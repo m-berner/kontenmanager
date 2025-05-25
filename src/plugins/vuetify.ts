@@ -10,6 +10,7 @@ import {createVuetify} from 'vuetify'
 import 'vuetify/styles'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {
+  mdiBankCircle,
   mdiBankPlus,
   mdiBankRemove,
   mdiCalculator,
@@ -20,7 +21,7 @@ import {
   mdiCurrencyEur,
   mdiDatabaseExport,
   mdiDatabaseImport,
-  mdiDelete,
+  mdiDelete, mdiDomain,
   mdiDomainPlus,
   mdiDomainRemove,
   mdiDotsVertical,
@@ -149,8 +150,6 @@ export default<IVuetify> {
         addBookingType: mdiFilterPlus,
         editBookingType: mdiFilterCog,
         deleteBookingType: mdiFilterRemove,
-        account: mdiDomainPlus,
-        deleteStock: mdiDomainRemove,
         exportDatabase: mdiDatabaseExport,
         importDatabase: mdiDatabaseImport,
         showAccounting: mdiCalculator,
@@ -170,7 +169,11 @@ export default<IVuetify> {
         mail: mdiEmail,
         magnify: mdiMagnify,
         addAccount: mdiBankPlus,
-        deleteAccount: mdiBankRemove
+        updateAccount: mdiBankCircle,
+        deleteAccount: mdiBankRemove,
+        addStock: mdiDomainPlus,
+        updateStock: mdiDomain,
+        deleteStock: mdiDomainRemove
       }
     }
   })

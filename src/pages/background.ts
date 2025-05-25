@@ -183,7 +183,11 @@ interface IUseAppApi {
     }
     DIALOGS: {
       ADD_ACCOUNT: string
+      UPDATE_ACCOUNT: string
       DELETE_ACCOUNT: string
+      ADD_STOCK: string
+      UPDATE_STOCK: string
+      DELETE_STOCK: string
       ADD_BOOKING_TYPE: string
       ADD_BOOKING: string
       DELETE_BOOKING: string
@@ -377,7 +381,7 @@ interface IUseAppApi {
 interface IUseDatabaseApi {
   open(): Promise<string>
 
-  toStores(p: browser.runtime.Port): Promise<string>
+  toStores(): Promise<string>
 
   addAccount(record: Omit<IAccount, 'cID'>): Promise<string>
 
@@ -490,7 +494,11 @@ export const useAppApi = (): IUseAppApi => {
       },
       DIALOGS: {
         ADD_ACCOUNT: 'AddAccount',
+        UPDATE_ACCOUNT: 'UpdateAccount',
         DELETE_ACCOUNT: 'DeleteAccount',
+        ADD_STOCK: 'AddStock',
+        UPDATE_STOCK: 'UpdateStock',
+        DELETE_STOCK: 'DeleteStock',
         ADD_BOOKING_TYPE: 'AddBookingType',
         DELETE_BOOKING_TYPE: 'DeleteBookingType',
         ADD_BOOKING: 'AddBooking',
@@ -878,7 +886,7 @@ export const useAppApi = (): IUseAppApi => {
 }
 const useDatabaseApi = (): IUseDatabaseApi => {
   return {
-    toStores: async (p) => {
+    toStores: async () => {
       log('BACKGROUND: toStores')
       const accounts: IAccount[] = []
       const bookings: IBooking[] = []
@@ -889,7 +897,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
           const storage = await browser.storage.local.get(['sActiveAccountId'])
           const onComplete = async (): Promise<void> => {
             log('BACKGROUND: toStores: all database records sent to frontend!')
-            p.postMessage({
+            backendAppMessagePort.postMessage({
               type: CONS.MESSAGES.DB__TO_STORE__RESPONSE,
               data: {accounts, bookings, bookingTypes, stocks}
             })
@@ -1426,7 +1434,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       const onAppRequest = async (m: object): Promise<void> => {
         switch (Object.values(m)[0]) {
           case CONS.MESSAGES.DB__TO_STORE:
-            await toStores(backendAppMessagePort)
+            await toStores()
             break
           case CONS.MESSAGES.DB__CLOSE:
             dbi.close()

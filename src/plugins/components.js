@@ -1,6 +1,10 @@
 import {} from 'vue';
 import { useAppApi } from '@/pages/background';
+import AddStock from '@/components/dialogs/AddStock.vue';
+import UpdateStock from '@/components/dialogs/UpdateStock.vue';
+import DeleteStock from '@/components/dialogs/DeleteStock.vue';
 import AddAccount from '@/components/dialogs/AddAccount.vue';
+import UpdateAccount from '@/components/dialogs/UpdateAccount.vue';
 import DeleteAccount from '@/components/dialogs/DeleteAccount.vue';
 import AddBookingType from '@/components/dialogs/AddBookingType.vue';
 import DeleteBookingType from '@/components/dialogs/DeleteBookingType.vue';
@@ -12,7 +16,11 @@ import DeleteBooking from '@/components/dialogs/DeleteBooking.vue';
 const { CONS, log } = useAppApi();
 export default {
     install: (app) => {
+        app.component(CONS.DIALOGS.ADD_STOCK, AddStock);
+        app.component(CONS.DIALOGS.UPDATE_STOCK, UpdateStock);
+        app.component(CONS.DIALOGS.DELETE_STOCK, DeleteStock);
         app.component(CONS.DIALOGS.ADD_ACCOUNT, AddAccount);
+        app.component(CONS.DIALOGS.UPDATE_ACCOUNT, UpdateAccount);
         app.component(CONS.DIALOGS.DELETE_ACCOUNT, DeleteAccount);
         app.component(CONS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType);
         app.component(CONS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType);

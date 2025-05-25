@@ -20,6 +20,7 @@ const settings = useSettingsStore()
 const formRef = useTemplateRef('form-ref')
 const {CONS, log} = useAppApi()
 
+console.error(records)
 const state = reactive({
   _date: '',
   _credit: 0,

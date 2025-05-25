@@ -92,7 +92,11 @@ export const useAppApi = () => {
             },
             DIALOGS: {
                 ADD_ACCOUNT: 'AddAccount',
+                UPDATE_ACCOUNT: 'UpdateAccount',
                 DELETE_ACCOUNT: 'DeleteAccount',
+                ADD_STOCK: 'AddStock',
+                UPDATE_STOCK: 'UpdateStock',
+                DELETE_STOCK: 'DeleteStock',
                 ADD_BOOKING_TYPE: 'AddBookingType',
                 DELETE_BOOKING_TYPE: 'DeleteBookingType',
                 ADD_BOOKING: 'AddBooking',
@@ -473,7 +477,7 @@ export const useAppApi = () => {
 };
 const useDatabaseApi = () => {
     return {
-        toStores: async (p) => {
+        toStores: async () => {
             log('BACKGROUND: toStores');
             const accounts = [];
             const bookings = [];
@@ -484,7 +488,7 @@ const useDatabaseApi = () => {
                     const storage = await browser.storage.local.get(['sActiveAccountId']);
                     const onComplete = async () => {
                         log('BACKGROUND: toStores: all database records sent to frontend!');
-                        p.postMessage({
+                        backendAppMessagePort.postMessage({
                             type: CONS.MESSAGES.DB__TO_STORE__RESPONSE,
                             data: { accounts, bookings, bookingTypes, stocks }
                         });
@@ -884,7 +888,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             const onAppRequest = async (m) => {
                 switch (Object.values(m)[0]) {
                     case CONS.MESSAGES.DB__TO_STORE:
-                        await toStores(backendAppMessagePort);
+                        await toStores();
                         break;
                     case CONS.MESSAGES.DB__CLOSE:
                         dbi.close();

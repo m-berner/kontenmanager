@@ -25,7 +25,8 @@ log('--- FooterBar.vue setup ---')
     </v-btn>
     <v-btn color="white">
       <router-link class="router-link-active" to="/privacy">
-        <v-icon icon="$privacy"></v-icon>
+        <v-icon icon="
+        $privacy"></v-icon>
         <div>{{ t('footer.privacy') }}</div>
       </router-link>
     </v-btn>

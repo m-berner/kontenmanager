@@ -11,6 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
+import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
@@ -24,20 +25,23 @@ const state = reactive({
 
 const ok = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: ok')
-    const formIs = await formRef.value!.validate()
-    if (formIs.valid) {
-      try {
-        const records = useRecordsStore()
-        const result = await records.addBookingType({cName: state._name.trim(), cAccountNumberID: settings.activeAccountId})
-        if (result === CONS.RESULTS.SUCCESS) {
-          await notice([t('dialogs.addBookingType.success')])
-          formRef.value!.reset()
-        }
-      } catch (e) {
-        console.error(e)
-        await notice([t('dialogs.addBookingType.error')])
+  const formIs = await formRef.value!.validate()
+  if (formIs.valid) {
+    try {
+      const bookingType = {
+        cName: state._name.trim(),
+        cAccountNumberID: settings.activeAccountId
       }
+      records.addBookingType(bookingType)
+      appMessagePort.postMessage({
+        type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE, data: bookingType
+      })
+      formRef.value!.reset()
+    } catch (e) {
+      console.error(e)
+      await notice([t('dialogs.addBookingType.error')])
     }
+  }
 }
 const title = t('dialogs.addBookingType.title')
 
@@ -54,20 +58,20 @@ log('--- AddBookingType.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-text-field v-if="settings.activeAccountId === -1">
-       {{ t('dialogs.addBookingType.message') }}
+      {{ t('dialogs.addBookingType.message') }}
     </v-text-field>
     <v-combobox
-      v-bind:disabled="settings.activeAccountId === -1"
-      v-model="state._name"
       ref="name-input"
+      v-model="state._name"
+      max-width="300"
+      v-bind:disabled="settings.activeAccountId === -1"
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
       v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+      v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
       v-bind:label="t('dialogs.addBookingType.label')"
-      v-bind:rules="VALIDATORS.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
-      max-width="300"
       v-bind:menu=true
       v-bind:menu-props="{ maxHeight: 250 }"
-      v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+      v-bind:rules="VALIDATORS.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
     ></v-combobox>
   </v-form>
 </template>

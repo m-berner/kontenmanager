@@ -108,17 +108,17 @@ const ok = async (): Promise<void> => {
             debit = 0
             bookingTypeId = transfer.cType
             costs = -transfer.cFTax - transfer.cSTax - transfer.cFees - transfer.cTax - transfer.cSoli
-            if (bookingTypeId === 1) {
-              debit = (transfer.cUnitQuotation * transfer.cCount) - costs
-            } else if (bookingTypeId === 2) {
+            if (bookingTypeId === 1) { // buy
+              debit = (transfer.cUnitQuotation * transfer.cCount) + costs
+            } else if (bookingTypeId === 2) { // sell
               credit = -(transfer.cUnitQuotation * transfer.cCount) - costs
-            } else if (bookingTypeId === 3) {
+            } else if (bookingTypeId === 3) { // divs
               credit = transfer.cUnitQuotation * transfer.cCount - costs
-            } else if (bookingTypeId === 4) {
-              credit = -costs + transfer.cAmount
+            } else if (bookingTypeId === 4) { // in
+              credit = transfer.cAmount - costs
               bookingTypeId = 6
-            } else if (bookingTypeId === 5) {
-              debit = costs - transfer.cAmount
+            } else if (bookingTypeId === 5) { // out
+              debit = -transfer.cAmount + costs
               bookingTypeId = 6
             }
             const booking: IBooking = {

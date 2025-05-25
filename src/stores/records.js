@@ -76,7 +76,7 @@ export const useRecordsStore = defineStore('records', {
                 });
                 this._booking_sum = bookings_per_account.map((entry) => {
                     return entry.cCredit - entry.cDebit;
-                }).reduce((acc, cur) => { console.error(acc, cur); return acc + cur; }, 0);
+                }).reduce((acc, cur) => { return acc + cur; }, 0);
             }
             else {
                 this._bookings = [];
@@ -91,7 +91,7 @@ export const useRecordsStore = defineStore('records', {
             this._bookings.splice(0, this._bookings.length);
             this._booking_types.splice(0, this._booking_types.length);
             this._accounts.splice(0, this._accounts.length);
-            this._stocks.splice(0, this._accounts.length);
+            this._stocks.splice(0, this._stocks.length);
             this._accounts = stores.accounts;
             this._bookings = stores.bookings;
             this._booking_types = stores.bookingTypes;
@@ -118,7 +118,7 @@ export const useRecordsStore = defineStore('records', {
             this._bookings.splice(0, this._bookings.length);
             this._booking_types.splice(0, this._booking_types.length);
             this._accounts.splice(0, this._accounts.length);
-            this._stocks.splice(0, this._accounts.length);
+            this._stocks.splice(0, this._stocks.length);
         }
     }
 });

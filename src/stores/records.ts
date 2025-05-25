@@ -96,7 +96,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         //this._bookings = bookings_per_account
         this._booking_sum = bookings_per_account.map((entry: IBooking) => {
           return entry.cCredit - entry.cDebit
-        }).reduce((acc: number, cur: number) => {console.error(acc,cur); return acc + cur}, 0)
+        }).reduce((acc: number, cur: number) => {return acc + cur}, 0)
       } else {
         this._bookings = []
         this._booking_sum = 0
@@ -110,7 +110,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._bookings.splice(0, this._bookings.length)
       this._booking_types.splice(0, this._booking_types.length)
       this._accounts.splice(0, this._accounts.length)
-      this._stocks.splice(0, this._accounts.length)
+      this._stocks.splice(0, this._stocks.length)
       this._accounts = stores.accounts
       this._bookings = stores.bookings
       this._booking_types = stores.bookingTypes
@@ -137,8 +137,7 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._bookings.splice(0, this._bookings.length)
       this._booking_types.splice(0, this._booking_types.length)
       this._accounts.splice(0, this._accounts.length)
-      this._stocks.splice(0, this._accounts.length)
-      //await browser.storage.local.set({sActiveAccountId: -1})
+      this._stocks.splice(0, this._stocks.length)
     }
   }
 })

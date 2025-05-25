@@ -2,7 +2,7 @@ import {} from 'vue';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-import { mdiBankPlus, mdiBankRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove } from '@mdi/js';
+import { mdiBankCircle, mdiBankPlus, mdiBankRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove } from '@mdi/js';
 import { useAppApi } from '@/pages/background';
 const { log } = useAppApi();
 export default {
@@ -106,8 +106,6 @@ export default {
                 addBookingType: mdiFilterPlus,
                 editBookingType: mdiFilterCog,
                 deleteBookingType: mdiFilterRemove,
-                account: mdiDomainPlus,
-                deleteStock: mdiDomainRemove,
                 exportDatabase: mdiDatabaseExport,
                 importDatabase: mdiDatabaseImport,
                 showAccounting: mdiCalculator,
@@ -127,7 +125,11 @@ export default {
                 mail: mdiEmail,
                 magnify: mdiMagnify,
                 addAccount: mdiBankPlus,
-                deleteAccount: mdiBankRemove
+                updateAccount: mdiBankCircle,
+                deleteAccount: mdiBankRemove,
+                addStock: mdiDomainPlus,
+                updateStock: mdiDomain,
+                deleteStock: mdiDomainRemove
             }
         }
     })
