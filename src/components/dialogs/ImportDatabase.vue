@@ -66,6 +66,19 @@ const ok = async (): Promise<void> => {
             cLogoUrl: CONS.LOGOS.NO_LOGO,
             cStockAccount: true
           })
+          records.addStock({
+            cID: 0,
+            cISIN: 'XX00000000000000000000',
+            cWKN: 'AAAAAAA',
+            cSymbol: 'WWW',
+            cFadeOut: 0,
+            cFirstPage: 0,
+            cURL: '',
+            cCompany: '',
+            cMeetingDay: '',
+            cQuarterDay: '',
+            cAccountNumberID: FAKE_ACCOUNT_ID,
+          })
           // file into stores (migration)
           for (stock of bkupObject.stocks) {
             const company = {
@@ -113,7 +126,7 @@ const ok = async (): Promise<void> => {
             } else if (bookingTypeId === 2) { // sell
               credit = -(transfer.cUnitQuotation * transfer.cCount) - costs
             } else if (bookingTypeId === 3) { // divs
-              credit = transfer.cUnitQuotation * transfer.cCount - costs
+              credit = (transfer.cUnitQuotation * transfer.cCount) - costs
             } else if (bookingTypeId === 4) { // in
               credit = transfer.cAmount - costs
               bookingTypeId = 6

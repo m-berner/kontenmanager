@@ -60,3 +60,12 @@ thead tr div.v-progress-linear {
 .text-align-center {
     text-align: center;
 }
+
+.withoutSpinner input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+.withoutSpinner input::-webkit-outer-spin-button,
+.withoutSpinner input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}

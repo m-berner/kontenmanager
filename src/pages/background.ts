@@ -49,8 +49,8 @@ declare global {
     cSymbol: string
     cFirstPage: number
     cFadeOut: number
-    cMeetingDay: number
-    cQuarterDay: number
+    cMeetingDay: string
+    cQuarterDay: string
     cURL: string
     cAccountNumberID: number
   }
@@ -396,6 +396,8 @@ interface IUseDatabaseApi {
   deleteBooking(ident: number): Promise<string>
 
   addStores(stores: IStores): Promise<string>
+
+  deleteStock(ident: number): Promise<string>
 
   addStock(record: Omit<IStock, 'cID'>): Promise<string>
 }
@@ -892,6 +894,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
       const bookings: IBooking[] = []
       const stocks: IStock[] = []
       const bookingTypes: IBookingType[] = []
+      let dummy = true
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const storage = await browser.storage.local.get(['sActiveAccountId'])
@@ -901,9 +904,6 @@ const useDatabaseApi = (): IUseDatabaseApi => {
               type: CONS.MESSAGES.DB__TO_STORE__RESPONSE,
               data: {accounts, bookings, bookingTypes, stocks}
             })
-            // if (accounts.length > 0) {
-            //   await browser.storage.local.set({sActiveAccountId: accounts[0].cID})
-            // }
             resolve('BACKGROUND: toStores: all database records sent to frontend!')
           }
           const onAbort = (): void => {
@@ -936,8 +936,27 @@ const useDatabaseApi = (): IUseDatabaseApi => {
           }
           const onSuccessStockOpenCursor = (ev: Event): void => {
             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              if (ev.target.result.value.cID === 0) {
+                dummy = false
+              }
               stocks.push(ev.target.result.value)
               ev.target.result.continue()
+            } else {
+              if (dummy) {
+                stocks.unshift({
+                  cID: 0,
+                  cISIN: 'XX00000000000000000000',
+                  cWKN: 'AAAAAAA',
+                  cSymbol: 'WWW',
+                  cFadeOut: 0,
+                  cFirstPage: 0,
+                  cURL: '',
+                  cCompany: '',
+                  cMeetingDay: '',
+                  cQuarterDay: '',
+                  cAccountNumberID: 1,
+                })
+              }
             }
           }
           const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor()
@@ -1095,9 +1114,53 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         if (dbi != null) {
           const onSuccess = (): void => {
             //this._bookings.all.splice(indexOfBooking, 1)
-            backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
+            //backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
             //this.sumBookings()
             resolve('Booking deleted')
+          }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident)
+          requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    addStock: async (record) => {
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest) {
+              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE, data: ev.target.result})
+              resolve(CONS.RESULTS.SUCCESS)
+            } else {
+              reject(CONS.RESULTS.ERROR)
+            }
+          }
+          const onError = (ev: Event): void => {
+            reject(ev)
+          }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    deleteStock: async (ident) => {
+      // const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
+      //   return booking.cID === ident
+      // })
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = (): void => {
+            //this._bookings.all.splice(indexOfBooking, 1)
+            //backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
+            //this.sumBookings()
+            resolve('Stock deleted')
           }
           const onError = (ev: Event): void => {
             reject(ev)
@@ -1164,28 +1227,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
           requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
         }
       })
-    },
-    addStock: async (record) => {
-      return new Promise(async (resolve, reject) => {
-        if (dbi != null) {
-          const onSuccess = (ev: Event): void => {
-            if (ev.target instanceof IDBRequest) {
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE, data: ev.target.result})
-              resolve(CONS.RESULTS.SUCCESS)
-            } else {
-              reject(CONS.RESULTS.ERROR)
-            }
-          }
-          const onError = (ev: Event): void => {
-            reject(ev)
-          }
-          const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite')
-          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record)
-          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
-        }
-      })
-    },
+    }
   }
 }
 
@@ -1436,6 +1478,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           case CONS.MESSAGES.DB__TO_STORE:
             await toStores()
             break
+          case CONS.MESSAGES.STORES__INIT_SETTINGS:
+            backendAppMessagePort.postMessage({
+              type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
+              data: await browser.storage.local.get()
+            })
+            break
           case CONS.MESSAGES.DB__CLOSE:
             dbi.close()
             break
@@ -1455,11 +1503,17 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           case CONS.MESSAGES.DB__ADD_STOCK:
             await addStock(Object.values(m)[1])
             break
-          case CONS.MESSAGES.STORES__INIT_SETTINGS:
-            backendAppMessagePort.postMessage({
-              type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
-              data: await browser.storage.local.get()
-            })
+          case CONS.MESSAGES.DB__DELETE_ACCOUNT:
+            await addAccount(Object.values(m)[1])
+            break
+          case CONS.MESSAGES.DB__DELETE_BOOKING:
+            await addBooking(Object.values(m)[1])
+            break
+          case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
+            await addBookingType(Object.values(m)[1])
+            break
+          case CONS.MESSAGES.DB__DELETE_STOCK:
+            await addStock(Object.values(m)[1])
             break
           default:
         }

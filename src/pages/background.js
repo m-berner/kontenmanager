@@ -483,6 +483,7 @@ const useDatabaseApi = () => {
             const bookings = [];
             const stocks = [];
             const bookingTypes = [];
+            let dummy = true;
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const storage = await browser.storage.local.get(['sActiveAccountId']);
@@ -524,8 +525,28 @@ const useDatabaseApi = () => {
                     };
                     const onSuccessStockOpenCursor = (ev) => {
                         if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                            if (ev.target.result.value.cID === 0) {
+                                dummy = false;
+                            }
                             stocks.push(ev.target.result.value);
                             ev.target.result.continue();
+                        }
+                        else {
+                            if (dummy) {
+                                stocks.unshift({
+                                    cID: 0,
+                                    cISIN: 'XX00000000000000000000',
+                                    cWKN: 'AAAAAAA',
+                                    cSymbol: 'WWW',
+                                    cFadeOut: 0,
+                                    cFirstPage: 0,
+                                    cURL: '',
+                                    cCompany: '',
+                                    cMeetingDay: '',
+                                    cQuarterDay: '',
+                                    cAccountNumberID: 1,
+                                });
+                            }
                         }
                     };
                     const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
@@ -670,8 +691,46 @@ const useDatabaseApi = () => {
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const onSuccess = () => {
-                        backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident });
                         resolve('Booking deleted');
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
+                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
+        addStock: async (record) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = (ev) => {
+                        if (ev.target instanceof IDBRequest) {
+                            backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE, data: ev.target.result });
+                            resolve(CONS.RESULTS.SUCCESS);
+                        }
+                        else {
+                            reject(CONS.RESULTS.ERROR);
+                        }
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record);
+                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
+        deleteStock: async (ident) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = () => {
+                        resolve('Stock deleted');
                     };
                     const onError = (ev) => {
                         reject(ev);
@@ -736,29 +795,7 @@ const useDatabaseApi = () => {
                     requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
                 }
             });
-        },
-        addStock: async (record) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = (ev) => {
-                        if (ev.target instanceof IDBRequest) {
-                            backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE, data: ev.target.result });
-                            resolve(CONS.RESULTS.SUCCESS);
-                        }
-                        else {
-                            reject(CONS.RESULTS.ERROR);
-                        }
-                    };
-                    const onError = (ev) => {
-                        reject(ev);
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record);
-                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
+        }
     };
 };
 const { CONS, log, notice } = useAppApi();
@@ -890,6 +927,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     case CONS.MESSAGES.DB__TO_STORE:
                         await toStores();
                         break;
+                    case CONS.MESSAGES.STORES__INIT_SETTINGS:
+                        backendAppMessagePort.postMessage({
+                            type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
+                            data: await browser.storage.local.get()
+                        });
+                        break;
                     case CONS.MESSAGES.DB__CLOSE:
                         dbi.close();
                         break;
@@ -909,11 +952,17 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     case CONS.MESSAGES.DB__ADD_STOCK:
                         await addStock(Object.values(m)[1]);
                         break;
-                    case CONS.MESSAGES.STORES__INIT_SETTINGS:
-                        backendAppMessagePort.postMessage({
-                            type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
-                            data: await browser.storage.local.get()
-                        });
+                    case CONS.MESSAGES.DB__DELETE_ACCOUNT:
+                        await addAccount(Object.values(m)[1]);
+                        break;
+                    case CONS.MESSAGES.DB__DELETE_BOOKING:
+                        await addBooking(Object.values(m)[1]);
+                        break;
+                    case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
+                        await addBookingType(Object.values(m)[1]);
+                        break;
+                    case CONS.MESSAGES.DB__DELETE_STOCK:
+                        await addStock(Object.values(m)[1]);
                         break;
                     default:
                 }

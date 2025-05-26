@@ -53,17 +53,17 @@ const ok = async (): Promise<void> => {
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
-      const account = {
+      const account: Omit<IAccount, 'cID'> = {
         cSwift: state._swift.trim().toUpperCase(),
         cNumber: state._number.replace(/\s/g, ''),
         cLogoUrl: state._logoUrl,
-        cStockAccount: state._stockAccount ? 1 : 0
+        cStockAccount: !!state._stockAccount
       }
-      records.addAccount(account)
-      runtime.setLogo()
       const onResponse = async (m: object): Promise<void> => {
         log('APPINDEX: onResponse', {info: Object.values(m)[1]})
         if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE) {
+          records.addAccount({...{cID: Object.values(m)[1]}, ...account})
+          runtime.setLogo()
           settings.setActiveAccountId(Object.values(m)[1])
           await notice([t('dialogs.addAccount.success')])
         }
