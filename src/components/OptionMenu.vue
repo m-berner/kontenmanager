@@ -7,7 +7,6 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import DialogPort from '@/components/helper/DialogPort.vue'
 import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 
@@ -72,5 +71,4 @@ log('--- OptionMenu.vue setup ---')
       </v-hover>
     </v-list>
   </v-menu>
-  <DialogPort v-if="runtime.teleport.showOptionDialog"></DialogPort>
 </template>

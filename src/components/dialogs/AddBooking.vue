@@ -42,33 +42,62 @@ const state = reactive({
 
 const ok = async (): Promise<void> => {
   log('ADD_BOOKING: ok')
+  let booking: object = {}
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
-      //const aNumber = records.accounts[records.getAccountIndexById(settings.activeAccountId)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
-      const aDescription = state._description !== undefined && state._description !== null ? state._description.trim() : ''
-      const booking: Omit<IBooking, 'cID'> = {
-        cDate: state._date,
-        // NOTE: CurrencyInput ensure 0 instead of null
-        cCredit: state._credit === null ? 0 : state._credit,
-        cDebit: state._debit === null ? 0 : state._debit,
-        cDescription: aDescription,
-        cBookingTypeID: state._booking_type_id,
-        cStockID: state._stock_id,
-        cAccountNumberID: settings.activeAccountId,
-        cExDate: state._ex_date,
-        cCount: state._count,
-        cSoli: state._soli === null ? 0 : state._soli,
-        cTax: state._tax === null ? 0 : state._tax,
-        cFee: state._fee === null ? 0 :state._fee,
-        cSourceTax: state._source_tax === null ? 0 : state._source_tax,
-        cTransactionTax: state._transaction_tax === null ? 0 : state._transaction_tax,
-        cMarketPlace: state._market_place
+      switch (state._booking_type_id) {
+        case 1:
+          break
+        case 2:
+          break
+        case 3:
+          break
+        default:
+          booking = {
+            cDate: state._date,
+            // NOTE: CurrencyInput ensure 0 instead of null
+            cCredit: state._credit === null ? 0 : state._credit,
+            cDebit: state._debit === null ? 0 : state._debit,
+            cDescription: state._description,
+            cBookingTypeID: state._booking_type_id,
+            cStockID: 0,
+            cAccountNumberID: settings.activeAccountId,
+            cExDate: CONS.DEFAULTS.DATE,
+            cCount: 0,
+            cSoli: 0,
+            cTax: 0,
+            cFee: 0,
+            cSourceTax: 0,
+            cTransactionTax: 0,
+            cMarketPlace: ''
+          }
       }
+      //const aNumber = records.accounts[records.getAccountIndexById(settings.activeAccountId)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
+      //const aDescription = state._description !== undefined && state._description !== null ? state._description.trim() : ''
+      // const booking: Omit<IBooking, 'cID'> = {
+      //   cDate: state._date,
+      //   // NOTE: CurrencyInput ensure 0 instead of null
+      //   cCredit: state._credit === null ? 0 : state._credit,
+      //   cDebit: state._debit === null ? 0 : state._debit,
+      //   cDescription: aDescription,
+      //   cBookingTypeID: state._booking_type_id,
+      //   cStockID: state._stock_id,
+      //   cAccountNumberID: settings.activeAccountId,
+      //   cExDate: state._ex_date,
+      //   cCount: state._count,
+      //   cSoli: state._soli === null ? 0 : state._soli,
+      //   cTax: state._tax === null ? 0 : state._tax,
+      //   cFee: state._fee === null ? 0 :state._fee,
+      //   cSourceTax: state._source_tax === null ? 0 : state._source_tax,
+      //   cTransactionTax: state._transaction_tax === null ? 0 : state._transaction_tax,
+      //   cMarketPlace: state._market_place
+      // }
       const onResponse = async (m: object): Promise<void> => {
-        log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE) {
+        log('ADD_BOOKING: onResponse', {info: Object.values(m)[1]})
+        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE) {
           records.addBooking({...{cID: Object.values(m)[1]}, ...booking})
+          records.sumBookings()
           await notice([t('dialogs.addBooking.success')])
         }
       }
@@ -78,6 +107,11 @@ const ok = async (): Promise<void> => {
       })
       state._debit = 0
       state._credit = 0
+      state._soli = 0
+      state._tax = 0
+      state._fee = 0
+      state._source_tax = 0
+      state._transaction_tax = 0
       formRef.value!.reset()
     } catch (e) {
       console.error(e)
@@ -134,6 +168,7 @@ log('--- AddBooking.vue setup ---')
             v-model="state._booking_type_id"
             density="compact"
             max-width="300"
+            required
             v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
             v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
             v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
@@ -151,9 +186,9 @@ log('--- AddBooking.vue setup ---')
           <v-text-field
             v-if="state._booking_type_id < 4 && state._booking_type_id > 0"
             v-model="state._count"
+            class="withoutSpinner"
             density="compact"
             type="number"
-            class="withoutSpinner"
             v-bind:label="t('dialogs.addBooking.countLabel')"
             variant="outlined"
           ></v-text-field>
@@ -163,7 +198,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state._booking_type_id < 4 && state._booking_type_id > 0"
             v-model="state._unit_quotation"
             v-bind:label="t('dialogs.addBooking.unitQuotationLabel')"
-            v-bind:options="{ currency: 'EUR' }"
+            v-bind:options="{ currency: 'EUR', valueRange: {min: 0} }"
           ></CurrencyInput>
         </v-col>
       </v-row>
@@ -173,7 +208,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state._booking_type_id > 3"
             v-model="state._credit"
             v-bind:label="t('dialogs.addBooking.creditLabel')"
-            v-bind:options="{ currency: 'EUR' }"
+            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
@@ -181,7 +216,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state._booking_type_id > 3"
             v-model="state._debit"
             v-bind:label="t('dialogs.addBooking.debitLabel')"
-            v-bind:options="{ currency: 'EUR' }"
+            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
       </v-row>
@@ -191,7 +226,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state._booking_type_id < 4 && state._booking_type_id > 1"
             v-model="state._tax"
             v-bind:label="t('dialogs.addBooking.taxLabel')"
-            v-bind:options="{ currency: 'EUR' }"
+            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
@@ -199,7 +234,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state._booking_type_id < 4 && state._booking_type_id > 1"
             v-model="state._soli"
             v-bind:label="t('dialogs.addBooking.soliLabel')"
-            v-bind:options="{ currency: 'EUR' }"
+            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
       </v-row>
@@ -224,7 +259,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state._booking_type_id === 3"
             v-model="state._source_tax"
             v-bind:label="t('dialogs.addBooking.sourceTaxLabel')"
-            v-bind:options="{ currency: 'EUR' }"
+            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
       </v-row>
@@ -265,7 +300,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state._booking_type_id < 3 && state._booking_type_id > 0"
             v-model="state._fee"
             v-bind:label="t('dialogs.addBooking.feeLabel')"
-            v-bind:options="{ currency: 'EUR' }"
+            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
@@ -273,7 +308,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state._booking_type_id === 1"
             v-model="state._transaction_tax"
             v-bind:label="t('dialogs.addBooking.transactionTaxLabel')"
-            v-bind:options="{ currency: 'EUR' }"
+            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
       </v-row>

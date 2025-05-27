@@ -10,19 +10,29 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
+import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
-const {log, notice} = useAppApi()
+const {CONS, log, notice} = useAppApi()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
 const ok = async (): Promise<void> => {
   log('DELETE_BOOKING: ok')
   try {
-    const result = await records.deleteBooking(runtime.bookingId)
-    if (result === 'Booking deleted') {
-      await notice([t('dialogs.deleteBooking.success')])
+    const onResponse = async (m: object): Promise<void> => {
+      log('DELETE_BOOKING: onResponse')
+      if (Object.values(m)[0] === CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE) {
+        records.deleteBooking(runtime.bookingId)
+        records.sumBookings()
+        runtime.resetTeleport()
+        await notice([t('dialogs.deleteBooking.success')])
+      }
     }
+    appMessagePort.onMessage.addListener(onResponse)
+    appMessagePort.postMessage({
+      type: CONS.MESSAGES.DB__DELETE_BOOKING, data: runtime.bookingId
+    })
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteBooking.error')])

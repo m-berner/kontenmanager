@@ -288,5 +288,5 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer></v-spacer>
   </v-app-bar>
-  <DialogPort v-if="runtime.teleport.showHeaderDialog"></DialogPort>
+  <DialogPort></DialogPort>
 </template>

@@ -166,6 +166,7 @@ interface IUseAppApi {
       CURRENCY: string
       LANG: string
       LOCALE: string
+      DATE: string
       YEAR: number
       STORAGE: {
         ACTIVE_ACCOUNT_ID: number
@@ -479,6 +480,7 @@ export const useAppApi = (): IUseAppApi => {
         CURRENCY: 'EUR',
         LANG: 'de',
         LOCALE: 'de-DE',
+        DATE: '1970-01-01',
         YEAR: 9999,
         STORAGE: {
           ACTIVE_ACCOUNT_ID: -1,
@@ -1113,9 +1115,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const onSuccess = (): void => {
-            //this._bookings.all.splice(indexOfBooking, 1)
-            //backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
-            //this.sumBookings()
+            backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
             resolve('Booking deleted')
           }
           const onError = (ev: Event): void => {
@@ -1237,7 +1237,7 @@ let backendAppMessagePort: browser.runtime.Port
 let backendOptionsMessagePort: browser.runtime.Port
 // TODO move all async code into backend!!!
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  const {addAccount, addBooking, addBookingType, addStock, toStores, addStores, open} = useDatabaseApi()
+  const {addAccount, addBooking, deleteBooking, addBookingType, addStock, toStores, addStores, open} = useDatabaseApi()
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = async (): Promise<void> => {
     console.log('BACKGROUND: onInstall')
@@ -1503,18 +1503,18 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           case CONS.MESSAGES.DB__ADD_STOCK:
             await addStock(Object.values(m)[1])
             break
-          case CONS.MESSAGES.DB__DELETE_ACCOUNT:
-            await addAccount(Object.values(m)[1])
-            break
+          // case CONS.MESSAGES.DB__DELETE_ACCOUNT:
+          //   await deleteAccount(Object.values(m)[1])
+          //   break
           case CONS.MESSAGES.DB__DELETE_BOOKING:
-            await addBooking(Object.values(m)[1])
+            await deleteBooking(Object.values(m)[1])
             break
-          case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
-            await addBookingType(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.DB__DELETE_STOCK:
-            await addStock(Object.values(m)[1])
-            break
+          // case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
+          //   await deleteBookingType(Object.values(m)[1])
+          //   break
+          // case CONS.MESSAGES.DB__DELETE_STOCK:
+          //   await deleteStock(Object.values(m)[1])
+          //   break
           default:
         }
       }

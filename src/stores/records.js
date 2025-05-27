@@ -61,6 +61,11 @@ export const useRecordsStore = defineStore('records', {
                 throw new Error('getBookingTextById: No booking found for given ID');
             }
         },
+        getBookingById(ident) {
+            return this._bookings.findIndex((entry) => {
+                return entry.cID === ident;
+            });
+        },
         sumBookings() {
             const settings = useSettingsStore();
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);
@@ -69,11 +74,6 @@ export const useRecordsStore = defineStore('records', {
             }
             const bookings_per_account = [...this._bookings];
             if (bookings_per_account.length > 0) {
-                bookings_per_account.sort((a, b) => {
-                    const A = new Date(a.cDate).getTime();
-                    const B = new Date(b.cDate).getTime();
-                    return A - B;
-                });
                 this._booking_sum = bookings_per_account.map((entry) => {
                     return entry.cCredit - entry.cDebit;
                 }).reduce((acc, cur) => { return acc + cur; }, 0);
@@ -96,6 +96,11 @@ export const useRecordsStore = defineStore('records', {
             this._bookings = stores.bookings;
             this._booking_types = stores.bookingTypes;
             this._stocks = stores.stocks;
+            this._bookings.sort((a, b) => {
+                const A = new Date(a.cDate).getTime();
+                const B = new Date(b.cDate).getTime();
+                return B - A;
+            });
         },
         addAccount(value) {
             log('RECORDS: addAccount');
@@ -103,7 +108,11 @@ export const useRecordsStore = defineStore('records', {
         },
         addBooking(value) {
             log('RECORDS: addBooking');
-            this._bookings.push(value);
+            this._bookings.unshift(value);
+        },
+        deleteBooking(ident) {
+            log('RECORDS: deleteBooking', { info: ident });
+            this._bookings.splice(this.getBookingById(ident), 1);
         },
         addStock(value) {
             log('RECORDS: addStocks');

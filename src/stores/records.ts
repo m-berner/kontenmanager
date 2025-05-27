@@ -77,6 +77,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         throw new Error('getBookingTextById: No booking found for given ID')
       }
     },
+    getBookingById(ident: number): number {
+      return this._bookings.findIndex((entry: IBooking) => {
+        return entry.cID === ident
+      })
+    },
     sumBookings(): void {
       const settings = useSettingsStore()
       const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
@@ -88,11 +93,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       // })
       const bookings_per_account = [...this._bookings]
       if (bookings_per_account.length > 0) {
-        bookings_per_account.sort((a: IBooking, b: IBooking) => {
-          const A = new Date(a.cDate).getTime()
-          const B = new Date(b.cDate).getTime()
-          return A - B
-        })
+        // bookings_per_account.sort((a: IBooking, b: IBooking) => {
+        //   const A = new Date(a.cDate).getTime()
+        //   const B = new Date(b.cDate).getTime()
+        //   return A - B
+        // })
         //this._bookings = bookings_per_account
         this._booking_sum = bookings_per_account.map((entry: IBooking) => {
           return entry.cCredit - entry.cDebit
@@ -115,6 +120,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       this._bookings = stores.bookings
       this._booking_types = stores.bookingTypes
       this._stocks = stores.stocks
+      this._bookings.sort((a: IBooking, b: IBooking) => {
+        const A = new Date(a.cDate).getTime()
+        const B = new Date(b.cDate).getTime()
+        return B - A
+      })
     },
     addAccount(value: IAccount): void {
       log('RECORDS: addAccount')
@@ -122,7 +132,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     addBooking(value: IBooking): void {
       log('RECORDS: addBooking')
-      this._bookings.push(value)
+      this._bookings.unshift(value)
+    },
+    deleteBooking(ident: number): void {
+      log('RECORDS: deleteBooking', {info:ident})
+      this._bookings.splice(this.getBookingById(ident), 1)
     },
     addStock(value: IStock): void {
       log('RECORDS: addStocks')

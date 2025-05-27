@@ -75,6 +75,7 @@ export const useAppApi = () => {
                 CURRENCY: 'EUR',
                 LANG: 'de',
                 LOCALE: 'de-DE',
+                DATE: '1970-01-01',
                 YEAR: 9999,
                 STORAGE: {
                     ACTIVE_ACCOUNT_ID: -1,
@@ -691,6 +692,7 @@ const useDatabaseApi = () => {
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const onSuccess = () => {
+                        backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident });
                         resolve('Booking deleted');
                     };
                     const onError = (ev) => {
@@ -803,7 +805,7 @@ let dbi;
 let backendAppMessagePort;
 let backendOptionsMessagePort;
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-    const { addAccount, addBooking, addBookingType, addStock, toStores, addStores, open } = useDatabaseApi();
+    const { addAccount, addBooking, deleteBooking, addBookingType, addStock, toStores, addStores, open } = useDatabaseApi();
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
         const installStorageLocal = async () => {
@@ -952,17 +954,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     case CONS.MESSAGES.DB__ADD_STOCK:
                         await addStock(Object.values(m)[1]);
                         break;
-                    case CONS.MESSAGES.DB__DELETE_ACCOUNT:
-                        await addAccount(Object.values(m)[1]);
-                        break;
                     case CONS.MESSAGES.DB__DELETE_BOOKING:
-                        await addBooking(Object.values(m)[1]);
-                        break;
-                    case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
-                        await addBookingType(Object.values(m)[1]);
-                        break;
-                    case CONS.MESSAGES.DB__DELETE_STOCK:
-                        await addStock(Object.values(m)[1]);
+                        await deleteBooking(Object.values(m)[1]);
                         break;
                     default:
                 }
