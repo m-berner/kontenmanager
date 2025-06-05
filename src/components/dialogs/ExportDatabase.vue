@@ -82,16 +82,15 @@ const ok = async (): Promise<void> => {
         cDescription: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.DESCRIPTION],
         cBookingTypeID: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID],
         cAccountNumberID: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID],
-        // TODO use memory later!
-        cCount: 0,
-        cStockID: 0,
-        cSoli: 0,
-        cTax: 0,
-        cFee: 0,
-        cSourceTax: 0,
-        cTransactionTax: 0,
-        cMarketPlace: '',
-        cExDate: '1970-01-01'
+        cCount: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.COUNT],
+        cStockID: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.STOCK_ID],
+        cSoli: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.SOLI],
+        cTax: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.TAX],
+        cFee: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.FEE],
+        cSourceTax: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.SOURCE_TAX],
+        cTransactionTax: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.TRANSACTION_TAX],
+        cMarketPlace: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.MARKET_PLACE],
+        cExDate: records.bookings[i][CONS.DB.STORES.BOOKINGS.FIELDS.EX_DATE]
       }
       buffer += JSON.stringify(booking)
       if (i === records.bookings.length - 1) {

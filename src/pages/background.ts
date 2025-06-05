@@ -72,13 +72,15 @@ declare global {
     accounts: IAccount[],
     bookings: IBooking[],
     bookingTypes: IBookingType[],
-    stocks: Array<Record<string, never>>
+    stocks: Array<Record<string, never>>,
+    clean: boolean
   }
 
   interface IStorageLocal {
     sActiveAccountId: number
     sBookingsPerPage: number
     sStocksPerPage: number
+    sStockmanagerDbImported: boolean
     sPartner: boolean
     sDebug: boolean
     sSkin: string
@@ -172,6 +174,7 @@ interface IUseAppApi {
         ACTIVE_ACCOUNT_ID: number
         BOOKINGS_PER_PAGE: number
         STOCKS_PER_PAGE: number
+        STOCKMANAGER_DB_IMPORTED: boolean
         PARTNER: boolean
         DEBUG: boolean
         SKIN: string
@@ -248,6 +251,7 @@ interface IUseAppApi {
       OPTIONS__SET_MATERIALS: number
       OPTIONS__SET_EXCHANGES: number
       OPTIONS__SET_MARKETS: number
+      OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: number
     }
     SERVICES: {
       [p: string]: Partial<{
@@ -485,6 +489,7 @@ export const useAppApi = (): IUseAppApi => {
         STORAGE: {
           ACTIVE_ACCOUNT_ID: -1,
           BOOKINGS_PER_PAGE: 9,
+          STOCKMANAGER_DB_IMPORTED: false,
           STOCKS_PER_PAGE: 9,
           DEBUG: false,
           SKIN: 'ocean',
@@ -561,7 +566,8 @@ export const useAppApi = (): IUseAppApi => {
         OPTIONS__SET_INDEXES: 12026,
         OPTIONS__SET_MATERIALS: 12027,
         OPTIONS__SET_EXCHANGES: 12028,
-        OPTIONS__SET_MARKETS: 12029
+        OPTIONS__SET_MARKETS: 12029,
+        OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: 12030
       },
       SERVICES: {
         goyax: {
@@ -896,7 +902,6 @@ const useDatabaseApi = (): IUseDatabaseApi => {
       const bookings: IBooking[] = []
       const stocks: IStock[] = []
       const bookingTypes: IBookingType[] = []
-      let dummy = true
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const storage = await browser.storage.local.get(['sActiveAccountId'])
@@ -938,27 +943,10 @@ const useDatabaseApi = (): IUseDatabaseApi => {
           }
           const onSuccessStockOpenCursor = (ev: Event): void => {
             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-              if (ev.target.result.value.cID === 0) {
-                dummy = false
+              if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                stocks.push(ev.target.result.value)
               }
-              stocks.push(ev.target.result.value)
               ev.target.result.continue()
-            } else {
-              if (dummy) {
-                stocks.unshift({
-                  cID: 0,
-                  cISIN: 'XX00000000000000000000',
-                  cWKN: 'AAAAAAA',
-                  cSymbol: 'WWW',
-                  cFadeOut: 0,
-                  cFirstPage: 0,
-                  cURL: '',
-                  cCompany: '',
-                  cMeetingDay: '',
-                  cQuarterDay: '',
-                  cAccountNumberID: 1,
-                })
-              }
             }
           }
           const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor()
@@ -1045,7 +1033,10 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         if (dbi != null) {
           const onSuccess = (ev: Event): void => {
             if (ev.target instanceof IDBRequest) {
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: ev.target.result})
+              backendAppMessagePort.postMessage({
+                type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE,
+                data: ev.target.result
+              })
               resolve(CONS.RESULTS.SUCCESS)
             } else {
               reject(CONS.RESULTS.ERROR)
@@ -1193,38 +1184,53 @@ const useDatabaseApi = (): IUseDatabaseApi => {
           requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
           requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
           requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-          const onSuccessClearBookings = (): void => {
-            log('BACKGROUND: bookings dropped')
-            for (let i = 0; i < stores.bookings.length; i++) {
-              requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
+          if (stores.clean) {
+            const onSuccessClearBookings = (): void => {
+              log('BACKGROUND: bookings dropped')
+              for (let i = 0; i < stores.bookings.length; i++) {
+                requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
+              }
             }
-          }
-          const onSuccessClearAccounts = (): void => {
-            log('BACKGROUND: accounts dropped')
+            const onSuccessClearAccounts = (): void => {
+              log('BACKGROUND: accounts dropped')
+              for (let i = 0; i < stores.accounts.length; i++) {
+                requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accounts[i]})
+              }
+            }
+            const onSuccessClearBookingTypes = (): void => {
+              log('BACKGROUND: booking types dropped')
+              for (let i = 0; i < stores.bookingTypes.length; i++) {
+                requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
+              }
+            }
+            const onSuccessClearStocks = (): void => {
+              log('BACKGROUND: stocks dropped')
+              for (let i = 0; i < stores.stocks.length; i++) {
+                requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocks[i]})
+              }
+            }
+            const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
+            requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
+            const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
+            requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
+            const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
+            requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
+            const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
+            requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
+          } else {
             for (let i = 0; i < stores.accounts.length; i++) {
-              requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accounts[i]})
+              requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({...stores.accounts[i]})
             }
-          }
-          const onSuccessClearBookingTypes = (): void => {
-            log('BACKGROUND: booking types dropped')
             for (let i = 0; i < stores.bookingTypes.length; i++) {
               requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
             }
-          }
-          const onSuccessClearStocks = (): void => {
-            log('BACKGROUND: stocks dropped')
+            for (let i = 0; i < stores.bookings.length; i++) {
+              requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
+            }
             for (let i = 0; i < stores.stocks.length; i++) {
               requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocks[i]})
             }
           }
-          const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
-          requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
-          const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
-          requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
-          const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
-          requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
-          const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
-          requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
         }
       })
     }
@@ -1469,10 +1475,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     log('BACKGROUND: onConnect', {info: p.name})
     if (p.name === CONS.MESSAGES.PORT__APP) {
       backendAppMessagePort = p
-      const onAppDisconnected = () => {
-        backendAppMessagePort.disconnect()
-        log('BACKGROUND: onDisconnected', {info: 'App disconnected!'})
-      }
+      // const onAppDisconnected = () => {
+      //   backendAppMessagePort.disconnect()
+      //   log('BACKGROUND: onDisconnected', {info: 'App disconnected!'})
+      // }
       const onAppRequest = async (m: object): Promise<void> => {
         switch (Object.values(m)[0]) {
           case CONS.MESSAGES.DB__TO_STORE:
@@ -1515,18 +1521,21 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           // case CONS.MESSAGES.DB__DELETE_STOCK:
           //   await deleteStock(Object.values(m)[1])
           //   break
+          case CONS.MESSAGES.OPTIONS__SET_STOCKMANAGER_DB_IMPORTED:
+            await browser.storage.local.set({sStockmanagerDbImported: Object.values(m)[1]})
+            break
           default:
         }
       }
       // listen for messages from app tab
       backendAppMessagePort.onMessage.addListener(onAppRequest)
-      backendAppMessagePort.onDisconnect.addListener(onAppDisconnected)
+      //backendAppMessagePort.onDisconnect.addListener(onAppDisconnected)
     } else {
       backendOptionsMessagePort = p
-      const onOptionsDisconnected = () => {
-        backendOptionsMessagePort.disconnect()
-        log('BACKGROUND: onDisconnected', {info: 'Options tab disconnected!'})
-      }
+      // const onOptionsDisconnected = () => {
+      //   backendOptionsMessagePort.disconnect()
+      //   log('BACKGROUND: onDisconnected', {info: 'Options tab disconnected!'})
+      // }
       const onOptionsRequest = async (m: object): Promise<void> => {
         log('BACKGROUND: onOptionsRequest', {info: Object.values(m)})
         switch (Object.values(m)[0]) {
@@ -1559,7 +1568,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       }
       // listen for messages from options tab
       backendOptionsMessagePort.onMessage.addListener(onOptionsRequest)
-      backendOptionsMessagePort.onDisconnect.addListener(onOptionsDisconnected)
+      //backendOptionsMessagePort.onDisconnect.addListener(onOptionsDisconnected)
     }
   }
   browser.runtime.onInstalled.addListener(onInstall)

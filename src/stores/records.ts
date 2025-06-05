@@ -8,6 +8,7 @@
 import {defineStore, type StoreDefinition} from 'pinia'
 import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
+import {toRaw} from 'vue'
 
 interface IRecordsStore {
   _accounts: IAccount[]
@@ -101,7 +102,9 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         //this._bookings = bookings_per_account
         this._booking_sum = bookings_per_account.map((entry: IBooking) => {
           return entry.cCredit - entry.cDebit
-        }).reduce((acc: number, cur: number) => {return acc + cur}, 0)
+        }).reduce((acc: number, cur: number) => {
+          return acc + cur
+        }, 0)
       } else {
         this._bookings = []
         this._booking_sum = 0
@@ -130,20 +133,31 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       log('RECORDS: addAccount')
       this._accounts.push(value)
     },
+    updateAccount(value: IAccount): void {
+      log('RECORDS: updateAccount')
+      const cloneAccounts = [...this._accounts]
+      this._accounts = cloneAccounts.map(account => {
+        if (account.cID === value.cID) {
+          return value
+        } else {
+          return toRaw(account)
+        }
+      })
+    },
     addBooking(value: IBooking): void {
       log('RECORDS: addBooking')
       this._bookings.unshift(value)
     },
     deleteBooking(ident: number): void {
-      log('RECORDS: deleteBooking', {info:ident})
+      log('RECORDS: deleteBooking', {info: ident})
       this._bookings.splice(this.getBookingById(ident), 1)
     },
     addStock(value: IStock): void {
-      log('RECORDS: addStocks')
+      log('RECORDS: addStock')
       this._stocks.push(value)
     },
     addBookingType(value: IBookingType): void {
-      log('RECORDS: addBookingTypes')
+      log('RECORDS: addBookingType')
       this._booking_types.push(value)
     },
     cleanStore(): void {

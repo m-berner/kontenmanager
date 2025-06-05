@@ -80,6 +80,7 @@ export const useAppApi = () => {
                 STORAGE: {
                     ACTIVE_ACCOUNT_ID: -1,
                     BOOKINGS_PER_PAGE: 9,
+                    STOCKMANAGER_DB_IMPORTED: false,
                     STOCKS_PER_PAGE: 9,
                     DEBUG: false,
                     SKIN: 'ocean',
@@ -156,7 +157,8 @@ export const useAppApi = () => {
                 OPTIONS__SET_INDEXES: 12026,
                 OPTIONS__SET_MATERIALS: 12027,
                 OPTIONS__SET_EXCHANGES: 12028,
-                OPTIONS__SET_MARKETS: 12029
+                OPTIONS__SET_MARKETS: 12029,
+                OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: 12030
             },
             SERVICES: {
                 goyax: {
@@ -484,7 +486,6 @@ const useDatabaseApi = () => {
             const bookings = [];
             const stocks = [];
             const bookingTypes = [];
-            let dummy = true;
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
                     const storage = await browser.storage.local.get(['sActiveAccountId']);
@@ -526,28 +527,10 @@ const useDatabaseApi = () => {
                     };
                     const onSuccessStockOpenCursor = (ev) => {
                         if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            if (ev.target.result.value.cID === 0) {
-                                dummy = false;
+                            if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                                stocks.push(ev.target.result.value);
                             }
-                            stocks.push(ev.target.result.value);
                             ev.target.result.continue();
-                        }
-                        else {
-                            if (dummy) {
-                                stocks.unshift({
-                                    cID: 0,
-                                    cISIN: 'XX00000000000000000000',
-                                    cWKN: 'AAAAAAA',
-                                    cSymbol: 'WWW',
-                                    cFadeOut: 0,
-                                    cFirstPage: 0,
-                                    cURL: '',
-                                    cCompany: '',
-                                    cMeetingDay: '',
-                                    cQuarterDay: '',
-                                    cAccountNumberID: 1,
-                                });
-                            }
                         }
                     };
                     const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
@@ -631,7 +614,10 @@ const useDatabaseApi = () => {
                 if (dbi != null) {
                     const onSuccess = (ev) => {
                         if (ev.target instanceof IDBRequest) {
-                            backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE, data: ev.target.result });
+                            backendAppMessagePort.postMessage({
+                                type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE,
+                                data: ev.target.result
+                            });
                             resolve(CONS.RESULTS.SUCCESS);
                         }
                         else {
@@ -763,38 +749,54 @@ const useDatabaseApi = () => {
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                    const onSuccessClearBookings = () => {
-                        log('BACKGROUND: bookings dropped');
-                        for (let i = 0; i < stores.bookings.length; i++) {
-                            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
-                        }
-                    };
-                    const onSuccessClearAccounts = () => {
-                        log('BACKGROUND: accounts dropped');
+                    if (stores.clean) {
+                        const onSuccessClearBookings = () => {
+                            log('BACKGROUND: bookings dropped');
+                            for (let i = 0; i < stores.bookings.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
+                            }
+                        };
+                        const onSuccessClearAccounts = () => {
+                            log('BACKGROUND: accounts dropped');
+                            for (let i = 0; i < stores.accounts.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
+                            }
+                        };
+                        const onSuccessClearBookingTypes = () => {
+                            log('BACKGROUND: booking types dropped');
+                            for (let i = 0; i < stores.bookingTypes.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
+                            }
+                        };
+                        const onSuccessClearStocks = () => {
+                            log('BACKGROUND: stocks dropped');
+                            for (let i = 0; i < stores.stocks.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
+                            }
+                        };
+                        const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
+                        requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
+                        const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
+                        requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
+                        const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
+                        requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
+                        const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
+                        requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
+                    }
+                    else {
                         for (let i = 0; i < stores.accounts.length; i++) {
-                            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
+                            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({ ...stores.accounts[i] });
                         }
-                    };
-                    const onSuccessClearBookingTypes = () => {
-                        log('BACKGROUND: booking types dropped');
                         for (let i = 0; i < stores.bookingTypes.length; i++) {
                             requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
                         }
-                    };
-                    const onSuccessClearStocks = () => {
-                        log('BACKGROUND: stocks dropped');
+                        for (let i = 0; i < stores.bookings.length; i++) {
+                            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
+                        }
                         for (let i = 0; i < stores.stocks.length; i++) {
                             requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
                         }
-                    };
-                    const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
-                    requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
-                    const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
-                    requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
-                    const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
-                    requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
-                    const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
-                    requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
+                    }
                 }
             });
         }
@@ -920,10 +922,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         log('BACKGROUND: onConnect', { info: p.name });
         if (p.name === CONS.MESSAGES.PORT__APP) {
             backendAppMessagePort = p;
-            const onAppDisconnected = () => {
-                backendAppMessagePort.disconnect();
-                log('BACKGROUND: onDisconnected', { info: 'App disconnected!' });
-            };
             const onAppRequest = async (m) => {
                 switch (Object.values(m)[0]) {
                     case CONS.MESSAGES.DB__TO_STORE:
@@ -957,18 +955,16 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     case CONS.MESSAGES.DB__DELETE_BOOKING:
                         await deleteBooking(Object.values(m)[1]);
                         break;
+                    case CONS.MESSAGES.OPTIONS__SET_STOCKMANAGER_DB_IMPORTED:
+                        await browser.storage.local.set({ sStockmanagerDbImported: Object.values(m)[1] });
+                        break;
                     default:
                 }
             };
             backendAppMessagePort.onMessage.addListener(onAppRequest);
-            backendAppMessagePort.onDisconnect.addListener(onAppDisconnected);
         }
         else {
             backendOptionsMessagePort = p;
-            const onOptionsDisconnected = () => {
-                backendOptionsMessagePort.disconnect();
-                log('BACKGROUND: onDisconnected', { info: 'Options tab disconnected!' });
-            };
             const onOptionsRequest = async (m) => {
                 log('BACKGROUND: onOptionsRequest', { info: Object.values(m) });
                 switch (Object.values(m)[0]) {
@@ -1000,7 +996,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 }
             };
             backendOptionsMessagePort.onMessage.addListener(onOptionsRequest);
-            backendOptionsMessagePort.onDisconnect.addListener(onOptionsDisconnected);
         }
     };
     browser.runtime.onInstalled.addListener(onInstall);

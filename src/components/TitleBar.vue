@@ -12,6 +12,7 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
+import {appMessagePort} from '@/pages/app'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
@@ -22,11 +23,10 @@ const {CONS, log} = useAppApi()
 const {_active_account_id} = storeToRefs(settings)
 
 const cUpdateTitlebar = async (): Promise<void> => {
-  records.sumBookings()
-  runtime.setLogo()
   await browser.storage.local.set({
-    sActiveAccountId: settings.activeAccountId
+     sActiveAccountId: settings.activeAccountId
   })
+  appMessagePort.postMessage({type: CONS.MESSAGES.DB__TO_STORE})
 }
 
 log('--- TitleBar.vue setup ---')

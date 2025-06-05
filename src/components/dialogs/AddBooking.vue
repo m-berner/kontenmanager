@@ -43,15 +43,71 @@ const state = reactive({
 const ok = async (): Promise<void> => {
   log('ADD_BOOKING: ok')
   let booking: object = {}
+  let costs: number = 0
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
       switch (state._booking_type_id) {
         case 1:
+          costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
+          booking = {
+            cDate: state._date,
+            cCredit: 0,
+            cDebit: state._count*state._unit_quotation + costs,
+            cDescription: state._description,
+            cBookingTypeID: state._booking_type_id,
+            cStockID: state._stock_id,
+            cAccountNumberID: settings.activeAccountId,
+            cExDate: CONS.DEFAULTS.DATE,
+            cCount: state._count,
+            cSoli: state._soli,
+            cTax: state._tax,
+            cFee: state._fee,
+            cSourceTax: state._source_tax,
+            cTransactionTax: state._transaction_tax,
+            cMarketPlace: state._market_place
+          }
           break
         case 2:
+          costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
+          booking = {
+            cDate: state._date,
+            // NOTE: CurrencyInput ensure 0 instead of null
+            cCredit: state._count*state._unit_quotation - costs,
+            cDebit: 0,
+            cDescription: state._description,
+            cBookingTypeID: state._booking_type_id,
+            cStockID: state._stock_id,
+            cAccountNumberID: settings.activeAccountId,
+            cExDate: CONS.DEFAULTS.DATE,
+            cCount: state._count,
+            cSoli: state._soli,
+            cTax: state._tax,
+            cFee: state._fee,
+            cSourceTax: state._source_tax,
+            cTransactionTax: state._transaction_tax,
+            cMarketPlace: state._market_place
+          }
           break
         case 3:
+          costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
+          booking = {
+            cDate: state._date,
+            cCredit: state._count*state._unit_quotation - costs,
+            cDebit: 0,
+            cDescription: state._description,
+            cBookingTypeID: state._booking_type_id,
+            cStockID: state._stock_id,
+            cAccountNumberID: settings.activeAccountId,
+            cExDate: state._ex_date,
+            cCount: state._count,
+            cSoli: state._soli,
+            cTax: state._tax,
+            cFee: state._fee,
+            cSourceTax: state._source_tax,
+            cTransactionTax: state._transaction_tax,
+            cMarketPlace: ''
+          }
           break
         default:
           booking = {

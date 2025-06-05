@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAppApi } from '@/pages/background';
 import { useSettingsStore } from '@/stores/settings';
+import { toRaw } from 'vue';
 const { log } = useAppApi();
 export const useRecordsStore = defineStore('records', {
     state: () => {
@@ -76,7 +77,9 @@ export const useRecordsStore = defineStore('records', {
             if (bookings_per_account.length > 0) {
                 this._booking_sum = bookings_per_account.map((entry) => {
                     return entry.cCredit - entry.cDebit;
-                }).reduce((acc, cur) => { return acc + cur; }, 0);
+                }).reduce((acc, cur) => {
+                    return acc + cur;
+                }, 0);
             }
             else {
                 this._bookings = [];
@@ -106,6 +109,18 @@ export const useRecordsStore = defineStore('records', {
             log('RECORDS: addAccount');
             this._accounts.push(value);
         },
+        updateAccount(value) {
+            log('RECORDS: updateAccount');
+            const cloneAccounts = [...this._accounts];
+            this._accounts = cloneAccounts.map(account => {
+                if (account.cID === value.cID) {
+                    return value;
+                }
+                else {
+                    return toRaw(account);
+                }
+            });
+        },
         addBooking(value) {
             log('RECORDS: addBooking');
             this._bookings.unshift(value);
@@ -115,11 +130,11 @@ export const useRecordsStore = defineStore('records', {
             this._bookings.splice(this.getBookingById(ident), 1);
         },
         addStock(value) {
-            log('RECORDS: addStocks');
+            log('RECORDS: addStock');
             this._stocks.push(value);
         },
         addBookingType(value) {
-            log('RECORDS: addBookingTypes');
+            log('RECORDS: addBookingType');
             this._booking_types.push(value);
         },
         cleanStore() {

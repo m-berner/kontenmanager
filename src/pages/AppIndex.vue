@@ -23,114 +23,69 @@ const {CONS, log} = useAppApi()
 const {_debug} = storeToRefs(settings)
 
 const onResponse = (m: object): void => {
+  log('APPINDEX: onResponse', {info: Object.values(m)[1]})
   switch (Object.values(m)[0]) {
     case CONS.MESSAGES.DB__TO_STORE__RESPONSE:
-      log('APPINDEX: onResponse', {info: Object.values(m)[1]})
       if (Object.values(m)[1].accounts.length > 0) {
         records.initStore(Object.values(m)[1])
-        settings.setActiveAccountId(records.accounts[0].cID)
+        if (settings.activeAccountId === undefined) {
+          settings.setActiveAccountId(records.accounts[0].cID)
+        }
         runtime.setLogo()
         records.sumBookings()
       }
       break
     case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
-      log('APPINDEX: onResponse', {info: Object.values(m)[1]})
       settings.initStore(theme, Object.values(m)[1])
       break
     default:
   }
 }
-// listen for backend responses
-appMessagePort.onMessage.addListener(onResponse);
+appMessagePort.onMessage.addListener(onResponse)
 
-//onBeforeMount(async (): Promise<void> => {
-//  log('APPINDEX: onBeforeMount: before')
-  const keyStrokeController: string[] = []
-  // const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
-  //   log('APPINDEX: onStorageChange', {info: changes})
-  //   switch (true) {
-  //     case changes.sSkin?.oldValue !== undefined:
-  //       theme.global.name.value = changes.sSkin.newValue
-  //       settings.setSkin(changes.sSkin.newValue)
-  //       break
-  //     case changes.sDebug?.oldValue !== undefined:
-  //       settings.setDebug(changes.sDebug.newValue)
-  //       break
-  //     case changes.sBookingsPerPage?.oldValue !== undefined:
-  //       settings.setBookingsPerPage(changes.sBookingsPerPage.newValue)
-  //       break
-  //     case changes.sStocksPerPage?.oldValue !== undefined:
-  //       settings.setStocksPerPage(changes.sStocksPerPage.newValue)
-  //       break
-  //     case changes.sActiveAccountId?.oldValue !== undefined:
-  //       settings.setActiveAccountId(changes.sActiveAccountId.newValue)
-  //       break
-  //     case changes.sPartner?.oldValue !== undefined:
-  //       settings.setPartner(changes.sPartner.newValue)
-  //       break
-  //     case changes.sService?.oldValue !== undefined:
-  //       settings.setService(changes.sService.newValue)
-  //       break
-  //     case changes.sExchanges?.oldValue !== undefined:
-  //       settings.setExchanges(changes.sExchanges.newValue)
-  //       break
-  //     case changes.sIndexes?.oldValue !== undefined:
-  //       settings.setIndexes(changes.sIndexes.newValue)
-  //       break
-  //     case changes.sMaterials?.oldValue !== undefined:
-  //       settings.setMaterials(changes.sMaterials.newValue)
-  //       break
-  //     case changes.sMarkets?.oldValue !== undefined:
-  //       settings.setMarkets(changes.sMarkets.newValue)
-  //       break
-  //     default:
-  //   }
-  // }
-  const onBeforeUnload = async (): Promise<void> => {
-    log('APPINDEX: onBeforeUnload')
-    const foundTabs = await browser.tabs.query({url: 'about:addons'})
-    appMessagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
-    if (foundTabs.length > 0) {
-      await browser.tabs.remove(foundTabs[0].id ?? 0)
-    }
+const keyStrokeController: string[] = []
+const onBeforeUnload = async (): Promise<void> => {
+  log('APPINDEX: onBeforeUnload')
+  const foundTabs = await browser.tabs.query({url: 'about:addons'})
+  appMessagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
+  if (foundTabs.length > 0) {
+    await browser.tabs.remove(foundTabs[0].id ?? 0)
   }
-  const onKeyDown = (ev: KeyboardEvent): void => {
-    keyStrokeController.push(ev.key)
-    log('APPINDEX: onKeyDown')
-    if (
-      keyStrokeController.includes('Control') &&
-      keyStrokeController.includes('Alt') &&
-      ev.key === 'r'
-    ) {
-      browser.storage.local.clear()
-    }
-    if (
-      keyStrokeController.includes('Control') &&
-      keyStrokeController.includes('Alt') &&
-      ev.key === 'd' && _debug.value
-    ) {
-      browser.storage.local.set({sDebug: false})
-    }
-    if (
-      keyStrokeController.includes('Control') &&
-      keyStrokeController.includes('Alt') &&
-      ev.key === 'd' && !_debug.value
-    ) {
-      browser.storage.local.set({sDebug: true})
-    }
+}
+const onKeyDown = (ev: KeyboardEvent): void => {
+  keyStrokeController.push(ev.key)
+  log('APPINDEX: onKeyDown')
+  if (
+    keyStrokeController.includes('Control') &&
+    keyStrokeController.includes('Alt') &&
+    ev.key === 'r'
+  ) {
+    browser.storage.local.clear()
   }
-  const onKeyUp = (ev: KeyboardEvent): void => {
-    keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
+  if (
+    keyStrokeController.includes('Control') &&
+    keyStrokeController.includes('Alt') &&
+    ev.key === 'd' && _debug.value
+  ) {
+    browser.storage.local.set({sDebug: false})
   }
-  window.addEventListener('keydown', onKeyDown, false)
-  window.addEventListener('keyup', onKeyUp, false)
-  window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
-  // if (!browser.storage.onChanged.hasListener(onStorageChange)) {
-  //   browser.storage.onChanged.addListener(onStorageChange)
-  // }
-  appMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
-  appMessagePort.postMessage({type: CONS.MESSAGES.DB__TO_STORE})
-//})
+  if (
+    keyStrokeController.includes('Control') &&
+    keyStrokeController.includes('Alt') &&
+    ev.key === 'd' && !_debug.value
+  ) {
+    browser.storage.local.set({sDebug: true})
+  }
+}
+const onKeyUp = (ev: KeyboardEvent): void => {
+  keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
+}
+window.addEventListener('keydown', onKeyDown, false)
+window.addEventListener('keyup', onKeyUp, false)
+window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
+appMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
+appMessagePort.postMessage({type: CONS.MESSAGES.DB__TO_STORE})
+
 log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>
 

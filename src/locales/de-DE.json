@@ -162,6 +162,9 @@
       "filename": "Dateiname",
       "messageStockmanager": "Stockmanager Daten können nur in eine leere Datenbank importiert werden!",
       "messageVersion": "Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version {version} oder neuer.",
+      "messageImported": "Die Daten wurden bereits importiert.",
+      "databaseLabel": "in leere Datenbank installieren",
+      "fakeLabel": "Fake Konto ID",
       "label": "aus Datei"
     },
     "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - Heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
