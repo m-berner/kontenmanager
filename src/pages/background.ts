@@ -252,6 +252,7 @@ interface IUseAppApi {
       OPTIONS__SET_EXCHANGES: number
       OPTIONS__SET_MARKETS: number
       OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: number
+      DB__EXPORT: number
     }
     SERVICES: {
       [p: string]: Partial<{
@@ -385,6 +386,8 @@ interface IUseAppApi {
 
 interface IUseDatabaseApi {
   open(): Promise<string>
+
+  exportDatabase(fn: string): Promise<string>
 
   toStores(): Promise<string>
 
@@ -567,7 +570,8 @@ export const useAppApi = (): IUseAppApi => {
         OPTIONS__SET_MATERIALS: 12027,
         OPTIONS__SET_EXCHANGES: 12028,
         OPTIONS__SET_MARKETS: 12029,
-        OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: 12030
+        OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: 12030,
+        DB__EXPORT: 12031
       },
       SERVICES: {
         goyax: {
@@ -896,6 +900,131 @@ export const useAppApi = (): IUseAppApi => {
 }
 const useDatabaseApi = (): IUseDatabaseApi => {
   return {
+    exportDatabase: async (filename: string) => {
+      log('BACKGROUND: exportDatabase')
+      const accounts: IAccount[] = []
+      const bookings: IBooking[] = []
+      const stocks: IStock[] = []
+      const bookingTypes: IBookingType[] = []
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onComplete = async (): Promise<void> => {
+            log('BACKGROUND: exportDatabase: data read!')
+            const stringifyDB = (): string => {
+              let buffer: string
+              let i: number
+              buffer = '"accounts":[\n'
+              for (i = 0; i < accounts.length; i++) {
+                buffer += JSON.stringify(accounts[i])
+                if (i === accounts.length - 1) {
+                  buffer += '\n],\n'
+                } else {
+                  buffer += ',\n'
+                }
+              }
+              buffer += i === 0 ? '],\n' : ''
+
+              buffer += '"stocks":[\n'
+              for (i = 0; i < stocks.length; i++) {
+                buffer += JSON.stringify(stocks[i])
+                if (i === stocks.length - 1) {
+                  buffer += '\n],\n'
+                } else {
+                  buffer += ',\n'
+                }
+              }
+              buffer += i === 0 ? '],\n' : ''
+              buffer += '"booking_types":[\n'
+              for (i = 0; i < bookingTypes.length; i++) {
+                buffer += JSON.stringify(bookingTypes[i])
+                if (i === bookingTypes.length - 1) {
+                  buffer += '\n],\n'
+                } else {
+                  buffer += ',\n'
+                }
+              }
+              buffer += i === 0 ? '],\n' : ''
+              buffer += '"bookings":[\n'
+              for (i = 0; i < bookings.length; i++) {
+                buffer += JSON.stringify(bookings[i])
+                if (i === bookings.length - 1) {
+                  buffer += '\n]\n'
+                } else {
+                  buffer += ',\n'
+                }
+              }
+              return buffer
+            }
+            let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${
+              CONS.DB.START_VERSION
+            }, "cEngine":"indexeddb"},\n`
+            buffer += stringifyDB()
+            buffer += '}'
+            const blob = new Blob([buffer], {type: 'application/json'}) // create blob object with all stores data
+            const blobUrl = URL.createObjectURL(blob) // create url reference for blob object
+            const op: browser.downloads._DownloadOptions = {
+              url: blobUrl,
+              filename: filename
+            }
+            const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
+              log('HEADERBAR: onChanged')
+              // noinspection JSDeprecatedSymbols
+              browser.downloads.onChanged.removeListener(onDownloadChange)
+              if (
+                (change.state !== undefined && change.id > 0) ||
+                (change.state !== undefined && change.state.current === CONS.EVENTS.COMP)
+              ) {
+                URL.revokeObjectURL(blobUrl) // release blob object
+              }
+            }
+            // noinspection JSDeprecatedSymbols
+            browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up blob object after download.
+            await browser.downloads.download(op) // writing blob object into download file
+            await notice(['Database exported!'])
+
+            resolve('BACKGROUND: exportDatabase: all database records sent to frontend!')
+          }
+          const onAbort = (): void => {
+            reject(requestTransaction.error)
+          }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly')
+          requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+          requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
+          const onSuccessAccountOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              accounts.push(ev.target.result.value)
+              ev.target.result.continue()
+            }
+          }
+          const onSuccessBookingTypeOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              bookingTypes.push(ev.target.result.value)
+              ev.target.result.continue()
+            }
+          }
+          const onSuccessBookingOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              bookings.push(ev.target.result.value)
+              ev.target.result.continue()
+            }
+          }
+          const onSuccessStockOpenCursor = (ev: Event): void => {
+            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+              stocks.push(ev.target.result.value)
+              ev.target.result.continue()
+            }
+          }
+          const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor()
+          requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false)
+          const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor()
+          requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false)
+          const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor()
+          requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false)
+          const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor()
+          requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false)
+        }
+      })
+    },
     toStores: async () => {
       log('BACKGROUND: toStores')
       const accounts: IAccount[] = []
@@ -1243,7 +1372,7 @@ let backendAppMessagePort: browser.runtime.Port
 let backendOptionsMessagePort: browser.runtime.Port
 // TODO move all async code into backend!!!
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  const {addAccount, addBooking, deleteBooking, addBookingType, addStock, toStores, addStores, open} = useDatabaseApi()
+  const {exportDatabase, addAccount, addBooking, deleteBooking, addBookingType, addStock, toStores, addStores, open} = useDatabaseApi()
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = async (): Promise<void> => {
     console.log('BACKGROUND: onInstall')
@@ -1489,6 +1618,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
               type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
               data: await browser.storage.local.get()
             })
+            break
+          case CONS.MESSAGES.DB__EXPORT:
+            await exportDatabase(Object.values(m)[1])
             break
           case CONS.MESSAGES.DB__CLOSE:
             dbi.close()
