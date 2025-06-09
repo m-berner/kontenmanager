@@ -66,7 +66,7 @@ const ok = async (): Promise<void> => {
         records.addStock({
           cID: 0,
           cISIN: 'XX00000000000000000000',
-          cWKN: 'AAAAAAA',
+          cWKN: 'AAAAAA',
           cSymbol: 'WWW',
           cFadeOut: 0,
           cFirstPage: 0,

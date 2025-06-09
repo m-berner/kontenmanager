@@ -559,7 +559,7 @@ const useDatabaseApi = () => {
                         browser.downloads.onChanged.addListener(onDownloadChange);
                         await browser.downloads.download(op);
                         await notice(['Database exported!']);
-                        resolve('BACKGROUND: exportDatabase: all database records sent to frontend!');
+                        resolve('BACKGROUND: exportDatabase: done!');
                     };
                     const onAbort = () => {
                         reject(requestTransaction.error);

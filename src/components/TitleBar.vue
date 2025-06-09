@@ -46,7 +46,7 @@ log('--- TitleBar.vue setup ---')
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
-      v-if="_active_account_id > -1"
+      v-if="_active_account_id > 0"
       v-model="_active_account_id"
       max-width="300"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"

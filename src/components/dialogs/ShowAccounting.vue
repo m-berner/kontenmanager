@@ -32,13 +32,13 @@ defineExpose({title})
 onMounted(() => {
   log('SHOW_ACCOUNTING: onMounted')
   const sums = []
-  for (let i = 1; i < records.bookingTypes.length; i++) {
-    sums[i-1] = records.bookings.filter((entry: IBooking) => {
+  for (let i = 0; i < records.bookingTypes.length; i++) {
+    sums[i] = records.bookings.filter((entry: IBooking) => {
       return entry.cBookingTypeID === records.bookingTypes[i].cID
     }).map((entry: IBooking) => {
       return entry.cCredit - entry.cDebit
     }).reduce((acc: number, cur: number) => acc + cur, 0)
-    cAddEntryToResult({title: records.bookingTypes[i].cName, subtitle: n(sums[i-1], 'currency')})
+    cAddEntryToResult({title: records.bookingTypes[i].cName, subtitle: n(sums[i], 'currency')})
   }
 })
 

@@ -981,8 +981,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
             browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up blob object after download.
             await browser.downloads.download(op) // writing blob object into download file
             await notice(['Database exported!'])
-
-            resolve('BACKGROUND: exportDatabase: all database records sent to frontend!')
+            resolve('BACKGROUND: exportDatabase: done!')
           }
           const onAbort = (): void => {
             reject(requestTransaction.error)
