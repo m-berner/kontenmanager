@@ -56,8 +56,7 @@ const ok = async (): Promise<void> => {
       const account = {
         cSwift: state._swift.trim().toUpperCase(),
         cNumber: state._number.replace(/\s/g, ''),
-        cLogoUrl: state._logoUrl,
-        cStockAccount: state._stockAccount ? 1 : 0
+        cLogoUrl: state._logoUrl
       }
       records.addAccount(account)
       runtime.setLogo()

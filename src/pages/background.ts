@@ -12,7 +12,6 @@ declare global {
     cSwift: string
     cNumber: string
     cLogoUrl: string
-    cStockAccount: boolean
   }
 
   interface IBookingType {
@@ -63,17 +62,15 @@ declare global {
     }
     accounts: IAccount[]
     bookings: IBooking[]
-    transfers: Array<Record<string, never>>
     booking_types: IBookingType[]
-    stocks: Array<Record<string, never>>
+    stocks: IStock[]
   }
 
   interface IStores {
     accounts: IAccount[],
     bookings: IBooking[],
     bookingTypes: IBookingType[],
-    stocks: Array<Record<string, never>>,
-    clean: boolean
+    stocks: IStock[]
   }
 
   interface IStorageLocal {
@@ -111,7 +108,6 @@ interface IUseAppApi {
             SWIFT: keyof IAccount
             LOGO_URL: keyof IAccount
             NUMBER: keyof IAccount
-            STOCK_ACCOUNT: keyof IAccount
           }
         }
         BOOKINGS: {
@@ -429,8 +425,7 @@ export const useAppApi = (): IUseAppApi => {
               ID: 'cID',
               SWIFT: 'cSwift',
               LOGO_URL: 'cLogoUrl',
-              NUMBER: 'cNumber',
-              STOCK_ACCOUNT: 'cStockAccount'
+              NUMBER: 'cNumber'
             }
           },
           BOOKINGS: {
@@ -1297,12 +1292,10 @@ const useDatabaseApi = (): IUseDatabaseApi => {
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const onComplete = async (): Promise<void> => {
-            // requestadd Account.removeEventListener(CONS.EVENTS.ERR, onError, false)
             await notice(['All memory records are added to the database!'])
             resolve('BACKGROUND: addStores: all memory records are added to the database!')
           }
           const onAbort = (): void => {
-            //await notice(['Transaction aborted!'])
             reject(requestTransaction.error)
           }
           const onError = (ev: Event): void => {
@@ -1312,53 +1305,38 @@ const useDatabaseApi = (): IUseDatabaseApi => {
           requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
           requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
           requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-          if (stores.clean) {
-            const onSuccessClearBookings = (): void => {
-              log('BACKGROUND: bookings dropped')
-              for (let i = 0; i < stores.bookings.length; i++) {
-                requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
-              }
-            }
-            const onSuccessClearAccounts = (): void => {
-              log('BACKGROUND: accounts dropped')
-              for (let i = 0; i < stores.accounts.length; i++) {
-                requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accounts[i]})
-              }
-            }
-            const onSuccessClearBookingTypes = (): void => {
-              log('BACKGROUND: booking types dropped')
-              for (let i = 0; i < stores.bookingTypes.length; i++) {
-                requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
-              }
-            }
-            const onSuccessClearStocks = (): void => {
-              log('BACKGROUND: stocks dropped')
-              for (let i = 0; i < stores.stocks.length; i++) {
-                requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocks[i]})
-              }
-            }
-            const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
-            requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
-            const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
-            requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
-            const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
-            requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
-            const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
-            requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
-          } else {
-            for (let i = 0; i < stores.accounts.length; i++) {
-              requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({...stores.accounts[i]})
-            }
-            for (let i = 0; i < stores.bookingTypes.length; i++) {
-              requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
-            }
+          const onSuccessClearBookings = (): void => {
+            log('BACKGROUND: bookings dropped')
             for (let i = 0; i < stores.bookings.length; i++) {
               requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
             }
+          }
+          const onSuccessClearAccounts = (): void => {
+            log('BACKGROUND: accounts dropped')
+            for (let i = 0; i < stores.accounts.length; i++) {
+              requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accounts[i]})
+            }
+          }
+          const onSuccessClearBookingTypes = (): void => {
+            log('BACKGROUND: booking types dropped')
+            for (let i = 0; i < stores.bookingTypes.length; i++) {
+              requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
+            }
+          }
+          const onSuccessClearStocks = (): void => {
+            log('BACKGROUND: stocks dropped')
             for (let i = 0; i < stores.stocks.length; i++) {
               requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocks[i]})
             }
           }
+          const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
+          requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
+          const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
+          requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
+          const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
+          requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
+          const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
+          requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
         }
       })
     }
@@ -1371,7 +1349,17 @@ let backendAppMessagePort: browser.runtime.Port
 let backendOptionsMessagePort: browser.runtime.Port
 // TODO move all async code into backend!!!
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  const {exportDatabase, addAccount, addBooking, deleteBooking, addBookingType, addStock, toStores, addStores, open} = useDatabaseApi()
+  const {
+    exportDatabase,
+    addAccount,
+    addBooking,
+    deleteBooking,
+    addBookingType,
+    addStock,
+    toStores,
+    addStores,
+    open
+  } = useDatabaseApi()
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = async (): Promise<void> => {
     console.log('BACKGROUND: onInstall')

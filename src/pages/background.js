@@ -17,8 +17,7 @@ export const useAppApi = () => {
                             ID: 'cID',
                             SWIFT: 'cSwift',
                             LOGO_URL: 'cLogoUrl',
-                            NUMBER: 'cNumber',
-                            STOCK_ACCOUNT: 'cStockAccount'
+                            NUMBER: 'cNumber'
                         }
                     },
                     BOOKINGS: {
@@ -871,54 +870,38 @@ const useDatabaseApi = () => {
                     requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
                     requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                    if (stores.clean) {
-                        const onSuccessClearBookings = () => {
-                            log('BACKGROUND: bookings dropped');
-                            for (let i = 0; i < stores.bookings.length; i++) {
-                                requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
-                            }
-                        };
-                        const onSuccessClearAccounts = () => {
-                            log('BACKGROUND: accounts dropped');
-                            for (let i = 0; i < stores.accounts.length; i++) {
-                                requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
-                            }
-                        };
-                        const onSuccessClearBookingTypes = () => {
-                            log('BACKGROUND: booking types dropped');
-                            for (let i = 0; i < stores.bookingTypes.length; i++) {
-                                requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
-                            }
-                        };
-                        const onSuccessClearStocks = () => {
-                            log('BACKGROUND: stocks dropped');
-                            for (let i = 0; i < stores.stocks.length; i++) {
-                                requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
-                            }
-                        };
-                        const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
-                        requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
-                        const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
-                        requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
-                        const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
-                        requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
-                        const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
-                        requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
-                    }
-                    else {
-                        for (let i = 0; i < stores.accounts.length; i++) {
-                            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put({ ...stores.accounts[i] });
-                        }
-                        for (let i = 0; i < stores.bookingTypes.length; i++) {
-                            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
-                        }
+                    const onSuccessClearBookings = () => {
+                        log('BACKGROUND: bookings dropped');
                         for (let i = 0; i < stores.bookings.length; i++) {
                             requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
                         }
+                    };
+                    const onSuccessClearAccounts = () => {
+                        log('BACKGROUND: accounts dropped');
+                        for (let i = 0; i < stores.accounts.length; i++) {
+                            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
+                        }
+                    };
+                    const onSuccessClearBookingTypes = () => {
+                        log('BACKGROUND: booking types dropped');
+                        for (let i = 0; i < stores.bookingTypes.length; i++) {
+                            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
+                        }
+                    };
+                    const onSuccessClearStocks = () => {
+                        log('BACKGROUND: stocks dropped');
                         for (let i = 0; i < stores.stocks.length; i++) {
                             requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
                         }
-                    }
+                    };
+                    const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
+                    requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
+                    const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
+                    requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
+                    const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
+                    requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
+                    const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
+                    requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
                 }
             });
         }

@@ -56,8 +56,7 @@ const ok = async (): Promise<void> => {
       const account: Omit<IAccount, 'cID'> = {
         cSwift: state._swift.trim().toUpperCase(),
         cNumber: state._number.replace(/\s/g, ''),
-        cLogoUrl: state._logoUrl,
-        cStockAccount: !!state._stockAccount
+        cLogoUrl: state._logoUrl
       }
       const onResponse = async (m: object): Promise<void> => {
         log('APPINDEX: onResponse', {info: Object.values(m)[1]})
