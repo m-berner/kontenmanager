@@ -1679,6 +1679,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
               data: await browser.storage.local.get()
             })
             break
+          // TODO move to onAppRequest
           case CONS.MESSAGES.OPTIONS__SET_INDEXES:
             await browser.storage.local.set({sIndexes: Object.values(m)[1]})
             break

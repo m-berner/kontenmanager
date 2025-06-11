@@ -87,27 +87,24 @@ optionsMessagePort.onMessage.addListener(onResponse)
 optionsMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
 
 const setIndexes = (): void => {
-  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__OPTIONS})
+  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
   optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_INDEXES, data: toRaw(settings.indexes)})
 }
 
 const setMaterials = (): void => {
-  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__OPTIONS})
+  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
   optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_MATERIALS, data: toRaw(settings.materials)})
 }
 
 const setSkin = (ev: Event): void => {
   const appMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
-  //const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__OPTIONS})
   if (ev.target instanceof HTMLInputElement) {
-    console.error('DSFSFDFSFFFDSFS----------------', ev.target.value)
-    //theme.global.name.value = ev.target.value
     appMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_SKIN, data: ev.target.value})
   }
 }
 
 const setService = (ev: Event): void => {
-  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__OPTIONS})
+  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
   if (ev.target instanceof HTMLInputElement) {
     optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_SERVICE, data: ev.target.value})
   }

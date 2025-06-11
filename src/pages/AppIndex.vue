@@ -83,6 +83,7 @@ window.addEventListener('keydown', onKeyDown, false)
 window.addEventListener('keyup', onKeyUp, false)
 window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
 browser.runtime.onMessage.addListener((msg) => {
+  console.error(msg)
   if(msg.type === CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE) {
     theme.global.name.value = msg.skin
     settings.setSkin(msg.skin)
