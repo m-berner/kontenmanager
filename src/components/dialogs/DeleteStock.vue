@@ -27,6 +27,7 @@ const state = reactive({
 const ok = async (): Promise<void> => {
   log('DELETE_ACCOUNT: ok')
   try {
+    // TODO in all delete dialogs,move to background!
     const result = await records.deleteAccount(state._selected)
     if (result === 'Account deleted') {
       formRef.value?.reset()

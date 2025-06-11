@@ -251,6 +251,9 @@ interface IUseAppApi {
       OPTIONS__SET_MARKETS: number
       OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: number
       DB__EXPORT: number
+      STORAGE__SET_ID: number
+      STORAGE__SET_ID__RESPONSE: number
+      OPTIONS__SET_SKIN__RESPONSE: number
     }
     SERVICES: {
       [p: string]: Partial<{
@@ -569,7 +572,10 @@ export const useAppApi = (): IUseAppApi => {
         OPTIONS__SET_EXCHANGES: 12028,
         OPTIONS__SET_MARKETS: 12029,
         OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: 12030,
-        DB__EXPORT: 12031
+        DB__EXPORT: 12031,
+        STORAGE__SET_ID: 12032,
+        STORAGE__SET_ID__RESPONSE: 12033,
+        OPTIONS__SET_SKIN__RESPONSE: 12034
       },
       SERVICES: {
         goyax: {
@@ -1349,6 +1355,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
 
 const {CONS, log, notice} = useAppApi()
 let dbi: IDBDatabase
+let extensionTabId = -1
 let backendAppMessagePort: browser.runtime.Port
 let backendOptionsMessagePort: browser.runtime.Port
 // TODO move all async code into backend!!!
@@ -1580,10 +1587,11 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}`})
     // NOTE: any async webextension API call which triggers a corresponding event listener will reload background.js.
     if (foundTabs.length === 0) {
-      await browser.tabs.create({
+      const extensionTab = await browser.tabs.create({
         url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
         active: true
       })
+      extensionTabId = extensionTab.id ?? -1
     } else {
       await browser.windows.update(foundTabs[0].windowId ?? 0, {
         focused: true
@@ -1603,6 +1611,14 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         switch (Object.values(m)[0]) {
           case CONS.MESSAGES.DB__TO_STORE:
             await toStores()
+            break
+          case CONS.MESSAGES.STORAGE__SET_ID:
+            await browser.storage.local.set({
+              sActiveAccountId: Object.values(m)[1]
+            })
+            backendAppMessagePort.postMessage({
+              type: CONS.MESSAGES.STORAGE__SET_ID__RESPONSE
+            })
             break
           case CONS.MESSAGES.STORES__INIT_SETTINGS:
             backendAppMessagePort.postMessage({
@@ -1632,18 +1648,13 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           case CONS.MESSAGES.DB__ADD_STOCK:
             await addStock(Object.values(m)[1])
             break
-          // case CONS.MESSAGES.DB__DELETE_ACCOUNT:
-          //   await deleteAccount(Object.values(m)[1])
-          //   break
           case CONS.MESSAGES.DB__DELETE_BOOKING:
             await deleteBooking(Object.values(m)[1])
             break
-          // case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
-          //   await deleteBookingType(Object.values(m)[1])
-          //   break
-          // case CONS.MESSAGES.DB__DELETE_STOCK:
-          //   await deleteStock(Object.values(m)[1])
-          //   break
+          case CONS.MESSAGES.OPTIONS__SET_SKIN:
+            await browser.tabs.sendMessage(extensionTabId,{type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE, skin: Object.values(m)[1]})
+            await browser.storage.local.set({sSkin: Object.values(m)[1]})
+            break
           case CONS.MESSAGES.OPTIONS__SET_STOCKMANAGER_DB_IMPORTED:
             await browser.storage.local.set({sStockmanagerDbImported: Object.values(m)[1]})
             break
@@ -1674,9 +1685,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
             await browser.storage.local.set({sMaterials: Object.values(m)[1]})
             break
-          case CONS.MESSAGES.OPTIONS__SET_SKIN:
-            await browser.storage.local.set({sSkin: Object.values(m)[1]})
-            break
+          // case CONS.MESSAGES.OPTIONS__SET_SKIN:
+          //   await browser.storage.local.set({sSkin: Object.values(m)[1]})
+          //   break
           case CONS.MESSAGES.OPTIONS__SET_SERVICE:
             await browser.storage.local.set({sService: Object.values(m)[1]})
             break
@@ -1697,6 +1708,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
   browser.runtime.onConnect.addListener(onConnect)
+
   console.info('--- PAGE_SCRIPT background.js --- onInstalled, onConnect, onClicked ---', window.location.href)
 }
 

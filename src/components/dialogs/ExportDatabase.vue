@@ -14,7 +14,7 @@ const {CONS, log} = useAppApi()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.START_VERSION}_${CONS.DB.NAME}.json`
 
-const ok = async (): Promise<void> => {
+const ok = (): void => {
   log('EXPORTDATABASE: ok')
   const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   appMessagePort.postMessage({type: CONS.MESSAGES.DB__EXPORT, data: fn})
