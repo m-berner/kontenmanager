@@ -10,18 +10,42 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
+//import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
 const {CONS, log} = useAppApi()
 const runtime = useRuntimeStore()
-const settings = useSettingsStore()
+//const settings = useSettingsStore()
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('HEADERBAR: onIconClick')
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
+      case CONS.DIALOGS.ADD_STOCK:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.ADD_STOCK,
+          showOkButton: true,
+          showHeaderDialog: true,
+          showOptionDialog: false
+        })
+        break
+      case CONS.DIALOGS.UPDATE_STOCK:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.UPDATE_STOCK,
+          showOkButton: true,
+          showHeaderDialog: true,
+          showOptionDialog: false
+        })
+        break
+      case CONS.DIALOGS.DELETE_STOCK:
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.DELETE_STOCK,
+          showOkButton: true,
+          showHeaderDialog: true,
+          showOptionDialog: false
+        })
+        break
       case CONS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_ACCOUNT,
@@ -65,7 +89,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.DIALOGS.ADD_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING,
-          showOkButton: settings.activeAccountId === 1,
+          showOkButton: true,
           showHeaderDialog: true,
           showOptionDialog: false
         })

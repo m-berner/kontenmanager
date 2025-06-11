@@ -23,11 +23,9 @@ const ok = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE: ok')
   try {
     if (state._selected !== null && state._selected > 1) {
-      const result = await records.deleteBookingType(state._selected)
-      if (result === 'Booking type deleted') {
-        formRef.value?.reset()
-        await notice([t('dialogs.deleteBookingType.success')])
-      }
+      await records.deleteBookingType(state._selected)
+      formRef.value?.reset()
+      await notice([t('dialogs.deleteBookingType.success')])
     } else {
       await notice(['Start kann nicht entfernt werden'])
     }

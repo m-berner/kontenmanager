@@ -8,7 +8,6 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
-import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
 const {CONS, log} = useAppApi()
@@ -17,6 +16,7 @@ const fn = `${prefix}_${CONS.DB.START_VERSION}_${CONS.DB.NAME}.json`
 
 const ok = async (): Promise<void> => {
   log('EXPORTDATABASE: ok')
+  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   appMessagePort.postMessage({type: CONS.MESSAGES.DB__EXPORT, data: fn})
 }
 const title = t('dialogs.exportDatabase.title')

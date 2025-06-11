@@ -12,7 +12,6 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
-import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
@@ -50,6 +49,7 @@ const ibanMask = (iban: string) => {
 
 const ok = async (): Promise<void> => {
   log('ADD_ACCOUNT: ok')
+  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {

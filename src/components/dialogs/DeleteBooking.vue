@@ -10,7 +10,6 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
 const {CONS, log, notice} = useAppApi()
@@ -19,6 +18,7 @@ const runtime = useRuntimeStore()
 
 const ok = async (): Promise<void> => {
   log('DELETE_BOOKING: ok')
+  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   try {
     const onResponse = async (m: object): Promise<void> => {
       log('DELETE_BOOKING: onResponse')

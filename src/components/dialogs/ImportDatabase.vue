@@ -12,7 +12,6 @@ import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {reactive} from 'vue'
-import {appMessagePort} from '@/pages/app'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: File[] }
@@ -36,6 +35,7 @@ const ok = async (): Promise<void> => {
   }
   const onFileLoaded = async (): Promise<void> => {
     log('IMPORTDATABASE: onFileLoaded')
+    const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
     if (typeof fr.result === 'string') {
       const bkupObject: IBackup = JSON.parse(fr.result)
       const accounts = []

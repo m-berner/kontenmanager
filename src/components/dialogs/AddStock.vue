@@ -9,16 +9,11 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
-import {useRuntimeStore} from '@/stores/runtime'
-import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
 const formRef = useTemplateRef('form-ref')
-const runtime = useRuntimeStore()
-const settings = useSettingsStore()
 const records = useRecordsStore()
 
 const state = reactive({
@@ -29,65 +24,45 @@ const state = reactive({
   _stockAccount: 0
 })
 
-const onInput = () => {
-  state._logoUrl = `https://cdn.brandfetch.io/${state._brandFetchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
-}
-const ibanMask = (iban: string) => {
-  if (iban !== null) {
-    const withoutSpace = iban.replace(/\s/g, '')
-    const loops = Math.ceil(withoutSpace.length / 4)
-    let masked = ''
-    for (let i = 0; i < loops; i++) {
-      if (i === 0) {
-        masked = withoutSpace.slice(i * 4, (i + 1) * 4).toUpperCase()
-      } else {
-        masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
-      }
-    }
-    state._number = masked
-  }
-}
-
 const ok = async (): Promise<void> => {
-  log('ADD_ACCOUNT: ok')
+  log('ADD_STOCK: ok')
   const formIs = await formRef.value!.validate()
+  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   if (formIs.valid) {
     try {
-      const account = {
+      const stock = {
         cSwift: state._swift.trim().toUpperCase(),
         cNumber: state._number.replace(/\s/g, ''),
         cLogoUrl: state._logoUrl
       }
-      records.addAccount(account)
-      runtime.setLogo()
+      records.addStock(stock)
       const onResponse = async (m: object): Promise<void> => {
         log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE) {
-          settings.setActiveAccountId(Object.values(m)[1])
-          await notice([t('dialogs.addAccount.success')])
+        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_STOCK__RESPONSE) {
+          await notice([t('dialogs.addStock.success')])
         }
       }
       appMessagePort.onMessage.addListener(onResponse)
       appMessagePort.postMessage({
-        type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
+        type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
       })
       formRef.value!.reset()
     } catch (e) {
       console.error(e)
-      await notice([t('dialogs.addAccount.error')])
+      await notice([t('dialogs.addStock.error')])
     }
   }
 }
-const title = t('dialogs.addAccount.title')
+const title = t('dialogs.addStock.title')
 
 defineExpose({ok, title})
 
 onMounted(() => {
-  log('ADD_ACCOUNT: onMounted')
+  log('ADD_STOCK: onMounted')
   formRef.value!.reset()
 })
 
-log('--- AddAccount.vue setup ---')
+log('--- AddStock.vue setup ---')
 </script>
 
 <template>
@@ -112,7 +87,6 @@ log('--- AddAccount.vue setup ---')
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
       v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
-      @update:modelValue="ibanMask"
     ></v-text-field>
     <v-text-field
       v-model="state._brandFetchName"
@@ -122,8 +96,6 @@ log('--- AddAccount.vue setup ---')
       v-bind:label="t('dialogs.addAccount.logoLabel')"
       v-bind:rules="VALIDATORS.brandNameRules([t('validators.brandNameRules', 0)])"
       variant="outlined"
-      v-on:input="onInput"
     ></v-text-field>
-    <img alt="brandfetch.com logo" v-bind:src="state._logoUrl">
   </v-form>
 </template>

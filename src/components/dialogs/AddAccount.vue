@@ -12,7 +12,6 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
-import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
@@ -26,7 +25,7 @@ const state = reactive({
   _number: '',
   _logoUrl: '',
   _brandFetchName: '',
-  _stockAccount: 0
+  _stockAccount: false
 })
 
 const onInput = () => {
@@ -51,12 +50,14 @@ const ibanMask = (iban: string) => {
 const ok = async (): Promise<void> => {
   log('ADD_ACCOUNT: ok')
   const formIs = await formRef.value!.validate()
+  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   if (formIs.valid) {
     try {
       const account: Omit<IAccount, 'cID'> = {
         cSwift: state._swift.trim().toUpperCase(),
         cNumber: state._number.replace(/\s/g, ''),
-        cLogoUrl: state._logoUrl
+        cLogoUrl: state._logoUrl,
+        cStockAccount: state._stockAccount
       }
       const onResponse = async (m: object): Promise<void> => {
         log('APPINDEX: onResponse', {info: Object.values(m)[1]})
@@ -124,6 +125,6 @@ log('--- AddAccount.vue setup ---')
       variant="outlined"
       v-on:input="onInput"
     ></v-text-field>
-    <img alt="brandfetch.com logo" v-bind:src="state._logoUrl">
+    <img alt="logo" v-bind:src="state._logoUrl">
   </v-form>
 </template>

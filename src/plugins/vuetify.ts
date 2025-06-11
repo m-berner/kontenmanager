@@ -10,9 +10,6 @@ import {createVuetify} from 'vuetify'
 import 'vuetify/styles'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {
-  mdiBankCircle,
-  mdiBankPlus,
-  mdiBankRemove,
   mdiCalculator,
   mdiCheck,
   mdiClose,
@@ -21,9 +18,7 @@ import {
   mdiCurrencyEur,
   mdiDatabaseExport,
   mdiDatabaseImport,
-  mdiDelete, mdiDomain,
-  mdiDomainPlus,
-  mdiDomainRemove,
+  mdiDelete,
   mdiDotsVertical,
   mdiEmail,
   mdiFileDocumentEdit,
@@ -39,7 +34,14 @@ import {
   mdiPlus,
   mdiReload,
   mdiShieldAccount,
-  mdiTableLargeRemove
+  mdiTableLargeRemove,
+  mdiBookPlus,
+  mdiCreditCardEdit,
+  mdiCreditCardPlus,
+  mdiCreditCardRemove,
+  mdiImageEdit,
+  mdiImageMinus,
+  mdiImagePlus
 } from '@mdi/js'
 import {useAppApi} from '@/pages/background'
 
@@ -146,7 +148,7 @@ export default<IVuetify> {
         home: mdiHome,
         euro: mdiCurrencyEur,
         reload: mdiReload,
-        addBooking: mdiDomainPlus,
+        addBooking: mdiBookPlus,
         addBookingType: mdiFilterPlus,
         editBookingType: mdiFilterCog,
         deleteBookingType: mdiFilterRemove,
@@ -168,12 +170,12 @@ export default<IVuetify> {
         privacy: mdiShieldAccount,
         mail: mdiEmail,
         magnify: mdiMagnify,
-        addAccount: mdiBankPlus,
-        updateAccount: mdiBankCircle,
-        deleteAccount: mdiBankRemove,
-        addStock: mdiDomainPlus,
-        updateStock: mdiDomain,
-        deleteStock: mdiDomainRemove
+        addAccount: mdiCreditCardPlus,
+        updateAccount: mdiCreditCardEdit,
+        deleteAccount: mdiCreditCardRemove,
+        addStock: mdiImagePlus,
+        updateStock: mdiImageEdit,
+        deleteStock: mdiImageMinus
       }
     }
   })

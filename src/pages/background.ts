@@ -12,6 +12,7 @@ declare global {
     cSwift: string
     cNumber: string
     cLogoUrl: string
+    cStockAccount: boolean
   }
 
   interface IBookingType {
@@ -108,6 +109,7 @@ interface IUseAppApi {
             SWIFT: keyof IAccount
             LOGO_URL: keyof IAccount
             NUMBER: keyof IAccount
+            STOCK_ACCOUNT: keyof IAccount
           }
         }
         BOOKINGS: {
@@ -425,7 +427,8 @@ export const useAppApi = (): IUseAppApi => {
               ID: 'cID',
               SWIFT: 'cSwift',
               LOGO_URL: 'cLogoUrl',
-              NUMBER: 'cNumber'
+              NUMBER: 'cNumber',
+              STOCK_ACCOUNT: 'cStockAccount'
             }
           },
           BOOKINGS: {
@@ -1091,6 +1094,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         const onSuccess = (ev: Event): void => {
           if (ev.target instanceof IDBOpenDBRequest) {
             dbi = ev.target.result
+            console.error(dbi)
             const onVersionChangeSuccess = (): void => {
               if (dbi != null) {
                 dbi.close()

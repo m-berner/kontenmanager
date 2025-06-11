@@ -2,7 +2,7 @@ import {} from 'vue';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-import { mdiBankCircle, mdiBankPlus, mdiBankRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove } from '@mdi/js';
+import { mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove, mdiBookPlus, mdiCreditCardEdit, mdiCreditCardPlus, mdiCreditCardRemove, mdiImageEdit, mdiImageMinus, mdiImagePlus } from '@mdi/js';
 import { useAppApi } from '@/pages/background';
 const { log } = useAppApi();
 export default {
@@ -102,7 +102,7 @@ export default {
                 home: mdiHome,
                 euro: mdiCurrencyEur,
                 reload: mdiReload,
-                addBooking: mdiDomainPlus,
+                addBooking: mdiBookPlus,
                 addBookingType: mdiFilterPlus,
                 editBookingType: mdiFilterCog,
                 deleteBookingType: mdiFilterRemove,
@@ -124,12 +124,12 @@ export default {
                 privacy: mdiShieldAccount,
                 mail: mdiEmail,
                 magnify: mdiMagnify,
-                addAccount: mdiBankPlus,
-                updateAccount: mdiBankCircle,
-                deleteAccount: mdiBankRemove,
-                addStock: mdiDomainPlus,
-                updateStock: mdiDomain,
-                deleteStock: mdiDomainRemove
+                addAccount: mdiCreditCardPlus,
+                updateAccount: mdiCreditCardEdit,
+                deleteAccount: mdiCreditCardRemove,
+                addStock: mdiImagePlus,
+                updateStock: mdiImageEdit,
+                deleteStock: mdiImageMinus
             }
         }
     })

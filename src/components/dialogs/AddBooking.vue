@@ -12,7 +12,6 @@ import {useRecordsStore} from '@/stores/records'
 import {useAppApi} from '@/pages/background'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
-import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
 const {notice, VALIDATORS} = useAppApi()
@@ -44,16 +43,19 @@ const ok = async (): Promise<void> => {
   log('ADD_BOOKING: ok')
   let booking: object = {}
   let costs: number = 0
+  let result: number = 0
+  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
+      costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
       switch (state._booking_type_id) {
         case 1:
-          costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
+          result = state._count*state._unit_quotation + costs
           booking = {
             cDate: state._date,
-            cCredit: 0,
-            cDebit: state._count*state._unit_quotation + costs,
+            cCredit: result < 0 ? -result : 0,
+            cDebit: result > 0 ? result : 0,
             cDescription: state._description,
             cBookingTypeID: state._booking_type_id,
             cStockID: state._stock_id,
@@ -69,12 +71,11 @@ const ok = async (): Promise<void> => {
           }
           break
         case 2:
-          costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
+          result = state._count*state._unit_quotation - costs
           booking = {
             cDate: state._date,
-            // NOTE: CurrencyInput ensure 0 instead of null
-            cCredit: state._count*state._unit_quotation - costs,
-            cDebit: 0,
+            cCredit: result > 0 ? result : 0,
+            cDebit: result < 0 ? -result : 0,
             cDescription: state._description,
             cBookingTypeID: state._booking_type_id,
             cStockID: state._stock_id,
@@ -90,11 +91,11 @@ const ok = async (): Promise<void> => {
           }
           break
         case 3:
-          costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
+          result = state._count*state._unit_quotation - costs
           booking = {
             cDate: state._date,
-            cCredit: state._count*state._unit_quotation - costs,
-            cDebit: 0,
+            cCredit: result > 0 ? result : 0,
+            cDebit: result < 0 ? -result : 0,
             cDescription: state._description,
             cBookingTypeID: state._booking_type_id,
             cStockID: state._stock_id,
@@ -112,7 +113,6 @@ const ok = async (): Promise<void> => {
         default:
           booking = {
             cDate: state._date,
-            // NOTE: CurrencyInput ensure 0 instead of null
             cCredit: state._credit === null ? 0 : state._credit,
             cDebit: state._debit === null ? 0 : state._debit,
             cDescription: state._description,
@@ -129,30 +129,10 @@ const ok = async (): Promise<void> => {
             cMarketPlace: ''
           }
       }
-      //const aNumber = records.accounts[records.getAccountIndexById(settings.activeAccountId)][CONS.DB.STORES.ACCOUNTS.FIELDS.N]
-      //const aDescription = state._description !== undefined && state._description !== null ? state._description.trim() : ''
-      // const booking: Omit<IBooking, 'cID'> = {
-      //   cDate: state._date,
-      //   // NOTE: CurrencyInput ensure 0 instead of null
-      //   cCredit: state._credit === null ? 0 : state._credit,
-      //   cDebit: state._debit === null ? 0 : state._debit,
-      //   cDescription: aDescription,
-      //   cBookingTypeID: state._booking_type_id,
-      //   cStockID: state._stock_id,
-      //   cAccountNumberID: settings.activeAccountId,
-      //   cExDate: state._ex_date,
-      //   cCount: state._count,
-      //   cSoli: state._soli === null ? 0 : state._soli,
-      //   cTax: state._tax === null ? 0 : state._tax,
-      //   cFee: state._fee === null ? 0 :state._fee,
-      //   cSourceTax: state._source_tax === null ? 0 : state._source_tax,
-      //   cTransactionTax: state._transaction_tax === null ? 0 : state._transaction_tax,
-      //   cMarketPlace: state._market_place
-      // }
       const onResponse = async (m: object): Promise<void> => {
         log('ADD_BOOKING: onResponse', {info: Object.values(m)[1]})
         if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE) {
-          records.addBooking({...{cID: Object.values(m)[1]}, ...booking})
+          records.addBooking({cID: Object.values(m)[1], ...booking})
           records.sumBookings()
           await notice([t('dialogs.addBooking.success')])
         }
@@ -161,6 +141,7 @@ const ok = async (): Promise<void> => {
       appMessagePort.postMessage({
         type: CONS.MESSAGES.DB__ADD_BOOKING, data: booking
       })
+      // NOTE: CurrencyInput ensure 0 instead of null
       state._debit = 0
       state._credit = 0
       state._soli = 0
@@ -181,6 +162,7 @@ defineExpose({ok, title})
 
 onMounted(() => {
   log('ADD_BOOKING: onMounted')
+  // NOTE: CurrencyInput ensure 0 instead of null
   state._debit = 0
   state._credit = 0
   state._soli = 0

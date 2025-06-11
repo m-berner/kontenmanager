@@ -68,6 +68,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         return ''
       }
     },
+    getBookingTypeById(ident: number): number {
+      return this._booking_types.findIndex((entry: IBookingType) => {
+        return entry.cID === ident
+      })
+    },
     getBookingTextById(ident: number): string | Error {
       const tmp = this._bookings.filter((entry: IBooking) => {
         return entry.cID === ident
@@ -80,6 +85,11 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
     },
     getBookingById(ident: number): number {
       return this._bookings.findIndex((entry: IBooking) => {
+        return entry.cID === ident
+      })
+    },
+    getStockById(ident: number): number {
+      return this._stocks.findIndex((entry: IStock) => {
         return entry.cID === ident
       })
     },
@@ -156,9 +166,28 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
       log('RECORDS: addStock')
       this._stocks.push(value)
     },
+    deleteStock(ident: number): void {
+      log('RECORDS: deleteStock', {info: ident})
+      this._stocks.splice(this.getStockById(ident), 1)
+    },
+    updateStock(value: IStock): void {
+      log('RECORDS: updateStock')
+      const cloneStocks = [...this._stocks]
+      this._stocks = cloneStocks.map(stock => {
+        if (stock.cID === value.cID) {
+          return value
+        } else {
+          return toRaw(stock)
+        }
+      })
+    },
     addBookingType(value: IBookingType): void {
       log('RECORDS: addBookingType')
       this._booking_types.push(value)
+    },
+    deleteBookingType(ident: number): void {
+      log('RECORDS: deleteBookingType', {info: ident})
+      this._booking_types.splice(this.getBookingTypeById(ident), 1)
     },
     cleanStore(): void {
       log('RECORDS: cleanStore')

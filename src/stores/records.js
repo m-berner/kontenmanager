@@ -51,6 +51,11 @@ export const useRecordsStore = defineStore('records', {
                 return '';
             }
         },
+        getBookingTypeById(ident) {
+            return this._booking_types.findIndex((entry) => {
+                return entry.cID === ident;
+            });
+        },
         getBookingTextById(ident) {
             const tmp = this._bookings.filter((entry) => {
                 return entry.cID === ident;
@@ -64,6 +69,11 @@ export const useRecordsStore = defineStore('records', {
         },
         getBookingById(ident) {
             return this._bookings.findIndex((entry) => {
+                return entry.cID === ident;
+            });
+        },
+        getStockById(ident) {
+            return this._stocks.findIndex((entry) => {
                 return entry.cID === ident;
             });
         },
@@ -133,9 +143,29 @@ export const useRecordsStore = defineStore('records', {
             log('RECORDS: addStock');
             this._stocks.push(value);
         },
+        deleteStock(ident) {
+            log('RECORDS: deleteStock', { info: ident });
+            this._stocks.splice(this.getStockById(ident), 1);
+        },
+        updateStock(value) {
+            log('RECORDS: updateStock');
+            const cloneStocks = [...this._stocks];
+            this._stocks = cloneStocks.map(stock => {
+                if (stock.cID === value.cID) {
+                    return value;
+                }
+                else {
+                    return toRaw(stock);
+                }
+            });
+        },
         addBookingType(value) {
             log('RECORDS: addBookingType');
             this._booking_types.push(value);
+        },
+        deleteBookingType(ident) {
+            log('RECORDS: deleteBookingType', { info: ident });
+            this._booking_types.splice(this.getBookingTypeById(ident), 1);
         },
         cleanStore() {
             log('RECORDS: cleanStore');

@@ -12,7 +12,6 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
-import {appMessagePort} from '@/pages/app'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
@@ -26,6 +25,7 @@ const cUpdateTitlebar = async (): Promise<void> => {
   await browser.storage.local.set({
      sActiveAccountId: settings.activeAccountId
   })
+  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   appMessagePort.postMessage({type: CONS.MESSAGES.DB__TO_STORE})
 }
 

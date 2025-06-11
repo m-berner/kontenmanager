@@ -8,11 +8,9 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-//import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
-import {appMessagePort} from '@/pages/app'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const settings = useSettingsStore()
@@ -21,6 +19,8 @@ const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log} = useAppApi()
 const {_debug} = storeToRefs(settings)
+
+const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
 
 const onResponse = (m: object): void => {
   log('APPINDEX: onResponse', {info: Object.values(m)[1]})
@@ -44,10 +44,9 @@ const onResponse = (m: object): void => {
 appMessagePort.onMessage.addListener(onResponse)
 
 const keyStrokeController: string[] = []
-const onBeforeUnload = async (): Promise<void> => {
-  log('APPINDEX: onBeforeUnload')
+const onBeforeUnload = async (ev: Event): Promise<void> => {
+  log('APPINDEX: onBeforeUnload', {info: ev})
   const foundTabs = await browser.tabs.query({url: 'about:addons'})
-  appMessagePort.postMessage({type: CONS.MESSAGES.DB__CLOSE})
   if (foundTabs.length > 0) {
     await browser.tabs.remove(foundTabs[0].id ?? 0)
   }

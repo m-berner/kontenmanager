@@ -11,7 +11,6 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
-import {appMessagePort} from '@/pages/app'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
@@ -26,6 +25,7 @@ const state = reactive({
 const ok = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: ok')
   const formIs = await formRef.value!.validate()
+  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   if (formIs.valid) {
     try {
       const bookingType = {

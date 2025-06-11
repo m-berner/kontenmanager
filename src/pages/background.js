@@ -17,7 +17,8 @@ export const useAppApi = () => {
                             ID: 'cID',
                             SWIFT: 'cSwift',
                             LOGO_URL: 'cLogoUrl',
-                            NUMBER: 'cNumber'
+                            NUMBER: 'cNumber',
+                            STOCK_ACCOUNT: 'cStockAccount'
                         }
                     },
                     BOOKINGS: {
@@ -673,6 +674,7 @@ const useDatabaseApi = () => {
                 const onSuccess = (ev) => {
                     if (ev.target instanceof IDBOpenDBRequest) {
                         dbi = ev.target.result;
+                        console.error(dbi);
                         const onVersionChangeSuccess = () => {
                             if (dbi != null) {
                                 dbi.close();
