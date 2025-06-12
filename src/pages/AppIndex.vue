@@ -20,7 +20,7 @@ const theme = useTheme()
 const {CONS, log} = useAppApi()
 const {_debug} = storeToRefs(settings)
 
-const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
+const appMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
 
 const onResponse = (m: object): void => {
   log('APPINDEX: onResponse', {info: Object.values(m)[1]})
@@ -83,10 +83,27 @@ window.addEventListener('keydown', onKeyDown, false)
 window.addEventListener('keyup', onKeyUp, false)
 window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
 browser.runtime.onMessage.addListener((msg) => {
-  console.error(msg)
-  if(msg.type === CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE) {
-    theme.global.name.value = msg.skin
-    settings.setSkin(msg.skin)
+  switch(msg.type) {
+    case CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE:
+      theme.global.name.value = msg.skin
+      settings.setSkin(msg.skin)
+      break
+    case CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE:
+      settings.setService(msg.service)
+      break
+    case CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE:
+      settings.setIndexes(msg.indexes)
+      break
+    case CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE:
+      settings.setMaterials(msg.materials)
+      break
+    case CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE:
+      settings.setMarkets(msg.markets)
+      break
+    case CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE:
+      settings.setExchanges(msg.exchanges)
+      break
+    default:
   }
 })
 appMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})

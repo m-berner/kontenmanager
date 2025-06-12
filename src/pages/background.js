@@ -158,11 +158,15 @@ export const useAppApi = () => {
                 OPTIONS__SET_MATERIALS: 12027,
                 OPTIONS__SET_EXCHANGES: 12028,
                 OPTIONS__SET_MARKETS: 12029,
-                OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: 12030,
                 DB__EXPORT: 12031,
                 STORAGE__SET_ID: 12032,
                 STORAGE__SET_ID__RESPONSE: 12033,
-                OPTIONS__SET_SKIN__RESPONSE: 12034
+                OPTIONS__SET_SKIN__RESPONSE: 12034,
+                OPTIONS__SET_SERVICE__RESPONSE: 12035,
+                OPTIONS__SET_INDEXES__RESPONSE: 12036,
+                OPTIONS__SET_MATERIALS__RESPONSE: 12037,
+                OPTIONS__SET_MARKETS__RESPONSE: 12038,
+                OPTIONS__SET_EXCHANGES__RESPONSE: 12039
             },
             SERVICES: {
                 goyax: {
@@ -914,9 +918,7 @@ const useDatabaseApi = () => {
 };
 const { CONS, log, notice } = useAppApi();
 let dbi;
-let extensionTabId = -1;
 let backendAppMessagePort;
-let backendOptionsMessagePort;
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const { exportDatabase, addAccount, addBooking, deleteBooking, addBookingType, addStock, toStores, addStores, open } = useDatabaseApi();
     const onInstall = async () => {
@@ -1021,7 +1023,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
                 active: true
             });
-            extensionTabId = extensionTab.id ?? -1;
+            const extensionTabIdStr = (extensionTab.id ?? -1).toString();
+            sessionStorage.setItem('sExtensionTabId', extensionTabIdStr);
         }
         else {
             await browser.windows.update(foundTabs[0].windowId ?? 0, {
@@ -1035,6 +1038,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         if (p.name === CONS.MESSAGES.PORT__APP) {
             backendAppMessagePort = p;
             const onAppRequest = async (m) => {
+                const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1';
                 switch (Object.values(m)[0]) {
                     case CONS.MESSAGES.DB__TO_STORE:
                         await toStores();
@@ -1079,47 +1083,51 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         await deleteBooking(Object.values(m)[1]);
                         break;
                     case CONS.MESSAGES.OPTIONS__SET_SKIN:
-                        await browser.tabs.sendMessage(extensionTabId, { type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE, skin: Object.values(m)[1] });
+                        await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+                            type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
+                            skin: Object.values(m)[1]
+                        });
                         await browser.storage.local.set({ sSkin: Object.values(m)[1] });
                         break;
-                    case CONS.MESSAGES.OPTIONS__SET_STOCKMANAGER_DB_IMPORTED:
-                        await browser.storage.local.set({ sStockmanagerDbImported: Object.values(m)[1] });
-                        break;
-                    default:
-                }
-            };
-            backendAppMessagePort.onMessage.addListener(onAppRequest);
-        }
-        else {
-            backendOptionsMessagePort = p;
-            const onOptionsRequest = async (m) => {
-                log('BACKGROUND: onOptionsRequest', { info: Object.values(m) });
-                switch (Object.values(m)[0]) {
-                    case CONS.MESSAGES.STORES__INIT_SETTINGS:
-                        backendOptionsMessagePort.postMessage({
-                            type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
-                            data: await browser.storage.local.get()
-                        });
-                        break;
                     case CONS.MESSAGES.OPTIONS__SET_INDEXES:
+                        await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+                            type: CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE,
+                            indexes: Object.values(m)[1]
+                        });
                         await browser.storage.local.set({ sIndexes: Object.values(m)[1] });
                         break;
                     case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
+                        await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+                            type: CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE,
+                            materials: Object.values(m)[1]
+                        });
                         await browser.storage.local.set({ sMaterials: Object.values(m)[1] });
                         break;
                     case CONS.MESSAGES.OPTIONS__SET_SERVICE:
+                        await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+                            type: CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE,
+                            service: Object.values(m)[1]
+                        });
                         await browser.storage.local.set({ sService: Object.values(m)[1] });
                         break;
                     case CONS.MESSAGES.OPTIONS__SET_MARKETS:
+                        await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+                            type: CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE,
+                            markets: Object.values(m)[1]
+                        });
                         await browser.storage.local.set({ sMarkets: Object.values(m)[1] });
                         break;
                     case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
+                        await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+                            type: CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE,
+                            exchanges: Object.values(m)[1]
+                        });
                         await browser.storage.local.set({ sExchanges: Object.values(m)[1] });
                         break;
                     default:
                 }
             };
-            backendOptionsMessagePort.onMessage.addListener(onOptionsRequest);
+            backendAppMessagePort.onMessage.addListener(onAppRequest);
         }
     };
     browser.runtime.onInstalled.addListener(onInstall);

@@ -249,11 +249,15 @@ interface IUseAppApi {
       OPTIONS__SET_MATERIALS: number
       OPTIONS__SET_EXCHANGES: number
       OPTIONS__SET_MARKETS: number
-      OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: number
       DB__EXPORT: number
       STORAGE__SET_ID: number
       STORAGE__SET_ID__RESPONSE: number
       OPTIONS__SET_SKIN__RESPONSE: number
+      OPTIONS__SET_SERVICE__RESPONSE: number
+      OPTIONS__SET_INDEXES__RESPONSE: number
+      OPTIONS__SET_MATERIALS__RESPONSE: number
+      OPTIONS__SET_EXCHANGES__RESPONSE: number
+      OPTIONS__SET_MARKETS__RESPONSE: number
     }
     SERVICES: {
       [p: string]: Partial<{
@@ -571,11 +575,15 @@ export const useAppApi = (): IUseAppApi => {
         OPTIONS__SET_MATERIALS: 12027,
         OPTIONS__SET_EXCHANGES: 12028,
         OPTIONS__SET_MARKETS: 12029,
-        OPTIONS__SET_STOCKMANAGER_DB_IMPORTED: 12030,
         DB__EXPORT: 12031,
         STORAGE__SET_ID: 12032,
         STORAGE__SET_ID__RESPONSE: 12033,
-        OPTIONS__SET_SKIN__RESPONSE: 12034
+        OPTIONS__SET_SKIN__RESPONSE: 12034,
+        OPTIONS__SET_SERVICE__RESPONSE: 12035,
+        OPTIONS__SET_INDEXES__RESPONSE: 12036,
+        OPTIONS__SET_MATERIALS__RESPONSE: 12037,
+        OPTIONS__SET_MARKETS__RESPONSE: 12038,
+        OPTIONS__SET_EXCHANGES__RESPONSE: 12039
       },
       SERVICES: {
         goyax: {
@@ -1355,9 +1363,7 @@ const useDatabaseApi = (): IUseDatabaseApi => {
 
 const {CONS, log, notice} = useAppApi()
 let dbi: IDBDatabase
-let extensionTabId = -1
 let backendAppMessagePort: browser.runtime.Port
-let backendOptionsMessagePort: browser.runtime.Port
 // TODO move all async code into backend!!!
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   const {
@@ -1591,7 +1597,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
         active: true
       })
-      extensionTabId = extensionTab.id ?? -1
+      const extensionTabIdStr = (extensionTab.id ?? -1).toString()
+      sessionStorage.setItem('sExtensionTabId', extensionTabIdStr)
     } else {
       await browser.windows.update(foundTabs[0].windowId ?? 0, {
         focused: true
@@ -1608,6 +1615,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       //   log('BACKGROUND: onDisconnected', {info: 'App disconnected!'})
       // }
       const onAppRequest = async (m: object): Promise<void> => {
+        const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1'
         switch (Object.values(m)[0]) {
           case CONS.MESSAGES.DB__TO_STORE:
             await toStores()
@@ -1652,11 +1660,46 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             await deleteBooking(Object.values(m)[1])
             break
           case CONS.MESSAGES.OPTIONS__SET_SKIN:
-            await browser.tabs.sendMessage(extensionTabId,{type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE, skin: Object.values(m)[1]})
+            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+              type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
+              skin: Object.values(m)[1]
+            })
             await browser.storage.local.set({sSkin: Object.values(m)[1]})
             break
-          case CONS.MESSAGES.OPTIONS__SET_STOCKMANAGER_DB_IMPORTED:
-            await browser.storage.local.set({sStockmanagerDbImported: Object.values(m)[1]})
+          case CONS.MESSAGES.OPTIONS__SET_INDEXES:
+            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+              type: CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE,
+              indexes: Object.values(m)[1]
+            })
+            await browser.storage.local.set({sIndexes: Object.values(m)[1]})
+            break
+          case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
+            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+              type: CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE,
+              materials: Object.values(m)[1]
+            })
+            await browser.storage.local.set({sMaterials: Object.values(m)[1]})
+            break
+          case CONS.MESSAGES.OPTIONS__SET_SERVICE:
+            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+              type: CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE,
+              service: Object.values(m)[1]
+            })
+            await browser.storage.local.set({sService: Object.values(m)[1]})
+            break
+          case CONS.MESSAGES.OPTIONS__SET_MARKETS:
+            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+              type: CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE,
+              markets: Object.values(m)[1]
+            })
+            await browser.storage.local.set({sMarkets: Object.values(m)[1]})
+            break
+          case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
+            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
+              type: CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE,
+              exchanges: Object.values(m)[1]
+            })
+            await browser.storage.local.set({sExchanges: Object.values(m)[1]})
             break
           default:
         }
@@ -1664,46 +1707,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       // listen for messages from app tab
       backendAppMessagePort.onMessage.addListener(onAppRequest)
       //backendAppMessagePort.onDisconnect.addListener(onAppDisconnected)
-    } else {
-      backendOptionsMessagePort = p
-      // const onOptionsDisconnected = () => {
-      //   backendOptionsMessagePort.disconnect()
-      //   log('BACKGROUND: onDisconnected', {info: 'Options tab disconnected!'})
-      // }
-      const onOptionsRequest = async (m: object): Promise<void> => {
-        log('BACKGROUND: onOptionsRequest', {info: Object.values(m)})
-        switch (Object.values(m)[0]) {
-          case CONS.MESSAGES.STORES__INIT_SETTINGS:
-            backendOptionsMessagePort.postMessage({
-              type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
-              data: await browser.storage.local.get()
-            })
-            break
-          // TODO move to onAppRequest
-          case CONS.MESSAGES.OPTIONS__SET_INDEXES:
-            await browser.storage.local.set({sIndexes: Object.values(m)[1]})
-            break
-          case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
-            await browser.storage.local.set({sMaterials: Object.values(m)[1]})
-            break
-          // case CONS.MESSAGES.OPTIONS__SET_SKIN:
-          //   await browser.storage.local.set({sSkin: Object.values(m)[1]})
-          //   break
-          case CONS.MESSAGES.OPTIONS__SET_SERVICE:
-            await browser.storage.local.set({sService: Object.values(m)[1]})
-            break
-          case CONS.MESSAGES.OPTIONS__SET_MARKETS:
-            await browser.storage.local.set({sMarkets: Object.values(m)[1]})
-            break
-          case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
-            await browser.storage.local.set({sExchanges: Object.values(m)[1]})
-            break
-          default:
-        }
-      }
-      // listen for messages from options tab
-      backendOptionsMessagePort.onMessage.addListener(onOptionsRequest)
-      //backendOptionsMessagePort.onDisconnect.addListener(onOptionsDisconnected)
     }
   }
   browser.runtime.onInstalled.addListener(onInstall)

@@ -72,7 +72,7 @@ const state: IOptionsIndex = reactive({
   _materialsB: materials_keys_b
 })
 
-const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__OPTIONS})
+const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
 const onResponse = (m: object): void => {
   switch (Object.values(m)[0]) {
     case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
