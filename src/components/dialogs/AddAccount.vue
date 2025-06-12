@@ -24,12 +24,12 @@ const state = reactive({
   _swift: '',
   _number: '',
   _logoUrl: '',
-  _brandFetchName: '',
+  _logoSearchName: '',
   _stockAccount: false
 })
 
 const onInput = () => {
-  state._logoUrl = `https://cdn.brandfetch.io/${state._brandFetchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+  state._logoUrl = `https://cdn.brandfetch.io/${state._logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
 const ibanMask = (iban: string) => {
   if (iban !== null) {
@@ -57,6 +57,7 @@ const ok = async (): Promise<void> => {
         cSwift: state._swift.trim().toUpperCase(),
         cNumber: state._number.replace(/\s/g, ''),
         cLogoUrl: state._logoUrl,
+        cLogoSearchName: state._logoSearchName,
         cStockAccount: state._stockAccount
       }
       const onResponse = async (m: object): Promise<void> => {
@@ -116,7 +117,7 @@ log('--- AddAccount.vue setup ---')
       @update:modelValue="ibanMask"
     ></v-text-field>
     <v-text-field
-      v-model="state._brandFetchName"
+      v-model="state._logoSearchName"
       autofocus
       placeholder="z. B. ing.com"
       required

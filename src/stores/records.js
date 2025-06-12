@@ -131,6 +131,10 @@ export const useRecordsStore = defineStore('records', {
                 }
             });
         },
+        deleteAccount(ident) {
+            log('RECORDS: deleteAccount', { info: ident });
+            this._accounts.splice(this.getAccountIndexById(ident), 1);
+        },
         addBooking(value) {
             log('RECORDS: addBooking');
             this._bookings.unshift(value);

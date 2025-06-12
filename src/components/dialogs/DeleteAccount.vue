@@ -29,13 +29,16 @@ const ok = async (): Promise<void> => {
   try {
     const result = await records.deleteAccount(state._selected)
     if (result === 'Account deleted') {
+      const appMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
       formRef.value?.reset()
       if (records.accounts.length > 0) {
         settings.setActiveAccountId(records.accounts[0].cID)
-        await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
+        appMessagePort.postMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: records.accounts[0]})
+        //await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
       } else {
         settings.setActiveAccountId(-1)
-        await browser.storage.local.set({sActiveAccountId: -1})
+        appMessagePort.postMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1})
+        // await browser.storage.local.set({sActiveAccountId: -1})
       }
       runtime.setLogo()
       await notice([t('dialogs.deleteAccount.success')])

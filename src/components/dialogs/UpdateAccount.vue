@@ -24,12 +24,12 @@ const state = reactive({
   _swift: '',
   _number: '',
   _logoUrl: '',
-  _brandFetchName: '',
-  _stockAccount: 0
+  _logoSearchName: '',
+  _stockAccount: false
 })
 
 const onInput = () => {
-  state._logoUrl = `https://cdn.brandfetch.io/${state._brandFetchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+  state._logoUrl = `https://cdn.brandfetch.io/${state._logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
 const ibanMask = (iban: string) => {
   if (iban !== null) {
@@ -48,46 +48,59 @@ const ibanMask = (iban: string) => {
 }
 
 const ok = async (): Promise<void> => {
-  log('ADD_ACCOUNT: ok')
+  log('UPDATE_ACCOUNT: ok')
   const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
       const account = {
+        cID: settings.activeAccountId,
         cSwift: state._swift.trim().toUpperCase(),
         cNumber: state._number.replace(/\s/g, ''),
-        cLogoUrl: state._logoUrl
+        cLogoUrl: state._logoUrl,
+        cLogoSearchName: state._logoSearchName,
+        cStockAccount: state._stockAccount
       }
-      records.addAccount(account)
+      records.updateAccount(account)
       runtime.setLogo()
       const onResponse = async (m: object): Promise<void> => {
         log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE) {
-          settings.setActiveAccountId(Object.values(m)[1])
-          await notice([t('dialogs.addAccount.success')])
+        if (Object.values(m)[0] === CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE) {
+          if (records.accounts.length > 0) {
+            settings.setActiveAccountId(records.accounts[0].cID)
+          } else {
+            settings.setActiveAccountId(-1)
+          }
+          await notice([t('dialogs.updateAccount.success')])
         }
       }
       appMessagePort.onMessage.addListener(onResponse)
       appMessagePort.postMessage({
-        type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
+        type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
       })
       formRef.value!.reset()
     } catch (e) {
       console.error(e)
-      await notice([t('dialogs.addAccount.error')])
+      await notice([t('dialogs.updateAccount.error')])
     }
   }
 }
-const title = t('dialogs.addAccount.title')
+const title = t('dialogs.updateAccount.title')
 
 defineExpose({ok, title})
 
 onMounted(() => {
-  log('ADD_ACCOUNT: onMounted')
+  log('UPDATE_ACCOUNT: onMounted')
   formRef.value!.reset()
+  const currentAccount = records.accounts[records.getAccountIndexById(settings.activeAccountId)]
+  state._swift = currentAccount.cSwift
+  state._number = currentAccount.cNumber
+  state._logoUrl = currentAccount.cLogoUrl
+  state._logoSearchName = currentAccount.cLogoSearchName
+  state._stockAccount = currentAccount.cStockAccount
 })
 
-log('--- AddAccount.vue setup ---')
+log('--- UpdateAccount.vue setup ---')
 </script>
 
 <template>
@@ -95,31 +108,31 @@ log('--- AddAccount.vue setup ---')
     <v-switch
       v-model="state._stockAccount"
       color="red"
-      v-bind:label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
+      v-bind:label="t('dialogs.updateAccount.stockAccountLabel')"></v-switch>
     <v-text-field
       ref="swift-input"
       v-model="state._swift"
       autofocus
       required
-      v-bind:label="t('dialogs.addAccount.swiftLabel')"
+      v-bind:label="t('dialogs.updateAccount.swiftLabel')"
       v-bind:rules="VALIDATORS.swiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
       variant="outlined"
     ></v-text-field>
     <v-text-field
       v-model="state._number"
       required
-      v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
-      v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
+      v-bind:label="t('dialogs.updateAccount.accountNumberLabel')"
+      v-bind:placeholder="t('dialogs.updateAccount.accountNumberPlaceholder')"
       v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
       @update:modelValue="ibanMask"
     ></v-text-field>
     <v-text-field
-      v-model="state._brandFetchName"
+      v-model="state._logoSearchName"
       autofocus
       placeholder="z. B. ing.com"
       required
-      v-bind:label="t('dialogs.addAccount.logoLabel')"
+      v-bind:label="t('dialogs.updateAccount.logoLabel')"
       v-bind:rules="VALIDATORS.brandNameRules([t('validators.brandNameRules', 0)])"
       variant="outlined"
       v-on:input="onInput"

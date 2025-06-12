@@ -154,6 +154,10 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore> = define
         }
       })
     },
+    deleteAccount(ident: number): void {
+      log('RECORDS: deleteAccount', {info: ident})
+      this._accounts.splice(this.getAccountIndexById(ident), 1)
+    },
     addBooking(value: IBooking): void {
       log('RECORDS: addBooking')
       this._bookings.unshift(value)

@@ -166,7 +166,9 @@ export const useAppApi = () => {
                 OPTIONS__SET_INDEXES__RESPONSE: 12036,
                 OPTIONS__SET_MATERIALS__RESPONSE: 12037,
                 OPTIONS__SET_MARKETS__RESPONSE: 12038,
-                OPTIONS__SET_EXCHANGES__RESPONSE: 12039
+                OPTIONS__SET_EXCHANGES__RESPONSE: 12039,
+                DB__UPDATE_ACCOUNT: 12040,
+                DB__UPDATE_ACCOUNT__RESPONSE: 12041
             },
             SERVICES: {
                 goyax: {
@@ -721,6 +723,28 @@ const useDatabaseApi = () => {
                 }
             });
         },
+        updateAccount: async (record) => {
+            return new Promise(async (resolve, reject) => {
+                if (dbi != null) {
+                    const onSuccess = async (ev) => {
+                        if (ev.target instanceof IDBRequest) {
+                            backendAppMessagePort.postMessage({ type: CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE, data: ev.target.result });
+                            resolve(ev.target.result);
+                        }
+                        else {
+                            reject(CONS.RESULTS.ERROR);
+                        }
+                    };
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
+                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put(record);
+                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                }
+            });
+        },
         deleteAccount: async (ident) => {
             return new Promise(async (resolve, reject) => {
                 if (dbi != null) {
@@ -920,7 +944,7 @@ const { CONS, log, notice } = useAppApi();
 let dbi;
 let backendAppMessagePort;
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-    const { exportDatabase, addAccount, addBooking, deleteBooking, addBookingType, addStock, toStores, addStores, open } = useDatabaseApi();
+    const { exportDatabase, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, addStock, toStores, addStores, open } = useDatabaseApi();
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
         const installStorageLocal = async () => {
@@ -1069,6 +1093,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         break;
                     case CONS.MESSAGES.DB__ADD_ACCOUNT:
                         await addAccount(Object.values(m)[1]);
+                        break;
+                    case CONS.MESSAGES.DB__UPDATE_ACCOUNT:
+                        await updateAccount(Object.values(m)[1]);
+                        break;
+                    case CONS.MESSAGES.DB__DELETE_ACCOUNT:
+                        await deleteAccount(Object.values(m)[1]);
                         break;
                     case CONS.MESSAGES.DB__ADD_BOOKING:
                         await addBooking(Object.values(m)[1]);

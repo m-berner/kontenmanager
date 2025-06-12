@@ -125,6 +125,17 @@
       "success": "Konto wurde hinzugefügt",
       "error": "Konto existiert bereits"
     },
+    "updateAccount": {
+      "title": "Bankkonto aktualisieren",
+      "swiftLabel": "BIC/SWIFT Code",
+      "logoLabel": "Logo brandfetch.com",
+      "stockAccountLabel": "Aktien Verrechnungskonto",
+      "accountNumberLabel": "Kontonummer",
+      "currencyPlaceholder": "z. B. EUR",
+      "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "success": "Konto wurde aktualisiert",
+      "error": "Konto existiert bereits"
+    },
     "deleteAccount": {
       "title": "Bankkonto entfernen",
       "accountNumberLabel": "Kontonummer",
