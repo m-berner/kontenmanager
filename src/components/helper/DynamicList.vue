@@ -18,7 +18,6 @@ interface DynamicListProps {
   _counter?: number
   _placeholder?: string
   _toUpperCase?: boolean
-  _port?: browser.runtime.Port
 }
 
 interface IState {
@@ -26,13 +25,13 @@ interface IState {
   _list: Array<string | number | undefined>
 }
 
-const {CONS, log, notice} = useAppApi()
+const {CONS, log} = useAppApi()
 const _props = defineProps<DynamicListProps>()
 const state: IState = {
   _newItem: '',
   _list: _props._list
 }
-let messageType: number
+let messageType: string
 // NOTE:
 // reading a v-text-field does work without reactivity
 // to write to it only with reactivity
@@ -51,24 +50,12 @@ const mAddItem = async (item: string): Promise<void> => {
       state._list.push(item)
     }
   }
-  if (_props._port !== undefined) {
-    _props._port.postMessage({type: messageType, data: toRaw(state._list)})
-    state._newItem = ''
-  } else {
-    await notice(['DynamicList', CONS.SYSTEM.ERRORS.PORT])
-    console.error(CONS.SYSTEM.ERRORS.PORT)
-  }
+    await browser.runtime.sendMessage({type: messageType, data: toRaw(state._list)})
 }
 const mRemoveItem = async (n: number): Promise<void> => {
   log('DYNAMICLIST: mRemoveItem')
   if (n > 0) {
-    if (_props._port !== undefined) {
-      state._list.splice(n, 1)
-      _props._port.postMessage({type: messageType, data: toRaw(state._list)})
-    } else {
-      await notice(['DynamicList', CONS.SYSTEM.ERRORS.PORT])
-      console.error(CONS.SYSTEM.ERRORS.PORT)
-    }
+    await browser.runtime.sendMessage({type: messageType, data: toRaw(state._list)})
   }
 }
 

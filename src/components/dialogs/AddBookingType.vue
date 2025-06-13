@@ -25,7 +25,6 @@ const state = reactive({
 const ok = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: ok')
   const formIs = await formRef.value!.validate()
-  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   if (formIs.valid) {
     try {
       const bookingType = {
@@ -33,7 +32,7 @@ const ok = async (): Promise<void> => {
         cAccountNumberID: settings.activeAccountId
       }
       records.addBookingType(bookingType)
-      appMessagePort.postMessage({
+      await browser.runtime.sendMessage({
         type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE, data: bookingType
       })
       formRef.value!.reset()

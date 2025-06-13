@@ -18,19 +18,12 @@ const runtime = useRuntimeStore()
 
 const ok = async (): Promise<void> => {
   log('DELETE_BOOKING: ok')
-  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   try {
-    const onResponse = async (m: object): Promise<void> => {
-      log('DELETE_BOOKING: onResponse')
-      if (Object.values(m)[0] === CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE) {
-        records.deleteBooking(runtime.bookingId)
-        records.sumBookings()
-        runtime.resetTeleport()
-        await notice([t('dialogs.deleteBooking.success')])
-      }
-    }
-    appMessagePort.onMessage.addListener(onResponse)
-    appMessagePort.postMessage({
+    records.deleteBooking(runtime.bookingId)
+    runtime.setLogo()
+    records.sumBookings()
+    runtime.resetTeleport()
+    await browser.runtime.sendMessage({
       type: CONS.MESSAGES.DB__DELETE_BOOKING, data: runtime.bookingId
     })
   } catch (e) {

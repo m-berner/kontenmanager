@@ -72,43 +72,24 @@ const state: IOptionsIndex = reactive({
   _materialsB: materials_keys_b
 })
 
-const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
-const onResponse = (m: object): void => {
-  switch (Object.values(m)[0]) {
-    case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
-      log('OPTIONS_INDEX: onResponse', {info: Object.values(m)[1]})
-      settings.initStore(theme, Object.values(m)[1])
-      break
-    default:
-  }
-}
-// listen for backend responses
-optionsMessagePort.onMessage.addListener(onResponse)
-optionsMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
-
 const setIndexes = (): void => {
-  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
-  optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_INDEXES, data: toRaw(settings.indexes)})
+  browser.runtime.sendMessage({type: CONS.MESSAGES.OPTIONS__SET_INDEXES, data: toRaw(settings.indexes)})
 }
-
 const setMaterials = (): void => {
-  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
-  optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_MATERIALS, data: toRaw(settings.materials)})
+  browser.runtime.sendMessage({type: CONS.MESSAGES.OPTIONS__SET_MATERIALS, data: toRaw(settings.materials)})
 }
-
 const setSkin = (ev: Event): void => {
-  const appMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
   if (ev.target instanceof HTMLInputElement) {
-    appMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_SKIN, data: ev.target.value})
+    browser.runtime.sendMessage({type: CONS.MESSAGES.OPTIONS__SET_SKIN, data: ev.target.value})
+  }
+}
+const setService = (ev: Event): void => {
+  if (ev.target instanceof HTMLInputElement) {
+    browser.runtime.sendMessage({type: CONS.MESSAGES.OPTIONS__SET_SERVICE, data: ev.target.value})
   }
 }
 
-const setService = (ev: Event): void => {
-  const optionsMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
-  if (ev.target instanceof HTMLInputElement) {
-    optionsMessagePort.postMessage({type: CONS.MESSAGES.OPTIONS__SET_SERVICE, data: ev.target.value})
-  }
-}
+browser.runtime.sendMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
 
 log('--- OptionsIndex.vue setup ---', {info: window.location.href})
 </script>
@@ -157,7 +138,6 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                   v-bind:_list="_markets"
                   v-bind:_tab="CONS.SETTINGS.MARKETS_TAB"
                   v-bind:_title="t('optionsPage.markets.title')"
-                  v-bind:_port="optionsMessagePort"
                 ></DynamicList>
               </v-col>
             </v-row>
@@ -223,7 +203,6 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                   v-bind:_tab="CONS.SETTINGS.EXCHANGES_TAB"
                   v-bind:_title="t('optionsPage.exchanges.title')"
                   v-bind:_toUpperCase="true"
-                  v-bind:_port="optionsMessagePort"
                 ></DynamicList>
               </v-col>
             </v-row>

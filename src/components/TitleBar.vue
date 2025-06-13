@@ -12,6 +12,7 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
+import {toRaw} from 'vue'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
@@ -22,28 +23,7 @@ const {CONS, log} = useAppApi()
 const {_active_account_id} = storeToRefs(settings)
 
 const cUpdateTitlebar = (): void => {
-  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
-  const onResponse = (m: object): void => {
-    log('TITLE_BAR: onResponse', {info: Object.values(m)[1]})
-    switch (Object.values(m)[0]) {
-      case CONS.MESSAGES.STORAGE__SET_ID__RESPONSE:
-        appMessagePort.postMessage({type: CONS.MESSAGES.DB__TO_STORE })
-        break
-      case CONS.MESSAGES.DB__TO_STORE__RESPONSE:
-        if (Object.values(m)[1].accounts.length > 0) {
-          records.initStore(Object.values(m)[1])
-          if (settings.activeAccountId === undefined) {
-            settings.setActiveAccountId(records.accounts[0].cID)
-          }
-          runtime.setLogo()
-          records.sumBookings()
-        }
-        break
-      default:
-    }
-  }
-  appMessagePort.onMessage.addListener(onResponse)
-  appMessagePort.postMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: _active_account_id.value})
+  browser.runtime.sendMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: toRaw(_active_account_id.value)})
 }
 
 log('--- TitleBar.vue setup ---')

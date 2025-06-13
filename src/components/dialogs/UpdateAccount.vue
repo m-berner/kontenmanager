@@ -49,7 +49,6 @@ const ibanMask = (iban: string) => {
 
 const ok = async (): Promise<void> => {
   log('UPDATE_ACCOUNT: ok')
-  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
@@ -63,22 +62,10 @@ const ok = async (): Promise<void> => {
       }
       records.updateAccount(account)
       runtime.setLogo()
-      const onResponse = async (m: object): Promise<void> => {
-        log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-        if (Object.values(m)[0] === CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE) {
-          if (records.accounts.length > 0) {
-            settings.setActiveAccountId(records.accounts[0].cID)
-          } else {
-            settings.setActiveAccountId(-1)
-          }
-          await notice([t('dialogs.updateAccount.success')])
-        }
-      }
-      appMessagePort.onMessage.addListener(onResponse)
-      appMessagePort.postMessage({
+      await browser.runtime.sendMessage({
         type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
       })
-      formRef.value!.reset()
+      // formRef.value!.reset()
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.updateAccount.error')])

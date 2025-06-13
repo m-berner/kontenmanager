@@ -44,7 +44,6 @@ const ok = async (): Promise<void> => {
   let booking: object = {}
   let costs: number = 0
   let result: number = 0
-  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
@@ -129,16 +128,7 @@ const ok = async (): Promise<void> => {
             cMarketPlace: ''
           }
       }
-      const onResponse = async (m: object): Promise<void> => {
-        log('ADD_BOOKING: onResponse', {info: Object.values(m)[1]})
-        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE) {
-          records.addBooking({cID: Object.values(m)[1], ...booking})
-          records.sumBookings()
-          await notice([t('dialogs.addBooking.success')])
-        }
-      }
-      appMessagePort.onMessage.addListener(onResponse)
-      appMessagePort.postMessage({
+      await browser.runtime.sendMessage({
         type: CONS.MESSAGES.DB__ADD_BOOKING, data: booking
       })
       // NOTE: CurrencyInput ensure 0 instead of null

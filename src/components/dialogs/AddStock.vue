@@ -27,7 +27,6 @@ const state = reactive({
 const ok = async (): Promise<void> => {
   log('ADD_STOCK: ok')
   const formIs = await formRef.value!.validate()
-  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   if (formIs.valid) {
     try {
       const stock = {
@@ -36,14 +35,7 @@ const ok = async (): Promise<void> => {
         cLogoUrl: state._logoUrl
       }
       records.addStock(stock)
-      const onResponse = async (m: object): Promise<void> => {
-        log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_STOCK__RESPONSE) {
-          await notice([t('dialogs.addStock.success')])
-        }
-      }
-      appMessagePort.onMessage.addListener(onResponse)
-      appMessagePort.postMessage({
+      await browser.runtime.sendMessage({
         type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
       })
       formRef.value!.reset()

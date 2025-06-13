@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, toRaw, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -27,22 +27,18 @@ const state = reactive({
 const ok = async (): Promise<void> => {
   log('DELETE_ACCOUNT: ok')
   try {
-    const result = await records.deleteAccount(state._selected)
-    if (result === 'Account deleted') {
-      const appMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
-      formRef.value?.reset()
-      if (records.accounts.length > 0) {
-        settings.setActiveAccountId(records.accounts[0].cID)
-        appMessagePort.postMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: records.accounts[0]})
-        //await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
-      } else {
-        settings.setActiveAccountId(-1)
-        appMessagePort.postMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1})
-        // await browser.storage.local.set({sActiveAccountId: -1})
-      }
-      runtime.setLogo()
-      await notice([t('dialogs.deleteAccount.success')])
+    records.deleteAccount(state._selected)
+    await browser.runtime.sendMessage({type: CONS.MESSAGES.DB__DELETE_ACCOUNT, data: toRaw(state._selected)})
+    if (records.accounts.length > 0) {
+      settings.setActiveAccountId(records.accounts[0].cID)
+      await browser.runtime.sendMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: toRaw(records.accounts[0])})
+    } else {
+      settings.setActiveAccountId(-1)
+      await browser.runtime.sendMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1})
     }
+    runtime.setLogo()
+    records.sumBookings()
+    formRef.value?.reset()
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteAccount.error')])

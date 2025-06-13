@@ -12,37 +12,15 @@ import {useTheme} from 'vuetify'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useI18n} from 'vue-i18n'
 
+const {t} = useI18n()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const theme = useTheme()
-const {CONS, log} = useAppApi()
+const {CONS, log, notice} = useAppApi()
 const {_debug} = storeToRefs(settings)
-
-const appMessagePort = browser.runtime.connect({name: CONS.MESSAGES.PORT__APP})
-
-const onResponse = (m: object): void => {
-  log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-  switch (Object.values(m)[0]) {
-    case CONS.MESSAGES.DB__TO_STORE__RESPONSE:
-      if (Object.values(m)[1].accounts.length > 0) {
-        records.initStore(Object.values(m)[1])
-        if (settings.activeAccountId === undefined) {
-          settings.setActiveAccountId(records.accounts[0].cID)
-        }
-        runtime.setLogo()
-        records.sumBookings()
-      }
-      break
-    case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
-      settings.initStore(theme, Object.values(m)[1])
-      break
-    default:
-  }
-}
-appMessagePort.onMessage.addListener(onResponse)
-
 const keyStrokeController: string[] = []
 const onBeforeUnload = async (ev: Event): Promise<void> => {
   log('APPINDEX: onBeforeUnload', {info: ev})
@@ -79,35 +57,92 @@ const onKeyDown = (ev: KeyboardEvent): void => {
 const onKeyUp = (ev: KeyboardEvent): void => {
   keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
 }
-window.addEventListener('keydown', onKeyDown, false)
-window.addEventListener('keyup', onKeyUp, false)
-window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
-browser.runtime.onMessage.addListener((msg) => {
-  switch(msg.type) {
+const onBackgroundMessage = (backgroundMsg: IMessage): void => {
+  switch (backgroundMsg.type) {
+    case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
+      settings.initStore(theme, backgroundMsg.data)
+      break
     case CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE:
-      theme.global.name.value = msg.skin
-      settings.setSkin(msg.skin)
+      theme.global.name.value = backgroundMsg.data
+      settings.setSkin(backgroundMsg.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE:
-      settings.setService(msg.service)
+      settings.setService(backgroundMsg.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE:
-      settings.setIndexes(msg.indexes)
+      settings.setIndexes(backgroundMsg.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE:
-      settings.setMaterials(msg.materials)
+      settings.setMaterials(backgroundMsg.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE:
-      settings.setMarkets(msg.markets)
+      settings.setMarkets(backgroundMsg.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE:
-      settings.setExchanges(msg.exchanges)
+      settings.setExchanges(backgroundMsg.data)
+      break
+    case CONS.MESSAGES.DB__TO_STORE__RESPONSE:
+      const toStoreData: IStores = backgroundMsg.data
+      if (toStoreData.accounts.length > 0) {
+        records.initStore(toStoreData)
+        if (settings.activeAccountId === undefined) {
+          settings.setActiveAccountId(records.accounts[0].cID)
+        }
+        runtime.setLogo()
+        records.sumBookings()
+      }
+      break
+    case CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE:
+      notice([t('dialogs.UpdateAccount.success')])
+      break
+    case CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE:
+      notice([t('dialogs.UpdateStock.success')])
+      break
+    case CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE:
+      notice([t('dialogs.deleteAccount.success')])
+      break
+    case CONS.MESSAGES.DB__DELETE_STOCK__RESPONSE:
+      notice([t('dialogs.deleteStock.success')])
+      break
+    case CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE:
+      notice([t('dialogs.deleteBooking.success')])
+      break
+    case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE:
+      notice([t('dialogs.deleteBookingType.success')])
+      break
+    case CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE:
+      const addAccountData: IAccount = backgroundMsg.data
+      records.addAccount(addAccountData)
+      runtime.setLogo()
+      settings.setActiveAccountId(addAccountData.cID)
+      notice([t('dialogs.AddAccount.success')])
+      break
+    case CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE:
+      const addBookingData: IBooking = backgroundMsg.data
+      records.addBooking(addBookingData)
+      notice([t('dialogs.AddBooking.success')])
+      break
+    case CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE:
+      const addBookingTypeData: IBookingType = backgroundMsg.data
+      records.addBookingType(addBookingTypeData)
+      notice([t('dialogs.AddBookingType.success')])
+      break
+    case CONS.MESSAGES.DB__ADD_STOCK__RESPONSE:
+      const addStockData: IStock = backgroundMsg.data
+      records.addStock(addStockData)
+      notice([t('dialogs.AddStock.success')])
       break
     default:
   }
-})
-appMessagePort.postMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
-appMessagePort.postMessage({type: CONS.MESSAGES.DB__TO_STORE})
+}
+
+window.addEventListener('keydown', onKeyDown, false)
+window.addEventListener('keyup', onKeyUp, false)
+window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
+browser.runtime.onMessage.addListener(onBackgroundMessage)
+
+browser.runtime.sendMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
+browser.runtime.sendMessage({type: CONS.MESSAGES.DB__TO_STORE})
 
 log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>

@@ -9,27 +9,23 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
-import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
 const formRef = useTemplateRef('form-ref')
-const runtime = useRuntimeStore()
-const settings = useSettingsStore()
 const records = useRecordsStore()
 
 const state = reactive({
   _swift: '',
   _number: '',
   _logoUrl: '',
-  _brandFetchName: '',
+  _logoSearchName: '',
   _stockAccount: 0
 })
 
 const onInput = () => {
-  state._logoUrl = `https://cdn.brandfetch.io/${state._brandFetchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+  state._logoUrl = `https://cdn.brandfetch.io/${state._logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
 const ibanMask = (iban: string) => {
   if (iban !== null) {
@@ -48,33 +44,23 @@ const ibanMask = (iban: string) => {
 }
 
 const ok = async (): Promise<void> => {
-  log('ADD_ACCOUNT: ok')
+  log('UPDATE_STOCK: ok')
   const formIs = await formRef.value!.validate()
-  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
   if (formIs.valid) {
     try {
-      const account = {
+      const stock = {
         cSwift: state._swift.trim().toUpperCase(),
         cNumber: state._number.replace(/\s/g, ''),
         cLogoUrl: state._logoUrl
       }
-      records.addAccount(account)
-      runtime.setLogo()
-      const onResponse = async (m: object): Promise<void> => {
-        log('APPINDEX: onResponse', {info: Object.values(m)[1]})
-        if (Object.values(m)[0] === CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE) {
-          settings.setActiveAccountId(Object.values(m)[1])
-          await notice([t('dialogs.addAccount.success')])
-        }
-      }
-      appMessagePort.onMessage.addListener(onResponse)
-      appMessagePort.postMessage({
-        type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
+      records.updateStock(stock)
+      await browser.runtime.sendMessage({
+        type: CONS.MESSAGES.DB__UPDATE_STOCK, data: stock
       })
       formRef.value!.reset()
     } catch (e) {
       console.error(e)
-      await notice([t('dialogs.addAccount.error')])
+      await notice([t('dialogs.updateStock.error')])
     }
   }
 }
@@ -115,7 +101,7 @@ log('--- AddAccount.vue setup ---')
       @update:modelValue="ibanMask"
     ></v-text-field>
     <v-text-field
-      v-model="state._brandFetchName"
+      v-model="state._logoSearchName"
       autofocus
       placeholder="z. B. ing.com"
       required

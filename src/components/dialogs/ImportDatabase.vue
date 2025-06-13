@@ -35,7 +35,6 @@ const ok = async (): Promise<void> => {
   }
   const onFileLoaded = async (): Promise<void> => {
     log('IMPORTDATABASE: onFileLoaded')
-    const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
     if (typeof fr.result === 'string') {
       const bkupObject: IBackup = JSON.parse(fr.result)
       const accounts = []
@@ -86,7 +85,7 @@ const ok = async (): Promise<void> => {
           bookingTypes: bookingTypes,
           stocks: stocks
         }
-        appMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
+        await browser.runtime.sendMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }

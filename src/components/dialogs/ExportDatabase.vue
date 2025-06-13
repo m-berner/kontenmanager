@@ -13,11 +13,11 @@ const {t} = useI18n()
 const {CONS, log} = useAppApi()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.START_VERSION}_${CONS.DB.NAME}.json`
+const txt = { filename: fn }
 
 const ok = (): void => {
   log('EXPORTDATABASE: ok')
-  const appMessagePort = browser.runtime.connect({ name: CONS.MESSAGES.PORT__APP })
-  appMessagePort.postMessage({type: CONS.MESSAGES.DB__EXPORT, data: fn})
+  browser.runtime.sendMessage({type: CONS.MESSAGES.DB__EXPORT, data: fn})
 }
 const title = t('dialogs.exportDatabase.title')
 
@@ -31,7 +31,7 @@ log('--- ExportDatabase.vue setup ---')
     <v-card-text class="pa-5">
       <v-textarea
         v-bind:disabled="true"
-        v-bind:modelValue="t('dialogs.exportDialog', { filename: fn })"
+        v-bind:modelValue="t('dialogs.exportDialog', txt)"
         variant="outlined"
       ></v-textarea>
     </v-card-text>

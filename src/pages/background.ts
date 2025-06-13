@@ -89,6 +89,11 @@ declare global {
     sIndexes: string[]
     sMarkets: string[]
   }
+
+  interface IMessage {
+    type: string
+    data: string & number & Omit<IStock, 'cID'> & Omit<IBookingType, 'cID'> & Omit<IAccount, 'cID'> & Omit<IBooking, 'cID'>
+  }
 }
 
 interface IUseAppApi {
@@ -109,6 +114,7 @@ interface IUseAppApi {
             ID: keyof IAccount
             SWIFT: keyof IAccount
             LOGO_URL: keyof IAccount
+            LOGO_SEARCH_NAME: keyof IAccount
             NUMBER: keyof IAccount
             STOCK_ACCOUNT: keyof IAccount
           }
@@ -220,47 +226,47 @@ interface IUseAppApi {
       UPG: string
     }
     MESSAGES: {
-      PORT__APP: string
-      PORT__OPTIONS: string
-      DB__CLOSE: number
-      DB__TO_STORE: number
-      DB__TO_STORE__RESPONSE: number
-      DB__ADD_ACCOUNT: number
-      DB__ADD_ACCOUNT__RESPONSE: number
-      DB__UPDATE_ACCOUNT: number
-      DB__UPDATE_ACCOUNT__RESPONSE: number
-      DB__ADD_BOOKING: number
-      DB__ADD_BOOKING__RESPONSE: number
-      DB__ADD_BOOKING_TYPE: number
-      DB__ADD_BOOKING_TYPE__RESPONSE: number
-      DB__ADD_STOCK: number
-      DB__ADD_STOCK__RESPONSE: number
-      DB__DELETE_ACCOUNT: number
-      DB__DELETE_ACCOUNT__RESPONSE: number
-      DB__DELETE_BOOKING: number
-      DB__DELETE_BOOKING__RESPONSE: number
-      DB__DELETE_BOOKING_TYPE: number
-      DB__DELETE_BOOKING_TYPE__RESPONSE: number
-      DB__DELETE_STOCK: number
-      DB__DELETE_STOCK__RESPONSE: number
-      STORES__INIT_SETTINGS: number
-      STORES__INIT_SETTINGS__RESPONSE: number
-      DB__ADD_STORES: number
-      OPTIONS__SET_SKIN: number
-      OPTIONS__SET_SERVICE: number
-      OPTIONS__SET_INDEXES: number
-      OPTIONS__SET_MATERIALS: number
-      OPTIONS__SET_EXCHANGES: number
-      OPTIONS__SET_MARKETS: number
-      DB__EXPORT: number
-      STORAGE__SET_ID: number
-      STORAGE__SET_ID__RESPONSE: number
-      OPTIONS__SET_SKIN__RESPONSE: number
-      OPTIONS__SET_SERVICE__RESPONSE: number
-      OPTIONS__SET_INDEXES__RESPONSE: number
-      OPTIONS__SET_MATERIALS__RESPONSE: number
-      OPTIONS__SET_EXCHANGES__RESPONSE: number
-      OPTIONS__SET_MARKETS__RESPONSE: number
+      DB__CLOSE: string
+      DB__TO_STORE: string
+      DB__TO_STORE__RESPONSE: string
+      DB__ADD_ACCOUNT: string
+      DB__ADD_ACCOUNT__RESPONSE: string
+      DB__UPDATE_ACCOUNT: string
+      DB__UPDATE_ACCOUNT__RESPONSE: string
+      DB__ADD_BOOKING: string
+      DB__ADD_BOOKING__RESPONSE: string
+      DB__ADD_BOOKING_TYPE: string
+      DB__ADD_BOOKING_TYPE__RESPONSE: string
+      DB__ADD_STOCK: string
+      DB__ADD_STOCK__RESPONSE: string
+      DB__UPDATE_STOCK: string
+      DB__UPDATE_STOCK__RESPONSE: string
+      DB__DELETE_ACCOUNT: string
+      DB__DELETE_ACCOUNT__RESPONSE: string
+      DB__DELETE_BOOKING: string
+      DB__DELETE_BOOKING__RESPONSE: string
+      DB__DELETE_BOOKING_TYPE: string
+      DB__DELETE_BOOKING_TYPE__RESPONSE: string
+      DB__DELETE_STOCK: string
+      DB__DELETE_STOCK__RESPONSE: string
+      STORES__INIT_SETTINGS: string
+      STORES__INIT_SETTINGS__RESPONSE: string
+      DB__ADD_STORES: string
+      OPTIONS__SET_SKIN: string
+      OPTIONS__SET_SERVICE: string
+      OPTIONS__SET_INDEXES: string
+      OPTIONS__SET_MATERIALS: string
+      OPTIONS__SET_EXCHANGES: string
+      OPTIONS__SET_MARKETS: string
+      DB__EXPORT: string
+      STORAGE__SET_ID: string
+      STORAGE__SET_ID__RESPONSE: string
+      OPTIONS__SET_SKIN__RESPONSE: string
+      OPTIONS__SET_SERVICE__RESPONSE: string
+      OPTIONS__SET_INDEXES__RESPONSE: string
+      OPTIONS__SET_MATERIALS__RESPONSE: string
+      OPTIONS__SET_EXCHANGES__RESPONSE: string
+      OPTIONS__SET_MARKETS__RESPONSE: string
     }
     SERVICES: {
       [p: string]: Partial<{
@@ -399,17 +405,17 @@ interface IUseDatabaseApi {
 
   toStores(): Promise<string>
 
-  addAccount(record: Omit<IAccount, 'cID'>): Promise<string>
+  addAccount(record: Omit<IAccount, 'cID'>): Promise<string | number>
 
   updateAccount(record: IAccount): Promise<string>
 
   deleteAccount(ident: number): Promise<string>
 
-  addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string>
+  addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string | number>
 
   deleteBookingType(ident: number): Promise<string>
 
-  addBooking(record: Omit<IBooking, 'cID'>): Promise<string>
+  addBooking(record: Omit<IBooking, 'cID'>): Promise<string | number>
 
   deleteBooking(ident: number): Promise<string>
 
@@ -417,7 +423,9 @@ interface IUseDatabaseApi {
 
   deleteStock(ident: number): Promise<string>
 
-  addStock(record: Omit<IStock, 'cID'>): Promise<string>
+  addStock(record: Omit<IStock, 'cID'>): Promise<string | number>
+
+  updateStock(record: IStock): Promise<string>
 }
 
 export const useAppApi = (): IUseAppApi => {
@@ -439,6 +447,7 @@ export const useAppApi = (): IUseAppApi => {
               ID: 'cID',
               SWIFT: 'cSwift',
               LOGO_URL: 'cLogoUrl',
+              LOGO_SEARCH_NAME: 'cLogoSearchName',
               NUMBER: 'cNumber',
               STOCK_ACCOUNT: 'cStockAccount'
             }
@@ -550,47 +559,47 @@ export const useAppApi = (): IUseAppApi => {
         UPG: 'upgradeneeded'
       },
       MESSAGES: {
-        PORT__APP: 'app',
-        PORT__OPTIONS: 'optionsMessagePort',
-        DB__CLOSE: 12001,
-        DB__TO_STORE: 12002,
-        DB__TO_STORE__RESPONSE: 12003,
-        DB__ADD_ACCOUNT: 12004,
-        DB__ADD_ACCOUNT__RESPONSE: 12005,
-        DB__ADD_BOOKING: 12006,
-        DB__ADD_BOOKING__RESPONSE: 12007,
-        DB__ADD_BOOKING_TYPE: 12008,
-        DB__ADD_BOOKING_TYPE__RESPONSE: 12009,
-        DB__ADD_STOCK: 12010,
-        DB__ADD_STOCK__RESPONSE: 12011,
-        DB__DELETE_ACCOUNT: 12012,
-        DB__DELETE_ACCOUNT__RESPONSE: 12013,
-        DB__DELETE_BOOKING: 12014,
-        DB__DELETE_BOOKING__RESPONSE: 12015,
-        DB__DELETE_BOOKING_TYPE: 12016,
-        DB__DELETE_BOOKING_TYPE__RESPONSE: 12017,
-        DB__DELETE_STOCK: 12018,
-        DB__DELETE_STOCK__RESPONSE: 12019,
-        STORES__INIT_SETTINGS: 12021,
-        STORES__INIT_SETTINGS__RESPONSE: 12022,
-        DB__ADD_STORES: 12023,
-        OPTIONS__SET_SKIN: 12024,
-        OPTIONS__SET_SERVICE: 12025,
-        OPTIONS__SET_INDEXES: 12026,
-        OPTIONS__SET_MATERIALS: 12027,
-        OPTIONS__SET_EXCHANGES: 12028,
-        OPTIONS__SET_MARKETS: 12029,
-        DB__EXPORT: 12031,
-        STORAGE__SET_ID: 12032,
-        STORAGE__SET_ID__RESPONSE: 12033,
-        OPTIONS__SET_SKIN__RESPONSE: 12034,
-        OPTIONS__SET_SERVICE__RESPONSE: 12035,
-        OPTIONS__SET_INDEXES__RESPONSE: 12036,
-        OPTIONS__SET_MATERIALS__RESPONSE: 12037,
-        OPTIONS__SET_MARKETS__RESPONSE: 12038,
-        OPTIONS__SET_EXCHANGES__RESPONSE: 12039,
-        DB__UPDATE_ACCOUNT: 12040,
-        DB__UPDATE_ACCOUNT__RESPONSE: 12041
+        DB__CLOSE: '12001',
+        DB__TO_STORE: '12002',
+        DB__TO_STORE__RESPONSE: '12003',
+        DB__ADD_ACCOUNT: '12004',
+        DB__ADD_ACCOUNT__RESPONSE: '12005',
+        DB__UPDATE_ACCOUNT: '13005',
+        DB__UPDATE_ACCOUNT__RESPONSE: '13006',
+        DB__ADD_BOOKING: '12006',
+        DB__ADD_BOOKING__RESPONSE: '12007',
+        DB__ADD_BOOKING_TYPE: '12008',
+        DB__ADD_BOOKING_TYPE__RESPONSE: '12009',
+        DB__ADD_STOCK: '12010',
+        DB__ADD_STOCK__RESPONSE: '13003',
+        DB__UPDATE_STOCK: '13001',
+        DB__UPDATE_STOCK__RESPONSE: '13002',
+        DB__DELETE_ACCOUNT: '12012',
+        DB__DELETE_ACCOUNT__RESPONSE: '12013',
+        DB__DELETE_BOOKING: '12014',
+        DB__DELETE_BOOKING__RESPONSE: '12015',
+        DB__DELETE_BOOKING_TYPE: '12016',
+        DB__DELETE_BOOKING_TYPE__RESPONSE: '12017',
+        DB__DELETE_STOCK: '12018',
+        DB__DELETE_STOCK__RESPONSE: '12019',
+        STORES__INIT_SETTINGS: '12021',
+        STORES__INIT_SETTINGS__RESPONSE: '12022',
+        DB__ADD_STORES: '12023',
+        OPTIONS__SET_SKIN: '12024',
+        OPTIONS__SET_SERVICE: '12025',
+        OPTIONS__SET_INDEXES: '12026',
+        OPTIONS__SET_MATERIALS: '12027',
+        OPTIONS__SET_EXCHANGES: '12028',
+        OPTIONS__SET_MARKETS: '12029',
+        DB__EXPORT: '12031',
+        STORAGE__SET_ID: '12032',
+        STORAGE__SET_ID__RESPONSE: '12033',
+        OPTIONS__SET_SKIN__RESPONSE: '12034',
+        OPTIONS__SET_SERVICE__RESPONSE: '12035',
+        OPTIONS__SET_INDEXES__RESPONSE: '12036',
+        OPTIONS__SET_MATERIALS__RESPONSE: '12037',
+        OPTIONS__SET_MARKETS__RESPONSE: '12038',
+        OPTIONS__SET_EXCHANGES__RESPONSE: '12039'
       },
       SERVICES: {
         goyax: {
@@ -1054,7 +1063,8 @@ const useDatabaseApi = (): IUseDatabaseApi => {
           const storage = await browser.storage.local.get(['sActiveAccountId'])
           const onComplete = async (): Promise<void> => {
             log('BACKGROUND: toStores: all database records sent to frontend!')
-            backendAppMessagePort.postMessage({
+            const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1'
+            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
               type: CONS.MESSAGES.DB__TO_STORE__RESPONSE,
               data: {accounts, bookings, bookingTypes, stocks}
             })
@@ -1135,21 +1145,20 @@ const useDatabaseApi = (): IUseDatabaseApi => {
     addAccount: async (record) => {
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
-          const onSuccess = async (ev: Event): Promise<void> => {
+          const onSuccess = async (ev: Event) => {
             if (ev.target instanceof IDBRequest) {
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE, data: ev.target.result})
-              await browser.storage.local.set({sActiveAccountId: ev.target.result})
               resolve(ev.target.result)
-            } else {
-              reject(CONS.RESULTS.ERROR)
             }
           }
           const onError = (ev: Event): void => {
-            reject(ev)
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
           const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record)
+          requestAdd.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
           requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
         }
       })
@@ -1159,19 +1168,40 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         if (dbi != null) {
           const onSuccess = async (ev: Event): Promise<void> => {
             if (ev.target instanceof IDBRequest) {
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE, data: ev.target.result})
-              resolve(ev.target.result)
-            } else {
-              reject(CONS.RESULTS.ERROR)
+              resolve('Account updated')
             }
           }
           const onError = (ev: Event): void => {
-            reject(ev)
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-          const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put(record)
-          requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put(record)
+          requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+        }
+      })
+    },
+    updateStock: async (record) => {
+      return new Promise(async (resolve, reject) => {
+        if (dbi != null) {
+          const onSuccess = async (ev: Event): Promise<void> => {
+            if (ev.target instanceof IDBRequest) {
+              resolve('Stock updated')
+            }
+          }
+          const onError = (ev: Event): void => {
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
+          }
+          const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite')
+          requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).put(record)
+          requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+          requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
         }
       })
     },
@@ -1184,11 +1214,13 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         if (dbi != null) {
           const onSuccess = (): void => {
             //this._accounts.splice(indexOfAccount, 1)
-            backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident})
+            //backendAppMessagePort.get(CONS.MESSAGES.DB__DELETE_ACCOUNT)?.postMessage({type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE, data: ident})
             resolve('Account deleted')
           }
           const onError = (ev: Event): void => {
-            reject(ev)
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
@@ -1203,17 +1235,13 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         if (dbi != null) {
           const onSuccess = (ev: Event): void => {
             if (ev.target instanceof IDBRequest) {
-              backendAppMessagePort.postMessage({
-                type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE,
-                data: ev.target.result
-              })
-              resolve(CONS.RESULTS.SUCCESS)
-            } else {
-              reject(CONS.RESULTS.ERROR)
+              resolve(ev.target.result)
             }
           }
           const onError = (ev: Event): void => {
-            reject(ev)
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
@@ -1232,13 +1260,12 @@ const useDatabaseApi = (): IUseDatabaseApi => {
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const onSuccess = (): void => {
-            //this._booking_types.all.splice(indexOfBookingType, 1)
-            backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE, data: ident})
-            //this._booking_types.per_account.splice(indexOfBookingTypePerAccount, 1)
             resolve('Booking type deleted')
           }
           const onError = (ev: Event): void => {
-            reject(ev)
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
@@ -1253,14 +1280,13 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         if (dbi != null) {
           const onSuccess = (ev: Event): void => {
             if (ev.target instanceof IDBRequest) {
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE, data: ev.target.result})
-              resolve(CONS.RESULTS.SUCCESS)
-            } else {
-              reject(CONS.RESULTS.ERROR)
+              resolve(ev.target.result)
             }
           }
           const onError = (ev: Event): void => {
-            reject(ev)
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
@@ -1276,7 +1302,6 @@ const useDatabaseApi = (): IUseDatabaseApi => {
       return new Promise(async (resolve, reject) => {
         if (dbi != null) {
           const onSuccess = (): void => {
-            backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE, data: ident})
             resolve('Booking deleted')
           }
           const onError = (ev: Event): void => {
@@ -1295,14 +1320,13 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         if (dbi != null) {
           const onSuccess = (ev: Event): void => {
             if (ev.target instanceof IDBRequest) {
-              backendAppMessagePort.postMessage({type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE, data: ev.target.result})
-              resolve(CONS.RESULTS.SUCCESS)
-            } else {
-              reject(CONS.RESULTS.ERROR)
+              resolve(ev.target.result)
             }
           }
           const onError = (ev: Event): void => {
-            reject(ev)
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
@@ -1324,7 +1348,9 @@ const useDatabaseApi = (): IUseDatabaseApi => {
             resolve('Stock deleted')
           }
           const onError = (ev: Event): void => {
-            reject(ev)
+            if (ev instanceof ErrorEvent) {
+              reject(ev.message)
+            }
           }
           const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
           requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
@@ -1392,7 +1418,6 @@ const useDatabaseApi = (): IUseDatabaseApi => {
 
 const {CONS, log, notice} = useAppApi()
 let dbi: IDBDatabase
-let backendAppMessagePort: browser.runtime.Port
 // TODO move all async code into backend!!!
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   const {
@@ -1403,9 +1428,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     addBooking,
     deleteBooking,
     addBookingType,
+    deleteBookingType,
     addStock,
+    updateStock,
     toStores,
     addStores,
+    deleteStock,
     open
   } = useDatabaseApi()
   // NOTE: onInstall runs at addon install, addon update and firefox update
@@ -1637,118 +1665,163 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       await browser.tabs.update(foundTabs[0].id ?? 0, {active: true})
     }
   }
-  const onConnect = async (p: browser.runtime.Port): Promise<void> => {
-    log('BACKGROUND: onConnect', {info: p.name})
-    if (p.name === CONS.MESSAGES.PORT__APP) {
-      backendAppMessagePort = p
-      // const onAppDisconnected = () => {
-      //   backendAppMessagePort.disconnect()
-      //   log('BACKGROUND: onDisconnected', {info: 'App disconnected!'})
-      // }
-      const onAppRequest = async (m: object): Promise<void> => {
-        const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1'
-        switch (Object.values(m)[0]) {
-          case CONS.MESSAGES.DB__TO_STORE:
-            await toStores()
-            break
-          case CONS.MESSAGES.STORAGE__SET_ID:
-            await browser.storage.local.set({
-              sActiveAccountId: Object.values(m)[1]
-            })
-            backendAppMessagePort.postMessage({
-              type: CONS.MESSAGES.STORAGE__SET_ID__RESPONSE
-            })
-            break
-          case CONS.MESSAGES.STORES__INIT_SETTINGS:
-            backendAppMessagePort.postMessage({
-              type: CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE,
-              data: await browser.storage.local.get()
-            })
-            break
-          case CONS.MESSAGES.DB__EXPORT:
-            await exportDatabase(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.DB__CLOSE:
-            dbi.close()
-            break
-          case CONS.MESSAGES.DB__ADD_STORES:
-            await addStores(Object.values(m)[1])
-            await browser.storage.local.set({sActiveAccountId: Object.values(m)[1].accounts[0].cID})
-            break
-          case CONS.MESSAGES.DB__ADD_ACCOUNT:
-            await addAccount(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.DB__UPDATE_ACCOUNT:
-            await updateAccount(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.DB__DELETE_ACCOUNT:
-            await deleteAccount(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.DB__ADD_BOOKING:
-            await addBooking(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.DB__ADD_BOOKING_TYPE:
-            await addBookingType(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.DB__ADD_STOCK:
-            await addStock(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.DB__DELETE_BOOKING:
-            await deleteBooking(Object.values(m)[1])
-            break
-          case CONS.MESSAGES.OPTIONS__SET_SKIN:
-            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
-              type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
-              skin: Object.values(m)[1]
-            })
-            await browser.storage.local.set({sSkin: Object.values(m)[1]})
-            break
-          case CONS.MESSAGES.OPTIONS__SET_INDEXES:
-            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
-              type: CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE,
-              indexes: Object.values(m)[1]
-            })
-            await browser.storage.local.set({sIndexes: Object.values(m)[1]})
-            break
-          case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
-            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
-              type: CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE,
-              materials: Object.values(m)[1]
-            })
-            await browser.storage.local.set({sMaterials: Object.values(m)[1]})
-            break
-          case CONS.MESSAGES.OPTIONS__SET_SERVICE:
-            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
-              type: CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE,
-              service: Object.values(m)[1]
-            })
-            await browser.storage.local.set({sService: Object.values(m)[1]})
-            break
-          case CONS.MESSAGES.OPTIONS__SET_MARKETS:
-            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
-              type: CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE,
-              markets: Object.values(m)[1]
-            })
-            await browser.storage.local.set({sMarkets: Object.values(m)[1]})
-            break
-          case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
-            await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
-              type: CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE,
-              exchanges: Object.values(m)[1]
-            })
-            await browser.storage.local.set({sExchanges: Object.values(m)[1]})
-            break
-          default:
+  const onAppMessage = async (appMsg: IMessage, sender: browser.runtime.MessageSender, sendResponse: CallableFunction): Promise<boolean> => {
+    log('BACKGROUND: onAppMessage', {info: sender})
+    // const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1'
+    switch (appMsg.type) {
+      case CONS.MESSAGES.STORES__INIT_SETTINGS:
+        sendResponse({
+          type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
+          data: await browser.storage.local.get()
+        })
+        break
+      case CONS.MESSAGES.DB__CLOSE:
+        dbi.close()
+        break
+      case CONS.MESSAGES.DB__EXPORT:
+        await exportDatabase(appMsg.data)
+        break
+      case CONS.MESSAGES.STORAGE__SET_ID:
+        await browser.storage.local.set({sActiveAccountId: appMsg.data})
+        await toStores()
+        break
+      case CONS.MESSAGES.DB__ADD_STORES:
+        const addStoresData: IStores = appMsg.data
+        await addStores(addStoresData)
+        await browser.storage.local.set({sActiveAccountId: addStoresData.accounts[0].cID})
+        break
+      case CONS.MESSAGES.DB__ADD_ACCOUNT:
+        const addAccountData: Omit<IAccount, 'cID'> = appMsg.data
+        const addAccountID = await addAccount(addAccountData)
+        if (typeof addAccountID === 'number') {
+          const completeAccount: IAccount = {cID: addAccountID, ...addAccountData}
+          sendResponse({
+            type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
+            data: completeAccount
+          })
+          await browser.storage.local.set({sActiveAccountId: addAccountID})
         }
-      }
-      // listen for messages from app tab
-      backendAppMessagePort.onMessage.addListener(onAppRequest)
-      //backendAppMessagePort.onDisconnect.addListener(onAppDisconnected)
+        break
+      case CONS.MESSAGES.DB__ADD_BOOKING:
+        const addBookingData: Omit<IBooking, 'cID'> = appMsg.data
+        const addBookingID = await addBooking(addBookingData)
+        if (typeof addBookingID === 'number') {
+          const completeBooking: IBooking = {cID: addBookingID, ...addBookingData}
+          sendResponse({
+            type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE,
+            data: completeBooking
+          })
+        }
+        break
+      case CONS.MESSAGES.DB__ADD_BOOKING_TYPE:
+        const addBookingTypeData: Omit<IBookingType, 'cID'> = appMsg.data
+        const addBookingTypeID = await addBookingType(addBookingTypeData)
+        if (typeof addBookingTypeID === 'number') {
+          const completeBookingType: IBookingType = {cID: addBookingTypeID, ...addBookingTypeData}
+          sendResponse({
+            type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE,
+            data: completeBookingType
+          })
+        }
+        break
+      case CONS.MESSAGES.DB__ADD_STOCK:
+        const addStockData: Omit<IStock, 'cID'> = appMsg.data
+        const addStockID = await addStock(addStockData)
+        if (typeof addStockID === 'number') {
+          const completeStock: IStock = {cID: addStockID, ...addStockData}
+          sendResponse({
+            type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE,
+            data: completeStock
+          })
+        }
+        break
+      case CONS.MESSAGES.DB__UPDATE_ACCOUNT:
+        await updateAccount(appMsg.data)
+        sendResponse({
+          type: CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE
+        })
+        break
+      case CONS.MESSAGES.DB__UPDATE_STOCK:
+        await updateStock(appMsg.data)
+        sendResponse({
+          type: CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE
+        })
+        break
+      case CONS.MESSAGES.DB__DELETE_ACCOUNT:
+        await deleteAccount(appMsg.data)
+        sendResponse({
+          type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE
+        })
+        break
+      case CONS.MESSAGES.DB__DELETE_STOCK:
+        await deleteStock(appMsg.data)
+        sendResponse({
+          type: CONS.MESSAGES.DB__DELETE_STOCK__RESPONSE
+        })
+        break
+      case CONS.MESSAGES.DB__DELETE_BOOKING:
+        await deleteBooking(appMsg.data)
+        sendResponse({
+          type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE
+        })
+        break
+      case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
+        await deleteBookingType(appMsg.data)
+        sendResponse({
+          type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE
+        })
+        break
+      case CONS.MESSAGES.OPTIONS__SET_SKIN:
+        sendResponse({
+          type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
+          skin: appMsg.data
+        })
+        await browser.storage.local.set({sSkin: appMsg.data})
+        break
+      case CONS.MESSAGES.OPTIONS__SET_INDEXES:
+        sendResponse({
+          type: CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE,
+          indexes: appMsg.data
+        })
+        await browser.storage.local.set({sIndexes: appMsg.data})
+        break
+      case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
+        sendResponse({
+          type: CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE,
+          materials: appMsg.data
+        })
+        await browser.storage.local.set({sMaterials: appMsg.data})
+        break
+      case CONS.MESSAGES.OPTIONS__SET_SERVICE:
+        sendResponse({
+          type: CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE,
+          service: appMsg.data
+        })
+        await browser.storage.local.set({sService: appMsg.data})
+        break
+      case CONS.MESSAGES.OPTIONS__SET_MARKETS:
+        sendResponse({
+          type: CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE,
+          markets: appMsg.data
+        })
+        await browser.storage.local.set({sMarkets: appMsg.data})
+        break
+      case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
+        sendResponse({
+          type: CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE,
+          exchanges: appMsg.data
+        })
+        await browser.storage.local.set({sExchanges: appMsg.data})
+        break
+      default:
+        return Promise.reject(false)
     }
+    return Promise.resolve(true)
   }
+
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
-  browser.runtime.onConnect.addListener(onConnect)
+  browser.runtime.onMessage.addListener(onAppMessage)
 
   console.info('--- PAGE_SCRIPT background.js --- onInstalled, onConnect, onClicked ---', window.location.href)
 }
