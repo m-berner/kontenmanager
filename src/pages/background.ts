@@ -1125,7 +1125,6 @@ const useDatabaseApi = (): IUseDatabaseApi => {
         const onSuccess = (ev: Event): void => {
           if (ev.target instanceof IDBOpenDBRequest) {
             dbi = ev.target.result
-            console.error(dbi)
             const onVersionChangeSuccess = (): void => {
               if (dbi != null) {
                 dbi.close()
