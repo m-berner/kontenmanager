@@ -56,39 +56,15 @@ const onKeyDown = (ev: KeyboardEvent): void => {
 const onKeyUp = (ev: KeyboardEvent): void => {
   keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
 }
-const onBackgroundMessage = (backgroundMsg: string): void => {
-  log('APP_INDEX: onBackgroundMessage', {info: backgroundMsg})
-  const backgroundMessage = JSON.parse(backgroundMsg)
-  switch (backgroundMessage.type) {
-    case CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE:
-      theme.global.name.value = backgroundMessage.data
-      settings.setSkin(backgroundMessage.data)
-      break
-    case CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE:
-      settings.setService(backgroundMessage.data)
-      break
-    case CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE:
-      settings.setIndexes(backgroundMessage.data)
-      break
-    case CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE:
-      settings.setMaterials(backgroundMessage.data)
-      break
-    case CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE:
-      settings.setMarkets(backgroundMessage.data)
-      break
-    case CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE:
-      settings.setExchanges(backgroundMessage.data)
-      break
-    default:
-  }
-}
 
 onBeforeMount(async (): Promise<void> => {
   window.addEventListener('keydown', onKeyDown, false)
   window.addEventListener('keyup', onKeyUp, false)
   window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
-  browser.runtime.onMessage.addListener(onBackgroundMessage)
-
+  browser.storage.local.onChanged.addListener((changes) => {
+    const changesKey = Object.keys(changes)
+    settings.setSkin(changes[changesKey[0]].newValue)
+  })
   const initSettingsResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.APP__INIT_SETTINGS}))
   settings.initStore(theme, JSON.parse(initSettingsResponse).data)
   const toStoreResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__TO_STORE}))

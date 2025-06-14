@@ -31,16 +31,10 @@ const state: IState = {
   _newItem: '',
   _list: _props._list
 }
-let messageType: string
+
 // NOTE:
 // reading a v-text-field does work without reactivity
 // to write to it only with reactivity
-if (_props._tab === CONS.SETTINGS.MARKETS_TAB) {
-  messageType = CONS.MESSAGES.OPTIONS__SET_MARKETS
-} else {
-  messageType = CONS.MESSAGES.OPTIONS__SET_EXCHANGES
-}
-
 const mAddItem = async (item: string): Promise<void> => {
   log('DYNAMIC_LIST: mAddItem')
   if (!state._list.includes(item)) {
@@ -50,12 +44,21 @@ const mAddItem = async (item: string): Promise<void> => {
       state._list.push(item)
     }
   }
-    await browser.runtime.sendMessage(JSON.stringify({type: messageType, data: toRaw(state._list)}))
+  if (_props._tab === CONS.SETTINGS.MARKETS_TAB) {
+    await browser.storage.local.set({sMarkets: toRaw(state._list)})
+  } else {
+    await browser.storage.local.set({sExchanges: toRaw(state._list)})
+  }
 }
 const mRemoveItem = async (n: number): Promise<void> => {
   log('DYNAMIC_LIST: mRemoveItem')
   if (n > 0) {
-    await browser.runtime.sendMessage(JSON.stringify({type: messageType, data: toRaw(state._list)}))
+    state._list.splice(n, 1)
+    if (_props._tab === CONS.SETTINGS.MARKETS_TAB) {
+      await browser.storage.local.set({sMarkets: toRaw(state._list)})
+    } else {
+      await browser.storage.local.set({sExchanges: toRaw(state._list)})
+    }
   }
 }
 

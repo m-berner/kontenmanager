@@ -6,17 +6,21 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
-import {onBeforeMount, type Reactive, reactive, toRaw} from 'vue'
+import {onBeforeMount, type Reactive, reactive} from 'vue'
 import {useAppApi} from '@/pages/background'
 import DynamicList from '@/components/helper/DynamicList.vue'
-import {useSettingsStore} from '@/stores/settings'
 
 interface IOptionsIndex {
   _tab: number
   _tabs: Array<{ title: string, id: string }>
+  _skin: string
+  _service: string
+  _exchanges: string[]
+  _indexes: string[]
+  _markets: string[]
+  _materials: string[]
   _themeKeys: string[]
   _themeNames: { [p: string]: string }
   _serviceKeys: string[]
@@ -29,8 +33,6 @@ interface IOptionsIndex {
 const {rt, t, tm} = useI18n()
 const theme = useTheme()
 const {CONS, log} = useAppApi()
-const settings = useSettingsStore()
-const {_service, _skin, _exchanges, _indexes, _markets, _materials} = storeToRefs(settings)
 
 const indexes_keys_a = []
 const indexes_keys_b = []
@@ -63,6 +65,12 @@ for (let i = 0; i < all_service_keys.length - 2; i++) {
 const state: Reactive<IOptionsIndex> = reactive({
   _tab: 0,
   _tabs: tm('optionsPage.tabs'),
+  _skin: '',
+  _service: '',
+  _exchanges: [],
+  _indexes: [],
+  _markets: [],
+  _materials: [],
   _themeKeys: Object.keys(theme.themes.value),
   _themeNames: tm(`optionsPage.themeNames`),
   _serviceKeys: service_keys,
@@ -73,30 +81,33 @@ const state: Reactive<IOptionsIndex> = reactive({
 })
 
 const setIndexes = async (): Promise<void> => {
-  await browser.runtime.sendMessage(JSON.stringify({
-    type: CONS.MESSAGES.OPTIONS__SET_INDEXES,
-    data: toRaw(settings.indexes)
-  }))
+  await browser.storage.local.set({sIndexes: state._indexes})
 }
 const setMaterials = async (): Promise<void> => {
-  await browser.runtime.sendMessage(JSON.stringify({
-    type: CONS.MESSAGES.OPTIONS__SET_MATERIALS,
-    data: toRaw(settings.materials)
-  }))
+  await browser.storage.local.set({sMaterials: state._materials})
 }
+
 const setSkin = async (ev: Event): Promise<void> => {
   if (ev.target instanceof HTMLInputElement) {
-    await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.OPTIONS__SET_SKIN, data: ev.target.value}))
+    theme.global.name.value = ev.target.value
+    await browser.storage.local.set({sSkin: ev.target.value})
   }
 }
 const setService = async (ev: Event): Promise<void> => {
   if (ev.target instanceof HTMLInputElement) {
-    await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.OPTIONS__SET_SERVICE, data: ev.target.value}))
+    await browser.storage.local.set({sService: ev.target.value})
   }
 }
 
 onBeforeMount(async (): Promise<void> => {
-  await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.OPTIONS__INIT_SETTINGS}))
+  const initSettingsResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.OPTIONS__INIT_SETTINGS}))
+  const initSettings = JSON.parse(initSettingsResponse).data
+  state._skin = initSettings.sSkin
+  state._service = initSettings.sService
+  state._indexes = initSettings.sIndexes
+  state._materials = initSettings.sMaterials
+  state._markets = initSettings.sMarkets
+  state._exchanges = initSettings.sExchanges
 })
 
 log('--- OptionsIndex.vue setup ---', {info: window.location.href})
@@ -115,7 +126,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
           <v-tabs-window-item v-bind:value="0">
             <v-row>
               <v-col cols="12" md="6" sm="6">
-                <v-radio-group v-model="_skin" column>
+                <v-radio-group v-model="state._skin" column>
                   <v-radio
                     v-for="item in state._themeKeys"
                     v-bind:key="item"
@@ -126,7 +137,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                 </v-radio-group>
               </v-col>
               <v-col cols="12" md="6" sm="6">
-                <v-radio-group v-model="_service" column>
+                <v-radio-group v-model="state._service" column>
                   <v-radio
                     v-for="item in state._serviceKeys"
                     v-bind:key="item"
@@ -143,7 +154,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
                   v-bind:_label="t('optionsPage.markets.label')"
-                  v-bind:_list="_markets"
+                  v-bind:_list="state._markets"
                   v-bind:_tab="CONS.SETTINGS.MARKETS_TAB"
                   v-bind:_title="t('optionsPage.markets.title')"
                 ></DynamicList>
@@ -156,7 +167,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                 <v-checkbox
                   v-for="item in state._indexesA"
                   v-bind:key="item"
-                  v-model="_indexes"
+                  v-model="state._indexes"
                   hide-details
                   v-bind:label="CONS.SETTINGS.INDEXES[item]"
                   v-bind:value="item"
@@ -167,7 +178,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                 <v-checkbox
                   v-for="item in state._indexesB"
                   v-bind:key="item"
-                  v-model="_indexes"
+                  v-model="state._indexes"
                   hide-details
                   v-bind:label="CONS.SETTINGS.INDEXES[item]"
                   v-bind:value="item"
@@ -182,7 +193,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                 <v-checkbox
                   v-for="item in state._materialsA"
                   v-bind:key="item"
-                  v-model="_materials"
+                  v-model="state._materials"
                   hide-details
                   v-bind:label="rt(tm('optionsPage.materials')[item])"
                   v-bind:value="item"
@@ -193,7 +204,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                 <v-checkbox
                   v-for="item in state._materialsB"
                   v-bind:key="item"
-                  v-model="_materials"
+                  v-model="state._materials"
                   hide-details
                   v-bind:label="rt(tm('optionsPage.materials')[item])"
                   v-bind:value="item"
@@ -207,7 +218,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
                   v-bind:_label="t('optionsPage.exchanges.label')"
-                  v-bind:_list="_exchanges"
+                  v-bind:_list="state._exchanges"
                   v-bind:_tab="CONS.SETTINGS.EXCHANGES_TAB"
                   v-bind:_title="t('optionsPage.exchanges.title')"
                   v-bind:_toUpperCase="true"

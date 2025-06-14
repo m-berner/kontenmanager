@@ -449,6 +449,7 @@ export const useAppApi = () => {
 };
 const { CONS, log, notice } = useAppApi();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
+    let dbi;
     const useDatabaseApi = () => {
         return {
             exportDatabase: async (filename) => {
@@ -908,7 +909,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
         };
     };
-    let dbi;
     const { exportDatabase, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, toStores, addStores, deleteStock, open } = useDatabaseApi();
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
@@ -1039,11 +1039,11 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     break;
                 case CONS.MESSAGES.OPTIONS__INIT_SETTINGS:
                     const storageLocal2 = await browser.storage.local.get();
-                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
+                    response = JSON.stringify({
                         type: CONS.MESSAGES.OPTIONS__INIT_SETTINGS__RESPONSE,
                         data: storageLocal2
-                    }));
-                    resolve('Options dummy response');
+                    });
+                    resolve(response);
                     break;
                 case CONS.MESSAGES.DB__CLOSE:
                     dbi.close();
