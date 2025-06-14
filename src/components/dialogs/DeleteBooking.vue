@@ -26,6 +26,7 @@ const ok = async (): Promise<void> => {
     await browser.runtime.sendMessage(JSON.stringify({
       type: CONS.MESSAGES.DB__DELETE_BOOKING, data: runtime.bookingId
     }))
+    await notice([t('dialogs.deleteBooking.success')])
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteBooking.error')])

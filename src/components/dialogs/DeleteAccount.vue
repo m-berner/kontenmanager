@@ -38,6 +38,7 @@ const ok = async (): Promise<void> => {
     }
     runtime.setLogo()
     records.sumBookings()
+    await notice([t('dialogs.deleteAccount.success')])
     formRef.value?.reset()
   } catch (e) {
     console.error(e)

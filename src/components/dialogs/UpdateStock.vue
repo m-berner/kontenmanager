@@ -57,6 +57,7 @@ const ok = async (): Promise<void> => {
       await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__UPDATE_STOCK, data: stock
       }))
+      await notice([t('dialogs.UpdateStock.success')])
       formRef.value!.reset()
     } catch (e) {
       console.error(e)

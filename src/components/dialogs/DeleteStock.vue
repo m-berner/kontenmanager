@@ -25,11 +25,11 @@ const state = reactive({
 })
 
 const ok = async (): Promise<void> => {
-  log('DELETE_ACCOUNT: ok')
+  log('DELETE_STOCK: ok')
   try {
     // TODO in all delete dialogs,move to background!
     const result = await records.deleteAccount(state._selected)
-    if (result === 'Account deleted') {
+    if (result === 'Stock deleted') {
       formRef.value?.reset()
       if (records.accounts.length > 0) {
         settings.setActiveAccountId(records.accounts[0].cID)
@@ -39,19 +39,19 @@ const ok = async (): Promise<void> => {
         await browser.storage.local.set({sActiveAccountId: -1})
       }
       runtime.setLogo()
-      await notice([t('dialogs.deleteAccount.success')])
+      await notice([t('dialogs.deleteStock.success')])
     }
   } catch (e) {
     console.error(e)
-    await notice([t('dialogs.deleteAccount.error')])
+    await notice([t('dialogs.deleteStock.error')])
   }
 }
-const title = t('dialogs.deleteAccount.title')
+const title = t('dialogs.deleteStock.title')
 
 defineExpose({ok, title})
 
 onMounted(() => {
-  log('DELETE_ACCOUNT: onMounted')
+  log('DELETE_STOCK: onMounted')
   formRef.value?.reset()
 })
 

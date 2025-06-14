@@ -9,10 +9,16 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
 const formRef = useTemplateRef('form-ref')
+const runtime = useRuntimeStore()
+const settings = useSettingsStore()
+const records = useRecordsStore()
 
 const state = reactive({
   _swift: '',
@@ -53,9 +59,14 @@ const ok = async (): Promise<void> => {
         cLogoSearchName: state._logoSearchName,
         cStockAccount: state._stockAccount
       }
-      await browser.runtime.sendMessage(JSON.stringify({
+      const addAccountResponse = await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
       }))
+      const addAccountData: IAccount = JSON.parse(addAccountResponse).data
+      records.addAccount(addAccountData)
+      runtime.setLogo()
+      settings.setActiveAccountId(addAccountData.cID)
+      await notice([t('dialogs.AddAccount.success')])
       formRef.value!.reset()
     } catch (e) {
       console.error(e)

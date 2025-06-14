@@ -1683,13 +1683,16 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           break
         case CONS.MESSAGES.DB__CLOSE:
           dbi.close()
+          resolve('DB closed')
           break
         case CONS.MESSAGES.DB__EXPORT:
           await exportDatabase(appMessage.data)
+          resolve('DB exported')
           break
         case CONS.MESSAGES.STORAGE__SET_ID:
           await browser.storage.local.set({sActiveAccountId: appMessage.data})
           await toStores()
+          resolve('ID set')
           break
         case CONS.MESSAGES.DB__TO_STORE:
           const stores = await toStores()
@@ -1703,6 +1706,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           const addStoresData: IStores = appMessage.data
           await addStores(addStoresData)
           await browser.storage.local.set({sActiveAccountId: addStoresData.accounts[0].cID})
+          resolve('Stores added')
           break
         case CONS.MESSAGES.DB__ADD_ACCOUNT:
           const addAccountData: Omit<IAccount, 'cID'> = appMessage.data

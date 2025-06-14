@@ -65,6 +65,7 @@ const ok = async (): Promise<void> => {
       await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
       }))
+      await notice([t('dialogs.UpdateAccount.success')])
       // formRef.value!.reset()
     } catch (e) {
       console.error(e)

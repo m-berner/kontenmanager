@@ -12,15 +12,13 @@ import {useTheme} from 'vuetify'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
-import {useI18n} from 'vue-i18n'
 import {onBeforeMount} from 'vue'
 
-const {t} = useI18n()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const theme = useTheme()
-const {CONS, log, notice} = useAppApi()
+const {CONS, log} = useAppApi()
 const {_debug} = storeToRefs(settings)
 const keyStrokeController: string[] = []
 const onBeforeUnload = async (ev: Event): Promise<void> => {
@@ -62,10 +60,6 @@ const onBackgroundMessage = (backgroundMsg: string): void => {
   log('APP_INDEX: onBackgroundMessage', {info: backgroundMsg})
   const backgroundMessage = JSON.parse(backgroundMsg)
   switch (backgroundMessage.type) {
-    // case CONS.MESSAGES.APP__INIT_SETTINGS__RESPONSE:
-    //   console.error('C')
-    //   settings.initStore(theme, backgroundMessage.data)
-    //   break
     case CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE:
       theme.global.name.value = backgroundMessage.data
       settings.setSkin(backgroundMessage.data)
@@ -84,57 +78,6 @@ const onBackgroundMessage = (backgroundMsg: string): void => {
       break
     case CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE:
       settings.setExchanges(backgroundMessage.data)
-      break
-    // case CONS.MESSAGES.DB__TO_STORE__RESPONSE:
-    //   const toStoreData: IStores = backgroundMessage.data
-    //   if (toStoreData.accounts.length > 0) {
-    //     records.initStore(toStoreData)
-    //     if (settings.activeAccountId === undefined) {
-    //       settings.setActiveAccountId(records.accounts[0].cID)
-    //     }
-    //     runtime.setLogo()
-    //     records.sumBookings()
-    //   }
-    //   break
-    case CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE:
-      notice([t('dialogs.UpdateAccount.success')])
-      break
-    case CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE:
-      notice([t('dialogs.UpdateStock.success')])
-      break
-    case CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE:
-      notice([t('dialogs.deleteAccount.success')])
-      break
-    case CONS.MESSAGES.DB__DELETE_STOCK__RESPONSE:
-      notice([t('dialogs.deleteStock.success')])
-      break
-    case CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE:
-      notice([t('dialogs.deleteBooking.success')])
-      break
-    case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE:
-      notice([t('dialogs.deleteBookingType.success')])
-      break
-    case CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE:
-      const addAccountData: IAccount = backgroundMessage.data
-      records.addAccount(addAccountData)
-      runtime.setLogo()
-      settings.setActiveAccountId(addAccountData.cID)
-      notice([t('dialogs.AddAccount.success')])
-      break
-    case CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE:
-      const addBookingData: IBooking = backgroundMessage.data
-      records.addBooking(addBookingData)
-      notice([t('dialogs.AddBooking.success')])
-      break
-    case CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE:
-      const addBookingTypeData: IBookingType = backgroundMessage.data
-      records.addBookingType(addBookingTypeData)
-      notice([t('dialogs.AddBookingType.success')])
-      break
-    case CONS.MESSAGES.DB__ADD_STOCK__RESPONSE:
-      const addStockData: IStock = backgroundMessage.data
-      records.addStock(addStockData)
-      notice([t('dialogs.AddStock.success')])
       break
     default:
   }

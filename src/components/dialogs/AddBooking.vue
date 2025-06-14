@@ -128,9 +128,12 @@ const ok = async (): Promise<void> => {
             cMarketPlace: ''
           }
       }
-      await browser.runtime.sendMessage(JSON.stringify({
+      const addBookingResponse = await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_BOOKING, data: booking
       }))
+      const addBookingData: IBooking = JSON.parse(addBookingResponse).data
+      records.addBooking(addBookingData)
+      await notice([t('dialogs.AddBooking.success')])
       // NOTE: CurrencyInput ensure 0 instead of null
       state._debit = 0
       state._credit = 0
