@@ -81,7 +81,6 @@ export const useAppApi = () => {
                 STORAGE: {
                     ACTIVE_ACCOUNT_ID: -1,
                     BOOKINGS_PER_PAGE: 9,
-                    STOCKMANAGER_DB_IMPORTED: false,
                     STOCKS_PER_PAGE: 9,
                     DEBUG: false,
                     SKIN: 'ocean',
@@ -1025,7 +1024,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const onPageMessage = async (appMsg) => {
         log('BACKGROUND: onPageMessage', { info: appMsg });
         return new Promise(async (resolve, reject) => {
-            const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1';
             const appMessage = JSON.parse(appMsg);
             let response;
             switch (appMessage.type) {
@@ -1165,54 +1163,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE
                     });
                     resolve(response);
-                    break;
-                case CONS.MESSAGES.OPTIONS__SET_SKIN:
-                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-                        type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
-                        data: appMessage.data
-                    }));
-                    await browser.storage.local.set({ sSkin: appMessage.data });
-                    resolve('Skin at background');
-                    break;
-                case CONS.MESSAGES.OPTIONS__SET_INDEXES:
-                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-                        type: CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE,
-                        data: appMessage.data
-                    }));
-                    await browser.storage.local.set({ sIndexes: appMessage.data });
-                    resolve('Indexes at background');
-                    break;
-                case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
-                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-                        type: CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE,
-                        data: appMessage.data
-                    }));
-                    await browser.storage.local.set({ sMaterials: appMessage.data });
-                    resolve('Materials at background');
-                    break;
-                case CONS.MESSAGES.OPTIONS__SET_SERVICE:
-                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-                        type: CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE,
-                        data: appMessage.data
-                    }));
-                    await browser.storage.local.set({ sService: appMessage.data });
-                    resolve('Services at background');
-                    break;
-                case CONS.MESSAGES.OPTIONS__SET_MARKETS:
-                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-                        type: CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE,
-                        data: appMessage.data
-                    }));
-                    await browser.storage.local.set({ sMarkets: appMessage.data });
-                    resolve('Markets at background');
-                    break;
-                case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
-                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-                        type: CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE,
-                        data: appMessage.data
-                    }));
-                    await browser.storage.local.set({ sExchanges: appMessage.data });
-                    resolve('Exchanges at background');
                     break;
                 default:
                     console.error('Missing message type');

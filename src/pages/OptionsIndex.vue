@@ -86,7 +86,6 @@ const setIndexes = async (): Promise<void> => {
 const setMaterials = async (): Promise<void> => {
   await browser.storage.local.set({sMaterials: state._materials})
 }
-
 const setSkin = async (ev: Event): Promise<void> => {
   if (ev.target instanceof HTMLInputElement) {
     theme.global.name.value = ev.target.value

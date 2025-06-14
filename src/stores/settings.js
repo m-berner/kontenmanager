@@ -63,7 +63,8 @@ export const useSettingsStore = defineStore('settings', {
         setStocksPerPage(value) {
             this._stocks_per_page = value;
         },
-        setSkin(value) {
+        setSkin(theme, value) {
+            theme.global.name.value = value;
             this._skin = value;
         },
         setDebug(value) {

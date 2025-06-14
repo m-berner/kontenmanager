@@ -63,7 +63,27 @@ onBeforeMount(async (): Promise<void> => {
   window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
   browser.storage.local.onChanged.addListener((changes) => {
     const changesKey = Object.keys(changes)
-    settings.setSkin(changes[changesKey[0]].newValue)
+    switch(changesKey[0]) {
+      case 'sSkin':
+        settings.setSkin(theme, changes[changesKey[0]].newValue)
+        break
+      case 'sService':
+        settings.setService(changes[changesKey[0]].newValue)
+        break
+      case 'sIndexes':
+        settings.setService(changes[changesKey[0]].newValue)
+        break
+      case 'sMarkets':
+        settings.setService(changes[changesKey[0]].newValue)
+        break
+      case 'sMaterials':
+        settings.setService(changes[changesKey[0]].newValue)
+        break
+      case 'sExchanges':
+        settings.setService(changes[changesKey[0]].newValue)
+        break
+      default:
+    }
   })
   const initSettingsResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.APP__INIT_SETTINGS}))
   settings.initStore(theme, JSON.parse(initSettingsResponse).data)

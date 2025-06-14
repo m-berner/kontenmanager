@@ -86,7 +86,8 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     setStocksPerPage(value: number): void {
       this._stocks_per_page = value
     },
-    setSkin(value: string): void {
+    setSkin(theme: ThemeInstance, value: string): void {
+      theme.global.name.value = value
       this._skin = value
     },
     setDebug(value: boolean): void {
