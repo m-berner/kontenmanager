@@ -213,8 +213,8 @@ export const useAppApi = () => {
                     NAME: 'Tradegate',
                     HOME: 'https://www.tradegate.de/',
                     QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
-                    CHSURL: 'https://www.tradegate.de/indizes.php?index=',
-                    CHBURL: 'https://www.tradegate.de/indizes.php?buchstabe=',
+                    CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
+                    CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
                     CHS: [
                         'DE000A1EXRV0',
                         'DE000A1EXRY4',
@@ -338,50 +338,6 @@ export const useAppApi = () => {
                 ]),
             },
             RESOURCES: {
-                SRC: 'assets',
-                OK: 'ok.png',
-                OKD: 'ok-dark.png',
-                CANCEL: 'cancel.png',
-                CANCELD: 'cancel-dark.png',
-                ICON32: 'icon32.png',
-                LOGO16: 'logo16.png',
-                LOGO256: 'logo256.png',
-                MAG: 'magnifier.png',
-                CALENDAR: 'calendar.png',
-                RENEW: 'renew.png',
-                FIRST: 'first.png',
-                NEXT: 'next.png',
-                PREV: 'previous.png',
-                LAST: 'last.png',
-                CB: 'home.png',
-                UP: 'update.png',
-                NS: 'addAccount.png',
-                DS: 'deletestock.png',
-                FI: 'fadein.png',
-                IT: 'intransfer.png',
-                OT: 'outtransfer.png',
-                CHS: 'changes.png',
-                CHB: 'allchanges.png',
-                BK: 'backup.png',
-                RE: 'restore.png',
-                OB: 'orderbook.png',
-                TB: 'transferbook.png',
-                PY: 'peryear.png',
-                CO: 'clean.png',
-                SE: 'settings.png',
-                RESET: 'reset.png',
-                ADD: 'add.png',
-                CHANGE: 'change.png',
-                DEL: 'delete.png',
-                NO: 'neworder.png',
-                BUY: 'buy.png',
-                SELL: 'sell.png',
-                ND: 'newdividend.png',
-                SD: 'showdividends.png',
-                CONF: 'config.png',
-                HTTP: 'http.png',
-                HELP: 'help.json',
-                PRIVACY: 'privacy.json',
                 LICENSE: 'license.html',
                 INDEX: 'pages/app.html',
                 ROOT: '/'
@@ -406,11 +362,11 @@ export const useAppApi = () => {
                     CURR: 'Missing current record!',
                     ERR: 'System error!',
                     INVALID: 'Invalid Range!',
-                    NOCASE: 'Missing case!',
-                    NODEL: 'Deletion off memory failed!',
+                    NO_CASE: 'Missing case!',
+                    NO_DEL: 'Deletion off memory failed!',
                     REQ: 'Request failed!',
                     SRV: 'Remote Server error!',
-                    WRONGPARAM: 'Wrong parameter!',
+                    WRONG_PARAM: 'Wrong parameter!',
                     SEND: 'Send message failed!',
                     PORT: 'Message port is missing!'
                 },
@@ -418,47 +374,47 @@ export const useAppApi = () => {
             }
         }),
         VALIDATORS: Object.freeze({
-            ibanRules: msgs => {
+            ibanRules: msgArray => {
                 return [
-                    v => v !== null || msgs[0],
-                    v => (v !== null && v.length < 37) || msgs[1],
-                    v => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgs[2]
+                    v => v !== null || msgArray[0],
+                    v => (v !== null && v.length < 37) || msgArray[1],
+                    v => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
                 ];
             },
-            nameRules: msgs => {
+            nameRules: msgArray => {
                 return [
-                    v => v !== null || msgs[0],
-                    v => (v !== null && v.length < 32) || msgs[1],
-                    v => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgs[2]
+                    v => v !== null || msgArray[0],
+                    v => (v !== null && v.length < 32) || msgArray[1],
+                    v => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
                 ];
             },
-            swiftRules: msgs => {
+            swiftRules: msgArray => {
                 return [
-                    v => v !== null || msgs[0],
-                    v => (v !== null && v.length < 13) || msgs[1],
-                    v => v.match(/[^a-zA-Z0-9]/g) === null || msgs[2]
+                    v => v !== null || msgArray[0],
+                    v => (v !== null && v.length < 13) || msgArray[1],
+                    v => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
                 ];
             },
-            dateRules: msgs => {
+            dateRules: msgArray => {
                 return [
-                    v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgs[0]
+                    v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
                 ];
             },
-            currencyCodeRules: msgs => {
+            currencyCodeRules: msgArray => {
                 return [
-                    v => v !== null || msgs[0],
-                    v => (v !== null && v.length === 3) || msgs[1],
-                    v => v.match(/[^a-zA-Z]/g) === null || msgs[2]
+                    v => v !== null || msgArray[0],
+                    v => (v !== null && v.length === 3) || msgArray[1],
+                    v => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
                 ];
             },
-            requiredRule: msgs => {
+            requiredRule: msgArray => {
                 return [
-                    v => v !== null || msgs[0]
+                    v => v !== null || msgArray[0]
                 ];
             },
-            brandNameRules: msgs => {
+            brandNameRules: msgArray => {
                 return [
-                    v => v !== null || msgs[0]
+                    v => v !== null || msgArray[0]
                 ];
             }
         }),
@@ -491,468 +447,468 @@ export const useAppApi = () => {
         }
     };
 };
-const useDatabaseApi = () => {
-    return {
-        exportDatabase: async (filename) => {
-            log('BACKGROUND: exportDatabase');
-            const accounts = [];
-            const bookings = [];
-            const stocks = [];
-            const bookingTypes = [];
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onComplete = async () => {
-                        log('BACKGROUND: exportDatabase: data read!');
-                        const stringifyDB = () => {
-                            let buffer;
-                            let i;
-                            buffer = '"accounts":[\n';
-                            for (i = 0; i < accounts.length; i++) {
-                                buffer += JSON.stringify(accounts[i]);
-                                if (i === accounts.length - 1) {
-                                    buffer += '\n],\n';
-                                }
-                                else {
-                                    buffer += ',\n';
-                                }
-                            }
-                            buffer += i === 0 ? '],\n' : '';
-                            buffer += '"stocks":[\n';
-                            for (i = 0; i < stocks.length; i++) {
-                                buffer += JSON.stringify(stocks[i]);
-                                if (i === stocks.length - 1) {
-                                    buffer += '\n],\n';
-                                }
-                                else {
-                                    buffer += ',\n';
-                                }
-                            }
-                            buffer += i === 0 ? '],\n' : '';
-                            buffer += '"booking_types":[\n';
-                            for (i = 0; i < bookingTypes.length; i++) {
-                                buffer += JSON.stringify(bookingTypes[i]);
-                                if (i === bookingTypes.length - 1) {
-                                    buffer += '\n],\n';
-                                }
-                                else {
-                                    buffer += ',\n';
-                                }
-                            }
-                            buffer += i === 0 ? '],\n' : '';
-                            buffer += '"bookings":[\n';
-                            for (i = 0; i < bookings.length; i++) {
-                                buffer += JSON.stringify(bookings[i]);
-                                if (i === bookings.length - 1) {
-                                    buffer += '\n]\n';
-                                }
-                                else {
-                                    buffer += ',\n';
-                                }
-                            }
-                            return buffer;
-                        };
-                        let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.DB.START_VERSION}, "cEngine":"indexeddb"},\n`;
-                        buffer += stringifyDB();
-                        buffer += '}';
-                        const blob = new Blob([buffer], { type: 'application/json' });
-                        const blobUrl = URL.createObjectURL(blob);
-                        const op = {
-                            url: blobUrl,
-                            filename: filename
-                        };
-                        const onDownloadChange = (change) => {
-                            log('HEADERBAR: onChanged');
-                            browser.downloads.onChanged.removeListener(onDownloadChange);
-                            if ((change.state !== undefined && change.id > 0) ||
-                                (change.state !== undefined && change.state.current === CONS.EVENTS.COMP)) {
-                                URL.revokeObjectURL(blobUrl);
-                            }
-                        };
-                        browser.downloads.onChanged.addListener(onDownloadChange);
-                        await browser.downloads.download(op);
-                        await notice(['Database exported!']);
-                        resolve('BACKGROUND: exportDatabase: done!');
-                    };
-                    const onAbort = () => {
-                        reject(requestTransaction.error);
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly');
-                    requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                    requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                    const onSuccessAccountOpenCursor = (ev) => {
-                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            accounts.push(ev.target.result.value);
-                            ev.target.result.continue();
-                        }
-                    };
-                    const onSuccessBookingTypeOpenCursor = (ev) => {
-                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            bookingTypes.push(ev.target.result.value);
-                            ev.target.result.continue();
-                        }
-                    };
-                    const onSuccessBookingOpenCursor = (ev) => {
-                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            bookings.push(ev.target.result.value);
-                            ev.target.result.continue();
-                        }
-                    };
-                    const onSuccessStockOpenCursor = (ev) => {
-                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            stocks.push(ev.target.result.value);
-                            ev.target.result.continue();
-                        }
-                    };
-                    const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
-                    requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
-                    const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
-                    requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false);
-                    const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
-                    requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
-                    const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
-                    requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
-                }
-            });
-        },
-        toStores: async () => {
-            log('BACKGROUND: toStores');
-            const accounts = [];
-            const bookings = [];
-            const stocks = [];
-            const bookingTypes = [];
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const storage = await browser.storage.local.get(['sActiveAccountId']);
-                    const onComplete = async () => {
-                        log('BACKGROUND: toStores: all database records sent to frontend!');
-                        resolve({ accounts, bookings, stocks, bookingTypes });
-                    };
-                    const onAbort = () => {
-                        reject(requestTransaction.error);
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly');
-                    requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                    requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                    const onSuccessAccountOpenCursor = (ev) => {
-                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            accounts.push(ev.target.result.value);
-                            ev.target.result.continue();
-                        }
-                    };
-                    const onSuccessBookingTypeOpenCursor = (ev) => {
-                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
-                                bookingTypes.push(ev.target.result.value);
-                            }
-                            ev.target.result.continue();
-                        }
-                    };
-                    const onSuccessBookingOpenCursor = (ev) => {
-                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
-                                bookings.push(ev.target.result.value);
-                            }
-                            ev.target.result.continue();
-                        }
-                    };
-                    const onSuccessStockOpenCursor = (ev) => {
-                        if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                            if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
-                                stocks.push(ev.target.result.value);
-                            }
-                            ev.target.result.continue();
-                        }
-                    };
-                    const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
-                    requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
-                    const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
-                    requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false);
-                    const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
-                    requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
-                    const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
-                    requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
-                }
-            });
-        },
-        open: async () => {
-            return new Promise(async (resolve, reject) => {
-                const onError = (ev) => {
-                    reject(ev);
-                };
-                const onSuccess = (ev) => {
-                    if (ev.target instanceof IDBOpenDBRequest) {
-                        dbi = ev.target.result;
-                        const onVersionChangeSuccess = () => {
-                            if (dbi != null) {
-                                dbi.close();
-                                notice(['Database is outdated, please reload the page.']);
-                            }
-                        };
-                        dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE);
-                        resolve('BACKGROUND: database opened successfully!');
-                    }
-                };
-                const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
-                log('BACKGROUND: open: database ready', { info: dbi });
-                openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-            });
-        },
-        addAccount: async (record) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = async (ev) => {
-                        if (ev.target instanceof IDBRequest) {
-                            resolve(ev.target.result);
-                        }
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record);
-                    requestAdd.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        updateAccount: async (record) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = async (ev) => {
-                        if (ev.target instanceof IDBRequest) {
-                            resolve('Account updated');
-                        }
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put(record);
-                    requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        updateStock: async (record) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = async (ev) => {
-                        if (ev.target instanceof IDBRequest) {
-                            resolve('Stock updated');
-                        }
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).put(record);
-                    requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        deleteAccount: async (ident) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = () => {
-                        resolve('Account deleted');
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident);
-                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        addBookingType: async (record) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = (ev) => {
-                        if (ev.target instanceof IDBRequest) {
-                            resolve(ev.target.result);
-                        }
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record);
-                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        deleteBookingType: async (ident) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = () => {
-                        resolve('Booking type deleted');
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident);
-                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        addBooking: async (record) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = (ev) => {
-                        if (ev.target instanceof IDBRequest) {
-                            resolve(ev.target.result);
-                        }
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record);
-                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        deleteBooking: async (ident) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = () => {
-                        resolve('Booking deleted');
-                    };
-                    const onError = (ev) => {
-                        reject(ev);
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
-                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        addStock: async (record) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = (ev) => {
-                        if (ev.target instanceof IDBRequest) {
-                            resolve(ev.target.result);
-                        }
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record);
-                    requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        deleteStock: async (ident) => {
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onSuccess = () => {
-                        resolve('Stock deleted');
-                    };
-                    const onError = (ev) => {
-                        if (ev instanceof ErrorEvent) {
-                            reject(ev.message);
-                        }
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
-                    requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                    requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                }
-            });
-        },
-        addStores: async (stores) => {
-            log('BACKGROUND: addStores', { info: dbi });
-            return new Promise(async (resolve, reject) => {
-                if (dbi != null) {
-                    const onComplete = async () => {
-                        await notice(['All memory records are added to the database!']);
-                        resolve('BACKGROUND: addStores: all memory records are added to the database!');
-                    };
-                    const onAbort = () => {
-                        reject(requestTransaction.error);
-                    };
-                    const onError = (ev) => {
-                        reject(ev);
-                    };
-                    const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                    requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                    requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
-                    requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                    const onSuccessClearBookings = () => {
-                        log('BACKGROUND: bookings dropped');
-                        for (let i = 0; i < stores.bookings.length; i++) {
-                            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
-                        }
-                    };
-                    const onSuccessClearAccounts = () => {
-                        log('BACKGROUND: accounts dropped');
-                        for (let i = 0; i < stores.accounts.length; i++) {
-                            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
-                        }
-                    };
-                    const onSuccessClearBookingTypes = () => {
-                        log('BACKGROUND: booking types dropped');
-                        for (let i = 0; i < stores.bookingTypes.length; i++) {
-                            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
-                        }
-                    };
-                    const onSuccessClearStocks = () => {
-                        log('BACKGROUND: stocks dropped');
-                        for (let i = 0; i < stores.stocks.length; i++) {
-                            requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
-                        }
-                    };
-                    const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
-                    requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
-                    const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
-                    requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
-                    const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
-                    requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
-                    const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
-                    requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
-                }
-            });
-        }
-    };
-};
 const { CONS, log, notice } = useAppApi();
-let dbi;
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
+    const useDatabaseApi = () => {
+        return {
+            exportDatabase: async (filename) => {
+                log('BACKGROUND: exportDatabase');
+                const accounts = [];
+                const bookings = [];
+                const stocks = [];
+                const bookingTypes = [];
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onComplete = async () => {
+                            log('BACKGROUND: exportDatabase: data read!');
+                            const stringifyDB = () => {
+                                let buffer;
+                                let i;
+                                buffer = '"accounts":[\n';
+                                for (i = 0; i < accounts.length; i++) {
+                                    buffer += JSON.stringify(accounts[i]);
+                                    if (i === accounts.length - 1) {
+                                        buffer += '\n],\n';
+                                    }
+                                    else {
+                                        buffer += ',\n';
+                                    }
+                                }
+                                buffer += i === 0 ? '],\n' : '';
+                                buffer += '"stocks":[\n';
+                                for (i = 0; i < stocks.length; i++) {
+                                    buffer += JSON.stringify(stocks[i]);
+                                    if (i === stocks.length - 1) {
+                                        buffer += '\n],\n';
+                                    }
+                                    else {
+                                        buffer += ',\n';
+                                    }
+                                }
+                                buffer += i === 0 ? '],\n' : '';
+                                buffer += '"booking_types":[\n';
+                                for (i = 0; i < bookingTypes.length; i++) {
+                                    buffer += JSON.stringify(bookingTypes[i]);
+                                    if (i === bookingTypes.length - 1) {
+                                        buffer += '\n],\n';
+                                    }
+                                    else {
+                                        buffer += ',\n';
+                                    }
+                                }
+                                buffer += i === 0 ? '],\n' : '';
+                                buffer += '"bookings":[\n';
+                                for (i = 0; i < bookings.length; i++) {
+                                    buffer += JSON.stringify(bookings[i]);
+                                    if (i === bookings.length - 1) {
+                                        buffer += '\n]\n';
+                                    }
+                                    else {
+                                        buffer += ',\n';
+                                    }
+                                }
+                                return buffer;
+                            };
+                            let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.DB.START_VERSION}, "cEngine":"indexeddb"},\n`;
+                            buffer += stringifyDB();
+                            buffer += '}';
+                            const blob = new Blob([buffer], { type: 'application/json' });
+                            const blobUrl = URL.createObjectURL(blob);
+                            const op = {
+                                url: blobUrl,
+                                filename: filename
+                            };
+                            const onDownloadChange = (change) => {
+                                log('BACKGROUND: onDownloadChange');
+                                browser.downloads.onChanged.removeListener(onDownloadChange);
+                                if ((change.state !== undefined && change.id > 0) ||
+                                    (change.state !== undefined && change.state.current === CONS.EVENTS.COMP)) {
+                                    URL.revokeObjectURL(blobUrl);
+                                }
+                            };
+                            browser.downloads.onChanged.addListener(onDownloadChange);
+                            await browser.downloads.download(op);
+                            await notice(['Database exported!']);
+                            resolve('BACKGROUND: exportDatabase: done!');
+                        };
+                        const onAbort = () => {
+                            reject(requestTransaction.error);
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly');
+                        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
+                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
+                        const onSuccessAccountOpenCursor = (ev) => {
+                            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                                accounts.push(ev.target.result.value);
+                                ev.target.result.continue();
+                            }
+                        };
+                        const onSuccessBookingTypeOpenCursor = (ev) => {
+                            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                                bookingTypes.push(ev.target.result.value);
+                                ev.target.result.continue();
+                            }
+                        };
+                        const onSuccessBookingOpenCursor = (ev) => {
+                            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                                bookings.push(ev.target.result.value);
+                                ev.target.result.continue();
+                            }
+                        };
+                        const onSuccessStockOpenCursor = (ev) => {
+                            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                                stocks.push(ev.target.result.value);
+                                ev.target.result.continue();
+                            }
+                        };
+                        const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
+                        requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
+                        const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
+                        requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false);
+                        const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
+                        requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
+                        const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
+                        requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
+                    }
+                });
+            },
+            toStores: async () => {
+                log('BACKGROUND: toStores');
+                const accounts = [];
+                const bookings = [];
+                const stocks = [];
+                const bookingTypes = [];
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const storage = await browser.storage.local.get(['sActiveAccountId']);
+                        const onComplete = async () => {
+                            log('BACKGROUND: toStores: all database records sent to frontend!');
+                            resolve({ accounts, bookings, stocks, bookingTypes });
+                        };
+                        const onAbort = () => {
+                            reject(requestTransaction.error);
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly');
+                        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
+                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
+                        const onSuccessAccountOpenCursor = (ev) => {
+                            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                                accounts.push(ev.target.result.value);
+                                ev.target.result.continue();
+                            }
+                        };
+                        const onSuccessBookingTypeOpenCursor = (ev) => {
+                            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                                if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                                    bookingTypes.push(ev.target.result.value);
+                                }
+                                ev.target.result.continue();
+                            }
+                        };
+                        const onSuccessBookingOpenCursor = (ev) => {
+                            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                                if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                                    bookings.push(ev.target.result.value);
+                                }
+                                ev.target.result.continue();
+                            }
+                        };
+                        const onSuccessStockOpenCursor = (ev) => {
+                            if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
+                                if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                                    stocks.push(ev.target.result.value);
+                                }
+                                ev.target.result.continue();
+                            }
+                        };
+                        const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
+                        requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
+                        const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
+                        requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false);
+                        const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
+                        requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
+                        const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
+                        requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
+                    }
+                });
+            },
+            open: async () => {
+                return new Promise(async (resolve, reject) => {
+                    const onError = (ev) => {
+                        reject(ev);
+                    };
+                    const onSuccess = (ev) => {
+                        if (ev.target instanceof IDBOpenDBRequest) {
+                            dbi = ev.target.result;
+                            const onVersionChangeSuccess = () => {
+                                if (dbi != null) {
+                                    dbi.close();
+                                    notice(['Database is outdated, please reload the page.']);
+                                }
+                            };
+                            dbi.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE);
+                            resolve('BACKGROUND: database opened successfully!');
+                        }
+                    };
+                    const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
+                    log('BACKGROUND: open: database ready', { info: dbi });
+                    openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                });
+            },
+            addAccount: async (record) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = async (ev) => {
+                            if (ev.target instanceof IDBRequest) {
+                                resolve(ev.target.result);
+                            }
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record);
+                        requestAdd.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            updateAccount: async (record) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = async (ev) => {
+                            if (ev.target instanceof IDBRequest) {
+                                resolve('Account updated');
+                            }
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put(record);
+                        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            updateStock: async (record) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = async (ev) => {
+                            if (ev.target instanceof IDBRequest) {
+                                resolve('Stock updated');
+                            }
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).put(record);
+                        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            deleteAccount: async (ident) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = () => {
+                            resolve('Account deleted');
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident);
+                        requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            addBookingType: async (record) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = (ev) => {
+                            if (ev.target instanceof IDBRequest) {
+                                resolve(ev.target.result);
+                            }
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record);
+                        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            deleteBookingType: async (ident) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = () => {
+                            resolve('Booking type deleted');
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident);
+                        requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            addBooking: async (record) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = (ev) => {
+                            if (ev.target instanceof IDBRequest) {
+                                resolve(ev.target.result);
+                            }
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record);
+                        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            deleteBooking: async (ident) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = () => {
+                            resolve('Booking deleted');
+                        };
+                        const onError = (ev) => {
+                            reject(ev);
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
+                        requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            addStock: async (record) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = (ev) => {
+                            if (ev.target instanceof IDBRequest) {
+                                resolve(ev.target.result);
+                            }
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record);
+                        requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            deleteStock: async (ident) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = () => {
+                            resolve('Stock deleted');
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
+                        requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            addStores: async (stores) => {
+                log('BACKGROUND: addStores', { info: dbi });
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onComplete = async () => {
+                            await notice(['All memory records are added to the database!']);
+                            resolve('BACKGROUND: addStores: all memory records are added to the database!');
+                        };
+                        const onAbort = () => {
+                            reject(requestTransaction.error);
+                        };
+                        const onError = (ev) => {
+                            reject(ev);
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
+                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
+                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
+                        const onSuccessClearBookings = () => {
+                            log('BACKGROUND: bookings dropped');
+                            for (let i = 0; i < stores.bookings.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
+                            }
+                        };
+                        const onSuccessClearAccounts = () => {
+                            log('BACKGROUND: accounts dropped');
+                            for (let i = 0; i < stores.accounts.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
+                            }
+                        };
+                        const onSuccessClearBookingTypes = () => {
+                            log('BACKGROUND: booking types dropped');
+                            for (let i = 0; i < stores.bookingTypes.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
+                            }
+                        };
+                        const onSuccessClearStocks = () => {
+                            log('BACKGROUND: stocks dropped');
+                            for (let i = 0; i < stores.stocks.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
+                            }
+                        };
+                        const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
+                        requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
+                        const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
+                        requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
+                        const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
+                        requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
+                        const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
+                        requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
+                    }
+                });
+            }
+        };
+    };
+    let dbi;
     const { exportDatabase, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, toStores, addStores, deleteStock, open } = useDatabaseApi();
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
@@ -1066,8 +1022,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
         }
     };
-    const onAppMessage = async (appMsg) => {
-        log('BACKGROUND: onAppMessage', { info: appMsg });
+    const onPageMessage = async (appMsg) => {
+        log('BACKGROUND: onPageMessage', { info: appMsg });
         return new Promise(async (resolve, reject) => {
             const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1';
             const appMessage = JSON.parse(appMsg);
@@ -1266,7 +1222,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     };
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
-    browser.runtime.onMessage.addListener(onAppMessage);
+    browser.runtime.onMessage.addListener(onPageMessage);
     console.info('--- PAGE_SCRIPT background.js --- onInstalled, onConnect, onClicked ---', window.location.href);
 }
 log('--- PAGE_SCRIPT background.js ---');
