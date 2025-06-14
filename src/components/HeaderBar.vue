@@ -18,7 +18,7 @@ const runtime = useRuntimeStore()
 //const settings = useSettingsStore()
 
 const onIconClick = async (ev: Event): Promise<void> => {
-  log('HEADERBAR: onIconClick')
+  log('HEADER_BAR: onIconClick')
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {

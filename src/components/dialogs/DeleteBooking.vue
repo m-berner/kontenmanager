@@ -23,9 +23,9 @@ const ok = async (): Promise<void> => {
     runtime.setLogo()
     records.sumBookings()
     runtime.resetTeleport()
-    await browser.runtime.sendMessage({
+    await browser.runtime.sendMessage(JSON.stringify({
       type: CONS.MESSAGES.DB__DELETE_BOOKING, data: runtime.bookingId
-    })
+    }))
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteBooking.error')])

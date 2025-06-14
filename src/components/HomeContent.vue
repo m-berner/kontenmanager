@@ -74,7 +74,7 @@ log('--- HomeContent.vue setup ---')
             v-bind:recordID="item.cID"
           ></OptionMenu>
         </td>
-        <td>{{ d(utcDate(item.cDate), 'short', 'de-DE') }}</td>
+        <td>{{ d(utcDate(item.cDate), 'short') }}</td>
         <td>{{ n(item.cDebit, 'currency') }}</td>
         <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>

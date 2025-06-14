@@ -42,7 +42,7 @@ if (_props._tab === CONS.SETTINGS.MARKETS_TAB) {
 }
 
 const mAddItem = async (item: string): Promise<void> => {
-  log('DYNAMICLIST: mAddItem')
+  log('DYNAMIC_LIST: mAddItem')
   if (!state._list.includes(item)) {
     if (_props._toUpperCase) {
       state._list.push(item.toUpperCase())
@@ -50,12 +50,12 @@ const mAddItem = async (item: string): Promise<void> => {
       state._list.push(item)
     }
   }
-    await browser.runtime.sendMessage({type: messageType, data: toRaw(state._list)})
+    await browser.runtime.sendMessage(JSON.stringify({type: messageType, data: toRaw(state._list)}))
 }
 const mRemoveItem = async (n: number): Promise<void> => {
-  log('DYNAMICLIST: mRemoveItem')
+  log('DYNAMIC_LIST: mRemoveItem')
   if (n > 0) {
-    await browser.runtime.sendMessage({type: messageType, data: toRaw(state._list)})
+    await browser.runtime.sendMessage(JSON.stringify({type: messageType, data: toRaw(state._list)}))
   }
 }
 

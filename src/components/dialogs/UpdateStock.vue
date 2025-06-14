@@ -28,7 +28,7 @@ const onInput = () => {
   state._logoUrl = `https://cdn.brandfetch.io/${state._logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
 const ibanMask = (iban: string) => {
-  if (iban !== null) {
+  if (iban !== '') {
     const withoutSpace = iban.replace(/\s/g, '')
     const loops = Math.ceil(withoutSpace.length / 4)
     let masked = ''
@@ -54,9 +54,9 @@ const ok = async (): Promise<void> => {
         cLogoUrl: state._logoUrl
       }
       records.updateStock(stock)
-      await browser.runtime.sendMessage({
+      await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__UPDATE_STOCK, data: stock
-      })
+      }))
       formRef.value!.reset()
     } catch (e) {
       console.error(e)

@@ -26,15 +26,15 @@ const state = reactive({
 })
 
 const ok = async (): Promise<void> => {
-  log('IMPORTDATABASE: ok', {info: state._choosen_file})
+  log('IMPORT_DATABASE: ok', {info: state._choosen_file})
   const {notice} = useAppApi()
   const records = useRecordsStore()
   const runtime = useRuntimeStore()
   const onError = async (): Promise<void> => {
-    await notice(['IMPORTDATABASE: onError: FileReader'])
+    await notice(['IMPORT_DATABASE: onError: FileReader'])
   }
   const onFileLoaded = async (): Promise<void> => {
-    log('IMPORTDATABASE: onFileLoaded')
+    log('IMPORT_DATABASE: onFileLoaded')
     if (typeof fr.result === 'string') {
       const bkupObject: IBackup = JSON.parse(fr.result)
       const accounts = []
@@ -47,7 +47,7 @@ const ok = async (): Promise<void> => {
       let stock: IStock
       let activeId: number
       if (bkupObject.sm.cDBVersion === undefined) {
-        await notice(['IMPORTDATABASE: onFileLoaded', 'Could not read backup file'])
+        await notice(['IMPORT_DATABASE: onFileLoaded', 'Could not read backup file'])
       } else if (bkupObject.sm.cDBVersion <= CONS.DB.MIN_VERSION) {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.MIN_VERSION.toString()})])
       } else if (bkupObject.sm.cDBVersion > CONS.DB.MIN_VERSION) {
@@ -85,7 +85,7 @@ const ok = async (): Promise<void> => {
           bookingTypes: bookingTypes,
           stocks: stocks
         }
-        await browser.runtime.sendMessage({type: CONS.MESSAGES.DB__ADD_STORES, data: stores})
+        await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }

@@ -23,7 +23,7 @@ const {CONS, log} = useAppApi()
 const {_active_account_id} = storeToRefs(settings)
 
 const cUpdateTitlebar = (): void => {
-  browser.runtime.sendMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: toRaw(_active_account_id.value)})
+  browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: toRaw(_active_account_id.value)}))
 }
 
 log('--- TitleBar.vue setup ---')

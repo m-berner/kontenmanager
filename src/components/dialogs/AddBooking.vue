@@ -112,8 +112,8 @@ const ok = async (): Promise<void> => {
         default:
           booking = {
             cDate: state._date,
-            cCredit: state._credit === null ? 0 : state._credit,
-            cDebit: state._debit === null ? 0 : state._debit,
+            cCredit: state._credit === undefined ? 0 : state._credit,
+            cDebit: state._debit === undefined ? 0 : state._debit,
             cDescription: state._description,
             cBookingTypeID: state._booking_type_id,
             cStockID: 0,
@@ -128,9 +128,9 @@ const ok = async (): Promise<void> => {
             cMarketPlace: ''
           }
       }
-      await browser.runtime.sendMessage({
+      await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_BOOKING, data: booking
-      })
+      }))
       // NOTE: CurrencyInput ensure 0 instead of null
       state._debit = 0
       state._credit = 0

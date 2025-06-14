@@ -16,8 +16,8 @@ const fn = `${prefix}_${CONS.DB.START_VERSION}_${CONS.DB.NAME}.json`
 const txt = { filename: fn }
 
 const ok = (): void => {
-  log('EXPORTDATABASE: ok')
-  browser.runtime.sendMessage({type: CONS.MESSAGES.DB__EXPORT, data: fn})
+  log('EXPORT_DATABASE: ok')
+  browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__EXPORT, data: fn}))
 }
 const title = t('dialogs.exportDatabase.title')
 

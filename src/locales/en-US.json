@@ -300,11 +300,11 @@
     },
     "public": {
       "title": "Public data",
-      "content": "Only Bank-logos from Brandfetsch.com are used and accessed on the Internet. "
+      "content": "Only Bank-logos from brandfetch.com are used and accessed on the Internet. "
     },
     "connections": {
       "title": "Internet connections",
-      "content": "Connections are only made to download bank logos from Brandfetsch.com."
+      "content": "Connections are only made to download bank logos from brandfetch.com."
     }
   },
   "optionsPage": {

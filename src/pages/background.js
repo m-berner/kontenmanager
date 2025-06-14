@@ -152,8 +152,8 @@ export const useAppApi = () => {
                 DB__DELETE_BOOKING_TYPE__RESPONSE: '12017',
                 DB__DELETE_STOCK: '12018',
                 DB__DELETE_STOCK__RESPONSE: '12019',
-                STORES__INIT_SETTINGS: '12021',
-                STORES__INIT_SETTINGS__RESPONSE: '12022',
+                APP__INIT_SETTINGS: '12021',
+                APP__INIT_SETTINGS__RESPONSE: '12022',
                 DB__ADD_STORES: '12023',
                 OPTIONS__SET_SKIN: '12024',
                 OPTIONS__SET_SERVICE: '12025',
@@ -169,7 +169,9 @@ export const useAppApi = () => {
                 OPTIONS__SET_INDEXES__RESPONSE: '12036',
                 OPTIONS__SET_MATERIALS__RESPONSE: '12037',
                 OPTIONS__SET_MARKETS__RESPONSE: '12038',
-                OPTIONS__SET_EXCHANGES__RESPONSE: '12039'
+                OPTIONS__SET_EXCHANGES__RESPONSE: '12039',
+                OPTIONS__INIT_SETTINGS: '13012',
+                OPTIONS__INIT_SETTINGS__RESPONSE: '13013'
             },
             SERVICES: {
                 goyax: {
@@ -623,12 +625,7 @@ const useDatabaseApi = () => {
                     const storage = await browser.storage.local.get(['sActiveAccountId']);
                     const onComplete = async () => {
                         log('BACKGROUND: toStores: all database records sent to frontend!');
-                        const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1';
-                        await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), {
-                            type: CONS.MESSAGES.DB__TO_STORE__RESPONSE,
-                            data: { accounts, bookings, bookingTypes, stocks }
-                        });
-                        resolve('BACKGROUND: toStores: all database records sent to frontend!');
+                        resolve({ accounts, bookings, stocks, bookingTypes });
                     };
                     const onAbort = () => {
                         reject(requestTransaction.error);
@@ -1069,157 +1066,199 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
         }
     };
-    const onAppMessage = async (appMsg, sender, sendResponse) => {
-        log('BACKGROUND: onAppMessage', { info: sender });
-        switch (appMsg.type) {
-            case CONS.MESSAGES.STORES__INIT_SETTINGS:
-                sendResponse({
-                    type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
-                    data: await browser.storage.local.get()
-                });
-                break;
-            case CONS.MESSAGES.DB__CLOSE:
-                dbi.close();
-                break;
-            case CONS.MESSAGES.DB__EXPORT:
-                await exportDatabase(appMsg.data);
-                break;
-            case CONS.MESSAGES.STORAGE__SET_ID:
-                await browser.storage.local.set({ sActiveAccountId: appMsg.data });
-                await toStores();
-                break;
-            case CONS.MESSAGES.DB__ADD_STORES:
-                const addStoresData = appMsg.data;
-                await addStores(addStoresData);
-                await browser.storage.local.set({ sActiveAccountId: addStoresData.accounts[0].cID });
-                break;
-            case CONS.MESSAGES.DB__ADD_ACCOUNT:
-                const addAccountData = appMsg.data;
-                const addAccountID = await addAccount(addAccountData);
-                if (typeof addAccountID === 'number') {
-                    const completeAccount = { cID: addAccountID, ...addAccountData };
-                    sendResponse({
-                        type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
-                        data: completeAccount
+    const onAppMessage = async (appMsg) => {
+        log('BACKGROUND: onAppMessage', { info: appMsg });
+        return new Promise(async (resolve, reject) => {
+            const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1';
+            const appMessage = JSON.parse(appMsg);
+            let response;
+            switch (appMessage.type) {
+                case CONS.MESSAGES.APP__INIT_SETTINGS:
+                    const storageLocal1 = await browser.storage.local.get();
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.APP__INIT_SETTINGS__RESPONSE,
+                        data: storageLocal1
                     });
-                    await browser.storage.local.set({ sActiveAccountId: addAccountID });
-                }
-                break;
-            case CONS.MESSAGES.DB__ADD_BOOKING:
-                const addBookingData = appMsg.data;
-                const addBookingID = await addBooking(addBookingData);
-                if (typeof addBookingID === 'number') {
-                    const completeBooking = { cID: addBookingID, ...addBookingData };
-                    sendResponse({
-                        type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE,
-                        data: completeBooking
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.OPTIONS__INIT_SETTINGS:
+                    const storageLocal2 = await browser.storage.local.get();
+                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
+                        type: CONS.MESSAGES.OPTIONS__INIT_SETTINGS__RESPONSE,
+                        data: storageLocal2
+                    }));
+                    resolve('Options dummy response');
+                    break;
+                case CONS.MESSAGES.DB__CLOSE:
+                    dbi.close();
+                    break;
+                case CONS.MESSAGES.DB__EXPORT:
+                    await exportDatabase(appMessage.data);
+                    break;
+                case CONS.MESSAGES.STORAGE__SET_ID:
+                    await browser.storage.local.set({ sActiveAccountId: appMessage.data });
+                    await toStores();
+                    break;
+                case CONS.MESSAGES.DB__TO_STORE:
+                    const stores = await toStores();
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.DB__TO_STORE__RESPONSE,
+                        data: stores
                     });
-                }
-                break;
-            case CONS.MESSAGES.DB__ADD_BOOKING_TYPE:
-                const addBookingTypeData = appMsg.data;
-                const addBookingTypeID = await addBookingType(addBookingTypeData);
-                if (typeof addBookingTypeID === 'number') {
-                    const completeBookingType = { cID: addBookingTypeID, ...addBookingTypeData };
-                    sendResponse({
-                        type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE,
-                        data: completeBookingType
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.DB__ADD_STORES:
+                    const addStoresData = appMessage.data;
+                    await addStores(addStoresData);
+                    await browser.storage.local.set({ sActiveAccountId: addStoresData.accounts[0].cID });
+                    break;
+                case CONS.MESSAGES.DB__ADD_ACCOUNT:
+                    const addAccountData = appMessage.data;
+                    const addAccountID = await addAccount(addAccountData);
+                    if (typeof addAccountID === 'number') {
+                        const completeAccount = { cID: addAccountID, ...addAccountData };
+                        response = JSON.stringify({
+                            type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
+                            data: completeAccount
+                        });
+                        await browser.storage.local.set({ sActiveAccountId: addAccountID });
+                        resolve(response);
+                    }
+                    break;
+                case CONS.MESSAGES.DB__ADD_BOOKING:
+                    const addBookingData = appMessage.data;
+                    const addBookingID = await addBooking(addBookingData);
+                    if (typeof addBookingID === 'number') {
+                        const completeBooking = { cID: addBookingID, ...addBookingData };
+                        response = JSON.stringify({
+                            type: CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE,
+                            data: completeBooking
+                        });
+                        resolve(response);
+                    }
+                    break;
+                case CONS.MESSAGES.DB__ADD_BOOKING_TYPE:
+                    const addBookingTypeData = appMessage.data;
+                    const addBookingTypeID = await addBookingType(addBookingTypeData);
+                    if (typeof addBookingTypeID === 'number') {
+                        const completeBookingType = { cID: addBookingTypeID, ...addBookingTypeData };
+                        response = JSON.stringify({
+                            type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE,
+                            data: completeBookingType
+                        });
+                        resolve(response);
+                    }
+                    break;
+                case CONS.MESSAGES.DB__ADD_STOCK:
+                    const addStockData = appMessage.data;
+                    const addStockID = await addStock(addStockData);
+                    if (typeof addStockID === 'number') {
+                        const completeStock = { cID: addStockID, ...addStockData };
+                        response = JSON.stringify({
+                            type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE,
+                            data: completeStock
+                        });
+                        resolve(response);
+                    }
+                    else {
+                        reject('Wrong ID type');
+                    }
+                    break;
+                case CONS.MESSAGES.DB__UPDATE_ACCOUNT:
+                    await updateAccount(appMessage.data);
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE
                     });
-                }
-                break;
-            case CONS.MESSAGES.DB__ADD_STOCK:
-                const addStockData = appMsg.data;
-                const addStockID = await addStock(addStockData);
-                if (typeof addStockID === 'number') {
-                    const completeStock = { cID: addStockID, ...addStockData };
-                    sendResponse({
-                        type: CONS.MESSAGES.DB__ADD_STOCK__RESPONSE,
-                        data: completeStock
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.DB__UPDATE_STOCK:
+                    await updateStock(appMessage.data);
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE
                     });
-                }
-                break;
-            case CONS.MESSAGES.DB__UPDATE_ACCOUNT:
-                await updateAccount(appMsg.data);
-                sendResponse({
-                    type: CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE
-                });
-                break;
-            case CONS.MESSAGES.DB__UPDATE_STOCK:
-                await updateStock(appMsg.data);
-                sendResponse({
-                    type: CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE
-                });
-                break;
-            case CONS.MESSAGES.DB__DELETE_ACCOUNT:
-                await deleteAccount(appMsg.data);
-                sendResponse({
-                    type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE
-                });
-                break;
-            case CONS.MESSAGES.DB__DELETE_STOCK:
-                await deleteStock(appMsg.data);
-                sendResponse({
-                    type: CONS.MESSAGES.DB__DELETE_STOCK__RESPONSE
-                });
-                break;
-            case CONS.MESSAGES.DB__DELETE_BOOKING:
-                await deleteBooking(appMsg.data);
-                sendResponse({
-                    type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE
-                });
-                break;
-            case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
-                await deleteBookingType(appMsg.data);
-                sendResponse({
-                    type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE
-                });
-                break;
-            case CONS.MESSAGES.OPTIONS__SET_SKIN:
-                sendResponse({
-                    type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
-                    skin: appMsg.data
-                });
-                await browser.storage.local.set({ sSkin: appMsg.data });
-                break;
-            case CONS.MESSAGES.OPTIONS__SET_INDEXES:
-                sendResponse({
-                    type: CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE,
-                    indexes: appMsg.data
-                });
-                await browser.storage.local.set({ sIndexes: appMsg.data });
-                break;
-            case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
-                sendResponse({
-                    type: CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE,
-                    materials: appMsg.data
-                });
-                await browser.storage.local.set({ sMaterials: appMsg.data });
-                break;
-            case CONS.MESSAGES.OPTIONS__SET_SERVICE:
-                sendResponse({
-                    type: CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE,
-                    service: appMsg.data
-                });
-                await browser.storage.local.set({ sService: appMsg.data });
-                break;
-            case CONS.MESSAGES.OPTIONS__SET_MARKETS:
-                sendResponse({
-                    type: CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE,
-                    markets: appMsg.data
-                });
-                await browser.storage.local.set({ sMarkets: appMsg.data });
-                break;
-            case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
-                sendResponse({
-                    type: CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE,
-                    exchanges: appMsg.data
-                });
-                await browser.storage.local.set({ sExchanges: appMsg.data });
-                break;
-            default:
-                return Promise.reject(false);
-        }
-        return Promise.resolve(true);
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.DB__DELETE_ACCOUNT:
+                    await deleteAccount(appMessage.data);
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.DB__DELETE_ACCOUNT__RESPONSE
+                    });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.DB__DELETE_STOCK:
+                    await deleteStock(appMessage.data);
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.DB__DELETE_STOCK__RESPONSE
+                    });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.DB__DELETE_BOOKING:
+                    await deleteBooking(appMessage.data);
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.DB__DELETE_BOOKING__RESPONSE
+                    });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.DB__DELETE_BOOKING_TYPE:
+                    await deleteBookingType(appMessage.data);
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE
+                    });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.OPTIONS__SET_SKIN:
+                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
+                        type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
+                        data: appMessage.data
+                    }));
+                    await browser.storage.local.set({ sSkin: appMessage.data });
+                    resolve('Skin at background');
+                    break;
+                case CONS.MESSAGES.OPTIONS__SET_INDEXES:
+                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
+                        type: CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE,
+                        data: appMessage.data
+                    }));
+                    await browser.storage.local.set({ sIndexes: appMessage.data });
+                    resolve('Indexes at background');
+                    break;
+                case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
+                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
+                        type: CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE,
+                        data: appMessage.data
+                    }));
+                    await browser.storage.local.set({ sMaterials: appMessage.data });
+                    resolve('Materials at background');
+                    break;
+                case CONS.MESSAGES.OPTIONS__SET_SERVICE:
+                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
+                        type: CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE,
+                        data: appMessage.data
+                    }));
+                    await browser.storage.local.set({ sService: appMessage.data });
+                    resolve('Services at background');
+                    break;
+                case CONS.MESSAGES.OPTIONS__SET_MARKETS:
+                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
+                        type: CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE,
+                        data: appMessage.data
+                    }));
+                    await browser.storage.local.set({ sMarkets: appMessage.data });
+                    resolve('Markets at background');
+                    break;
+                case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
+                    await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
+                        type: CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE,
+                        data: appMessage.data
+                    }));
+                    await browser.storage.local.set({ sExchanges: appMessage.data });
+                    resolve('Exchanges at background');
+                    break;
+                default:
+                    console.error('Missing message type');
+                    reject('Missing message type');
+            }
+        });
     };
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);

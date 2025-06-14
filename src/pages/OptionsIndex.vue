@@ -9,7 +9,7 @@
 import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
-import {reactive, toRaw} from 'vue'
+import {onBeforeMount, type Reactive, reactive, toRaw} from 'vue'
 import {useAppApi} from '@/pages/background'
 import DynamicList from '@/components/helper/DynamicList.vue'
 import {useSettingsStore} from '@/stores/settings'
@@ -60,7 +60,7 @@ for (let i = 0; i < all_service_keys.length - 2; i++) {
   service_keys.push(all_service_keys[i])
 }
 
-const state: IOptionsIndex = reactive({
+const state: Reactive<IOptionsIndex> = reactive({
   _tab: 0,
   _tabs: tm('optionsPage.tabs'),
   _themeKeys: Object.keys(theme.themes.value),
@@ -72,24 +72,32 @@ const state: IOptionsIndex = reactive({
   _materialsB: materials_keys_b
 })
 
-const setIndexes = (): void => {
-  browser.runtime.sendMessage({type: CONS.MESSAGES.OPTIONS__SET_INDEXES, data: toRaw(settings.indexes)})
+const setIndexes = async (): Promise<void> => {
+  await browser.runtime.sendMessage(JSON.stringify({
+    type: CONS.MESSAGES.OPTIONS__SET_INDEXES,
+    data: toRaw(settings.indexes)
+  }))
 }
-const setMaterials = (): void => {
-  browser.runtime.sendMessage({type: CONS.MESSAGES.OPTIONS__SET_MATERIALS, data: toRaw(settings.materials)})
+const setMaterials = async (): Promise<void> => {
+  await browser.runtime.sendMessage(JSON.stringify({
+    type: CONS.MESSAGES.OPTIONS__SET_MATERIALS,
+    data: toRaw(settings.materials)
+  }))
 }
-const setSkin = (ev: Event): void => {
+const setSkin = async (ev: Event): Promise<void> => {
   if (ev.target instanceof HTMLInputElement) {
-    browser.runtime.sendMessage({type: CONS.MESSAGES.OPTIONS__SET_SKIN, data: ev.target.value})
+    await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.OPTIONS__SET_SKIN, data: ev.target.value}))
   }
 }
-const setService = (ev: Event): void => {
+const setService = async (ev: Event): Promise<void> => {
   if (ev.target instanceof HTMLInputElement) {
-    browser.runtime.sendMessage({type: CONS.MESSAGES.OPTIONS__SET_SERVICE, data: ev.target.value})
+    await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.OPTIONS__SET_SERVICE, data: ev.target.value}))
   }
 }
 
-browser.runtime.sendMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
+onBeforeMount(async (): Promise<void> => {
+  await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.OPTIONS__INIT_SETTINGS}))
+})
 
 log('--- OptionsIndex.vue setup ---', {info: window.location.href})
 </script>

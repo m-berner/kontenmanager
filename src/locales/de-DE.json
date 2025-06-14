@@ -111,7 +111,7 @@
     "deleteBooking": {
       "title": "Buchung",
       "ask": "jetzt löschen?",
-      "success": "Buchung wurde enternt",
+      "success": "Buchung wurde entfernt",
       "error": "Eingabe Fehler?"
     },
     "addAccount": {
@@ -178,7 +178,7 @@
       "fakeLabel": "Fake Konto ID",
       "label": "aus Datei"
     },
-    "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - Heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
+    "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
   },
   "footer": {
     "help": "Hilfe",
@@ -204,32 +204,32 @@
     "toolBar": [
       {
         "title": "Startseite",
-        "content": "Klicken um zur Startseite zurückzukehren.",
+        "content": "Klicken, um zur Startseite zurückzukehren.",
         "icon": "$home"
       },
       {
         "title": "Buchungen",
-        "content": "Klicken um auf die Buchungsseite zu gelangen.",
+        "content": "Klicken, um auf die Buchungsseite zu gelangen.",
         "icon": "$transfersTable"
       },
       {
         "title": "Kurse aktualisieren",
-        "content": "Klicken um die Kurse zu aktualisieren.",
+        "content": "Klicken, um die Kurse zu aktualisieren.",
         "icon": "$reload"
       },
       {
         "title": "Unternehmen hinzufügen",
-        "content": "Klicken um den erforderlichen Dialog zu öffnen.",
+        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
         "icon": "$addAccount"
       },
       {
         "title": "Unternehmen entfernen",
-        "content": "Klicken um den erforderlichen Dialog zu öffnen.",
+        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
         "icon": "$deleteStock"
       },
       {
         "title": "Unternehmen einblenden",
-        "content": "Klicken um den erforderlichen Dialog zu öffnen.",
+        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
         "icon": "$fadeinStock"
       },
       {
@@ -239,42 +239,42 @@
       },
       {
         "title": "Auszahlung",
-        "content": "Klicken um den erforderlichen Dialog zu öffnen.",
+        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
         "icon": "$cashMinus"
       },
       {
         "title": "Tagesveränderungen",
-        "content": "Klicken um die Tagesveränderungen anzuzeigen.",
+        "content": "Klicken, um die Tagesveränderungen anzuzeigen.",
         "icon": "$dailyChanges"
       },
       {
         "title": "Tagesveränderungen (alle)",
-        "content": "Klicken um alle Tagesveränderungen anzuzeigen.",
+        "content": "Klicken, um alle Tagesveränderungen anzuzeigen.",
         "icon": "$dailyChangesAll"
       },
       {
         "title": "Datenbank exportieren",
-        "content": "Klicken um den erforderlichen Dialog zu exportieren.",
+        "content": "Klicken, um den erforderlichen Dialog zu exportieren.",
         "icon": "$exportDatabase"
       },
       {
         "title": "Datenbank importieren",
-        "content": "Klicken um den erforderlichen Dialog zu importieren.",
+        "content": "Klicken, um den erforderlichen Dialog zu importieren.",
         "icon": "$importDatabase"
       },
       {
         "title": "Buchungen",
-        "content": "Klicken um die Buchungen anzuzeigen.",
+        "content": "Klicken, um die Buchungen anzuzeigen.",
         "icon": "$transfersTable"
       },
       {
         "title": "Jahres-Berechnungen",
-        "content": "Klicken um die Jahres-Berechnungen anzuzeigen.",
+        "content": "Klicken, um die Jahres-Berechnungen anzuzeigen.",
         "icon": "$showAccounting"
       },
       {
         "title": "Einstellungen",
-        "content": "Klicken um das KontenManager Einstellungen-Tab anzuzeigen.",
+        "content": "Klicken, um das KontenManager-Einstellungen-Tab anzuzeigen.",
         "icon": "$settings"
       }
     ],
@@ -329,15 +329,15 @@
     "title": "KontenManager Datenschutz Richtlinien",
     "local": {
       "title": "Lokale Daten",
-      "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Addon hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert."
+      "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert."
     },
     "public": {
       "title": "Öffentliche Daten",
-      "content": "Nur Bank-Logos von brandfetsch.com werden verwendet und über das Internet abgerufen. KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben."
+      "content": "Nur Bank-Logos von brandfetch.com werden verwendet und über das Internet abgerufen. KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben."
     },
     "connections": {
       "title": "Internetverbindungen",
-      "content": "Verbindungen werden nur hergestellt, um Bank-Logos von brandfetsch.com herunterzuladen."
+      "content": "Verbindungen werden nur hergestellt, um Bank-Logos von brandfetch.com herunterzuladen."
     }
   },
   "optionsPage": {
@@ -371,11 +371,11 @@
       "dark": "Dunkel",
       "light": "Hell"
     },
-    "markets" : {
+    "markets": {
       "title": "Marktplätze",
       "label": "Neuer Marktplatz"
     },
-    "exchanges" : {
+    "exchanges": {
       "title": "Wechselkurse",
       "label": "Neues Wechselkurs-Kürzel"
     },

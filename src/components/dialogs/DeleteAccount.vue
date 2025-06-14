@@ -28,13 +28,13 @@ const ok = async (): Promise<void> => {
   log('DELETE_ACCOUNT: ok')
   try {
     records.deleteAccount(state._selected)
-    await browser.runtime.sendMessage({type: CONS.MESSAGES.DB__DELETE_ACCOUNT, data: toRaw(state._selected)})
+    await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__DELETE_ACCOUNT, data: toRaw(state._selected)}))
     if (records.accounts.length > 0) {
       settings.setActiveAccountId(records.accounts[0].cID)
-      await browser.runtime.sendMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: toRaw(records.accounts[0])})
+      await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: toRaw(records.accounts[0])}))
     } else {
       settings.setActiveAccountId(-1)
-      await browser.runtime.sendMessage({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1})
+      await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1}))
     }
     runtime.setLogo()
     records.sumBookings()

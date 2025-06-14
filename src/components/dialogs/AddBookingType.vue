@@ -32,9 +32,9 @@ const ok = async (): Promise<void> => {
         cAccountNumberID: settings.activeAccountId
       }
       records.addBookingType(bookingType)
-      await browser.runtime.sendMessage({
+      await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE, data: bookingType
-      })
+      }))
       formRef.value!.reset()
     } catch (e) {
       console.error(e)

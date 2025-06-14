@@ -13,6 +13,7 @@ import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useI18n} from 'vue-i18n'
+import {onBeforeMount} from 'vue'
 
 const {t} = useI18n()
 const settings = useSettingsStore()
@@ -23,7 +24,7 @@ const {CONS, log, notice} = useAppApi()
 const {_debug} = storeToRefs(settings)
 const keyStrokeController: string[] = []
 const onBeforeUnload = async (ev: Event): Promise<void> => {
-  log('APPINDEX: onBeforeUnload', {info: ev})
+  log('APP_INDEX: onBeforeUnload', {info: ev})
   const foundTabs = await browser.tabs.query({url: 'about:addons'})
   if (foundTabs.length > 0) {
     await browser.tabs.remove(foundTabs[0].id ?? 0)
@@ -31,7 +32,7 @@ const onBeforeUnload = async (ev: Event): Promise<void> => {
 }
 const onKeyDown = (ev: KeyboardEvent): void => {
   keyStrokeController.push(ev.key)
-  log('APPINDEX: onKeyDown')
+  log('APP_INDEX: onKeyDown')
   if (
     keyStrokeController.includes('Control') &&
     keyStrokeController.includes('Alt') &&
@@ -57,41 +58,44 @@ const onKeyDown = (ev: KeyboardEvent): void => {
 const onKeyUp = (ev: KeyboardEvent): void => {
   keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
 }
-const onBackgroundMessage = (backgroundMsg: IMessage): void => {
-  switch (backgroundMsg.type) {
-    case CONS.MESSAGES.STORES__INIT_SETTINGS__RESPONSE:
-      settings.initStore(theme, backgroundMsg.data)
-      break
+const onBackgroundMessage = (backgroundMsg: string): void => {
+  log('APP_INDEX: onBackgroundMessage', {info: backgroundMsg})
+  const backgroundMessage = JSON.parse(backgroundMsg)
+  switch (backgroundMessage.type) {
+    // case CONS.MESSAGES.APP__INIT_SETTINGS__RESPONSE:
+    //   console.error('C')
+    //   settings.initStore(theme, backgroundMessage.data)
+    //   break
     case CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE:
-      theme.global.name.value = backgroundMsg.data
-      settings.setSkin(backgroundMsg.data)
+      theme.global.name.value = backgroundMessage.data
+      settings.setSkin(backgroundMessage.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE:
-      settings.setService(backgroundMsg.data)
+      settings.setService(backgroundMessage.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE:
-      settings.setIndexes(backgroundMsg.data)
+      settings.setIndexes(backgroundMessage.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE:
-      settings.setMaterials(backgroundMsg.data)
+      settings.setMaterials(backgroundMessage.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE:
-      settings.setMarkets(backgroundMsg.data)
+      settings.setMarkets(backgroundMessage.data)
       break
     case CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE:
-      settings.setExchanges(backgroundMsg.data)
+      settings.setExchanges(backgroundMessage.data)
       break
-    case CONS.MESSAGES.DB__TO_STORE__RESPONSE:
-      const toStoreData: IStores = backgroundMsg.data
-      if (toStoreData.accounts.length > 0) {
-        records.initStore(toStoreData)
-        if (settings.activeAccountId === undefined) {
-          settings.setActiveAccountId(records.accounts[0].cID)
-        }
-        runtime.setLogo()
-        records.sumBookings()
-      }
-      break
+    // case CONS.MESSAGES.DB__TO_STORE__RESPONSE:
+    //   const toStoreData: IStores = backgroundMessage.data
+    //   if (toStoreData.accounts.length > 0) {
+    //     records.initStore(toStoreData)
+    //     if (settings.activeAccountId === undefined) {
+    //       settings.setActiveAccountId(records.accounts[0].cID)
+    //     }
+    //     runtime.setLogo()
+    //     records.sumBookings()
+    //   }
+    //   break
     case CONS.MESSAGES.DB__UPDATE_ACCOUNT__RESPONSE:
       notice([t('dialogs.UpdateAccount.success')])
       break
@@ -111,24 +115,24 @@ const onBackgroundMessage = (backgroundMsg: IMessage): void => {
       notice([t('dialogs.deleteBookingType.success')])
       break
     case CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE:
-      const addAccountData: IAccount = backgroundMsg.data
+      const addAccountData: IAccount = backgroundMessage.data
       records.addAccount(addAccountData)
       runtime.setLogo()
       settings.setActiveAccountId(addAccountData.cID)
       notice([t('dialogs.AddAccount.success')])
       break
     case CONS.MESSAGES.DB__ADD_BOOKING__RESPONSE:
-      const addBookingData: IBooking = backgroundMsg.data
+      const addBookingData: IBooking = backgroundMessage.data
       records.addBooking(addBookingData)
       notice([t('dialogs.AddBooking.success')])
       break
     case CONS.MESSAGES.DB__ADD_BOOKING_TYPE__RESPONSE:
-      const addBookingTypeData: IBookingType = backgroundMsg.data
+      const addBookingTypeData: IBookingType = backgroundMessage.data
       records.addBookingType(addBookingTypeData)
       notice([t('dialogs.AddBookingType.success')])
       break
     case CONS.MESSAGES.DB__ADD_STOCK__RESPONSE:
-      const addStockData: IStock = backgroundMsg.data
+      const addStockData: IStock = backgroundMessage.data
       records.addStock(addStockData)
       notice([t('dialogs.AddStock.success')])
       break
@@ -136,13 +140,25 @@ const onBackgroundMessage = (backgroundMsg: IMessage): void => {
   }
 }
 
-window.addEventListener('keydown', onKeyDown, false)
-window.addEventListener('keyup', onKeyUp, false)
-window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
-browser.runtime.onMessage.addListener(onBackgroundMessage)
+onBeforeMount(async (): Promise<void> => {
+  window.addEventListener('keydown', onKeyDown, false)
+  window.addEventListener('keyup', onKeyUp, false)
+  window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
+  browser.runtime.onMessage.addListener(onBackgroundMessage)
 
-browser.runtime.sendMessage({type: CONS.MESSAGES.STORES__INIT_SETTINGS})
-browser.runtime.sendMessage({type: CONS.MESSAGES.DB__TO_STORE})
+  const initSettingsResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.APP__INIT_SETTINGS}))
+  settings.initStore(theme, JSON.parse(initSettingsResponse).data)
+  const toStoreResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__TO_STORE}))
+  const toStoreData: IStores = JSON.parse(toStoreResponse).data
+  if (toStoreData.accounts.length > 0) {
+    records.initStore(toStoreData)
+    if (settings.activeAccountId === undefined) {
+      settings.setActiveAccountId(records.accounts[0].cID)
+    }
+    runtime.setLogo()
+    records.sumBookings()
+  }
+})
 
 log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>

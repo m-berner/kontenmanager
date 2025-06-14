@@ -35,9 +35,9 @@ const ok = async (): Promise<void> => {
         cLogoUrl: state._logoUrl
       }
       records.addStock(stock)
-      await browser.runtime.sendMessage({
+      await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
-      })
+      }))
       formRef.value!.reset()
     } catch (e) {
       console.error(e)

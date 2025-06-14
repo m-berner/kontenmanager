@@ -21,7 +21,7 @@ const runtime = useRuntimeStore()
 const {CONS, log} = useAppApi()
 
 const onIconClick = async (ev: Event): Promise<void> => {
-  log('OPTIONMENU: onIconClick', {info: _props.recordID})
+  log('OPTION_MENU: onIconClick', {info: _props.recordID})
   runtime.setBookingId(_props.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
