@@ -381,7 +381,12 @@ interface IUseDatabaseApi {
 
   updateStock(record: IStock): Promise<string>
 }
-
+// TODO stockmanager conversion
+// in settings new tab, append stockmanager data
+// input exported backupfile, stockmanager backup
+// migrate transfers to bookings, stocks to stocks
+// find max ID, start with max + 1
+// result file that could be imported
 export const useAppApi = (): IUseAppApi => {
   return {
     CONS: Object.freeze({
@@ -1567,8 +1572,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       await browser.tabs.update(foundTabs[0].id ?? 0, {active: true})
     }
   }
-  const onPageMessage = async (appMsg: string): Promise<string> => {
-    log('BACKGROUND: onPageMessage', {info: appMsg})
+  const onAppMessage = async (appMsg: string): Promise<string> => {
+    log('BACKGROUND: onAppMessage', {info: appMsg})
     return new Promise(async (resolve, reject) => {
       //const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1'
       const appMessage = JSON.parse(appMsg)
@@ -1766,7 +1771,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   }
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
-  browser.runtime.onMessage.addListener(onPageMessage)
+  browser.runtime.onMessage.addListener(onAppMessage)
 
   console.info('--- PAGE_SCRIPT background.js --- onInstalled, onConnect, onClicked ---', window.location.href)
 }

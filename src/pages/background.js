@@ -1021,8 +1021,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             await browser.tabs.update(foundTabs[0].id ?? 0, { active: true });
         }
     };
-    const onPageMessage = async (appMsg) => {
-        log('BACKGROUND: onPageMessage', { info: appMsg });
+    const onAppMessage = async (appMsg) => {
+        log('BACKGROUND: onAppMessage', { info: appMsg });
         return new Promise(async (resolve, reject) => {
             const appMessage = JSON.parse(appMsg);
             let response;
@@ -1172,7 +1172,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     };
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
-    browser.runtime.onMessage.addListener(onPageMessage);
+    browser.runtime.onMessage.addListener(onAppMessage);
     console.info('--- PAGE_SCRIPT background.js --- onInstalled, onConnect, onClicked ---', window.location.href);
 }
 log('--- PAGE_SCRIPT background.js ---');
