@@ -14,7 +14,6 @@ interface ISettingsStore {
   _bookings_per_page: number
   _stocks_per_page: number
   _active_account_id: number
-  _debug: boolean
   _partner: boolean
   _service: string
   _materials: string[]
@@ -32,7 +31,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       _bookings_per_page: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
       _stocks_per_page: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE,
       _active_account_id: -1,
-      _debug: false,
       _partner: false,
       _service: CONS.DEFAULTS.STORAGE.SERVICE,
       _materials: CONS.DEFAULTS.STORAGE.MATERIALS,
@@ -53,9 +51,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
     },
     skin(state: ISettingsStore) {
       return state._skin
-    },
-    debug(state: ISettingsStore) {
-      return state._debug
     },
     partner(state: ISettingsStore) {
       return state._partner
@@ -90,9 +85,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       theme.global.name.value = value
       this._skin = value
     },
-    setDebug(value: boolean): void {
-      this._debug = value
-    },
     setPartner(value: boolean): void {
       this._partner = value
     },
@@ -118,7 +110,6 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore> = def
       this._bookings_per_page = storage.sBookingsPerPage
       this._stocks_per_page = storage.sStocksPerPage
       this._active_account_id = storage.sActiveAccountId
-      this._debug = storage.sDebug
       this._partner = storage.sPartner
       this._service = storage.sService
       this._materials = storage.sMaterials

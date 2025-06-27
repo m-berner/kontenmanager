@@ -12,7 +12,7 @@ import {useAppApi} from '@/pages/background'
 const {t} = useI18n()
 const {CONS, log} = useAppApi()
 const prefix = new Date().toISOString().substring(0, 10)
-const fn = `${prefix}_${CONS.DB.START_VERSION}_${CONS.DB.NAME}.json`
+const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
 const txt = { filename: fn }
 
 const ok = (): void => {

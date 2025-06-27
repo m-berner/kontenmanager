@@ -10,7 +10,6 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useTheme} from 'vuetify'
 import {useAppApi} from '@/pages/background'
-import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
 import {onBeforeMount} from 'vue'
 
@@ -19,7 +18,6 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log} = useAppApi()
-const {_debug} = storeToRefs(settings)
 const keyStrokeController: string[] = []
 const onBeforeUnload = async (ev: Event): Promise<void> => {
   log('APP_INDEX: onBeforeUnload', {info: ev})
@@ -41,50 +39,52 @@ const onKeyDown = (ev: KeyboardEvent): void => {
   if (
     keyStrokeController.includes('Control') &&
     keyStrokeController.includes('Alt') &&
-    ev.key === 'd' && _debug.value
+    ev.key === 'd' && Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0
   ) {
-    browser.storage.local.set({sDebug: false})
+    localStorage.setItem('sDebug', '0')
   }
   if (
     keyStrokeController.includes('Control') &&
     keyStrokeController.includes('Alt') &&
-    ev.key === 'd' && !_debug.value
+    ev.key === 'd' && !(Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0)
   ) {
-    browser.storage.local.set({sDebug: true})
+    localStorage.setItem('sDebug', '1')
   }
 }
 const onKeyUp = (ev: KeyboardEvent): void => {
   keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
 }
+const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
+  const changesKey = Object.keys(changes)
+  switch(changesKey[0]) {
+    case 'sSkin':
+      settings.setSkin(theme, changes[changesKey[0]].newValue)
+      break
+    case 'sService':
+      settings.setService(changes[changesKey[0]].newValue)
+      break
+    case 'sIndexes':
+      settings.setService(changes[changesKey[0]].newValue)
+      break
+    case 'sMarkets':
+      settings.setService(changes[changesKey[0]].newValue)
+      break
+    case 'sMaterials':
+      settings.setService(changes[changesKey[0]].newValue)
+      break
+    case 'sExchanges':
+      settings.setService(changes[changesKey[0]].newValue)
+      break
+    default:
+  }
+}
+
+window.addEventListener('keydown', onKeyDown, false)
+window.addEventListener('keyup', onKeyUp, false)
+window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
+browser.storage.local.onChanged.addListener(onStorageChange)
 
 onBeforeMount(async (): Promise<void> => {
-  window.addEventListener('keydown', onKeyDown, false)
-  window.addEventListener('keyup', onKeyUp, false)
-  window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
-  browser.storage.local.onChanged.addListener((changes) => {
-    const changesKey = Object.keys(changes)
-    switch(changesKey[0]) {
-      case 'sSkin':
-        settings.setSkin(theme, changes[changesKey[0]].newValue)
-        break
-      case 'sService':
-        settings.setService(changes[changesKey[0]].newValue)
-        break
-      case 'sIndexes':
-        settings.setService(changes[changesKey[0]].newValue)
-        break
-      case 'sMarkets':
-        settings.setService(changes[changesKey[0]].newValue)
-        break
-      case 'sMaterials':
-        settings.setService(changes[changesKey[0]].newValue)
-        break
-      case 'sExchanges':
-        settings.setService(changes[changesKey[0]].newValue)
-        break
-      default:
-    }
-  })
   const initSettingsResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.APP__INIT_SETTINGS}))
   settings.initStore(theme, JSON.parse(initSettingsResponse).data)
   const toStoreResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__TO_STORE}))

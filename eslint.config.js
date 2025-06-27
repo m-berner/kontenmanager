@@ -14,7 +14,8 @@ export default [
             'indent': ['error', 2, {'SwitchCase': 1}],
             '@stylistic/ts/indent': ['error', 2, {'SwitchCase': 1}],
             'semi': ['error', 'never'],
-            '@stylistic/ts/semi': ['error', 'never']
+            '@stylistic/ts/semi': ['error', 'never'],
+            '@stylistic/ts/no-namespace': ['error'],
         }
     }, {
         files: ['**/*.js'], plugins: {

@@ -269,7 +269,7 @@ log('--- HeaderBar.vue setup ---')
           v-bind="props"
           variant="tonal"
           v-on:click="onIconClick">
-          <v-icon class="put-into-background" icon="$exportDatabase"></v-icon>
+          <v-icon icon="$exportDatabase"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
@@ -281,7 +281,7 @@ log('--- HeaderBar.vue setup ---')
           v-bind="props"
           variant="tonal"
           v-on:click="onIconClick">
-          <v-icon class="put-into-background" icon="$importDatabase"></v-icon>
+          <v-icon icon="$importDatabase"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
@@ -294,7 +294,7 @@ log('--- HeaderBar.vue setup ---')
           v-bind="props"
           variant="tonal"
           v-on:click="onIconClick">
-          <v-icon class="put-into-background" icon="$showAccounting"></v-icon>
+          <v-icon icon="$showAccounting"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>

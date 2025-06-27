@@ -68,8 +68,8 @@ export const useAppApi = () => {
                         }
                     }
                 },
-                MIN_VERSION: 24,
-                START_VERSION: 25
+                IMPORT_MIN_VERSION: 25,
+                CURRENT_VERSION: 26
             },
             DEFAULTS: {
                 BACKGROUND: '_generated_background_page.html',
@@ -170,7 +170,9 @@ export const useAppApi = () => {
                 OPTIONS__SET_MARKETS__RESPONSE: '12038',
                 OPTIONS__SET_EXCHANGES__RESPONSE: '12039',
                 OPTIONS__INIT_SETTINGS: '13012',
-                OPTIONS__INIT_SETTINGS__RESPONSE: '13013'
+                OPTIONS__INIT_SETTINGS__RESPONSE: '13013',
+                FETCH__COMPANY_DATA: '13014',
+                FETCH__COMPANY_DATA__RESPONSE: '13015'
             },
             SERVICES: {
                 goyax: {
@@ -267,6 +269,14 @@ export const useAppApi = () => {
                     EXCHANGE: 'https://fx-rate.net/calculator/?c_input=',
                     DELAY: 50
                 }
+            },
+            STATES: {
+                DONE: 'complete',
+                SRV: 500,
+                SUCCESS: 200,
+                PAUSE: 'resting',
+                MUTATE: 'mutation',
+                NO_RENDER: 'no_render'
             },
             SETTINGS: {
                 ITEMS_PER_PAGE_OPTIONS: [
@@ -433,9 +443,9 @@ export const useAppApi = () => {
         toISODate: (ms) => {
             return new Date(ms).toISOString().substring(0, 10);
         },
-        log: async (msg, mode = { info: null }) => {
-            const storageLocal = await browser.storage.local.get(['sDebug']);
-            if (storageLocal.sDebug) {
+        log: (msg, mode = { info: null }) => {
+            const localDebug = localStorage.getItem('sDebug');
+            if (Number.parseInt(localDebug ?? '0') > 0) {
                 if (mode.info !== null) {
                     console.info(msg, mode.info);
                 }
@@ -448,7 +458,6 @@ export const useAppApi = () => {
 };
 const { CONS, log, notice } = useAppApi();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-    let dbi;
     const useDatabaseApi = () => {
         return {
             exportDatabase: async (filename) => {
@@ -509,7 +518,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                                 }
                                 return buffer;
                             };
-                            let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.DB.START_VERSION}, "cEngine":"indexeddb"},\n`;
+                            let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`;
                             buffer += stringifyDB();
                             buffer += '}';
                             const blob = new Blob([buffer], { type: 'application/json' });
@@ -650,7 +659,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                             resolve('BACKGROUND: database opened successfully!');
                         }
                     };
-                    const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
+                    const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.CURRENT_VERSION);
                     log('BACKGROUND: open: database ready', { info: dbi });
                     openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
                     openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
@@ -908,7 +917,72 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
         };
     };
+    const useFetchApi = () => {
+        return {
+            fetchCompanyData: async (isin) => {
+                return new Promise(async (resolve, reject) => {
+                    let sDocument;
+                    let company = '';
+                    let child;
+                    let wkn;
+                    let symbol;
+                    let tables;
+                    let result = {
+                        company: '',
+                        wkn: '',
+                        symbol: ''
+                    };
+                    const firstResponse = await fetch(CONS.SERVICES.tgate.QUOTE + isin);
+                    if (firstResponse.url.length === 0 ||
+                        !firstResponse.ok ||
+                        firstResponse.status >= CONS.STATES.SRV ||
+                        (firstResponse.status > 0 &&
+                            firstResponse.status < CONS.STATES.SUCCESS)) {
+                        await notice(['First request failed']);
+                        reject('First request failed');
+                    }
+                    else {
+                        const secondResponse = await fetch(firstResponse.url);
+                        if (!secondResponse.ok ||
+                            secondResponse.status >= CONS.STATES.SRV ||
+                            (secondResponse.status > 0 &&
+                                secondResponse.status < CONS.STATES.SUCCESS)) {
+                            await notice(['Second request failed']);
+                            reject('Second request failed');
+                        }
+                        else {
+                            const secondResponseText = await secondResponse.text();
+                            sDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                            tables = sDocument.querySelectorAll('table > tbody tr');
+                            child = sDocument?.querySelector('#col1_content')?.childNodes[1];
+                            company =
+                                child?.textContent !== null
+                                    ? child?.textContent.split(',')[0].trim() ?? ''
+                                    : '';
+                            if (!company.includes('Die Gattung wird') &&
+                                tables[1].cells !== null &&
+                                tables.length > 0) {
+                                wkn = tables[1].cells[0].textContent ?? '';
+                                symbol = tables[1].cells[1].textContent ?? '';
+                                result = {
+                                    company,
+                                    wkn,
+                                    symbol
+                                };
+                                resolve(result);
+                            }
+                            else {
+                                reject('Unexpected error occurred');
+                            }
+                        }
+                    }
+                });
+            }
+        };
+    };
+    let dbi;
     const { exportDatabase, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, toStores, addStores, deleteStock, open } = useDatabaseApi();
+    const { fetchCompanyData } = useFetchApi();
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
         const installStorageLocal = async () => {
@@ -930,9 +1004,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
             if (storageLocal.sService === undefined) {
                 await browser.storage.local.set({ sService: CONS.DEFAULTS.STORAGE.SERVICE });
-            }
-            if (storageLocal.sDebug === undefined) {
-                await browser.storage.local.set({ sDebug: CONS.DEFAULTS.STORAGE.DEBUG });
             }
             if (storageLocal.sExchanges === undefined) {
                 await browser.storage.local.set({ sExchanges: CONS.DEFAULTS.STORAGE.EXCHANGES });
@@ -997,7 +1068,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 await installStorageLocal();
             }
         };
-        const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION);
+        const dbOpenRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.CURRENT_VERSION);
         dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
         dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
         dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE);
@@ -1161,6 +1232,14 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     await deleteBookingType(appMessage.data);
                     response = JSON.stringify({
                         type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE__RESPONSE
+                    });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.FETCH__COMPANY_DATA:
+                    const fetchedCompanyData = await fetchCompanyData(appMessage.data);
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.FETCH__COMPANY_DATA__RESPONSE,
+                        data: fetchedCompanyData
                     });
                     resolve(response);
                     break;

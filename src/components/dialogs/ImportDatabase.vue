@@ -48,9 +48,9 @@ const ok = async (): Promise<void> => {
       let activeId: number
       if (bkupObject.sm.cDBVersion === undefined) {
         await notice(['IMPORT_DATABASE: onFileLoaded', 'Could not read backup file'])
-      } else if (bkupObject.sm.cDBVersion <= CONS.DB.MIN_VERSION) {
-        await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.MIN_VERSION.toString()})])
-      } else if (bkupObject.sm.cDBVersion > CONS.DB.MIN_VERSION) {
+      } else if (bkupObject.sm.cDBVersion <= CONS.DB.IMPORT_MIN_VERSION) {
+        await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.IMPORT_MIN_VERSION.toString()})])
+      } else if (bkupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of bkupObject.accounts) {
           records.addAccount(account)

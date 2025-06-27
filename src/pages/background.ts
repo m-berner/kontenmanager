@@ -83,13 +83,19 @@ declare global {
     sStocksPerPage: number
     sStockmanagerDbImported: boolean
     sPartner: boolean
-    sDebug: boolean
     sSkin: string
     sService: string
     sExchanges: string[]
     sMaterials: string[]
     sIndexes: string[]
     sMarkets: string[]
+  }
+}
+declare namespace FetchedResources {
+  interface ICompanyData {
+    company: string
+    wkn: string
+    symbol: string
   }
 }
 
@@ -162,8 +168,8 @@ interface IUseAppApi {
           }
         }
       }
-      MIN_VERSION: number
-      START_VERSION: number
+      IMPORT_MIN_VERSION: number
+      CURRENT_VERSION: number
     }
     DEFAULTS: {
       BACKGROUND: string
@@ -265,6 +271,8 @@ interface IUseAppApi {
       OPTIONS__SET_MARKETS__RESPONSE: string
       OPTIONS__INIT_SETTINGS: string
       OPTIONS__INIT_SETTINGS__RESPONSE: string
+      FETCH__COMPANY_DATA: string
+      FETCH__COMPANY_DATA__RESPONSE: string
     }
     SERVICES: {
       [p: string]: Partial<{
@@ -283,6 +291,14 @@ interface IUseAppApi {
         EXCHANGE: string
         DELAY: number
       }>
+    }
+    STATES: {
+      DONE: string
+      SRV: number
+      SUCCESS: number
+      PAUSE: string
+      MUTATE: string
+      NO_RENDER: string
     }
     SETTINGS: {
       ITEMS_PER_PAGE_OPTIONS: {
@@ -352,38 +368,9 @@ interface IUseAppApi {
   log(msg: string, mode?: { info: unknown }): void
 }
 
-interface IUseDatabaseApi {
-  open(): Promise<string>
-
-  exportDatabase(fn: string): Promise<string>
-
-  toStores(): Promise<IStores | string>
-
-  addAccount(record: Omit<IAccount, 'cID'>): Promise<string | number>
-
-  updateAccount(record: IAccount): Promise<string>
-
-  deleteAccount(ident: number): Promise<string>
-
-  addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string | number>
-
-  deleteBookingType(ident: number): Promise<string>
-
-  addBooking(record: Omit<IBooking, 'cID'>): Promise<string | number>
-
-  deleteBooking(ident: number): Promise<string>
-
-  addStores(stores: IStores): Promise<string>
-
-  deleteStock(ident: number): Promise<string>
-
-  addStock(record: Omit<IStock, 'cID'>): Promise<string | number>
-
-  updateStock(record: IStock): Promise<string>
-}
-// TODO stockmanager conversion
-// in settings new tab, append stockmanager data
-// input exported backupfile, stockmanager backup
+// TODO
+// in settings new tab, concat backup data, stockmanager data
+// input exported backup_file, stockmanager
 // migrate transfers to bookings, stocks to stocks
 // find max ID, start with max + 1
 // result file that could be imported
@@ -457,8 +444,8 @@ export const useAppApi = (): IUseAppApi => {
             }
           }
         },
-        MIN_VERSION: 24,
-        START_VERSION: 25
+        IMPORT_MIN_VERSION: 25,
+        CURRENT_VERSION: 26
       },
       DEFAULTS: {
         BACKGROUND: '_generated_background_page.html',
@@ -559,7 +546,9 @@ export const useAppApi = (): IUseAppApi => {
         OPTIONS__SET_MARKETS__RESPONSE: '12038',
         OPTIONS__SET_EXCHANGES__RESPONSE: '12039',
         OPTIONS__INIT_SETTINGS: '13012',
-        OPTIONS__INIT_SETTINGS__RESPONSE: '13013'
+        OPTIONS__INIT_SETTINGS__RESPONSE: '13013',
+        FETCH__COMPANY_DATA: '13014',
+        FETCH__COMPANY_DATA__RESPONSE: '13015'
       },
       SERVICES: {
         goyax: {
@@ -658,6 +647,14 @@ export const useAppApi = (): IUseAppApi => {
           EXCHANGE: 'https://fx-rate.net/calculator/?c_input=',
           DELAY: 50
         }
+      },
+      STATES: {
+        DONE: 'complete',
+        SRV: 500,
+        SUCCESS: 200,
+        PAUSE: 'resting',
+        MUTATE: 'mutation',
+        NO_RENDER: 'no_render'
       },
       SETTINGS: {
         ITEMS_PER_PAGE_OPTIONS: [
@@ -830,9 +827,9 @@ export const useAppApi = (): IUseAppApi => {
     toISODate: (ms) => {
       return new Date(ms).toISOString().substring(0, 10)
     },
-    log: async (msg, mode = {info: null}) => {
-      const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get(['sDebug'])
-      if (storageLocal.sDebug) {
+    log: (msg, mode = {info: null}) => {
+      const localDebug = localStorage.getItem('sDebug')
+      if (Number.parseInt(localDebug ?? '0') > 0) {
         if (mode.info !== null) {
           console.info(msg, mode.info)
         } else {
@@ -842,10 +839,44 @@ export const useAppApi = (): IUseAppApi => {
     }
   }
 }
+
 const {CONS, log, notice} = useAppApi()
-// TODO move all async code into backend!!!
+
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  let dbi: IDBDatabase
+  interface IUseDatabaseApi {
+    open(): Promise<string>
+
+    exportDatabase(fn: string): Promise<string>
+
+    toStores(): Promise<IStores | string>
+
+    addAccount(record: Omit<IAccount, 'cID'>): Promise<string | number>
+
+    updateAccount(record: IAccount): Promise<string>
+
+    deleteAccount(ident: number): Promise<string>
+
+    addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string | number>
+
+    deleteBookingType(ident: number): Promise<string>
+
+    addBooking(record: Omit<IBooking, 'cID'>): Promise<string | number>
+
+    deleteBooking(ident: number): Promise<string>
+
+    addStores(stores: IStores): Promise<string>
+
+    deleteStock(ident: number): Promise<string>
+
+    addStock(record: Omit<IStock, 'cID'>): Promise<string | number>
+
+    updateStock(record: IStock): Promise<string>
+  }
+
+  interface IUseFetchApi {
+    fetchCompanyData(isin: string): Promise<FetchedResources.ICompanyData>
+  }
+
   const useDatabaseApi = (): IUseDatabaseApi => {
     return {
       exportDatabase: async (filename: string) => {
@@ -904,7 +935,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 return buffer
               }
               let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${
-                CONS.DB.START_VERSION
+                CONS.DB.CURRENT_VERSION
               }, "cEngine":"indexeddb"},\n`
               buffer += stringifyDB()
               buffer += '}'
@@ -1048,7 +1079,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
               resolve('BACKGROUND: database opened successfully!')
             }
           }
-          const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
+          const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.CURRENT_VERSION)
           log('BACKGROUND: open: database ready', {info: dbi})
           openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
           openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
@@ -1327,6 +1358,78 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       }
     }
   }
+
+  const useFetchApi = (): IUseFetchApi => {
+    return {
+      fetchCompanyData: async (isin) => {
+        return new Promise(async (resolve, reject) => {
+          let sDocument: Document
+          let company = ''
+          let child: ChildNode | undefined
+          let wkn: string
+          let symbol: string
+          let tables: NodeListOf<HTMLTableRowElement>
+          let result = {
+            company: '',
+            wkn: '',
+            symbol: ''
+          }
+          const firstResponse = await fetch(CONS.SERVICES.tgate.QUOTE + isin)
+          if (
+            firstResponse.url.length === 0 ||
+            !firstResponse.ok ||
+            firstResponse.status >= CONS.STATES.SRV ||
+            (firstResponse.status > 0 &&
+              firstResponse.status < CONS.STATES.SUCCESS)
+          ) {
+            await notice(['First request failed'])
+            reject('First request failed')
+          } else {
+            const secondResponse = await fetch(firstResponse.url)
+            if (
+              !secondResponse.ok ||
+              secondResponse.status >= CONS.STATES.SRV ||
+              (secondResponse.status > 0 &&
+                secondResponse.status < CONS.STATES.SUCCESS)
+            ) {
+              await notice(['Second request failed'])
+              reject('Second request failed')
+            } else {
+              const secondResponseText = await secondResponse.text()
+              sDocument = new DOMParser().parseFromString(
+                secondResponseText,
+                'text/html'
+              )
+              tables = sDocument.querySelectorAll('table > tbody tr')
+              child = sDocument?.querySelector('#col1_content')?.childNodes[1]
+              company =
+                child?.textContent !== null
+                  ? child?.textContent.split(',')[0].trim() ?? ''
+                  : ''
+              if (
+                !company.includes('Die Gattung wird') &&
+                tables[1].cells !== null &&
+                tables.length > 0
+              ) {
+                wkn = tables[1].cells[0].textContent ?? ''
+                symbol = tables[1].cells[1].textContent ?? ''
+                result = {
+                  company,
+                  wkn,
+                  symbol
+                }
+                resolve(result)
+              } else {
+                reject('Unexpected error occurred')
+              }
+            }
+          }
+        })
+      }
+    }
+  }
+
+  let dbi: IDBDatabase
   const {
     exportDatabase,
     addAccount,
@@ -1343,6 +1446,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     deleteStock,
     open
   } = useDatabaseApi()
+  const {
+    fetchCompanyData
+  } = useFetchApi()
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = async (): Promise<void> => {
     console.log('BACKGROUND: onInstall')
@@ -1365,9 +1471,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       }
       if (storageLocal.sService === undefined) {
         await browser.storage.local.set({sService: CONS.DEFAULTS.STORAGE.SERVICE})
-      }
-      if (storageLocal.sDebug === undefined) {
-        await browser.storage.local.set({sDebug: CONS.DEFAULTS.STORAGE.DEBUG})
       }
       if (storageLocal.sExchanges === undefined) {
         await browser.storage.local.set({sExchanges: CONS.DEFAULTS.STORAGE.EXCHANGES})
@@ -1548,7 +1651,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         await installStorageLocal()
       }
     }
-    const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.START_VERSION)
+    const dbOpenRequest: IDBOpenDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.CURRENT_VERSION)
     dbOpenRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
     dbOpenRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
     dbOpenRequest.addEventListener(CONS.EVENTS.UPG, onUpgradeNeeded, CONS.SYSTEM.ONCE)
@@ -1575,7 +1678,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   const onAppMessage = async (appMsg: string): Promise<string> => {
     log('BACKGROUND: onAppMessage', {info: appMsg})
     return new Promise(async (resolve, reject) => {
-      //const extensionTabIdString = sessionStorage.getItem('sExtensionTabId') ?? '-1'
       const appMessage = JSON.parse(appMsg)
       let response: string
       switch (appMessage.type) {
@@ -1715,60 +1817,21 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           })
           resolve(response)
           break
-        // case CONS.MESSAGES.OPTIONS__SET_SKIN:
-        //   await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-        //     type: CONS.MESSAGES.OPTIONS__SET_SKIN__RESPONSE,
-        //     data: appMessage.data
-        //   }))
-        //   await browser.storage.local.set({sSkin: appMessage.data})
-        //   resolve('Skin at background')
-        //   break
-        // case CONS.MESSAGES.OPTIONS__SET_INDEXES:
-        //   await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-        //     type: CONS.MESSAGES.OPTIONS__SET_INDEXES__RESPONSE,
-        //     data: appMessage.data
-        //   }))
-        //   await browser.storage.local.set({sIndexes: appMessage.data})
-        //   resolve('Indexes at background')
-        //   break
-        // case CONS.MESSAGES.OPTIONS__SET_MATERIALS:
-        //   await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-        //     type: CONS.MESSAGES.OPTIONS__SET_MATERIALS__RESPONSE,
-        //     data: appMessage.data
-        //   }))
-        //   await browser.storage.local.set({sMaterials: appMessage.data})
-        //   resolve('Materials at background')
-        //   break
-        // case CONS.MESSAGES.OPTIONS__SET_SERVICE:
-        //   await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-        //     type: CONS.MESSAGES.OPTIONS__SET_SERVICE__RESPONSE,
-        //     data: appMessage.data
-        //   }))
-        //   await browser.storage.local.set({sService: appMessage.data})
-        //   resolve('Services at background')
-        //   break
-        // case CONS.MESSAGES.OPTIONS__SET_MARKETS:
-        //   await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-        //     type: CONS.MESSAGES.OPTIONS__SET_MARKETS__RESPONSE,
-        //     data: appMessage.data
-        //   }))
-        //   await browser.storage.local.set({sMarkets: appMessage.data})
-        //   resolve('Markets at background')
-        //   break
-        // case CONS.MESSAGES.OPTIONS__SET_EXCHANGES:
-        //   await browser.tabs.sendMessage(Number.parseInt(extensionTabIdString), JSON.stringify({
-        //     type: CONS.MESSAGES.OPTIONS__SET_EXCHANGES__RESPONSE,
-        //     data: appMessage.data
-        //   }))
-        //   await browser.storage.local.set({sExchanges: appMessage.data})
-        //   resolve('Exchanges at background')
-        //   break
+        case CONS.MESSAGES.FETCH__COMPANY_DATA:
+          const fetchedCompanyData: FetchedResources.ICompanyData = await fetchCompanyData(appMessage.data)
+          response = JSON.stringify({
+            type: CONS.MESSAGES.FETCH__COMPANY_DATA__RESPONSE,
+            data: fetchedCompanyData
+          })
+          resolve(response)
+          break
         default:
           console.error('Missing message type')
           reject('Missing message type')
       }
     })
   }
+
   browser.runtime.onInstalled.addListener(onInstall)
   browser.action.onClicked.addListener(onClick)
   browser.runtime.onMessage.addListener(onAppMessage)

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "KontenManager",
-  "version": "2025.1001",
+  "version": "2026.1",
   "author": "Martin Berner",
   "icons": {
     "64": "assets/icon64.png"
@@ -22,6 +22,15 @@
     "notifications",
     "storage"
   ],
+  "host_permissions": [
+    "https://www.tradegate.de/*",
+    "https://*.finanzen.net/*",
+    "https://fx-rate.net/*",
+    "https://www.goyax.de/*",
+    "https://www.wallstreet-online.de/*",
+    "https://*.aktiencheck.de/*",
+    "https://www.tagesschau.de/*"
+  ],
   "options_ui": {
     "browser_style": false,
     "open_in_tab": false,
@@ -30,7 +39,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "kontenmanager@gmx.de",
-      "strict_min_version": "132.0"
+      "strict_min_version": "140.0"
     }
   }
 }
