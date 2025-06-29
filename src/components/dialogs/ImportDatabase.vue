@@ -22,11 +22,11 @@ const {CONS, log} = useAppApi()
 const settings = useSettingsStore()
 
 const state = reactive({
-  _choosen_file: new Blob()
+  _chosen_file: new Blob()
 })
 
 const ok = async (): Promise<void> => {
-  log('IMPORT_DATABASE: ok', {info: state._choosen_file})
+  log('IMPORT_DATABASE: ok', {info: state._chosen_file})
   const {notice} = useAppApi()
   const records = useRecordsStore()
   const runtime = useRuntimeStore()
@@ -36,7 +36,7 @@ const ok = async (): Promise<void> => {
   const onFileLoaded = async (): Promise<void> => {
     log('IMPORT_DATABASE: onFileLoaded')
     if (typeof fr.result === 'string') {
-      const bkupObject: IBackup = JSON.parse(fr.result)
+      const backupObject: IBackup = JSON.parse(fr.result)
       const accounts = []
       const bookings = []
       const bookingTypes = []
@@ -46,30 +46,42 @@ const ok = async (): Promise<void> => {
       let bookingType: IBookingType
       let stock: IStock
       let activeId: number
-      if (bkupObject.sm.cDBVersion === undefined) {
+      if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
         await notice(['IMPORT_DATABASE: onFileLoaded', 'Could not read backup file'])
-      } else if (bkupObject.sm.cDBVersion <= CONS.DB.IMPORT_MIN_VERSION) {
+      } else if (backupObject.sm.cDBVersion < CONS.DB.IMPORT_MIN_VERSION) {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.IMPORT_MIN_VERSION.toString()})])
-      } else if (bkupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
+      } else if (backupObject.sm.cDBVersion === CONS.DB.IMPORT_MIN_VERSION) {
+        // TODO import stockmanager backup file
+        // TODO think over showHeaderDialog, showOptionDialg are both required?
+        await notice([t('Please add corresponding account data!')])
+
+        runtime.setTeleport({
+          dialogName: CONS.DIALOGS.ADD_ACCOUNT,
+          okButton: true,
+          visibility: true
+        })
         records.cleanStore()
-        for (account of bkupObject.accounts) {
+        console.error('kkkkkk', state)
+      } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
+        records.cleanStore()
+        for (account of backupObject.accounts) {
           records.addAccount(account)
           accounts.push(account)
         }
         activeId = records.accounts[0].cID
-        for (stock of bkupObject.stocks) {
+        for (stock of backupObject.stocks) {
           if (stock.cAccountNumberID === activeId) {
             records.addStock(stock)
           }
           stocks.push(stock)
         }
-        for (bookingType of bkupObject.booking_types) {
+        for (bookingType of backupObject.booking_types) {
           if (bookingType.cAccountNumberID === activeId) {
             records.addBookingType(bookingType)
           }
           bookingTypes.push(bookingType)
         }
-        for (booking of bkupObject.bookings) {
+        for (booking of backupObject.bookings) {
           if (booking.cAccountNumberID === activeId) {
             records.addBooking(booking)
           }
@@ -94,8 +106,8 @@ const ok = async (): Promise<void> => {
   const fr: FileReader = new FileReader()
   fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
   fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-  if (state._choosen_file !== null) {
-    fr.readAsText(state._choosen_file, 'UTF-8')
+  if (state._chosen_file.size > 0) {
+    fr.readAsText(state._chosen_file, 'UTF-8')
   }
 }
 const title = t('dialogs.importDatabase.title')
@@ -113,7 +125,7 @@ log('--- ImportDatabase.vue setup ---')
         v-bind:clearable="true"
         v-bind:label="t('dialogs.importDatabase.label')"
         variant="outlined"
-        v-on:change="(ev: IEventTarget) => { state._choosen_file = ev.target.files[0] }"></v-file-input>
+        v-on:change="(ev: IEventTarget) => { state._chosen_file = ev.target.files[0] }"></v-file-input>
     </v-card-text>
   </v-form>
 </template>

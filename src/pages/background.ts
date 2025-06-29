@@ -5,6 +5,9 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+
+// NOTE: an extensions background script runs before a html page gets loaded.
+// That is a multipage extension runs background multiple times
 declare global {
   interface IAccount {
     // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
@@ -91,6 +94,7 @@ declare global {
     sMarkets: string[]
   }
 }
+// eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace FetchedResources {
   interface ICompanyData {
     company: string
@@ -173,6 +177,8 @@ interface IUseAppApi {
     }
     DEFAULTS: {
       BACKGROUND: string
+      APP: string
+      OPTIONS: string
       CURRENCY: string
       LANG: string
       LOCALE: string
@@ -369,11 +375,10 @@ interface IUseAppApi {
 }
 
 // TODO
-// in settings new tab, concat backup data, stockmanager data
-// input exported backup_file, stockmanager
+// ask for account data
 // migrate transfers to bookings, stocks to stocks
-// find max ID, start with max + 1
-// result file that could be imported
+// booking types: buy 1, sell 2, dividend 3, transfers in/out 4,5
+
 export const useAppApi = (): IUseAppApi => {
   return {
     CONS: Object.freeze({
@@ -449,6 +454,8 @@ export const useAppApi = (): IUseAppApi => {
       },
       DEFAULTS: {
         BACKGROUND: '_generated_background_page.html',
+        APP: 'app.html',
+        OPTIONS: 'options.html',
         CURRENCY: 'EUR',
         LANG: 'de',
         LOCALE: 'de-DE',
@@ -886,7 +893,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         const stocks: IStock[] = []
         const bookingTypes: IBookingType[] = []
         return new Promise(async (resolve, reject) => {
-          if (dbi != null) {
+          if (dbi !== null) {
             const onComplete = async (): Promise<void> => {
               log('BACKGROUND: exportDatabase: data read!')
               const stringifyDB = (): string => {
@@ -1358,7 +1365,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       }
     }
   }
-
   const useFetchApi = (): IUseFetchApi => {
     return {
       fetchCompanyData: async (isin) => {
@@ -1429,7 +1435,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     }
   }
 
-  let dbi: IDBDatabase
   const {
     exportDatabase,
     addAccount,
@@ -1449,6 +1454,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   const {
     fetchCompanyData
   } = useFetchApi()
+  let dbi: IDBDatabase
+
   // NOTE: onInstall runs at addon install, addon update and firefox update
   const onInstall = async (): Promise<void> => {
     console.log('BACKGROUND: onInstall')
@@ -1698,8 +1705,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           resolve(response)
           break
         case CONS.MESSAGES.DB__CLOSE:
-          dbi.close()
-          resolve('DB closed')
+          if (dbi !== undefined) {
+            dbi.close()
+            resolve('DB closed')
+          } else {
+            resolve('No DB open')
+          }
           break
         case CONS.MESSAGES.DB__EXPORT:
           await exportDatabase(appMessage.data)
@@ -1836,7 +1847,48 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.action.onClicked.addListener(onClick)
   browser.runtime.onMessage.addListener(onAppMessage)
 
-  console.info('--- PAGE_SCRIPT background.js --- onInstalled, onConnect, onClicked ---', window.location.href)
+  log('--- PAGE_SCRIPT background.js --- BACKGROUND PAGE ---', {info: window.location.href})
+}
+else if (window.location.href.includes(CONS.DEFAULTS.APP)) {
+  const keyStrokeController: string[] = []
+  const onBeforeUnload = async (): Promise<void> => {
+    log('BACKGROUND: onBeforeUnload')
+    await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__CLOSE}))
+  }
+  const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
+    keyStrokeController.push(ev.key)
+    log('BACKGROUND: onKeyDown')
+    if (
+      keyStrokeController.includes('Control') &&
+      keyStrokeController.includes('Alt') &&
+      ev.key === 'r'
+    ) {
+      await browser.storage.local.clear()
+    }
+    if (
+      keyStrokeController.includes('Control') &&
+      keyStrokeController.includes('Alt') &&
+      ev.key === 'd' && Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0
+    ) {
+      localStorage.setItem('sDebug', '0')
+    }
+    if (
+      keyStrokeController.includes('Control') &&
+      keyStrokeController.includes('Alt') &&
+      ev.key === 'd' && !(Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0)
+    ) {
+      localStorage.setItem('sDebug', '1')
+    }
+  }
+  const onKeyUp = (ev: KeyboardEvent): void => {
+    keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
+  }
+
+  window.addEventListener('keydown', onKeyDown, false)
+  window.addEventListener('keyup', onKeyUp, false)
+  window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
+
+  log('--- PAGE_SCRIPT background.js --- APP PAGE ---', {info: window.location.href})
 }
 
 log('--- PAGE_SCRIPT background.js ---')

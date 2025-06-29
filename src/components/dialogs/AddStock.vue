@@ -10,6 +10,7 @@ import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from '
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useAppApi} from '@/pages/background'
+import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
   _isin: string
@@ -23,6 +24,7 @@ const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
+const settings = useSettingsStore()
 
 const state: Reactive<IState> = reactive({
   _isin: '',
@@ -51,10 +53,17 @@ const ok = async (): Promise<void> => {
   if (formIs.valid) {
     try {
       const stock = {
+        cID: -1,
         cCompany: state._company.trim(),
         cISIN: state._isin,
         cWKN: state._wkn,
         cSymbol: state._symbol,
+        cMeetingDay: '',
+        cQuarterDay: '',
+        cFadeOut: 0,
+        cFirstPage: 0,
+        cURL: '',
+        cAccountNumberID: settings.activeAccountId
       }
       records.addStock(stock)
       const addStockResponse = await browser.runtime.sendMessage(JSON.stringify({
@@ -96,7 +105,7 @@ log('--- AddStock.vue setup ---')
         v-bind:label="t('dialogs.addStock.isin')"
         v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
         variant="outlined"
-        v-on:focus="formRef?.resetValidation"
+        v-on:focus="formRef!.value!.resetValidation()"
         v-on:update:modelValue="onIsin"
       ></v-text-field>
       <v-text-field

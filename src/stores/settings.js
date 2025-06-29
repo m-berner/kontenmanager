@@ -5,95 +5,64 @@ const { CONS, log } = useAppApi();
 export const useSettingsStore = defineStore('settings', {
     state: () => {
         return {
-            _skin: CONS.DEFAULTS.STORAGE.SKIN,
-            _bookings_per_page: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
-            _stocks_per_page: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE,
-            _active_account_id: -1,
-            _partner: false,
-            _service: CONS.DEFAULTS.STORAGE.SERVICE,
-            _materials: CONS.DEFAULTS.STORAGE.MATERIALS,
-            _markets: CONS.DEFAULTS.STORAGE.MARKETS,
-            _indexes: CONS.DEFAULTS.STORAGE.INDEXES,
-            _exchanges: CONS.DEFAULTS.STORAGE.EXCHANGES
+            skin: CONS.DEFAULTS.STORAGE.SKIN,
+            bookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
+            stocksPerPage: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE,
+            activeAccountId: -1,
+            partner: false,
+            service: CONS.DEFAULTS.STORAGE.SERVICE,
+            materials: CONS.DEFAULTS.STORAGE.MATERIALS,
+            markets: CONS.DEFAULTS.STORAGE.MARKETS,
+            indexes: CONS.DEFAULTS.STORAGE.INDEXES,
+            exchanges: CONS.DEFAULTS.STORAGE.EXCHANGES
         };
     },
-    getters: {
-        activeAccountId(state) {
-            return state._active_account_id;
-        },
-        bookingsPerPage(state) {
-            return state._bookings_per_page;
-        },
-        stocksPerPage(state) {
-            return state._stocks_per_page;
-        },
-        skin(state) {
-            return state._skin;
-        },
-        partner(state) {
-            return state._partner;
-        },
-        service(state) {
-            return state._service;
-        },
-        materials(state) {
-            return state._materials;
-        },
-        markets(state) {
-            return state._markets;
-        },
-        indexes(state) {
-            return state._indexes;
-        },
-        exchanges(state) {
-            return state._exchanges;
-        }
-    },
+    getters: {},
     actions: {
         setActiveAccountId(value) {
-            this._active_account_id = value;
+            this.activeAccountId = value;
         },
         setBookingsPerPage(value) {
-            this._bookings_per_page = value;
+            this.bookingsPerPage = value;
         },
         setStocksPerPage(value) {
-            this._stocks_per_page = value;
+            this.stocksPerPage = value;
         },
         setSkin(theme, value) {
             theme.global.name.value = value;
-            this._skin = value;
+            this.skin = value;
         },
         setPartner(value) {
-            this._partner = value;
+            this.partner = value;
         },
         setService(value) {
-            this._service = value;
+            this.service = value;
         },
         setMaterials(value) {
-            this._materials = value;
+            this.materials = value;
         },
         setMarkets(value) {
-            this._markets = value;
+            this.markets = value;
         },
         setIndexes(value) {
-            this._indexes = value;
+            this.indexes = value;
         },
         setExchanges(value) {
-            this._exchanges = value;
+            this.exchanges = value;
         },
         initStore(theme, storage) {
             log('SETTINGS: initStore');
             theme.global.name.value = storage.sSkin;
-            this._skin = storage.sSkin;
-            this._bookings_per_page = storage.sBookingsPerPage;
-            this._stocks_per_page = storage.sStocksPerPage;
-            this._active_account_id = storage.sActiveAccountId;
-            this._partner = storage.sPartner;
-            this._service = storage.sService;
-            this._materials = storage.sMaterials;
-            this._markets = storage.sMarkets;
-            this._indexes = storage.sIndexes;
-            this._exchanges = storage.sExchanges;
+            this.skin = storage.sSkin;
+            this.bookingsPerPage = storage.sBookingsPerPage;
+            this.stocksPerPage = storage.sStocksPerPage;
+            this.activeAccountId = storage.sActiveAccountId;
+            this.partner = storage.sPartner;
+            this.service = storage.sService;
+            this.materials = storage.sMaterials;
+            this.markets = storage.sMarkets;
+            this.indexes = storage.sIndexes;
+            this.exchanges = storage.sExchanges;
         }
     }
 });

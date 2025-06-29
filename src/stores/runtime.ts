@@ -11,71 +11,66 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
 interface ITelePort {
-  dialog_name: string
-  show_ok_button: boolean
-  show_header_dialog: boolean
-  show_option_dialog: boolean
+  dialogName: string
+  okButton: boolean
+  visibility: boolean
 }
 
 interface IRuntimeStore {
-  _booking_id: number
-  _logo: string
-  _teleport: {
-    dialog_name: string
-    show_ok_button: boolean
-    show_header_dialog: boolean
-    show_option_dialog: boolean
-  }
+  bookingId: number
+  logo: string
+  teleport: ITelePort
+}
+
+interface IRuntimeGetter {
+  //
+}
+
+interface IRuntimeActions {
+  setLogo: () => void
+  setBookingId: (bookingId: number) => void
+  setTeleport: (teleport: ITelePort) => void
+  resetTeleport: () => void
 }
 
 const {CONS, log} = useAppApi()
 
-export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore> = defineStore('runtime', {
+export const useRuntimeStore: StoreDefinition<'runtime', IRuntimeStore, IRuntimeGetter, IRuntimeActions> = defineStore('runtime', {
   state: (): IRuntimeStore => {
     return {
-      _booking_id: -1,
-      _logo: CONS.LOGOS.NO_LOGO,
-      _teleport: {
-        dialog_name: '',
-        show_ok_button: true,
-        show_header_dialog: false,
-        show_option_dialog: false
+      bookingId: -1,
+      logo: CONS.LOGOS.NO_LOGO,
+      teleport: {
+        dialogName: '',
+        okButton: true,
+        visibility: false
       }
     }
   },
   getters: {
-    bookingId(state: IRuntimeStore) {
-      return state._booking_id
-    },
-    logo(state: IRuntimeStore) {
-      return state._logo
-    },
-    teleport(state: IRuntimeStore) {
-      return state._teleport
-    }
+    //
   },
   actions: {
     setLogo() {
       const records = useRecordsStore()
       const settings = useSettingsStore()
       if (settings.activeAccountId > -1) {
-        this._logo = records.accounts[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl
+        this.logo = records.accounts[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl
       } else {
-        this._logo = CONS.LOGOS.NO_LOGO
+        this.logo = CONS.LOGOS.NO_LOGO
       }
     },
-    setBookingId(value: number) {
-      this._booking_id = value
+    setBookingId(value) {
+      this.bookingId = value
     },
-    setTeleport(entry: ITelePort) {
-      this._teleport = entry
+    setTeleport(entry) {
+      this.teleport = entry
     },
-    resetTeleport(): void {
-      this._teleport = {
-        dialog_name: '',
-        show_ok_button: true,
-        show_header_dialog: false,
-        show_option_dialog: false
+    resetTeleport() {
+      this.teleport = {
+        dialogName: '',
+        okButton: true,
+        visibility: false,
       }
     }
   }

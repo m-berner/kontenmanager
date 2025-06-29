@@ -28,8 +28,8 @@ const ok = async (): Promise<void> => {
   log('DELETE_STOCK: ok')
   try {
     // TODO in all delete dialogs,move to background!
-    const result = await records.deleteAccount(state._selected)
-    if (result === 'Stock deleted') {
+    // TODO sendMessage to delete from DB
+    records.deleteStock(state._selected)
       formRef.value?.reset()
       if (records.accounts.length > 0) {
         settings.setActiveAccountId(records.accounts[0].cID)
@@ -40,7 +40,6 @@ const ok = async (): Promise<void> => {
       }
       runtime.setLogo()
       await notice([t('dialogs.deleteStock.success')])
-    }
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteStock.error')])

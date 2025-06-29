@@ -13,12 +13,18 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/OptionMenu.vue'
 import {reactive} from 'vue'
+import {type VDataTable} from 'vuetify/components'
 
-interface IHeader {
-  title: string,
-  align: string,
-  sortable: boolean,
-  key: string
+type TAlign = 'start' | 'center' | 'end' | undefined
+type TReadonlyHeaders = VDataTable['$props']['headers']
+type TMenuItem = {
+  id: string
+  title: string
+  icon?: string
+}
+
+interface State {
+  _search: string
 }
 
 const {d, n, rt, t, tm} = useI18n()
@@ -26,11 +32,27 @@ const {CONS, log, utcDate} = useAppApi()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const {_bookings} = storeToRefs(records)
-const {_bookings_per_page} = storeToRefs(settings)
+const {bookings} = storeToRefs(records)
+const {bookingsPerPage} = storeToRefs(settings)
 
-const state = reactive({
+const state: State = reactive({
   _search: ''
+})
+
+const headers = (tm<'appPage.headers'>('appPage.headers') as TReadonlyHeaders)?.map((item) => {
+  return {
+    title: rt(item?.title ?? ''),
+    align: rt(item.align ?? '') as TAlign,
+    sortable: item.sortable,
+    key: rt(item.key ?? '')
+  }
+})
+const menuItems = (tm<'appPage.menuItems'>('appPage.menuItems') as TMenuItem[]).map((item) => {
+  return {
+    title: rt(item.title ?? ''),
+    id: rt(item.id ?? ''),
+    icon: rt(item.icon ?? '')
+  }
 })
 
 log('--- HomeContent.vue setup ---')
@@ -49,18 +71,11 @@ log('--- HomeContent.vue setup ---')
   <v-data-table
     density="compact"
     item-key="cID"
-    v-bind:headers="tm('appPage.headers').map((item: IHeader): IHeader => {
-    return {
-      title: rt(item.title),
-      align: rt(item.align),
-      sortable: item.sortable,
-      key: rt(item.key)
-    }
-  })"
+    v-bind:headers="headers"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="_bookings"
-    v-bind:items-per-page="_bookings_per_page"
+    v-bind:items="bookings"
+    v-bind:items-per-page="bookingsPerPage"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('appPage.itemsPerPageText')"
     v-bind:no-data-text="t('appPage.noDataText')"
@@ -70,7 +85,7 @@ log('--- HomeContent.vue setup ---')
       <tr class="table-row">
         <td>
           <OptionMenu
-            v-bind:menuItems="tm('appPage.menuItems')"
+            v-bind:menuItems="menuItems"
             v-bind:recordID="item.cID"
           ></OptionMenu>
         </td>

@@ -12,18 +12,17 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
-import {toRaw} from 'vue'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 const {CONS, log} = useAppApi()
+const {activeAccountId} = storeToRefs(settings)
+// TODO use settings getter?
 
-const {_active_account_id} = storeToRefs(settings)
-
-const cUpdateTitlebar = (): void => {
-  browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: toRaw(_active_account_id.value)}))
+const cUpdateTitleBar = (): void => {
+  browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID}))
 }
 
 log('--- TitleBar.vue setup ---')
@@ -43,14 +42,14 @@ log('--- TitleBar.vue setup ---')
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
-      v-if="_active_account_id > 0"
-      v-model="_active_account_id"
+      v-if="activeAccountId > 0"
+      v-model="activeAccountId"
       max-width="300"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts"
       v-bind:label="t('titleBar.selectAccountLabel')"
-      v-on:update:modelValue="cUpdateTitlebar"
+      v-on:update:modelValue="cUpdateTitleBar"
     ></v-select>
   </v-app-bar>
 </template>

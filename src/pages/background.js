@@ -73,6 +73,8 @@ export const useAppApi = () => {
             },
             DEFAULTS: {
                 BACKGROUND: '_generated_background_page.html',
+                APP: 'app.html',
+                OPTIONS: 'options.html',
                 CURRENCY: 'EUR',
                 LANG: 'de',
                 LOCALE: 'de-DE',
@@ -467,7 +469,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 const stocks = [];
                 const bookingTypes = [];
                 return new Promise(async (resolve, reject) => {
-                    if (dbi != null) {
+                    if (dbi !== null) {
                         const onComplete = async () => {
                             log('BACKGROUND: exportDatabase: data read!');
                             const stringifyDB = () => {
@@ -980,9 +982,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
         };
     };
-    let dbi;
     const { exportDatabase, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, toStores, addStores, deleteStock, open } = useDatabaseApi();
     const { fetchCompanyData } = useFetchApi();
+    let dbi;
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
         const installStorageLocal = async () => {
@@ -1115,8 +1117,13 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     resolve(response);
                     break;
                 case CONS.MESSAGES.DB__CLOSE:
-                    dbi.close();
-                    resolve('DB closed');
+                    if (dbi !== undefined) {
+                        dbi.close();
+                        resolve('DB closed');
+                    }
+                    else {
+                        resolve('No DB open');
+                    }
                     break;
                 case CONS.MESSAGES.DB__EXPORT:
                     await exportDatabase(appMessage.data);
@@ -1252,6 +1259,39 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     browser.runtime.onInstalled.addListener(onInstall);
     browser.action.onClicked.addListener(onClick);
     browser.runtime.onMessage.addListener(onAppMessage);
-    console.info('--- PAGE_SCRIPT background.js --- onInstalled, onConnect, onClicked ---', window.location.href);
+    log('--- PAGE_SCRIPT background.js --- BACKGROUND PAGE ---', { info: window.location.href });
+}
+else if (window.location.href.includes(CONS.DEFAULTS.APP)) {
+    const keyStrokeController = [];
+    const onBeforeUnload = async () => {
+        log('BACKGROUND: onBeforeUnload');
+        await browser.runtime.sendMessage(JSON.stringify({ type: CONS.MESSAGES.DB__CLOSE }));
+    };
+    const onKeyDown = async (ev) => {
+        keyStrokeController.push(ev.key);
+        log('BACKGROUND: onKeyDown');
+        if (keyStrokeController.includes('Control') &&
+            keyStrokeController.includes('Alt') &&
+            ev.key === 'r') {
+            await browser.storage.local.clear();
+        }
+        if (keyStrokeController.includes('Control') &&
+            keyStrokeController.includes('Alt') &&
+            ev.key === 'd' && Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0) {
+            localStorage.setItem('sDebug', '0');
+        }
+        if (keyStrokeController.includes('Control') &&
+            keyStrokeController.includes('Alt') &&
+            ev.key === 'd' && !(Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0)) {
+            localStorage.setItem('sDebug', '1');
+        }
+    };
+    const onKeyUp = (ev) => {
+        keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1);
+    };
+    window.addEventListener('keydown', onKeyDown, false);
+    window.addEventListener('keyup', onKeyUp, false);
+    window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE);
+    log('--- PAGE_SCRIPT background.js --- APP PAGE ---', { info: window.location.href });
 }
 log('--- PAGE_SCRIPT background.js ---');

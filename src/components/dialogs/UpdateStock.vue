@@ -9,12 +9,14 @@
 import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
+const settings = useSettingsStore()
 
 const state = reactive({
   _swift: '',
@@ -49,9 +51,17 @@ const ok = async (): Promise<void> => {
   if (formIs.valid) {
     try {
       const stock = {
-        cSwift: state._swift.trim().toUpperCase(),
-        cNumber: state._number.replace(/\s/g, ''),
-        cLogoUrl: state._logoUrl
+        cID: -1,
+        cCompany: state._number.replace(/\s/g, ''),
+        cISIN: state._logoUrl,
+        cWKN: '',
+        cSymbol: '',
+        cFadeOut: 0,
+        cFirstPage: 0,
+        cMeetingDay: '',
+        cQuarterDay: '',
+        cURL: '',
+        cAccountNumberID: settings.activeAccountId
       }
       records.updateStock(stock)
       await browser.runtime.sendMessage(JSON.stringify({

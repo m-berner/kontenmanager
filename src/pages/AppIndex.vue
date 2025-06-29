@@ -18,42 +18,6 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log} = useAppApi()
-const keyStrokeController: string[] = []
-const onBeforeUnload = async (ev: Event): Promise<void> => {
-  log('APP_INDEX: onBeforeUnload', {info: ev})
-  const foundTabs = await browser.tabs.query({url: 'about:addons'})
-  if (foundTabs.length > 0) {
-    await browser.tabs.remove(foundTabs[0].id ?? 0)
-  }
-}
-const onKeyDown = (ev: KeyboardEvent): void => {
-  keyStrokeController.push(ev.key)
-  log('APP_INDEX: onKeyDown')
-  if (
-    keyStrokeController.includes('Control') &&
-    keyStrokeController.includes('Alt') &&
-    ev.key === 'r'
-  ) {
-    browser.storage.local.clear()
-  }
-  if (
-    keyStrokeController.includes('Control') &&
-    keyStrokeController.includes('Alt') &&
-    ev.key === 'd' && Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0
-  ) {
-    localStorage.setItem('sDebug', '0')
-  }
-  if (
-    keyStrokeController.includes('Control') &&
-    keyStrokeController.includes('Alt') &&
-    ev.key === 'd' && !(Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0)
-  ) {
-    localStorage.setItem('sDebug', '1')
-  }
-}
-const onKeyUp = (ev: KeyboardEvent): void => {
-  keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
-}
 const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
   const changesKey = Object.keys(changes)
   switch(changesKey[0]) {
@@ -79,9 +43,6 @@ const onStorageChange = (changes: Record<string, browser.storage.StorageChange>)
   }
 }
 
-window.addEventListener('keydown', onKeyDown, false)
-window.addEventListener('keyup', onKeyUp, false)
-window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
 browser.storage.local.onChanged.addListener(onStorageChange)
 
 onBeforeMount(async (): Promise<void> => {

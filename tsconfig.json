@@ -29,7 +29,7 @@
       ]
     },
     "module": "esnext",
-    "target": "esnext",
+    "target": "es2022",
     "useDefineForClassFields": true,
     "outDir": "./src",
     "removeComments": true,
@@ -67,11 +67,12 @@
     /* Linting */
     "strict": true,
     "strictNullChecks": true,
+    "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
   "vueCompilerOption": {
-    "target": 3.4
+    "target": 3.5
   }
 }

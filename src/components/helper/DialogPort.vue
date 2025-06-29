@@ -12,13 +12,12 @@ import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
-
 const runtime = useRuntimeStore()
 </script>
 
 <template>
   <Teleport to="body">
-    <v-dialog v-bind:modelValue="runtime.teleport.showHeaderDialog || runtime.teleport.showOptionDialog" v-bind:persistent="true" width="500">
+    <v-dialog v-bind:modelValue="runtime.teleport.visibility" v-bind:persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
           {{ dialogRef?.title }}
@@ -30,7 +29,7 @@ const runtime = useRuntimeStore()
           <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
             <template v-slot:activator="{ props }">
               <v-btn
-                v-if="runtime.teleport.showOkButton"
+                v-if="runtime.teleport.okButton"
                 class="ml-auto"
                 icon="$check"
                 type="submit"

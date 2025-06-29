@@ -9,7 +9,7 @@
 import {type CurrencyInputOptions, useCurrencyInput} from 'vue-currency-input'
 
 interface CurrencyInputProps {
-  modelValue: number
+  //modelValue: number
   options: CurrencyInputOptions
   label: string
   disabled?: boolean
@@ -21,7 +21,7 @@ const {inputRef, formattedValue} = useCurrencyInput(_props.options)
 
 <template>
   <v-text-field
-    ref="inputRef"
+    v-bind:ref="inputRef"
     density="compact"
     type="text"
     v-bind:disabled="_props.disabled"

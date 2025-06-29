@@ -191,7 +191,7 @@ log('--- AddBooking.vue setup ---')
             v-bind:label="t('dialogs.addBooking.dateLabel')"
             v-bind:rules="VALIDATORS.dateRules([t('validators.dateRules', 0)])"
             variant="outlined"
-            v-on:focus="formRef?.resetValidation"
+            v-on:focus="formRef!.value!.resetValidation()"
           ></v-text-field>
         </v-col>
         <v-col>
@@ -282,7 +282,7 @@ log('--- AddBooking.vue setup ---')
             v-bind:label="t('dialogs.addBooking.exDateLabel')"
             v-bind:rules="VALIDATORS.dateRules([t('validators.dateRules', 0)])"
             variant="outlined"
-            v-on:focus="formRef?.resetValidation"
+            v-on:focus="formRef!.value!.resetValidation()"
           ></v-text-field>
         </v-col>
         <v-col>

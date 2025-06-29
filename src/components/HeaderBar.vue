@@ -10,12 +10,10 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
-//import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
 const {CONS, log} = useAppApi()
 const runtime = useRuntimeStore()
-//const settings = useSettingsStore()
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('HEADER_BAR: onIconClick')
@@ -25,97 +23,85 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.DIALOGS.ADD_STOCK:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_STOCK,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.UPDATE_STOCK:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.UPDATE_STOCK,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.DELETE_STOCK:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_STOCK,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_ACCOUNT,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.UPDATE_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.UPDATE_ACCOUNT,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.DELETE_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.ADD_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.DELETE_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.ADD_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_BOOKING,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.EXPORT_DATABASE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.EXPORT_DATABASE,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.IMPORT_DATABASE:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.IMPORT_DATABASE,
-          showOkButton: true,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       case CONS.DIALOGS.SHOW_ACCOUNTING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
-          showOkButton: false,
-          showHeaderDialog: true,
-          showOptionDialog: false
+          okButton: false,
+          visibility: true
         })
         break
       case CONS.DIALOGS.SETTING:

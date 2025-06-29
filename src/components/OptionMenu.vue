@@ -22,16 +22,15 @@ const {CONS, log} = useAppApi()
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTION_MENU: onIconClick', {info: _props.recordID})
-  runtime.setBookingId(_props.recordID)
+  runtime.setBookingId(_props.recordID ?? -1)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.DELETE_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.DELETE_BOOKING,
-          showOkButton: true,
-          showOptionDialog: true,
-          showHeaderDialog: false
+          okButton: true,
+          visibility: true
         })
         break
       default:

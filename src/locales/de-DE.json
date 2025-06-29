@@ -47,6 +47,7 @@
         "title": "Soll",
         "align": "start",
         "sortable": false,
+        "visible": true,
         "key": "cDebit"
       },
       {

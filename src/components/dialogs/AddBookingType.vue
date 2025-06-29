@@ -28,6 +28,7 @@ const ok = async (): Promise<void> => {
   if (formIs.valid) {
     try {
       const bookingType = {
+        cID: -1,
         cName: state._name.trim(),
         cAccountNumberID: settings.activeAccountId
       }
