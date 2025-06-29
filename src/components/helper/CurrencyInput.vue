@@ -9,7 +9,6 @@
 import {type CurrencyInputOptions, useCurrencyInput} from 'vue-currency-input'
 
 interface CurrencyInputProps {
-  //modelValue: number
   options: CurrencyInputOptions
   label: string
   disabled?: boolean

@@ -12,7 +12,7 @@ import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/OptionMenu.vue'
-import {reactive} from 'vue'
+import {type Reactive, reactive} from 'vue'
 import {type VDataTable} from 'vuetify/components'
 
 type TAlign = 'start' | 'center' | 'end' | undefined
@@ -23,7 +23,7 @@ type TMenuItem = {
   icon?: string
 }
 
-interface State {
+interface IState {
   _search: string
 }
 
@@ -35,7 +35,7 @@ const settings = useSettingsStore()
 const {bookings} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
 
-const state: State = reactive({
+const state: Reactive<IState> = reactive({
   _search: ''
 })
 

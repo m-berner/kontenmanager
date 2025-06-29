@@ -15,13 +15,13 @@ const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
 const txt = { filename: fn }
 
-const ok = (): void => {
-  log('EXPORT_DATABASE: ok')
+ const onClickOk = (): void => {
+  log('EXPORT_DATABASE : onClickOk')
   browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__EXPORT, data: fn}))
 }
 const title = t('dialogs.exportDatabase.title')
 
-defineExpose({ok, title})
+defineExpose( {onClickOk, title})
 
 log('--- ExportDatabase.vue setup ---')
 </script>

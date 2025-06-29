@@ -6,12 +6,16 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, toRaw, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, type Reactive, reactive, toRaw, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
+
+interface IState {
+  _selected: number
+}
 
 const {t} = useI18n()
 const {CONS, log, notice} = useAppApi()
@@ -20,12 +24,12 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _selected: -1
 })
 
-const ok = async (): Promise<void> => {
-  log('DELETE_ACCOUNT: ok')
+ const onClickOk = async (): Promise<void> => {
+  log('DELETE_ACCOUNT : onClickOk')
   try {
     records.deleteAccount(state._selected)
     await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__DELETE_ACCOUNT, data: toRaw(state._selected)}))
@@ -47,7 +51,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.deleteAccount.title')
 
-defineExpose({ok, title})
+defineExpose( {onClickOk, title})
 
 onMounted(() => {
   log('DELETE_ACCOUNT: onMounted')

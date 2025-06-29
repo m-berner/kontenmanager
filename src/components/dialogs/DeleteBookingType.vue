@@ -6,21 +6,25 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onMounted, reactive, useTemplateRef} from 'vue'
+import {onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
+
+interface IState {
+  _selected: number
+}
 
 const {t} = useI18n()
 const {CONS, log, notice} = useAppApi()
 const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _selected: -1
 })
-const ok = async (): Promise<void> => {
-  log('DELETE_BOOKING_TYPE: ok')
+const onClickOk = async (): Promise<void> => {
+  log('DELETE_BOOKING_TYPE : onClickOk')
   try {
     if (state._selected > 1) {
       await records.deleteBookingType(state._selected)
@@ -36,7 +40,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.deleteBookingType.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('DELETE_BOOKING_TYPE: onMounted')

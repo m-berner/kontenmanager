@@ -11,7 +11,7 @@ import {useTemplateRef} from 'vue'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const dialogRef = useTemplateRef<{ ok: null, title: string }>('dialog-ref')
+const dialogRef = useTemplateRef<{ onClickOk: null, title: string }>('dialog-ref')
 const runtime = useRuntimeStore()
 </script>
 
@@ -35,7 +35,7 @@ const runtime = useRuntimeStore()
                 type="submit"
                 v-bind="props"
                 variant="outlined"
-                v-on:click="dialogRef?.ok"
+                v-on:click="dialogRef?.onClickOk"
               ></v-btn>
             </template>
           </v-tooltip>

@@ -6,21 +6,39 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useAppApi} from '@/pages/background'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
 
+interface IState {
+  _date: string
+  _ex_date: string
+  _credit: number
+  _debit: number
+  _description: string
+  _count: number
+  _unit_quotation: number
+  _booking_type_id: number
+  _account_type_id: number
+  _stock_id: number
+  _source_tax: number
+  _transaction_tax: number
+  _tax: number
+  _fee: number
+  _soli: number
+  _market_place: string
+}
+
 const {t} = useI18n()
-const {notice, VALIDATORS} = useAppApi()
+const {CONS, log, notice, VALIDATORS} = useAppApi()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const formRef = useTemplateRef('form-ref')
-const {CONS, log} = useAppApi()
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _date: '',
   _ex_date: '',
   _credit: 0,
@@ -39,8 +57,8 @@ const state = reactive({
   _market_place: ''
 })
 
-const ok = async (): Promise<void> => {
-  log('ADD_BOOKING: ok')
+const onClickOk = async (): Promise<void> => {
+  log('ADD_BOOKING : onClickOk')
   let booking: object = {}
   let costs: number = 0
   let result: number = 0
@@ -50,7 +68,7 @@ const ok = async (): Promise<void> => {
       costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
       switch (state._booking_type_id) {
         case 1:
-          result = state._count*state._unit_quotation + costs
+          result = state._count * state._unit_quotation + costs
           booking = {
             cDate: state._date,
             cCredit: result < 0 ? -result : 0,
@@ -70,7 +88,7 @@ const ok = async (): Promise<void> => {
           }
           break
         case 2:
-          result = state._count*state._unit_quotation - costs
+          result = state._count * state._unit_quotation - costs
           booking = {
             cDate: state._date,
             cCredit: result > 0 ? result : 0,
@@ -90,7 +108,7 @@ const ok = async (): Promise<void> => {
           }
           break
         case 3:
-          result = state._count*state._unit_quotation - costs
+          result = state._count * state._unit_quotation - costs
           booking = {
             cDate: state._date,
             cCredit: result > 0 ? result : 0,
@@ -151,7 +169,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.addBooking.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_BOOKING: onMounted')

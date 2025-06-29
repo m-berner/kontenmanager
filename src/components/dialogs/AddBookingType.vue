@@ -6,11 +6,15 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
+
+interface IState {
+  _name: string
+}
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
@@ -18,12 +22,12 @@ const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _name: ''
 })
 
-const ok = async (): Promise<void> => {
-  log('ADD_BOOKING_TYPE: ok')
+const onClickOk = async (): Promise<void> => {
+  log('ADD_BOOKING_TYPE: onClickOk')
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
@@ -48,7 +52,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.addBookingType.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_BOOKING_TYPE: onMounted')

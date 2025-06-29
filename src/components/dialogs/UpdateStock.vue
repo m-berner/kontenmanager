@@ -6,11 +6,19 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
+
+interface IState {
+  _swift: string
+  _number: string
+  _logoUrl: string
+  _logoSearchName: string
+  _stockAccount: number
+}
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
@@ -18,7 +26,7 @@ const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _swift: '',
   _number: '',
   _logoUrl: '',
@@ -45,8 +53,8 @@ const ibanMask = (iban: string) => {
   }
 }
 
-const ok = async (): Promise<void> => {
-  log('UPDATE_STOCK: ok')
+const onClickOk = async (): Promise<void> => {
+  log('UPDATE_STOCK : onClickOk')
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
@@ -77,7 +85,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.addAccount.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_ACCOUNT: onMounted')

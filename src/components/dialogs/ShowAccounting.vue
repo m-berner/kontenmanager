@@ -6,23 +6,23 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive} from 'vue'
+import {defineExpose, onMounted, type Reactive, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useAppApi} from '@/pages/background'
 
 interface IShowAccounting {
-  _result: Array<{title: string, subtitle: string}>
+  _result: Array<{ title: string, subtitle: string }>
 }
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const {log} = useAppApi()
 
-const state: IShowAccounting = reactive({
+const state: Reactive<IShowAccounting> = reactive({
   _result: []
 })
-const cAddEntryToResult = (value: {title: string, subtitle: string}) => {
+const cAddEntryToResult = (value: { title: string, subtitle: string }) => {
   state._result.push(value)
 }
 const title = t('dialogs.showAccounting.title')

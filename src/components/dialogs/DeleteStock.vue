@@ -6,12 +6,16 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
+
+interface IState {
+  _selected: number
+}
 
 const {t} = useI18n()
 const {CONS, log, notice} = useAppApi()
@@ -20,26 +24,26 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _selected: -1
 })
 
-const ok = async (): Promise<void> => {
-  log('DELETE_STOCK: ok')
+const onClickOk = async (): Promise<void> => {
+  log('DELETE_STOCK : onClickOk')
   try {
     // TODO in all delete dialogs,move to background!
     // TODO sendMessage to delete from DB
     records.deleteStock(state._selected)
-      formRef.value?.reset()
-      if (records.accounts.length > 0) {
-        settings.setActiveAccountId(records.accounts[0].cID)
-        await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
-      } else {
-        settings.setActiveAccountId(-1)
-        await browser.storage.local.set({sActiveAccountId: -1})
-      }
-      runtime.setLogo()
-      await notice([t('dialogs.deleteStock.success')])
+    formRef.value?.reset()
+    if (records.accounts.length > 0) {
+      settings.setActiveAccountId(records.accounts[0].cID)
+      await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
+    } else {
+      settings.setActiveAccountId(-1)
+      await browser.storage.local.set({sActiveAccountId: -1})
+    }
+    runtime.setLogo()
+    await notice([t('dialogs.deleteStock.success')])
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteStock.error')])
@@ -47,7 +51,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.deleteStock.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('DELETE_STOCK: onMounted')

@@ -47,8 +47,8 @@ const onIsin = async (): Promise<void> => {
     state._symbol = addStock.symbol.toUpperCase()
   }
 }
-const ok = async (): Promise<void> => {
-  log('ADD_STOCK: ok')
+const onClickOk = async (): Promise<void> => {
+  log('ADD_STOCK : onClickOk')
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
@@ -81,7 +81,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.addStock.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_STOCK: onMounted')

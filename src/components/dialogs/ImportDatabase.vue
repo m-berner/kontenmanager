@@ -11,22 +11,26 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
-import {reactive, type UnwrapRef} from 'vue'
+import {type Reactive, reactive, type UnwrapRef} from 'vue'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: UnwrapRef<Blob>[] }
+}
+
+interface IState {
+  _chosen_file: Blob
 }
 
 const {t} = useI18n()
 const {CONS, log} = useAppApi()
 const settings = useSettingsStore()
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _chosen_file: new Blob()
 })
 
-const ok = async (): Promise<void> => {
-  log('IMPORT_DATABASE: ok', {info: state._chosen_file})
+const onClickOk = async (): Promise<void> => {
+  log('IMPORT_DATABASE : onClickOk', {info: state._chosen_file})
   const {notice} = useAppApi()
   const records = useRecordsStore()
   const runtime = useRuntimeStore()
@@ -59,7 +63,6 @@ const ok = async (): Promise<void> => {
           visibility: true
         })
         records.cleanStore()
-        console.error('kkkkkk', state)
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {
@@ -110,7 +113,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.importDatabase.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 log('--- ImportDatabase.vue setup ---')
 </script>

@@ -10,19 +10,23 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {reactive} from 'vue'
+import {type Reactive, reactive} from 'vue'
+
+interface IState {
+  _bookingId: number
+}
 
 const {t} = useI18n()
 const {CONS, log, notice} = useAppApi()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _bookingId: runtime.bookingId
 })
 
-const ok = async (): Promise<void> => {
-  log('DELETE_BOOKING: ok')
+const onClickOk = async (): Promise<void> => {
+  log('DELETE_BOOKING : onClickOk')
   try {
     records.deleteBooking(state._bookingId)
     runtime.setLogo()
@@ -39,7 +43,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.deleteBooking.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 log('--- DeleteBooking.vue setup ---')
 </script>

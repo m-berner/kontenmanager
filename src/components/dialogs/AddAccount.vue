@@ -6,12 +6,20 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
+
+interface IState {
+  _swift: string
+  _number: string
+  _logoUrl: string
+  _logoSearchName: string
+  _stockAccount: boolean
+}
 
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
@@ -20,7 +28,7 @@ const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
-const state = reactive({
+const state: Reactive<IState> = reactive({
   _swift: '',
   _number: '',
   _logoUrl: '',
@@ -28,10 +36,10 @@ const state = reactive({
   _stockAccount: false
 })
 
-const onInput = () => {
+const onInputLogoName = () => {
   state._logoUrl = `https://cdn.brandfetch.io/${state._logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
-const ibanMask = (iban: string) => {
+const onUpdateIbanMask = (iban: string) => {
   if (iban !== '') {
     const withoutSpace = iban.replace(/\s/g, '')
     const loops = Math.ceil(withoutSpace.length / 4)
@@ -46,9 +54,8 @@ const ibanMask = (iban: string) => {
     state._number = masked
   }
 }
-
-const ok = async (): Promise<void> => {
-  log('ADD_ACCOUNT: ok')
+const onClickOk = async (): Promise<void> => {
+  log('ADD_ACCOUNT: onClickOk')
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
@@ -76,7 +83,7 @@ const ok = async (): Promise<void> => {
 }
 const title = t('dialogs.addAccount.title')
 
-defineExpose({ok, title})
+defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_ACCOUNT: onMounted')
@@ -108,7 +115,7 @@ log('--- AddAccount.vue setup ---')
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
       v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
-      @update:modelValue="ibanMask"
+      @update:modelValue="onUpdateIbanMask"
     ></v-text-field>
     <v-text-field
       v-model="state._logoSearchName"
@@ -118,7 +125,7 @@ log('--- AddAccount.vue setup ---')
       v-bind:label="t('dialogs.addAccount.logoLabel')"
       v-bind:rules="VALIDATORS.brandNameRules([t('validators.brandNameRules', 0)])"
       variant="outlined"
-      v-on:input="onInput"
+      v-on:input="onInputLogoName"
     ></v-text-field>
     <img alt="logo" v-bind:src="state._logoUrl">
   </v-form>
