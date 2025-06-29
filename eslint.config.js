@@ -15,7 +15,6 @@ export default [
             '@stylistic/ts/indent': ['error', 2, {'SwitchCase': 1}],
             'semi': ['error', 'never'],
             '@stylistic/ts/semi': ['error', 'never']
-            //'@typescript-eslint/ts/no-namespace': ['error'],
         }
     }, {
         files: ['**/*.js'], plugins: {
@@ -30,7 +29,7 @@ export default [
         files: ['**/*.{vue,ts}'],
         languageOptions: {parserOptions: {parser: tseslint.parser}},
         rules: {
-            //'@typescript-eslint/no-namespace': 'off',
+            '@typescript-eslint/no-namespace': 0
         }
     }
 ]

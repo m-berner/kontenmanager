@@ -94,7 +94,7 @@ declare global {
     sMarkets: string[]
   }
 }
-// eslint-disable-next-line @typescript-eslint/no-namespace
+
 declare namespace FetchedResources {
   interface ICompanyData {
     company: string
@@ -1848,8 +1848,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   browser.runtime.onMessage.addListener(onAppMessage)
 
   log('--- PAGE_SCRIPT background.js --- BACKGROUND PAGE ---', {info: window.location.href})
-}
-else if (window.location.href.includes(CONS.DEFAULTS.APP)) {
+} else if (window.location.href.includes(CONS.DEFAULTS.APP)) {
   const keyStrokeController: string[] = []
   const onBeforeUnload = async (): Promise<void> => {
     log('BACKGROUND: onBeforeUnload')

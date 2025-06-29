@@ -11,10 +11,10 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
-import {reactive} from 'vue'
+import {reactive, type UnwrapRef} from 'vue'
 
 interface IEventTarget extends HTMLInputElement {
-  target: { files: File[] }
+  target: { files: UnwrapRef<Blob>[] }
 }
 
 const {t} = useI18n()
@@ -52,9 +52,7 @@ const ok = async (): Promise<void> => {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.IMPORT_MIN_VERSION.toString()})])
       } else if (backupObject.sm.cDBVersion === CONS.DB.IMPORT_MIN_VERSION) {
         // TODO import stockmanager backup file
-        // TODO think over showHeaderDialog, showOptionDialg are both required?
         await notice([t('Please add corresponding account data!')])
-
         runtime.setTeleport({
           dialogName: CONS.DIALOGS.ADD_ACCOUNT,
           okButton: true,
