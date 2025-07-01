@@ -21,22 +21,22 @@ const {CONS, log} = useAppApi()
 const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
   const changesKey = Object.keys(changes)
   switch(changesKey[0]) {
-    case 'sSkin':
+    case CONS.STORAGE.PROPS.SKIN:
       settings.setSkin(theme, changes[changesKey[0]].newValue)
       break
-    case 'sService':
+    case CONS.STORAGE.PROPS.SERVICE:
       settings.setService(changes[changesKey[0]].newValue)
       break
-    case 'sIndexes':
+    case CONS.STORAGE.PROPS.INDEXES:
       settings.setService(changes[changesKey[0]].newValue)
       break
-    case 'sMarkets':
+    case CONS.STORAGE.PROPS.MARKETS:
       settings.setService(changes[changesKey[0]].newValue)
       break
-    case 'sMaterials':
+    case CONS.STORAGE.PROPS.MATERIALS:
       settings.setService(changes[changesKey[0]].newValue)
       break
-    case 'sExchanges':
+    case CONS.STORAGE.PROPS.EXCHANGES:
       settings.setService(changes[changesKey[0]].newValue)
       break
     default:
@@ -46,12 +46,12 @@ const onStorageChange = (changes: Record<string, browser.storage.StorageChange>)
 browser.storage.local.onChanged.addListener(onStorageChange)
 
 onBeforeMount(async (): Promise<void> => {
-  const initSettingsResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.APP__INIT_SETTINGS}))
-  settings.initStore(theme, JSON.parse(initSettingsResponse).data)
-  const toStoreResponse = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__TO_STORE}))
-  const toStoreData: IStores = JSON.parse(toStoreResponse).data
-  if (toStoreData.accounts.length > 0) {
-    records.initStore(toStoreData)
+  const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__GET_ALL}))
+  settings.initStore(theme, JSON.parse(storageResponseString).data)
+  const dbGetStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__GET_STORES}))
+  const dbGetStoresData: IStores = JSON.parse(dbGetStoresResponseString).data
+  if (dbGetStoresData.accounts.length > 0) {
+    records.initStore(dbGetStoresData)
     if (settings.activeAccountId === undefined) {
       settings.setActiveAccountId(records.accounts[0].cID)
     }

@@ -1,9 +1,9 @@
 import {defineConfig} from 'vite'
 import {fileURLToPath, URL} from 'url'
-import {dirname, resolve} from 'path'
+//import {dirname, resolve} from 'path'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
-import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+//import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import {viteStaticCopy} from 'vite-plugin-static-copy'
 import zipPack from 'vite-plugin-zip-pack'
 
@@ -12,11 +12,11 @@ export default defineConfig({
     plugins: [
         vue(),
         vuetify({ autoImport: true }),
-        VueI18nPlugin({
-            runtimeOnly: true,
-            compositionOnly: true,
-            include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**')
-        }),
+        // VueI18nPlugin({
+        //     runtimeOnly: true,
+        //     compositionOnly: true,
+        //     include: resolve(dirname(fileURLToPath(import.meta.url)), './src/locales/**')
+        // }),
         viteStaticCopy({
             targets: [
                 {

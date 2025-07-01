@@ -48,9 +48,9 @@
     "types": [
       "node",
       "@types/firefox-webext-browser",
-      "@intlify/unplugin-vue-i18n/messages",
-      "firefox",
-      "chrome"
+      "@types/firefox",
+      "@types/chrome",
+      "@types/web"
     ],
     /* Bundler mode */
     "composite": false,
@@ -66,10 +66,14 @@
     "jsx": "preserve",
     /* Linting */
     "strict": true,
+    "alwaysStrict": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
   "vueCompilerOption": {

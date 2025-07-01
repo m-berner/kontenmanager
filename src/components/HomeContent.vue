@@ -13,18 +13,24 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/OptionMenu.vue'
 import {type Reactive, reactive} from 'vue'
-import {type VDataTable} from 'vuetify/components'
 
 type TAlign = 'start' | 'center' | 'end' | undefined
-type TReadonlyHeaders = VDataTable['$props']['headers']
+
 type TMenuItem = {
-  id: string
-  title: string
-  icon?: string
+  readonly id: string
+  readonly title: string
+  readonly icon?: string
+}
+
+type THeader = {
+  readonly title: string
+  readonly align: TAlign
+  readonly sortable: boolean
+  readonly key: string
 }
 
 interface IState {
-  _search: string
+  search: string
 }
 
 const {d, n, rt, t, tm} = useI18n()
@@ -35,19 +41,26 @@ const settings = useSettingsStore()
 const {bookings} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
 
-const state: Reactive<IState> = reactive({
-  _search: ''
+const state: Reactive<IState> = reactive<IState>({
+  search: ''
 })
 
-const headers = (tm<'appPage.headers'>('appPage.headers') as TReadonlyHeaders)?.map((item) => {
+// NOTE: using "as" keyword for types means
+// the programmer decides what will be considered as the type of the object.
+// The "as" keyword is required mainly when TypeScriptValidateTypes (infer the type) fails.
+
+// Convert reactive messages array into non-reactive array (no Proxies)
+// noinspection TypeScriptValidateTypes
+const headers = (tm('appPage.headers') as THeader[])?.map((item: THeader) => {
   return {
-    title: rt(item?.title ?? ''),
+    title: rt(item.title ?? ''),
     align: rt(item.align ?? '') as TAlign,
     sortable: item.sortable,
     key: rt(item.key ?? '')
   }
 })
-const menuItems = (tm<'appPage.menuItems'>('appPage.menuItems') as TMenuItem[]).map((item) => {
+// noinspection TypeScriptValidateTypes
+const menuItems = (tm('appPage.menuItems') as TMenuItem[]).map((item) => {
   return {
     title: rt(item.title ?? ''),
     id: rt(item.id ?? ''),
@@ -60,7 +73,7 @@ log('--- HomeContent.vue setup ---')
 
 <template>
   <v-text-field
-    v-model="state._search"
+    v-model="state.search"
     density="compact"
     hide-details
     prepend-inner-icon="$magnify"
@@ -79,7 +92,7 @@ log('--- HomeContent.vue setup ---')
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('appPage.itemsPerPageText')"
     v-bind:no-data-text="t('appPage.noDataText')"
-    v-bind:search="state._search"
+    v-bind:search="state.search"
     v-on:update:items-per-page="(count) => { settings.setBookingsPerPage(count) }">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">

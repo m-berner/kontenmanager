@@ -1,70 +1,74 @@
 {
   "titleBar": {
-    "title": "Mein Girokonto",
-    "bookingsSumLabel": "Account balance",
+    "title": "KontenManager",
+    "bookingsSumLabel": "Kontostand",
     "selectAccountLabel": "IBAN",
-    "error": "No account has been created yet?"
+    "error": "Es wurde noch kein Konto angelegt?"
   },
   "headerBar": {
-    "home": "Homepage",
-    "reload": "Update courses",
-    "addBookingType": "Add booking type",
-    "deleteBookingType": "Remove booking type",
-    "addAccount": "Add bank account",
-    "deleteAccount": "Remove bank account",
-    "addBooking": "Add booking",
-    "exportDatabase": "Export database",
-    "importDatabase": "Import database",
-    "showAccounting": "Annual calculations",
-    "settings": "Settings"
+    "home": "Startseite",
+    "reload": "Kurse aktualisieren",
+    "addBookingType": "Buchungstyp hinzufügen",
+    "deleteBookingType": "Buchungstyp entfernen",
+    "addAccount": "Bankkonto hinzufügen",
+    "updateAccount": "Bankkonto bearbeiten",
+    "deleteAccount": "Bankkonto entfernen",
+    "addStock": "Aktien-Unternehmen hinzufügen",
+    "deleteStock": "Aktien-Unternehmen entfernen",
+    "updateStock": "Aktien-Unternehmen bearbeiten",
+    "addBooking": "Buchung hinzufügen",
+    "exportDatabase": "Datenbank exportieren",
+    "importDatabase": "Datenbank importieren",
+    "showAccounting": "Jahres-Berechnungen",
+    "settings": "Einstellungen"
   },
   "appPage": {
-    "search": "Seek",
+    "search": "Suchen",
     "headers": [
       {
         "title": "ID",
-        "align": " D-None",
+        "align": " d-none",
         "sortable": false,
         "key": "cID"
       },
       {
-        "title": "Actions",
+        "title": "Aktionen",
         "align": "start",
         "sortable": false,
         "key": "mAction"
       },
       {
-        "title": "Date",
+        "title": "Datum",
         "align": "start",
         "sortable": false,
         "key": "cDate"
       },
       {
-        "title": "Debit",
+        "title": "Soll",
         "align": "start",
         "sortable": false,
         "key": "cDebit"
       },
       {
-        "title": "Credit",
+        "title": "Haben",
         "align": "start",
         "sortable": false,
         "key": "cCredit"
       },
       {
-        "title": "Remark",
+        "title": "Bemerkung",
         "align": "start",
         "sortable": false,
         "key": "cDescription"
       },
       {
-        "title": "Booking type",
+        "title": "Buchungstyp",
         "align": "start",
         "sortable": false,
         "key": "cAccountType"
       },
       {
-        "title": "Account",
+        "title": "Konto",
         "align": " d-none",
         "sortable": false,
         "key": "cAccountNumberID"
@@ -73,263 +77,329 @@
     "menuItems": [
       {
         "id": "DeleteBooking",
-        "title": "Delete booking",
+        "title": "Buchung löschen",
         "icon": "$tableRemove"
       }
     ],
-    "noDataText": "No entries found.",
-    "itemsPerPageText": "Entries per page:"
+    "noDataText": "Keine Einträge gefunden.",
+    "itemsPerPageText": "Einträge pro Seite:"
   },
   "dialogs": {
-    "cancel": "Cancel",
+    "cancel": "Abbrechen",
     "ok": "OK",
     "addBooking": {
-      "title": "Add booking",
-      "dateLabel": "Booking day",
-      "descriptionLabel": "Remark",
-      "creditLabel": "Credit",
-      "debitLabel": "Debit",
-      "typeLabel": "Booking type",
-      "success": "Booking was added",
-      "error": "Enter error?"
+      "title": "Buchung hinzufügen",
+      "dateLabel": "Buchungstag",
+      "exDateLabel": "Ex-Tag",
+      "descriptionLabel": "Bemerkung",
+      "creditLabel": "Haben",
+      "debitLabel": "Soll",
+      "countLabel": "Anzahl",
+      "unitQuotationLabel": "Stückpreis",
+      "bookingTypeLabel": "Buchungstyp",
+      "feeLabel": "Gebühr",
+      "taxLabel": "Steuer",
+      "soliLabel": "Soli",
+      "stockLabel": "Unternehmen",
+      "marketPlaceLabel": "Handelsplatz",
+      "transactionTaxLabel": "Transaktionssteuer",
+      "sourceTaxLabel": "Quellensteuer",
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
+      "success": "Buchung wurde hinzugefügt",
+      "error": "Eingabe Fehler?"
     },
     "deleteBooking": {
-      "title": "Booking",
-      "ask": "Delete now?",
-      "success": "Booking was removed",
-      "error": "Enter error?"
+      "title": "Buchung",
+      "ask": "jetzt löschen?",
+      "success": "Buchung wurde entfernt",
+      "error": "Eingabe Fehler?"
     },
     "addAccount": {
-      "title": "Add bank account",
-      "swiftLabel": "BIC/SWIFT CODE",
+      "title": "Bankkonto hinzufügen",
+      "swiftLabel": "BIC/SWIFT Code",
       "logoLabel": "Logo brandfetch.com",
-      "accountNumberLabel": "Account number",
-      "currencyPlaceholder": "f. e. USD",
+      "stockAccountLabel": "Aktien Verrechnungskonto",
+      "accountNumberLabel": "Kontonummer",
+      "currencyPlaceholder": "z. B. EUR",
       "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "success": "Account was added",
-      "error": "Account already exists"
+      "success": "Konto wurde hinzugefügt",
+      "error": "Konto existiert bereits"
+    },
+    "updateAccount": {
+      "title": "Bankkonto aktualisieren",
+      "swiftLabel": "BIC/SWIFT Code",
+      "logoLabel": "Logo brandfetch.com",
+      "stockAccountLabel": "Aktien Verrechnungskonto",
+      "accountNumberLabel": "Kontonummer",
+      "currencyPlaceholder": "z. B. EUR",
+      "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "success": "Konto wurde aktualisiert",
+      "error": "Konto existiert bereits"
     },
     "deleteAccount": {
-      "title": "Remove bank account",
-      "accountNumberLabel": "Account number",
-      "success": "Account was removed",
-      "error": "Account was not removed?"
+      "title": "Bankkonto entfernen",
+      "accountNumberLabel": "Kontonummer",
+      "success": "Konto wurde entfernt",
+      "error": "Konto wurde nicht entfernt?"
     },
     "addBookingType": {
-      "title": "Add booking type",
-      "label": "Booking type",
-      "success": "Booking type was added",
-      "error": "Booking type already exists"
+      "title": "Buchungstyp hinzufügen",
+      "label": "Buchungstyp",
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
+      "success": "Buchungstyp wurde hinzugefügt",
+      "error": "Buchungstyp existiert bereits"
     },
     "deleteBookingType": {
-      "title": "Delete booking type",
-      "label": "Booking type",
-      "success": "Booking type was removed",
-      "error": "Booking type was not removed"
+      "title": "Buchungstyp löschen",
+      "label": "Buchungstyp",
+      "success": "Buchungstyp wurde entfernt",
+      "error": "Buchungstyp wurde nicht entfernt"
     },
     "showAccounting": {
-      "title": "Booking results",
-      "dateLabel": "Booking day",
-      "descriptionLabel": "Remark",
-      "creditLabel": "Credit",
-      "debitLabel": "Debit",
-      "success": "Booking was added",
-      "error": "Enter error?"
+      "title": "Buchungsergebnisse",
+      "dateLabel": "Buchungstag",
+      "descriptionLabel": "Bemerkung",
+      "creditLabel": "Einnahme",
+      "debitLabel": "Ausgabe",
+      "success": "Buchung wurde hinzugefügt",
+      "error": "Eingabe Fehler?"
     },
     "exportDatabase": {
-      "title": "Export database",
-      "filename": "File name"
+      "title": "Datenbank exportieren",
+      "filename": "Dateiname"
     },
     "importDatabase": {
-      "title": "Import database",
-      "filename": "File name",
-      "label": "from file"
+      "title": "Datenbank importieren",
+      "filename": "Dateiname",
+      "messageStockmanager": "Stockmanager Daten können nur in eine leere Datenbank importiert werden!",
+      "messageVersion": "Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version {version} oder neuer.",
+      "messageImported": "Die Daten wurden bereits importiert.",
+      "databaseLabel": "in leere Datenbank installieren",
+      "fakeLabel": "Fake Konto ID",
+      "label": "aus Datei"
     },
-    "exportDialog": "When backing up, the file {filename} is generated and saved in the folder - downloaded files - from the user. "
+    "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
   },
   "footer": {
-    "help": "Help",
-    "privacy": "Data protection",
-    "mail": "E-mail"
+    "help": "Hilfe",
+    "privacy": "Datenschutz",
+    "mail": "Email"
   },
   "helpContent": {
-    "title": "Mein GiroKonto help",
-    "requestsTitle": "Requirements",
+    "title": "Mein GiroKonto Hilfe",
+    "requestsTitle": "Anforderungen",
     "requests": [
       {
-        "title": "Settings - data protection - chronicle",
-        "content": "Mein Giro account does not work in private mode. ",
+        "title": "Einstellungen - Datenschutz - Chronik",
+        "content": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
         "icon": ""
       },
       {
-        "title": "Mein Girokonto start",
-        "content": "The symbol shown appears in the Firefox toolbar after installation. ",
+        "title": "Mein GiroKonto starten",
+        "content": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden.",
         "icon": "$sm"
       }
     ],
-    "toolBarTitle": "Toolbar",
+    "toolBarTitle": "Werkzeugleiste",
     "toolBar": [
       {
-        "title": "Homepage",
-        "content": "Click to return to the homepage.",
+        "title": "Startseite",
+        "content": "Klicken, um zur Startseite zurückzukehren.",
         "icon": "$home"
       },
       {
-        "title": "Bookings",
-        "content": "Click to get to the booking page.",
+        "title": "Buchungen",
+        "content": "Klicken, um auf die Buchungsseite zu gelangen.",
         "icon": "$transfersTable"
       },
       {
-        "title": "Update courses",
-        "content": "Click to update the courses.",
+        "title": "Kurse aktualisieren",
+        "content": "Klicken, um die Kurse zu aktualisieren.",
         "icon": "$reload"
       },
       {
-        "title": "Add companies",
-        "content": "Click to open the required dialog.",
+        "title": "Unternehmen hinzufügen",
+        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
         "icon": "$addAccount"
       },
       {
-        "title": "Remove companies",
-        "content": "Click to open the required dialog.",
+        "title": "Unternehmen entfernen",
+        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
         "icon": "$deleteStock"
       },
       {
-        "title": "Show companies",
-        "content": "Click to open the required dialog.",
+        "title": "Unternehmen einblenden",
+        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
         "icon": "$fadeinStock"
       },
       {
-        "title": "Deposit",
-        "content": "Click to open the required dialogue.",
+        "title": "Einzahlung",
+        "content": "Klicken um den erforderlichen Dialog zu öffner.",
         "icon": "$cashPlus"
       },
       {
-        "title": "Pay",
-        "content": "Click to open the required dialog.",
+        "title": "Auszahlung",
+        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
         "icon": "$cashMinus"
       },
       {
-        "title": "Daily changes",
-        "content": "Click to display the daily changes.",
+        "title": "Tagesveränderungen",
+        "content": "Klicken, um die Tagesveränderungen anzuzeigen.",
         "icon": "$dailyChanges"
       },
       {
-        "title": "Daily changes (all)",
-        "content": "Click to display all daily changes.",
+        "title": "Tagesveränderungen (alle)",
+        "content": "Klicken, um alle Tagesveränderungen anzuzeigen.",
         "icon": "$dailyChangesAll"
       },
       {
-        "title": "Export database",
-        "content": "Click to export the required dialog.",
+        "title": "Datenbank exportieren",
+        "content": "Klicken, um den erforderlichen Dialog zu exportieren.",
         "icon": "$exportDatabase"
       },
       {
-        "title": "Import database",
-        "content": "Click to import the required dialog.",
+        "title": "Datenbank importieren",
+        "content": "Klicken, um den erforderlichen Dialog zu importieren.",
         "icon": "$importDatabase"
       },
       {
-        "title": "Bookings",
-        "content": "Click to display the bookings.",
+        "title": "Buchungen",
+        "content": "Klicken, um die Buchungen anzuzeigen.",
         "icon": "$transfersTable"
       },
       {
-        "title": "Annual calculations",
-        "content": "Click to display the annual calculations.",
+        "title": "Jahres-Berechnungen",
+        "content": "Klicken, um die Jahres-Berechnungen anzuzeigen.",
         "icon": "$showAccounting"
       },
       {
-        "title": "Settings",
-        "content": "Click to display the MeinGiro account settings.",
+        "title": "Einstellungen",
+        "content": "Klicken, um das KontenManager-Einstellungen-Tab anzuzeigen.",
         "icon": "$settings"
       }
     ],
-    "companyBarTitle": "Companies actions",
+    "companyBarTitle": "Unternehmen Aktionen",
     "companyBar": [
       {
-        "title": "Buy shares",
+        "title": "Aktien kaufen",
         "subtitle": "",
         "icon": "$addAccount"
       },
       {
-        "title": "Sell ​​shares",
+        "title": "Aktien verkaufen",
         "subtitle": "",
         "icon": "$sellStock"
       },
       {
-        "title": "Dividend income",
+        "title": "Dividenden Einnahmen",
         "subtitle": "",
         "icon": "$addDividend"
       },
       {
-        "title": "Dividend overview",
+        "title": "Dividenden-Übersicht",
         "subtitle": "",
         "icon": "$addDividend"
       },
       {
-        "title": "Configure companies",
+        "title": "Unternehmen konfigurieren",
         "subtitle": "",
         "icon": "$addDividend"
       },
       {
-        "title": "Business broker page",
+        "title": "Unternehmen-Brokerseite",
         "subtitle": "",
         "icon": "$link"
       }
     ],
-    "transferBarTitle": "Bookings actions",
+    "transferBarTitle": "Buchungen Aktionen",
     "transferBar": [
       {
-        "title": "Delete booking",
+        "title": "Buchung löschen",
         "subtitle": "",
         "icon": "$removeDocument"
       },
       {
-        "title": "Correct booking",
+        "title": "Buchung korrigieren",
         "subtitle": "",
         "icon": "$editDocument"
       }
     ]
   },
   "privacyContent": {
-    "title": "Mein Giro account data protection guidelines",
+    "title": "KontenManager Datenschutz Richtlinien",
     "local": {
-      "title": "Local data",
-      "content": "No data is sent to a server. "
+      "title": "Lokale Daten",
+      "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert."
     },
     "public": {
-      "title": "Public data",
-      "content": "Only Bank-logos from brandfetch.com are used and accessed on the Internet. "
+      "title": "Öffentliche Daten",
+      "content": "Nur Bank-Logos von brandfetch.com werden verwendet und über das Internet abgerufen. KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben."
     },
     "connections": {
-      "title": "Internet connections",
-      "content": "Connections are only made to download bank logos from brandfetch.com."
+      "title": "Internetverbindungen",
+      "content": "Verbindungen werden nur hergestellt, um Bank-Logos von brandfetch.com herunterzuladen."
     }
   },
   "optionsPage": {
     "tabs": [
       {
-        "title": "Themes",
+        "title": "Themen & Dienste",
         "id": "register_ge"
+      },
+      {
+        "title": "Marktplätze",
+        "id": "register_mp"
+      },
+      {
+        "title": "Indizes",
+        "id": "register_ind"
+      },
+      {
+        "title": "Rohstoffe",
+        "id": "register_mat"
+      },
+      {
+        "title": "Währungen",
+        "id": "register_ex"
       }
     ],
     "themeNames": {
-      "earth": "Earth",
-      "ocean": "Ocean",
-      "sky": "Heaven",
-      "meadow": "Meadow",
-      "dark": "Dark",
-      "light": "Bright"
+      "earth": "Erde",
+      "ocean": "Ozean",
+      "sky": "Himmel",
+      "meadow": "Wiese",
+      "dark": "Dunkel",
+      "light": "Hell"
+    },
+    "markets": {
+      "title": "Marktplätze",
+      "label": "Neuer Marktplatz"
+    },
+    "exchanges": {
+      "title": "Wechselkurse",
+      "label": "Neues Wechselkurs-Kürzel"
+    },
+    "materials": {
+      "au": "Gold",
+      "ag": "Silber",
+      "brent": "Ölpreis (Brent)",
+      "wti": "Ölpreis (WTI)",
+      "cu": "Kupfer",
+      "pt": "Platin",
+      "al": "Aluminium",
+      "ni": "Nickel",
+      "sn": "Zinn",
+      "pb": "Blei",
+      "pd": "Palladium"
     }
   },
   "validators": {
-    "ibanRules": "Iban is required | Nur 36 Zeichen | Nach Ländercode nur Zahlen",
-    "nameRules": "Name is required | Nur 15 Zeichen | Nur Buchstaben",
-    "swiftRules": "Swift is required | Nur 12 Zeichen | Nur alphanumerisch",
-    "dateRules": "Date is required",
-    "currencyCodeRules": "Is required | 3 Zeichen | Nur Buchstaben",
-    "requiredRule": "Is required",
-    "brandNameRules": "Is required"
+    "ibanRules": "IBAN ist erforderlich | Nur 36 Zeichen | Nach Ländercode nur Zahlen",
+    "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben",
+    "swiftRules": "SWIFT ist erforderlich | Nur 12 Zeichen | Nur alphanumerisch",
+    "dateRules": "Datum ist erforderlich",
+    "currencyCodeRules": "Ist erforderlich | 3 Zeichen | Nur Buchstaben",
+    "requiredRule": "Ist erforderlich",
+    "brandNameRules": "Ist erforderlich"
   }
 }

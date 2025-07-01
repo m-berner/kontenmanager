@@ -14,11 +14,11 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
-  _swift: string
-  _number: string
-  _logoUrl: string
-  _logoSearchName: string
-  _stockAccount: boolean
+  swift: string
+  accountNumber: string
+  logoUrl: string
+  logoSearchName: string
+  stockAccount: boolean
 }
 
 const {t} = useI18n()
@@ -29,15 +29,15 @@ const settings = useSettingsStore()
 const records = useRecordsStore()
 
 const state: Reactive<IState> = reactive({
-  _swift: '',
-  _number: '',
-  _logoUrl: '',
-  _logoSearchName: '',
-  _stockAccount: false
+  swift: '',
+  accountNumber: '',
+  logoUrl: '',
+  logoSearchName: '',
+  stockAccount: false
 })
 
 const onInputLogoName = () => {
-  state._logoUrl = `https://cdn.brandfetch.io/${state._logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+  state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
 const onUpdateIbanMask = (iban: string) => {
   if (iban !== '') {
@@ -51,7 +51,7 @@ const onUpdateIbanMask = (iban: string) => {
         masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
       }
     }
-    state._number = masked
+    state.accountNumber = masked
   }
 }
 const onClickOk = async (): Promise<void> => {
@@ -60,11 +60,11 @@ const onClickOk = async (): Promise<void> => {
   if (formIs.valid) {
     try {
       const account: Omit<IAccount, 'cID'> = {
-        cSwift: state._swift.trim().toUpperCase(),
-        cNumber: state._number.replace(/\s/g, ''),
-        cLogoUrl: state._logoUrl,
-        cLogoSearchName: state._logoSearchName,
-        cStockAccount: state._stockAccount
+        cSwift: state.swift.trim().toUpperCase(),
+        cNumber: state.accountNumber.replace(/\s/g, ''),
+        cLogoUrl: state.logoUrl,
+        cLogoSearchName: state.logoSearchName,
+        cStockAccount: state.stockAccount
       }
       const addAccountResponse = await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
@@ -82,7 +82,6 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 const title = t('dialogs.addAccount.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -96,12 +95,12 @@ log('--- AddAccount.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-switch
-      v-model="state._stockAccount"
+      v-model="state.stockAccount"
       color="red"
       v-bind:label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
     <v-text-field
       ref="swift-input"
-      v-model="state._swift"
+      v-model="state.swift"
       autofocus
       required
       v-bind:label="t('dialogs.addAccount.swiftLabel')"
@@ -109,7 +108,7 @@ log('--- AddAccount.vue setup ---')
       variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state._number"
+      v-model="state.accountNumber"
       required
       v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
@@ -118,7 +117,7 @@ log('--- AddAccount.vue setup ---')
       @update:modelValue="onUpdateIbanMask"
     ></v-text-field>
     <v-text-field
-      v-model="state._logoSearchName"
+      v-model="state.logoSearchName"
       autofocus
       placeholder="z. B. ing.com"
       required
@@ -127,6 +126,6 @@ log('--- AddAccount.vue setup ---')
       variant="outlined"
       v-on:input="onInputLogoName"
     ></v-text-field>
-    <img alt="logo" v-bind:src="state._logoUrl">
+    <img alt="logo" v-bind:src="state.logoUrl">
   </v-form>
 </template>

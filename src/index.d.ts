@@ -4,5 +4,3 @@ declare module '*.vue' {
   // noinspection JSUnusedGlobalSymbols
   export default component
 }
-
-

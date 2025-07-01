@@ -5,9 +5,40 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-
 // NOTE: an extensions background script runs before a html page gets loaded.
 // That is a multipage extension runs background multiple times
+export declare namespace Stockmanager {
+  interface IStock {
+    cID: number
+    cCompany: string
+    cISIN: string
+    cWKN: string
+    cSym: string
+    cMeetingDay: number
+    cQuarterDay: number
+    cFadeOut: number
+    cFirstPage: number
+    cURL: string
+  }
+
+  interface ITransfer {
+    cID: number
+    cStockID: number
+    cDate: number
+    cExDay: number
+    cUnitQuotation: number
+    cAmount: number
+    cCount: number
+    cFees: number
+    cSTax: number
+    cFTax: number
+    cTax: number
+    cSoli: number
+    cMarketPlace: string
+    cDescription: string
+    cType: number
+  }
+}
 declare global {
   interface IAccount {
     // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
@@ -70,7 +101,8 @@ declare global {
     accounts: IAccount[]
     bookings: IBooking[]
     booking_types: IBookingType[]
-    stocks: IStock[]
+    stocks: IStock[] & Stockmanager.IStock[]
+    transfers?: IBooking[] & Stockmanager.ITransfer[]
   }
 
   interface IStores {
@@ -80,19 +112,19 @@ declare global {
     stocks: IStock[]
   }
 
-  interface IStorageLocal {
-    sActiveAccountId: number
-    sBookingsPerPage: number
-    sStocksPerPage: number
-    sStockmanagerDbImported: boolean
-    sPartner: boolean
-    sSkin: string
-    sService: string
-    sExchanges: string[]
-    sMaterials: string[]
-    sIndexes: string[]
-    sMarkets: string[]
-  }
+  // interface IStorageLocal {
+  //   sActiveAccountId: number
+  //   sBookingsPerPage: number
+  //   sStocksPerPage: number
+  //   sStockmanagerDbImported: boolean
+  //   sPartner: boolean
+  //   sSkin: string
+  //   sService: string
+  //   sExchanges: string[]
+  //   sMaterials: string[]
+  //   sIndexes: string[]
+  //   sMarkets: string[]
+  // }
 }
 
 declare namespace FetchedResources {
@@ -214,6 +246,12 @@ interface IUseAppApi {
       SHOW_ACCOUNTING: string
       SETTING: string
     }
+    DYNAMIC_LIST: {
+      TYPES: {
+        MARKETS: symbol
+        EXCHANGES: symbol
+      }
+    },
     LOGOS: {
       NO_LOGO: string
     }
@@ -235,8 +273,8 @@ interface IUseAppApi {
     }
     MESSAGES: {
       DB__CLOSE: string
-      DB__TO_STORE: string
-      DB__TO_STORE__RESPONSE: string
+      DB__GET_STORES: string
+      DB__GET_STORES__RESPONSE: string
       DB__ADD_ACCOUNT: string
       DB__ADD_ACCOUNT__RESPONSE: string
       DB__UPDATE_ACCOUNT: string
@@ -257,8 +295,8 @@ interface IUseAppApi {
       DB__DELETE_BOOKING_TYPE__RESPONSE: string
       DB__DELETE_STOCK: string
       DB__DELETE_STOCK__RESPONSE: string
-      APP__INIT_SETTINGS: string
-      APP__INIT_SETTINGS__RESPONSE: string
+      STORAGE__GET_ALL: string
+      STORAGE__GET_ALL__RESPONSE: string
       DB__ADD_STORES: string
       OPTIONS__SET_SKIN: string
       OPTIONS__SET_SERVICE: string
@@ -275,8 +313,6 @@ interface IUseAppApi {
       OPTIONS__SET_MATERIALS__RESPONSE: string
       OPTIONS__SET_EXCHANGES__RESPONSE: string
       OPTIONS__SET_MARKETS__RESPONSE: string
-      OPTIONS__INIT_SETTINGS: string
-      OPTIONS__INIT_SETTINGS__RESPONSE: string
       FETCH__COMPANY_DATA: string
       FETCH__COMPANY_DATA__RESPONSE: string
     }
@@ -311,11 +347,22 @@ interface IUseAppApi {
         value: number
         title: string
       }[]
-      MARKETS_TAB: string
-      EXCHANGES_TAB: string
       INDEXES: Record<string, string>
       MATERIALS: Record<string, string>
-      MATERIALS_ORG: Map<string, string>
+    }
+    STORAGE: {
+      PROPS: {
+        SKIN: string
+        SERVICE: string
+        INDEXES: string
+        MARKETS: string
+        MATERIALS: string
+        EXCHANGES: string
+        PARTNER: string
+        ACTIVE_ACCOUNT_ID: string
+        BOOKINGS_PER_PAGE: string
+        STOCKS_PER_PAGE: string
+      }
     }
     RESOURCES: {
       LICENSE: string
@@ -374,14 +421,9 @@ interface IUseAppApi {
   log(msg: string, mode?: { info: unknown }): void
 }
 
-// TODO
-// ask for account data
-// migrate transfers to bookings, stocks to stocks
-// booking types: buy 1, sell 2, dividend 3, transfers in/out 4,5
-
 export const useAppApi = (): IUseAppApi => {
   return {
-    CONS: Object.freeze({
+    CONS: {
       DATE: {
         DEFAULT: 0,
         DEFAULT_ISO: '1970-01-01',
@@ -462,10 +504,11 @@ export const useAppApi = (): IUseAppApi => {
         DATE: '1970-01-01',
         YEAR: 9999,
         STORAGE: {
-          ACTIVE_ACCOUNT_ID: -1,
-          BOOKINGS_PER_PAGE: 9,
-          STOCKS_PER_PAGE: 9,
-          DEBUG: false,
+          ACTIVE_ACCOUNT_ID: -1, //localStorage
+          BOOKINGS_PER_PAGE: 9, // localStorage
+          STOCKS_PER_PAGE: 9, // localStorage
+          DEBUG: false, //localStorage
+          // sExtensionId sesseionStorage
           SKIN: 'ocean',
           MATERIALS: ['au', 'brent'],
           INDEXES: ['dax', 'dow'],
@@ -491,6 +534,12 @@ export const useAppApi = (): IUseAppApi => {
         SHOW_ACCOUNTING: 'ShowAccounting',
         SETTING: 'setting'
       },
+      DYNAMIC_LIST: {
+        TYPES: {
+          MARKETS: Symbol.for('markets'),
+          EXCHANGES: Symbol.for('exchanges')
+        }
+      },
       LOGOS: {
         NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
       },
@@ -512,8 +561,8 @@ export const useAppApi = (): IUseAppApi => {
       },
       MESSAGES: {
         DB__CLOSE: '12001',
-        DB__TO_STORE: '12002',
-        DB__TO_STORE__RESPONSE: '12003',
+        DB__GET_STORES: '12002',
+        DB__GET_STORES__RESPONSE: '12003',
         DB__ADD_ACCOUNT: '12004',
         DB__ADD_ACCOUNT__RESPONSE: '12005',
         DB__UPDATE_ACCOUNT: '13005',
@@ -534,8 +583,8 @@ export const useAppApi = (): IUseAppApi => {
         DB__DELETE_BOOKING_TYPE__RESPONSE: '12017',
         DB__DELETE_STOCK: '12018',
         DB__DELETE_STOCK__RESPONSE: '12019',
-        APP__INIT_SETTINGS: '12021',
-        APP__INIT_SETTINGS__RESPONSE: '12022',
+        STORAGE__GET_ALL: '12021',
+        STORAGE__GET_ALL__RESPONSE: '12022',
         DB__ADD_STORES: '12023',
         OPTIONS__SET_SKIN: '12024',
         OPTIONS__SET_SERVICE: '12025',
@@ -552,8 +601,6 @@ export const useAppApi = (): IUseAppApi => {
         OPTIONS__SET_MATERIALS__RESPONSE: '12037',
         OPTIONS__SET_MARKETS__RESPONSE: '12038',
         OPTIONS__SET_EXCHANGES__RESPONSE: '12039',
-        OPTIONS__INIT_SETTINGS: '13012',
-        OPTIONS__INIT_SETTINGS__RESPONSE: '13013',
         FETCH__COMPANY_DATA: '13014',
         FETCH__COMPANY_DATA__RESPONSE: '13015'
       },
@@ -686,8 +733,6 @@ export const useAppApi = (): IUseAppApi => {
           //   title: 'Alle'
           // }
         ],
-        MARKETS_TAB: 'markets',
-        EXCHANGES_TAB: 'exchanges',
         INDEXES: {
           dax: 'DAX',
           dow: 'Dow Jones',
@@ -721,19 +766,32 @@ export const useAppApi = (): IUseAppApi => {
           pb: 'Bleipreis',
           pd: 'Palladiumpreis'
         },
-        MATERIALS_ORG: new Map([
-          ['Goldpreis', 'au'],
-          ['Silberpreis', 'ag'],
-          ['Ölpreis (Brent)', 'brent'],
-          ['Ölpreis (WTI)', 'wti'],
-          ['Kupferpreis', 'cu'],
-          ['Platinpreis', 'pt'],
-          ['Aluminiumpreis', 'al'],
-          ['Nickelpreis', 'ni'],
-          ['Zinnpreis', 'sn'],
-          ['Bleipreis', 'pb'],
-          ['Palladiumpreis', 'pd']
-        ]),
+      },
+      STORAGE: {
+        PROPS: {
+          SKIN: 'sSkin',
+          SERVICE: 'sService',
+          INDEXES: 'sIndexes',
+          MARKETS: 'sMarkets',
+          MATERIALS: 'sMaterials',
+          EXCHANGES: 'sExchanges',
+          PARTNER: 'sPartner',
+          ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
+          BOOKINGS_PER_PAGE: 'sBookingsPerPage',
+          STOCKS_PER_PAGE: 'sStocksPerPage'
+        }
+        //   ACTIVE_ACCOUNT_ID: -1, //localStorage
+        //   BOOKINGS_PER_PAGE: 9, // localStorage
+        //   STOCKS_PER_PAGE: 9, // localStorage
+        //   DEBUG: false, //localStorage
+        //   // sExtensionId sesseionStorage
+        //   SKIN: 'ocean',
+        //   MATERIALS: ['au', 'brent'],
+        //   INDEXES: ['dax', 'dow'],
+        //   EXCHANGES: ['EURUSD'],
+        //   MARKETS: ['Frankfurt', 'XETRA'],
+        //   SERVICE: 'wstreet',
+        //   PARTNER: false
       },
       RESOURCES: {
         LICENSE: 'license.html',
@@ -771,8 +829,8 @@ export const useAppApi = (): IUseAppApi => {
         },
         ONCE: {once: true}
       }
-    }),
-    VALIDATORS: Object.freeze({
+    },
+    VALIDATORS: {
       ibanRules: msgArray => {
         return [
           v => v !== null || msgArray[0],
@@ -816,7 +874,7 @@ export const useAppApi = (): IUseAppApi => {
           v => v !== null || msgArray[0]
         ]
       }
-    }),
+    },
     notice: async (messages) => {
       const msg = messages.join('\n')
       const notificationOption: browser.notifications.CreateNotificationOptions =
@@ -1016,7 +1074,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         const bookingTypes: IBookingType[] = []
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
-            const storage = await browser.storage.local.get(['sActiveAccountId'])
+            const storage = await browser.storage.local.get([CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID])
             const onComplete = async (): Promise<void> => {
               log('BACKGROUND: toStores: all database records sent to frontend!')
               resolve({accounts, bookings, stocks, bookingTypes})
@@ -1035,7 +1093,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
             const onSuccessBookingTypeOpenCursor = (ev: Event): void => {
               if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                if (ev.target.result.value.cAccountNumberID === storage[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]) {
                   bookingTypes.push(ev.target.result.value)
                 }
                 ev.target.result.continue()
@@ -1043,7 +1101,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
             const onSuccessBookingOpenCursor = (ev: Event): void => {
               if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                if (ev.target.result.value.cAccountNumberID === storage[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]) {
                   bookings.push(ev.target.result.value)
                 }
                 ev.target.result.continue()
@@ -1051,7 +1109,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
             const onSuccessStockOpenCursor = (ev: Event): void => {
               if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                if (ev.target.result.value.cAccountNumberID === storage.sActiveAccountId) {
+                if (ev.target.result.value.cAccountNumberID === storage[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]) {
                   stocks.push(ev.target.result.value)
                 }
                 ev.target.result.continue()
@@ -1460,36 +1518,36 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   const onInstall = async (): Promise<void> => {
     console.log('BACKGROUND: onInstall')
     const installStorageLocal = async () => {
-      const storageLocal: Partial<IStorageLocal> = await browser.storage.local.get()
-      if (storageLocal.sSkin === undefined) {
-        await browser.storage.local.set({sSkin: CONS.DEFAULTS.STORAGE.SKIN})
+      const storageLocal = await browser.storage.local.get()
+      if (storageLocal[CONS.STORAGE.PROPS.SKIN] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.SKIN]]: CONS.DEFAULTS.STORAGE.SKIN})
       }
-      if (storageLocal.sActiveAccountId === undefined) {
-        await browser.storage.local.set({sActiveAccountId: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID})
+      if (storageLocal[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]]: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID})
       }
-      if (storageLocal.sBookingsPerPage === undefined) {
-        await browser.storage.local.set({sBookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
+      if (storageLocal[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE]]: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
       }
-      if (storageLocal.sStocksPerPage === undefined) {
-        await browser.storage.local.set({sStocksPerPage: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE})
+      if (storageLocal[CONS.STORAGE.PROPS.STOCKS_PER_PAGE] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.STOCKS_PER_PAGE]]: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE})
       }
-      if (storageLocal.sPartner === undefined) {
-        await browser.storage.local.set({sPartner: CONS.DEFAULTS.STORAGE.PARTNER})
+      if (storageLocal[CONS.STORAGE.PROPS.PARTNER] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.PARTNER]]: CONS.DEFAULTS.STORAGE.PARTNER})
       }
-      if (storageLocal.sService === undefined) {
-        await browser.storage.local.set({sService: CONS.DEFAULTS.STORAGE.SERVICE})
+      if (storageLocal[CONS.STORAGE.PROPS.SERVICE] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.SERVICE]]: CONS.DEFAULTS.STORAGE.SERVICE})
       }
-      if (storageLocal.sExchanges === undefined) {
-        await browser.storage.local.set({sExchanges: CONS.DEFAULTS.STORAGE.EXCHANGES})
+      if (storageLocal[CONS.STORAGE.PROPS.EXCHANGES] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.EXCHANGES]]: CONS.DEFAULTS.STORAGE.EXCHANGES})
       }
-      if (storageLocal.sIndexes === undefined) {
-        await browser.storage.local.set({sIndexes: CONS.DEFAULTS.STORAGE.INDEXES})
+      if (storageLocal[CONS.STORAGE.PROPS.INDEXES] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.INDEXES]]: CONS.DEFAULTS.STORAGE.INDEXES})
       }
-      if (storageLocal.sMarkets === undefined) {
-        await browser.storage.local.set({sMarkets: CONS.DEFAULTS.STORAGE.MARKETS})
+      if (storageLocal[CONS.STORAGE.PROPS.MARKETS] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.MARKETS]]: CONS.DEFAULTS.STORAGE.MARKETS})
       }
-      if (storageLocal.sMaterials === undefined) {
-        await browser.storage.local.set({sMaterials: CONS.DEFAULTS.STORAGE.MATERIALS})
+      if (storageLocal[CONS.STORAGE.PROPS.MATERIALS] === undefined) {
+        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.MATERIALS]]: CONS.DEFAULTS.STORAGE.MATERIALS})
       }
       console.log('BACKGROUND: installStorageLocal: DONE')
     }
@@ -1688,19 +1746,11 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       const appMessage = JSON.parse(appMsg)
       let response: string
       switch (appMessage.type) {
-        case CONS.MESSAGES.APP__INIT_SETTINGS:
+        case CONS.MESSAGES.STORAGE__GET_ALL:
           const storageLocal1 = await browser.storage.local.get()
           response = JSON.stringify({
-            type: CONS.MESSAGES.APP__INIT_SETTINGS__RESPONSE,
+            type: CONS.MESSAGES.STORAGE__GET_ALL__RESPONSE,
             data: storageLocal1
-          })
-          resolve(response)
-          break
-        case CONS.MESSAGES.OPTIONS__INIT_SETTINGS:
-          const storageLocal2 = await browser.storage.local.get()
-          response = JSON.stringify({
-            type: CONS.MESSAGES.OPTIONS__INIT_SETTINGS__RESPONSE,
-            data: storageLocal2
           })
           resolve(response)
           break
@@ -1717,14 +1767,14 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           resolve('DB exported')
           break
         case CONS.MESSAGES.STORAGE__SET_ID:
-          await browser.storage.local.set({sActiveAccountId: appMessage.data})
+          await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: appMessage.data})
           await toStores()
           resolve('ID set')
           break
-        case CONS.MESSAGES.DB__TO_STORE:
+        case CONS.MESSAGES.DB__GET_STORES:
           const stores = await toStores()
           response = JSON.stringify({
-            type: CONS.MESSAGES.DB__TO_STORE__RESPONSE,
+            type: CONS.MESSAGES.DB__GET_STORES__RESPONSE,
             data: stores
           })
           resolve(response)
@@ -1732,7 +1782,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         case CONS.MESSAGES.DB__ADD_STORES:
           const addStoresData: IStores = appMessage.data
           await addStores(addStoresData)
-          await browser.storage.local.set({sActiveAccountId: addStoresData.accounts[0].cID})
+          await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addStoresData.accounts[0].cID})
           resolve('Stores added')
           break
         case CONS.MESSAGES.DB__ADD_ACCOUNT:
@@ -1744,7 +1794,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
               type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
               data: completeAccount
             })
-            await browser.storage.local.set({sActiveAccountId: addAccountID})
+            await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addAccountID})
             resolve(response)
           }
           break
@@ -1887,7 +1937,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   window.addEventListener('keyup', onKeyUp, false)
   window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
 
-  log('--- PAGE_SCRIPT background.js --- APP PAGE ---', {info: window.location.href})
+  log('--- PAGE_SCRIPT background.js --- BACKGROUND PAGE ---', {info: window.location.href})
 }
 
 log('--- PAGE_SCRIPT background.js ---')

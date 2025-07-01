@@ -1,6 +1,7 @@
 import { createI18n } from 'vue-i18n';
-import messages from '@intlify/unplugin-vue-i18n/messages';
 import { useAppApi } from '@/pages/background';
+import deDE from '@/locales/de-DE.json';
+import enUS from '@/locales/en-US.json';
 const { CONS, log } = useAppApi();
 const getUI = () => {
     const result = {
@@ -25,9 +26,11 @@ export default {
     i18n: createI18n({
         locale: getUI().locale,
         fallbackLocale: 'en-US',
-        mode: 'composition',
         globalInjection: true,
-        messages,
+        messages: {
+            'de-DE': deDE,
+            'en-US': enUS
+        },
         datetimeFormats: {
             'de-DE': {
                 numeric: {

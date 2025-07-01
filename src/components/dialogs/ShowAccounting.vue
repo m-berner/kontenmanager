@@ -19,7 +19,7 @@ const {n, t} = useI18n()
 const records = useRecordsStore()
 const {log} = useAppApi()
 
-const state: Reactive<IShowAccounting> = reactive({
+const state: Reactive<IShowAccounting> = reactive<IShowAccounting>({
   _result: []
 })
 const cAddEntryToResult = (value: { title: string, subtitle: string }) => {
@@ -31,7 +31,7 @@ defineExpose({title})
 
 onMounted(() => {
   log('SHOW_ACCOUNTING: onMounted')
-  const sums = []
+  const sums: number[] = []
   for (let i = 0; i < records.bookingTypes.length; i++) {
     sums[i] = records.bookings.filter((entry: IBooking) => {
       return entry.cBookingTypeID === records.bookingTypes[i].cID

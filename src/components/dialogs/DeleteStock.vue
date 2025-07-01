@@ -37,10 +37,10 @@ const onClickOk = async (): Promise<void> => {
     formRef.value?.reset()
     if (records.accounts.length > 0) {
       settings.setActiveAccountId(records.accounts[0].cID)
-      await browser.storage.local.set({sActiveAccountId: records.accounts[0].cID})
+      await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: records.accounts[0].cID})
     } else {
       settings.setActiveAccountId(-1)
-      await browser.storage.local.set({sActiveAccountId: -1})
+      await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: -1})
     }
     runtime.setLogo()
     await notice([t('dialogs.deleteStock.success')])

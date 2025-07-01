@@ -6,59 +6,71 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {toRaw} from 'vue'
+import {reactive, type Reactive, toRaw} from 'vue'
 import {useAppApi} from '@/pages/background'
 
 interface DynamicListProps {
-  _title: string
-  _list: Array<string | number | undefined>
-  _label: string
-  _tab: string
-  _hint?: string
-  _counter?: number
-  _placeholder?: string
-  _toUpperCase?: boolean
+  title: string
+  list: string[]
+  label: string
+  type: symbol
+  hint?: string
+  placeholder?: string
 }
 
 interface IState {
-  _newItem: string
-  _list: Array<string | number | undefined>
+  newItem: string
+  list: string[]
 }
 
 const {CONS, log} = useAppApi()
-const _props = defineProps<DynamicListProps>()
-const state: IState = {
-  _newItem: '',
-  _list: _props._list
-}
+const dynamicListProps = defineProps<DynamicListProps>()
+
+const state: Reactive<IState> = reactive<IState>({
+  newItem: '',
+  list: [...dynamicListProps.list]
+})
 
 // NOTE:
 // reading a v-text-field does work without reactivity
-// to write to it only with reactivity
+// write to it only with reactivity
 const mAddItem = async (item: string): Promise<void> => {
   log('DYNAMIC_LIST: mAddItem')
-  if (!state._list.includes(item)) {
-    if (_props._toUpperCase) {
-      state._list.push(item.toUpperCase())
-    } else {
-      state._list.push(item)
+  if (!state.list?.includes(item)) {
+    let newItem = ''
+    let storageItem = {}
+    switch(dynamicListProps.type) {
+      case CONS.DYNAMIC_LIST.TYPES.MARKETS:
+        newItem = item
+        storageItem = {[CONS.STORAGE.PROPS.MARKETS]: toRaw(state.list)}
+        break
+      case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
+        newItem = item.toUpperCase()
+        storageItem = {[CONS.STORAGE.PROPS.EXCHANGES]: toRaw(state.list)}
+        break
+      default:
     }
-  }
-  if (_props._tab === CONS.SETTINGS.MARKETS_TAB) {
-    await browser.storage.local.set({sMarkets: toRaw(state._list)})
-  } else {
-    await browser.storage.local.set({sExchanges: toRaw(state._list)})
+    state.list.push(newItem)
+    state.newItem = ''
+    await browser.storage.local.set(storageItem)
   }
 }
 const mRemoveItem = async (n: number): Promise<void> => {
   log('DYNAMIC_LIST: mRemoveItem')
   if (n > 0) {
-    state._list.splice(n, 1)
-    if (_props._tab === CONS.SETTINGS.MARKETS_TAB) {
-      await browser.storage.local.set({sMarkets: toRaw(state._list)})
-    } else {
-      await browser.storage.local.set({sExchanges: toRaw(state._list)})
+    let storageItem = {}
+    switch(dynamicListProps.type) {
+      case CONS.DYNAMIC_LIST.TYPES.MARKETS:
+        storageItem = {[CONS.STORAGE.PROPS.MARKETS]: toRaw(state.list)}
+        break
+      case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
+        storageItem = {[CONS.STORAGE.PROPS.EXCHANGES]: toRaw(state.list)}
+        break
+      default:
     }
+    state.list.splice(n, 1)
+    state.newItem = ''
+    await browser.storage.local.set({storageItem})
   }
 }
 
@@ -66,10 +78,10 @@ log('--- DynamicList.vue setup ---')
 </script>
 
 <template>
-  <v-card color="secondary" v-bind:title="_props._title">
+  <v-card color="secondary" v-bind:title="dynamicListProps.title">
     <v-list bg-color="secondary">
       <v-list-item
-        v-for="(item, i) in state._list"
+        v-for="(item, i) in state.list"
         v-bind:key="item"
         hide-details
         v-bind:title="item">
@@ -83,17 +95,17 @@ log('--- DynamicList.vue setup ---')
     </v-list>
     <v-card-actions>
       <v-text-field
-        v-model="state._newItem"
+        v-model="state.newItem"
         type="text"
         v-bind:autofocus="true"
         v-bind:clearable="true"
-        v-bind:label="_props._label"
-        v-bind:placeholder="_props._placeholder">
+        v-bind:label="dynamicListProps.label"
+        v-bind:placeholder="dynamicListProps.placeholder">
         <template v-slot:append>
           <v-btn class="ml-3"
                  color="primary"
                  icon="$add"
-                 v-on:click="mAddItem(state._newItem)"></v-btn>
+                 v-on:click="mAddItem(state.newItem)"></v-btn>
         </template>
       </v-text-field>
     </v-card-actions>

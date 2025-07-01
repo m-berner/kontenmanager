@@ -4,8 +4,6 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^9.13.0",
-    "@intlify/message-compiler": "10.0.4",
-    "@intlify/unplugin-vue-i18n": "5.2.0",
     "@mdi/font": "7.4.47",
     "@mdi/js": "7.4.47",
     "@stylistic/eslint-plugin-js": "2.9.0",
