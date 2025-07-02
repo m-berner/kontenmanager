@@ -272,6 +272,7 @@ interface IUseAppApi {
       UPG: string
     }
     MESSAGES: {
+      DB__DELETE_ALL: string
       DB__CLOSE: string
       DB__GET_STORES: string
       DB__GET_STORES__RESPONSE: string
@@ -298,6 +299,7 @@ interface IUseAppApi {
       STORAGE__GET_ALL: string
       STORAGE__GET_ALL__RESPONSE: string
       DB__ADD_STORES: string
+      DB__ADD_STORES_25: string
       OPTIONS__SET_SKIN: string
       OPTIONS__SET_SERVICE: string
       OPTIONS__SET_INDEXES: string
@@ -560,6 +562,7 @@ export const useAppApi = (): IUseAppApi => {
         UPG: 'upgradeneeded'
       },
       MESSAGES: {
+        DB__DELETE_ALL: '12000',
         DB__CLOSE: '12001',
         DB__GET_STORES: '12002',
         DB__GET_STORES__RESPONSE: '12003',
@@ -586,6 +589,7 @@ export const useAppApi = (): IUseAppApi => {
         STORAGE__GET_ALL: '12021',
         STORAGE__GET_ALL__RESPONSE: '12022',
         DB__ADD_STORES: '12023',
+        DB__ADD_STORES_25: '11999',
         OPTIONS__SET_SKIN: '12024',
         OPTIONS__SET_SERVICE: '12025',
         OPTIONS__SET_INDEXES: '12026',
@@ -911,6 +915,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   interface IUseDatabaseApi {
     open(): Promise<string>
 
+    truncateDatabaseTables(): Promise<string>
+
     exportDatabase(fn: string): Promise<string>
 
     toStores(): Promise<IStores | string>
@@ -929,7 +935,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
 
     deleteBooking(ident: number): Promise<string>
 
-    addStores(stores: IStores): Promise<string>
+    addStores(stores: IStores, all?: boolean): Promise<string>
 
     deleteStock(ident: number): Promise<string>
 
@@ -944,6 +950,47 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
 
   const useDatabaseApi = (): IUseDatabaseApi => {
     return {
+      truncateDatabaseTables: async () => {
+        log('BACKGROUND: truncateDatabaseTables')
+        return new Promise(async (resolve, reject) => {
+          if (dbi != null) {
+            const onComplete = async (): Promise<void> => {
+              await notice(['Database is empty!'])
+              resolve('BACKGROUND: database is empty!')
+            }
+            const onAbort = (): void => {
+              reject(requestTransaction.error)
+            }
+            const onError = (ev: Event): void => {
+              reject(ev)
+            }
+            const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite')
+            requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+            requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
+            requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
+            const onSuccessClearBookings = (): void => {
+              log('BACKGROUND: bookings dropped')
+            }
+            const onSuccessClearAccounts = (): void => {
+              log('BACKGROUND: accounts dropped')
+            }
+            const onSuccessClearBookingTypes = (): void => {
+              log('BACKGROUND: booking types dropped')
+            }
+            const onSuccessClearStocks = (): void => {
+              log('BACKGROUND: stocks dropped')
+            }
+            const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
+            requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
+            const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
+            requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
+            const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
+            requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
+            const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
+            requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
+          }
+        })
+      },
       exportDatabase: async (filename: string) => {
         log('BACKGROUND: exportDatabase')
         const accounts: IAccount[] = []
@@ -1368,7 +1415,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      addStores: async (stores) => {
+      addStores: async (stores, all = true) => {
         log('BACKGROUND: addStores', {info: dbi})
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
@@ -1412,8 +1459,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
             const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
             requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
-            const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
-            requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
+            if (all) {
+              const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
+              requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
+            }
             const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
             requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
             const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
@@ -1494,6 +1543,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   }
 
   const {
+    truncateDatabaseTables,
     exportDatabase,
     addAccount,
     updateAccount,
@@ -1762,6 +1812,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             resolve('No DB open')
           }
           break
+        case CONS.MESSAGES.DB__DELETE_ALL:
+          await truncateDatabaseTables()
+          resolve('DB empty')
+          break
         case CONS.MESSAGES.DB__EXPORT:
           await exportDatabase(appMessage.data)
           resolve('DB exported')
@@ -1778,6 +1832,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             data: stores
           })
           resolve(response)
+          break
+        case CONS.MESSAGES.DB__ADD_STORES_25:
+          const addStoresData25: IStores = appMessage.data
+          await addStores(addStoresData25, false)
+          await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addStoresData25.accounts[0].cID})
+          resolve('Stores added')
           break
         case CONS.MESSAGES.DB__ADD_STORES:
           const addStoresData: IStores = appMessage.data

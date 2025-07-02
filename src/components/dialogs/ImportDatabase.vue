@@ -60,14 +60,22 @@ const onClickOk = async (): Promise<void> => {
       } else if (backupObject.sm.cDBVersion < CONS.DB.IMPORT_MIN_VERSION) {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.IMPORT_MIN_VERSION.toString()})])
       } else if (backupObject.sm.cDBVersion === CONS.DB.IMPORT_MIN_VERSION) {
-        await notice([t('Please add corresponding account data!')])
-        // TODO message that all data will be deleted
         records.cleanStore()
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_ACCOUNT,
-          okButton: true,
-          visibility: true
-        })
+        await browser.runtime.sendMessage(JSON.stringify({
+          type: CONS.MESSAGES.DB__DELETE_ALL
+        }))
+        const account: Omit<IAccount, 'cID'> = {
+          cSwift: 'KMKLPJJ9099',
+          cNumber: 'XX13120300001064506999',
+          cLogoUrl: '',
+          cLogoSearchName: '',
+          cStockAccount: true
+        }
+        const addAccountResponse = await browser.runtime.sendMessage(JSON.stringify({
+          type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
+        }))
+        const addAccountData: IAccount = JSON.parse(addAccountResponse).data
+        records.addAccount(addAccountData)
         activeId = records.accounts[0].cID
 
         bookingTypes.push({cID: 1, cName: 'Aktienkauf', cAccountNumberID: activeId})
@@ -123,7 +131,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypes: bookingTypes,
           stocks: stocks
         }
-        await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
+        await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES_25, data: stores}))
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {
@@ -182,6 +190,11 @@ log('--- ImportDatabase.vue setup ---')
 <template>
   <v-form validate-on="submit" v-on:submit.prevent>
     <v-card-text class="pa-5">
+      <v-text-field
+        v-bind:disabled="true"
+        variant="plain"
+      >{{ 'Attention: all current data will be deleted!' }}
+      </v-text-field>
       <v-file-input
         accept=".json"
         v-bind:clearable="true"

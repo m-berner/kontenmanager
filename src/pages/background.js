@@ -136,6 +136,7 @@ export const useAppApi = () => {
                 UPG: 'upgradeneeded'
             },
             MESSAGES: {
+                DB__DELETE_ALL: '12000',
                 DB__CLOSE: '12001',
                 DB__GET_STORES: '12002',
                 DB__GET_STORES__RESPONSE: '12003',
@@ -162,6 +163,7 @@ export const useAppApi = () => {
                 STORAGE__GET_ALL: '12021',
                 STORAGE__GET_ALL__RESPONSE: '12022',
                 DB__ADD_STORES: '12023',
+                DB__ADD_STORES_25: '11999',
                 OPTIONS__SET_SKIN: '12024',
                 OPTIONS__SET_SERVICE: '12025',
                 OPTIONS__SET_INDEXES: '12026',
@@ -465,6 +467,47 @@ const { CONS, log, notice } = useAppApi();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const useDatabaseApi = () => {
         return {
+            truncateDatabaseTables: async () => {
+                log('BACKGROUND: truncateDatabaseTables');
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onComplete = async () => {
+                            await notice(['Database is empty!']);
+                            resolve('BACKGROUND: database is empty!');
+                        };
+                        const onAbort = () => {
+                            reject(requestTransaction.error);
+                        };
+                        const onError = (ev) => {
+                            reject(ev);
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
+                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
+                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
+                        const onSuccessClearBookings = () => {
+                            log('BACKGROUND: bookings dropped');
+                        };
+                        const onSuccessClearAccounts = () => {
+                            log('BACKGROUND: accounts dropped');
+                        };
+                        const onSuccessClearBookingTypes = () => {
+                            log('BACKGROUND: booking types dropped');
+                        };
+                        const onSuccessClearStocks = () => {
+                            log('BACKGROUND: stocks dropped');
+                        };
+                        const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
+                        requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
+                        const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
+                        requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
+                        const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
+                        requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
+                        const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
+                        requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
             exportDatabase: async (filename) => {
                 log('BACKGROUND: exportDatabase');
                 const accounts = [];
@@ -867,7 +910,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
-            addStores: async (stores) => {
+            addStores: async (stores, all = true) => {
                 log('BACKGROUND: addStores', { info: dbi });
                 return new Promise(async (resolve, reject) => {
                     if (dbi != null) {
@@ -911,8 +954,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         };
                         const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
                         requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
-                        const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
-                        requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
+                        if (all) {
+                            const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
+                            requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
+                        }
                         const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
                         requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
                         const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
@@ -985,7 +1030,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
         };
     };
-    const { exportDatabase, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, toStores, addStores, deleteStock, open } = useDatabaseApi();
+    const { truncateDatabaseTables, exportDatabase, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, toStores, addStores, deleteStock, open } = useDatabaseApi();
     const { fetchCompanyData } = useFetchApi();
     let dbi;
     const onInstall = async () => {
@@ -1120,6 +1165,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         resolve('No DB open');
                     }
                     break;
+                case CONS.MESSAGES.DB__DELETE_ALL:
+                    await truncateDatabaseTables();
+                    resolve('DB empty');
+                    break;
                 case CONS.MESSAGES.DB__EXPORT:
                     await exportDatabase(appMessage.data);
                     resolve('DB exported');
@@ -1136,6 +1185,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         data: stores
                     });
                     resolve(response);
+                    break;
+                case CONS.MESSAGES.DB__ADD_STORES_25:
+                    const addStoresData25 = appMessage.data;
+                    await addStores(addStoresData25, false);
+                    await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addStoresData25.accounts[0].cID });
+                    resolve('Stores added');
                     break;
                 case CONS.MESSAGES.DB__ADD_STORES:
                     const addStoresData = appMessage.data;

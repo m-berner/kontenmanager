@@ -40,6 +40,7 @@ const onInputLogoName = () => {
   state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
 const onUpdateIbanMask = (iban: string) => {
+  console.error(iban)
   if (iban !== '') {
     const withoutSpace = iban.replace(/\s/g, '')
     const loops = Math.ceil(withoutSpace.length / 4)
@@ -114,7 +115,7 @@ log('--- AddAccount.vue setup ---')
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
       v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
-      @update:modelValue="onUpdateIbanMask"
+      @update:modelValue="onUpdateIbanMask(state.accountNumber)"
     ></v-text-field>
     <v-text-field
       v-model="state.logoSearchName"

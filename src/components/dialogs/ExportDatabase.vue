@@ -13,7 +13,7 @@ const {t} = useI18n()
 const {CONS, log} = useAppApi()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
-const txt = { filename: fn }
+//const txt = { filename: fn }
 
  const onClickOk = (): void => {
   log('EXPORT_DATABASE : onClickOk')
@@ -31,7 +31,7 @@ log('--- ExportDatabase.vue setup ---')
     <v-card-text class="pa-5">
       <v-textarea
         v-bind:disabled="true"
-        v-bind:modelValue="t('dialogs.exportDialog', txt)"
+        v-bind:modelValue="t('dialogs.exportDialog', { filename: fn })"
         variant="outlined"
       ></v-textarea>
     </v-card-text>
