@@ -174,6 +174,7 @@
       "messageStockmanager": "Stockmanager Daten können nur in eine leere Datenbank importiert werden!",
       "messageVersion": "Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version {version} oder neuer.",
       "messageImported": "Die Daten wurden bereits importiert.",
+      "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
       "databaseLabel": "in leere Datenbank installieren",
       "fakeLabel": "Fake Konto ID",
       "label": "aus Datei"

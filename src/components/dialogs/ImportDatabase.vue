@@ -214,10 +214,9 @@ log('--- ImportDatabase.vue setup ---')
   <v-form validate-on="submit" v-on:submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
-        v-bind:disabled="true"
+        v-bind:label="t('dialogs.importDatabase.messageDelete')"
         variant="plain"
-      >{{ 'Attention: all current data will be deleted!' }}
-      </v-text-field>
+      ></v-text-field>
       <v-file-input
         accept=".json"
         v-bind:clearable="true"
