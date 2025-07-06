@@ -51,10 +51,30 @@ const onClickOk = async (): Promise<void> => {
       let bookingType: IBookingType
       let stock: IStock
       let smStock: Stockmanager.IStock
-      let smTransfer: Stockmanager.ITransfer
-      let stockClone: IStock = {} as IStock
-      let transferClone: IBooking = {} as IBooking
-      let activeId: number
+      let activeId = 1
+      const getCreditDebit = (rec: Stockmanager.ITransfer): number => {
+        let result: number
+        switch (rec.cType) {
+          case 1:
+            result = rec.cUnitQuotation * rec.cCount
+            break
+          case 2:
+            result = rec.cUnitQuotation * -rec.cCount
+            break
+          case 3:
+            result = rec.cUnitQuotation * rec.cCount
+            break
+          case 4:
+            result = rec.cAmount
+            break
+          case 5:
+            result = -rec.cAmount
+            break
+          default:
+            result = 0
+        }
+        return result
+      }
       if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
         await notice(['IMPORT_DATABASE: onFileLoaded', 'Could not read backup file'])
       } else if (backupObject.sm.cDBVersion < CONS.DB.IMPORT_MIN_VERSION) {
@@ -64,27 +84,25 @@ const onClickOk = async (): Promise<void> => {
         await browser.runtime.sendMessage(JSON.stringify({
           type: CONS.MESSAGES.DB__DELETE_ALL
         }))
-        const account: Omit<IAccount, 'cID'> = {
+        const account: IAccount = {
+          cID: 1,
           cSwift: 'KMKLPJJ9099',
           cNumber: 'XX13120300001064506999',
           cLogoUrl: '',
           cLogoSearchName: '',
           cStockAccount: true
         }
-        const addAccountResponse = await browser.runtime.sendMessage(JSON.stringify({
-          type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
-        }))
-        const addAccountData: IAccount = JSON.parse(addAccountResponse).data
-        records.addAccount(addAccountData)
-        activeId = records.accounts[0].cID
-
+        records.addAccount(account)
         bookingTypes.push({cID: 1, cName: 'Aktienkauf', cAccountNumberID: activeId})
         bookingTypes.push({cID: 2, cName: 'Aktienverkauf', cAccountNumberID: activeId})
         bookingTypes.push({cID: 3, cName: 'Dividende', cAccountNumberID: activeId})
         bookingTypes.push({cID: 4, cName: 'Einzahlung', cAccountNumberID: activeId})
         bookingTypes.push({cID: 5, cName: 'Auszahlung', cAccountNumberID: activeId})
-
+        for (let entry of bookingTypes) {
+          records.addBookingType(entry)
+        }
         for (smStock of backupObject.stocks) {
+          let stockClone: IStock = {} as IStock
           stockClone.cID = smStock.cID
           stockClone.cAccountNumberID = activeId
           stockClone.cSymbol = smStock.cSym
@@ -100,14 +118,16 @@ const onClickOk = async (): Promise<void> => {
           records.addStock(stockClone)
           stocks.push(stockClone)
         }
-        for (smTransfer of backupObject.transfers ?? []) {
-          transferClone.cID = smTransfer.cID
+        for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
+          let transferClone: IBooking = {} as IBooking
+          let smTransfer: Stockmanager.ITransfer = backupObject.transfers[i]
+          transferClone.cID = i + 1
           transferClone.cAccountNumberID = activeId
           transferClone.cStockID = smTransfer.cStockID
           transferClone.cDate = toISODate(smTransfer.cDate)
           transferClone.cBookingTypeID = smTransfer.cType
           transferClone.cExDate = toISODate(smTransfer.cExDay)
-          transferClone.cCount = smTransfer.cCount
+          transferClone.cCount = smTransfer.cCount < 0 ? -smTransfer.cCount : smTransfer.cCount
           transferClone.cDescription = smTransfer.cDescription
           transferClone.cTransactionTax = smTransfer.cFTax
           transferClone.cSourceTax = smTransfer.cSTax
@@ -115,23 +135,26 @@ const onClickOk = async (): Promise<void> => {
           transferClone.cTax = smTransfer.cTax
           transferClone.cMarketPlace = smTransfer.cMarketPlace
           transferClone.cSoli = smTransfer.cSoli
-          transferClone.cDebit = smTransfer.cType === 5 ? -smTransfer.cAmount : 0
-          transferClone.cCredit = smTransfer.cType === 4 ? smTransfer.cAmount : 0
+          transferClone.cDebit = smTransfer.cType === 1 || smTransfer.cType === 5 ? getCreditDebit(smTransfer) : 0
+          transferClone.cCredit = smTransfer.cType === 2 || smTransfer.cType === 3 || smTransfer.cType === 4 ? getCreditDebit(smTransfer) : 0
           records.addBooking(transferClone)
           bookings.push(transferClone)
         }
-
+        records.bookings.sort((a: IBooking, b: IBooking) => {
+          const A = new Date(a.cDate).getTime()
+          const B = new Date(b.cDate).getTime()
+          return B - A
+        })
         settings.setActiveAccountId(activeId)
         runtime.setLogo()
         records.sumBookings()
-
         const stores: IStores = {
           accounts: toRaw(records.accounts),
           bookings: bookings,
           bookingTypes: bookingTypes,
           stocks: stocks
         }
-        await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES_25, data: stores}))
+        await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {

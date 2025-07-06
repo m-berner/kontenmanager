@@ -19,6 +19,7 @@ interface IRecordsStore {
   bookingSumField: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface IRecordsGetter {
   //
 }
@@ -126,19 +127,12 @@ export const useRecordsStore: StoreDefinition<'records', IRecordsStore, IRecords
       if (activeAccountIndex === -1) {
         return
       }
-      // const bookings_per_account = this.bookings.filter((rec: IBooking) => {
-      //   return rec.cAccountNumberID === this.accounts[activeAccountIndex].cID
-      // })
       const bookings_per_account = [...this.bookings]
       if (bookings_per_account.length > 0) {
-        // bookings_per_account.sort((a: IBooking, b: IBooking) => {
-        //   const A = new Date(a.cDate).getTime()
-        //   const B = new Date(b.cDate).getTime()
-        //   return A - B
-        // })
-        //this.bookings = bookings_per_account
         this.bookingSum = bookings_per_account.map((entry: IBooking) => {
-          return entry.cCredit - entry.cDebit
+          const a = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee
+          const b = entry.cCredit - entry.cDebit
+          return a + b
         }).reduce((acc: number, cur: number) => {
           return acc + cur
         }, 0)

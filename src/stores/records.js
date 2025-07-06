@@ -67,7 +67,9 @@ export const useRecordsStore = defineStore('records', {
             const bookings_per_account = [...this.bookings];
             if (bookings_per_account.length > 0) {
                 this.bookingSum = bookings_per_account.map((entry) => {
-                    return entry.cCredit - entry.cDebit;
+                    const a = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee;
+                    const b = entry.cCredit - entry.cDebit;
+                    return a + b;
                 }).reduce((acc, cur) => {
                     return acc + cur;
                 }, 0);
