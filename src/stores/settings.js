@@ -17,7 +17,21 @@ export const useSettingsStore = defineStore('settings', {
             exchanges: CONS.DEFAULTS.STORAGE.EXCHANGES
         };
     },
-    getters: {},
+    getters: {
+        isPartnerEnabled: (state) => state.partner,
+        currentTheme: (state) => state.skin,
+        paginationConfig: (state) => ({
+            bookings: state.bookingsPerPage,
+            stocks: state.stocksPerPage
+        }),
+        hasActiveAccount: (state) => state.activeAccountId !== -1,
+        marketingData: (state) => ({
+            materials: state.materials,
+            markets: state.markets,
+            indexes: state.indexes,
+            exchanges: state.exchanges
+        })
+    },
     actions: {
         setActiveAccountId(value) {
             this.activeAccountId = value;
@@ -28,10 +42,6 @@ export const useSettingsStore = defineStore('settings', {
         setStocksPerPage(value) {
             this.stocksPerPage = value;
         },
-        setSkin(theme, value) {
-            theme.global.name.value = value;
-            this.skin = value;
-        },
         setPartner(value) {
             this.partner = value;
         },
@@ -39,30 +49,62 @@ export const useSettingsStore = defineStore('settings', {
             this.service = value;
         },
         setMaterials(value) {
-            this.materials = value;
+            this.materials = [...value];
         },
         setMarkets(value) {
-            this.markets = value;
+            this.markets = [...value];
         },
         setIndexes(value) {
-            this.indexes = value;
+            this.indexes = [...value];
         },
         setExchanges(value) {
-            this.exchanges = value;
+            this.exchanges = [...value];
+        },
+        setSkin(theme, value) {
+            if (theme?.global?.name) {
+                theme.global.name.value = value;
+            }
+            this.skin = value;
         },
         initStore(theme, storage) {
             log('SETTINGS: initStore');
-            theme.global.name.value = storage[CONS.STORAGE.PROPS.SKIN];
-            this.skin = storage[CONS.STORAGE.PROPS.SKIN];
-            this.bookingsPerPage = storage[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE];
-            this.stocksPerPage = storage[CONS.STORAGE.PROPS.STOCKS_PER_PAGE];
-            this.activeAccountId = storage[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID];
-            this.partner = storage[CONS.STORAGE.PROPS.PARTNER];
-            this.service = storage[CONS.STORAGE.PROPS.SERVICE];
-            this.materials = storage[CONS.STORAGE.PROPS.MATERIALS];
-            this.markets = storage[CONS.STORAGE.PROPS.MARKETS];
-            this.indexes = storage[CONS.STORAGE.PROPS.INDEXES];
-            this.exchanges = storage[CONS.STORAGE.PROPS.EXCHANGES];
+            if (theme?.global?.name) {
+                theme.global.name.value = storage.sSkin;
+            }
+            this.skin = storage.sSkin;
+            this.bookingsPerPage = storage.sBookingsPerPage;
+            this.stocksPerPage = storage.sStocksPerPage;
+            this.activeAccountId = storage.sActiveAccountId;
+            this.partner = storage.sPartner;
+            this.service = storage.sService;
+            this.materials = [...storage.sMaterials];
+            this.markets = [...storage.sMarkets];
+            this.indexes = [...storage.sIndexes];
+            this.exchanges = [...storage.sExchanges];
+        },
+        updatePagination(bookings, stocks) {
+            this.bookingsPerPage = bookings;
+            this.stocksPerPage = stocks;
+        },
+        updateMarketData(data) {
+            if (data.materials)
+                this.materials = [...data.materials];
+            if (data.markets)
+                this.markets = [...data.markets];
+            if (data.indexes)
+                this.indexes = [...data.indexes];
+            if (data.exchanges)
+                this.exchanges = [...data.exchanges];
+        },
+        validateSettings() {
+            return (this.bookingsPerPage > 0 &&
+                this.stocksPerPage > 0 &&
+                this.skin.length > 0 &&
+                this.service.length > 0 &&
+                Array.isArray(this.materials) &&
+                Array.isArray(this.markets) &&
+                Array.isArray(this.indexes) &&
+                Array.isArray(this.exchanges));
         }
     }
 });

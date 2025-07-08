@@ -31,7 +31,7 @@ const state: Reactive<IState> = reactive({
 })
 
 const onClickOk = async (): Promise<void> => {
-  log('IMPORT_DATABASE : onClickOk', {info: state._chosen_file})
+  log('IMPORT_DATABASE: onClickOk', {info: state._chosen_file})
   const {notice, toISODate} = useAppApi()
   const records = useRecordsStore()
   const runtime = useRuntimeStore()

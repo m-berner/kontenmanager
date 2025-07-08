@@ -6,7 +6,6 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createI18n, type I18n} from 'vue-i18n'
-//import messages from '@intlify/unplugin-vue-i18n/messages'
 import {useAppApi} from '@/pages/background'
 import deDE from '@/locales/de-DE.json'
 import enUS from '@/locales/en-US.json'
@@ -24,7 +23,6 @@ interface IBrowserUI {
 }
 
 const {CONS, log} = useAppApi()
-
 const getUI = (): IBrowserUI => {
   const result = {
     lang: '',
@@ -48,13 +46,11 @@ export default <II18n>{
   i18n: createI18n<[MessageSchema], 'de-DE' | 'en-US'>({
     locale: getUI().locale,
     fallbackLocale: 'en-US',
-    //mode: 'composition',
     globalInjection: true,
     messages: {
       'de-DE': deDE,
       'en-US': enUS
     },
-    //messages,
     datetimeFormats: {
       'de-DE': {
         numeric: {

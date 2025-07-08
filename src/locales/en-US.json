@@ -17,7 +17,7 @@
     "deleteStock": "Aktien-Unternehmen entfernen",
     "updateStock": "Aktien-Unternehmen bearbeiten",
     "addBooking": "Buchung hinzufügen",
-    "exportDatabase": "Datenbank exportieren",
+    "exportToFile": "Datenbank exportieren",
     "importDatabase": "Datenbank importieren",
     "showAccounting": "Jahres-Berechnungen",
     "settings": "Einstellungen"
@@ -164,7 +164,7 @@
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?"
     },
-    "exportDatabase": {
+    "exportToFile": {
       "title": "Datenbank exportieren",
       "filename": "Dateiname"
     },
@@ -256,7 +256,7 @@
       {
         "title": "Datenbank exportieren",
         "content": "Klicken, um den erforderlichen Dialog zu exportieren.",
-        "icon": "$exportDatabase"
+        "icon": "$exportToFile"
       },
       {
         "title": "Datenbank importieren",

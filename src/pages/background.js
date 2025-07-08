@@ -183,45 +183,51 @@ export const useAppApi = () => {
                 FETCH__COMPANY_DATA__RESPONSE: '13015'
             },
             SERVICES: {
-                goyax: {
-                    NAME: 'Goyax',
-                    HOME: 'https://www.goyax.de/',
-                    QUOTE: 'https://www.goyax.de/aktien/',
-                    DELAY: 50
-                },
-                fnet: {
-                    NAME: 'Finanzen.Net',
-                    HOME: 'https://www.finanzen.net/aktienkurse/',
-                    INDEXES: 'https://www.finanzen.net/indizes/',
-                    QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search=',
-                    DATES: 'https://www.finanzen.net/termine/',
-                    MATERIALS: 'https://www.finanzen.net/rohstoffe/',
-                    GM: 'Hauptversammlung',
-                    QF: 'Quartalszahlen',
-                    DELAY: 750
-                },
-                wstreet: {
-                    NAME: 'Wallstreet-Online',
-                    HOME: 'https://www.wallstreet-online.de',
-                    QUOTE: 'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/',
-                    DELAY: 50
-                },
-                acheck: {
-                    NAME: 'Aktien Check',
-                    HOME: 'https://m.aktiencheck.de/',
-                    QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search=',
-                    DELAY: 50
-                },
-                ard: {
-                    NAME: 'ARD',
-                    HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
-                    QUOTE: 'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff=',
-                    DELAY: 50
-                },
-                tgate: {
-                    NAME: 'Tradegate',
-                    HOME: 'https://www.tradegate.de/',
-                    QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
+                MAP: new Map([
+                    ['goyax', {
+                            NAME: 'Goyax',
+                            HOME: 'https://www.goyax.de/',
+                            QUOTE: 'https://www.goyax.de/aktien/',
+                            DELAY: 50
+                        }],
+                    ['fnet', {
+                            NAME: 'Finanzen.Net',
+                            HOME: 'https://www.finanzen.net/aktienkurse/',
+                            QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search=',
+                            DELAY: 750
+                        }],
+                    ['wstreet', {
+                            NAME: 'Wallstreet-Online',
+                            HOME: 'https://www.wallstreet-online.de',
+                            QUOTE: 'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/',
+                            DELAY: 50
+                        }],
+                    ['acheck', {
+                            NAME: 'Aktien Check',
+                            HOME: 'https://m.aktiencheck.de/',
+                            QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search=',
+                            DELAY: 50
+                        }],
+                    ['ard', {
+                            NAME: 'ARD',
+                            HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
+                            QUOTE: 'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff=',
+                            DELAY: 50
+                        }],
+                    ['tgate', {
+                            NAME: 'Tradegate',
+                            HOME: 'https://www.tradegate.de/',
+                            QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
+                            DELAY: 0
+                        }],
+                    ['fx', {
+                            NAME: 'fx-rate',
+                            HOME: 'https://fx-rate.net/qwsaq',
+                            QUOTE: 'https://fx-rate.net/calculator/?c_input=',
+                            DELAY: 50
+                        }]
+                ]),
+                TGATE: {
                     CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
                     CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
                     CHS: [
@@ -269,13 +275,15 @@ export const useAppApi = () => {
                         'Y',
                         'Z',
                         'Ö'
-                    ]
+                    ],
+                    CHANGES: { SMALL: 34, BIG: 41 }
                 },
-                fx: {
-                    NAME: 'fx-rate',
-                    HOME: 'https://fx-rate.net/qwsaq',
-                    EXCHANGE: 'https://fx-rate.net/calculator/?c_input=',
-                    DELAY: 50
+                FNET: {
+                    INDEXES: 'https://www.finanzen.net/indizes/',
+                    DATES: 'https://www.finanzen.net/termine/',
+                    MATERIALS: 'https://www.finanzen.net/rohstoffe/',
+                    GM: 'Hauptversammlung',
+                    QF: 'Quartalszahlen'
                 }
             },
             STATES: {
@@ -450,6 +458,50 @@ export const useAppApi = () => {
         toISODate: (ms) => {
             return new Date(ms).toISOString().substring(0, 10);
         },
+        toNumber: (str) => {
+            let result = 0;
+            if (str !== null && str !== undefined) {
+                const a = str.toString().replace(/,$/g, '');
+                const b = a.split(',');
+                if (b.length === 2) {
+                    const tmp2 = a
+                        .trim()
+                        .replace(/\s|\.|\t|%/g, '')
+                        .replace(',', '.');
+                    result = Number.isNaN(Number.parseFloat(tmp2))
+                        ? 0
+                        : Number.parseFloat(tmp2);
+                }
+                else if (b.length > 2) {
+                    let tmp = '';
+                    for (let i = b.length - 1; i > 0; i--) {
+                        tmp += b[i];
+                    }
+                    const tmp2 = tmp + '.' + b[0];
+                    result = Number.isNaN(Number.parseFloat(tmp2))
+                        ? 0
+                        : Number.parseFloat(tmp2);
+                }
+                else {
+                    result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0]);
+                }
+            }
+            return result;
+        },
+        mean: (nar) => {
+            let sum = 0;
+            let len = nar.length;
+            let n;
+            for (n of nar) {
+                if (n !== 0 && !Number.isNaN(n)) {
+                    sum += n;
+                }
+                else {
+                    len--;
+                }
+            }
+            return len > 0 ? sum / len : 0;
+        },
         log: (msg, mode = { info: null }) => {
             const localDebug = localStorage.getItem('sDebug');
             if (Number.parseInt(localDebug ?? '0') > 0) {
@@ -463,14 +515,14 @@ export const useAppApi = () => {
         }
     };
 };
-const { CONS, log, notice } = useAppApi();
+const { CONS, log, mean, notice, toNumber } = useAppApi();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const useDatabaseApi = () => {
         return {
-            truncateDatabaseTables: async () => {
-                log('BACKGROUND: truncateDatabaseTables');
+            truncateTables: async () => {
+                log('BACKGROUND: truncateTables');
                 return new Promise(async (resolve, reject) => {
-                    if (dbi != null) {
+                    if (dbi !== null) {
                         const onComplete = async () => {
                             await notice(['Database is empty!']);
                             resolve('BACKGROUND: database is empty!');
@@ -478,8 +530,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         const onAbort = () => {
                             reject(requestTransaction.error);
                         };
-                        const onError = (ev) => {
-                            reject(ev);
+                        const onError = () => {
+                            reject(requestTransaction.error);
                         };
                         const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
                         requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
@@ -508,8 +560,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
-            exportDatabase: async (filename) => {
-                log('BACKGROUND: exportDatabase');
+            exportToFile: async (filename) => {
+                log('BACKGROUND: exportToFile');
                 const accounts = [];
                 const bookings = [];
                 const stocks = [];
@@ -517,7 +569,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 return new Promise(async (resolve, reject) => {
                     if (dbi !== null) {
                         const onComplete = async () => {
-                            log('BACKGROUND: exportDatabase: data read!');
+                            log('BACKGROUND: exportToFile: data read!');
                             const stringifyDB = () => {
                                 let buffer;
                                 let i;
@@ -586,7 +638,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                             browser.downloads.onChanged.addListener(onDownloadChange);
                             await browser.downloads.download(op);
                             await notice(['Database exported!']);
-                            resolve('BACKGROUND: exportDatabase: done!');
+                            resolve('BACKGROUND: exportToFile: done!');
                         };
                         const onAbort = () => {
                             reject(requestTransaction.error);
@@ -629,8 +681,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
-            toStores: async () => {
-                log('BACKGROUND: toStores');
+            exportToStores: async () => {
+                log('BACKGROUND: exportToStores');
                 const accounts = [];
                 const bookings = [];
                 const stocks = [];
@@ -639,7 +691,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     if (dbi != null) {
                         const storage = await browser.storage.local.get([CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]);
                         const onComplete = async () => {
-                            log('BACKGROUND: toStores: all database records sent to frontend!');
+                            log('BACKGROUND: exportToStores: all database records sent to frontend!');
                             resolve({ accounts, bookings, stocks, bookingTypes });
                         };
                         const onAbort = () => {
@@ -686,6 +738,61 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
                         const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
                         requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
+                    }
+                });
+            },
+            importStores: async (stores, all = true) => {
+                log('BACKGROUND: importStores', { info: dbi });
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onComplete = async () => {
+                            await notice(['All memory records are added to the database!']);
+                            resolve('BACKGROUND: importStores: all memory records are added to the database!');
+                        };
+                        const onAbort = () => {
+                            reject(requestTransaction.error);
+                        };
+                        const onError = (ev) => {
+                            reject(ev);
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
+                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
+                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
+                        const onSuccessClearBookings = () => {
+                            log('BACKGROUND: bookings dropped');
+                            for (let i = 0; i < stores.bookings.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
+                            }
+                        };
+                        const onSuccessClearAccounts = () => {
+                            log('BACKGROUND: accounts dropped');
+                            for (let i = 0; i < stores.accounts.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
+                            }
+                        };
+                        const onSuccessClearBookingTypes = () => {
+                            log('BACKGROUND: booking types dropped');
+                            for (let i = 0; i < stores.bookingTypes.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
+                            }
+                        };
+                        const onSuccessClearStocks = () => {
+                            log('BACKGROUND: stocks dropped');
+                            for (let i = 0; i < stores.stocks.length; i++) {
+                                requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
+                            }
+                        };
+                        const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
+                        requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
+                        if (all) {
+                            const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
+                            requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
+                        }
+                        const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
+                        requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
+                        const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
+                        requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
                     }
                 });
             },
@@ -755,28 +862,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
-            updateStock: async (record) => {
-                return new Promise(async (resolve, reject) => {
-                    if (dbi != null) {
-                        const onSuccess = async (ev) => {
-                            if (ev.target instanceof IDBRequest) {
-                                resolve('Stock updated');
-                            }
-                        };
-                        const onError = (ev) => {
-                            if (ev instanceof ErrorEvent) {
-                                reject(ev.message);
-                            }
-                        };
-                        const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).put(record);
-                        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                    }
-                });
-            },
-            deleteAccount: async (ident) => {
+            deleteAccount: async (id) => {
                 return new Promise(async (resolve, reject) => {
                     if (dbi != null) {
                         const onSuccess = () => {
@@ -789,7 +875,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         };
                         const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
                         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(ident);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(id);
                         requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
                         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
                     }
@@ -815,7 +901,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
-            deleteBookingType: async (ident) => {
+            deleteBookingType: async (id) => {
                 return new Promise(async (resolve, reject) => {
                     if (dbi != null) {
                         const onSuccess = () => {
@@ -828,7 +914,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         };
                         const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
                         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(ident);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(id);
                         requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
                         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
                     }
@@ -854,7 +940,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
-            deleteBooking: async (ident) => {
+            deleteBooking: async (id) => {
                 return new Promise(async (resolve, reject) => {
                     if (dbi != null) {
                         const onSuccess = () => {
@@ -865,7 +951,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         };
                         const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
                         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(id);
                         requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
                         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
                     }
@@ -891,7 +977,28 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
-            deleteStock: async (ident) => {
+            updateStock: async (record) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = async (ev) => {
+                            if (ev.target instanceof IDBRequest) {
+                                resolve('Stock updated');
+                            }
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev.message);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
+                        requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).put(record);
+                        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
+            deleteStock: async (id) => {
                 return new Promise(async (resolve, reject) => {
                     if (dbi != null) {
                         const onSuccess = () => {
@@ -904,64 +1011,9 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         };
                         const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
                         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(ident);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(id);
                         requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
                         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-                    }
-                });
-            },
-            addStores: async (stores, all = true) => {
-                log('BACKGROUND: addStores', { info: dbi });
-                return new Promise(async (resolve, reject) => {
-                    if (dbi != null) {
-                        const onComplete = async () => {
-                            await notice(['All memory records are added to the database!']);
-                            resolve('BACKGROUND: addStores: all memory records are added to the database!');
-                        };
-                        const onAbort = () => {
-                            reject(requestTransaction.error);
-                        };
-                        const onError = (ev) => {
-                            reject(ev);
-                        };
-                        const requestTransaction = dbi.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
-                        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                        const onSuccessClearBookings = () => {
-                            log('BACKGROUND: bookings dropped');
-                            for (let i = 0; i < stores.bookings.length; i++) {
-                                requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
-                            }
-                        };
-                        const onSuccessClearAccounts = () => {
-                            log('BACKGROUND: accounts dropped');
-                            for (let i = 0; i < stores.accounts.length; i++) {
-                                requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
-                            }
-                        };
-                        const onSuccessClearBookingTypes = () => {
-                            log('BACKGROUND: booking types dropped');
-                            for (let i = 0; i < stores.bookingTypes.length; i++) {
-                                requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
-                            }
-                        };
-                        const onSuccessClearStocks = () => {
-                            log('BACKGROUND: stocks dropped');
-                            for (let i = 0; i < stores.stocks.length; i++) {
-                                requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
-                            }
-                        };
-                        const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
-                        requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
-                        if (all) {
-                            const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
-                            requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
-                        }
-                        const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
-                        requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
-                        const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
-                        requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
                     }
                 });
             }
@@ -976,61 +1028,562 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     let child;
                     let wkn;
                     let symbol;
+                    const service = CONS.SERVICES.MAP.get('tgate');
                     let tables;
+                    let firstResponse;
                     let result = {
                         company: '',
                         wkn: '',
                         symbol: ''
                     };
-                    const firstResponse = await fetch(CONS.SERVICES.tgate.QUOTE + isin);
-                    if (firstResponse.url.length === 0 ||
-                        !firstResponse.ok ||
-                        firstResponse.status >= CONS.STATES.SRV ||
-                        (firstResponse.status > 0 &&
-                            firstResponse.status < CONS.STATES.SUCCESS)) {
-                        await notice(['First request failed']);
-                        reject('First request failed');
-                    }
-                    else {
-                        const secondResponse = await fetch(firstResponse.url);
-                        if (!secondResponse.ok ||
-                            secondResponse.status >= CONS.STATES.SRV ||
-                            (secondResponse.status > 0 &&
-                                secondResponse.status < CONS.STATES.SUCCESS)) {
-                            await notice(['Second request failed']);
-                            reject('Second request failed');
+                    if (service !== undefined) {
+                        firstResponse = await fetch(service.QUOTE + isin);
+                        if (firstResponse.url.length === 0 ||
+                            !firstResponse.ok ||
+                            firstResponse.status >= CONS.STATES.SRV ||
+                            (firstResponse.status > 0 &&
+                                firstResponse.status < CONS.STATES.SUCCESS)) {
+                            await notice(['First request failed']);
+                            reject('First request failed');
                         }
                         else {
-                            const secondResponseText = await secondResponse.text();
-                            sDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
-                            tables = sDocument.querySelectorAll('table > tbody tr');
-                            child = sDocument?.querySelector('#col1_content')?.childNodes[1];
-                            company =
-                                child?.textContent !== null
-                                    ? child?.textContent.split(',')[0].trim() ?? ''
-                                    : '';
-                            if (!company.includes('Die Gattung wird') &&
-                                tables[1].cells !== null &&
-                                tables.length > 0) {
-                                wkn = tables[1].cells[0].textContent ?? '';
-                                symbol = tables[1].cells[1].textContent ?? '';
-                                result = {
-                                    company,
-                                    wkn,
-                                    symbol
-                                };
-                                resolve(result);
+                            const secondResponse = await fetch(firstResponse.url);
+                            if (!secondResponse.ok ||
+                                secondResponse.status >= CONS.STATES.SRV ||
+                                (secondResponse.status > 0 &&
+                                    secondResponse.status < CONS.STATES.SUCCESS)) {
+                                await notice(['Second request failed']);
+                                reject('Second request failed');
                             }
                             else {
-                                reject('Unexpected error occurred');
+                                const secondResponseText = await secondResponse.text();
+                                sDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                                tables = sDocument.querySelectorAll('table > tbody tr');
+                                child = sDocument?.querySelector('#col1_content')?.childNodes[1];
+                                company =
+                                    child?.textContent !== null
+                                        ? child?.textContent.split(',')[0].trim() ?? ''
+                                        : '';
+                                if (!company.includes('Die Gattung wird') &&
+                                    tables[1].cells !== null &&
+                                    tables.length > 0) {
+                                    wkn = tables[1].cells[0].textContent ?? '';
+                                    symbol = tables[1].cells[1].textContent ?? '';
+                                    result = {
+                                        company,
+                                        wkn,
+                                        symbol
+                                    };
+                                    resolve(result);
+                                }
+                                else {
+                                    reject('Unexpected error occurred');
+                                }
                             }
                         }
                     }
                 });
+            },
+            fetchMinRateMaxData: async (storageOnline) => {
+                console.log('BACKGROUND: fetchMinRateMaxData');
+                return new Promise(async (resolve, reject) => {
+                    const storageService = await browser.storage.local.get('sService');
+                    const serviceName = storageService['sService'].name;
+                    const _fnet = async (urls) => {
+                        return await Promise.all(urls.map(async (urlObj) => {
+                            const firstResponse = await fetch(urlObj.url);
+                            const secondResponse = await fetch(firstResponse.url);
+                            const secondResponseText = await secondResponse.text();
+                            const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                            const onlineNodes = onlineDocument.querySelectorAll('#snapshot-value-fst-current-0 > span');
+                            const onlineArticleNodes = onlineDocument.querySelectorAll('main div[class=accordion__content]');
+                            let onlineMin = '0';
+                            let onlineMax = '0';
+                            let onlineCurrency = 'EUR';
+                            let onlineRate = '0';
+                            if (onlineArticleNodes.length > 0) {
+                                const onlineMmNodes = onlineArticleNodes[0].querySelectorAll('table > tbody > tr');
+                                for (let i = 0; i < onlineMmNodes.length; i++) {
+                                    if (onlineMmNodes[i].textContent?.includes('1 Jahr')) {
+                                        const tr = onlineMmNodes[i].querySelectorAll('td');
+                                        onlineMin =
+                                            tr[3].textContent ?? '0';
+                                        onlineMax =
+                                            tr[4].textContent ?? '0';
+                                    }
+                                }
+                            }
+                            if (onlineNodes.length > 1) {
+                                onlineCurrency = onlineNodes[1].textContent ?? '';
+                                onlineRate = onlineNodes[0].textContent ?? '';
+                            }
+                            return {
+                                id: urlObj.id,
+                                isin: '',
+                                rate: onlineRate,
+                                min: onlineMin,
+                                max: onlineMax,
+                                cur: onlineCurrency
+                            };
+                        }));
+                    };
+                    const _ard = async (urls) => {
+                        return await Promise.all(urls.map(async (urlObj) => {
+                            const firstResponse = await fetch(urlObj.url);
+                            const firstResponseText = await firstResponse.text();
+                            const firstResponseDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+                            const firstResponseRows = firstResponseDocument.querySelectorAll('#desktopSearchResult > table > tbody > tr');
+                            if (firstResponseRows.length > 0) {
+                                const url = firstResponseRows[0].getAttribute('onclick') ?? '';
+                                const secondResponse = await fetch(url.replace('document.location=\'', '').replace('\';', ''));
+                                const secondResponseText = await secondResponse.text();
+                                const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                                const onlineCurrency = 'EUR';
+                                const ardRows = onlineDocument.querySelectorAll('#USFkursdaten table > tbody tr');
+                                const onlineRate = (ardRows[0].cells[1].textContent ?? '0').replace('€', '');
+                                const onlineMin = (ardRows[6].cells[1].textContent ?? '0').replace('€', '');
+                                const onlineMax = (ardRows[7].cells[1].textContent ?? '0').replace('€', '');
+                                return {
+                                    id: urlObj.id,
+                                    isin: '',
+                                    rate: onlineRate,
+                                    min: onlineMin,
+                                    max: onlineMax,
+                                    cur: onlineCurrency
+                                };
+                            }
+                            else {
+                                return {
+                                    id: urlObj.id,
+                                    isin: '',
+                                    rate: '0',
+                                    min: '0',
+                                    max: '0',
+                                    cur: 'EUR'
+                                };
+                            }
+                        }));
+                    };
+                    const _wstreet = async (urls, homeUrl) => {
+                        return await Promise.all(urls.map(async (urlObj) => {
+                            const firstResponse = await fetch(urlObj.url);
+                            const firstResponseJson = await firstResponse.json();
+                            const url2 = homeUrl + firstResponseJson.result[0].link;
+                            const secondResponse = await fetch(url2);
+                            const secondResponseText = await secondResponse.text();
+                            const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                            const onlineRates = onlineDocument.querySelectorAll('div.c2 table');
+                            const onlineMinMax = onlineDocument.querySelectorAll('div.fundamental > div > div.float-start');
+                            let onlineCurrency = '';
+                            const onlineRate = onlineRates[0]
+                                ?.querySelectorAll('tr')[1]
+                                ?.querySelectorAll('td')[1].textContent ?? '0';
+                            const onlineMax = onlineMinMax[1].textContent?.split('Hoch')[1];
+                            const onlineMin = onlineMinMax[1].textContent?.split('Hoch')[0].split('WochenTief')[1];
+                            if (onlineRate.includes('USD')) {
+                                onlineCurrency = 'USD';
+                            }
+                            else if (onlineRate.includes('EUR')) {
+                                onlineCurrency = 'EUR';
+                            }
+                            return {
+                                id: urlObj.id ?? 0,
+                                isin: '',
+                                rate: onlineRate,
+                                min: onlineMin ?? '',
+                                max: onlineMax ?? '',
+                                cur: onlineCurrency
+                            };
+                        }));
+                    };
+                    const _goyax = async (urls) => {
+                        return await Promise.all(urls.map(async (urlObj) => {
+                            const firstResponse = await fetch(urlObj.url);
+                            const secondResponse = await fetch(firstResponse.url);
+                            const secondResponseText = await secondResponse.text();
+                            const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                            const onlineNodes = onlineDocument.querySelectorAll('div#instrument-ueberblick > div');
+                            const onlineRateNodes = onlineNodes[1].querySelectorAll('ul.list-rows');
+                            const onlineRateAll = onlineRateNodes[1].querySelectorAll('li')[3].textContent ?? '0';
+                            const onlineRate = onlineRateAll.split(')')[1] ?? '0';
+                            const onlineStatisticRows = onlineNodes[0]
+                                .querySelectorAll('table')[1]
+                                .querySelectorAll('tr');
+                            const onlineMax = onlineStatisticRows[4].querySelectorAll('td')[3].textContent ??
+                                '0';
+                            const onlineMin = onlineStatisticRows[5].querySelectorAll('td')[3].textContent ??
+                                '0';
+                            const onlineCurrency = 'EUR';
+                            return {
+                                id: urlObj.id,
+                                isin: '',
+                                rate: onlineRate,
+                                min: onlineMin,
+                                max: onlineMax,
+                                cur: onlineCurrency
+                            };
+                        }));
+                    };
+                    const _acheck = async (urls) => {
+                        return await Promise.all(urls.map(async (urlObj) => {
+                            const firstResponse = await fetch(urlObj.url);
+                            let onlineCurrency = '';
+                            const secondResponse = await fetch(firstResponse.url);
+                            const secondResponseText = await secondResponse.text();
+                            const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                            const onlineTables = onlineDocument.querySelectorAll('#content table');
+                            if (onlineTables.length > 1) {
+                                const onlineRate = onlineTables[0]
+                                    .querySelectorAll('tr')[1]
+                                    .querySelectorAll('td')[1].textContent ?? '0';
+                                const findCurrency = onlineTables[0]
+                                    .querySelectorAll('tr')[1]
+                                    .querySelectorAll('td')[2].textContent ?? '0';
+                                const onlineMin = onlineTables[2]
+                                    .querySelectorAll('tr')[3]
+                                    .querySelectorAll('td')[2].textContent ?? '0';
+                                const onlineMax = onlineTables[2]
+                                    .querySelectorAll('tr')[3]
+                                    .querySelectorAll('td')[1].textContent ?? '0';
+                                if (findCurrency.includes('$')) {
+                                    onlineCurrency = 'USD';
+                                }
+                                else if (findCurrency.includes('€')) {
+                                    onlineCurrency = 'EUR';
+                                }
+                                return {
+                                    id: urlObj.id,
+                                    isin: '',
+                                    rate: onlineRate,
+                                    min: onlineMin,
+                                    max: onlineMax,
+                                    cur: onlineCurrency
+                                };
+                            }
+                            else {
+                                return {
+                                    id: -1,
+                                    isin: '',
+                                    rate: '0',
+                                    min: '0',
+                                    max: '0',
+                                    cur: 'EUR'
+                                };
+                            }
+                        }));
+                    };
+                    const _tgate = async (urls) => {
+                        return await Promise.all(urls.map(async (urlObj) => {
+                            const firstResponse = await fetch(urlObj.url);
+                            const onlineCurrency = 'EUR';
+                            const onlineMax = '0';
+                            const onlineMin = '0';
+                            const onlineDocument = new DOMParser().parseFromString(await firstResponse.text(), 'text/html');
+                            const resultask = onlineDocument.querySelector('#ask') !== null
+                                ? onlineDocument.querySelector('#ask')?.textContent
+                                : '0';
+                            const resultbid = onlineDocument.querySelector('#bid') !== null
+                                ? onlineDocument.querySelector('#bid')?.textContent
+                                : '0';
+                            const quote = mean([toNumber(resultbid), toNumber(resultask)]);
+                            const onlineRate = quote.toString();
+                            return {
+                                id: urlObj.id,
+                                isin: '',
+                                rate: onlineRate,
+                                min: onlineMin,
+                                max: onlineMax,
+                                cur: onlineCurrency
+                            };
+                        }));
+                    };
+                    const _select = async (urls) => {
+                        return new Promise(async (resolve, reject) => {
+                            const service = CONS.SERVICES.MAP.get(serviceName);
+                            switch (serviceName) {
+                                case 'fnet':
+                                    resolve(await _fnet(urls));
+                                    break;
+                                case 'ard':
+                                    resolve(await _ard(urls));
+                                    break;
+                                case 'wstreet':
+                                    if (service !== undefined) {
+                                        resolve(await _wstreet(urls, service.HOME));
+                                    }
+                                    else {
+                                        reject('Undefined service constant!');
+                                    }
+                                    break;
+                                case 'goyax':
+                                    resolve(await _goyax(urls));
+                                    break;
+                                case 'acheck':
+                                    resolve(await _acheck(urls));
+                                    break;
+                                case 'tgate':
+                                    resolve(await _tgate(urls));
+                                    break;
+                                default:
+                                    throw new Error('ONLINE: fetchMinRateMaxData: unknown service!');
+                            }
+                        });
+                    };
+                    const urls = [];
+                    if (storageOnline.length > 0) {
+                        for (let i = 0; i < storageOnline.length; i++) {
+                            const service = CONS.SERVICES.MAP.get(serviceName);
+                            const isin = storageOnline[i].isin;
+                            if (isin !== undefined && service !== undefined && service !== null) {
+                                urls.push({
+                                    url: service.QUOTE + isin,
+                                    id: storageOnline[i].id ?? -1
+                                });
+                            }
+                        }
+                    }
+                    else {
+                        reject('System Error');
+                    }
+                    resolve(await _select(urls));
+                });
+            },
+            fetchDailyChangesData: async (table, mode = CONS.SERVICES.TGATE.CHANGES.SMALL) => {
+                console.log('BACKGROUND: fetchDailyChangesData');
+                let valuestr;
+                let company;
+                let sDocument;
+                let trCollection;
+                let url = CONS.SERVICES.TGATE.CHB_URL ?? '' + table;
+                let selector = '#kursliste_abc > tr';
+                if (mode === CONS.SERVICES.TGATE.CHANGES.SMALL) {
+                    url = CONS.SERVICES.TGATE.CHS_URL ?? '' + table;
+                    selector = '#kursliste_daten > tr';
+                }
+                const convertHTMLEntities = (str) => {
+                    const entities = new Map([
+                        ['aum', 'ä'],
+                        ['Aum', 'Ä'],
+                        ['oum', 'ö'],
+                        ['Oum', 'Ö'],
+                        ['uum', 'ü'],
+                        ['Uum', 'Ü'],
+                        ['amp', '&'],
+                        ['eac', 'é'],
+                        ['Eac', 'É'],
+                        ['eci', 'ê'],
+                        ['Eci', 'Ê'],
+                        ['oac', 'ó'],
+                        ['Oac', 'Ó'],
+                        ['ael', 'æ'],
+                        ['Ael', 'Æ']
+                    ]);
+                    const fMatch = (match) => {
+                        return entities.get(match.substring(1, 4)) ?? '';
+                    };
+                    let result = '';
+                    if (str !== null) {
+                        result = str
+                            .trim()
+                            .replace(new RegExp(CONS.SYSTEM.HTML_ENTITY, 'g'), fMatch);
+                    }
+                    return result;
+                };
+                const entry = {
+                    key: '',
+                    value: {
+                        percentChange: '',
+                        change: 0,
+                        stringChange: ''
+                    }
+                };
+                const firstResponse = await fetch(url);
+                const _changes = [];
+                if (firstResponse.url.length === 0 ||
+                    !firstResponse.ok ||
+                    firstResponse.status >= CONS.STATES.SRV ||
+                    (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
+                    await notice(['Request failed']);
+                }
+                else {
+                    const firstResponseText = await firstResponse.text();
+                    sDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+                    trCollection = sDocument.querySelectorAll(selector);
+                    for (let i = 0; i < trCollection.length; i++) {
+                        valuestr = trCollection[i].childNodes[11].textContent ?? '';
+                        company = convertHTMLEntities(trCollection[i].childNodes[1].textContent ?? '').replace('<wbr>', '');
+                        entry.key = company.toUpperCase();
+                        entry.value = {
+                            percentChange: valuestr.replace(/\t/g, ''),
+                            change: toNumber(valuestr),
+                            stringChange: toNumber(valuestr).toString()
+                        };
+                        _changes.push({ ...entry });
+                    }
+                    console.error(trCollection, _changes);
+                }
+                return _changes;
+            },
+            fetchExchangesData: async (exchangeCodes) => {
+                console.log('BACKGROUND: fetchExchangesData');
+                const service = CONS.SERVICES.MAP.get('fx');
+                const fExUrl = (code) => {
+                    if (service !== undefined) {
+                        return `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`;
+                    }
+                    else {
+                        throw new Error('Undefined service constant!');
+                    }
+                };
+                return new Promise(async (resolve, reject) => {
+                    const result = [];
+                    for (let i = 0; i < exchangeCodes.length; i++) {
+                        const firstResponse = await fetch(fExUrl(exchangeCodes[i]));
+                        if (!firstResponse.ok ||
+                            firstResponse.status >= CONS.STATES.SRV ||
+                            (firstResponse.status > 0 &&
+                                firstResponse.status < CONS.STATES.SUCCESS)) {
+                            await notice([firstResponse.statusText]);
+                            reject('System Error');
+                        }
+                        const firstResponseText = await firstResponse.text();
+                        const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+                        const resultTr = resultDocument.querySelector('form#formcalculator.formcalculator > div');
+                        if (resultTr !== undefined && resultTr !== null) {
+                            const resultString = resultTr.getAttribute('data-rate');
+                            const resultMatchArray = resultString?.match(/[0-9]*\.?[0-9]+/g) ?? ['1'];
+                            const exchangeRate = Number.parseFloat(resultMatchArray[0]);
+                            result.push({ key: exchangeCodes[i], value: exchangeRate });
+                        }
+                    }
+                    resolve(result);
+                });
+            },
+            fetchMaterialData: async () => {
+                console.log('BACKGROUND: fetchMaterialData');
+                return new Promise(async (resolve, reject) => {
+                    const materials = [];
+                    const firstResponse = await fetch(CONS.SERVICES.FNET.MATERIALS);
+                    if (!firstResponse.ok ||
+                        firstResponse.status >= CONS.STATES.SRV ||
+                        (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
+                        await notice([firstResponse.statusText]);
+                        reject('System error');
+                    }
+                    const firstResponseText = await firstResponse.text();
+                    const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+                    const resultTr = resultDocument.querySelectorAll('#commodity_prices > table > tbody tr');
+                    for (let i = 0; i < resultTr.length; i++) {
+                        if (resultTr[i].children[0].tagName === 'TD' &&
+                            CONS.SETTINGS.MATERIALS[resultTr[i].children[0].textContent ?? ''] !== undefined) {
+                            materials.push({
+                                key: CONS.SETTINGS.MATERIALS[resultTr[i].children[0].textContent ?? ''],
+                                value: toNumber(resultTr[i].children[1].textContent)
+                            });
+                        }
+                    }
+                    resolve(materials);
+                });
+            },
+            fetchIndexData: async () => {
+                console.log('BACKGROUND: fetchIndexData');
+                return new Promise(async (resolve, reject) => {
+                    const indexes = [];
+                    const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES);
+                    const indexesValues = Object.values(CONS.SETTINGS.INDEXES);
+                    const firstResponse = await fetch(CONS.SERVICES.FNET.INDEXES ?? '');
+                    if (!firstResponse.ok ||
+                        firstResponse.status >= CONS.STATES.SRV ||
+                        (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
+                        await notice([firstResponse.statusText]);
+                        reject(firstResponse.statusText);
+                    }
+                    const firstResponseText = await firstResponse.text();
+                    const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+                    const resultTr = resultDocument.querySelectorAll('.index-world-map a');
+                    for (let i = 0; i < indexesKeys.length; i++) {
+                        for (let j = 0; j < resultTr.length; j++) {
+                            if (indexesValues[i].includes(resultTr[j].getAttribute('title') ?? '') &&
+                                resultTr[j].children[0].textContent !== undefined) {
+                                indexes.push({
+                                    key: indexesKeys[i],
+                                    value: toNumber(resultTr[j].children[0].textContent)
+                                });
+                            }
+                        }
+                    }
+                    resolve(indexes);
+                });
+            },
+            fetchDatesData: async (obj) => {
+                console.log('BACKGROUND: fetchDatesData');
+                const gmqf = { gm: 0, qf: 0 };
+                const parseGermanDate = (germanDateString) => {
+                    const parts = germanDateString.match(/(\d+)/g) ?? ['01', '01', '1970'];
+                    const year = parts.length === 3 && parts[2].length === 4 ? parts[2] : '1970';
+                    const month = parts.length === 3 ? parts[1].padStart(2, '0') : '01';
+                    const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01';
+                    return new Date(`${year}-${month}-${day}`).getTime();
+                };
+                const firstResponse = await fetch('https://www.finanzen.net/suchergebnis.asp?_search=' + obj.isin);
+                if (firstResponse.url.length === 0 ||
+                    !firstResponse.ok ||
+                    firstResponse.status >= CONS.STATES.SRV ||
+                    (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
+                    console.error('BACKGROUND: fetchDatesData: First request failed');
+                }
+                else {
+                    const atoms = firstResponse.url.split('/');
+                    const stockName = atoms[atoms.length - 1].replace('-aktie', '');
+                    const secondResponse = await fetch('https://www.finanzen.net/termine/' + stockName);
+                    if (!secondResponse.ok ||
+                        secondResponse.status >= CONS.STATES.SRV ||
+                        (secondResponse.status > 0 &&
+                            secondResponse.status < CONS.STATES.SUCCESS)) {
+                        console.error('BACKGROUND: fetchDatesData: Second request failed');
+                    }
+                    else {
+                        const secondResponseText = await secondResponse.text();
+                        const qfgmDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                        const tables = qfgmDocument.querySelectorAll('.table');
+                        const rows = tables[1].querySelectorAll('tr');
+                        let stopGm = false;
+                        let stopQf = false;
+                        const gmqfString = { gm: '01.01.1970', qf: '01.01.1970' };
+                        for (let j = 0; j < rows.length && !!(rows[j].cells[3]); j++) {
+                            const row = rows[j].cells[3].textContent?.replaceAll('(e)*', '').trim() ?? '01.01.1970';
+                            if (rows[j].cells[0].textContent === 'Quartalszahlen' &&
+                                row !== '01.01.1970' &&
+                                row.length === 10 &&
+                                !stopQf) {
+                                gmqfString.qf = row;
+                                stopQf = true;
+                            }
+                            else if (rows[j].cells[0].textContent === 'Hauptversammlung' &&
+                                row !== '01.01.1970' &&
+                                row.length === 10 &&
+                                !stopGm) {
+                                gmqfString.gm = row;
+                                stopGm = true;
+                            }
+                            if (stopQf && stopGm)
+                                break;
+                        }
+                        gmqf.qf =
+                            gmqfString.qf !== undefined && gmqfString.qf !== ''
+                                ? parseGermanDate(gmqfString.qf)
+                                : 0;
+                        gmqf.gm =
+                            gmqfString.gm !== undefined && gmqfString.gm !== ''
+                                ? parseGermanDate(gmqfString.gm)
+                                : 0;
+                    }
+                }
+                return { key: obj.id, value: gmqf };
             }
         };
     };
-    const { truncateDatabaseTables, exportDatabase, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, toStores, addStores, deleteStock, open } = useDatabaseApi();
+    const { truncateTables, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, exportToStores, importStores, deleteStock, open } = useDatabaseApi();
     const { fetchCompanyData } = useFetchApi();
     let dbi;
     const onInstall = async () => {
@@ -1166,20 +1719,20 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                     break;
                 case CONS.MESSAGES.DB__DELETE_ALL:
-                    await truncateDatabaseTables();
+                    await truncateTables();
                     resolve('DB empty');
                     break;
                 case CONS.MESSAGES.DB__EXPORT:
-                    await exportDatabase(appMessage.data);
+                    await exportToFile(appMessage.data);
                     resolve('DB exported');
                     break;
                 case CONS.MESSAGES.STORAGE__SET_ID:
                     await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: appMessage.data });
-                    await toStores();
+                    await exportToStores();
                     resolve('ID set');
                     break;
                 case CONS.MESSAGES.DB__GET_STORES:
-                    const stores = await toStores();
+                    const stores = await exportToStores();
                     response = JSON.stringify({
                         type: CONS.MESSAGES.DB__GET_STORES__RESPONSE,
                         data: stores
@@ -1187,15 +1740,15 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     resolve(response);
                     break;
                 case CONS.MESSAGES.DB__ADD_STORES_25:
-                    const addStoresData25 = appMessage.data;
-                    await addStores(addStoresData25, false);
-                    await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addStoresData25.accounts[0].cID });
+                    const importStoresData25 = appMessage.data;
+                    await importStores(importStoresData25, false);
+                    await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: importStoresData25.accounts[0].cID });
                     resolve('Stores added');
                     break;
                 case CONS.MESSAGES.DB__ADD_STORES:
-                    const addStoresData = appMessage.data;
-                    await addStores(addStoresData);
-                    await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addStoresData.accounts[0].cID });
+                    const importStoresData = appMessage.data;
+                    await importStores(importStoresData);
+                    await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: importStoresData.accounts[0].cID });
                     resolve('Stores added');
                     break;
                 case CONS.MESSAGES.DB__ADD_ACCOUNT:

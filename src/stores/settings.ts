@@ -5,13 +5,13 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {defineStore, type StoreDefinition} from 'pinia'
+import {defineStore} from 'pinia'
 import {type ThemeInstance} from 'vuetify'
 import {useAppApi} from '@/pages/background'
 
 interface ISettingsStore {
   skin: string
-  bookingsPerPage: string | number
+  bookingsPerPage: number
   stocksPerPage: number
   activeAccountId: number
   partner: boolean
@@ -22,28 +22,9 @@ interface ISettingsStore {
   exchanges: string[]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface ISettingsGetter {
-  //
-}
-
-interface ISettingsActions {
-  setActiveAccountId: (accountId: number) => void
-  setBookingsPerPage: (bookingsPerPage: number) => void
-  setPartner: (partner: boolean) => void
-  setSkin: (theme: ThemeInstance, skin: string) => void
-  setStocksPerPage: (stocksPerPage: number) => void
-  setService: (service: string) => void
-  setMaterials: (materials: string[]) => void
-  setMarkets: (markets: string[]) => void
-  setExchanges: (exchanges: string[]) => void
-  setIndexes: (indexes: string[]) => void
-  initStore: (theme: ThemeInstance, storage: { [p: string]: number & boolean & string & string[] }) => void
-}
-
 const {CONS, log} = useAppApi()
 
-export const useSettingsStore: StoreDefinition<'settings', ISettingsStore, ISettingsGetter, ISettingsActions> = defineStore('settings', {
+export const useSettingsStore = defineStore('settings', {
   state: (): ISettingsStore => {
     return {
       skin: CONS.DEFAULTS.STORAGE.SKIN,
@@ -59,82 +40,101 @@ export const useSettingsStore: StoreDefinition<'settings', ISettingsStore, ISett
     }
   },
   getters: {
-    // activeAccountId(state: ISettingsStore) {
-    //  return state._active_account_id
-    // },
-    // bookingsPerPage(state: ISettingsStore) {
-    //   return state._bookings_per_page
-    // },
-    // stocksPerPage(state: ISettingsStore) {
-    //   return state._stocks_per_page
-    // },
-    // skin(state: ISettingsStore) {
-    //   return state._skin
-    // },
-    // partner(state: ISettingsStore) {
-    //   return state._partner
-    // },
-    // service(state: ISettingsStore) {
-    //   return state._service
-    // },
-    // materials(state: ISettingsStore) {
-    //   return state._materials
-    // },
-    // markets(state: ISettingsStore) {
-    //   return state._markets
-    // },
-    // indexes(state: ISettingsStore) {
-    //   return state._indexes
-    // },
-    // exchanges(state: ISettingsStore) {
-    //   return state._exchanges
-    // }
+    // Computed properties for commonly used derived state
+    isPartnerEnabled: (state): boolean => state.partner,
+
+    currentTheme: (state): string => state.skin,
+
+    paginationConfig: (state) => ({
+      bookings: state.bookingsPerPage,
+      stocks: state.stocksPerPage
+    }),
+
+    hasActiveAccount: (state): boolean => state.activeAccountId !== -1,
+
+    marketingData: (state) => ({
+      materials: state.materials,
+      markets: state.markets,
+      indexes: state.indexes,
+      exchanges: state.exchanges
+    })
   },
   actions: {
-    setActiveAccountId(value) {
+    setActiveAccountId(value: number) {
       this.activeAccountId = value
     },
-    setBookingsPerPage(value) {
+    setBookingsPerPage(value: number) {
       this.bookingsPerPage = value
     },
-    setStocksPerPage(value) {
+    setStocksPerPage(value: number) {
       this.stocksPerPage = value
     },
-    setSkin(theme, value) {
-      theme.global.name.value = value
-      this.skin = value
-    },
-    setPartner(value) {
+    setPartner(value: boolean) {
       this.partner = value
     },
-    setService(value) {
+    setService(value: string) {
       this.service = value
     },
-    setMaterials(value) {
-      this.materials = value
+    setMaterials(value: string[]) {
+      this.materials = [...value]
     },
-    setMarkets(value) {
-      this.markets = value
+    setMarkets(value: string[]) {
+      this.markets = [...value]
     },
-    setIndexes(value) {
-      this.indexes = value
+    setIndexes(value: string[]) {
+      this.indexes = [...value]
     },
-    setExchanges(value) {
-      this.exchanges = value
+    setExchanges(value: string[]) {
+      this.exchanges = [...value]
     },
-    initStore(theme, storage) {
+    setSkin(theme: ThemeInstance, value: string) {
+      if (theme?.global?.name) {
+        theme.global.name.value = value
+      }
+      this.skin = value
+    },
+    initStore(theme: ThemeInstance, storage: IStorageLocal): void {
       log('SETTINGS: initStore')
-      theme.global.name.value = storage[CONS.STORAGE.PROPS.SKIN]
-      this.skin = storage[CONS.STORAGE.PROPS.SKIN]
-      this.bookingsPerPage = storage[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE]
-      this.stocksPerPage = storage[CONS.STORAGE.PROPS.STOCKS_PER_PAGE]
-      this.activeAccountId = storage[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]
-      this.partner = storage[CONS.STORAGE.PROPS.PARTNER]
-      this.service = storage[CONS.STORAGE.PROPS.SERVICE]
-      this.materials = storage[CONS.STORAGE.PROPS.MATERIALS]
-      this.markets = storage[CONS.STORAGE.PROPS.MARKETS]
-      this.indexes = storage[CONS.STORAGE.PROPS.INDEXES]
-      this.exchanges = storage[CONS.STORAGE.PROPS.EXCHANGES]
+      if (theme?.global?.name) {
+        theme.global.name.value = storage.sSkin
+      }
+      this.skin = storage.sSkin
+      this.bookingsPerPage = storage.sBookingsPerPage
+      this.stocksPerPage = storage.sStocksPerPage
+      this.activeAccountId = storage.sActiveAccountId
+      this.partner = storage.sPartner
+      this.service = storage.sService
+      this.materials = [...storage.sMaterials]
+      this.markets = [...storage.sMarkets]
+      this.indexes = [...storage.sIndexes]
+      this.exchanges = [...storage.sExchanges]
+    },
+    updatePagination(bookings: number, stocks: number): void {
+      this.bookingsPerPage = bookings
+      this.stocksPerPage = stocks
+    },
+    updateMarketData(data: Partial<{
+      materials: string[]
+      markets: string[]
+      indexes: string[]
+      exchanges: string[]
+    }>): void {
+      if (data.materials) this.materials = [...data.materials]
+      if (data.markets) this.markets = [...data.markets]
+      if (data.indexes) this.indexes = [...data.indexes]
+      if (data.exchanges) this.exchanges = [...data.exchanges]
+    },
+    validateSettings(): boolean {
+      return (
+        this.bookingsPerPage > 0 &&
+        this.stocksPerPage > 0 &&
+        this.skin.length > 0 &&
+        this.service.length > 0 &&
+        Array.isArray(this.materials) &&
+        Array.isArray(this.markets) &&
+        Array.isArray(this.indexes) &&
+        Array.isArray(this.exchanges)
+      )
     }
   }
 })

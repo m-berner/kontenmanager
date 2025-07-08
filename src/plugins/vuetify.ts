@@ -152,7 +152,7 @@ export default<IVuetify> {
         addBookingType: mdiFilterPlus,
         editBookingType: mdiFilterCog,
         deleteBookingType: mdiFilterRemove,
-        exportDatabase: mdiDatabaseExport,
+        exportToFile: mdiDatabaseExport,
         importDatabase: mdiDatabaseImport,
         showAccounting: mdiCalculator,
         settings: mdiCog,

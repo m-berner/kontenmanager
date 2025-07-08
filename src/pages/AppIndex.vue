@@ -20,7 +20,7 @@ const theme = useTheme()
 const {CONS, log} = useAppApi()
 const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
   const changesKey = Object.keys(changes)
-  switch(changesKey[0]) {
+  switch (changesKey[0]) {
     case CONS.STORAGE.PROPS.SKIN:
       settings.setSkin(theme, changes[changesKey[0]].newValue)
       break
@@ -52,9 +52,7 @@ onBeforeMount(async (): Promise<void> => {
   const dbGetStoresData: IStores = JSON.parse(dbGetStoresResponseString).data
   if (dbGetStoresData.accounts.length > 0) {
     records.initStore(dbGetStoresData)
-    if (settings.activeAccountId === undefined) {
-      settings.setActiveAccountId(records.accounts[0].cID)
-    }
+    settings.setActiveAccountId(records.accounts[0].cID)
     runtime.setLogo()
     records.sumBookings()
   }
@@ -67,6 +65,7 @@ log('--- AppIndex.vue setup ---', {info: window.location.href})
   <v-app v-bind:flat="true">
     <router-view name="title"></router-view>
     <router-view name="header"></router-view>
+    <router-view name="info"></router-view>
     <v-main>
       <router-view></router-view>
     </v-main>

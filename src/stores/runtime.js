@@ -15,23 +15,42 @@ export const useRuntimeStore = defineStore('runtime', {
             }
         };
     },
-    getters: {},
+    getters: {
+        hasActiveBooking: (state) => state.bookingId !== -1,
+        isDialogVisible: (state) => state.teleport.visibility,
+        currentDialog: (state) => state.teleport.dialogName,
+        hasLogo: (state) => state.logo !== CONS.LOGOS.NO_LOGO,
+        dialogConfig: (state) => ({ ...state.teleport }),
+        currentBookingInfo: (state) => {
+            if (state.bookingId === -1)
+                return null;
+            const records = useRecordsStore();
+            const bookingIndex = records.getBookingById(state.bookingId);
+            return bookingIndex !== -1 ? records.bookings[bookingIndex] : null;
+        }
+    },
     actions: {
         setLogo() {
             const records = useRecordsStore();
             const settings = useSettingsStore();
+            this.logo = CONS.LOGOS.NO_LOGO;
             if (settings.activeAccountId > -1) {
-                this.logo = records.accounts[records.getAccountIndexById(settings.activeAccountId)].cLogoUrl;
-            }
-            else {
-                this.logo = CONS.LOGOS.NO_LOGO;
+                const accountIndex = records.getAccountIndexById(settings.activeAccountId);
+                if (accountIndex !== -1) {
+                    const account = records.accounts[accountIndex];
+                    this.logo = account.cLogoUrl;
+                }
             }
         },
         setBookingId(value) {
             this.bookingId = value;
         },
         setTeleport(entry) {
-            this.teleport = entry;
+            this.teleport = {
+                dialogName: entry.dialogName,
+                okButton: entry.okButton,
+                visibility: entry.visibility
+            };
         },
         resetTeleport() {
             this.teleport = {
@@ -39,6 +58,46 @@ export const useRuntimeStore = defineStore('runtime', {
                 okButton: true,
                 visibility: false,
             };
+        },
+        openDialog(dialogName, showOkButton = true) {
+            this.teleport = {
+                dialogName,
+                okButton: showOkButton,
+                visibility: true
+            };
+        },
+        closeDialog() {
+            this.teleport.visibility = false;
+        },
+        toggleDialog() {
+            this.teleport.visibility = !this.teleport.visibility;
+        },
+        updateDialogConfig(config) {
+            this.teleport = {
+                ...this.teleport,
+                ...config
+            };
+        },
+        clearBooking() {
+            this.bookingId = -1;
+        },
+        setBookingAndOpenDialog(bookingId, dialogName) {
+            this.bookingId = bookingId;
+            this.openDialog(dialogName);
+        },
+        resetRuntimeState() {
+            this.bookingId = -1;
+            this.logo = CONS.LOGOS.NO_LOGO;
+            this.resetTeleport();
+        },
+        updateLogoSafely() {
+            try {
+                this.setLogo();
+            }
+            catch (error) {
+                log('ERROR: Failed to update logo', { info: error });
+                this.logo = CONS.LOGOS.NO_LOGO;
+            }
         }
     }
 });

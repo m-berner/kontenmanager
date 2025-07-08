@@ -16,6 +16,17 @@ export default {
                 }
             },
             {
+                path: '/company',
+                name: 'company',
+                components: {
+                    default: () => import('@/components/CompanyContent.vue'),
+                    title: () => import('@/components/TitleBar.vue'),
+                    header: () => import('@/components/HeaderBar.vue'),
+                    info: () => import('@/components/InfoBar.vue'),
+                    footer: () => import('@/components/FooterBar.vue')
+                }
+            },
+            {
                 path: '/help',
                 name: 'help',
                 components: {

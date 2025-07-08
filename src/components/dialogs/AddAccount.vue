@@ -39,22 +39,21 @@ const state: Reactive<IState> = reactive({
 const onInputLogoName = () => {
   state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
-const onUpdateIbanMask = (iban: string) => {
-  console.error(iban)
-  if (iban !== '') {
-    const withoutSpace = iban.replace(/\s/g, '')
-    const loops = Math.ceil(withoutSpace.length / 4)
-    let masked = ''
-    for (let i = 0; i < loops; i++) {
-      if (i === 0) {
-        masked = withoutSpace.slice(i * 4, (i + 1) * 4).toUpperCase()
-      } else {
-        masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
+const onUpdateIbanMask = (iban: string): void => {
+    if (iban !== '') {
+      const withoutSpace = iban.replace(/\s/g, '')
+      const loops = Math.ceil(withoutSpace.length / 4)
+      let masked = ''
+      for (let i = 0; i < loops; i++) {
+        if (i === 0) {
+          masked = withoutSpace.slice(i * 4, (i + 1) * 4).toUpperCase()
+        } else {
+          masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
+        }
       }
+      state.accountNumber = masked
     }
-    state.accountNumber = masked
   }
-}
 const onClickOk = async (): Promise<void> => {
   log('ADD_ACCOUNT: onClickOk')
   const formIs = await formRef.value!.validate()

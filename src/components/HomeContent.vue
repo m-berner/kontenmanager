@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import OptionMenu from '@/components/OptionMenu.vue'
+import OptionMenu from '@/components/helper/OptionMenu.vue'
 import {type Reactive, reactive} from 'vue'
 
 type TAlign = 'start' | 'center' | 'end' | undefined

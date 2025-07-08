@@ -101,6 +101,15 @@ const setService = async (ev: Event): Promise<void> => {
   }
 }
 
+const serviceLabels = (item: string) => {
+  const service = CONS.SERVICES.MAP.get(item)
+  if (service !== undefined) {
+    return service.NAME
+  } else {
+    return 'Label not found'
+  }
+}
+
 onBeforeMount(async (): Promise<void> => {
   const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__GET_ALL}))
   const storageResponseData = JSON.parse(storageResponseString).data
@@ -143,7 +152,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                   <v-radio
                     v-for="item in state.serviceKeys"
                     v-bind:key="item"
-                    v-bind:label="CONS.SERVICES[item].NAME ?? ''"
+                    v-bind:label="serviceLabels(item)"
                     v-bind:value="item"
                     v-on:click="setService"
                   ></v-radio>

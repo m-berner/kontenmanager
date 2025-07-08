@@ -247,7 +247,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.exportDatabase')">
+    <v-tooltip location="top" v-bind:text="t('headerBar.exportToFile')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.EXPORT_DATABASE"
@@ -255,7 +255,7 @@ log('--- HeaderBar.vue setup ---')
           v-bind="props"
           variant="tonal"
           v-on:click="onIconClick">
-          <v-icon icon="$exportDatabase"></v-icon>
+          <v-icon icon="$exportToFile"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
