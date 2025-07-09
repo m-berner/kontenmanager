@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {type ObjectPlugin} from 'vue'
+import {type App, type Plugin} from 'vue'
 import {useAppApi} from '@/pages/background'
 import AddStock from '@/components/dialogs/AddStock.vue'
 import UpdateStock from '@/components/dialogs/UpdateStock.vue'
@@ -23,8 +23,8 @@ import DeleteBooking from '@/components/dialogs/DeleteBooking.vue'
 
 const {CONS, log} = useAppApi()
 
-export default <ObjectPlugin<[]>>{
-  install: (app) => {
+const ComponentsPlugin: Plugin = {
+  install: (app: App) => {
     app.component(CONS.DIALOGS.ADD_STOCK, AddStock)
     app.component(CONS.DIALOGS.UPDATE_STOCK, UpdateStock)
     app.component(CONS.DIALOGS.DELETE_STOCK, DeleteStock)
@@ -40,5 +40,7 @@ export default <ObjectPlugin<[]>>{
     app.component(CONS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)
   }
 }
+
+export default ComponentsPlugin
 
 log('--- PLUGINS components.js ---')

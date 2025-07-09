@@ -5,10 +5,9 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {defineStore, type StoreDefinition} from 'pinia'
-import {useAppApi} from '@/pages/background'
-import {useSettingsStore} from '@/stores/settings'
-import {toRaw} from 'vue'
+import { defineStore } from 'pinia'
+import { useAppApi } from '@/pages/background'
+import { useSettingsStore } from '@/stores/settings'
 
 interface IRecordsStore {
   accounts: IAccount[]
@@ -19,209 +18,192 @@ interface IRecordsStore {
   bookingSumField: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface IRecordsGetter {
-  //
-}
+const { log } = useAppApi()
 
-interface IRecordsActions {
-  getAccountIndexById: (ident: number) => number
-  getBookingTypeNameById: (ident: number) => string
-  getBookingTypeById: (ident: number) => number
-  getBookingTextById: (ident: number) => string | Error
-  getBookingById: (ident: number) => number
-  getStockById: (ident: number) => number
-  sumBookings: () => void
-  setBookingSumField: (value: string) => void
-  initStore: (stores: IStores) => void
-  addAccount: (account: IAccount) => void
-  updateAccount: (account: IAccount) => void
-  deleteAccount: (ident: number) => void
-  addBooking: (booking: IBooking) => void
-  deleteBooking: (ident: number) => void
-  addStock: (stock: IStock) => void
-  updateStock: (stock: IStock) => void
-  deleteStock: (ident: number) => void
-  addBookingType: (value: IBookingType) => void
-  deleteBookingType: (ident: number) => void
-  cleanStore: () => void
-}
+export const useRecordsStore = defineStore('records', {
+  state: (): IRecordsStore => ({
+    accounts: [],
+    bookings: [],
+    bookingSum: 0,
+    bookingSumField: '',
+    bookingTypes: [],
+    stocks: []
+  }),
 
-const {log} = useAppApi()
+  getters: {
+    // You can add getters here if needed
+    getAccountById: (state) => (id: number): IAccount | undefined => {
+      return state.accounts.find(account => account.cID === id)
+    },
 
-export const useRecordsStore: StoreDefinition<'records', IRecordsStore, IRecordsGetter, IRecordsActions> = defineStore('records', {
-  state: (): IRecordsStore => {
-    return {
-      accounts: [],
-      bookings: [],
-      bookingSum: 0,
-      bookingSumField: '',
-      bookingTypes: [],
-      stocks: []
+    getBookingsByAccountId: (state) => (accountId: number): IBooking[] => {
+      return state.bookings.filter(booking =>
+        booking.cAccountNumberID === accountId
+      )
     }
   },
-  getters: {
-    // accounts(state: IRecordsStore): IAccount[] {
-    //   return state.accounts
-    // },
-    // bookings(state: IRecordsStore): IBooking[] {
-    //   return state.bookings
-    // },
-    // stocks(state: IRecordsStore): IStock[] {
-    //   return state.stocks
-    // },
-    // bookingSum(state: IRecordsStore): number {
-    //   return state._booking_sum
-    // },
-    // bookingSumField(state: IRecordsStore): string {
-    //   return state._booking_sum_field
-    // },
-    // bookingTypes(state: IRecordsStore): IBookingType[] {
-    //   return state.bookingTypes
-    // }
-  },
+
   actions: {
-    getAccountIndexById(ident) {
-      return this.accounts.findIndex((account: IAccount) => {
-        return account.cID === ident
-      })
+    getAccountIndexById(ident: number): number {
+      return this.accounts.findIndex((account: IAccount) => account.cID === ident)
     },
-    getBookingTypeNameById(ident) {
-      const tmp = this.bookingTypes.filter((entry: IBookingType) => {
-        return entry.cID === ident
-      })
-      if (tmp.length > 0) {
-        return tmp[0].cName
-      } else {
-        return ''
-      }
+
+    getBookingTypeNameById(ident: number): string {
+      const bookingType = this.bookingTypes.find((entry: IBookingType) => entry.cID === ident)
+      return bookingType ? bookingType.cName : ''
     },
-    getBookingTypeById(ident) {
-      return this.bookingTypes.findIndex((entry: IBookingType) => {
-        return entry.cID === ident
-      })
+
+    getBookingTypeById(ident: number): number {
+      return this.bookingTypes.findIndex((entry: IBookingType) => entry.cID === ident)
     },
-    getBookingTextById(ident) {
-      const tmp = this.bookings.filter((entry: IBooking) => {
-        return entry.cID === ident
-      })
-      if (tmp.length > 0) {
-        return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`
+
+    getBookingTextById(ident: number): string {
+      const booking = this.bookings.find((entry: IBooking) => entry.cID === ident)
+      if (booking) {
+        return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`
       } else {
         throw new Error('getBookingTextById: No booking found for given ID')
       }
     },
-    getBookingById(ident) {
-      return this.bookings.findIndex((entry: IBooking) => {
-        return entry.cID === ident
-      })
+
+    getBookingById(ident: number): number {
+      return this.bookings.findIndex((entry: IBooking) => entry.cID === ident)
     },
-    getStockById(ident) {
-      return this.stocks.findIndex((entry: IStock) => {
-        return entry.cID === ident
-      })
+
+    getStockById(ident: number): number {
+      return this.stocks.findIndex((entry: IStock) => entry.cID === ident)
     },
-    sumBookings() {
+
+    sumBookings(): void {
       const settings = useSettingsStore()
       const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
+
       if (activeAccountIndex === -1) {
+        this.bookingSum = 0
         return
       }
-      const bookings_per_account = [...this.bookings]
-      if (bookings_per_account.length > 0) {
-        this.bookingSum = bookings_per_account.map((entry: IBooking) => {
-          const a = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee
-          const b = entry.cCredit - entry.cDebit
-          return a + b
-        }).reduce((acc: number, cur: number) => {
-          return acc + cur
-        }, 0)
+
+      // Filter bookings for the active account if needed
+      const bookingsPerAccount = [...this.bookings]
+
+      if (bookingsPerAccount.length > 0) {
+        this.bookingSum = bookingsPerAccount
+          .map((entry: IBooking) => {
+            const fees = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee
+            const balance = entry.cCredit - entry.cDebit
+            return fees + balance
+          })
+          .reduce((acc: number, cur: number) => acc + cur, 0)
       } else {
-        this.bookings = []
         this.bookingSum = 0
       }
     },
-    setBookingSumField(value) {
+
+    setBookingSumField(value: string): void {
       this.bookingSumField = value
     },
-    initStore(stores) {
+
+    initStore(stores: IStores): void {
       log('RECORDS: initStore')
-      this.bookings.splice(0, this.bookings.length)
-      this.bookingTypes.splice(0, this.bookingTypes.length)
-      this.accounts.splice(0, this.accounts.length)
-      this.stocks.splice(0, this.stocks.length)
-      this.accounts = stores.accounts
-      this.bookings = stores.bookings
-      this.bookingTypes = stores.bookingTypes
-      this.stocks = stores.stocks
+
+      // Clear existing data
+      this.accounts.length = 0
+      this.bookings.length = 0
+      this.bookingTypes.length = 0
+      this.stocks.length = 0
+
+      // Set new data
+      this.accounts.push(...stores.accounts)
+      this.bookings.push(...stores.bookings)
+      this.bookingTypes.push(...stores.bookingTypes)
+      this.stocks.push(...stores.stocks)
+
+      // Sort bookings by date (newest first)
       this.bookings.sort((a: IBooking, b: IBooking) => {
-        const A = new Date(a.cDate).getTime()
-        const B = new Date(b.cDate).getTime()
-        return B - A
+        const dateA = new Date(a.cDate).getTime()
+        const dateB = new Date(b.cDate).getTime()
+        return dateB - dateA
       })
     },
-    addAccount(value) {
+
+    addAccount(account: IAccount): void {
       log('RECORDS: addAccount')
-      this.accounts.push(value)
+      this.accounts.push(account)
     },
-    updateAccount(value) {
+
+    updateAccount(account: IAccount): void {
       log('RECORDS: updateAccount')
-      const cloneAccounts = [...this.accounts]
-      this.accounts = cloneAccounts.map(account => {
-        if (account.cID === value.cID) {
-          return value
-        } else {
-          return toRaw(account)
-        }
-      })
+      const index = this.getAccountIndexById(account.cID)
+      if (index !== -1) {
+        this.accounts[index] = {...account}
+      }
     },
-    deleteAccount(ident) {
-      log('RECORDS: deleteAccount', {info: ident})
-      this.accounts.splice(this.getAccountIndexById(ident), 1)
+
+    deleteAccount(ident: number): void {
+      log('RECORDS: deleteAccount', { info: ident })
+      const index = this.getAccountIndexById(ident)
+      if (index !== -1) {
+        this.accounts.splice(index, 1)
+      }
     },
-    addBooking(value) {
+
+    addBooking(booking: IBooking): void {
       log('RECORDS: addBooking')
-      this.bookings.unshift(value)
+      this.bookings.unshift(booking)
     },
-    deleteBooking(ident) {
-      log('RECORDS: deleteBooking', {info: ident})
-      this.bookings.splice(this.getBookingById(ident), 1)
+
+    deleteBooking(ident: number): void {
+      log('RECORDS: deleteBooking', { info: ident })
+      const index = this.getBookingById(ident)
+      if (index !== -1) {
+        this.bookings.splice(index, 1)
+      }
     },
-    addStock(value) {
+
+    addStock(stock: IStock): void {
       log('RECORDS: addStock')
-      this.stocks.push(value)
+      this.stocks.push(stock)
     },
-    deleteStock(ident) {
-      log('RECORDS: deleteStock', {info: ident})
-      this.stocks.splice(this.getStockById(ident), 1)
-    },
-    updateStock(value) {
+
+    updateStock(stock: IStock): void {
       log('RECORDS: updateStock')
-      const cloneStocks = [...this.stocks]
-      this.stocks = cloneStocks.map(stock => {
-        if (stock.cID === value.cID) {
-          return value
-        } else {
-          return toRaw(stock)
-        }
-      })
+      const index = this.getStockById(stock.cID)
+      if (index !== -1) {
+        this.stocks[index] = {...stock}
+      }
     },
-    addBookingType(value) {
+
+    deleteStock(ident: number): void {
+      log('RECORDS: deleteStock', { info: ident })
+      const index = this.getStockById(ident)
+      if (index !== -1) {
+        this.stocks.splice(index, 1)
+      }
+    },
+
+    addBookingType(bookingType: IBookingType): void {
       log('RECORDS: addBookingType')
-      this.bookingTypes.push(value)
+      this.bookingTypes.push(bookingType)
     },
-    deleteBookingType(ident) {
-      log('RECORDS: deleteBookingType', {info: ident})
-      this.bookingTypes.splice(this.getBookingTypeById(ident), 1)
+
+    deleteBookingType(ident: number): void {
+      log('RECORDS: deleteBookingType', { info: ident })
+      const index = this.getBookingTypeById(ident)
+      if (index !== -1) {
+        this.bookingTypes.splice(index, 1)
+      }
     },
-    cleanStore() {
+
+    cleanStore(): void {
       log('RECORDS: cleanStore')
-      this.bookings.splice(0, this.bookings.length)
-      this.bookingTypes.splice(0, this.bookingTypes.length)
-      this.accounts.splice(0, this.accounts.length)
-      this.stocks.splice(0, this.stocks.length)
+      this.accounts.length = 0
+      this.bookings.length = 0
+      this.bookingTypes.length = 0
+      this.stocks.length = 0
+      this.bookingSum = 0
+      this.bookingSumField = ''
     }
   }
 })
 
-log('--- STORE records.js ---')
+log('--- STORE records.ts ---')

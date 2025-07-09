@@ -1,81 +1,68 @@
 import { defineStore } from 'pinia';
 import { useAppApi } from '@/pages/background';
 import { useSettingsStore } from '@/stores/settings';
-import { toRaw } from 'vue';
 const { log } = useAppApi();
 export const useRecordsStore = defineStore('records', {
-    state: () => {
-        return {
-            accounts: [],
-            bookings: [],
-            bookingSum: 0,
-            bookingSumField: '',
-            bookingTypes: [],
-            stocks: []
-        };
+    state: () => ({
+        accounts: [],
+        bookings: [],
+        bookingSum: 0,
+        bookingSumField: '',
+        bookingTypes: [],
+        stocks: []
+    }),
+    getters: {
+        getAccountById: (state) => (id) => {
+            return state.accounts.find(account => account.cID === id);
+        },
+        getBookingsByAccountId: (state) => (accountId) => {
+            return state.bookings.filter(booking => booking.cAccountNumberID === accountId);
+        }
     },
-    getters: {},
     actions: {
         getAccountIndexById(ident) {
-            return this.accounts.findIndex((account) => {
-                return account.cID === ident;
-            });
+            return this.accounts.findIndex((account) => account.cID === ident);
         },
         getBookingTypeNameById(ident) {
-            const tmp = this.bookingTypes.filter((entry) => {
-                return entry.cID === ident;
-            });
-            if (tmp.length > 0) {
-                return tmp[0].cName;
-            }
-            else {
-                return '';
-            }
+            const bookingType = this.bookingTypes.find((entry) => entry.cID === ident);
+            return bookingType ? bookingType.cName : '';
         },
         getBookingTypeById(ident) {
-            return this.bookingTypes.findIndex((entry) => {
-                return entry.cID === ident;
-            });
+            return this.bookingTypes.findIndex((entry) => entry.cID === ident);
         },
         getBookingTextById(ident) {
-            const tmp = this.bookings.filter((entry) => {
-                return entry.cID === ident;
-            });
-            if (tmp.length > 0) {
-                return `${tmp[0].cDate} : ${tmp[0].cDebit} : ${tmp[0].cCredit}`;
+            const booking = this.bookings.find((entry) => entry.cID === ident);
+            if (booking) {
+                return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`;
             }
             else {
                 throw new Error('getBookingTextById: No booking found for given ID');
             }
         },
         getBookingById(ident) {
-            return this.bookings.findIndex((entry) => {
-                return entry.cID === ident;
-            });
+            return this.bookings.findIndex((entry) => entry.cID === ident);
         },
         getStockById(ident) {
-            return this.stocks.findIndex((entry) => {
-                return entry.cID === ident;
-            });
+            return this.stocks.findIndex((entry) => entry.cID === ident);
         },
         sumBookings() {
             const settings = useSettingsStore();
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);
             if (activeAccountIndex === -1) {
+                this.bookingSum = 0;
                 return;
             }
-            const bookings_per_account = [...this.bookings];
-            if (bookings_per_account.length > 0) {
-                this.bookingSum = bookings_per_account.map((entry) => {
-                    const a = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee;
-                    const b = entry.cCredit - entry.cDebit;
-                    return a + b;
-                }).reduce((acc, cur) => {
-                    return acc + cur;
-                }, 0);
+            const bookingsPerAccount = [...this.bookings];
+            if (bookingsPerAccount.length > 0) {
+                this.bookingSum = bookingsPerAccount
+                    .map((entry) => {
+                    const fees = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee;
+                    const balance = entry.cCredit - entry.cDebit;
+                    return fees + balance;
+                })
+                    .reduce((acc, cur) => acc + cur, 0);
             }
             else {
-                this.bookings = [];
                 this.bookingSum = 0;
             }
         },
@@ -84,83 +71,87 @@ export const useRecordsStore = defineStore('records', {
         },
         initStore(stores) {
             log('RECORDS: initStore');
-            this.bookings.splice(0, this.bookings.length);
-            this.bookingTypes.splice(0, this.bookingTypes.length);
-            this.accounts.splice(0, this.accounts.length);
-            this.stocks.splice(0, this.stocks.length);
-            this.accounts = stores.accounts;
-            this.bookings = stores.bookings;
-            this.bookingTypes = stores.bookingTypes;
-            this.stocks = stores.stocks;
+            this.accounts.length = 0;
+            this.bookings.length = 0;
+            this.bookingTypes.length = 0;
+            this.stocks.length = 0;
+            this.accounts.push(...stores.accounts);
+            this.bookings.push(...stores.bookings);
+            this.bookingTypes.push(...stores.bookingTypes);
+            this.stocks.push(...stores.stocks);
             this.bookings.sort((a, b) => {
-                const A = new Date(a.cDate).getTime();
-                const B = new Date(b.cDate).getTime();
-                return B - A;
+                const dateA = new Date(a.cDate).getTime();
+                const dateB = new Date(b.cDate).getTime();
+                return dateB - dateA;
             });
         },
-        addAccount(value) {
+        addAccount(account) {
             log('RECORDS: addAccount');
-            this.accounts.push(value);
+            this.accounts.push(account);
         },
-        updateAccount(value) {
+        updateAccount(account) {
             log('RECORDS: updateAccount');
-            const cloneAccounts = [...this.accounts];
-            this.accounts = cloneAccounts.map(account => {
-                if (account.cID === value.cID) {
-                    return value;
-                }
-                else {
-                    return toRaw(account);
-                }
-            });
+            const index = this.getAccountIndexById(account.cID);
+            if (index !== -1) {
+                this.accounts[index] = { ...account };
+            }
         },
         deleteAccount(ident) {
             log('RECORDS: deleteAccount', { info: ident });
-            this.accounts.splice(this.getAccountIndexById(ident), 1);
+            const index = this.getAccountIndexById(ident);
+            if (index !== -1) {
+                this.accounts.splice(index, 1);
+            }
         },
-        addBooking(value) {
+        addBooking(booking) {
             log('RECORDS: addBooking');
-            this.bookings.unshift(value);
+            this.bookings.unshift(booking);
         },
         deleteBooking(ident) {
             log('RECORDS: deleteBooking', { info: ident });
-            this.bookings.splice(this.getBookingById(ident), 1);
+            const index = this.getBookingById(ident);
+            if (index !== -1) {
+                this.bookings.splice(index, 1);
+            }
         },
-        addStock(value) {
+        addStock(stock) {
             log('RECORDS: addStock');
-            this.stocks.push(value);
+            this.stocks.push(stock);
+        },
+        updateStock(stock) {
+            log('RECORDS: updateStock');
+            const index = this.getStockById(stock.cID);
+            if (index !== -1) {
+                this.stocks[index] = { ...stock };
+            }
         },
         deleteStock(ident) {
             log('RECORDS: deleteStock', { info: ident });
-            this.stocks.splice(this.getStockById(ident), 1);
+            const index = this.getStockById(ident);
+            if (index !== -1) {
+                this.stocks.splice(index, 1);
+            }
         },
-        updateStock(value) {
-            log('RECORDS: updateStock');
-            const cloneStocks = [...this.stocks];
-            this.stocks = cloneStocks.map(stock => {
-                if (stock.cID === value.cID) {
-                    return value;
-                }
-                else {
-                    return toRaw(stock);
-                }
-            });
-        },
-        addBookingType(value) {
+        addBookingType(bookingType) {
             log('RECORDS: addBookingType');
-            this.bookingTypes.push(value);
+            this.bookingTypes.push(bookingType);
         },
         deleteBookingType(ident) {
             log('RECORDS: deleteBookingType', { info: ident });
-            this.bookingTypes.splice(this.getBookingTypeById(ident), 1);
+            const index = this.getBookingTypeById(ident);
+            if (index !== -1) {
+                this.bookingTypes.splice(index, 1);
+            }
         },
         cleanStore() {
             log('RECORDS: cleanStore');
-            this.bookings.splice(0, this.bookings.length);
-            this.bookingTypes.splice(0, this.bookingTypes.length);
-            this.accounts.splice(0, this.accounts.length);
-            this.stocks.splice(0, this.stocks.length);
+            this.accounts.length = 0;
+            this.bookings.length = 0;
+            this.bookingTypes.length = 0;
+            this.stocks.length = 0;
+            this.bookingSum = 0;
+            this.bookingSumField = '';
         }
     }
 });
-log('--- STORE records.js ---');
+log('--- STORE records.ts ---');

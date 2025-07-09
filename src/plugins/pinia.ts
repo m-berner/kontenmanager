@@ -14,8 +14,10 @@ interface IPinia {
 
 const {log} = useAppApi()
 
-export default<IPinia> {
+const piniaConfig: IPinia = {
   pinia: createPinia()
 }
+
+export default piniaConfig
 
 log('--- PLUGINS pinia.js ---')

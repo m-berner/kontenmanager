@@ -6,23 +6,26 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onMounted, type Reactive, reactive, watch} from 'vue'
+import {onMounted, type Reactive, reactive, type Ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import {storeToRefs} from 'pinia'
 import {useAppApi} from '@/pages/background'
+
 interface IDrawerControl {
   id: number
   title: string
   value: string
   class: string
 }
+
 interface IState {
   show: boolean
   drawerControls: IDrawerControl[]
 }
+
 const {n, t} = useI18n()
 const {CONS} = useAppApi()
 const runtime = useRuntimeStore()
@@ -102,7 +105,7 @@ watch(() => records.bookings.total_controller.depot, updateDrawerControls)
 watch(() => records.bookings.total_controller.account, updateDrawerControls)
 
 onMounted(() => {
-  updateDrawerControls()
+updateDrawerControls()
 })
 //if (!browser.runtime.onMessage.hasListener(onMessageInfoBar)) {
 // noinspection JSDeprecatedSymbols

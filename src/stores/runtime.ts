@@ -38,18 +38,18 @@ export const useRuntimeStore = defineStore('runtime', {
   },
   getters: {
     // Computed properties for commonly used derived state
-    hasActiveBooking: (state): boolean => state.bookingId !== -1,
+    hasActiveBooking: (state: IRuntimeStore): boolean => state.bookingId !== -1,
 
-    isDialogVisible: (state): boolean => state.teleport.visibility,
+    isDialogVisible: (state: IRuntimeStore): boolean => state.teleport.visibility,
 
-    currentDialog: (state): string => state.teleport.dialogName,
+    currentDialog: (state: IRuntimeStore): string => state.teleport.dialogName,
 
-    hasLogo: (state): boolean => state.logo !== CONS.LOGOS.NO_LOGO,
+    hasLogo: (state: IRuntimeStore): boolean => state.logo !== CONS.LOGOS.NO_LOGO,
 
-    dialogConfig: (state): ITelePort => ({...state.teleport}),
+    dialogConfig: (state: IRuntimeStore): ITelePort => ({...state.teleport}),
 
     // Get current booking info if available
-    currentBookingInfo: (state) => {
+    currentBookingInfo: (state: IRuntimeStore) => {
       if (state.bookingId === -1) return null
       const records = useRecordsStore()
       const bookingIndex = records.getBookingById(state.bookingId)
@@ -57,7 +57,7 @@ export const useRuntimeStore = defineStore('runtime', {
     }
   },
   actions: {
-    setLogo() {
+    setLogo(): void {
       const records = useRecordsStore()
       const settings = useSettingsStore()
 
@@ -70,10 +70,10 @@ export const useRuntimeStore = defineStore('runtime', {
         }
       }
     },
-    setBookingId(value: number) {
+    setBookingId(value: number): void {
       this.bookingId = value
     },
-    setTeleport(entry: ITelePort) {
+    setTeleport(entry: ITelePort): void {
       // Create a copy to avoid mutation issues
       this.teleport = {
         dialogName: entry.dialogName,

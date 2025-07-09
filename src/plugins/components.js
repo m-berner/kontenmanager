@@ -1,11 +1,3 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * you could obtain one at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
- */
-
 import {} from 'vue';
 import { useAppApi } from '@/pages/background';
 import AddStock from '@/components/dialogs/AddStock.vue';
@@ -22,7 +14,7 @@ import ImportDatabase from '@/components/dialogs/ImportDatabase.vue';
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue';
 import DeleteBooking from '@/components/dialogs/DeleteBooking.vue';
 const { CONS, log } = useAppApi();
-export default {
+const ComponentsPlugin = {
     install: (app) => {
         app.component(CONS.DIALOGS.ADD_STOCK, AddStock);
         app.component(CONS.DIALOGS.UPDATE_STOCK, UpdateStock);
@@ -39,4 +31,5 @@ export default {
         app.component(CONS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting);
     }
 };
+export default ComponentsPlugin;
 log('--- PLUGINS components.js ---');

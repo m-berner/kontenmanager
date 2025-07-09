@@ -13,23 +13,25 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
-import {computed, type ComputedRef} from 'vue'
+import {computed, type ComputedRef, nextTick} from 'vue'
+
 interface TableHeader {
   title: string
   align: 'start' | 'center' | 'end' | undefined
   sortable: boolean
   key: string
 }
+
 // Store setup with proper typing
 const {d, n, rt, t, tm} = useI18n()
 const {CONS, toNumber} = useAppApi()
-const recordsStore = useRecordsStore()
-const settingsStore = useSettingsStore()
-const runtimeStore = useRuntimeStore()
+const records = useRecordsStore()
+const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 // Use storeToRefs for reactive store properties
-const {_is_stocks_loading} = storeToRefs(runtimeStore)
-const {stocksPerPage} = storeToRefs(settingsStore)
-const {stocks} = storeToRefs(recordsStore)
+const {_is_stocks_loading} = storeToRefs(runtime)
+const {stocksPerPage} = storeToRefs(settings)
+const {stocks} = storeToRefs(records)
 // Computed properties with proper typing
 const tableHeaders: ComputedRef<TableHeader[]> = computed(() => {
   const headers = tm('stocksTable.headers')
@@ -40,22 +42,26 @@ const tableHeaders: ComputedRef<TableHeader[]> = computed(() => {
     key: rt(item.key)
   }))
 })
-// Typed event handlers
-const setDynamicStyleWinLoss = (el: HTMLElement | null): void => {
-  if (el !== null) {
-    const value = toNumber(el.textContent)
-    if (value < 0) {
-      el.classList.add('color-red')
-    } else if (value > 0) {
-      el.classList.add('color-black')
+// Fixed: Use a function that returns a function for proper ref handling
+const setDynamicStyleWinLoss = () => {
+  return async (el: HTMLElement | null): Promise<void> => {
+    if (el !== null) {
+      // Use nextTick to ensure DOM is updated
+      await nextTick()
+      const value = toNumber(el.textContent)
+      if (value < 0) {
+        el.classList.add('color-red')
+      } else if (value > 0) {
+        el.classList.add('color-black')
+      }
+      el.classList.add('font-weight-bold')
     }
-    el.classList.add('font-weight-bold')
   }
 }
 const onUpdatePageHandler = async (page: number): Promise<void> => {
   console.info('STOCKSTABLE: onUpdatePageHandler', page)
-  recordsStore.setActiveStocksPage(page)
-  await recordsStore.updateWrapper()
+  records.setActiveStocksPage(page)
+  await records.updateWrapper()
 }
 console.log('--- StocksTable.vue setup ---')
 </script>
@@ -72,7 +78,7 @@ console.log('--- StocksTable.vue setup ---')
     v-bind:items-per-page-text="t('stocksTable.itemsPerPageText')"
     v-bind:loading="_is_stocks_loading"
     v-bind:no-data-text="t('stocksTable.noDataText')"
-    v-on:update:items-per-page="settingsStore.setStocksPerPage"
+    v-on:update:items-per-page="settings.setStocksPerPage"
     v-on:update:page="onUpdatePageHandler">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
