@@ -12,10 +12,23 @@ export const useRuntimeStore = defineStore('runtime', {
                 dialogName: '',
                 okButton: true,
                 visibility: false
-            }
+            },
+            infoBar: {
+                exchanges: new Map(),
+                indexes: new Map(),
+                materials: new Map()
+            },
+            exchanges: {
+                curUsd: 1,
+                curEur: 1
+            },
         };
     },
     getters: {
+        materials: (state) => state.infoBar.materials,
+        exchanges: (state) => state.infoBar.exchanges,
+        indexes: (state) => state.infoBar.indexes,
+        exchangesCurUsd: (state) => state.exchanges.curUsd,
         hasActiveBooking: (state) => state.bookingId !== -1,
         isDialogVisible: (state) => state.teleport.visibility,
         currentDialog: (state) => state.teleport.dialogName,

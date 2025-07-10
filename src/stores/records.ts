@@ -13,12 +13,13 @@ interface IRecordsStore {
   accounts: IAccount[]
   bookings: IBooking[]
   bookingTypes: IBookingType[]
-  stocks: IStock[]
+  stocks: IStockStore[]
   bookingSum: number
   bookingSumField: string
+  totalController: TTotalController
 }
 
-const { log } = useAppApi()
+const { CONS, log } = useAppApi()
 
 export const useRecordsStore = defineStore('records', {
   state: (): IRecordsStore => ({
@@ -27,7 +28,8 @@ export const useRecordsStore = defineStore('records', {
     bookingSum: 0,
     bookingSumField: '',
     bookingTypes: [],
-    stocks: []
+    stocks: [],
+    totalController: CONS.RECORDS.CONTROLLER.TOTAL
   }),
 
   getters: {
@@ -160,12 +162,12 @@ export const useRecordsStore = defineStore('records', {
       }
     },
 
-    addStock(stock: IStock): void {
+    addStock(stock: IStockStore): void {
       log('RECORDS: addStock')
       this.stocks.push(stock)
     },
 
-    updateStock(stock: IStock): void {
+    updateStock(stock: IStockStore): void {
       log('RECORDS: updateStock')
       const index = this.getStockById(stock.cID)
       if (index !== -1) {

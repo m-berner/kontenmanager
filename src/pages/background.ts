@@ -92,6 +92,27 @@ declare global {
     cAccountNumberID: number
   }
 
+  interface IStockStore {
+    cID: number
+    cCompany: string
+    cISIN: string
+    cWKN: string
+    cSymbol: string
+    cMeetingDay: string
+    cQuarterDay: string
+    cFadeOut: number
+    cFirstPage: number
+    cURL: string
+    cAccountNumberID: number
+    mPortfolio: number
+    mChange: number
+    mBuyValue: number
+    mEuroChange: number
+    mMin: number
+    mValue: number
+    mMax: number
+  }
+
   interface IBackup {
     sm: {
       cVersion: number
@@ -105,11 +126,27 @@ declare global {
     transfers?: IBooking[] & Stockmanager.ITransfer[]
   }
 
-  interface IStores {
+  interface IStoresDB {
     accounts: IAccount[],
     bookings: IBooking[],
     bookingTypes: IBookingType[],
     stocks: IStock[]
+  }
+
+  interface IStores {
+    accounts: IAccount[],
+    bookings: IBooking[],
+    bookingTypes: IBookingType[],
+    stocks: IStockStore[]
+  }
+
+  type TTotalController = Record<string, number>
+
+  interface IDrawerControls {
+    id: number
+    title: string
+    value: string
+    class: string
   }
 
   interface IStorageLocal {
@@ -281,6 +318,8 @@ interface IUseAppApi {
         INDEXES: string[]
         MARKETS: string[]
       }
+      DRAWER_KEYS: string[]
+      DRAWER_CONTROLS: IDrawerControls[]
     }
     DIALOGS: {
       ADD_ACCOUNT: string
@@ -415,6 +454,11 @@ interface IUseAppApi {
         ACTIVE_ACCOUNT_ID: string
         BOOKINGS_PER_PAGE: string
         STOCKS_PER_PAGE: string
+      }
+    }
+    RECORDS: {
+      CONTROLLER: {
+        TOTAL: TTotalController
       }
     }
     RESOURCES: {
@@ -573,7 +617,74 @@ export const useAppApi = (): IUseAppApi => {
           MARKETS: ['Frankfurt', 'XETRA'],
           SERVICE: 'wstreet',
           PARTNER: false
-        }
+        },
+        DRAWER_KEYS: [
+          'winloss',
+          'earnings',
+          'deposits',
+          'dividends',
+          'withdrawals',
+          'fees',
+          'taxes',
+          'account',
+          'depot'
+        ],
+        DRAWER_CONTROLS: [
+          {
+            id: 0,
+            title: '',
+            value: '0',
+            class: ''
+          },
+          {
+            id: 1,
+            title: '',
+            value: '0',
+            class: ''
+          },
+          {
+            id: 2,
+            title: '',
+            value: '0',
+            class: ''
+          },
+          {
+            id: 3,
+            title: '',
+            value: '0',
+            class: ''
+          },
+          {
+            id: 4,
+            title: '',
+            value: '0',
+            class: ''
+          },
+          {
+            id: 5,
+            title: '',
+            value: '0',
+            class: ''
+          },
+          {
+            id: 6,
+            title: '',
+            value: '0',
+            class: ''
+          },
+          {
+            id: 7,
+            title: '',
+            value: '0',
+            class: ''
+          },
+          {
+            id: 8,
+            title: '',
+            value: '0',
+            class: ''
+          }
+        ]
       },
       DIALOGS: {
         ADD_ACCOUNT: 'AddAccount',
@@ -860,6 +971,27 @@ export const useAppApi = (): IUseAppApi => {
         //   SERVICE: 'wstreet',
         //   PARTNER: false
       },
+      RECORDS: {
+        CONTROLLER: {
+          TOTAL: {
+            efficiency: 0,
+            returnRate: 0,
+            buy: 0,
+            sell: 0,
+            dividends: 0,
+            deposits: 0,
+            withdrawals: 0,
+            taxes: 0,
+            fees: 0,
+            earnings: 0,
+            account: 0,
+            depot: 0,
+            winLoss: 0,
+            winLossPercent: 0,
+            depotBuyValue: 0
+          }
+        }
+      },
       RESOURCES: {
         LICENSE: 'license.html',
         INDEX: 'pages/app.html',
@@ -897,51 +1029,59 @@ export const useAppApi = (): IUseAppApi => {
         ONCE: {once: true}
       }
     },
-    VALIDATORS: {
-      ibanRules: msgArray => {
-        return [
-          v => v !== null || msgArray[0],
-          v => (v !== null && v.length < 37) || msgArray[1],
-          v => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
-        ]
-      },
-      nameRules: msgArray => {
-        return [
-          v => v !== null || msgArray[0],
-          v => (v !== null && v.length < 32) || msgArray[1],
-          v => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
-        ]
-      },
-      swiftRules: msgArray => {
-        return [
-          v => v !== null || msgArray[0],
-          v => (v !== null && v.length < 13) || msgArray[1],
-          v => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
-        ]
-      },
-      dateRules: msgArray => {
-        return [
-          v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
-        ]
-      },
-      currencyCodeRules: msgArray => {
-        return [
-          v => v !== null || msgArray[0],
-          v => (v !== null && v.length === 3) || msgArray[1],
-          v => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
-        ]
-      },
-      requiredRule: msgArray => {
-        return [
-          v => v !== null || msgArray[0]
-        ]
-      },
-      brandNameRules: msgArray => {
-        return [
-          v => v !== null || msgArray[0]
-        ]
+    VALIDATORS:
+      {
+        ibanRules: msgArray => {
+          return [
+            v => v !== null || msgArray[0],
+            v => (v !== null && v.length < 37) || msgArray[1],
+            v => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
+          ]
+        },
+        nameRules:
+          msgArray => {
+            return [
+              v => v !== null || msgArray[0],
+              v => (v !== null && v.length < 32) || msgArray[1],
+              v => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
+            ]
+          },
+        swiftRules:
+          msgArray => {
+            return [
+              v => v !== null || msgArray[0],
+              v => (v !== null && v.length < 13) || msgArray[1],
+              v => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
+            ]
+          },
+        dateRules:
+          msgArray => {
+            return [
+              v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
+            ]
+          },
+        currencyCodeRules:
+          msgArray => {
+            return [
+              v => v !== null || msgArray[0],
+              v => (v !== null && v.length === 3) || msgArray[1],
+              v => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
+            ]
+          },
+        requiredRule:
+          msgArray => {
+            return [
+              v => v !== null || msgArray[0]
+            ]
+          },
+        brandNameRules:
+          msgArray => {
+            return [
+              v => v !== null || msgArray[0]
+            ]
+          }
       }
-    },
+    ,
     notice: async (messages) => {
       const msg = messages.join('\n')
       const notificationOption: browser.notifications.CreateNotificationOptions =
@@ -953,63 +1093,68 @@ export const useAppApi = (): IUseAppApi => {
         }
       await browser.notifications.create(notificationOption)
     },
-    utcDate: (iso) => {
-      return new Date(`${iso}T00:00:00.000`)
-    },
-    toISODate: (ms) => {
-      return new Date(ms).toISOString().substring(0, 10)
-    },
-    toNumber: (str: string | boolean | number | undefined | null): number => {
-      let result = 0
-      if (str !== null && str !== undefined) {
-        const a = str.toString().replace(/,$/g, '')
-        const b = a.split(',')
-        if (b.length === 2) {
-          const tmp2 = a
-            .trim()
-            .replace(/\s|\.|\t|%/g, '')
-            .replace(',', '.')
-          result = Number.isNaN(Number.parseFloat(tmp2))
-            ? 0
-            : Number.parseFloat(tmp2)
-        } else if (b.length > 2) {
-          let tmp: string = ''
-          for (let i = b.length - 1; i > 0; i--) {
-            tmp += b[i]
+    utcDate:
+      (iso) => {
+        return new Date(`${iso}T00:00:00.000`)
+      },
+    toISODate:
+      (ms) => {
+        return new Date(ms).toISOString().substring(0, 10)
+      },
+    toNumber:
+      (str: string | boolean | number | undefined | null): number => {
+        let result = 0
+        if (str !== null && str !== undefined) {
+          const a = str.toString().replace(/,$/g, '')
+          const b = a.split(',')
+          if (b.length === 2) {
+            const tmp2 = a
+              .trim()
+              .replace(/\s|\.|\t|%/g, '')
+              .replace(',', '.')
+            result = Number.isNaN(Number.parseFloat(tmp2))
+              ? 0
+              : Number.parseFloat(tmp2)
+          } else if (b.length > 2) {
+            let tmp: string = ''
+            for (let i = b.length - 1; i > 0; i--) {
+              tmp += b[i]
+            }
+            const tmp2 = tmp + '.' + b[0]
+            result = Number.isNaN(Number.parseFloat(tmp2))
+              ? 0
+              : Number.parseFloat(tmp2)
+          } else {
+            result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
           }
-          const tmp2 = tmp + '.' + b[0]
-          result = Number.isNaN(Number.parseFloat(tmp2))
-            ? 0
-            : Number.parseFloat(tmp2)
-        } else {
-          result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
+        }
+        return result
+      },
+    mean:
+      (nar: number[]): number => {
+        let sum = 0
+        let len: number = nar.length
+        let n: number
+        for (n of nar) {
+          if (n !== 0 && !Number.isNaN(n)) {
+            sum += n
+          } else {
+            len--
+          }
+        }
+        return len > 0 ? sum / len : 0
+      },
+    log:
+      (msg, mode = {info: null}) => {
+        const localDebug = localStorage.getItem('sDebug')
+        if (Number.parseInt(localDebug ?? '0') > 0) {
+          if (mode.info !== null) {
+            console.info(msg, mode.info)
+          } else {
+            console.log(msg)
+          }
         }
       }
-      return result
-    },
-    mean: (nar: number[]): number => {
-      let sum = 0
-      let len: number = nar.length
-      let n: number
-      for (n of nar) {
-        if (n !== 0 && !Number.isNaN(n)) {
-          sum += n
-        } else {
-          len--
-        }
-      }
-      return len > 0 ? sum / len : 0
-    },
-    log: (msg, mode = {info: null}) => {
-      const localDebug = localStorage.getItem('sDebug')
-      if (Number.parseInt(localDebug ?? '0') > 0) {
-        if (mode.info !== null) {
-          console.info(msg, mode.info)
-        } else {
-          console.log(msg)
-        }
-      }
-    }
   }
 }
 
@@ -1222,7 +1367,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         log('BACKGROUND: exportToStores')
         const accounts: IAccount[] = []
         const bookings: IBooking[] = []
-        const stocks: IStock[] = []
+        const stocks: IStockStore[] = []
         const bookingTypes: IBookingType[] = []
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {

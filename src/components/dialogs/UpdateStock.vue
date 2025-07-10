@@ -55,7 +55,14 @@ const onClickOk = async (): Promise<void> => {
         cFadeOut: state._fadeOut,
         cFirstPage: state._firstPage,
         cURL: state._url,
-        cAccountNumberID: settings.activeAccountId
+        cAccountNumberID: settings.activeAccountId,
+        mPortfolio: 0,
+        mChange: 0,
+        mBuyValue: 0,
+        mEuroChange: 0,
+        mMin: 0,
+        mValue: 0,
+        mMax: 0
       }
       records.updateStock(stock)
       await browser.runtime.sendMessage(JSON.stringify({

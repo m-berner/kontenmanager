@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAppApi } from '@/pages/background';
 import { useSettingsStore } from '@/stores/settings';
-const { log } = useAppApi();
+const { CONS, log } = useAppApi();
 export const useRecordsStore = defineStore('records', {
     state: () => ({
         accounts: [],
@@ -9,7 +9,8 @@ export const useRecordsStore = defineStore('records', {
         bookingSum: 0,
         bookingSumField: '',
         bookingTypes: [],
-        stocks: []
+        stocks: [],
+        totalController: CONS.RECORDS.CONTROLLER.TOTAL
     }),
     getters: {
         getAccountById: (state) => (id) => {

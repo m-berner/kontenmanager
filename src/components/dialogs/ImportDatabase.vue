@@ -103,6 +103,7 @@ const onClickOk = async (): Promise<void> => {
         }
         for (smStock of backupObject.stocks) {
           let stockClone: IStock = {} as IStock
+          let stockCloneStore: IStockStore = {} as IStockStore
           stockClone.cID = smStock.cID
           stockClone.cAccountNumberID = activeId
           stockClone.cSymbol = smStock.cSym
@@ -115,8 +116,9 @@ const onClickOk = async (): Promise<void> => {
           stockClone.cFirstPage = smStock.cFirstPage
           stockClone.cFirstPage = smStock.cFirstPage
           stockClone.cURL = smStock.cURL
-          records.addStock(stockClone)
-          stocks.push(stockClone)
+          stocks.push({...stockClone})
+          stockCloneStore = {...stockClone, mPortfolio: 0,mChange: 0,mBuyValue: 0,mEuroChange: 0,mMin: 0,mValue: 0,mMax: 0}
+          records.addStock(stockCloneStore)
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
           let transferClone: IBooking = {} as IBooking
@@ -148,7 +150,7 @@ const onClickOk = async (): Promise<void> => {
         settings.setActiveAccountId(activeId)
         runtime.setLogo()
         records.sumBookings()
-        const stores: IStores = {
+        const stores: IStoresDB = {
           accounts: toRaw(records.accounts),
           bookings: bookings,
           bookingTypes: bookingTypes,
@@ -163,10 +165,17 @@ const onClickOk = async (): Promise<void> => {
         }
         activeId = records.accounts[0].cID
         for (stock of backupObject.stocks) {
-          if (stock.cAccountNumberID === activeId) {
-            records.addStock(stock)
-          }
           stocks.push(stock)
+          if (stock.cAccountNumberID === activeId) {
+            let stockClone = {...stock,mPortfolio: 0,
+            mChange: 0,
+            mEuroChange: 0,
+            mBuyValue:0,
+            mMin:0,
+            mValue: 0,
+            mMax: 0}
+            records.addStock(stockClone)
+          }
         }
         for (bookingType of backupObject.booking_types) {
           if (bookingType.cAccountNumberID === activeId) {
@@ -184,7 +193,7 @@ const onClickOk = async (): Promise<void> => {
         runtime.setLogo()
         records.sumBookings()
 
-        const stores: IStores = {
+        const stores: IStoresDB = {
           accounts: accounts,
           bookings: bookings,
           bookingTypes: bookingTypes,

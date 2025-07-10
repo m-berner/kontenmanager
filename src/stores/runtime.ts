@@ -10,16 +10,27 @@ import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
-interface ITelePort {
+type TTelePort = {
   dialogName: string
   okButton: boolean
   visibility: boolean
 }
 
+type TInfos = {
+  exchanges: Map<string, number>
+  indexes: Map<string, number>
+  materials: Map<string,number>
+}
+
 interface IRuntimeStore {
   bookingId: number
   logo: string
-  teleport: ITelePort
+  teleport: TTelePort
+  infoBar:  TInfos
+  exchanges: {
+    curUsd: number
+    curEur: number
+  }
 }
 
 const {CONS, log} = useAppApi()
@@ -33,10 +44,26 @@ export const useRuntimeStore = defineStore('runtime', {
         dialogName: '',
         okButton: true,
         visibility: false
-      }
+      },
+      infoBar:  {
+        exchanges: new Map(),
+        indexes: new Map(),
+        materials: new Map()
+      },
+      exchanges: {
+        curUsd: 1,
+        curEur: 1
+      },
     }
   },
   getters: {
+    materials: (state: IRuntimeStore): Map<string, number> => state.infoBar.materials,
+
+    exchanges: (state: IRuntimeStore): Map<string, number> => state.infoBar.exchanges,
+
+    indexes: (state: IRuntimeStore): Map<string, number> => state.infoBar.indexes,
+
+    exchangesCurUsd: (state: IRuntimeStore): number => state.exchanges.curUsd,
     // Computed properties for commonly used derived state
     hasActiveBooking: (state: IRuntimeStore): boolean => state.bookingId !== -1,
 
@@ -46,7 +73,7 @@ export const useRuntimeStore = defineStore('runtime', {
 
     hasLogo: (state: IRuntimeStore): boolean => state.logo !== CONS.LOGOS.NO_LOGO,
 
-    dialogConfig: (state: IRuntimeStore): ITelePort => ({...state.teleport}),
+    dialogConfig: (state: IRuntimeStore): TTelePort => ({...state.teleport}),
 
     // Get current booking info if available
     currentBookingInfo: (state: IRuntimeStore) => {
@@ -73,7 +100,7 @@ export const useRuntimeStore = defineStore('runtime', {
     setBookingId(value: number): void {
       this.bookingId = value
     },
-    setTeleport(entry: ITelePort): void {
+    setTeleport(entry: TTelePort): void {
       // Create a copy to avoid mutation issues
       this.teleport = {
         dialogName: entry.dialogName,
@@ -105,7 +132,7 @@ export const useRuntimeStore = defineStore('runtime', {
       this.teleport.visibility = !this.teleport.visibility
     },
 
-    updateDialogConfig(config: Partial<ITelePort>): void {
+    updateDialogConfig(config: Partial<TTelePort>): void {
       this.teleport = {
         ...this.teleport,
         ...config

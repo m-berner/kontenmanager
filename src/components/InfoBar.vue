@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onMounted, type Reactive, reactive, type Ref, watch} from 'vue'
+import {onMounted, type Reactive, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
@@ -31,11 +31,7 @@ const {CONS} = useAppApi()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
-const {_exchanges, _indexes, _materials} = storeToRefs<{
-  _exchanges: Ref<string[]>
-  _indexes: Ref<string[]>
-  _materials: Ref<string[]>
-}>(settings)
+const {exchanges, indexes, materials} = storeToRefs(settings)
 
 const state: Reactive<IState> = reactive({
   show: true,
@@ -67,46 +63,42 @@ const usd = (mat: string, usd = true): number => {
 const updateDrawerControls = (): void => {
   console.log('INFOBAR: updateDrawerControls')
   state.drawerControls = CONS.DEFAULTS.DRAWER_KEYS.map((key, index) => {
-    const value = records.transfers.total_controller[key] ?? 0
+    const value = records.totalController[key] ?? 0
     return {
       id: index,
       title: t(`infoBar.drawerTitles.${key}`),
       value: n(value, 'currency') +
-        (key === 'winloss' ? ' / ' + n(records.transfers.total_controller.winlossPercent ?? 0, 'percent') : ''),
+        (key === 'winLoss' ? ' / ' + n(records.totalController.winLossPercent ?? 0, 'percent') : ''),
       class: value < 0 ? `${key}_minus` : key
     }
   })
 }
 // Typed watch handlers
-watch(
-  () => records.bookings.total_controller.dividends,
-  updateDrawerControls,
-  {immediate: true}
-)
-watch(
-  () => records.bookings.total_controller.depot,
-  updateDrawerControls
-)
-watch(
-  () => records.bookings.total_controller.account,
-  updateDrawerControls
-)
+// watch(
+//   () => records.bookings.total_controller.dividends,
+//   updateDrawerControls,
+//   {immediate: true}
+// )
+// watch(
+//   () => records.bookings.total_controller.depot,
+//   updateDrawerControls
+// )
+// watch(
+//   () => records.bookings.total_controller.account,
+//   updateDrawerControls
+// )
 onMounted(() => {
   updateDrawerControls()
 })
-</script>
 //         break
 //     }
 //   }
 // }
+//
+// watch(() => records.bookings.total_controller.dividends, updateDrawerControls)
+// watch(() => records.bookings.total_controller.depot, updateDrawerControls)
+// watch(() => records.bookings.total_controller.account, updateDrawerControls)
 
-watch(() => records.bookings.total_controller.dividends, updateDrawerControls)
-watch(() => records.bookings.total_controller.depot, updateDrawerControls)
-watch(() => records.bookings.total_controller.account, updateDrawerControls)
-
-onMounted(() => {
-updateDrawerControls()
-})
 //if (!browser.runtime.onMessage.hasListener(onMessageInfoBar)) {
 // noinspection JSDeprecatedSymbols
 //browser.runtime.onMessage.addListener(onMessageInfoBar)
@@ -133,17 +125,17 @@ console.log('--- InfoBar.vue setup ---')
     <v-app-bar-nav-icon variant="text" v-on:click="state.show = !state.show"></v-app-bar-nav-icon>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>
-        <v-list-item v-for="item in _exchanges" v-bind:key="item">
+        <v-list-item v-for="item in exchanges" v-bind:key="item">
           <v-list-item-title>{{ item }}</v-list-item-title>
           <v-list-item-subtitle>{{ n(runtime.exchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in _indexes" v-bind:key="item">
+        <v-list-item v-for="item in indexes" v-bind:key="item">
           <v-list-item-title>{{ CONS.SETTINGS.INDEXES[item] }}</v-list-item-title>
           <v-list-item-subtitle>{{ n(runtime.indexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in _materials" v-bind:key="item">
+        <v-list-item v-for="item in materials" v-bind:key="item">
           <v-list-item-title>{{ t('optionsPage.materials.' + item) }}</v-list-item-title>
           <v-list-item-subtitle
           >{{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}
@@ -156,12 +148,12 @@ console.log('--- InfoBar.vue setup ---')
 
 <!--suppress CssUnusedSymbol -->
 <style scoped>
-.winloss {
+.winLoss {
   font-weight: bold;
   color: green;
 }
 
-.winloss_minus,
+.winLoss_minus,
 .fees_minus,
 .taxes_minus,
 .withdrawals_minus,

@@ -92,7 +92,74 @@ export const useAppApi = () => {
                     MARKETS: ['Frankfurt', 'XETRA'],
                     SERVICE: 'wstreet',
                     PARTNER: false
-                }
+                },
+                DRAWER_KEYS: [
+                    'winloss',
+                    'earnings',
+                    'deposits',
+                    'dividends',
+                    'withdrawals',
+                    'fees',
+                    'taxes',
+                    'account',
+                    'depot'
+                ],
+                DRAWER_CONTROLS: [
+                    {
+                        id: 0,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    },
+                    {
+                        id: 1,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    },
+                    {
+                        id: 2,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    },
+                    {
+                        id: 3,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    },
+                    {
+                        id: 4,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    },
+                    {
+                        id: 5,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    },
+                    {
+                        id: 6,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    },
+                    {
+                        id: 7,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    },
+                    {
+                        id: 8,
+                        title: '',
+                        value: '0',
+                        class: ''
+                    }
+                ]
             },
             DIALOGS: {
                 ADD_ACCOUNT: 'AddAccount',
@@ -359,6 +426,27 @@ export const useAppApi = () => {
                     ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
                     BOOKINGS_PER_PAGE: 'sBookingsPerPage',
                     STOCKS_PER_PAGE: 'sStocksPerPage'
+                }
+            },
+            RECORDS: {
+                CONTROLLER: {
+                    TOTAL: {
+                        efficiency: 0,
+                        returnRate: 0,
+                        buy: 0,
+                        sell: 0,
+                        dividends: 0,
+                        deposits: 0,
+                        withdrawals: 0,
+                        taxes: 0,
+                        fees: 0,
+                        earnings: 0,
+                        account: 0,
+                        depot: 0,
+                        winLoss: 0,
+                        winLossPercent: 0,
+                        depotBuyValue: 0
+                    }
                 }
             },
             RESOURCES: {
