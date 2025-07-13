@@ -39,7 +39,7 @@ const mAddItem = async (item: string): Promise<void> => {
   if (!state.list?.includes(item)) {
     let newItem = ''
     let storageItem = {}
-    switch(dynamicListProps.type) {
+    switch (dynamicListProps.type) {
       case CONS.DYNAMIC_LIST.TYPES.MARKETS:
         newItem = item
         storageItem = {[CONS.STORAGE.PROPS.MARKETS]: toRaw(state.list)}
@@ -59,7 +59,7 @@ const mRemoveItem = async (n: number): Promise<void> => {
   log('DYNAMIC_LIST: mRemoveItem')
   if (n > 0) {
     let storageItem = {}
-    switch(dynamicListProps.type) {
+    switch (dynamicListProps.type) {
       case CONS.DYNAMIC_LIST.TYPES.MARKETS:
         storageItem = {[CONS.STORAGE.PROPS.MARKETS]: toRaw(state.list)}
         break

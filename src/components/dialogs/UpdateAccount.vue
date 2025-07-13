@@ -88,12 +88,15 @@ defineExpose({onClickOk, title})
 onMounted(() => {
   log('UPDATE_ACCOUNT: onMounted')
   formRef.value!.reset()
-  const currentAccount = records.accounts[records.getAccountIndexById(settings.activeAccountId)]
-  state._swift = currentAccount.cSwift
-  state._number = currentAccount.cNumber
-  state._logoUrl = currentAccount.cLogoUrl
-  state._logoSearchName = currentAccount.cLogoSearchName
-  state._stockAccount = currentAccount.cStockAccount
+  const accountIndex = records.getAccountIndexById(settings.activeAccountId)
+  if (accountIndex !== -1) {
+    const currentAccount = records.accounts[accountIndex]
+    state._swift = currentAccount.cSwift
+    state._number = currentAccount.cNumber
+    state._logoUrl = currentAccount.cLogoUrl
+    state._logoSearchName = currentAccount.cLogoSearchName
+    state._stockAccount = currentAccount.cStockAccount
+  }
 })
 
 log('--- UpdateAccount.vue setup ---')
@@ -125,7 +128,6 @@ log('--- UpdateAccount.vue setup ---')
     ></v-text-field>
     <v-text-field
       v-model="state._logoSearchName"
-      autofocus
       placeholder="z. B. ing.com"
       required
       v-bind:label="t('dialogs.updateAccount.logoLabel')"

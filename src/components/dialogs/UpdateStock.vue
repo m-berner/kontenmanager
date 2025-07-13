@@ -23,6 +23,7 @@ interface IState {
   _firstPage: number
   _url: string
 }
+
 const {t} = useI18n()
 const {CONS, log, notice, VALIDATORS} = useAppApi()
 const formRef = useTemplateRef('form-ref')
@@ -66,7 +67,7 @@ const onClickOk = async (): Promise<void> => {
       }
       records.updateStock(stock)
       await browser.runtime.sendMessage(JSON.stringify({
-        type: CONS.MESSAGES.DB__UPDATE_STOCK,  stock
+        type: CONS.MESSAGES.DB__UPDATE_STOCK, stock
       }))
       await notice([t('dialogs.UpdateStock.success')])
       formRef.value!.reset()

@@ -117,7 +117,16 @@ const onClickOk = async (): Promise<void> => {
           stockClone.cFirstPage = smStock.cFirstPage
           stockClone.cURL = smStock.cURL
           stocks.push({...stockClone})
-          stockCloneStore = {...stockClone, mPortfolio: 0,mChange: 0,mBuyValue: 0,mEuroChange: 0,mMin: 0,mValue: 0,mMax: 0}
+          stockCloneStore = {
+            ...stockClone,
+            mPortfolio: 0,
+            mChange: 0,
+            mBuyValue: 0,
+            mEuroChange: 0,
+            mMin: 0,
+            mValue: 0,
+            mMax: 0
+          }
           records.addStock(stockCloneStore)
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
@@ -167,13 +176,15 @@ const onClickOk = async (): Promise<void> => {
         for (stock of backupObject.stocks) {
           stocks.push(stock)
           if (stock.cAccountNumberID === activeId) {
-            let stockClone = {...stock,mPortfolio: 0,
-            mChange: 0,
-            mEuroChange: 0,
-            mBuyValue:0,
-            mMin:0,
-            mValue: 0,
-            mMax: 0}
+            let stockClone = {
+              ...stock, mPortfolio: 0,
+              mChange: 0,
+              mEuroChange: 0,
+              mBuyValue: 0,
+              mMin: 0,
+              mValue: 0,
+              mMax: 0
+            }
             records.addStock(stockClone)
           }
         }

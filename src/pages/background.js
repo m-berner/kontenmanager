@@ -280,21 +280,13 @@ export const useAppApi = () => {
                             HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
                             QUOTE: 'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff=',
                             DELAY: 50
-                        }],
-                    ['tgate', {
-                            NAME: 'Tradegate',
-                            HOME: 'https://www.tradegate.de/',
-                            QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
-                            DELAY: 0
-                        }],
-                    ['fx', {
-                            NAME: 'fx-rate',
-                            HOME: 'https://fx-rate.net/qwsaq',
-                            QUOTE: 'https://fx-rate.net/calculator/?c_input=',
-                            DELAY: 50
                         }]
                 ]),
                 TGATE: {
+                    NAME: 'Tradegate',
+                    HOME: 'https://www.tradegate.de/',
+                    QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
+                    DELAY: 0,
                     CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
                     CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
                     CHS: [
@@ -346,6 +338,10 @@ export const useAppApi = () => {
                     CHANGES: { SMALL: 34, BIG: 41 }
                 },
                 FNET: {
+                    NAME: 'fx-rate',
+                    HOME: 'https://fx-rate.net/qwsaq',
+                    QUOTE: 'https://fx-rate.net/calculator/?c_input=',
+                    DELAY: 50,
                     INDEXES: 'https://www.finanzen.net/indizes/',
                     DATES: 'https://www.finanzen.net/termine/',
                     MATERIALS: 'https://www.finanzen.net/rohstoffe/',

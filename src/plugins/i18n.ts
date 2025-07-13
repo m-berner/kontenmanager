@@ -13,7 +13,7 @@ import enUS from '@/locales/en-US.json'
 type MessageSchema = typeof deDE
 
 interface II18n {
-  i18n: I18n<{"de-DE": MessageSchema, "en-US": MessageSchema}>
+  i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
 }
 
 interface IBrowserUI {
@@ -34,7 +34,7 @@ const getUI = (): IBrowserUI => {
   const uiLang = (typeof browser !== 'undefined' && browser.i18n?.getUILanguage?.())
     ? browser.i18n.getUILanguage().toLowerCase()
     : CONS.DEFAULTS.LOCALE
-  //const uiLang = browser.i18n.getUILanguage().toLowerCase() ?? CONS.DEFAULTS.LOCALE
+
   if (uiLang.includes('-')) {
     result.lang = uiLang.split('-')[0]
     result.region = uiLang.split('-')[1].toUpperCase()

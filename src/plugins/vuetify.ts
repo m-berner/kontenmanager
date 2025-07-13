@@ -10,11 +10,15 @@ import {createVuetify} from 'vuetify'
 import 'vuetify/styles'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {
+  mdiBookPlus,
   mdiCalculator,
   mdiCheck,
   mdiClose,
   mdiCog,
   mdiCopyright,
+  mdiCreditCardEdit,
+  mdiCreditCardPlus,
+  mdiCreditCardRemove,
   mdiCurrencyEur,
   mdiDatabaseExport,
   mdiDatabaseImport,
@@ -29,19 +33,15 @@ import {
   mdiHelpCircle,
   mdiHome,
   mdiImage,
+  mdiImageEdit,
+  mdiImageMinus,
+  mdiImagePlus,
   mdiInfinity,
   mdiMagnify,
   mdiPlus,
   mdiReload,
   mdiShieldAccount,
-  mdiTableLargeRemove,
-  mdiBookPlus,
-  mdiCreditCardEdit,
-  mdiCreditCardPlus,
-  mdiCreditCardRemove,
-  mdiImageEdit,
-  mdiImageMinus,
-  mdiImagePlus
+  mdiTableLargeRemove
 } from '@mdi/js'
 import {useAppApi} from '@/pages/background'
 

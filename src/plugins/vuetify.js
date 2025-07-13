@@ -2,7 +2,7 @@ import {} from 'vue';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-import { mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove, mdiBookPlus, mdiCreditCardEdit, mdiCreditCardPlus, mdiCreditCardRemove, mdiImageEdit, mdiImageMinus, mdiImagePlus } from '@mdi/js';
+import { mdiBookPlus, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCreditCardEdit, mdiCreditCardPlus, mdiCreditCardRemove, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiImageEdit, mdiImageMinus, mdiImagePlus, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove } from '@mdi/js';
 import { useAppApi } from '@/pages/background';
 const { log } = useAppApi();
 const vuetifyInstance = createVuetify({

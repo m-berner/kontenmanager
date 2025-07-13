@@ -28,14 +28,24 @@ const state: Reactive<IState> = reactive({
   _selected: -1
 })
 
- const onClickOk = async (): Promise<void> => {
+const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT : onClickOk')
+  if (state._selected === -1) {
+    await notice([t('dialogs.deleteAccount.error')])
+    return
+  }
   try {
     records.deleteAccount(state._selected)
-    await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__DELETE_ACCOUNT, data: toRaw(state._selected)}))
+    await browser.runtime.sendMessage(JSON.stringify({
+      type: CONS.MESSAGES.DB__DELETE_ACCOUNT,
+      data: toRaw(state._selected)
+    }))
     if (records.accounts.length > 0) {
       settings.setActiveAccountId(records.accounts[0].cID)
-      await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: toRaw(records.accounts[0])}))
+      await browser.runtime.sendMessage(JSON.stringify({
+        type: CONS.MESSAGES.STORAGE__SET_ID,
+        data: toRaw(records.accounts[0])
+      }))
     } else {
       settings.setActiveAccountId(-1)
       await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1}))
@@ -44,6 +54,7 @@ const state: Reactive<IState> = reactive({
     records.sumBookings()
     await notice([t('dialogs.deleteAccount.success')])
     formRef.value?.reset()
+    state._selected = -1
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteAccount.error')])
@@ -51,7 +62,7 @@ const state: Reactive<IState> = reactive({
 }
 const title = t('dialogs.deleteAccount.title')
 
-defineExpose( {onClickOk, title})
+defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('DELETE_ACCOUNT: onMounted')

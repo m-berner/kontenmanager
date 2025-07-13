@@ -19,14 +19,14 @@ type TTelePort = {
 type TInfos = {
   exchanges: Map<string, number>
   indexes: Map<string, number>
-  materials: Map<string,number>
+  materials: Map<string, number>
 }
 
 interface IRuntimeStore {
   bookingId: number
   logo: string
   teleport: TTelePort
-  infoBar:  TInfos
+  infoBar: TInfos
   exchanges: {
     curUsd: number
     curEur: number
@@ -45,7 +45,7 @@ export const useRuntimeStore = defineStore('runtime', {
         okButton: true,
         visibility: false
       },
-      infoBar:  {
+      infoBar: {
         exchanges: new Map(),
         indexes: new Map(),
         materials: new Map()
@@ -161,7 +161,7 @@ export const useRuntimeStore = defineStore('runtime', {
       try {
         this.setLogo()
       } catch (error) {
-        log('ERROR: Failed to update logo', {info:error})
+        log('ERROR: Failed to update logo', {info: error})
         this.logo = CONS.LOGOS.NO_LOGO
       }
     }

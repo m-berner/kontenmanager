@@ -58,12 +58,6 @@ for (let i = 0; i < materialsKeys.length; i++) {
   }
 }
 
-const serviceKeys: string[] = []
-const allServiceKeys = Object.keys(CONS.SERVICES)
-for (let i = 0; i < allServiceKeys.length - 2; i++) {
-  serviceKeys.push(allServiceKeys[i])
-}
-
 // noinspection TypeScriptValidateTypes
 const state: Reactive<IOptionsIndex> = reactive<IOptionsIndex>({
   tab: 0,
@@ -76,7 +70,7 @@ const state: Reactive<IOptionsIndex> = reactive<IOptionsIndex>({
   materials: [],
   themeKeys: Object.keys(theme.themes.value),
   themeNames: tm(`optionsPage.themeNames`),
-  serviceKeys: serviceKeys,
+  serviceKeys: [...CONS.SERVICES.MAP.keys()],
   indexesA: indexesKeysA,
   indexesB: indexesKeysB,
   materialsA: materialsKeysA,
@@ -100,7 +94,6 @@ const setService = async (ev: Event): Promise<void> => {
     await browser.storage.local.set({[CONS.STORAGE.PROPS.SERVICE]: ev.target.value})
   }
 }
-
 const serviceLabels = (item: string) => {
   const service = CONS.SERVICES.MAP.get(item)
   if (service !== undefined) {
@@ -166,8 +159,8 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                 <DynamicList
                   v-bind:label="t('optionsPage.markets.label')"
                   v-bind:list="state.markets"
-                  v-bind:type="CONS.DYNAMIC_LIST.TYPES.MARKETS"
                   v-bind:title="t('optionsPage.markets.title')"
+                  v-bind:type="CONS.DYNAMIC_LIST.TYPES.MARKETS"
                 ></DynamicList>
               </v-col>
             </v-row>
@@ -232,8 +225,8 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                 <DynamicList
                   v-bind:label="t('optionsPage.exchanges.label')"
                   v-bind:list="state.exchanges"
-                  v-bind:type="CONS.DYNAMIC_LIST.TYPES.EXCHANGES"
                   v-bind:title="t('optionsPage.exchanges.title')"
+                  v-bind:type="CONS.DYNAMIC_LIST.TYPES.EXCHANGES"
                 ></DynamicList>
               </v-col>
             </v-row>

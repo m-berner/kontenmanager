@@ -77,7 +77,16 @@ const onClickOk = async (): Promise<void> => {
         type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
       }))
       const addStockData: IStock = JSON.parse(addStockResponse).data
-      records.addStock({...addStockData, mPortfolio: 0, mChange: 0, mBuyValue: 0, mEuroChange: 0, mMin: 0, mValue: 0, mMax: 0})
+      records.addStock({
+        ...addStockData,
+        mPortfolio: 0,
+        mChange: 0,
+        mBuyValue: 0,
+        mEuroChange: 0,
+        mMin: 0,
+        mValue: 0,
+        mMax: 0
+      })
       await notice([t('dialogs.AddStock.success')])
       formRef.value!.reset()
     } catch (e) {

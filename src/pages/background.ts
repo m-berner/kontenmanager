@@ -412,6 +412,10 @@ interface IUseAppApi {
     SERVICES: {
       MAP: Map<string, TService>
       TGATE: {
+        NAME: string,
+        HOME: string
+        QUOTE: string
+        DELAY: number
         CHS_URL: string
         CHB_URL: string
         CHS: string[]
@@ -419,6 +423,10 @@ interface IUseAppApi {
         CHANGES: { SMALL: number, BIG: number }
       }
       FNET: {
+        NAME: string,
+        HOME: string
+        QUOTE: string
+        DELAY: number
         INDEXES: string
         DATES: string
         MATERIALS: string
@@ -807,21 +815,13 @@ export const useAppApi = (): IUseAppApi => {
             QUOTE:
               'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff=',
             DELAY: 50
-          }],
-          ['tgate', {
-            NAME: 'Tradegate', // changes list, new stock
-            HOME: 'https://www.tradegate.de/',
-            QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
-            DELAY: 0
-          }],
-          ['fx', {
-            NAME: 'fx-rate',
-            HOME: 'https://fx-rate.net/qwsaq',
-            QUOTE: 'https://fx-rate.net/calculator/?c_input=',
-            DELAY: 50
           }]
         ]),
         TGATE: {
+          NAME: 'Tradegate', // changes list, new stock
+          HOME: 'https://www.tradegate.de/',
+          QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
+          DELAY: 0,
           CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
           CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
           CHS: [
@@ -873,6 +873,10 @@ export const useAppApi = (): IUseAppApi => {
           CHANGES: {SMALL: 34, BIG: 41}
         },
         FNET: {
+          NAME: 'fx-rate',
+          HOME: 'https://fx-rate.net/qwsaq',
+          QUOTE: 'https://fx-rate.net/calculator/?c_input=',
+          DELAY: 50,
           INDEXES: 'https://www.finanzen.net/indizes/',
           DATES: 'https://www.finanzen.net/termine/',
           MATERIALS: 'https://www.finanzen.net/rohstoffe/',

@@ -121,24 +121,24 @@ const stocksHeaders = computed<DataTableHeader[]>(() => [
 ])
 const stocksMenuItems = computed<StocksMenuItems[]>(() => [
   {
-    "id": "DeleteStock",
-    "title": t('stocksTable.menuItems.delete'),
-    "icon": "$tableRemove"
+    'id': 'DeleteStock',
+    'title': t('stocksTable.menuItems.delete'),
+    'icon': '$tableRemove'
   },
   {
-    "id": "ShowDividend",
-    "title": t('stocksTable.menuItems.dividend'),
-    "icon": "$showDividend"
+    'id': 'ShowDividend',
+    'title': t('stocksTable.menuItems.dividend'),
+    'icon': '$showDividend'
   },
   {
-    "id": "ConfigCompany",
-    "title": t('stocksTable.menuItems.config'),
-    "icon": "$tableEdit"
+    'id': 'ConfigCompany',
+    'title': t('stocksTable.menuItems.config'),
+    'icon': '$tableEdit'
   },
   {
-    "id": "ExternalLink",
-    "title": t('stocksTable.menuItems.link'),
-    "icon": "$link"
+    'id': 'ExternalLink',
+    'title': t('stocksTable.menuItems.link'),
+    'icon': '$link'
   }
 ])
 // Fixed: Use a function that returns a function for proper ref handling

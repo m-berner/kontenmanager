@@ -5,9 +5,9 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import { defineStore } from 'pinia'
-import { useAppApi } from '@/pages/background'
-import { useSettingsStore } from '@/stores/settings'
+import {defineStore} from 'pinia'
+import {useAppApi} from '@/pages/background'
+import {useSettingsStore} from '@/stores/settings'
 
 interface IRecordsStore {
   accounts: IAccount[]
@@ -19,7 +19,7 @@ interface IRecordsStore {
   totalController: TTotalController
 }
 
-const { CONS, log } = useAppApi()
+const {CONS, log} = useAppApi()
 
 export const useRecordsStore = defineStore('records', {
   state: (): IRecordsStore => ({
@@ -142,7 +142,7 @@ export const useRecordsStore = defineStore('records', {
     },
 
     deleteAccount(ident: number): void {
-      log('RECORDS: deleteAccount', { info: ident })
+      log('RECORDS: deleteAccount', {info: ident})
       const index = this.getAccountIndexById(ident)
       if (index !== -1) {
         this.accounts.splice(index, 1)
@@ -155,7 +155,7 @@ export const useRecordsStore = defineStore('records', {
     },
 
     deleteBooking(ident: number): void {
-      log('RECORDS: deleteBooking', { info: ident })
+      log('RECORDS: deleteBooking', {info: ident})
       const index = this.getBookingById(ident)
       if (index !== -1) {
         this.bookings.splice(index, 1)
@@ -176,7 +176,7 @@ export const useRecordsStore = defineStore('records', {
     },
 
     deleteStock(ident: number): void {
-      log('RECORDS: deleteStock', { info: ident })
+      log('RECORDS: deleteStock', {info: ident})
       const index = this.getStockById(ident)
       if (index !== -1) {
         this.stocks.splice(index, 1)
@@ -189,7 +189,7 @@ export const useRecordsStore = defineStore('records', {
     },
 
     deleteBookingType(ident: number): void {
-      log('RECORDS: deleteBookingType', { info: ident })
+      log('RECORDS: deleteBookingType', {info: ident})
       const index = this.getBookingTypeById(ident)
       if (index !== -1) {
         this.bookingTypes.splice(index, 1)
