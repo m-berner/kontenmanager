@@ -79,6 +79,7 @@ const onClickOk = async (): Promise<void> => {
 }
 const title = t('dialogs.updateStock.title')
 defineExpose({onClickOk, title})
+
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
   formRef.value!.reset()

@@ -82,7 +82,6 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 const title = t('dialogs.updateAccount.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {

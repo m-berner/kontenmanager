@@ -12,7 +12,7 @@ import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 
 interface IState {
-  _selected: number
+  selected: number
 }
 
 const {t} = useI18n()
@@ -21,13 +21,13 @@ const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
 
 const state: Reactive<IState> = reactive({
-  _selected: -1
+  selected: -1
 })
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE : onClickOk')
   try {
-    if (state._selected > 1) {
-      await records.deleteBookingType(state._selected)
+    if (state.selected > 1) {
+      await records.deleteBookingType(state.selected)
       formRef.value?.reset()
       await notice([t('dialogs.deleteBookingType.success')])
     } else {
@@ -39,7 +39,6 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 const title = t('dialogs.deleteBookingType.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -53,7 +52,7 @@ log('--- DeleteBookingType.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-select
-      v-model="state._selected"
+      v-model="state.selected"
       density="compact"
       required
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"

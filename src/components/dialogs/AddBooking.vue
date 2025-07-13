@@ -14,22 +14,22 @@ import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
-  _date: string
-  _ex_date: string
-  _credit: number
-  _debit: number
-  _description: string
-  _count: number
-  _unit_quotation: number
-  _booking_type_id: number
-  _account_type_id: number
-  _stock_id: number
-  _source_tax: number
-  _transaction_tax: number
-  _tax: number
-  _fee: number
-  _soli: number
-  _market_place: string
+  bookDate: string
+  exDate: string
+  credit: number
+  debit: number
+  description: string
+  count: number
+  unitQuotation: number
+  bookingTypeId: number
+  accountTypeId: number
+  stockId: number
+  sourceTax: number
+  transactionTax: number
+  tax: number
+  fee: number
+  soli: number
+  marketPlace: string
 }
 
 const {t} = useI18n()
@@ -39,22 +39,22 @@ const settings = useSettingsStore()
 const formRef = useTemplateRef('form-ref')
 
 const state: Reactive<IState> = reactive({
-  _date: '',
-  _ex_date: '',
-  _credit: 0,
-  _debit: 0,
-  _description: '',
-  _count: 0,
-  _unit_quotation: 0,
-  _booking_type_id: -1,
-  _account_type_id: -1,
-  _stock_id: 0,
-  _source_tax: 0,
-  _transaction_tax: 0,
-  _tax: 0,
-  _fee: 0,
-  _soli: 0,
-  _market_place: ''
+  bookDate: '',
+  exDate: '',
+  credit: 0,
+  debit: 0,
+  description: '',
+  count: 0,
+  unitQuotation: 0,
+  bookingTypeId: -1,
+  accountTypeId: -1,
+  stockId: 0,
+  sourceTax: 0,
+  transactionTax: 0,
+  tax: 0,
+  fee: 0,
+  soli: 0,
+  marketPlace: ''
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -65,75 +65,75 @@ const onClickOk = async (): Promise<void> => {
   const formIs = await formRef.value!.validate()
   if (formIs.valid) {
     try {
-      costs = state._soli + state._transaction_tax + state._tax + state._fee + state._source_tax
-      switch (state._booking_type_id) {
+      costs = state.soli + state.transactionTax + state.tax + state.fee + state.sourceTax
+      switch (state.bookingTypeId) {
         case 1:
-          result = state._count * state._unit_quotation + costs
+          result = state.count * state.unitQuotation + costs
           booking = {
-            cDate: state._date,
+            cDate: state.bookDate,
             cCredit: result < 0 ? -result : 0,
             cDebit: result > 0 ? result : 0,
-            cDescription: state._description,
-            cBookingTypeID: state._booking_type_id,
-            cStockID: state._stock_id,
+            cDescription: state.description,
+            cBookingTypeID: state.bookingTypeId,
+            cStockID: state.stockId,
             cAccountNumberID: settings.activeAccountId,
             cExDate: CONS.DEFAULTS.DATE,
-            cCount: state._count,
-            cSoli: state._soli,
-            cTax: state._tax,
-            cFee: state._fee,
-            cSourceTax: state._source_tax,
-            cTransactionTax: state._transaction_tax,
-            cMarketPlace: state._market_place
+            cCount: state.count,
+            cSoli: state.soli,
+            cTax: state.tax,
+            cFee: state.fee,
+            cSourceTax: state.sourceTax,
+            cTransactionTax: state.transactionTax,
+            cMarketPlace: state.marketPlace
           }
           break
         case 2:
-          result = state._count * state._unit_quotation - costs
+          result = state.count * state.unitQuotation - costs
           booking = {
-            cDate: state._date,
+            cDate: state.bookDate,
             cCredit: result > 0 ? result : 0,
             cDebit: result < 0 ? -result : 0,
-            cDescription: state._description,
-            cBookingTypeID: state._booking_type_id,
-            cStockID: state._stock_id,
+            cDescription: state.description,
+            cBookingTypeID: state.bookingTypeId,
+            cStockID: state.stockId,
             cAccountNumberID: settings.activeAccountId,
             cExDate: CONS.DEFAULTS.DATE,
-            cCount: state._count,
-            cSoli: state._soli,
-            cTax: state._tax,
-            cFee: state._fee,
-            cSourceTax: state._source_tax,
-            cTransactionTax: state._transaction_tax,
-            cMarketPlace: state._market_place
+            cCount: state.count,
+            cSoli: state.soli,
+            cTax: state.tax,
+            cFee: state.fee,
+            cSourceTax: state.sourceTax,
+            cTransactionTax: state.transactionTax,
+            cMarketPlace: state.marketPlace
           }
           break
         case 3:
-          result = state._count * state._unit_quotation - costs
+          result = state.count * state.unitQuotation - costs
           booking = {
-            cDate: state._date,
+            cDate: state.bookDate,
             cCredit: result > 0 ? result : 0,
             cDebit: result < 0 ? -result : 0,
-            cDescription: state._description,
-            cBookingTypeID: state._booking_type_id,
-            cStockID: state._stock_id,
+            cDescription: state.description,
+            cBookingTypeID: state.bookingTypeId,
+            cStockID: state.stockId,
             cAccountNumberID: settings.activeAccountId,
-            cExDate: state._ex_date,
-            cCount: state._count,
-            cSoli: state._soli,
-            cTax: state._tax,
-            cFee: state._fee,
-            cSourceTax: state._source_tax,
-            cTransactionTax: state._transaction_tax,
+            cExDate: state.exDate,
+            cCount: state.count,
+            cSoli: state.soli,
+            cTax: state.tax,
+            cFee: state.fee,
+            cSourceTax: state.sourceTax,
+            cTransactionTax: state.transactionTax,
             cMarketPlace: ''
           }
           break
         default:
           booking = {
-            cDate: state._date,
-            cCredit: state._credit === undefined ? 0 : state._credit,
-            cDebit: state._debit === undefined ? 0 : state._debit,
-            cDescription: state._description,
-            cBookingTypeID: state._booking_type_id,
+            cDate: state.bookDate,
+            cCredit: state.credit === undefined ? 0 : state.credit,
+            cDebit: state.debit === undefined ? 0 : state.debit,
+            cDescription: state.description,
+            cBookingTypeID: state.bookingTypeId,
             cStockID: 0,
             cAccountNumberID: settings.activeAccountId,
             cExDate: CONS.DEFAULTS.DATE,
@@ -153,13 +153,13 @@ const onClickOk = async (): Promise<void> => {
       records.addBooking(addBookingData)
       await notice([t('dialogs.AddBooking.success')])
       // NOTE: CurrencyInput ensure 0 instead of null
-      state._debit = 0
-      state._credit = 0
-      state._soli = 0
-      state._tax = 0
-      state._fee = 0
-      state._source_tax = 0
-      state._transaction_tax = 0
+      state.debit = 0
+      state.credit = 0
+      state.soli = 0
+      state.tax = 0
+      state.fee = 0
+      state.sourceTax = 0
+      state.transactionTax = 0
       formRef.value!.reset()
     } catch (e) {
       console.error(e)
@@ -168,19 +168,18 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 const title = t('dialogs.addBooking.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_BOOKING: onMounted')
   // NOTE: CurrencyInput ensure 0 instead of null
-  state._debit = 0
-  state._credit = 0
-  state._soli = 0
-  state._tax = 0
-  state._fee = 0
-  state._source_tax = 0
-  state._transaction_tax = 0
+  state.debit = 0
+  state.credit = 0
+  state.soli = 0
+  state.tax = 0
+  state.fee = 0
+  state.sourceTax = 0
+  state.transactionTax = 0
   formRef.value!.reset()
 })
 
@@ -201,7 +200,7 @@ log('--- AddBooking.vue setup ---')
         <v-col>
           <v-text-field
             ref="date-input"
-            v-model="state._date"
+            v-model="state.bookDate"
             autofocus
             density="compact"
             required
@@ -214,7 +213,7 @@ log('--- AddBooking.vue setup ---')
         </v-col>
         <v-col>
           <v-select
-            v-model="state._booking_type_id"
+            v-model="state.bookingTypeId"
             density="compact"
             max-width="300"
             required
@@ -233,8 +232,8 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <v-text-field
-            v-if="state._booking_type_id < 4 && state._booking_type_id > 0"
-            v-model="state._count"
+            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
+            v-model="state.count"
             class="withoutSpinner"
             density="compact"
             type="number"
@@ -244,8 +243,8 @@ log('--- AddBooking.vue setup ---')
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state._booking_type_id < 4 && state._booking_type_id > 0"
-            v-model="state._unit_quotation"
+            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
+            v-model="state.unitQuotation"
             v-bind:label="t('dialogs.addBooking.unitQuotationLabel')"
             v-bind:options="{ currency: 'EUR', valueRange: {min: 0} }"
           ></CurrencyInput>
@@ -254,16 +253,16 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-            v-if="state._booking_type_id > 3"
-            v-model="state._credit"
+            v-if="state.bookingTypeId > 3"
+            v-model="state.credit"
             v-bind:label="t('dialogs.addBooking.creditLabel')"
             v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state._booking_type_id > 3"
-            v-model="state._debit"
+            v-if="state.bookingTypeId > 3"
+            v-model="state.debit"
             v-bind:label="t('dialogs.addBooking.debitLabel')"
             v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
@@ -272,16 +271,16 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-            v-if="state._booking_type_id < 4 && state._booking_type_id > 1"
-            v-model="state._tax"
+            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 1"
+            v-model="state.tax"
             v-bind:label="t('dialogs.addBooking.taxLabel')"
             v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state._booking_type_id < 4 && state._booking_type_id > 1"
-            v-model="state._soli"
+            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 1"
+            v-model="state.soli"
             v-bind:label="t('dialogs.addBooking.soliLabel')"
             v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
@@ -290,9 +289,9 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <v-text-field
-            v-if="state._booking_type_id === 3"
+            v-if="state.bookingTypeId === 3"
             ref="date-input"
-            v-model="state._ex_date"
+            v-model="state.exDate"
             autofocus
             density="compact"
             required
@@ -305,8 +304,8 @@ log('--- AddBooking.vue setup ---')
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state._booking_type_id === 3"
-            v-model="state._source_tax"
+            v-if="state.bookingTypeId === 3"
+            v-model="state.sourceTax"
             v-bind:label="t('dialogs.addBooking.sourceTaxLabel')"
             v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
@@ -315,8 +314,8 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <v-select
-            v-if="state._booking_type_id < 4 && state._booking_type_id > 0"
-            v-model="state._stock_id"
+            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
+            v-model="state.stockId"
             density="compact"
             max-width="300"
             v-bind:item-title="CONS.DB.STORES.STOCKS.FIELDS.COMPANY"
@@ -331,8 +330,8 @@ log('--- AddBooking.vue setup ---')
         </v-col>
         <v-col>
           <v-select
-            v-if="state._booking_type_id < 3 && state._booking_type_id > 0"
-            v-model="state._market_place"
+            v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
+            v-model="state.marketPlace"
             density="compact"
             max-width="300"
             v-bind:items="settings.markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
@@ -346,16 +345,16 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-            v-if="state._booking_type_id < 3 && state._booking_type_id > 0"
-            v-model="state._fee"
+            v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
+            v-model="state.fee"
             v-bind:label="t('dialogs.addBooking.feeLabel')"
             v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state._booking_type_id === 1"
-            v-model="state._transaction_tax"
+            v-if="state.bookingTypeId === 1"
+            v-model="state.transactionTax"
             v-bind:label="t('dialogs.addBooking.transactionTaxLabel')"
             v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
@@ -364,7 +363,7 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="12">
           <v-text-field
-            v-model="state._description"
+            v-model="state.description"
             density="compact"
             required
             v-bind:label="t('dialogs.addBooking.descriptionLabel')"

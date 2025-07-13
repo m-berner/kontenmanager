@@ -13,7 +13,7 @@ import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
-  _name: string
+  bookingTypeName: string
 }
 
 const {t} = useI18n()
@@ -23,7 +23,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 
 const state: Reactive<IState> = reactive({
-  _name: ''
+  bookingTypeName: ''
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -33,7 +33,7 @@ const onClickOk = async (): Promise<void> => {
     try {
       const bookingType = {
         cID: -1,
-        cName: state._name.trim(),
+        cName: state.bookingTypeName.trim(),
         cAccountNumberID: settings.activeAccountId
       }
       records.addBookingType(bookingType)
@@ -51,7 +51,6 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 const title = t('dialogs.addBookingType.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -69,7 +68,7 @@ log('--- AddBookingType.vue setup ---')
     </v-text-field>
     <v-combobox
       ref="name-input"
-      v-model="state._name"
+      v-model="state.bookingTypeName"
       max-width="300"
       v-bind:disabled="settings.activeAccountId === -1"
       v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"

@@ -13,7 +13,7 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {type Reactive, reactive} from 'vue'
 
 interface IState {
-  _bookingId: number
+  bookingId: number
 }
 
 const {t} = useI18n()
@@ -22,18 +22,18 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
 const state: Reactive<IState> = reactive({
-  _bookingId: runtime.bookingId
+  bookingId: runtime.bookingId
 })
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING : onClickOk')
   try {
-    records.deleteBooking(state._bookingId)
+    records.deleteBooking(state.bookingId)
     runtime.setLogo()
     records.sumBookings()
     runtime.resetTeleport()
     await browser.runtime.sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.DB__DELETE_BOOKING, data: state._bookingId
+      type: CONS.MESSAGES.DB__DELETE_BOOKING, data: state.bookingId
     }))
     await notice([t('dialogs.deleteBooking.success')])
   } catch (e) {
@@ -42,7 +42,6 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 const title = t('dialogs.deleteBooking.title')
-
 defineExpose({onClickOk, title})
 
 log('--- DeleteBooking.vue setup ---')
@@ -50,7 +49,7 @@ log('--- DeleteBooking.vue setup ---')
 
 <template>
   <v-form validate-on="submit" v-on:submit.prevent>
-    <p class="text-align-center">{{ records.getBookingTextById(state._bookingId) }}</p>
+    <p class="text-align-center">{{ records.getBookingTextById(state.bookingId) }}</p>
     <p class="text-align-center">{{ t('dialogs.deleteBooking.ask') }}</p>
   </v-form>
 </template>

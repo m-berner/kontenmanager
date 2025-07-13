@@ -14,7 +14,7 @@ import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
-  _selected: number
+  selected: number
 }
 
 const {t} = useI18n()
@@ -25,20 +25,20 @@ const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
 const state: Reactive<IState> = reactive({
-  _selected: -1
+  selected: -1
 })
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT : onClickOk')
-  if (state._selected === -1) {
+  if (state.selected === -1) {
     await notice([t('dialogs.deleteAccount.error')])
     return
   }
   try {
-    records.deleteAccount(state._selected)
+    records.deleteAccount(state.selected)
     await browser.runtime.sendMessage(JSON.stringify({
       type: CONS.MESSAGES.DB__DELETE_ACCOUNT,
-      data: toRaw(state._selected)
+      data: toRaw(state.selected)
     }))
     if (records.accounts.length > 0) {
       settings.setActiveAccountId(records.accounts[0].cID)
@@ -54,14 +54,13 @@ const onClickOk = async (): Promise<void> => {
     records.sumBookings()
     await notice([t('dialogs.deleteAccount.success')])
     formRef.value?.reset()
-    state._selected = -1
+    state.selected = -1
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteAccount.error')])
   }
 }
 const title = t('dialogs.deleteAccount.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -75,7 +74,7 @@ log('--- DeleteAccount.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-select
-      v-model="state._selected"
+      v-model="state.selected"
       density="compact"
       required
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"

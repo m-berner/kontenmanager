@@ -14,7 +14,7 @@ import {useAppApi} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
-  _selected: number
+  selected: number
 }
 
 const {t} = useI18n()
@@ -25,7 +25,7 @@ const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
 const state: Reactive<IState> = reactive({
-  _selected: -1
+  selected: -1
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -33,7 +33,7 @@ const onClickOk = async (): Promise<void> => {
   try {
     // TODO in all delete dialogs,move to background!
     // TODO sendMessage to delete from DB
-    records.deleteStock(state._selected)
+    records.deleteStock(state.selected)
     formRef.value?.reset()
     if (records.accounts.length > 0) {
       settings.setActiveAccountId(records.accounts[0].cID)
@@ -50,7 +50,6 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 const title = t('dialogs.deleteStock.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -64,7 +63,7 @@ log('--- DeleteAccount.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-select
-      v-model="state._selected"
+      v-model="state.selected"
       density="compact"
       required
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
