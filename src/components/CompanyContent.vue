@@ -16,9 +16,9 @@ import {computed, nextTick} from 'vue'
 import type {DataTableHeader} from 'vuetify'
 
 type StocksMenuItems = {
-  title: string
-  id: string
-  icon: string
+  readonly title: string
+  readonly id: string
+  readonly icon: string
 }
 
 // Store setup with proper typing
@@ -35,7 +35,7 @@ const {stocksPerPage} = storeToRefs(settings)
 //const {stocks} = storeToRefs(records)
 // Computed properties with proper typing
 //const tableHeaders: ComputedRef<TableHeader[]> = computed(() => {
-// const headers = tm('stocksTable.headers')
+// const headers = t('stocksTable.headers')
 // headers.map((item: { title: string, align: string, sortable: boolean, key: string }) => ({
 //   title: rt(item.title),
 //   align: rt(item.align) as 'start' | 'center' | 'end' | undefined,

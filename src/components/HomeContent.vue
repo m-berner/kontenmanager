@@ -12,28 +12,20 @@ import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/helper/OptionMenu.vue'
-import {type Reactive, reactive} from 'vue'
+import {computed, type Reactive, reactive} from 'vue'
+import type {DataTableHeader} from 'vuetify'
 
-type TAlign = 'start' | 'center' | 'end' | undefined
-
-type TMenuItem = {
+type HomeMenuItem = {
   readonly id: string
   readonly title: string
   readonly icon?: string
-}
-
-type THeader = {
-  readonly title: string
-  readonly align: TAlign
-  readonly sortable: boolean
-  readonly key: string
 }
 
 interface IState {
   search: string
 }
 
-const {d, n, rt, t, tm} = useI18n()
+const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useAppApi()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -48,25 +40,78 @@ const state: Reactive<IState> = reactive<IState>({
 // NOTE: using "as" keyword for types means
 // the programmer decides what will be considered as the type of the object.
 // The "as" keyword is required mainly when TypeScriptValidateTypes (infer the type) fails.
-
-// Convert reactive messages array into non-reactive array (no Proxies)
-// noinspection TypeScriptValidateTypes
-const headers = (tm('appPage.headers') as THeader[])?.map((item: THeader) => {
-  return {
-    title: rt(item.title ?? ''),
-    align: rt(item.align ?? '') as TAlign,
-    sortable: item.sortable,
-    key: rt(item.key ?? '')
+const homeHeaders = computed<DataTableHeader[]>(() => [
+  {
+    title: t('appPage.headers.id'),
+    align: ' d-none' as 'start' | 'center' | 'end' | undefined,
+    sortable: false,
+    key: 'cID'
+  },
+  {
+    title: t('appPage.headers.action'),
+    align: 'start',
+    sortable: false,
+    key: 'mAction'
+  },
+  {
+    title: t('appPage.headers.date'),
+    align: 'start',
+    sortable: false,
+    key: 'cDate'
+  },
+  {
+    title: t('appPage.headers.debit'),
+    align: 'start',
+    sortable: false,
+    key: 'cDebit'
+  },
+  {
+    title: t('appPage.headers.credit'),
+    align: 'start',
+    sortable: false,
+    key: 'cCredit'
+  },
+  {
+    title: t('appPage.headers.description'),
+    align: 'start',
+    sortable: false,
+    key: 'cDescription'
+  },
+  {
+    title: t('appPage.headers.bookingType'),
+    align: 'start',
+    sortable: false,
+    key: 'cBookingType'
+  },
+  {
+    title: t('appPage.headers.accountNumberId'),
+    align: ' d-none' as 'start' | 'center' | 'end' | undefined,
+    sortable: false,
+    key: 'cAccountNumberID'
   }
-})
-// noinspection TypeScriptValidateTypes
-const menuItems = (tm('appPage.menuItems') as TMenuItem[]).map((item) => {
-  return {
-    title: rt(item.title ?? ''),
-    id: rt(item.id ?? ''),
-    icon: rt(item.icon ?? '')
+])
+const homeMenuItems = computed<HomeMenuItem[]>(() => [
+  {
+    id: 'DeleteStock',
+    title: t('stocksTable.menuItems.delete'),
+    icon: '$tableRemove'
+  },
+  {
+    id: 'ShowDividend',
+    title: t('stocksTable.menuItems.dividend'),
+    icon: '$showDividend'
+  },
+  {
+    'id': 'ConfigCompany',
+    'title': t('stocksTable.menuItems.config'),
+    'icon': '$tableEdit'
+  },
+  {
+    id: 'ExternalLink',
+    title: t('stocksTable.menuItems.link'),
+    icon: '$link'
   }
-})
+])
 
 log('--- HomeContent.vue setup ---')
 </script>
@@ -84,7 +129,7 @@ log('--- HomeContent.vue setup ---')
   <v-data-table
     density="compact"
     item-key="cID"
-    v-bind:headers="headers"
+    v-bind:headers="homeHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
     v-bind:items="bookings"
@@ -98,7 +143,7 @@ log('--- HomeContent.vue setup ---')
       <tr class="table-row">
         <td>
           <OptionMenu
-            v-bind:menuItems="menuItems"
+            v-bind:menuItems="homeMenuItems"
             v-bind:recordID="item.cID"
           ></OptionMenu>
         </td>

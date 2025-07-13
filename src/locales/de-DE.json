@@ -24,56 +24,16 @@
   },
   "appPage": {
     "search": "Suchen",
-    "headers": [
-      {
-        "title": "ID",
-        "align": " d-none",
-        "sortable": false,
-        "key": "cID"
-      },
-      {
-        "title": "Aktionen",
-        "align": "start",
-        "sortable": false,
-        "key": "mAction"
-      },
-      {
-        "title": "Datum",
-        "align": "start",
-        "sortable": false,
-        "key": "cDate"
-      },
-      {
-        "title": "Soll",
-        "align": "start",
-        "sortable": false,
-        "key": "cDebit"
-      },
-      {
-        "title": "Haben",
-        "align": "start",
-        "sortable": false,
-        "key": "cCredit"
-      },
-      {
-        "title": "Bemerkung",
-        "align": "start",
-        "sortable": false,
-        "key": "cDescription"
-      },
-      {
-        "title": "Buchungstyp",
-        "align": "start",
-        "sortable": false,
-        "key": "cAccountType"
-      },
-      {
-        "title": "Konto",
-        "align": " d-none",
-        "sortable": false,
-        "key": "cAccountNumberID"
-      }
-    ],
+    "headers": {
+      "id": "ID",
+      "action": "Aktionen",
+      "date": "Datum",
+      "debit": "Soll",
+      "edit": "Haben",
+      "description": "Bemerkung",
+      "bookingType": "Buchungstyp",
+      "accountNumberId": "Konto"
+    },
     "menuItems": [
       {
         "id": "DeleteBooking",

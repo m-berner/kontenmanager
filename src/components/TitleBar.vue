@@ -21,7 +21,7 @@ const {CONS, log} = useAppApi()
 const {activeAccountId} = storeToRefs(settings)
 // TODO use settings getter?
 
-const cUpdateTitleBar = (): void => {
+const mUpdateTitleBar = (): void => {
   browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID}))
 }
 
@@ -49,7 +49,7 @@ log('--- TitleBar.vue setup ---')
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts"
       v-bind:label="t('titleBar.selectAccountLabel')"
-      v-on:update:modelValue="cUpdateTitleBar"
+      v-on:update:modelValue="mUpdateTitleBar"
     ></v-select>
   </v-app-bar>
 </template>

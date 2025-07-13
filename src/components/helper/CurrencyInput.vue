@@ -14,8 +14,8 @@ interface CurrencyInputProps {
   disabled?: boolean
 }
 
-const _props = defineProps<CurrencyInputProps>()
-const {inputRef, formattedValue} = useCurrencyInput(_props.options)
+const currencyInputProps = defineProps<CurrencyInputProps>()
+const {inputRef, formattedValue} = useCurrencyInput(currencyInputProps.options)
 </script>
 
 <template>
@@ -23,8 +23,8 @@ const {inputRef, formattedValue} = useCurrencyInput(_props.options)
     v-bind:ref="inputRef"
     density="compact"
     type="text"
-    v-bind:disabled="_props.disabled"
-    v-bind:label="_props.label"
+    v-bind:disabled="currencyInputProps.disabled"
+    v-bind:label="currencyInputProps.label"
     v-bind:modelValue="formattedValue"
     variant="outlined"
   ></v-text-field>

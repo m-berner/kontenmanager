@@ -1553,6 +1553,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         //   return account.cID === id
         // })
         // TODO only allowed for accounts with no bookings, stocks, bookingTypes
+        // TODO replace tm(
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
             const onSuccess = (): void => {

@@ -15,14 +15,14 @@ interface PropsOptionMenu {
   menuItems: Record<string, string>[]
 }
 
-const _props = defineProps<PropsOptionMenu>()
+const optionMenuProps = defineProps<PropsOptionMenu>()
 const {rt} = useI18n()
 const runtime = useRuntimeStore()
 const {CONS, log} = useAppApi()
 
 const onIconClick = async (ev: Event): Promise<void> => {
-  log('OPTION_MENU: onIconClick', {info: _props.recordID})
-  runtime.setBookingId(_props.recordID ?? -1)
+  log('OPTION_MENU: onIconClick', {info: optionMenuProps.recordID})
+  runtime.setBookingId(optionMenuProps.recordID ?? -1)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
@@ -57,7 +57,7 @@ log('--- OptionMenu.vue setup ---')
     <v-list>
       <v-hover v-slot:default="{ props, isHovering }">
         <v-list-item
-          v-for="item in _props.menuItems"
+          v-for="item in optionMenuProps.menuItems"
           v-bind:id="rt(item.id)"
           v-bind:key="rt(item.title)"
           class="pointer"
