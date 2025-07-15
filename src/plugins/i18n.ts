@@ -16,36 +16,7 @@ interface II18n {
   i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
 }
 
-interface IBrowserUI {
-  lang: string
-  region: string
-  locale: string
-}
-
-const {CONS, log} = useAppApi()
-
-const getUI = (): IBrowserUI => {
-  const result = {
-    lang: '',
-    region: '',
-    locale: ''
-  }
-  // Check if browser.i18n is available (browser extension context)
-  const uiLang = (typeof browser !== 'undefined' && browser.i18n?.getUILanguage?.())
-    ? browser.i18n.getUILanguage().toLowerCase()
-    : CONS.DEFAULTS.LOCALE
-
-  if (uiLang.includes('-')) {
-    result.lang = uiLang.split('-')[0]
-    result.region = uiLang.split('-')[1].toUpperCase()
-    result.locale = uiLang
-  } else {
-    result.lang = uiLang
-    result.region = uiLang.toUpperCase()
-    result.locale = uiLang + '-' + uiLang.toUpperCase()
-  }
-  return result
-}
+const {log, getUI} = useAppApi()
 
 const getInitialLocale = (): 'de-DE' | 'en-US' => {
   const uiLocale = getUI().locale

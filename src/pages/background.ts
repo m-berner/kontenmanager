@@ -7,39 +7,93 @@
  */
 // NOTE: an extensions background script runs before a html page gets loaded.
 // That is a multipage extension runs background multiple times
-export declare namespace Stockmanager {
-  interface IStock {
-    cID: number
-    cCompany: string
-    cISIN: string
-    cWKN: string
-    cSym: string
-    cMeetingDay: number
-    cQuarterDay: number
-    cFadeOut: number
-    cFirstPage: number
-    cURL: string
+declare global {
+  namespace Stockmanager {
+    interface IStock {
+      cID: number
+      cCompany: string
+      cISIN: string
+      cWKN: string
+      cSym: string
+      cMeetingDay: number
+      cQuarterDay: number
+      cFadeOut: number
+      cFirstPage: number
+      cURL: string
+    }
+
+    interface ITransfer {
+      cID: number
+      cStockID: number
+      cDate: number
+      cExDay: number
+      cUnitQuotation: number
+      cAmount: number
+      cCount: number
+      cFees: number
+      cSTax: number
+      cFTax: number
+      cTax: number
+      cSoli: number
+      cMarketPlace: string
+      cDescription: string
+      cType: number
+    }
+  }
+  namespace FetchedResources {
+    type TIdIsin = {
+      id: number
+      isin: string
+    }
+
+    interface ICompanyData {
+      company: string
+      wkn: string
+      symbol: string
+    }
+
+    interface IMinRateMaxData {
+      id: number,
+      isin: string,
+      rate: string,
+      min: string,
+      max: string,
+      cur: string
+    }
+
+    interface IDailyChangesData {
+      key: string
+      value: {
+        percentChange: string,
+        change: number,
+        stringChange: string
+      }
+    }
+
+    interface IExchangesData {
+      key: string,
+      value: number
+    }
+
+    interface IMaterialData {
+      key: string,
+      value: number
+    }
+
+    interface IIndexData {
+      key: string,
+      value: number
+    }
+
+    interface IDatesData {
+      key: number | undefined
+      value: {
+        qf: number
+        gm: number
+      }
+    }
   }
 
-  interface ITransfer {
-    cID: number
-    cStockID: number
-    cDate: number
-    cExDay: number
-    cUnitQuotation: number
-    cAmount: number
-    cCount: number
-    cFees: number
-    cSTax: number
-    cFTax: number
-    cTax: number
-    cSoli: number
-    cMarketPlace: string
-    cDescription: string
-    cType: number
-  }
-}
-declare global {
   interface IAccount {
     // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
     cID: number
@@ -140,8 +194,6 @@ declare global {
     stocks: IStockStore[]
   }
 
-  type TTotalController = Record<string, number>
-
   interface IDrawerControls {
     id: number
     title: string
@@ -163,376 +215,161 @@ declare global {
   }
 }
 
-declare namespace FetchedResources {
-  type TIdIsin = {
-    id: number
-    isin: string
-  }
+type TValidator = (v: string) => string | boolean
 
-  interface ICompanyData {
-    company: string
-    wkn: string
-    symbol: string
-  }
-
-  interface IMinRateMaxData {
-    id: number,
-    isin: string,
-    rate: string,
-    min: string,
-    max: string,
-    cur: string
-  }
-
-  interface IDailyChangesData {
-    key: string
-    value: {
-      percentChange: string,
-      change: number,
-      stringChange: string
-    }
-  }
-
-  interface IExchangesData {
-    key: string,
-    value: number
-  }
-
-  interface IMaterialData {
-    key: string,
-    value: number
-  }
-
-  interface IIndexData {
-    key: string,
-    value: number
-  }
-
-  interface IDatesData {
-    key: number | undefined
-    value: {
-      qf: number
-      gm: number
-    }
-  }
-}
-
-type TService = {
+interface IService {
   NAME: string
   HOME: string
   QUOTE: string
-  DELAY: number
 }
 
-interface IUseAppApi {
-  CONS: Readonly<{
-    DATE: {
-      DEFAULT: number
-      DEFAULT_ISO: string
-      DEFAULT_YEAR: number
-      MILLI_PER_DAY: number
-      MILLI_PER_MIN: number
-    }
-    DB: {
-      NAME: string
-      STORES: {
-        ACCOUNTS: {
-          NAME: string
-          FIELDS: {
-            ID: keyof IAccount
-            SWIFT: keyof IAccount
-            LOGO_URL: keyof IAccount
-            LOGO_SEARCH_NAME: keyof IAccount
-            NUMBER: keyof IAccount
-            STOCK_ACCOUNT: keyof IAccount
-          }
-        }
-        BOOKINGS: {
-          NAME: string
-          FIELDS: {
-            ID: keyof IBooking
-            DATE: keyof IBooking
-            EX_DATE: keyof IBooking
-            COUNT: keyof IBooking
-            CREDIT: keyof IBooking
-            DEBIT: keyof IBooking
-            DESCRIPTION: keyof IBooking
-            BOOKING_TYPE_ID: keyof IBooking
-            ACCOUNT_NUMBER_ID: keyof IBooking
-            STOCK_ID: keyof IBooking
-            SOLI: keyof IBooking
-            MARKET_PLACE: keyof IBooking
-            TAX: keyof IBooking
-            FEE: keyof IBooking
-            SOURCE_TAX: keyof IBooking
-            TRANSACTION_TAX: keyof IBooking
-          }
-        }
-        BOOKING_TYPES: {
-          NAME: string
-          FIELDS: {
-            ID: keyof IBookingType
-            NAME: keyof IBookingType
-            ACCOUNT_NUMBER_ID: keyof IBookingType
-          }
-        }
-        STOCKS: {
-          NAME: string
-          FIELDS: {
-            ID: keyof IStock
-            ISIN: keyof IStock
-            SYMBOL: keyof IStock
-            FADE_OUT: keyof IStock
-            FIRST_PAGE: keyof IStock
-            URL: keyof IStock
-            MEETING_DAY: keyof IStock
-            QUARTER_DAY: keyof IStock
-            WKN: keyof IStock
-            COMPANY: keyof IStock
-            ACCOUNT_NUMBER_ID: keyof IStock
-          }
-        }
-      }
-      IMPORT_MIN_VERSION: number
-      CURRENT_VERSION: number
-    }
-    DEFAULTS: {
-      BACKGROUND: string
-      APP: string
-      OPTIONS: string
-      CURRENCY: string
-      LANG: string
-      LOCALE: string
-      DATE: string
-      YEAR: number
-      STORAGE: {
-        ACTIVE_ACCOUNT_ID: number
-        BOOKINGS_PER_PAGE: number
-        STOCKS_PER_PAGE: number
-        PARTNER: boolean
-        DEBUG: boolean
-        SKIN: string
-        SERVICE: string
-        EXCHANGES: string[]
-        MATERIALS: string[]
-        INDEXES: string[]
-        MARKETS: string[]
-      }
-      DRAWER_KEYS: string[]
-      DRAWER_CONTROLS: IDrawerControls[]
-    }
-    DIALOGS: {
-      ADD_ACCOUNT: string
-      UPDATE_ACCOUNT: string
-      DELETE_ACCOUNT: string
-      ADD_STOCK: string
-      UPDATE_STOCK: string
-      DELETE_STOCK: string
-      ADD_BOOKING_TYPE: string
-      ADD_BOOKING: string
-      DELETE_BOOKING: string
-      DELETE_BOOKING_TYPE: string
-      EXPORT_DATABASE: string
-      IMPORT_DATABASE: string
-      SHOW_ACCOUNTING: string
-      SETTING: string
-    }
-    DYNAMIC_LIST: {
-      TYPES: {
-        MARKETS: symbol
-        EXCHANGES: symbol
-      }
-    }
-    LOGOS: {
-      NO_LOGO: string
-    }
-    EVENTS: {
-      ABORT: string
-      BEFOREUNLOAD: string
-      CHANGE: string
-      CLICK: string
-      COMP: string
-      DOM: string
-      ERR: string
-      INP: string
-      KEYDOWN: string
-      LOAD: string
-      FOCUS: string
-      BLUR: string
-      SUC: string
-      UPG: string
-    }
-    MESSAGES: {
-      DB__DELETE_ALL: string
-      DB__CLOSE: string
-      DB__GET_STORES: string
-      DB__GET_STORES__RESPONSE: string
-      DB__ADD_ACCOUNT: string
-      DB__ADD_ACCOUNT__RESPONSE: string
-      DB__UPDATE_ACCOUNT: string
-      DB__UPDATE_ACCOUNT__RESPONSE: string
-      DB__ADD_BOOKING: string
-      DB__ADD_BOOKING__RESPONSE: string
-      DB__ADD_BOOKING_TYPE: string
-      DB__ADD_BOOKING_TYPE__RESPONSE: string
-      DB__ADD_STOCK: string
-      DB__ADD_STOCK__RESPONSE: string
-      DB__UPDATE_STOCK: string
-      DB__UPDATE_STOCK__RESPONSE: string
-      DB__DELETE_ACCOUNT: string
-      DB__DELETE_ACCOUNT__RESPONSE: string
-      DB__DELETE_BOOKING: string
-      DB__DELETE_BOOKING__RESPONSE: string
-      DB__DELETE_BOOKING_TYPE: string
-      DB__DELETE_BOOKING_TYPE__RESPONSE: string
-      DB__DELETE_STOCK: string
-      DB__DELETE_STOCK__RESPONSE: string
-      STORAGE__GET_ALL: string
-      STORAGE__GET_ALL__RESPONSE: string
-      DB__ADD_STORES: string
-      DB__ADD_STORES_25: string
-      OPTIONS__SET_SKIN: string
-      OPTIONS__SET_SERVICE: string
-      OPTIONS__SET_INDEXES: string
-      OPTIONS__SET_MATERIALS: string
-      OPTIONS__SET_EXCHANGES: string
-      OPTIONS__SET_MARKETS: string
-      DB__EXPORT: string
-      STORAGE__SET_ID: string
-      STORAGE__SET_ID__RESPONSE: string
-      OPTIONS__SET_SKIN__RESPONSE: string
-      OPTIONS__SET_SERVICE__RESPONSE: string
-      OPTIONS__SET_INDEXES__RESPONSE: string
-      OPTIONS__SET_MATERIALS__RESPONSE: string
-      OPTIONS__SET_EXCHANGES__RESPONSE: string
-      OPTIONS__SET_MARKETS__RESPONSE: string
-      FETCH__COMPANY_DATA: string
-      FETCH__COMPANY_DATA__RESPONSE: string
-    }
-    SERVICES: {
-      MAP: Map<string, TService>
-      TGATE: {
-        NAME: string,
-        HOME: string
-        QUOTE: string
-        DELAY: number
-        CHS_URL: string
-        CHB_URL: string
-        CHS: string[]
-        CHB: string[]
-        CHANGES: { SMALL: number, BIG: number }
-      }
-      FNET: {
-        NAME: string,
-        HOME: string
-        QUOTE: string
-        DELAY: number
-        INDEXES: string
-        DATES: string
-        MATERIALS: string
-        GM: string
-        QF: string
-      }
-    }
-    STATES: {
-      DONE: string
-      SRV: number
-      SUCCESS: number
-      PAUSE: string
-      MUTATE: string
-      NO_RENDER: string
-    }
-    SETTINGS: {
-      ITEMS_PER_PAGE_OPTIONS: {
-        value: number
-        title: string
-      }[]
-      INDEXES: Record<string, string>
-      MATERIALS: Record<string, string>
-    }
-    STORAGE: {
-      PROPS: {
-        SKIN: string
-        SERVICE: string
-        INDEXES: string
-        MARKETS: string
-        MATERIALS: string
-        EXCHANGES: string
-        PARTNER: string
-        ACTIVE_ACCOUNT_ID: string
-        BOOKINGS_PER_PAGE: string
-        STOCKS_PER_PAGE: string
-      }
-    }
-    RECORDS: {
-      CONTROLLER: {
-        TOTAL: TTotalController
-      }
-    }
-    RESOURCES: {
-      LICENSE: string
-      INDEX: string
-      ROOT: string
-    }
-    RESULTS: {
-      ERROR: string
-      SUCCESS: string
-    }
-    SYSTEM: {
-      COPYRIGHT: string
-      MAILTO: string
-      GET: string
-      HTML_ENTITY: string
-      KEYS: {
-        ENTER: string
-        TAB: string
-        T: string
-        V: string
-        Z: string
-      }
-      ERRORS: {
-        CURR: string
-        ERR: string
-        INVALID: string
-        NO_CASE: string
-        NO_DEL: string
-        REQ: string
-        SRV: string
-        WRONG_PARAM: string
-        SEND: string
-        PORT: string
-      }
-      ONCE: {
-        once: boolean
-      }
-    }
-  }>
-  VALIDATORS: Readonly<{
-    ibanRules: (msgArray: string[]) => ((v: string) => string | boolean)[]
-    nameRules: (msgArray: string[]) => ((v: string) => string | boolean)[]
-    swiftRules: (msgArray: string[]) => ((v: string) => string | boolean)[]
-    dateRules: (msgArray: string[]) => ((v: string) => string | boolean)[]
-    currencyCodeRules: (msgArray: string[]) => ((v: string) => string | boolean)[]
-    requiredRule: (msgArray: string[]) => ((v: string) => string | boolean)[]
-    brandNameRules: (msgArray: string[]) => ((v: string) => string | boolean)[]
-  }>
-
-  notice(msgArray: string[]): Promise<void>
-
-  utcDate(iso: string): Date
-
-  toISODate(ms: number): string
-
-  toNumber(str: string | boolean | number | undefined | null): number
-
-  mean(nar: number[]): number
-
-  log(msg: string, mode?: { info: unknown }): void
+interface IBrowserUI {
+  lang: string
+  region: string
+  locale: string
+  currency: string
+  curEur: string
+  curUsd: string
+  fontSize: string
 }
 
-export const useAppApi = (): IUseAppApi => {
+interface IUrlWithId {
+  url: string
+  id: number
+}
+
+export const useAppApi = () => {
+  enum MESSAGES {
+    DB__DELETE_ALL,
+    DB__CLOSE,
+    DB__GET_STORES,
+    DB__GET_STORES__RESPONSE,
+    DB__ADD_ACCOUNT,
+    DB__ADD_ACCOUNT__RESPONSE,
+    DB__UPDATE_ACCOUNT,
+    DB__UPDATE_ACCOUNT__RESPONSE,
+    DB__ADD_BOOKING,
+    DB__ADD_BOOKING__RESPONSE,
+    DB__ADD_BOOKING_TYPE,
+    DB__ADD_BOOKING_TYPE__RESPONSE,
+    DB__ADD_STOCK,
+    DB__ADD_STOCK__RESPONSE,
+    DB__UPDATE_STOCK,
+    DB__UPDATE_STOCK__RESPONSE,
+    DB__DELETE_ACCOUNT,
+    DB__DELETE_ACCOUNT__RESPONSE,
+    DB__DELETE_BOOKING,
+    DB__DELETE_BOOKING__RESPONSE,
+    DB__DELETE_BOOKING_TYPE,
+    DB__DELETE_BOOKING_TYPE__RESPONSE,
+    DB__DELETE_STOCK,
+    DB__DELETE_STOCK__RESPONSE,
+    STORAGE__GET_ALL,
+    STORAGE__GET_ALL__RESPONSE,
+    DB__ADD_STORES,
+    DB__ADD_STORES_25,
+    OPTIONS__SET_SKIN,
+    OPTIONS__SET_SERVICE,
+    OPTIONS__SET_INDEXES,
+    OPTIONS__SET_MATERIALS,
+    OPTIONS__SET_EXCHANGES,
+    OPTIONS__SET_MARKETS,
+    DB__EXPORT,
+    STORAGE__SET_ID,
+    STORAGE__SET_ID__RESPONSE,
+    OPTIONS__SET_SKIN__RESPONSE,
+    OPTIONS__SET_SERVICE__RESPONSE,
+    OPTIONS__SET_INDEXES__RESPONSE,
+    OPTIONS__SET_MATERIALS__RESPONSE,
+    OPTIONS__SET_MARKETS__RESPONSE,
+    OPTIONS__SET_EXCHANGES__RESPONSE,
+    FETCH__COMPANY_DATA,
+    FETCH__EXCHANGES_BASE_DATA,
+    FETCH__INDEXES_DATA,
+    FETCH__MATERIALS_DATA
+  }
+
   return {
-    CONS: {
+    CONS: Object.freeze({
+      CURRENCIES: {
+        EUR: 'EUR',
+        USD: 'USD',
+        CODE: new Map([
+          ['ar', 'ARS'],
+          ['at', 'EUR'],
+          ['au', 'AUD'],
+          ['be', 'EUR'],
+          ['bg', 'BGN'],
+          ['bo', 'BOB'],
+          ['br', 'BRL'],
+          ['bz', 'BZD'],
+          ['ca', 'CAD'],
+          ['ch', 'CHF'],
+          ['cl', 'CLP'],
+          ['chs', 'CNY'],
+          ['cht', 'CNY'],
+          ['co', 'COU'],
+          ['cr', 'CRC'],
+          ['cs', 'CZK'],
+          ['cy', 'EUR'],
+          ['da', 'DKK'],
+          ['de', 'EUR'],
+          ['do', 'DOP'],
+          ['ec', 'USD'],
+          ['ee', 'EUR'],
+          ['el', 'EUR'],
+          ['es', 'EUR'],
+          ['et', 'EUR'],
+          ['fi', 'EUR'],
+          ['fr', 'EUR'],
+          ['gb', 'GBP'],
+          ['gr', 'EUR'],
+          ['gt', 'GTQ'],
+          ['hk', 'HKD'],
+          ['hn', 'HNL'],
+          ['hu', 'HUF'],
+          ['ie', 'EUR'],
+          ['in', 'INR'],
+          ['is', 'ISK'],
+          ['it', 'EUR'],
+          ['ja', 'JPY'],
+          ['jm', 'JMD'],
+          ['ko', 'KRW'],
+          ['li', 'EUR'],
+          ['lt', 'EUR'],
+          ['lu', 'EUR'],
+          ['mc', 'EUR'],
+          ['mo', 'MOP'],
+          ['mt', 'EUR'],
+          ['mx', 'MXN'],
+          ['ni', 'NIO'],
+          ['nl', 'EUR'],
+          ['no', 'NOK'],
+          ['nz', 'NZD'],
+          ['pa', 'PAB'],
+          ['pe', 'PEN'],
+          ['ph', 'PHP'],
+          ['pl', 'PLN'],
+          ['pr', 'USD'],
+          ['pt', 'EUR'],
+          ['py', 'PYG'],
+          ['ro', 'RON'],
+          ['ru', 'RUB'],
+          ['se', 'SEK'],
+          ['sg', 'SGD'],
+          ['sk', 'EUR'],
+          ['sl', 'EUR'],
+          ['sp', 'RSD'],
+          ['sv', 'USD'],
+          ['tr', 'TRY'],
+          ['tt', 'TTD'],
+          ['tw', 'TWD'],
+          ['uy', 'UYU'],
+          ['ve', 'VES'],
+          ['za', 'ZAR'],
+          ['zw', 'ZWD']
+        ])
+      },
       DATE: {
         DEFAULT: 0,
         DEFAULT_ISO: '1970-01-01',
@@ -716,9 +553,6 @@ export const useAppApi = (): IUseAppApi => {
           EXCHANGES: Symbol.for('exchanges')
         }
       },
-      LOGOS: {
-        NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
-      },
       EVENTS: {
         ABORT: 'abort',
         BEFOREUNLOAD: 'beforeunload',
@@ -735,93 +569,70 @@ export const useAppApi = (): IUseAppApi => {
         SUC: 'success',
         UPG: 'upgradeneeded'
       },
-      MESSAGES: {
-        DB__DELETE_ALL: '12000',
-        DB__CLOSE: '12001',
-        DB__GET_STORES: '12002',
-        DB__GET_STORES__RESPONSE: '12003',
-        DB__ADD_ACCOUNT: '12004',
-        DB__ADD_ACCOUNT__RESPONSE: '12005',
-        DB__UPDATE_ACCOUNT: '13005',
-        DB__UPDATE_ACCOUNT__RESPONSE: '13006',
-        DB__ADD_BOOKING: '12006',
-        DB__ADD_BOOKING__RESPONSE: '12007',
-        DB__ADD_BOOKING_TYPE: '12008',
-        DB__ADD_BOOKING_TYPE__RESPONSE: '12009',
-        DB__ADD_STOCK: '12010',
-        DB__ADD_STOCK__RESPONSE: '13003',
-        DB__UPDATE_STOCK: '13001',
-        DB__UPDATE_STOCK__RESPONSE: '13002',
-        DB__DELETE_ACCOUNT: '12012',
-        DB__DELETE_ACCOUNT__RESPONSE: '12013',
-        DB__DELETE_BOOKING: '12014',
-        DB__DELETE_BOOKING__RESPONSE: '12015',
-        DB__DELETE_BOOKING_TYPE: '12016',
-        DB__DELETE_BOOKING_TYPE__RESPONSE: '12017',
-        DB__DELETE_STOCK: '12018',
-        DB__DELETE_STOCK__RESPONSE: '12019',
-        STORAGE__GET_ALL: '12021',
-        STORAGE__GET_ALL__RESPONSE: '12022',
-        DB__ADD_STORES: '12023',
-        DB__ADD_STORES_25: '11999',
-        OPTIONS__SET_SKIN: '12024',
-        OPTIONS__SET_SERVICE: '12025',
-        OPTIONS__SET_INDEXES: '12026',
-        OPTIONS__SET_MATERIALS: '12027',
-        OPTIONS__SET_EXCHANGES: '12028',
-        OPTIONS__SET_MARKETS: '12029',
-        DB__EXPORT: '12031',
-        STORAGE__SET_ID: '12032',
-        STORAGE__SET_ID__RESPONSE: '12033',
-        OPTIONS__SET_SKIN__RESPONSE: '12034',
-        OPTIONS__SET_SERVICE__RESPONSE: '12035',
-        OPTIONS__SET_INDEXES__RESPONSE: '12036',
-        OPTIONS__SET_MATERIALS__RESPONSE: '12037',
-        OPTIONS__SET_MARKETS__RESPONSE: '12038',
-        OPTIONS__SET_EXCHANGES__RESPONSE: '12039',
-        FETCH__COMPANY_DATA: '13014',
-        FETCH__COMPANY_DATA__RESPONSE: '13015'
+      LOGOS: {
+        NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
+      },
+      MESSAGES: MESSAGES,
+      RECORDS: {
+        CONTROLLER: {
+          TOTAL: {
+            efficiency: 0,
+            returnRate: 0,
+            buy: 0,
+            sell: 0,
+            dividends: 0,
+            deposits: 0,
+            withdrawals: 0,
+            taxes: 0,
+            fees: 0,
+            earnings: 0,
+            account: 0,
+            depot: 0,
+            winLoss: 0,
+            winLossPercent: 0,
+            depotBuyValue: 0
+          }
+        }
       },
       SERVICES: {
         MAP: new Map([
           ['goyax', {
             NAME: 'Goyax',
             HOME: 'https://www.goyax.de/',
-            QUOTE: 'https://www.goyax.de/aktien/',
-            DELAY: 50
+            QUOTE: 'https://www.goyax.de/aktien/'
           }],
           ['fnet', {
             NAME: 'Finanzen.Net',
             HOME: 'https://www.finanzen.net/aktienkurse/',
             QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search=',
-            DELAY: 750
+            INDEXES: 'https://www.finanzen.net/indizes/',
+            DATES: 'https://www.finanzen.net/termine/',
+            MATERIALS: 'https://www.finanzen.net/rohstoffe/',
+            GM: 'Hauptversammlung',
+            QF: 'Quartalszahlen'
           }],
           ['wstreet', {
             NAME: 'Wallstreet-Online',
             HOME: 'https://www.wallstreet-online.de',
             QUOTE:
-              'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/',
-            DELAY: 50
+              'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/'
           }],
           ['acheck', {
             NAME: 'Aktien Check',
             HOME: 'https://m.aktiencheck.de/',
-            QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search=',
-            DELAY: 50
+            QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search='
           }],
           ['ard', {
             NAME: 'ARD',
             HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
             QUOTE:
-              'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff=',
-            DELAY: 50
+              'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff='
           }]
         ]),
         TGATE: {
           NAME: 'Tradegate', // changes list, new stock
           HOME: 'https://www.tradegate.de/',
           QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
-          DELAY: 0,
           CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
           CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
           CHS: [
@@ -872,25 +683,11 @@ export const useAppApi = (): IUseAppApi => {
           ],
           CHANGES: {SMALL: 34, BIG: 41}
         },
-        FNET: {
+        FX: {
           NAME: 'fx-rate',
           HOME: 'https://fx-rate.net/qwsaq',
           QUOTE: 'https://fx-rate.net/calculator/?c_input=',
-          DELAY: 50,
-          INDEXES: 'https://www.finanzen.net/indizes/',
-          DATES: 'https://www.finanzen.net/termine/',
-          MATERIALS: 'https://www.finanzen.net/rohstoffe/',
-          GM: 'Hauptversammlung',
-          QF: 'Quartalszahlen'
         }
-      },
-      STATES: {
-        DONE: 'complete',
-        SRV: 500,
-        SUCCESS: 200,
-        PAUSE: 'resting',
-        MUTATE: 'mutation',
-        NO_RENDER: 'no_render'
       },
       SETTINGS: {
         ITEMS_PER_PAGE_OPTIONS: [
@@ -915,39 +712,47 @@ export const useAppApi = (): IUseAppApi => {
           //   title: 'Alle'
           // }
         ],
-        INDEXES: {
-          dax: 'DAX',
-          dow: 'Dow Jones',
-          nasdaq: 'NASDAQ Comp.',
-          nikkei: 'NIKKEI 225',
-          hang: 'Hang Seng',
-          ibex: 'IBEX 35',
-          straits: 'Straits Times',
-          asx: 'Australia All Ordinaries',
-          rts: 'RTS',
-          bovespa: 'BOVESPA',
-          sensex: 'SENSEX',
-          sci: 'Shanghai Composite',
-          ftse: 'FTSE 100',
-          smi: 'SMI',
-          cac: 'CAC 40',
-          stoxx: 'Euro Stoxx 50',
-          tsx: 'S&P/TSX',
-          sp: 'S&P 500'
-        },
-        MATERIALS: {
-          au: 'Goldpreis',
-          ag: 'Silberpreis',
-          brent: 'Ölpreis (Brent)',
-          wti: 'Ölpreis (WTI)',
-          cu: 'Kupferpreis',
-          pt: 'Platinpreis',
-          al: 'Aluminiumpreis',
-          ni: 'Nickelpreis',
-          sn: 'Zinnpreis',
-          pb: 'Bleipreis',
-          pd: 'Palladiumpreis'
-        },
+        INDEXES: new Map<string, string>([
+          ['dax', 'DAX'],
+          ['dow', 'Dow Jones'],
+          ['nasdaq', 'NASDAQ Comp.'],
+          ['nikkei', 'NIKKEI 225'],
+          ['hang', 'Hang Seng'],
+          ['ibex', 'IBEX 35'],
+          ['straits', 'Straits Times'],
+          ['asx', 'Australia All Ordinaries'],
+          ['rts', 'RTS'],
+          ['bovespa', 'BOVESPA'],
+          ['sensex', 'SENSEX'],
+          ['sci', 'Shanghai Composite'],
+          ['ftse', 'FTSE 100'],
+          ['smi', 'SMI'],
+          ['cac', 'CAC 40'],
+          ['stoxx', 'Euro Stoxx 50'],
+          ['tsx', 'S&P/TSX'],
+          ['sp', 'S&P 500']
+        ]),
+        MATERIALS: new Map<string, string>([
+          ['au', 'Goldpreis'],
+          ['ag', 'Silberpreis'],
+          ['brent', 'Ölpreis (Brent)'],
+          ['wti', 'Ölpreis (WTI)'],
+          ['cu', 'Kupferpreis'],
+          ['pt', 'Platinpreis'],
+          ['al', 'Aluminiumpreis'],
+          ['ni', 'Nickelpreis'],
+          ['sn', 'Zinnpreis'],
+          ['pb', 'Bleipreis'],
+          ['pd', 'Palladiumpreis']
+        ]),
+      },
+      STATES: {
+        DONE: 'complete',
+        SRV: 500,
+        SUCCESS: 200,
+        PAUSE: 'resting',
+        MUTATE: 'mutation',
+        NO_RENDER: 'no_render'
       },
       STORAGE: {
         PROPS: {
@@ -958,57 +763,17 @@ export const useAppApi = (): IUseAppApi => {
           MATERIALS: 'sMaterials',
           EXCHANGES: 'sExchanges',
           PARTNER: 'sPartner',
+          DEBUG: 'sDebug',
           ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
           BOOKINGS_PER_PAGE: 'sBookingsPerPage',
           STOCKS_PER_PAGE: 'sStocksPerPage'
         }
-        //   ACTIVE_ACCOUNT_ID: -1, //localStorage
-        //   BOOKINGS_PER_PAGE: 9, // localStorage
-        //   STOCKS_PER_PAGE: 9, // localStorage
-        //   DEBUG: false, //localStorage
-        //   // sExtensionId sesseionStorage
-        //   SKIN: 'ocean',
-        //   MATERIALS: ['au', 'brent'],
-        //   INDEXES: ['dax', 'dow'],
-        //   EXCHANGES: ['EURUSD'],
-        //   MARKETS: ['Frankfurt', 'XETRA'],
-        //   SERVICE: 'wstreet',
-        //   PARTNER: false
-      },
-      RECORDS: {
-        CONTROLLER: {
-          TOTAL: {
-            efficiency: 0,
-            returnRate: 0,
-            buy: 0,
-            sell: 0,
-            dividends: 0,
-            deposits: 0,
-            withdrawals: 0,
-            taxes: 0,
-            fees: 0,
-            earnings: 0,
-            account: 0,
-            depot: 0,
-            winLoss: 0,
-            winLossPercent: 0,
-            depotBuyValue: 0
-          }
-        }
-      },
-      RESOURCES: {
-        LICENSE: 'license.html',
-        INDEX: 'pages/app.html',
-        ROOT: '/'
-      },
-      RESULTS: {
-        ERROR: 'ERR',
-        SUCCESS: 'SUCCESS'
       },
       SYSTEM: {
         COPYRIGHT: '2013-2025 Martin Berner',
         MAILTO: 'mailto:kontenmanager@gmx.de',
         GET: 'GET',
+        INDEX: 'pages/app.html',
         HTML_ENTITY:
           '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
         KEYS: {
@@ -1032,61 +797,84 @@ export const useAppApi = (): IUseAppApi => {
         },
         ONCE: {once: true}
       }
+    }),
+    valIbanRules: (msgArray: string[]): TValidator[] => {
+      return [
+        (v: string) => v !== null || msgArray[0],
+        (v: string) => (v !== null && v.length < 37) || msgArray[1],
+        (v: string) => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
+      ]
     },
-    VALIDATORS:
-      {
-        ibanRules: msgArray => {
-          return [
-            v => v !== null || msgArray[0],
-            v => (v !== null && v.length < 37) || msgArray[1],
-            v => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
-          ]
-        },
-        nameRules:
-          msgArray => {
-            return [
-              v => v !== null || msgArray[0],
-              v => (v !== null && v.length < 32) || msgArray[1],
-              v => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
-            ]
-          },
-        swiftRules:
-          msgArray => {
-            return [
-              v => v !== null || msgArray[0],
-              v => (v !== null && v.length < 13) || msgArray[1],
-              v => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
-            ]
-          },
-        dateRules:
-          msgArray => {
-            return [
-              v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
-            ]
-          },
-        currencyCodeRules:
-          msgArray => {
-            return [
-              v => v !== null || msgArray[0],
-              v => (v !== null && v.length === 3) || msgArray[1],
-              v => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
-            ]
-          },
-        requiredRule:
-          msgArray => {
-            return [
-              v => v !== null || msgArray[0]
-            ]
-          },
-        brandNameRules:
-          msgArray => {
-            return [
-              v => v !== null || msgArray[0]
-            ]
-          }
+    valNameRules: (msgArray: string[]): TValidator[] => {
+      return [
+        (v: string) => v !== null || msgArray[0],
+        (v: string) => (v !== null && v.length < 32) || msgArray[1],
+        (v: string) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
+      ]
+    },
+    valSwiftRules: (msgArray: string[]): TValidator[] => {
+      return [
+        (v: string) => v !== null || msgArray[0],
+        (v: string) => (v !== null && v.length < 13) || msgArray[1],
+        (v: string) => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
+      ]
+    },
+    valDateRules: (msgArray: string[]): TValidator[] => {
+      return [
+        (v: string) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
+      ]
+    },
+    valCurrencyCodeRules: (msgArray: string[]): TValidator[] => {
+      return [
+        (v: string) => v !== null || msgArray[0],
+        (v: string) => (v !== null && v.length === 3) || msgArray[1],
+        (v: string) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
+      ]
+    },
+    valRequiredRules: (msgArray: string[]): TValidator[] => {
+      return [
+        (v: string) => v !== null || msgArray[0]
+      ]
+    },
+    valBrandNameRules: (msgArray: string[]): TValidator[] => {
+      return [
+        (v: string) => v !== null || msgArray[0]
+      ]
+    },
+    getUI: (): IBrowserUI => {
+      const result = {
+        lang: '',
+        region: '',
+        locale: '',
+        currency: '',
+        curUsd: '',
+        curEur: '',
+        fontSize: ''
       }
-    ,
-    notice: async (messages) => {
+      // Check if browser.i18n is available (browser extension context)
+      const uiLang = (typeof browser !== 'undefined' && browser.i18n?.getUILanguage?.())
+        ? browser.i18n.getUILanguage().toLowerCase()
+        : CONS.DEFAULTS.LOCALE
+
+      if (uiLang.includes('-')) {
+        result.lang = uiLang.split('-')[0]
+        result.region = uiLang.split('-')[1].toUpperCase()
+        result.locale = uiLang
+        result.currency = CONS.CURRENCIES.CODE.get(uiLang.split('-')[1]) ?? CONS.DEFAULTS.CURRENCY
+      } else {
+        result.lang = uiLang
+        result.region = uiLang.toUpperCase()
+        result.locale = uiLang + '-' + uiLang.toUpperCase()
+        result.currency = CONS.CURRENCIES.CODE.get(uiLang) ?? CONS.DEFAULTS.CURRENCY
+      }
+      result.curEur = result.currency + CONS.CURRENCIES.EUR
+      result.curUsd = result.currency + CONS.CURRENCIES.USD
+      result.fontSize = window
+        .getComputedStyle(document.body, null)
+        .getPropertyValue('font-size')
+      return result
+    },
+    notice: async (messages: string[]): Promise<void> => {
       const msg = messages.join('\n')
       const notificationOption: browser.notifications.CreateNotificationOptions =
         {
@@ -1097,114 +885,72 @@ export const useAppApi = (): IUseAppApi => {
         }
       await browser.notifications.create(notificationOption)
     },
-    utcDate:
-      (iso) => {
-        return new Date(`${iso}T00:00:00.000`)
-      },
-    toISODate:
-      (ms) => {
-        return new Date(ms).toISOString().substring(0, 10)
-      },
-    toNumber:
-      (str: string | boolean | number | undefined | null): number => {
-        let result = 0
-        if (str !== null && str !== undefined) {
-          const a = str.toString().replace(/,$/g, '')
-          const b = a.split(',')
-          if (b.length === 2) {
-            const tmp2 = a
-              .trim()
-              .replace(/\s|\.|\t|%/g, '')
-              .replace(',', '.')
-            result = Number.isNaN(Number.parseFloat(tmp2))
-              ? 0
-              : Number.parseFloat(tmp2)
-          } else if (b.length > 2) {
-            let tmp: string = ''
-            for (let i = b.length - 1; i > 0; i--) {
-              tmp += b[i]
-            }
-            const tmp2 = tmp + '.' + b[0]
-            result = Number.isNaN(Number.parseFloat(tmp2))
-              ? 0
-              : Number.parseFloat(tmp2)
-          } else {
-            result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
+    utcDate: (iso: string): Date => {
+      return new Date(`${iso}T00:00:00.000`)
+    },
+    toISODate: (ms: number): string => {
+      return new Date(ms).toISOString().substring(0, 10)
+    },
+    toNumber: (str: string | boolean | number | undefined | null): number => {
+      let result = 0
+      if (str !== null && str !== undefined) {
+        const a = str.toString().replace(/,$/g, '')
+        const b = a.split(',')
+        if (b.length === 2) {
+          const tmp2 = a
+            .trim()
+            .replace(/\s|\.|\t|%/g, '')
+            .replace(',', '.')
+          result = Number.isNaN(Number.parseFloat(tmp2))
+            ? 0
+            : Number.parseFloat(tmp2)
+        } else if (b.length > 2) {
+          let tmp: string = ''
+          for (let i = b.length - 1; i > 0; i--) {
+            tmp += b[i]
           }
-        }
-        return result
-      },
-    mean:
-      (nar: number[]): number => {
-        let sum = 0
-        let len: number = nar.length
-        let n: number
-        for (n of nar) {
-          if (n !== 0 && !Number.isNaN(n)) {
-            sum += n
-          } else {
-            len--
-          }
-        }
-        return len > 0 ? sum / len : 0
-      },
-    log:
-      (msg, mode = {info: null}) => {
-        const localDebug = localStorage.getItem('sDebug')
-        if (Number.parseInt(localDebug ?? '0') > 0) {
-          if (mode.info !== null) {
-            console.info(msg, mode.info)
-          } else {
-            console.log(msg)
-          }
+          const tmp2 = tmp + '.' + b[0]
+          result = Number.isNaN(Number.parseFloat(tmp2))
+            ? 0
+            : Number.parseFloat(tmp2)
+        } else {
+          result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
         }
       }
+      return result
+    },
+    mean: (nar: number[]): number => {
+      let sum = 0
+      let len: number = nar.length
+      let n: number
+      for (n of nar) {
+        if (n !== 0 && !Number.isNaN(n)) {
+          sum += n
+        } else {
+          len--
+        }
+      }
+      return len > 0 ? sum / len : 0
+    },
+    log: (msg: string, mode?: { info: unknown }) => {
+      const localDebug = localStorage.getItem(CONS.STORAGE.PROPS.DEBUG)
+      if (Number.parseInt(localDebug ?? '0') > 0) {
+        if (mode?.info !== '') {
+          console.info(msg, mode?.info)
+        } else {
+          console.log(msg)
+        }
+      }
+    }
   }
 }
 
 const {CONS, log, mean, notice, toNumber} = useAppApi()
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  interface IUseDatabaseApi {
-    open(): Promise<string>
-
-    truncateTables(): Promise<string>
-
-    exportToFile(fn: string): Promise<string>
-
-    exportToStores(): Promise<IStores | string>
-
-    addAccount(record: Omit<IAccount, 'cID'>): Promise<string | number>
-
-    updateAccount(record: IAccount): Promise<string>
-
-    deleteAccount(id: number): Promise<string>
-
-    addBookingType(record: Omit<IBookingType, 'cID'>): Promise<string | number>
-
-    deleteBookingType(id: number): Promise<string>
-
-    addBooking(record: Omit<IBooking, 'cID'>): Promise<string | number>
-
-    deleteBooking(id: number): Promise<string>
-
-    importStores(stores: IStores, all?: boolean): Promise<string>
-
-    deleteStock(id: number): Promise<string>
-
-    addStock(record: Omit<IStock, 'cID'>): Promise<string | number>
-
-    updateStock(record: IStock): Promise<string>
-  }
-
-  interface IUrlWithId {
-    url: string
-    id: number
-  }
-
-  const useDatabaseApi = (): IUseDatabaseApi => {
+  const useDatabaseApi = () => {
     return {
-      truncateTables: async () => {
+      truncateTables: async (): Promise<string> => {
         log('BACKGROUND: truncateTables')
         return new Promise(async (resolve, reject) => {
           if (dbi !== null) {
@@ -1245,7 +991,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      exportToFile: async (filename: string) => {
+      exportToFile: async (filename: string): Promise<string> => {
         log('BACKGROUND: exportToFile')
         const accounts: IAccount[] = []
         const bookings: IBooking[] = []
@@ -1367,7 +1113,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      exportToStores: async () => {
+      exportToStores: async (): Promise<IStores | string> => {
         log('BACKGROUND: exportToStores')
         const accounts: IAccount[] = []
         const bookings: IBooking[] = []
@@ -1427,7 +1173,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      importStores: async (stores, all = true) => {
+      importStores: async (stores: IStores, all = true) => {
         log('BACKGROUND: importStores', {info: dbi})
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
@@ -1482,7 +1228,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      open: async () => {
+      open: async (): Promise<string> => {
         return new Promise(async (resolve, reject) => {
           const onError = (ev: Event): void => {
             reject(ev)
@@ -1506,7 +1252,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
         })
       },
-      addAccount: async (record) => {
+      addAccount: async (record: Omit<IAccount, 'cID'>) => {
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
             const onSuccess = async (ev: Event) => {
@@ -1527,7 +1273,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      updateAccount: async (record) => {
+      updateAccount: async (record: IAccount): Promise<string> => {
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
             const onSuccess = async (ev: Event): Promise<void> => {
@@ -1548,7 +1294,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      deleteAccount: async (id) => {
+      deleteAccount: async (id: number): Promise<string> => {
         // const indexOfAccount = this._accounts.findIndex((account: IAccount) => {
         //   return account.cID === id
         // })
@@ -1574,7 +1320,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      addBookingType: async (record) => {
+      addBookingType: async (record: Omit<IBookingType, 'cID'>): Promise<string | number> => {
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
             const onSuccess = (ev: Event): void => {
@@ -1594,7 +1340,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      deleteBookingType: async (id) => {
+      deleteBookingType: async (id: number): Promise<string> => {
         // const indexOfBookingType = this._booking_types.all.findIndex((bookingType: IBookingType) => {
         //   return bookingType.cID === id
         // })
@@ -1619,7 +1365,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      addBooking: async (record) => {
+      addBooking: async (record: Omit<IBooking, 'cID'>): Promise<string | number> => {
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
             const onSuccess = (ev: Event): void => {
@@ -1639,7 +1385,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      deleteBooking: async (id) => {
+      deleteBooking: async (id: number): Promise<string> => {
         // const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
         //   return booking.cID === id
         // })
@@ -1659,7 +1405,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      addStock: async (record) => {
+      addStock: async (record: Omit<IStock, 'cID'>): Promise<string | number> => {
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
             const onSuccess = (ev: Event): void => {
@@ -1679,7 +1425,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      updateStock: async (record) => {
+      updateStock: async (record: IStock): Promise<string> => {
         return new Promise(async (resolve, reject) => {
           if (dbi != null) {
             const onSuccess = async (ev: Event): Promise<void> => {
@@ -1700,7 +1446,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
-      deleteStock: async (id) => {
+      deleteStock: async (id: number): Promise<string> => {
         // const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
         //   return booking.cID === id
         // })
@@ -1736,7 +1482,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           let child: ChildNode | undefined
           let wkn: string
           let symbol: string
-          const service: TService | undefined = CONS.SERVICES.MAP.get('tgate')
+          const service: IService | undefined = CONS.SERVICES.TGATE
           let tables: NodeListOf<HTMLTableRowElement>
           let firstResponse: Response
           let result: FetchedResources.ICompanyData = {
@@ -1801,8 +1547,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       fetchMinRateMaxData: async (storageOnline: FetchedResources.TIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> => {
         console.log('BACKGROUND: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
-          const storageService = await browser.storage.local.get('sService')
-          const serviceName = storageService['sService'].name
+          const storageService = await browser.storage.local.get(CONS.STORAGE.PROPS.SERVICE)
+          const serviceName = storageService[CONS.STORAGE.PROPS.SERVICE].name
           const _fnet = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
             return await Promise.all(
               urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
@@ -2205,7 +1951,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       },
       fetchExchangesData: async (exchangeCodes: string[]): Promise<FetchedResources.IExchangesData[]> => {
         console.log('BACKGROUND: fetchExchangesData')
-        const service = CONS.SERVICES.MAP.get('fx')
+        const service = CONS.SERVICES.FX
         const fExUrl = (code: string): string => {
           if (service !== undefined) {
             return `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`
@@ -2213,7 +1959,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             throw new Error('Undefined service constant!')
           }
         }
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve, reject): Promise<FetchedResources.IExchangesData[]> => {
           const result: FetchedResources.IExchangesData[] = []
           for (let i = 0; i < exchangeCodes.length; i++) {
             const firstResponse = await fetch(fExUrl(exchangeCodes[i]))
@@ -2243,13 +1989,14 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
           }
           resolve(result)
+          return result
         })
       },
       fetchMaterialData: async (): Promise<FetchedResources.IMaterialData[]> => {
         console.log('BACKGROUND: fetchMaterialData')
         return new Promise(async (resolve, reject) => {
           const materials: FetchedResources.IMaterialData[] = []
-          const firstResponse = await fetch(CONS.SERVICES.FNET.MATERIALS)
+          const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '')
           if (
             !firstResponse.ok ||
             firstResponse.status >= CONS.STATES.SRV ||
@@ -2267,12 +2014,13 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             '#commodity_prices > table > tbody tr'
           )
           for (let i = 0; i < resultTr.length; i++) {
+            const material = CONS.SETTINGS.MATERIALS.get(resultTr[i].children[0].textContent ?? '')
             if (
               resultTr[i].children[0].tagName === 'TD' &&
-              CONS.SETTINGS.MATERIALS[resultTr[i].children[0].textContent ?? ''] !== undefined
+              material !== undefined
             ) {
               materials.push({
-                key: CONS.SETTINGS.MATERIALS[resultTr[i].children[0].textContent ?? ''],
+                key: material,
                 value: toNumber(resultTr[i].children[1].textContent)
               })
             }
@@ -2286,7 +2034,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           const indexes: FetchedResources.IIndexData[] = []
           const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES)
           const indexesValues: string[] = Object.values(CONS.SETTINGS.INDEXES)
-          const firstResponse = await fetch(CONS.SERVICES.FNET.INDEXES ?? '')
+          const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.INDEXES ?? '')
           if (
             !firstResponse.ok ||
             firstResponse.status >= CONS.STATES.SRV ||
@@ -2415,7 +2163,13 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     open
   } = useDatabaseApi()
   const {
-    fetchCompanyData
+    fetchCompanyData,
+    // fetchMinRateMaxData,
+    // fetchDailyChangesData,
+    fetchExchangesData
+    // fetchMaterialData,
+    // fetchIndexData,
+    // fetchDatesData
   } = useFetchApi()
   let dbi: IDBDatabase
 
@@ -2629,11 +2383,11 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   const onClick = async (): Promise<void> => {
     log('BACKGROUND: onClick')
     await open()
-    const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}`})
+    const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.SYSTEM.INDEX)}`})
     // NOTE: any async webextension API call which triggers a corresponding event listener will reload background.js.
     if (foundTabs.length === 0) {
       const extensionTab = await browser.tabs.create({
-        url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
+        url: browser.runtime.getURL(CONS.SYSTEM.INDEX),
         active: true
       })
       const extensionTabIdStr = (extensionTab.id ?? -1).toString()
@@ -2795,10 +2549,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           break
         case CONS.MESSAGES.FETCH__COMPANY_DATA:
           const fetchedCompanyData: FetchedResources.ICompanyData = await fetchCompanyData(appMessage.data)
-          response = JSON.stringify({
-            type: CONS.MESSAGES.FETCH__COMPANY_DATA__RESPONSE,
-            data: fetchedCompanyData
-          })
+          response = JSON.stringify({data: fetchedCompanyData})
+          resolve(response)
+          break
+        case CONS.MESSAGES.FETCH__EXCHANGES_BASE_DATA:
+          const fetchedExchangesData: FetchedResources.IExchangesData[] = await fetchExchangesData(appMessage.data)
+          response = JSON.stringify({data: fetchedExchangesData})
           resolve(response)
           break
         default:
@@ -2832,16 +2588,16 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     if (
       keyStrokeController.includes('Control') &&
       keyStrokeController.includes('Alt') &&
-      ev.key === 'd' && Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0
+      ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0
     ) {
-      localStorage.setItem('sDebug', '0')
+      localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '0')
     }
     if (
       keyStrokeController.includes('Control') &&
       keyStrokeController.includes('Alt') &&
-      ev.key === 'd' && !(Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0)
+      ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0)
     ) {
-      localStorage.setItem('sDebug', '1')
+      localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '1')
     }
   }
   const onKeyUp = (ev: KeyboardEvent): void => {

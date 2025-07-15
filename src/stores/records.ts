@@ -16,7 +16,7 @@ interface IRecordsStore {
   stocks: IStockStore[]
   bookingSum: number
   bookingSumField: string
-  totalController: TTotalController
+  totalController: Record<string, number>
 }
 
 const {CONS, log} = useAppApi()

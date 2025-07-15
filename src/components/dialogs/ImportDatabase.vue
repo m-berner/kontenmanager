@@ -8,7 +8,6 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
-import type {Stockmanager} from '@/pages/background'
 import {useAppApi} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'

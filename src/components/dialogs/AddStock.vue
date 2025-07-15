@@ -21,7 +21,7 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, VALIDATORS} = useAppApi()
+const {CONS, log, notice, valIbanRules} = useAppApi()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -118,7 +118,7 @@ log('--- AddStock.vue setup ---')
         required
         v-bind:counter="12"
         v-bind:label="t('dialogs.addStock.isin')"
-        v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+        v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
         variant="outlined"
         v-on:focus="formRef!.value!.resetValidation()"
         v-on:update:modelValue="onIsin"

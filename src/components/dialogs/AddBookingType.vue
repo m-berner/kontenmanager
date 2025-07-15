@@ -17,7 +17,7 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, VALIDATORS} = useAppApi()
+const {CONS, log, notice, valNameRules} = useAppApi()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -77,7 +77,7 @@ log('--- AddBookingType.vue setup ---')
       v-bind:label="t('dialogs.addBookingType.label')"
       v-bind:menu=true
       v-bind:menu-props="{ maxHeight: 250 }"
-      v-bind:rules="VALIDATORS.nameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
+      v-bind:rules="valNameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
     ></v-combobox>
   </v-form>
 </template>

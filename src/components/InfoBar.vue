@@ -131,7 +131,7 @@ console.log('--- InfoBar.vue setup ---')
         </v-list-item>
 
         <v-list-item v-for="item in indexes" v-bind:key="item">
-          <v-list-item-title>{{ CONS.SETTINGS.INDEXES[item] }}</v-list-item-title>
+          <v-list-item-title>{{ CONS.SETTINGS.INDEXES.get(item) }}</v-list-item-title>
           <v-list-item-subtitle>{{ n(runtime.indexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
         </v-list-item>
 

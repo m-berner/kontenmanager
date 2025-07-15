@@ -33,7 +33,7 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, VALIDATORS} = useAppApi()
+const {CONS, log, notice, valRequiredRules, valDateRules} = useAppApi()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const formRef = useTemplateRef('form-ref')
@@ -206,7 +206,7 @@ log('--- AddBooking.vue setup ---')
             required
             type="date"
             v-bind:label="t('dialogs.addBooking.dateLabel')"
-            v-bind:rules="VALIDATORS.dateRules([t('validators.dateRules', 0)])"
+            v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
             variant="outlined"
             v-on:focus="formRef!.value!.resetValidation()"
           ></v-text-field>
@@ -223,7 +223,7 @@ log('--- AddBooking.vue setup ---')
             v-bind:label="t('dialogs.addBooking.bookingTypeLabel')"
             v-bind:menu=false
             v-bind:menu-props="{ maxHeight: 250 }"
-            v-bind:rules="VALIDATORS.requiredRule([t('validators.requiredRule', 0)])"
+            v-bind:rules="valRequiredRules([t('validators.requiredRule', 0)])"
             variant="outlined"
             v-on:update:modelValue="(ev) => {console.error('CHANGE', ev)}"
           ></v-select>
@@ -297,7 +297,7 @@ log('--- AddBooking.vue setup ---')
             required
             type="date"
             v-bind:label="t('dialogs.addBooking.exDateLabel')"
-            v-bind:rules="VALIDATORS.dateRules([t('validators.dateRules', 0)])"
+            v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
             variant="outlined"
             v-on:focus="formRef!.value!.resetValidation()"
           ></v-text-field>
@@ -324,7 +324,7 @@ log('--- AddBooking.vue setup ---')
             v-bind:label="t('dialogs.addBooking.stockLabel')"
             v-bind:menu=false
             v-bind:menu-props="{ maxHeight: 250 }"
-            v-bind:rules="VALIDATORS.requiredRule([t('validators.requiredRule', 0)])"
+            v-bind:rules="valRequiredRules([t('validators.requiredRule', 0)])"
             variant="outlined"
           ></v-select>
         </v-col>

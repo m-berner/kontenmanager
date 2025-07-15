@@ -111,7 +111,13 @@ export const useRuntimeStore = defineStore('runtime', {
                 log('ERROR: Failed to update logo', { info: error });
                 this.logo = CONS.LOGOS.NO_LOGO;
             }
-        }
+        },
+        setExchangesUsd(value) {
+            this.exchanges.curUsd = value;
+        },
+        setExchangesEur(value) {
+            this.exchanges.curEur = value;
+        },
     }
 });
 log('--- STORE runtime.js ---');

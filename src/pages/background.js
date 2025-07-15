@@ -1,6 +1,135 @@
 export const useAppApi = () => {
+    let MESSAGES;
+    (function (MESSAGES) {
+        MESSAGES[MESSAGES["DB__DELETE_ALL"] = 0] = "DB__DELETE_ALL";
+        MESSAGES[MESSAGES["DB__CLOSE"] = 1] = "DB__CLOSE";
+        MESSAGES[MESSAGES["DB__GET_STORES"] = 2] = "DB__GET_STORES";
+        MESSAGES[MESSAGES["DB__GET_STORES__RESPONSE"] = 3] = "DB__GET_STORES__RESPONSE";
+        MESSAGES[MESSAGES["DB__ADD_ACCOUNT"] = 4] = "DB__ADD_ACCOUNT";
+        MESSAGES[MESSAGES["DB__ADD_ACCOUNT__RESPONSE"] = 5] = "DB__ADD_ACCOUNT__RESPONSE";
+        MESSAGES[MESSAGES["DB__UPDATE_ACCOUNT"] = 6] = "DB__UPDATE_ACCOUNT";
+        MESSAGES[MESSAGES["DB__UPDATE_ACCOUNT__RESPONSE"] = 7] = "DB__UPDATE_ACCOUNT__RESPONSE";
+        MESSAGES[MESSAGES["DB__ADD_BOOKING"] = 8] = "DB__ADD_BOOKING";
+        MESSAGES[MESSAGES["DB__ADD_BOOKING__RESPONSE"] = 9] = "DB__ADD_BOOKING__RESPONSE";
+        MESSAGES[MESSAGES["DB__ADD_BOOKING_TYPE"] = 10] = "DB__ADD_BOOKING_TYPE";
+        MESSAGES[MESSAGES["DB__ADD_BOOKING_TYPE__RESPONSE"] = 11] = "DB__ADD_BOOKING_TYPE__RESPONSE";
+        MESSAGES[MESSAGES["DB__ADD_STOCK"] = 12] = "DB__ADD_STOCK";
+        MESSAGES[MESSAGES["DB__ADD_STOCK__RESPONSE"] = 13] = "DB__ADD_STOCK__RESPONSE";
+        MESSAGES[MESSAGES["DB__UPDATE_STOCK"] = 14] = "DB__UPDATE_STOCK";
+        MESSAGES[MESSAGES["DB__UPDATE_STOCK__RESPONSE"] = 15] = "DB__UPDATE_STOCK__RESPONSE";
+        MESSAGES[MESSAGES["DB__DELETE_ACCOUNT"] = 16] = "DB__DELETE_ACCOUNT";
+        MESSAGES[MESSAGES["DB__DELETE_ACCOUNT__RESPONSE"] = 17] = "DB__DELETE_ACCOUNT__RESPONSE";
+        MESSAGES[MESSAGES["DB__DELETE_BOOKING"] = 18] = "DB__DELETE_BOOKING";
+        MESSAGES[MESSAGES["DB__DELETE_BOOKING__RESPONSE"] = 19] = "DB__DELETE_BOOKING__RESPONSE";
+        MESSAGES[MESSAGES["DB__DELETE_BOOKING_TYPE"] = 20] = "DB__DELETE_BOOKING_TYPE";
+        MESSAGES[MESSAGES["DB__DELETE_BOOKING_TYPE__RESPONSE"] = 21] = "DB__DELETE_BOOKING_TYPE__RESPONSE";
+        MESSAGES[MESSAGES["DB__DELETE_STOCK"] = 22] = "DB__DELETE_STOCK";
+        MESSAGES[MESSAGES["DB__DELETE_STOCK__RESPONSE"] = 23] = "DB__DELETE_STOCK__RESPONSE";
+        MESSAGES[MESSAGES["STORAGE__GET_ALL"] = 24] = "STORAGE__GET_ALL";
+        MESSAGES[MESSAGES["STORAGE__GET_ALL__RESPONSE"] = 25] = "STORAGE__GET_ALL__RESPONSE";
+        MESSAGES[MESSAGES["DB__ADD_STORES"] = 26] = "DB__ADD_STORES";
+        MESSAGES[MESSAGES["DB__ADD_STORES_25"] = 27] = "DB__ADD_STORES_25";
+        MESSAGES[MESSAGES["OPTIONS__SET_SKIN"] = 28] = "OPTIONS__SET_SKIN";
+        MESSAGES[MESSAGES["OPTIONS__SET_SERVICE"] = 29] = "OPTIONS__SET_SERVICE";
+        MESSAGES[MESSAGES["OPTIONS__SET_INDEXES"] = 30] = "OPTIONS__SET_INDEXES";
+        MESSAGES[MESSAGES["OPTIONS__SET_MATERIALS"] = 31] = "OPTIONS__SET_MATERIALS";
+        MESSAGES[MESSAGES["OPTIONS__SET_EXCHANGES"] = 32] = "OPTIONS__SET_EXCHANGES";
+        MESSAGES[MESSAGES["OPTIONS__SET_MARKETS"] = 33] = "OPTIONS__SET_MARKETS";
+        MESSAGES[MESSAGES["DB__EXPORT"] = 34] = "DB__EXPORT";
+        MESSAGES[MESSAGES["STORAGE__SET_ID"] = 35] = "STORAGE__SET_ID";
+        MESSAGES[MESSAGES["STORAGE__SET_ID__RESPONSE"] = 36] = "STORAGE__SET_ID__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_SKIN__RESPONSE"] = 37] = "OPTIONS__SET_SKIN__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_SERVICE__RESPONSE"] = 38] = "OPTIONS__SET_SERVICE__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_INDEXES__RESPONSE"] = 39] = "OPTIONS__SET_INDEXES__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_MATERIALS__RESPONSE"] = 40] = "OPTIONS__SET_MATERIALS__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_MARKETS__RESPONSE"] = 41] = "OPTIONS__SET_MARKETS__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_EXCHANGES__RESPONSE"] = 42] = "OPTIONS__SET_EXCHANGES__RESPONSE";
+        MESSAGES[MESSAGES["FETCH__COMPANY_DATA"] = 43] = "FETCH__COMPANY_DATA";
+        MESSAGES[MESSAGES["FETCH__EXCHANGES_BASE_DATA"] = 44] = "FETCH__EXCHANGES_BASE_DATA";
+        MESSAGES[MESSAGES["FETCH__INDEXES_DATA"] = 45] = "FETCH__INDEXES_DATA";
+        MESSAGES[MESSAGES["FETCH__MATERIALS_DATA"] = 46] = "FETCH__MATERIALS_DATA";
+    })(MESSAGES || (MESSAGES = {}));
     return {
-        CONS: {
+        CONS: Object.freeze({
+            CURRENCIES: {
+                EUR: 'EUR',
+                USD: 'USD',
+                CODE: new Map([
+                    ['ar', 'ARS'],
+                    ['at', 'EUR'],
+                    ['au', 'AUD'],
+                    ['be', 'EUR'],
+                    ['bg', 'BGN'],
+                    ['bo', 'BOB'],
+                    ['br', 'BRL'],
+                    ['bz', 'BZD'],
+                    ['ca', 'CAD'],
+                    ['ch', 'CHF'],
+                    ['cl', 'CLP'],
+                    ['chs', 'CNY'],
+                    ['cht', 'CNY'],
+                    ['co', 'COU'],
+                    ['cr', 'CRC'],
+                    ['cs', 'CZK'],
+                    ['cy', 'EUR'],
+                    ['da', 'DKK'],
+                    ['de', 'EUR'],
+                    ['do', 'DOP'],
+                    ['ec', 'USD'],
+                    ['ee', 'EUR'],
+                    ['el', 'EUR'],
+                    ['es', 'EUR'],
+                    ['et', 'EUR'],
+                    ['fi', 'EUR'],
+                    ['fr', 'EUR'],
+                    ['gb', 'GBP'],
+                    ['gr', 'EUR'],
+                    ['gt', 'GTQ'],
+                    ['hk', 'HKD'],
+                    ['hn', 'HNL'],
+                    ['hu', 'HUF'],
+                    ['ie', 'EUR'],
+                    ['in', 'INR'],
+                    ['is', 'ISK'],
+                    ['it', 'EUR'],
+                    ['ja', 'JPY'],
+                    ['jm', 'JMD'],
+                    ['ko', 'KRW'],
+                    ['li', 'EUR'],
+                    ['lt', 'EUR'],
+                    ['lu', 'EUR'],
+                    ['mc', 'EUR'],
+                    ['mo', 'MOP'],
+                    ['mt', 'EUR'],
+                    ['mx', 'MXN'],
+                    ['ni', 'NIO'],
+                    ['nl', 'EUR'],
+                    ['no', 'NOK'],
+                    ['nz', 'NZD'],
+                    ['pa', 'PAB'],
+                    ['pe', 'PEN'],
+                    ['ph', 'PHP'],
+                    ['pl', 'PLN'],
+                    ['pr', 'USD'],
+                    ['pt', 'EUR'],
+                    ['py', 'PYG'],
+                    ['ro', 'RON'],
+                    ['ru', 'RUB'],
+                    ['se', 'SEK'],
+                    ['sg', 'SGD'],
+                    ['sk', 'EUR'],
+                    ['sl', 'EUR'],
+                    ['sp', 'RSD'],
+                    ['sv', 'USD'],
+                    ['tr', 'TRY'],
+                    ['tt', 'TTD'],
+                    ['tw', 'TWD'],
+                    ['uy', 'UYU'],
+                    ['ve', 'VES'],
+                    ['za', 'ZAR'],
+                    ['zw', 'ZWD']
+                ])
+            },
             DATE: {
                 DEFAULT: 0,
                 DEFAULT_ISO: '1970-01-01',
@@ -183,9 +312,6 @@ export const useAppApi = () => {
                     EXCHANGES: Symbol.for('exchanges')
                 }
             },
-            LOGOS: {
-                NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
-            },
             EVENTS: {
                 ABORT: 'abort',
                 BEFOREUNLOAD: 'beforeunload',
@@ -202,91 +328,68 @@ export const useAppApi = () => {
                 SUC: 'success',
                 UPG: 'upgradeneeded'
             },
-            MESSAGES: {
-                DB__DELETE_ALL: '12000',
-                DB__CLOSE: '12001',
-                DB__GET_STORES: '12002',
-                DB__GET_STORES__RESPONSE: '12003',
-                DB__ADD_ACCOUNT: '12004',
-                DB__ADD_ACCOUNT__RESPONSE: '12005',
-                DB__UPDATE_ACCOUNT: '13005',
-                DB__UPDATE_ACCOUNT__RESPONSE: '13006',
-                DB__ADD_BOOKING: '12006',
-                DB__ADD_BOOKING__RESPONSE: '12007',
-                DB__ADD_BOOKING_TYPE: '12008',
-                DB__ADD_BOOKING_TYPE__RESPONSE: '12009',
-                DB__ADD_STOCK: '12010',
-                DB__ADD_STOCK__RESPONSE: '13003',
-                DB__UPDATE_STOCK: '13001',
-                DB__UPDATE_STOCK__RESPONSE: '13002',
-                DB__DELETE_ACCOUNT: '12012',
-                DB__DELETE_ACCOUNT__RESPONSE: '12013',
-                DB__DELETE_BOOKING: '12014',
-                DB__DELETE_BOOKING__RESPONSE: '12015',
-                DB__DELETE_BOOKING_TYPE: '12016',
-                DB__DELETE_BOOKING_TYPE__RESPONSE: '12017',
-                DB__DELETE_STOCK: '12018',
-                DB__DELETE_STOCK__RESPONSE: '12019',
-                STORAGE__GET_ALL: '12021',
-                STORAGE__GET_ALL__RESPONSE: '12022',
-                DB__ADD_STORES: '12023',
-                DB__ADD_STORES_25: '11999',
-                OPTIONS__SET_SKIN: '12024',
-                OPTIONS__SET_SERVICE: '12025',
-                OPTIONS__SET_INDEXES: '12026',
-                OPTIONS__SET_MATERIALS: '12027',
-                OPTIONS__SET_EXCHANGES: '12028',
-                OPTIONS__SET_MARKETS: '12029',
-                DB__EXPORT: '12031',
-                STORAGE__SET_ID: '12032',
-                STORAGE__SET_ID__RESPONSE: '12033',
-                OPTIONS__SET_SKIN__RESPONSE: '12034',
-                OPTIONS__SET_SERVICE__RESPONSE: '12035',
-                OPTIONS__SET_INDEXES__RESPONSE: '12036',
-                OPTIONS__SET_MATERIALS__RESPONSE: '12037',
-                OPTIONS__SET_MARKETS__RESPONSE: '12038',
-                OPTIONS__SET_EXCHANGES__RESPONSE: '12039',
-                FETCH__COMPANY_DATA: '13014',
-                FETCH__COMPANY_DATA__RESPONSE: '13015'
+            LOGOS: {
+                NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
+            },
+            MESSAGES: MESSAGES,
+            RECORDS: {
+                CONTROLLER: {
+                    TOTAL: {
+                        efficiency: 0,
+                        returnRate: 0,
+                        buy: 0,
+                        sell: 0,
+                        dividends: 0,
+                        deposits: 0,
+                        withdrawals: 0,
+                        taxes: 0,
+                        fees: 0,
+                        earnings: 0,
+                        account: 0,
+                        depot: 0,
+                        winLoss: 0,
+                        winLossPercent: 0,
+                        depotBuyValue: 0
+                    }
+                }
             },
             SERVICES: {
                 MAP: new Map([
                     ['goyax', {
                             NAME: 'Goyax',
                             HOME: 'https://www.goyax.de/',
-                            QUOTE: 'https://www.goyax.de/aktien/',
-                            DELAY: 50
+                            QUOTE: 'https://www.goyax.de/aktien/'
                         }],
                     ['fnet', {
                             NAME: 'Finanzen.Net',
                             HOME: 'https://www.finanzen.net/aktienkurse/',
                             QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search=',
-                            DELAY: 750
+                            INDEXES: 'https://www.finanzen.net/indizes/',
+                            DATES: 'https://www.finanzen.net/termine/',
+                            MATERIALS: 'https://www.finanzen.net/rohstoffe/',
+                            GM: 'Hauptversammlung',
+                            QF: 'Quartalszahlen'
                         }],
                     ['wstreet', {
                             NAME: 'Wallstreet-Online',
                             HOME: 'https://www.wallstreet-online.de',
-                            QUOTE: 'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/',
-                            DELAY: 50
+                            QUOTE: 'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/'
                         }],
                     ['acheck', {
                             NAME: 'Aktien Check',
                             HOME: 'https://m.aktiencheck.de/',
-                            QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search=',
-                            DELAY: 50
+                            QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search='
                         }],
                     ['ard', {
                             NAME: 'ARD',
                             HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
-                            QUOTE: 'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff=',
-                            DELAY: 50
+                            QUOTE: 'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff='
                         }]
                 ]),
                 TGATE: {
                     NAME: 'Tradegate',
                     HOME: 'https://www.tradegate.de/',
                     QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
-                    DELAY: 0,
                     CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
                     CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
                     CHS: [
@@ -337,25 +440,11 @@ export const useAppApi = () => {
                     ],
                     CHANGES: { SMALL: 34, BIG: 41 }
                 },
-                FNET: {
+                FX: {
                     NAME: 'fx-rate',
                     HOME: 'https://fx-rate.net/qwsaq',
                     QUOTE: 'https://fx-rate.net/calculator/?c_input=',
-                    DELAY: 50,
-                    INDEXES: 'https://www.finanzen.net/indizes/',
-                    DATES: 'https://www.finanzen.net/termine/',
-                    MATERIALS: 'https://www.finanzen.net/rohstoffe/',
-                    GM: 'Hauptversammlung',
-                    QF: 'Quartalszahlen'
                 }
-            },
-            STATES: {
-                DONE: 'complete',
-                SRV: 500,
-                SUCCESS: 200,
-                PAUSE: 'resting',
-                MUTATE: 'mutation',
-                NO_RENDER: 'no_render'
             },
             SETTINGS: {
                 ITEMS_PER_PAGE_OPTIONS: [
@@ -376,39 +465,47 @@ export const useAppApi = () => {
                         title: '11'
                     }
                 ],
-                INDEXES: {
-                    dax: 'DAX',
-                    dow: 'Dow Jones',
-                    nasdaq: 'NASDAQ Comp.',
-                    nikkei: 'NIKKEI 225',
-                    hang: 'Hang Seng',
-                    ibex: 'IBEX 35',
-                    straits: 'Straits Times',
-                    asx: 'Australia All Ordinaries',
-                    rts: 'RTS',
-                    bovespa: 'BOVESPA',
-                    sensex: 'SENSEX',
-                    sci: 'Shanghai Composite',
-                    ftse: 'FTSE 100',
-                    smi: 'SMI',
-                    cac: 'CAC 40',
-                    stoxx: 'Euro Stoxx 50',
-                    tsx: 'S&P/TSX',
-                    sp: 'S&P 500'
-                },
-                MATERIALS: {
-                    au: 'Goldpreis',
-                    ag: 'Silberpreis',
-                    brent: 'Ölpreis (Brent)',
-                    wti: 'Ölpreis (WTI)',
-                    cu: 'Kupferpreis',
-                    pt: 'Platinpreis',
-                    al: 'Aluminiumpreis',
-                    ni: 'Nickelpreis',
-                    sn: 'Zinnpreis',
-                    pb: 'Bleipreis',
-                    pd: 'Palladiumpreis'
-                },
+                INDEXES: new Map([
+                    ['dax', 'DAX'],
+                    ['dow', 'Dow Jones'],
+                    ['nasdaq', 'NASDAQ Comp.'],
+                    ['nikkei', 'NIKKEI 225'],
+                    ['hang', 'Hang Seng'],
+                    ['ibex', 'IBEX 35'],
+                    ['straits', 'Straits Times'],
+                    ['asx', 'Australia All Ordinaries'],
+                    ['rts', 'RTS'],
+                    ['bovespa', 'BOVESPA'],
+                    ['sensex', 'SENSEX'],
+                    ['sci', 'Shanghai Composite'],
+                    ['ftse', 'FTSE 100'],
+                    ['smi', 'SMI'],
+                    ['cac', 'CAC 40'],
+                    ['stoxx', 'Euro Stoxx 50'],
+                    ['tsx', 'S&P/TSX'],
+                    ['sp', 'S&P 500']
+                ]),
+                MATERIALS: new Map([
+                    ['au', 'Goldpreis'],
+                    ['ag', 'Silberpreis'],
+                    ['brent', 'Ölpreis (Brent)'],
+                    ['wti', 'Ölpreis (WTI)'],
+                    ['cu', 'Kupferpreis'],
+                    ['pt', 'Platinpreis'],
+                    ['al', 'Aluminiumpreis'],
+                    ['ni', 'Nickelpreis'],
+                    ['sn', 'Zinnpreis'],
+                    ['pb', 'Bleipreis'],
+                    ['pd', 'Palladiumpreis']
+                ]),
+            },
+            STATES: {
+                DONE: 'complete',
+                SRV: 500,
+                SUCCESS: 200,
+                PAUSE: 'resting',
+                MUTATE: 'mutation',
+                NO_RENDER: 'no_render'
             },
             STORAGE: {
                 PROPS: {
@@ -419,45 +516,17 @@ export const useAppApi = () => {
                     MATERIALS: 'sMaterials',
                     EXCHANGES: 'sExchanges',
                     PARTNER: 'sPartner',
+                    DEBUG: 'sDebug',
                     ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
                     BOOKINGS_PER_PAGE: 'sBookingsPerPage',
                     STOCKS_PER_PAGE: 'sStocksPerPage'
                 }
             },
-            RECORDS: {
-                CONTROLLER: {
-                    TOTAL: {
-                        efficiency: 0,
-                        returnRate: 0,
-                        buy: 0,
-                        sell: 0,
-                        dividends: 0,
-                        deposits: 0,
-                        withdrawals: 0,
-                        taxes: 0,
-                        fees: 0,
-                        earnings: 0,
-                        account: 0,
-                        depot: 0,
-                        winLoss: 0,
-                        winLossPercent: 0,
-                        depotBuyValue: 0
-                    }
-                }
-            },
-            RESOURCES: {
-                LICENSE: 'license.html',
-                INDEX: 'pages/app.html',
-                ROOT: '/'
-            },
-            RESULTS: {
-                ERROR: 'ERR',
-                SUCCESS: 'SUCCESS'
-            },
             SYSTEM: {
                 COPYRIGHT: '2013-2025 Martin Berner',
                 MAILTO: 'mailto:kontenmanager@gmx.de',
                 GET: 'GET',
+                INDEX: 'pages/app.html',
                 HTML_ENTITY: '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
                 KEYS: {
                     ENTER: 'Enter',
@@ -480,51 +549,81 @@ export const useAppApi = () => {
                 },
                 ONCE: { once: true }
             }
+        }),
+        valIbanRules: (msgArray) => {
+            return [
+                (v) => v !== null || msgArray[0],
+                (v) => (v !== null && v.length < 37) || msgArray[1],
+                (v) => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
+            ];
         },
-        VALIDATORS: {
-            ibanRules: msgArray => {
-                return [
-                    v => v !== null || msgArray[0],
-                    v => (v !== null && v.length < 37) || msgArray[1],
-                    v => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
-                ];
-            },
-            nameRules: msgArray => {
-                return [
-                    v => v !== null || msgArray[0],
-                    v => (v !== null && v.length < 32) || msgArray[1],
-                    v => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
-                ];
-            },
-            swiftRules: msgArray => {
-                return [
-                    v => v !== null || msgArray[0],
-                    v => (v !== null && v.length < 13) || msgArray[1],
-                    v => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
-                ];
-            },
-            dateRules: msgArray => {
-                return [
-                    v => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
-                ];
-            },
-            currencyCodeRules: msgArray => {
-                return [
-                    v => v !== null || msgArray[0],
-                    v => (v !== null && v.length === 3) || msgArray[1],
-                    v => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
-                ];
-            },
-            requiredRule: msgArray => {
-                return [
-                    v => v !== null || msgArray[0]
-                ];
-            },
-            brandNameRules: msgArray => {
-                return [
-                    v => v !== null || msgArray[0]
-                ];
+        valNameRules: (msgArray) => {
+            return [
+                (v) => v !== null || msgArray[0],
+                (v) => (v !== null && v.length < 32) || msgArray[1],
+                (v) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
+            ];
+        },
+        valSwiftRules: (msgArray) => {
+            return [
+                (v) => v !== null || msgArray[0],
+                (v) => (v !== null && v.length < 13) || msgArray[1],
+                (v) => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
+            ];
+        },
+        valDateRules: (msgArray) => {
+            return [
+                (v) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
+            ];
+        },
+        valCurrencyCodeRules: (msgArray) => {
+            return [
+                (v) => v !== null || msgArray[0],
+                (v) => (v !== null && v.length === 3) || msgArray[1],
+                (v) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
+            ];
+        },
+        valRequiredRules: (msgArray) => {
+            return [
+                (v) => v !== null || msgArray[0]
+            ];
+        },
+        valBrandNameRules: (msgArray) => {
+            return [
+                (v) => v !== null || msgArray[0]
+            ];
+        },
+        getUI: () => {
+            const result = {
+                lang: '',
+                region: '',
+                locale: '',
+                currency: '',
+                curUsd: '',
+                curEur: '',
+                fontSize: ''
+            };
+            const uiLang = (typeof browser !== 'undefined' && browser.i18n?.getUILanguage?.())
+                ? browser.i18n.getUILanguage().toLowerCase()
+                : CONS.DEFAULTS.LOCALE;
+            if (uiLang.includes('-')) {
+                result.lang = uiLang.split('-')[0];
+                result.region = uiLang.split('-')[1].toUpperCase();
+                result.locale = uiLang;
+                result.currency = CONS.CURRENCIES.CODE.get(uiLang.split('-')[1]) ?? CONS.DEFAULTS.CURRENCY;
             }
+            else {
+                result.lang = uiLang;
+                result.region = uiLang.toUpperCase();
+                result.locale = uiLang + '-' + uiLang.toUpperCase();
+                result.currency = CONS.CURRENCIES.CODE.get(uiLang) ?? CONS.DEFAULTS.CURRENCY;
+            }
+            result.curEur = result.currency + CONS.CURRENCIES.EUR;
+            result.curUsd = result.currency + CONS.CURRENCIES.USD;
+            result.fontSize = window
+                .getComputedStyle(document.body, null)
+                .getPropertyValue('font-size');
+            return result;
         },
         notice: async (messages) => {
             const msg = messages.join('\n');
@@ -586,11 +685,11 @@ export const useAppApi = () => {
             }
             return len > 0 ? sum / len : 0;
         },
-        log: (msg, mode = { info: null }) => {
-            const localDebug = localStorage.getItem('sDebug');
+        log: (msg, mode) => {
+            const localDebug = localStorage.getItem(CONS.STORAGE.PROPS.DEBUG);
             if (Number.parseInt(localDebug ?? '0') > 0) {
-                if (mode.info !== null) {
-                    console.info(msg, mode.info);
+                if (mode?.info !== '') {
+                    console.info(msg, mode?.info);
                 }
                 else {
                     console.log(msg);
@@ -1112,7 +1211,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     let child;
                     let wkn;
                     let symbol;
-                    const service = CONS.SERVICES.MAP.get('tgate');
+                    const service = CONS.SERVICES.TGATE;
                     let tables;
                     let firstResponse;
                     let result = {
@@ -1171,8 +1270,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             fetchMinRateMaxData: async (storageOnline) => {
                 console.log('BACKGROUND: fetchMinRateMaxData');
                 return new Promise(async (resolve, reject) => {
-                    const storageService = await browser.storage.local.get('sService');
-                    const serviceName = storageService['sService'].name;
+                    const storageService = await browser.storage.local.get(CONS.STORAGE.PROPS.SERVICE);
+                    const serviceName = storageService[CONS.STORAGE.PROPS.SERVICE].name;
                     const _fnet = async (urls) => {
                         return await Promise.all(urls.map(async (urlObj) => {
                             const firstResponse = await fetch(urlObj.url);
@@ -1510,7 +1609,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             },
             fetchExchangesData: async (exchangeCodes) => {
                 console.log('BACKGROUND: fetchExchangesData');
-                const service = CONS.SERVICES.MAP.get('fx');
+                const service = CONS.SERVICES.FX;
                 const fExUrl = (code) => {
                     if (service !== undefined) {
                         return `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`;
@@ -1541,13 +1640,14 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         }
                     }
                     resolve(result);
+                    return result;
                 });
             },
             fetchMaterialData: async () => {
                 console.log('BACKGROUND: fetchMaterialData');
                 return new Promise(async (resolve, reject) => {
                     const materials = [];
-                    const firstResponse = await fetch(CONS.SERVICES.FNET.MATERIALS);
+                    const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '');
                     if (!firstResponse.ok ||
                         firstResponse.status >= CONS.STATES.SRV ||
                         (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
@@ -1558,10 +1658,11 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
                     const resultTr = resultDocument.querySelectorAll('#commodity_prices > table > tbody tr');
                     for (let i = 0; i < resultTr.length; i++) {
+                        const material = CONS.SETTINGS.MATERIALS.get(resultTr[i].children[0].textContent ?? '');
                         if (resultTr[i].children[0].tagName === 'TD' &&
-                            CONS.SETTINGS.MATERIALS[resultTr[i].children[0].textContent ?? ''] !== undefined) {
+                            material !== undefined) {
                             materials.push({
-                                key: CONS.SETTINGS.MATERIALS[resultTr[i].children[0].textContent ?? ''],
+                                key: material,
                                 value: toNumber(resultTr[i].children[1].textContent)
                             });
                         }
@@ -1575,7 +1676,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     const indexes = [];
                     const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES);
                     const indexesValues = Object.values(CONS.SETTINGS.INDEXES);
-                    const firstResponse = await fetch(CONS.SERVICES.FNET.INDEXES ?? '');
+                    const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.INDEXES ?? '');
                     if (!firstResponse.ok ||
                         firstResponse.status >= CONS.STATES.SRV ||
                         (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
@@ -1668,7 +1769,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         };
     };
     const { truncateTables, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, exportToStores, importStores, deleteStock, open } = useDatabaseApi();
-    const { fetchCompanyData } = useFetchApi();
+    const { fetchCompanyData, fetchExchangesData } = useFetchApi();
     let dbi;
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
@@ -1763,10 +1864,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     const onClick = async () => {
         log('BACKGROUND: onClick');
         await open();
-        const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.RESOURCES.INDEX)}` });
+        const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.SYSTEM.INDEX)}` });
         if (foundTabs.length === 0) {
             const extensionTab = await browser.tabs.create({
-                url: browser.runtime.getURL(CONS.RESOURCES.INDEX),
+                url: browser.runtime.getURL(CONS.SYSTEM.INDEX),
                 active: true
             });
             const extensionTabIdStr = (extensionTab.id ?? -1).toString();
@@ -1931,10 +2032,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     break;
                 case CONS.MESSAGES.FETCH__COMPANY_DATA:
                     const fetchedCompanyData = await fetchCompanyData(appMessage.data);
-                    response = JSON.stringify({
-                        type: CONS.MESSAGES.FETCH__COMPANY_DATA__RESPONSE,
-                        data: fetchedCompanyData
-                    });
+                    response = JSON.stringify({ data: fetchedCompanyData });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.FETCH__EXCHANGES_BASE_DATA:
+                    const fetchedExchangesData = await fetchExchangesData(appMessage.data);
+                    response = JSON.stringify({ data: fetchedExchangesData });
                     resolve(response);
                     break;
                 default:
@@ -1964,13 +2067,13 @@ else if (window.location.href.includes(CONS.DEFAULTS.APP)) {
         }
         if (keyStrokeController.includes('Control') &&
             keyStrokeController.includes('Alt') &&
-            ev.key === 'd' && Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0) {
-            localStorage.setItem('sDebug', '0');
+            ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0) {
+            localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '0');
         }
         if (keyStrokeController.includes('Control') &&
             keyStrokeController.includes('Alt') &&
-            ev.key === 'd' && !(Number.parseInt(localStorage.getItem('sDebug') ?? '0') > 0)) {
-            localStorage.setItem('sDebug', '1');
+            ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0)) {
+            localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '1');
         }
     };
     const onKeyUp = (ev) => {

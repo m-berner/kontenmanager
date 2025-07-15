@@ -17,7 +17,7 @@ const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const theme = useTheme()
-const {CONS, log} = useAppApi()
+const {CONS, log, getUI} = useAppApi()
 const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
   const changesKey = Object.keys(changes)
   switch (changesKey[0]) {
@@ -55,6 +55,18 @@ onBeforeMount(async (): Promise<void> => {
     settings.setActiveAccountId(records.accounts[0].cID)
     runtime.setLogo()
     records.sumBookings()
+  }
+  const exchangesBaseResponseString = await browser.runtime.sendMessage(JSON.stringify({
+    type: CONS.MESSAGES.FETCH__EXCHANGES_BASE_DATA,
+    data: [getUI().curUsd, getUI().curEur],
+  }))
+  const exchangesBaseResponseData = JSON.parse(exchangesBaseResponseString).data
+  for (let i = 0; i < exchangesBaseResponseData.length; i++) {
+    if (exchangesBaseResponseData[i].key.includes('USD')) {
+      runtime.setExchangesUsd(exchangesBaseResponseData[i].value)
+    } else {
+      runtime.setExchangesEur(exchangesBaseResponseData[i].value)
+    }
   }
 })
 

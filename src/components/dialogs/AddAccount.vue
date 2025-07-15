@@ -22,7 +22,7 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, VALIDATORS} = useAppApi()
+const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useAppApi()
 const formRef = useTemplateRef('form-ref')
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
@@ -104,7 +104,7 @@ log('--- AddAccount.vue setup ---')
       autofocus
       required
       v-bind:label="t('dialogs.addAccount.swiftLabel')"
-      v-bind:rules="VALIDATORS.swiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
+      v-bind:rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
       variant="outlined"
     ></v-text-field>
     <v-text-field
@@ -112,7 +112,7 @@ log('--- AddAccount.vue setup ---')
       required
       v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
-      v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+      v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
       @update:modelValue="onUpdateIbanMask"
     ></v-text-field>
@@ -121,7 +121,7 @@ log('--- AddAccount.vue setup ---')
       placeholder="z. B. ing.com"
       required
       v-bind:label="t('dialogs.addAccount.logoLabel')"
-      v-bind:rules="VALIDATORS.brandNameRules([t('validators.brandNameRules', 0)])"
+      v-bind:rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
       variant="outlined"
       v-on:input="onInputLogoName"
     ></v-text-field>

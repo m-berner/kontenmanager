@@ -49,13 +49,15 @@ for (let i = 0; i < indexesKeys.length; i++) {
 
 const materialsKeysA: string[] = []
 const materialsKeysB: string[] = []
-const materialsKeys = Object.keys(CONS.SETTINGS.MATERIALS)
-for (let i = 0; i < materialsKeys.length; i++) {
-  if (i < materialsKeys.length / 2) {
-    materialsKeysA.push(materialsKeys[i])
+let i = 0
+for (let entry of CONS.SETTINGS.MATERIALS.keys()) {
+  materialsKeysA.push(entry)
+  if (i < CONS.SETTINGS.MATERIALS.size / 2) {
+    materialsKeysA.push(entry)
   } else {
-    materialsKeysB.push(materialsKeys[i])
+    materialsKeysB.push(entry)
   }
+  i++
 }
 
 // noinspection TypeScriptValidateTypes
@@ -173,7 +175,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                   v-bind:key="item"
                   v-model="state.indexes"
                   hide-details
-                  v-bind:label="CONS.SETTINGS.INDEXES[item]"
+                  v-bind:label="CONS.SETTINGS.INDEXES.get(item)"
                   v-bind:value="item"
                   v-on:change="setIndexes"
                 ></v-checkbox>
@@ -184,7 +186,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                   v-bind:key="item"
                   v-model="state.indexes"
                   hide-details
-                  v-bind:label="CONS.SETTINGS.INDEXES[item]"
+                  v-bind:label="CONS.SETTINGS.INDEXES.get(item)"
                   v-bind:value="item"
                   v-on:change="setIndexes"
                 ></v-checkbox>
