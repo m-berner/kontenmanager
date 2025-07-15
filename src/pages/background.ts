@@ -286,7 +286,11 @@ export const useAppApi = () => {
     FETCH__COMPANY_DATA,
     FETCH__EXCHANGES_BASE_DATA,
     FETCH__INDEXES_DATA,
-    FETCH__MATERIALS_DATA
+    FETCH__MATERIALS_DATA,
+    FETCH__EXCHANGES_DATA,
+    FETCH__DAILY_CHANGES_DATA,
+    FETCH__DATES_DATA,
+    FETCH__MIN_RATE_MAX_DATA
   }
 
   return {
@@ -1867,7 +1871,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           resolve(await _select(urls))
         })
       },
-      fetchDailyChangesData: async (table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<FetchedResources.IDailyChangesData[]> => {
+      fetchDailyChangeData: async (table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<FetchedResources.IDailyChangesData[]> => {
         console.log('BACKGROUND: fetchDailyChangesData')
         let valuestr: string
         let company: string
@@ -2067,7 +2071,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           resolve(indexes)
         })
       },
-      fetchDatesData: async (obj: FetchedResources.TIdIsin): Promise<FetchedResources.IDatesData> => {
+      fetchDateData: async (obj: FetchedResources.TIdIsin): Promise<FetchedResources.IDatesData> => {
         console.log('BACKGROUND: fetchDatesData')
         const gmqf = {gm: 0, qf: 0}
         const parseGermanDate = (germanDateString: string): number => {
@@ -2164,12 +2168,12 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
   } = useDatabaseApi()
   const {
     fetchCompanyData,
-    // fetchMinRateMaxData,
-    // fetchDailyChangesData,
-    fetchExchangesData
-    // fetchMaterialData,
-    // fetchIndexData,
-    // fetchDatesData
+    fetchMinRateMaxData,
+    fetchDailyChangeData,
+    fetchExchangesData,
+    fetchMaterialData,
+    fetchIndexData,
+    fetchDateData
   } = useFetchApi()
   let dbi: IDBDatabase
 
@@ -2547,14 +2551,44 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           })
           resolve(response)
           break
+        case CONS.MESSAGES.FETCH__MIN_RATE_MAX_DATA:
+          const fetchedMinRateMaxData: FetchedResources.IMinRateMaxData[] = await fetchMinRateMaxData(appMessage.data)
+          response = JSON.stringify({data: fetchedMinRateMaxData})
+          resolve(response)
+          break
         case CONS.MESSAGES.FETCH__COMPANY_DATA:
           const fetchedCompanyData: FetchedResources.ICompanyData = await fetchCompanyData(appMessage.data)
           response = JSON.stringify({data: fetchedCompanyData})
           resolve(response)
           break
         case CONS.MESSAGES.FETCH__EXCHANGES_BASE_DATA:
+          const fetchedExchangesBaseData: FetchedResources.IExchangesData[] = await fetchExchangesData(appMessage.data)
+          response = JSON.stringify({data: fetchedExchangesBaseData})
+          resolve(response)
+          break
+        case CONS.MESSAGES.FETCH__EXCHANGES_DATA:
           const fetchedExchangesData: FetchedResources.IExchangesData[] = await fetchExchangesData(appMessage.data)
           response = JSON.stringify({data: fetchedExchangesData})
+          resolve(response)
+          break
+        case CONS.MESSAGES.FETCH__MATERIALS_DATA:
+          const fetchedMaterialsData: FetchedResources.IMaterialData[] = await fetchMaterialData()
+          response = JSON.stringify({data: fetchedMaterialsData})
+          resolve(response)
+          break
+        case CONS.MESSAGES.FETCH__INDEXES_DATA:
+          const fetchedIndexesData: FetchedResources.IMaterialData[] = await fetchIndexData()
+          response = JSON.stringify({data: fetchedIndexesData})
+          resolve(response)
+          break
+        case CONS.MESSAGES.FETCH__DATES_DATA:
+          const fetchedDatesData: FetchedResources.IDatesData = await fetchDateData(appMessage.data)
+          response = JSON.stringify({data: fetchedDatesData})
+          resolve(response)
+          break
+        case CONS.MESSAGES.FETCH__DAILY_CHANGES_DATA:
+          const fetchedDailyChangesData: FetchedResources.IDailyChangesData[] = await fetchDailyChangeData(appMessage.data)
+          response = JSON.stringify({data: fetchedDailyChangesData})
           resolve(response)
           break
         default:
