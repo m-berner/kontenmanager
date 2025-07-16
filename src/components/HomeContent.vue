@@ -12,7 +12,7 @@ import {useAppApi} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/helper/OptionMenu.vue'
-import {computed, type Reactive, reactive} from 'vue'
+import {type Reactive, reactive} from 'vue'
 import type {DataTableHeader} from 'vuetify'
 
 type HomeMenuItem = {
@@ -36,15 +36,9 @@ const state: Reactive<IState> = reactive<IState>({
 
 const {bookings} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
-const homeHeaders = computed<DataTableHeader[]>(() => [
+const homeHeaders: DataTableHeader[] = [
   // NOTE: using the "as" keyword for type means the programmer decides what will be considered as the type of the object.
   // The "as" keyword is required mainly when TypeScriptValidateTypes (infer the type) fails.
-  {
-    title: t('appPage.headers.id'),
-    align: ' d-none' as 'start' | 'center' | 'end' | undefined,
-    sortable: false,
-    key: 'cID'
-  },
   {
     title: t('appPage.headers.action'),
     align: 'start',
@@ -80,21 +74,15 @@ const homeHeaders = computed<DataTableHeader[]>(() => [
     align: 'start',
     sortable: false,
     key: 'cBookingType'
-  },
-  {
-    title: t('appPage.headers.accountNumberId'),
-    align: ' d-none' as 'start' | 'center' | 'end' | undefined,
-    sortable: false,
-    key: 'cAccountNumberID'
   }
-])
-const homeMenuItems = computed<HomeMenuItem[]>(() => [
+]
+const homeMenuItems: HomeMenuItem[] = [
   {
     id: 'DeleteBooking',
     title: t('appPage.menuItems.delete'),
     icon: '$tableRemove'
   }
-])
+]
 const onUpdateItemsPerPage = (count: number): void => {
   settings.setBookingsPerPage(count)
 }
@@ -112,8 +100,8 @@ log('--- HomeContent.vue setup ---')
     hide-details
     prepend-inner-icon="$magnify"
     single-line
-    v-bind:label="t('appPage.search')"
     variant="outlined"
+    v-bind:label="t('appPage.search')"
   ></v-text-field>
   <v-data-table
     density="compact"
@@ -131,6 +119,7 @@ log('--- HomeContent.vue setup ---')
     v-on:update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
+        <td class="d-none">{{ item.cID }}</td>
         <td>
           <OptionMenu
             v-bind:menuItems="homeMenuItems"
@@ -142,7 +131,14 @@ log('--- HomeContent.vue setup ---')
         <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>
         <td>{{ records.getBookingTypeNameById(item.cBookingTypeID) }}</td>
+        <td class="d-none">{{ item.cAccountNumberID }}</td>
       </tr>
     </template>
   </v-data-table>
 </template>
+
+<style scoped>
+.d-none {
+  display: none;
+}
+</style>

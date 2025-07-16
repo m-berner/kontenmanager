@@ -134,6 +134,17 @@ log('--- HeaderBar.vue setup ---')
         </template>
       </v-tooltip>
     </router-link>
+    <router-link class="router-link-active" to="/company">
+      <v-tooltip location="top" v-bind:text="t('headerBar.home')">
+        <template v-slot:activator="{ props }">
+          <v-app-bar-nav-icon
+            icon="$home"
+            size="large"
+            v-bind="props"
+            variant="tonal"></v-app-bar-nav-icon>
+        </template>
+      </v-tooltip>
+    </router-link>
     <v-spacer></v-spacer>
     <v-tooltip location="top" v-bind:text="t('headerBar.addStock')">
       <template v-slot:activator="{ props }">

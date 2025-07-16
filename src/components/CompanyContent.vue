@@ -12,7 +12,6 @@ import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useAppApi} from '@/pages/background'
-import {computed, nextTick} from 'vue'
 import type {DataTableHeader} from 'vuetify'
 
 type StocksMenuItems = {
@@ -47,13 +46,7 @@ const {log} = useAppApi()
 
 const {stocksPerPage} = storeToRefs(settings)
 const {stocks} = storeToRefs(records)
-const stocksHeaders = computed<DataTableHeader[]>(() => [
-  {
-    title: t('stocksTable.headers.id'),
-    align: ' d-none' as 'center' | 'start' | 'end' | undefined,
-    sortable: false,
-    key: 'cID'
-  },
+const stocksHeaders: DataTableHeader[] = [
   {
     title: t('stocksTable.headers.action'),
     align: 'start',
@@ -120,8 +113,8 @@ const stocksHeaders = computed<DataTableHeader[]>(() => [
     sortable: false,
     key: 'mMax'
   }
-])
-const stocksMenuItems = computed<StocksMenuItems[]>(() => [
+]
+const stocksMenuItems: StocksMenuItems[] = [
   {
     'id': 'DeleteStock',
     'title': t('stocksTable.menuItems.delete'),
@@ -142,13 +135,14 @@ const stocksMenuItems = computed<StocksMenuItems[]>(() => [
     'title': t('stocksTable.menuItems.link'),
     'icon': '$link'
   }
-])
+]
 // Fixed: Use a function that returns a function for proper ref handling
 const mSetDynamicStyleWinLoss = () => {
-  return async (el: HTMLElement | null): Promise<void> => {
+  return (el: HTMLElement | null): void => {
+    console.error('DFSFSF', el)
     if (el !== null) {
       // Use nextTick to ensure DOM is updated
-      await nextTick()
+      //await nextTick()
       const value = toNumber(el.textContent)
       if (value < 0) {
         el.classList.add('color-red')
@@ -190,6 +184,7 @@ log('--- StocksTable.vue setup ---')
     v-on:update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
+        <td class="d-none">{{ item.cID }}</td>
         <td>
           <OptionMenu
             menuType="stocks"
@@ -207,7 +202,7 @@ log('--- StocksTable.vue setup ---')
         <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
         <v-tooltip location="left" v-bind:text="n((item.mChange ?? 0) / 100, 'percent')">
           <template v-slot:activator="{ props }">
-            <td v-bind:ref="mSetDynamicStyleWinLoss" v-bind="props">
+            <td v-bind="props" v-bind:class="mSetDynamicStyleWinLoss">
               {{ n(item.mEuroChange ?? 0, 'currency') }}
             </td>
           </template>
@@ -221,3 +216,9 @@ log('--- StocksTable.vue setup ---')
     </template>
   </v-data-table>
 </template>
+
+<style scoped>
+.d-none {
+  display: none;
+}
+</style>
