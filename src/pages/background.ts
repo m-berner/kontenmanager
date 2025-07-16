@@ -100,7 +100,7 @@ declare global {
     cSwift: string
     cNumber: string
     cLogoUrl: string
-    cLogoSearchName: string
+    //cLogoSearchName: string
     cStockAccount: boolean
   }
 

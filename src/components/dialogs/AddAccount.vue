@@ -63,7 +63,6 @@ const onClickOk = async (): Promise<void> => {
         cSwift: state.swift.trim().toUpperCase(),
         cNumber: state.accountNumber.replace(/\s/g, ''),
         cLogoUrl: state.logoUrl,
-        cLogoSearchName: state.logoSearchName,
         cStockAccount: state.stockAccount
       }
       const addAccountResponse = await browser.runtime.sendMessage(JSON.stringify({

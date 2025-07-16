@@ -14,11 +14,11 @@ import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
-  _swift: string
-  _number: string
-  _logoUrl: string
-  _logoSearchName: string
-  _stockAccount: boolean
+  swift: string
+  number: string
+  logoUrl: string
+  logoSearchName: string
+  stockAccount: boolean
 }
 
 const {t} = useI18n()
@@ -29,17 +29,17 @@ const settings = useSettingsStore()
 const records = useRecordsStore()
 
 const state: Reactive<IState> = reactive({
-  _swift: '',
-  _number: '',
-  _logoUrl: '',
-  _logoSearchName: '',
-  _stockAccount: false
+  swift: '',
+  number: '',
+  logoUrl: '',
+  logoSearchName: '',
+  stockAccount: false
 })
 
 const onInput = () => {
-  state._logoUrl = `https://cdn.brandfetch.io/${state._logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+  state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
-const ibanMask = (iban: string) => {
+const onUpdateModelValue = (iban: string) => {
   if (iban !== '') {
     const withoutSpace = iban.replace(/\s/g, '')
     const loops = Math.ceil(withoutSpace.length / 4)
@@ -51,7 +51,7 @@ const ibanMask = (iban: string) => {
         masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
       }
     }
-    state._number = masked
+    state.number = masked
   }
 }
 
@@ -62,11 +62,11 @@ const onClickOk = async (): Promise<void> => {
     try {
       const account = {
         cID: settings.activeAccountId,
-        cSwift: state._swift.trim().toUpperCase(),
-        cNumber: state._number.replace(/\s/g, ''),
-        cLogoUrl: state._logoUrl,
-        cLogoSearchName: state._logoSearchName,
-        cStockAccount: state._stockAccount
+        cSwift: state.swift.trim().toUpperCase(),
+        cNumber: state.number.replace(/\s/g, ''),
+        cLogoUrl: state.logoUrl,
+        //cLogoSearchName: state.logoSearchName,
+        cStockAccount: state.stockAccount
       }
       records.updateAccount(account)
       runtime.setLogo()
@@ -74,7 +74,6 @@ const onClickOk = async (): Promise<void> => {
         type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
       }))
       await notice([t('dialogs.UpdateAccount.success')])
-      // formRef.value!.reset()
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.updateAccount.error')])
@@ -90,11 +89,11 @@ onMounted(() => {
   const accountIndex = records.getAccountIndexById(settings.activeAccountId)
   if (accountIndex !== -1) {
     const currentAccount = records.accounts[accountIndex]
-    state._swift = currentAccount.cSwift
-    state._number = currentAccount.cNumber
-    state._logoUrl = currentAccount.cLogoUrl
-    state._logoSearchName = currentAccount.cLogoSearchName
-    state._stockAccount = currentAccount.cStockAccount
+    state.swift = currentAccount.cSwift
+    state.number = currentAccount.cNumber
+    state.logoUrl = currentAccount.cLogoUrl
+    state.logoSearchName = ''
+    state.stockAccount = currentAccount.cStockAccount
   }
 })
 
@@ -104,12 +103,12 @@ log('--- UpdateAccount.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-switch
-      v-model="state._stockAccount"
+      v-model="state.stockAccount"
       color="red"
       v-bind:label="t('dialogs.updateAccount.stockAccountLabel')"></v-switch>
     <v-text-field
       ref="swift-input"
-      v-model="state._swift"
+      v-model="state.swift"
       autofocus
       required
       v-bind:label="t('dialogs.updateAccount.swiftLabel')"
@@ -117,23 +116,23 @@ log('--- UpdateAccount.vue setup ---')
       variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state._number"
+      v-model="state.number"
       required
       v-bind:label="t('dialogs.updateAccount.accountNumberLabel')"
       v-bind:placeholder="t('dialogs.updateAccount.accountNumberPlaceholder')"
       v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
-      @update:modelValue="ibanMask"
+      v-on:update:modelValue="onUpdateModelValue"
     ></v-text-field>
     <v-text-field
-      v-model="state._logoSearchName"
+      v-model="state.logoSearchName"
       placeholder="z. B. ing.com"
       required
+      variant="outlined"
       v-bind:label="t('dialogs.updateAccount.logoLabel')"
       v-bind:rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
-      variant="outlined"
       v-on:input="onInput"
     ></v-text-field>
-    <img alt="brandfetch.com logo" v-bind:src="state._logoUrl">
+    <img alt="brandfetch.com logo" v-bind:src="state.logoUrl">
   </v-form>
 </template>

@@ -88,7 +88,7 @@ const onClickOk = async (): Promise<void> => {
           cSwift: 'KMKLPJJ9099',
           cNumber: 'XX13120300001064506999',
           cLogoUrl: '',
-          cLogoSearchName: '',
+          // cLogoSearchName: '',
           cStockAccount: true
         }
         records.addAccount(account)
