@@ -31,7 +31,7 @@ const {log} = useAppApi()
 //const runtime = useRuntimeStore()
 // Use storeToRefs for reactive store properties
 //const {_is_stocks_loading} = storeToRefs(runtime)
-const {stocksPerPage} = storeToRefs(settings)
+//const {stocksPerPage} = storeToRefs(settings)
 //const {stocks} = storeToRefs(records)
 // Computed properties with proper typing
 //const tableHeaders: ComputedRef<TableHeader[]> = computed(() => {
@@ -45,6 +45,8 @@ const {stocksPerPage} = storeToRefs(settings)
 //return tm<'stocksTable.headers'>('stocksTable.headers') //as Array<TableHeader>
 //})
 
+const {stocksPerPage} = storeToRefs(settings)
+const {stocks} = storeToRefs(records)
 const stocksHeaders = computed<DataTableHeader[]>(() => [
   {
     title: t('stocksTable.headers.id'),
@@ -142,7 +144,7 @@ const stocksMenuItems = computed<StocksMenuItems[]>(() => [
   }
 ])
 // Fixed: Use a function that returns a function for proper ref handling
-const setDynamicStyleWinLoss = () => {
+const mSetDynamicStyleWinLoss = () => {
   return async (el: HTMLElement | null): Promise<void> => {
     if (el !== null) {
       // Use nextTick to ensure DOM is updated
@@ -157,13 +159,19 @@ const setDynamicStyleWinLoss = () => {
     }
   }
 }
-const onUpdatePageHandler = async (page: number): Promise<void> => {
-  log('COMPANY_CONTENT: onUpdatePageHandler', {info: page})
-  //records.setActiveStocksPage(page)
-  //await records.updateWrapper()
+// const onUpdatePageHandler = async (page: number): Promise<void> => {
+//   log('COMPANY_CONTENT: onUpdatePageHandler', {info: page})
+//   //records.setActiveStocksPage(page)
+//   //await records.updateWrapper()
+// }
+const onUpdateItemsPerPage = (count: number): void => {
+  settings.setStocksPerPage(count)
+}
+const onUpdatePage = (page: number): void => {
+  console.error(page)
 }
 
-console.log('--- StocksTable.vue setup ---')
+log('--- StocksTable.vue setup ---')
 </script>
 
 <template>
@@ -173,13 +181,13 @@ console.log('--- StocksTable.vue setup ---')
     v-bind:headers="stocksHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="records.stocks"
+    v-bind:items="stocks"
     v-bind:items-per-page="stocksPerPage"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('stocksTable.itemsPerPageText')"
     v-bind:no-data-text="t('stocksTable.noDataText')"
-    v-on:update:items-per-page="settings.setStocksPerPage"
-    v-on:update:page="onUpdatePageHandler">
+    v-on:update:items-per-page="onUpdateItemsPerPage"
+    v-on:update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td>
@@ -199,7 +207,7 @@ console.log('--- StocksTable.vue setup ---')
         <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
         <v-tooltip location="left" v-bind:text="n((item.mChange ?? 0) / 100, 'percent')">
           <template v-slot:activator="{ props }">
-            <td v-bind:ref="setDynamicStyleWinLoss" v-bind="props">
+            <td v-bind:ref="mSetDynamicStyleWinLoss" v-bind="props">
               {{ n(item.mEuroChange ?? 0, 'currency') }}
             </td>
           </template>

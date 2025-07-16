@@ -48,6 +48,10 @@ export const useAppApi = () => {
         MESSAGES[MESSAGES["FETCH__EXCHANGES_BASE_DATA"] = 44] = "FETCH__EXCHANGES_BASE_DATA";
         MESSAGES[MESSAGES["FETCH__INDEXES_DATA"] = 45] = "FETCH__INDEXES_DATA";
         MESSAGES[MESSAGES["FETCH__MATERIALS_DATA"] = 46] = "FETCH__MATERIALS_DATA";
+        MESSAGES[MESSAGES["FETCH__EXCHANGES_DATA"] = 47] = "FETCH__EXCHANGES_DATA";
+        MESSAGES[MESSAGES["FETCH__DAILY_CHANGES_DATA"] = 48] = "FETCH__DAILY_CHANGES_DATA";
+        MESSAGES[MESSAGES["FETCH__DATES_DATA"] = 49] = "FETCH__DATES_DATA";
+        MESSAGES[MESSAGES["FETCH__MIN_RATE_MAX_DATA"] = 50] = "FETCH__MIN_RATE_MAX_DATA";
     })(MESSAGES || (MESSAGES = {}));
     return {
         CONS: Object.freeze({
@@ -1531,7 +1535,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     resolve(await _select(urls));
                 });
             },
-            fetchDailyChangesData: async (table, mode = CONS.SERVICES.TGATE.CHANGES.SMALL) => {
+            fetchDailyChangeData: async (table, mode = CONS.SERVICES.TGATE.CHANGES.SMALL) => {
                 console.log('BACKGROUND: fetchDailyChangesData');
                 let valuestr;
                 let company;
@@ -1700,7 +1704,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     resolve(indexes);
                 });
             },
-            fetchDatesData: async (obj) => {
+            fetchDateData: async (obj) => {
                 console.log('BACKGROUND: fetchDatesData');
                 const gmqf = { gm: 0, qf: 0 };
                 const parseGermanDate = (germanDateString) => {
@@ -1769,7 +1773,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
         };
     };
     const { truncateTables, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, exportToStores, importStores, deleteStock, open } = useDatabaseApi();
-    const { fetchCompanyData, fetchExchangesData } = useFetchApi();
+    const { fetchCompanyData, fetchMinRateMaxData, fetchDailyChangeData, fetchExchangesData, fetchMaterialData, fetchIndexData, fetchDateData } = useFetchApi();
     let dbi;
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
@@ -2030,14 +2034,44 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     });
                     resolve(response);
                     break;
+                case CONS.MESSAGES.FETCH__MIN_RATE_MAX_DATA:
+                    const fetchedMinRateMaxData = await fetchMinRateMaxData(appMessage.data);
+                    response = JSON.stringify({ data: fetchedMinRateMaxData });
+                    resolve(response);
+                    break;
                 case CONS.MESSAGES.FETCH__COMPANY_DATA:
                     const fetchedCompanyData = await fetchCompanyData(appMessage.data);
                     response = JSON.stringify({ data: fetchedCompanyData });
                     resolve(response);
                     break;
                 case CONS.MESSAGES.FETCH__EXCHANGES_BASE_DATA:
+                    const fetchedExchangesBaseData = await fetchExchangesData(appMessage.data);
+                    response = JSON.stringify({ data: fetchedExchangesBaseData });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.FETCH__EXCHANGES_DATA:
                     const fetchedExchangesData = await fetchExchangesData(appMessage.data);
                     response = JSON.stringify({ data: fetchedExchangesData });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.FETCH__MATERIALS_DATA:
+                    const fetchedMaterialsData = await fetchMaterialData();
+                    response = JSON.stringify({ data: fetchedMaterialsData });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.FETCH__INDEXES_DATA:
+                    const fetchedIndexesData = await fetchIndexData();
+                    response = JSON.stringify({ data: fetchedIndexesData });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.FETCH__DATES_DATA:
+                    const fetchedDatesData = await fetchDateData(appMessage.data);
+                    response = JSON.stringify({ data: fetchedDatesData });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.FETCH__DAILY_CHANGES_DATA:
+                    const fetchedDailyChangesData = await fetchDailyChangeData(appMessage.data);
+                    response = JSON.stringify({ data: fetchedDailyChangesData });
                     resolve(response);
                     break;
                 default:

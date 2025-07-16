@@ -30,17 +30,15 @@ const {CONS, log, utcDate} = useAppApi()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const {bookings} = storeToRefs(records)
-const {bookingsPerPage} = storeToRefs(settings)
-
 const state: Reactive<IState> = reactive<IState>({
   search: ''
 })
 
-// NOTE: using "as" keyword for types means
-// the programmer decides what will be considered as the type of the object.
-// The "as" keyword is required mainly when TypeScriptValidateTypes (infer the type) fails.
+const {bookings} = storeToRefs(records)
+const {bookingsPerPage} = storeToRefs(settings)
 const homeHeaders = computed<DataTableHeader[]>(() => [
+  // NOTE: using the "as" keyword for type means the programmer decides what will be considered as the type of the object.
+  // The "as" keyword is required mainly when TypeScriptValidateTypes (infer the type) fails.
   {
     title: t('appPage.headers.id'),
     align: ' d-none' as 'start' | 'center' | 'end' | undefined,
@@ -92,26 +90,17 @@ const homeHeaders = computed<DataTableHeader[]>(() => [
 ])
 const homeMenuItems = computed<HomeMenuItem[]>(() => [
   {
-    id: 'DeleteStock',
-    title: t('stocksTable.menuItems.delete'),
+    id: 'DeleteBooking',
+    title: t('appPage.menuItems.delete'),
     icon: '$tableRemove'
-  },
-  {
-    id: 'ShowDividend',
-    title: t('stocksTable.menuItems.dividend'),
-    icon: '$showDividend'
-  },
-  {
-    'id': 'ConfigCompany',
-    'title': t('stocksTable.menuItems.config'),
-    'icon': '$tableEdit'
-  },
-  {
-    id: 'ExternalLink',
-    title: t('stocksTable.menuItems.link'),
-    icon: '$link'
   }
 ])
+const onUpdateItemsPerPage = (count: number): void => {
+  settings.setBookingsPerPage(count)
+}
+const onUpdatePage = (page: number): void => {
+  console.error(page)
+}
 
 log('--- HomeContent.vue setup ---')
 </script>
@@ -138,7 +127,8 @@ log('--- HomeContent.vue setup ---')
     v-bind:items-per-page-text="t('appPage.itemsPerPageText')"
     v-bind:no-data-text="t('appPage.noDataText')"
     v-bind:search="state.search"
-    v-on:update:items-per-page="(count) => { settings.setBookingsPerPage(count) }">
+    v-on:update:items-per-page="onUpdateItemsPerPage"
+    v-on:update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td>

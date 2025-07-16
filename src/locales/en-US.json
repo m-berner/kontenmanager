@@ -29,18 +29,14 @@
       "action": "Aktionen",
       "date": "Datum",
       "debit": "Soll",
-      "edit": "Haben",
+      "credit": "Haben",
       "description": "Bemerkung",
       "bookingType": "Buchungstyp",
       "accountNumberId": "Konto"
     },
-    "menuItems": [
-      {
-        "id": "DeleteBooking",
-        "title": "Buchung löschen",
-        "icon": "$tableRemove"
-      }
-    ],
+    "menuItems": {
+      "delete": "Buchung löschen"
+    },
     "noDataText": "Keine Einträge gefunden.",
     "itemsPerPageText": "Einträge pro Seite:"
   },
