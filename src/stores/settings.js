@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import {} from 'vuetify';
-import { useAppApi } from '@/pages/background';
-const { CONS, log } = useAppApi();
+import { useApp } from '@/pages/background';
+const { CONS, log } = useApp();
 export const useSettingsStore = defineStore('settings', {
     state: () => {
         return {

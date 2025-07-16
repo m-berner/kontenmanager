@@ -9,7 +9,7 @@
 import {defineExpose, onMounted, type Reactive, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 interface IShowAccounting {
   _result: Array<{ title: string, subtitle: string }>
@@ -17,7 +17,7 @@ interface IShowAccounting {
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {log} = useAppApi()
+const {log} = useApp()
 
 const state: Reactive<IShowAccounting> = reactive<IShowAccounting>({
   _result: []

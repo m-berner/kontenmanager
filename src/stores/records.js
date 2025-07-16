@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { useAppApi } from '@/pages/background';
+import { useApp } from '@/pages/background';
 import { useSettingsStore } from '@/stores/settings';
-const { CONS, log } = useAppApi();
+const { CONS, log } = useApp();
 export const useRecordsStore = defineStore('records', {
     state: () => ({
         accounts: [],

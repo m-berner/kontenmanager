@@ -6,13 +6,13 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createRouter, createWebHashHistory, type Router} from 'vue-router'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 interface IRouter {
   router: Router
 }
 
-const {log} = useAppApi()
+const {log} = useApp()
 
 const routerInstance = createRouter({
   history: createWebHashHistory(),

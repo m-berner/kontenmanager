@@ -9,7 +9,7 @@
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useTheme} from 'vuetify'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 import {onBeforeMount} from 'vue'
 
@@ -17,7 +17,7 @@ const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const theme = useTheme()
-const {CONS, log, getUI} = useAppApi()
+const {CONS, log, getUI} = useApp()
 const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
   const changesKey = Object.keys(changes)
   switch (changesKey[0]) {

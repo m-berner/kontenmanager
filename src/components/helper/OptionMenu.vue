@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 
 interface PropsOptionMenu {
@@ -18,7 +18,7 @@ interface PropsOptionMenu {
 const optionMenuProps = defineProps<PropsOptionMenu>()
 const {rt} = useI18n()
 const runtime = useRuntimeStore()
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTION_MENU: onIconClick', {info: optionMenuProps.recordID})

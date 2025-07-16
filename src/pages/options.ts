@@ -9,9 +9,9 @@ import OptionsIndex from '@/pages/OptionsIndex.vue'
 import {createApp} from 'vue'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
-const {log} = useAppApi()
+const {log} = useApp()
 
 const op = createApp(OptionsIndex)
 op.config.errorHandler = (err: unknown) => {

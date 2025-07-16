@@ -10,7 +10,7 @@ import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from '
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 interface IState {
   _isin: string
@@ -25,7 +25,7 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, valIbanRules} = useAppApi()
+const {CONS, log, notice, valIbanRules} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()

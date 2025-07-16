@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createI18n, type I18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import deDE from '@/locales/de-DE.json'
 import enUS from '@/locales/en-US.json'
 
@@ -16,7 +16,7 @@ interface II18n {
   i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
 }
 
-const {log, getUI} = useAppApi()
+const {log, getUI} = useApp()
 
 const getInitialLocale = (): 'de-DE' | 'en-US' => {
   const uiLocale = getUI().locale

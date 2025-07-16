@@ -6,13 +6,13 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createPinia, type Pinia} from 'pinia'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 interface IPinia {
   pinia: Pinia
 }
 
-const {log} = useAppApi()
+const {log} = useApp()
 
 const piniaConfig: IPinia = {
   pinia: createPinia()

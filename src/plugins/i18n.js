@@ -1,8 +1,8 @@
 import { createI18n } from 'vue-i18n';
-import { useAppApi } from '@/pages/background';
+import { useApp } from '@/pages/background';
 import deDE from '@/locales/de-DE.json';
 import enUS from '@/locales/en-US.json';
-const { log, getUI } = useAppApi();
+const { log, getUI } = useApp();
 const getInitialLocale = () => {
     const uiLocale = getUI().locale;
     if (uiLocale.startsWith('de')) {

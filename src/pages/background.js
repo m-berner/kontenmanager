@@ -1,4 +1,4 @@
-export const useAppApi = () => {
+export const useApp = () => {
     let MESSAGES;
     (function (MESSAGES) {
         MESSAGES[MESSAGES["DB__DELETE_ALL"] = 0] = "DB__DELETE_ALL";
@@ -702,9 +702,9 @@ export const useAppApi = () => {
         }
     };
 };
-const { CONS, log, mean, notice, toNumber } = useAppApi();
+const { CONS, log, mean, notice, toNumber } = useApp();
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-    const useDatabaseApi = () => {
+    const useDatabase = () => {
         return {
             truncateTables: async () => {
                 log('BACKGROUND: truncateTables');
@@ -1206,7 +1206,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
         };
     };
-    const useFetchApi = () => {
+    const useFetch = () => {
         return {
             fetchCompanyData: async (isin) => {
                 return new Promise(async (resolve, reject) => {
@@ -1772,8 +1772,8 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
         };
     };
-    const { truncateTables, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, exportToStores, importStores, deleteStock, open } = useDatabaseApi();
-    const { fetchCompanyData, fetchMinRateMaxData, fetchDailyChangeData, fetchExchangesData, fetchMaterialData, fetchIndexData, fetchDateData } = useFetchApi();
+    const { truncateTables, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, exportToStores, importStores, deleteStock, open } = useDatabase();
+    const { fetchCompanyData, fetchMinRateMaxData, fetchDailyChangeData, fetchExchangesData, fetchMaterialData, fetchIndexData, fetchDateData } = useFetch();
     let dbi;
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');

@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { useAppApi } from '@/pages/background';
-const { log } = useAppApi();
+import { useApp } from '@/pages/background';
+const { log } = useApp();
 const routerInstance = createRouter({
     history: createWebHashHistory(),
     routes: [

@@ -7,10 +7,10 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 const {t} = useI18n()
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
 

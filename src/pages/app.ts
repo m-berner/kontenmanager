@@ -12,9 +12,9 @@ import i18nPlugin from '@/plugins/i18n'
 import componentsPlugin from '@/plugins/components'
 import routerPlugin from '@/plugins/router'
 import piniaPlugin from '@/plugins/pinia'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
-const {log} = useAppApi()
+const {log} = useApp()
 const app = createApp(AppIndex)
 app.config.errorHandler = (err: unknown) => {
   console.error(err)

@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {reactive, type Reactive, toRaw} from 'vue'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 interface DynamicListProps {
   title: string
@@ -23,7 +23,7 @@ interface IState {
   list: string[]
 }
 
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 const dynamicListProps = defineProps<DynamicListProps>()
 
 const state: Reactive<IState> = reactive<IState>({

@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {defineStore} from 'pinia'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 
 interface IRecordsStore {
@@ -19,7 +19,7 @@ interface IRecordsStore {
   totalController: Record<string, number>
 }
 
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 
 export const useRecordsStore = defineStore('records', {
   state: (): IRecordsStore => ({

@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {type Reactive, reactive, toRaw, type UnwrapRef} from 'vue'
@@ -22,7 +22,7 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 const settings = useSettingsStore()
 
 const state: Reactive<IState> = reactive({
@@ -31,7 +31,7 @@ const state: Reactive<IState> = reactive({
 
 const onClickOk = async (): Promise<void> => {
   log('IMPORT_DATABASE: onClickOk', {info: state._chosen_file})
-  const {notice, toISODate} = useAppApi()
+  const {notice, toISODate} = useApp()
   const records = useRecordsStore()
   const runtime = useRuntimeStore()
   const onError = async (): Promise<void> => {

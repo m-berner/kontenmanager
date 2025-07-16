@@ -9,7 +9,7 @@
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
 import {onBeforeMount, type Reactive, reactive} from 'vue'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import DynamicList from '@/components/helper/DynamicList.vue'
 
 type ITabs = { title: string, id: string }
@@ -34,7 +34,7 @@ interface IOptionsIndex {
 
 const {rt, t, tm} = useI18n()
 const theme = useTheme()
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 
 const indexesKeysA: string[] = []
 const indexesKeysB: string[] = []

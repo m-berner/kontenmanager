@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import type {DataTableHeader} from 'vuetify'
 
 type StocksMenuItems = {
@@ -22,11 +22,11 @@ type StocksMenuItems = {
 
 // Store setup with proper typing
 const {d, n, t} = useI18n()
-const {CONS, toNumber} = useAppApi()
+const {CONS, toNumber} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const {log} = useAppApi()
+const {log} = useApp()
 //const runtime = useRuntimeStore()
 // Use storeToRefs for reactive store properties
 //const {_is_stocks_loading} = storeToRefs(runtime)

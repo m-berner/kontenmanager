@@ -9,7 +9,7 @@
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
 
@@ -17,7 +17,7 @@ const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 const {activeAccountId} = storeToRefs(settings)
 // TODO use settings getter?
 

@@ -238,7 +238,7 @@ interface IUrlWithId {
   id: number
 }
 
-export const useAppApi = () => {
+export const useApp = () => {
   enum MESSAGES {
     DB__DELETE_ALL,
     DB__CLOSE,
@@ -949,10 +949,10 @@ export const useAppApi = () => {
   }
 }
 
-const {CONS, log, mean, notice, toNumber} = useAppApi()
+const {CONS, log, mean, notice, toNumber} = useApp()
 
 if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
-  const useDatabaseApi = () => {
+  const useDatabase = () => {
     return {
       truncateTables: async (): Promise<string> => {
         log('BACKGROUND: truncateTables')
@@ -1477,7 +1477,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
       }
     }
   }
-  const useFetchApi = () => {
+  const useFetch = () => {
     return {
       fetchCompanyData: async (isin: string): Promise<FetchedResources.ICompanyData> => {
         return new Promise(async (resolve, reject) => {
@@ -2165,7 +2165,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     importStores,
     deleteStock,
     open
-  } = useDatabaseApi()
+  } = useDatabase()
   const {
     fetchCompanyData,
     fetchMinRateMaxData,
@@ -2174,7 +2174,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     fetchMaterialData,
     fetchIndexData,
     fetchDateData
-  } = useFetchApi()
+  } = useFetch()
   let dbi: IDBDatabase
 
   // NOTE: onInstall runs at addon install, addon update and firefox update

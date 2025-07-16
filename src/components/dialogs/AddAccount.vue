@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -22,7 +22,7 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useAppApi()
+const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
 const formRef = useTemplateRef('form-ref')
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()

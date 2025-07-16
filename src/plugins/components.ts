@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {type App, type Plugin} from 'vue'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import AddStock from '@/components/dialogs/AddStock.vue'
 import UpdateStock from '@/components/dialogs/UpdateStock.vue'
 import DeleteStock from '@/components/dialogs/DeleteStock.vue'
@@ -21,7 +21,7 @@ import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
 import DeleteBooking from '@/components/dialogs/DeleteBooking.vue'
 
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 
 const ComponentsPlugin: Plugin = {
   install: (app: App) => {

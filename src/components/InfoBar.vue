@@ -12,7 +12,7 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import {storeToRefs} from 'pinia'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 interface IDrawerControl {
   id: number
@@ -27,7 +27,7 @@ interface IState {
 }
 
 const {n, t} = useI18n()
-const {CONS} = useAppApi()
+const {CONS} = useApp()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()

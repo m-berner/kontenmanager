@@ -1,5 +1,5 @@
 import {} from 'vue';
-import { useAppApi } from '@/pages/background';
+import { useApp } from '@/pages/background';
 import AddStock from '@/components/dialogs/AddStock.vue';
 import UpdateStock from '@/components/dialogs/UpdateStock.vue';
 import DeleteStock from '@/components/dialogs/DeleteStock.vue';
@@ -13,7 +13,7 @@ import ExportDatabase from '@/components/dialogs/ExportDatabase.vue';
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue';
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue';
 import DeleteBooking from '@/components/dialogs/DeleteBooking.vue';
-const { CONS, log } = useAppApi();
+const { CONS, log } = useApp();
 const ComponentsPlugin = {
     install: (app) => {
         app.component(CONS.DIALOGS.ADD_STOCK, AddStock);

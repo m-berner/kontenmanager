@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import OptionMenu from '@/components/helper/OptionMenu.vue'
@@ -26,7 +26,7 @@ interface IState {
 }
 
 const {d, n, t} = useI18n()
-const {CONS, log, utcDate} = useAppApi()
+const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 

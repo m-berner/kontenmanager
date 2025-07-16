@@ -7,10 +7,10 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 
 const {t} = useI18n()
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 
 log('--- FooterBar.vue setup ---')
 </script>

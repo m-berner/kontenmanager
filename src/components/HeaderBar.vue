@@ -7,12 +7,12 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const {CONS, log} = useAppApi()
+const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
 
 const onIconClick = async (ev: Event): Promise<void> => {

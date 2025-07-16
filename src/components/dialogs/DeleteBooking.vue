@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useAppApi} from '@/pages/background'
+import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {type Reactive, reactive} from 'vue'
@@ -17,7 +17,7 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice} = useAppApi()
+const {CONS, log, notice} = useApp()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
