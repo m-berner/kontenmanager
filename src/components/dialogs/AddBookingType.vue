@@ -28,7 +28,11 @@ const state: Reactive<IState> = reactive({
 
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: onClickOk')
-  const formIs = await formRef.value!.validate()
+  if (!formRef.value) {
+    console.error('Form ref is null')
+    return
+  }
+  const formIs = await formRef.value.validate()
   if (formIs.valid) {
     try {
       const bookingType = {

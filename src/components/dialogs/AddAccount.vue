@@ -23,7 +23,7 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
-const formRef = useTemplateRef('form-ref')
+const formRef = useTemplateRef<HTMLFormElement>('form-ref')
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -36,8 +36,19 @@ const state: Reactive<IState> = reactive({
   stockAccount: false
 })
 
-const onInputLogoName = () => {
-  state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+const mResetState = (): void => {
+  state.swift = ''
+  state.accountNumber = ''
+  state.logoUrl = ''
+  state.logoSearchName = ''
+  state.stockAccount = false
+}
+const onInputLogoName = (): void => {
+  if (state.logoSearchName && state.logoSearchName.trim()) {
+    state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName.trim()}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+  } else {
+    state.logoUrl = ''
+  }
 }
 const onUpdateIbanMask = (iban: string): void => {
   if (iban !== '') {
@@ -54,9 +65,14 @@ const onUpdateIbanMask = (iban: string): void => {
     state.accountNumber = masked
   }
 }
+
 const onClickOk = async (): Promise<void> => {
   log('ADD_ACCOUNT: onClickOk')
-  const formIs = await formRef.value!.validate()
+  if (!formRef.value) {
+    console.error('Form ref is null')
+    return
+  }
+  const formIs = await formRef.value.validate()
   if (formIs.valid) {
     try {
       const account: Omit<IAccount, 'cID'> = {
@@ -73,7 +89,7 @@ const onClickOk = async (): Promise<void> => {
       runtime.setLogo()
       settings.setActiveAccountId(addAccountData.cID)
       await notice([t('dialogs.AddAccount.success')])
-      formRef.value!.reset()
+      mResetState()
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.addAccount.error')])
@@ -85,45 +101,50 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_ACCOUNT: onMounted')
-  formRef.value!.reset()
+  mResetState()
 })
 
 log('--- AddAccount.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+  <v-form
+    ref="form-ref"
+    validate-on="submit"
+    v-on:submit.prevent>
     <v-switch
       v-model="state.stockAccount"
       color="red"
       v-bind:label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
     <v-text-field
-      ref="swift-input"
       v-model="state.swift"
       autofocus
       required
+      variant="outlined"
       v-bind:label="t('dialogs.addAccount.swiftLabel')"
       v-bind:rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
-      variant="outlined"
     ></v-text-field>
     <v-text-field
       v-model="state.accountNumber"
       required
+      variant="outlined"
       v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
       v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
       v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-      variant="outlined"
-      @update:modelValue="onUpdateIbanMask"
+      v-on:update:modelValue="onUpdateIbanMask"
     ></v-text-field>
     <v-text-field
       v-model="state.logoSearchName"
       placeholder="z. B. ing.com"
       required
+      variant="outlined"
       v-bind:label="t('dialogs.addAccount.logoLabel')"
       v-bind:rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
-      variant="outlined"
       v-on:input="onInputLogoName"
     ></v-text-field>
-    <img alt="logo" v-bind:src="state.logoUrl">
+    <img
+      alt="logo"
+      style="max-width: 48px; max-height: 48px;"
+      v-bind:src="state.logoUrl">
   </v-form>
 </template>

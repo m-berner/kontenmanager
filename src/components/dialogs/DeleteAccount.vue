@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive, toRaw, useTemplateRef} from 'vue'
+import {defineExpose, type Reactive, reactive, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -19,13 +19,12 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
-const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
 const state: Reactive<IState> = reactive({
-  selected: -1
+  selected: records.accounts.length > 0 ? records.accounts[0].cID : -1
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -53,7 +52,6 @@ const onClickOk = async (): Promise<void> => {
     runtime.setLogo()
     records.sumBookings()
     await notice([t('dialogs.deleteAccount.success')])
-    formRef.value?.reset()
     state.selected = -1
   } catch (e) {
     console.error(e)
@@ -63,25 +61,25 @@ const onClickOk = async (): Promise<void> => {
 const title = t('dialogs.deleteAccount.title')
 defineExpose({onClickOk, title})
 
-onMounted(() => {
-  log('DELETE_ACCOUNT: onMounted')
-  formRef.value?.reset()
-})
-
 log('--- DeleteAccount.vue setup ---')
 </script>
 
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-select
+      v-if="records.accounts.length > 0"
       v-model="state.selected"
       density="compact"
       required
+      variant="outlined"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts"
       v-bind:label="t('dialogs.deleteAccount.accountNumberLabel')"
-      variant="outlined"
     ></v-select>
+    <v-text-field
+      v-else
+      density="compact"
+      variant="outlined">{{ 'No account to delete' }}</v-text-field>
   </v-form>
 </template>

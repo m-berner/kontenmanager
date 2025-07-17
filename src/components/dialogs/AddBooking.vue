@@ -62,7 +62,11 @@ const onClickOk = async (): Promise<void> => {
   let booking: object = {}
   let costs: number = 0
   let result: number = 0
-  const formIs = await formRef.value!.validate()
+  if (!formRef.value) {
+    console.error('Form ref is null')
+    return
+  }
+  const formIs = await formRef.value.validate()
   if (formIs.valid) {
     try {
       costs = state.soli + state.transactionTax + state.tax + state.fee + state.sourceTax

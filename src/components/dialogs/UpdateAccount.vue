@@ -36,11 +36,18 @@ const state: Reactive<IState> = reactive({
   stockAccount: false
 })
 
-const onInput = () => {
+const mResetState = () => {
+  state.swift = ''
+  state.number= ''
+  state.logoUrl = ''
+  state.logoSearchName = ''
+  state.stockAccount = false
+}
+const onInputLogoUrl = () => {
   state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
 }
-const onUpdateModelValue = (iban: string) => {
-  if (iban !== '') {
+const onUpdateLogoSearchName = (iban: string) => {
+  if (iban) {
     const withoutSpace = iban.replace(/\s/g, '')
     const loops = Math.ceil(withoutSpace.length / 4)
     let masked = ''
@@ -57,7 +64,11 @@ const onUpdateModelValue = (iban: string) => {
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_ACCOUNT : onClickOk')
-  const formIs = await formRef.value!.validate()
+  if (!formRef.value) {
+    console.error('Form ref is null')
+    return
+  }
+  const formIs = await formRef.value.validate()
   if (formIs.valid) {
     try {
       const account = {
@@ -65,7 +76,6 @@ const onClickOk = async (): Promise<void> => {
         cSwift: state.swift.trim().toUpperCase(),
         cNumber: state.number.replace(/\s/g, ''),
         cLogoUrl: state.logoUrl,
-        //cLogoSearchName: state.logoSearchName,
         cStockAccount: state.stockAccount
       }
       records.updateAccount(account)
@@ -74,6 +84,7 @@ const onClickOk = async (): Promise<void> => {
         type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
       }))
       await notice([t('dialogs.UpdateAccount.success')])
+      mResetState()
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.updateAccount.error')])
@@ -85,7 +96,6 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_ACCOUNT: onMounted')
-  formRef.value!.reset()
   const accountIndex = records.getAccountIndexById(settings.activeAccountId)
   if (accountIndex !== -1) {
     const currentAccount = records.accounts[accountIndex]
@@ -105,24 +115,25 @@ log('--- UpdateAccount.vue setup ---')
     <v-switch
       v-model="state.stockAccount"
       color="red"
+      variant="outlined"
       v-bind:label="t('dialogs.updateAccount.stockAccountLabel')"></v-switch>
     <v-text-field
       ref="swift-input"
       v-model="state.swift"
       autofocus
       required
+      variant="outlined"
       v-bind:label="t('dialogs.updateAccount.swiftLabel')"
       v-bind:rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
-      variant="outlined"
     ></v-text-field>
     <v-text-field
       v-model="state.number"
       required
+      variant="outlined"
       v-bind:label="t('dialogs.updateAccount.accountNumberLabel')"
       v-bind:placeholder="t('dialogs.updateAccount.accountNumberPlaceholder')"
       v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-      variant="outlined"
-      v-on:update:modelValue="onUpdateModelValue"
+      v-on:update:modelValue="onUpdateLogoSearchName"
     ></v-text-field>
     <v-text-field
       v-model="state.logoSearchName"
@@ -131,7 +142,7 @@ log('--- UpdateAccount.vue setup ---')
       variant="outlined"
       v-bind:label="t('dialogs.updateAccount.logoLabel')"
       v-bind:rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
-      v-on:input="onInput"
+      v-on:input="onInputLogoUrl"
     ></v-text-field>
     <img alt="brandfetch.com logo" v-bind:src="state.logoUrl">
   </v-form>

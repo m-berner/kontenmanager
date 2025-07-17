@@ -13,15 +13,15 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
 
 interface IState {
-  _isin: string
-  _company: string
-  _wkn: string
-  _symbol: string
-  _meetingDay: string
-  _quarterDay: string
-  _fadeOut: number
-  _firstPage: number
-  _url: string
+  isin: string
+  company: string
+  wkn: string
+  symbol: string
+  meetingDay: string
+  quarterDay: string
+  fadeOut: number
+  firstPage: number
+  url: string
 }
 
 const {t} = useI18n()
@@ -29,33 +29,51 @@ const {CONS, log, notice, valIbanRules} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
+
 const state: Reactive<IState> = reactive({
-  _isin: '',
-  _company: '',
-  _wkn: '',
-  _symbol: '',
-  _meetingDay: '',
-  _quarterDay: '',
-  _fadeOut: 0,
-  _firstPage: 0,
-  _url: ''
+  isin: '',
+  company: '',
+  wkn: '',
+  symbol: '',
+  meetingDay: '',
+  quarterDay: '',
+  fadeOut: 0,
+  firstPage: 0,
+  url: ''
 })
+
+const mResetState = () => {
+  state.isin = ''
+  state.company = ''
+  state.wkn = ''
+  state.symbol = ''
+  state.meetingDay = ''
+  state.quarterDay = ''
+  state.fadeOut = 0
+  state.firstPage = 0
+  state.url = ''
+}
+
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
-  const formIs = await formRef.value!.validate()
+  if (!formRef.value) {
+    console.error('Form ref is null')
+    return
+  }
+  const formIs = await formRef.value.validate()
   if (formIs.valid) {
     try {
       const stock = {
         cID: settings.activeAccountId,
-        cISIN: state._isin,
-        cCompany: state._company,
-        cWKN: state._wkn,
-        cSymbol: state._symbol,
-        cMeetingDay: state._meetingDay,
-        cQuarterDay: state._quarterDay,
-        cFadeOut: state._fadeOut,
-        cFirstPage: state._firstPage,
-        cURL: state._url,
+        cISIN: state.isin,
+        cCompany: state.company,
+        cWKN: state.wkn,
+        cSymbol: state.symbol,
+        cMeetingDay: state.meetingDay,
+        cQuarterDay: state.quarterDay,
+        cFadeOut: state.fadeOut,
+        cFirstPage: state.firstPage,
+        cURL: state.url,
         cAccountNumberID: settings.activeAccountId,
         mPortfolio: 0,
         mChange: 0,
@@ -70,7 +88,7 @@ const onClickOk = async (): Promise<void> => {
         type: CONS.MESSAGES.DB__UPDATE_STOCK, stock
       }))
       await notice([t('dialogs.UpdateStock.success')])
-      formRef.value!.reset()
+      mResetState()
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.updateStock.error')])
@@ -82,58 +100,57 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  formRef.value!.reset()
   const currentStock = records.stocks[records.getStockById(settings.activeAccountId)]
-  state._isin = currentStock.cISIN
-  state._company = currentStock.cCompany
-  state._wkn = currentStock.cWKN
-  state._symbol = currentStock.cSymbol
-  state._meetingDay = currentStock.cMeetingDay
-  state._quarterDay = currentStock.cQuarterDay
-  state._fadeOut = currentStock.cFadeOut
-  state._firstPage = currentStock.cFirstPage
-  state._url = currentStock.cURL
+  state.isin = currentStock.cISIN
+  state.company = currentStock.cCompany
+  state.wkn = currentStock.cWKN
+  state.symbol = currentStock.cSymbol
+  state.meetingDay = currentStock.cMeetingDay
+  state.quarterDay = currentStock.cQuarterDay
+  state.fadeOut = currentStock.cFadeOut
+  state.firstPage = currentStock.cFirstPage
+  state.url = currentStock.cURL
 })
 log('--- UpdateStock.vue setup ---')
 </script>
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-text-field
-      v-model="state._isin"
+      v-model="state.isin"
       autofocus
       required
+      variant="outlined"
       v-bind:counter="12"
       v-bind:label="t('dialogs.updateStock.isin')"
       v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-      variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state._company"
+      v-model="state.company"
       required
+      variant="outlined"
       v-bind:label="t('dialogs.updateStock.company')"
-      variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state._wkn"
+      v-model="state.wkn"
       required
+      variant="outlined"
       v-bind:label="t('dialogs.updateStock.wkn')"
-      variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state._symbol"
+      v-model="state.symbol"
       required
+      variant="outlined"
       v-bind:label="t('dialogs.updateStock.symbol')"
-      variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state._meetingDay"
+      v-model="state.meetingDay"
+      variant="outlined"
       v-bind:label="t('dialogs.updateStock.meetingDay')"
-      variant="outlined"
     ></v-text-field>
     <v-text-field
-      v-model="state._quarterDay"
-      v-bind:label="t('dialogs.updateStock.quarterDay')"
+      v-model="state.quarterDay"
       variant="outlined"
+      v-bind:label="t('dialogs.updateStock.quarterDay')"
     ></v-text-field>
   </v-form>
 </template>

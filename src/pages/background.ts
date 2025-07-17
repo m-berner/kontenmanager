@@ -100,7 +100,6 @@ declare global {
     cSwift: string
     cNumber: string
     cLogoUrl: string
-    //cLogoSearchName: string
     cStockAccount: boolean
   }
 
@@ -2464,7 +2463,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           if (typeof addAccountID === 'number') {
             const completeAccount: IAccount = {cID: addAccountID, ...addAccountData}
             response = JSON.stringify({
-              type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
+              //type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
               data: completeAccount
             })
             await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addAccountID})

@@ -49,7 +49,11 @@ const onIsin = async (): Promise<void> => {
 }
 const onClickOk = async (): Promise<void> => {
   log('ADD_STOCK : onClickOk')
-  const formIs = await formRef.value!.validate()
+  if (!formRef.value) {
+    console.error('Form ref is null')
+    return
+  }
+  const formIs = await formRef.value.validate()
   if (formIs.valid) {
     try {
       const stock = {
