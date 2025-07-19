@@ -6,12 +6,10 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
+import {defineExpose, type Reactive, reactive, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
-import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
   selected: number
@@ -19,30 +17,26 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
-const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
-const settings = useSettingsStore()
-const runtime = useRuntimeStore()
 
 const state: Reactive<IState> = reactive({
-  selected: -1
+  selected: records.stocks.length > 0 ? records.stocks[0].cID : -1
 })
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_STOCK : onClickOk')
+  if (state.selected === -1) {
+    await notice([t('dialogs.deleteStock.error')])
+    return
+  }
   try {
     // TODO in all delete dialogs,move to background!
     // TODO sendMessage to delete from DB
     records.deleteStock(state.selected)
-    formRef.value?.reset()
-    if (records.accounts.length > 0) {
-      settings.setActiveAccountId(records.accounts[0].cID)
-      await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: records.accounts[0].cID})
-    } else {
-      settings.setActiveAccountId(-1)
-      await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: -1})
-    }
-    runtime.setLogo()
+    await browser.runtime.sendMessage(JSON.stringify({
+      type: CONS.MESSAGES.DB__DELETE_STOCK,
+      data: toRaw(state.selected)
+    }))
     await notice([t('dialogs.deleteStock.success')])
   } catch (e) {
     console.error(e)
@@ -52,25 +46,25 @@ const onClickOk = async (): Promise<void> => {
 const title = t('dialogs.deleteStock.title')
 defineExpose({onClickOk, title})
 
-onMounted(() => {
-  log('DELETE_STOCK: onMounted')
-  formRef.value?.reset()
-})
-
 log('--- DeleteAccount.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+  <v-form validate-on="submit" v-on:submit.prevent>
     <v-select
+      v-if="records.stocks.length > 0"
       v-model="state.selected"
       density="compact"
       required
+      variant="outlined"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-      v-bind:items="records.accounts"
-      v-bind:label="t('dialogs.deleteAccount.accountNumberLabel')"
-      variant="outlined"
+      v-bind:items="records.stocks"
+      v-bind:label="t('dialogs.deleteStock.accountNumberLabel')"
     ></v-select>
+    <v-text-field
+      v-else
+      density="compact"
+      variant="outlined">{{ 'No company to delete' }}</v-text-field>
   </v-form>
 </template>

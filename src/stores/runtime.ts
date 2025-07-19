@@ -31,6 +31,7 @@ interface IRuntimeStore {
     curUsd: number
     curEur: number
   }
+  optionMenuColors: Map<number, string>
 }
 
 const {CONS, log} = useApp()
@@ -54,6 +55,7 @@ export const useRuntimeStore = defineStore('runtime', {
         curUsd: 1,
         curEur: 1
       },
+      optionMenuColors: new Map()
     }
   },
   getters: {

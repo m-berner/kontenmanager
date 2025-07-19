@@ -9,9 +9,10 @@
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
+import {onMounted} from 'vue'
 
 interface PropsOptionMenu {
-  recordID: number | undefined
+  recordID: number
   menuItems: Record<string, string>[]
 }
 
@@ -20,9 +21,16 @@ const {rt} = useI18n()
 const runtime = useRuntimeStore()
 const {CONS, log} = useApp()
 
+const onButtonClick = async (): Promise<void> => {
+  log('OPTION_MENU: onButtonClick', {info: optionMenuProps.recordID})
+  for(const m of runtime.optionMenuColors.keys()) {
+     runtime.optionMenuColors.set(m, '')
+  }
+  runtime.optionMenuColors.set(optionMenuProps.recordID, 'green')
+}
 const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTION_MENU: onIconClick', {info: optionMenuProps.recordID})
-  runtime.setBookingId(optionMenuProps.recordID ?? -1)
+  runtime.setBookingId(optionMenuProps.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
@@ -43,6 +51,10 @@ const onIconClick = async (ev: Event): Promise<void> => {
   }
 }
 
+onMounted(() => {
+  runtime.optionMenuColors.set(optionMenuProps.recordID, '')
+})
+
 log('--- OptionMenu.vue setup ---')
 </script>
 
@@ -52,6 +64,8 @@ log('--- OptionMenu.vue setup ---')
       <v-btn
         icon="$dots"
         v-bind="props"
+        v-bind:color="runtime.optionMenuColors.get(optionMenuProps.recordID ?? -1)"
+        v-on:click="onButtonClick"
       ></v-btn>
     </template>
     <v-list>

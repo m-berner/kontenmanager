@@ -65,7 +65,7 @@ log('--- DeleteAccount.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+  <v-form validate-on="submit" v-on:submit.prevent>
     <v-select
       v-if="records.accounts.length > 0"
       v-model="state.selected"

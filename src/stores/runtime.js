@@ -22,6 +22,7 @@ export const useRuntimeStore = defineStore('runtime', {
                 curUsd: 1,
                 curEur: 1
             },
+            optionMenuColors: new Map()
         };
     },
     getters: {
