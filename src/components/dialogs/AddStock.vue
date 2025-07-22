@@ -11,6 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
+import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
   isin: string
@@ -25,6 +26,7 @@ const {CONS, log, notice, valIbanRules} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 
 const state: Reactive<IState> = reactive({
   isin: '',
@@ -34,8 +36,14 @@ const state: Reactive<IState> = reactive({
   auto: true
 })
 
+const mResetState = (): void => {
+  state.isin = ''
+  state.company = ''
+  state.wkn = ''
+  state.symbol = ''
+  state.auto = false
+}
 const onIsin = async (): Promise<void> => {
-  console.log('ADD_STOCK: onIsin')
   if (state.isin !== '' && state.isin?.length === 12) {
     const addStockResponse = await browser.runtime.sendMessage(JSON.stringify({
       type: CONS.MESSAGES.FETCH__COMPANY_DATA,
@@ -56,8 +64,7 @@ const onClickOk = async (): Promise<void> => {
   const formIs = await formRef.value.validate()
   if (formIs.valid) {
     try {
-      const stock = {
-        cID: -1,
+      const stock: Omit<IStockStore, 'cID'> = {
         cCompany: state.company.trim(),
         cISIN: state.isin,
         cWKN: state.wkn,
@@ -76,7 +83,6 @@ const onClickOk = async (): Promise<void> => {
         mValue: 0,
         mMax: 0
       }
-      records.addStock(stock)
       const addStockResponse = await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
       }))
@@ -91,8 +97,9 @@ const onClickOk = async (): Promise<void> => {
         mValue: 0,
         mMax: 0
       })
-      await notice([t('dialogs.AddStock.success')])
-      formRef.value!.reset()
+      await notice([t('dialogs.addStock.success')])
+      mResetState()
+      runtime.resetTeleport()
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.addStock.error')])
@@ -104,8 +111,7 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_STOCK: onMounted')
-  formRef.value!.reset()
-  state.auto = true
+  mResetState()
 })
 
 log('--- AddStock.vue setup ---')
@@ -114,39 +120,36 @@ log('--- AddStock.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-card-text class="pa-5">
-      <v-switch v-model="state.auto" color="secondary" hide-details label="Auto"
-                v-on:click="state.auto = !state.auto"></v-switch>
       <v-text-field
         v-model="state.isin"
         autofocus
         required
+        variant="outlined"
         v-bind:counter="12"
         v-bind:label="t('dialogs.addStock.isin')"
         v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-        variant="outlined"
-        v-on:focus="formRef!.value!.resetValidation()"
         v-on:update:modelValue="onIsin"
       ></v-text-field>
       <v-text-field
         v-model="state.company"
         required
+        variant="outlined"
         v-bind:disabled="state.auto"
         v-bind:label="t('dialogs.addStock.company')"
-        variant="outlined"
       ></v-text-field>
       <v-text-field
         v-model="state.wkn"
         required
+        variant="outlined"
         v-bind:disabled="state.auto"
         v-bind:label="t('dialogs.addStock.wkn')"
-        variant="outlined"
       ></v-text-field>
       <v-text-field
         v-model="state.symbol"
         required
+        variant="outlined"
         v-bind:disabled="state.auto"
         v-bind:label="t('dialogs.addStock.symbol')"
-        variant="outlined"
       ></v-text-field>
     </v-card-text>
   </v-form>

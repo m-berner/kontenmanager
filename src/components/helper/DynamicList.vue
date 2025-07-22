@@ -31,9 +31,6 @@ const state: Reactive<IState> = reactive<IState>({
   list: [...dynamicListProps.list]
 })
 
-// NOTE:
-// reading a v-text-field does work without reactivity
-// write to it only with reactivity
 const mAddItem = async (item: string): Promise<void> => {
   log('DYNAMIC_LIST: mAddItem')
   if (!state.list?.includes(item)) {

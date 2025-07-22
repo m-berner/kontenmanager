@@ -16,15 +16,15 @@ interface PropsOptionMenu {
   menuItems: Record<string, string>[]
 }
 
+const {CONS, log} = useApp()
 const optionMenuProps = defineProps<PropsOptionMenu>()
 const {rt} = useI18n()
 const runtime = useRuntimeStore()
-const {CONS, log} = useApp()
 
 const onButtonClick = async (): Promise<void> => {
   log('OPTION_MENU: onButtonClick', {info: optionMenuProps.recordID})
-  for(const m of runtime.optionMenuColors.keys()) {
-     runtime.optionMenuColors.set(m, '')
+  for (const m of runtime.optionMenuColors.keys()) {
+    runtime.optionMenuColors.set(m, '')
   }
   runtime.optionMenuColors.set(optionMenuProps.recordID, 'green')
 }

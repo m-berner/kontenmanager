@@ -557,8 +557,8 @@ export const useApp = () => {
         valIbanRules: (msgArray) => {
             return [
                 (v) => v !== null || msgArray[0],
-                (v) => (v !== null && v.length < 37) || msgArray[1],
-                (v) => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
+                (v) => (v !== null && v.length < 13) || msgArray[1],
+                (v) => v.match(/^(^[A-Z]{2}[0-9]{3,12})/g) !== null || msgArray[2]
             ];
         },
         valNameRules: (msgArray) => {

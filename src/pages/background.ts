@@ -804,8 +804,8 @@ export const useApp = () => {
     valIbanRules: (msgArray: string[]): TValidator[] => {
       return [
         (v: string) => v !== null || msgArray[0],
-        (v: string) => (v !== null && v.length < 37) || msgArray[1],
-        (v: string) => v.match(/^(^[A-Z]{2}[0-9|\s]{20,36})/g) !== null || msgArray[2]
+        (v: string) => (v !== null && v.length < 13) || msgArray[1],
+        (v: string) => v.match(/^(^[A-Z]{2}[0-9]{3,12})/g) !== null || msgArray[2]
       ]
     },
     valNameRules: (msgArray: string[]): TValidator[] => {

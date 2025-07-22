@@ -20,12 +20,12 @@ const {inputRef, formattedValue} = useCurrencyInput(currencyInputProps.options)
 
 <template>
   <v-text-field
-    v-bind:ref="inputRef"
     density="compact"
     type="text"
+    variant="outlined"
+    v-bind:ref="inputRef"
     v-bind:disabled="currencyInputProps.disabled"
     v-bind:label="currencyInputProps.label"
     v-bind:modelValue="formattedValue"
-    variant="outlined"
   ></v-text-field>
 </template>

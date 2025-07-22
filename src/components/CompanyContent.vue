@@ -21,12 +21,12 @@ type StocksMenuItems = {
 }
 
 // Store setup with proper typing
+const {log} = useApp()
 const {d, n, t} = useI18n()
 const {CONS, toNumber} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const {log} = useApp()
 //const runtime = useRuntimeStore()
 // Use storeToRefs for reactive store properties
 //const {_is_stocks_loading} = storeToRefs(runtime)
@@ -139,7 +139,6 @@ const stocksMenuItems: StocksMenuItems[] = [
 // Fixed: Use a function that returns a function for proper ref handling
 const mSetDynamicStyleWinLoss = () => {
   return (el: HTMLElement | null): void => {
-    console.error('DFSFSF', el)
     if (el !== null) {
       // Use nextTick to ensure DOM is updated
       //await nextTick()

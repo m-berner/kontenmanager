@@ -10,7 +10,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
-import {storeToRefs} from 'pinia'
+//import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {n, t} = useI18n()
@@ -18,7 +18,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 const {CONS, log} = useApp()
-const {activeAccountId} = storeToRefs(settings)
+//const {activeAccountId} = storeToRefs(settings)
 // TODO use settings getter?
 
 const mUpdateTitleBar = (): void => {
@@ -42,8 +42,8 @@ log('--- TitleBar.vue setup ---')
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
-      v-if="activeAccountId > 0"
-      v-model="activeAccountId"
+      v-if="settings.activeAccountId > 0"
+      v-model="settings.activeAccountId"
       max-width="300"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"

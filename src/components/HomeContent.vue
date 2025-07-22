@@ -29,11 +29,6 @@ const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-
-const state: Reactive<IState> = reactive<IState>({
-  search: ''
-})
-
 const {bookings} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
 const homeHeaders: DataTableHeader[] = [
@@ -83,6 +78,11 @@ const homeMenuItems: HomeMenuItem[] = [
     icon: '$tableRemove'
   }
 ]
+
+const state: Reactive<IState> = reactive<IState>({
+  search: ''
+})
+
 const onUpdateItemsPerPage = (count: number): void => {
   settings.setBookingsPerPage(count)
 }

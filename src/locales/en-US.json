@@ -81,6 +81,15 @@
       "success": "Konto wurde hinzugefügt",
       "error": "Konto existiert bereits"
     },
+    "addStock": {
+      "title": "Unternehmen hinzufügen",
+      "company": "Unternehmen",
+      "isin": "ISIN",
+      "wkn": "WKN",
+      "symbol": "Kürzel",
+      "success": "Unternehmen wurde hinzugefügt",
+      "error": "Unternehmen existiert bereits"
+    },
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
       "swiftLabel": "BIC/SWIFT Code",

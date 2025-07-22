@@ -65,7 +65,6 @@ const onUpdateIbanMask = (iban: string): void => {
     state.accountNumber = masked
   }
 }
-
 const onClickOk = async (): Promise<void> => {
   log('ADD_ACCOUNT: onClickOk')
   if (!formRef.value) {
@@ -90,6 +89,7 @@ const onClickOk = async (): Promise<void> => {
       settings.setActiveAccountId(addAccountData.cID)
       await notice([t('dialogs.AddAccount.success')])
       mResetState()
+      runtime.resetTeleport()
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.addAccount.error')])
@@ -108,10 +108,7 @@ log('--- AddAccount.vue setup ---')
 </script>
 
 <template>
-  <v-form
-    ref="form-ref"
-    validate-on="submit"
-    v-on:submit.prevent>
+  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-switch
       v-model="state.stockAccount"
       color="red"
