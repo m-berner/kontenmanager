@@ -35,7 +35,8 @@
       "accountNumberId": "Konto"
     },
     "menuItems": {
-      "delete": "Buchung löschen"
+      "delete": "Buchung löschen",
+      "update": "Buchung bearbeiten"
     },
     "noDataText": "Keine Einträge gefunden.",
     "itemsPerPageText": "Einträge pro Seite:"

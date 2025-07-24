@@ -32,8 +32,6 @@ const settings = useSettingsStore()
 const {bookings} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
 const homeHeaders: DataTableHeader[] = [
-  // NOTE: using the "as" keyword for type means the programmer decides what will be considered as the type of the object.
-  // The "as" keyword is required mainly when TypeScriptValidateTypes (infer the type) fails.
   {
     title: t('appPage.headers.action'),
     align: 'start',
@@ -75,6 +73,11 @@ const homeMenuItems: HomeMenuItem[] = [
   {
     id: 'DeleteBooking',
     title: t('appPage.menuItems.delete'),
+    icon: '$tableRemove'
+  },
+  {
+    id: 'UpdateBooking',
+    title: t('appPage.menuItems.update'),
     icon: '$tableRemove'
   }
 ]
