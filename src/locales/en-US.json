@@ -90,6 +90,11 @@
       "success": "Unternehmen wurde hinzugefügt",
       "error": "Unternehmen existiert bereits"
     },
+    "deleteStock": {
+      "title": "Unternehmen entfernen",
+      "success": "Unternehmen wurde hinzugefügt",
+      "error": "Unternehmen existiert bereits"
+    },
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
       "swiftLabel": "BIC/SWIFT Code",

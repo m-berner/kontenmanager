@@ -1186,19 +1186,23 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 });
             },
             deleteStock: async (id) => {
+                log('BACKGROUND: deleteStock');
                 return new Promise(async (resolve, reject) => {
                     if (dbi != null) {
                         const onSuccess = () => {
+                            console.error('SFDASF--------------');
                             resolve('Stock deleted');
+                            return;
                         };
                         const onError = (ev) => {
                             if (ev instanceof ErrorEvent) {
                                 reject(ev.message);
                             }
+                            return;
                         };
-                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
                         requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(id);
+                        const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).delete(id);
                         requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
                         requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
                     }
@@ -2013,6 +2017,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     resolve(response);
                     break;
                 case CONS.MESSAGES.DB__DELETE_STOCK:
+                    console.error('sdfs', appMessage.data);
                     await deleteStock(appMessage.data);
                     response = JSON.stringify({
                         type: CONS.MESSAGES.DB__DELETE_STOCK__RESPONSE

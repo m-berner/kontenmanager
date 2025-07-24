@@ -87,6 +87,13 @@ const onClickOk = async (): Promise<void> => {
         type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
       }))
       const addStockData: IStock = JSON.parse(addStockResponse).data
+      const test = records.stocks.filter((stock) => {
+        return stock.cISIN === addStockData.cISIN
+      })
+      if (test.length > 0) {
+        await notice(['Unternehmen existiert bereits'])
+        return
+      }
       records.addStock({
         ...addStockData,
         mPortfolio: 0,

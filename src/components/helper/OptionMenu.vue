@@ -9,6 +9,7 @@
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useRecordsStore} from '@/stores/records'
 import {onMounted} from 'vue'
 
 interface PropsOptionMenu {
@@ -16,10 +17,11 @@ interface PropsOptionMenu {
   menuItems: Record<string, string>[]
 }
 
-const {CONS, log} = useApp()
+const {CONS, log, notice} = useApp()
 const optionMenuProps = defineProps<PropsOptionMenu>()
-const {rt} = useI18n()
+const {rt, t} = useI18n()
 const runtime = useRuntimeStore()
+const records = useRecordsStore()
 
 const onButtonClick = async (): Promise<void> => {
   log('OPTION_MENU: onButtonClick', {info: optionMenuProps.recordID})
@@ -30,16 +32,44 @@ const onButtonClick = async (): Promise<void> => {
 }
 const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTION_MENU: onIconClick', {info: optionMenuProps.recordID})
-  runtime.setBookingId(optionMenuProps.recordID)
+  //runtime.setBookingId(optionMenuProps.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.DIALOGS.DELETE_BOOKING:
-        runtime.setTeleport({
-          dialogName: CONS.DIALOGS.DELETE_BOOKING,
-          okButton: true,
-          visibility: true
+        // runtime.setTeleport({
+        //   dialogName: CONS.DIALOGS.DELETE_BOOKING,
+        //   okButton: true,
+        //   visibility: true
+        // })
+        records.deleteBooking(optionMenuProps.recordID)
+        records.sumBookings()
+        await browser.runtime.sendMessage(JSON.stringify({
+          type: CONS.MESSAGES.DB__DELETE_BOOKING,
+          data: optionMenuProps.recordID
+        }))
+        await notice([t('dialogs.deleteBooking.success')])
+        for (const m of runtime.optionMenuColors.keys()) {
+          runtime.optionMenuColors.set(m, '')
+        }
+        break
+      case CONS.DIALOGS.DELETE_STOCK:
+        const deleteAble = records.bookings.filter((booking) => {
+          return optionMenuProps.recordID === booking.cStockID
         })
+        if (deleteAble.length === 0) {
+          records.deleteStock(optionMenuProps.recordID)
+          await browser.runtime.sendMessage(JSON.stringify({
+            type: CONS.MESSAGES.DB__DELETE_STOCK,
+            data: optionMenuProps.recordID
+          }))
+          await notice([t('dialogs.deleteStock.success')])
+        } else {
+          await notice(['Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.'])
+        }
+        for (const m of runtime.optionMenuColors.keys()) {
+          runtime.optionMenuColors.set(m, '')
+        }
         break
       default:
         loop += 1
