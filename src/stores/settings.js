@@ -18,19 +18,7 @@ export const useSettingsStore = defineStore('settings', {
         };
     },
     getters: {
-        isPartnerEnabled: (state) => state.partner,
-        currentTheme: (state) => state.skin,
-        paginationConfig: (state) => ({
-            bookings: state.bookingsPerPage,
-            stocks: state.stocksPerPage
-        }),
         hasActiveAccount: (state) => state.activeAccountId !== -1,
-        marketingData: (state) => ({
-            materials: state.materials,
-            markets: state.markets,
-            indexes: state.indexes,
-            exchanges: state.exchanges
-        })
     },
     actions: {
         setActiveAccountId(value) {

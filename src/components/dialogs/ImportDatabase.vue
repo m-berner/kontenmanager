@@ -18,7 +18,7 @@ interface IEventTarget extends HTMLInputElement {
 }
 
 interface IState {
-  _chosen_file: Blob
+  chosen_file: Blob
 }
 
 const {t} = useI18n()
@@ -26,11 +26,11 @@ const {CONS, log} = useApp()
 const settings = useSettingsStore()
 
 const state: Reactive<IState> = reactive({
-  _chosen_file: new Blob()
+  chosen_file: new Blob()
 })
 
 const onClickOk = async (): Promise<void> => {
-  log('IMPORT_DATABASE: onClickOk', {info: state._chosen_file})
+  log('IMPORT_DATABASE: onClickOk', {info: state.chosen_file})
   const {notice, toISODate} = useApp()
   const records = useRecordsStore()
   const runtime = useRuntimeStore()
@@ -55,18 +55,23 @@ const onClickOk = async (): Promise<void> => {
         let result: number
         switch (rec.cType) {
           case 1:
+            // Buy
             result = rec.cUnitQuotation * rec.cCount
             break
           case 2:
+            // Sell
             result = rec.cUnitQuotation * -rec.cCount
             break
           case 3:
+            // Dividend
             result = rec.cUnitQuotation * rec.cCount
             break
           case 4:
+            // Credit
             result = rec.cAmount
             break
           case 5:
+            // Debit
             result = -rec.cAmount
             break
           default:
@@ -84,11 +89,10 @@ const onClickOk = async (): Promise<void> => {
           type: CONS.MESSAGES.DB__DELETE_ALL
         }))
         const account: IAccount = {
-          cID: 1,
+          cID: activeId,
           cSwift: 'KMKLPJJ9099',
           cNumber: 'XX13120300001064506999',
-          cLogoUrl: '',
-          // cLogoSearchName: '',
+          cLogoUrl: CONS.LOGOS.NO_LOGO,
           cStockAccount: true
         }
         records.addAccount(account)
@@ -164,7 +168,10 @@ const onClickOk = async (): Promise<void> => {
           bookingTypes: bookingTypes,
           stocks: stocks
         }
-        await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
+        await browser.runtime.sendMessage(JSON.stringify({
+          type: CONS.MESSAGES.DB__ADD_STORES,
+          data: stores
+        }))
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {
@@ -202,7 +209,6 @@ const onClickOk = async (): Promise<void> => {
         settings.setActiveAccountId(activeId)
         runtime.setLogo()
         records.sumBookings()
-
         const stores: IStoresDB = {
           accounts: accounts,
           bookings: bookings,
@@ -218,12 +224,11 @@ const onClickOk = async (): Promise<void> => {
   const fr: FileReader = new FileReader()
   fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
   fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-  if (state._chosen_file.size > 0) {
-    fr.readAsText(state._chosen_file, 'UTF-8')
+  if (state.chosen_file.size > 0) {
+    fr.readAsText(state.chosen_file, 'UTF-8')
   }
 }
 const title = t('dialogs.importDatabase.title')
-
 defineExpose({onClickOk, title})
 
 log('--- ImportDatabase.vue setup ---')
@@ -241,7 +246,7 @@ log('--- ImportDatabase.vue setup ---')
         v-bind:clearable="true"
         v-bind:label="t('dialogs.importDatabase.label')"
         variant="outlined"
-        v-on:change="(ev: IEventTarget) => { state._chosen_file = ev.target.files[0] }"></v-file-input>
+        v-on:change="(ev: IEventTarget) => { state.chosen_file = ev.target.files[0] }"></v-file-input>
     </v-card-text>
   </v-form>
 </template>

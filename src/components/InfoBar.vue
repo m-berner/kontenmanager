@@ -9,9 +9,9 @@
 import {onMounted, type Reactive, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
+//import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
-import {storeToRefs} from 'pinia'
+//import {storeToRefs} from 'pinia'
 import {useApp} from '@/pages/background'
 
 interface IDrawerControl {
@@ -29,9 +29,9 @@ interface IState {
 const {n, t} = useI18n()
 const {CONS} = useApp()
 const runtime = useRuntimeStore()
-const settings = useSettingsStore()
+//const settings = useSettingsStore()
 const records = useRecordsStore()
-const {exchanges, indexes, materials} = storeToRefs(settings)
+// const {materials} = storeToRefs(settings)
 
 const state: Reactive<IState> = reactive({
   show: true,
@@ -44,9 +44,9 @@ const state: Reactive<IState> = reactive({
 })
 const usd = (mat: string, usd = true): number => {
   if (usd) {
-    return runtime.materials.get(mat) ?? 0
+    return runtime.infoBar.materials.get(mat) ?? 0
   }
-  return (runtime.materials.get(mat) ?? 0) / runtime.exchangesCurUsd
+  return (runtime.infoBar.materials.get(mat) ?? 0) / runtime.exchanges.curUsd
 }
 // const updateDrawerControls = (): void => {
 //   console.log('INFOBAR: updateDrawerControls')
@@ -125,17 +125,17 @@ console.log('--- InfoBar.vue setup ---')
     <v-app-bar-nav-icon variant="text" v-on:click="state.show = !state.show"></v-app-bar-nav-icon>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>
-        <v-list-item v-for="item in exchanges" v-bind:key="item">
+        <v-list-item v-for="item in runtime.infoBar.exchanges.keys()" v-bind:key="item">
           <v-list-item-title>{{ item }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n(runtime.exchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ n(runtime.infoBar.exchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in indexes" v-bind:key="item">
+        <v-list-item v-for="item in runtime.infoBar.indexes.keys()" v-bind:key="item">
           <v-list-item-title>{{ CONS.SETTINGS.INDEXES.get(item) }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n(runtime.indexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ n(runtime.infoBar.indexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in materials" v-bind:key="item">
+        <v-list-item v-for="item in runtime.infoBar.materials.keys()" v-bind:key="item">
           <v-list-item-title>{{ t('optionsPage.materials.' + item) }}</v-list-item-title>
           <v-list-item-subtitle
           >{{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}

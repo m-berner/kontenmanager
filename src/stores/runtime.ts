@@ -59,31 +59,20 @@ export const useRuntimeStore = defineStore('runtime', {
     }
   },
   getters: {
-    materials: (state: IRuntimeStore): Map<string, number> => state.infoBar.materials,
-
-    exchanges: (state: IRuntimeStore): Map<string, number> => state.infoBar.exchanges,
-
-    indexes: (state: IRuntimeStore): Map<string, number> => state.infoBar.indexes,
-
-    exchangesCurUsd: (state: IRuntimeStore): number => state.exchanges.curUsd,
+    //materials: (state: IRuntimeStore): Map<string, number> => state.infoBar.materials,
+    //exchanges: (state: IRuntimeStore): Map<string, number> => state.infoBar.exchanges,
+    //indexes: (state: IRuntimeStore): Map<string, number> => state.infoBar.indexes,
+    //bookingId: (state: IRuntimeStore): number => state.bookingId,
+    //exchangesCurUsd: (state: IRuntimeStore): number => state.exchanges.curUsd,
+    //exchangesCurEur: (state: IRuntimeStore): number => state.exchanges.curEur,
     // Computed properties for commonly used derived state
     hasActiveBooking: (state: IRuntimeStore): boolean => state.bookingId !== -1,
-
     isDialogVisible: (state: IRuntimeStore): boolean => state.teleport.visibility,
-
-    currentDialog: (state: IRuntimeStore): string => state.teleport.dialogName,
+    //optionMenuColors: (state: IRuntimeStore): Map<number, string> => state.optionMenuColors,
+    //logo: (state: IRuntimeStore): string => state.logo,
 
     hasLogo: (state: IRuntimeStore): boolean => state.logo !== CONS.LOGOS.NO_LOGO,
-
-    dialogConfig: (state: IRuntimeStore): TTelePort => ({...state.teleport}),
-
-    // Get current booking info if available
-    currentBookingInfo: (state: IRuntimeStore) => {
-      if (state.bookingId === -1) return null
-      const records = useRecordsStore()
-      const bookingIndex = records.getBookingById(state.bookingId)
-      return bookingIndex !== -1 ? records.bookings[bookingIndex] : null
-    }
+    //teleport: (state: IRuntimeStore): TTelePort => state.teleport
   },
   actions: {
     setLogo(): void {

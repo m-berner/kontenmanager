@@ -16,7 +16,7 @@ export const useRecordsStore = defineStore('records', {
         getAccountById: (state) => (id) => {
             return state.accounts.find(account => account.cID === id);
         },
-        getBookingsByAccountId: (state) => (accountId) => {
+        getBookingByAccountId: (state) => (accountId) => {
             return state.bookings.filter(booking => booking.cAccountNumberID === accountId);
         }
     },

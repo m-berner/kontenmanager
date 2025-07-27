@@ -33,12 +33,19 @@ export const useRecordsStore = defineStore('records', {
   }),
 
   getters: {
+    // accounts: (state: IRecordsStore) => state.accounts,
+    // bookings: (state: IRecordsStore) => state.bookings,
+    // //bookingSum: (state: IRecordsStore) => state.bookingSum,
+    // //bookingSumField: (state: IRecordsStore) => state.bookingSumField,
+    // bookingTypes: (state: IRecordsStore) => state.bookingTypes,
+    // stocks: (state: IRecordsStore) => state.stocks,
+    // totalController: (state: IRecordsStore) => state.totalController,
     // You can add getters here if needed
     getAccountById: (state) => (id: number): IAccount | undefined => {
       return state.accounts.find(account => account.cID === id)
     },
 
-    getBookingsByAccountId: (state) => (accountId: number): IBooking[] => {
+    getBookingByAccountId: (state) => (accountId: number): IBooking[] => {
       return state.bookings.filter(booking =>
         booking.cAccountNumberID === accountId
       )

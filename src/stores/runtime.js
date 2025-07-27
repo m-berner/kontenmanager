@@ -26,22 +26,9 @@ export const useRuntimeStore = defineStore('runtime', {
         };
     },
     getters: {
-        materials: (state) => state.infoBar.materials,
-        exchanges: (state) => state.infoBar.exchanges,
-        indexes: (state) => state.infoBar.indexes,
-        exchangesCurUsd: (state) => state.exchanges.curUsd,
         hasActiveBooking: (state) => state.bookingId !== -1,
         isDialogVisible: (state) => state.teleport.visibility,
-        currentDialog: (state) => state.teleport.dialogName,
         hasLogo: (state) => state.logo !== CONS.LOGOS.NO_LOGO,
-        dialogConfig: (state) => ({ ...state.teleport }),
-        currentBookingInfo: (state) => {
-            if (state.bookingId === -1)
-                return null;
-            const records = useRecordsStore();
-            const bookingIndex = records.getBookingById(state.bookingId);
-            return bookingIndex !== -1 ? records.bookings[bookingIndex] : null;
-        }
     },
     actions: {
         setLogo() {

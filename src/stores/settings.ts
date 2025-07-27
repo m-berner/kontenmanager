@@ -40,24 +40,17 @@ export const useSettingsStore = defineStore('settings', {
     }
   },
   getters: {
+    //activeAccountId: (state): number => state.activeAccountId,
     // Computed properties for commonly used derived state
-    isPartnerEnabled: (state): boolean => state.partner,
-
-    currentTheme: (state): string => state.skin,
-
-    paginationConfig: (state) => ({
-      bookings: state.bookingsPerPage,
-      stocks: state.stocksPerPage
-    }),
-
+    //partner: (state): boolean => state.partner,
+    //skin: (state): string => state.skin,
+    //bookingsPerPage: (state) => state.bookingsPerPage,
+    //stocksPerPage: (state) => state.stocksPerPage,
     hasActiveAccount: (state): boolean => state.activeAccountId !== -1,
-
-    marketingData: (state) => ({
-      materials: state.materials,
-      markets: state.markets,
-      indexes: state.indexes,
-      exchanges: state.exchanges
-    })
+    //materials: (state) => state.materials,
+    //markets: (state) => state.markets,
+    //indexes: (state) => state.indexes,
+    //exchanges: (state) => state.exchanges
   },
   actions: {
     setActiveAccountId(value: number) {
