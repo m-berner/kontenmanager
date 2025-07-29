@@ -23,7 +23,7 @@ type TInfos = {
 }
 
 interface IRuntimeStore {
-  bookingId: number
+  activeId: number
   logo: string
   teleport: TTelePort
   infoBar: TInfos
@@ -39,7 +39,7 @@ const {CONS, log} = useApp()
 export const useRuntimeStore = defineStore('runtime', {
   state: (): IRuntimeStore => {
     return {
-      bookingId: -1,
+      activeId: -1,
       logo: CONS.LOGOS.NO_LOGO,
       teleport: {
         dialogName: '',
@@ -62,11 +62,11 @@ export const useRuntimeStore = defineStore('runtime', {
     //materials: (state: IRuntimeStore): Map<string, number> => state.infoBar.materials,
     //exchanges: (state: IRuntimeStore): Map<string, number> => state.infoBar.exchanges,
     //indexes: (state: IRuntimeStore): Map<string, number> => state.infoBar.indexes,
-    //bookingId: (state: IRuntimeStore): number => state.bookingId,
+    //activeId: (state: IRuntimeStore): number => state.activeId,
     //exchangesCurUsd: (state: IRuntimeStore): number => state.exchanges.curUsd,
     //exchangesCurEur: (state: IRuntimeStore): number => state.exchanges.curEur,
     // Computed properties for commonly used derived state
-    hasActiveBooking: (state: IRuntimeStore): boolean => state.bookingId !== -1,
+    hasActiveBooking: (state: IRuntimeStore): boolean => state.activeId !== -1,
     isDialogVisible: (state: IRuntimeStore): boolean => state.teleport.visibility,
     //optionMenuColors: (state: IRuntimeStore): Map<number, string> => state.optionMenuColors,
     //logo: (state: IRuntimeStore): string => state.logo,
@@ -88,8 +88,8 @@ export const useRuntimeStore = defineStore('runtime', {
         }
       }
     },
-    setBookingId(value: number): void {
-      this.bookingId = value
+    setActiveId(value: number): void {
+      this.activeId = value
     },
     setTeleport(entry: TTelePort): void {
       // Create a copy to avoid mutation issues
@@ -107,7 +107,7 @@ export const useRuntimeStore = defineStore('runtime', {
       }
     },
     // Additional utility methods
-    openDialog(dialogName: string, showOkButton: boolean = true): void {
+    openModalDialog(dialogName: string, showOkButton: boolean = true): void {
       this.teleport = {
         dialogName,
         okButton: showOkButton,
@@ -131,18 +131,18 @@ export const useRuntimeStore = defineStore('runtime', {
     },
 
     clearBooking(): void {
-      this.bookingId = -1
+      this.activeId = -1
     },
 
     // Set both booking and open related dialog
-    setBookingAndOpenDialog(bookingId: number, dialogName: string): void {
-      this.bookingId = bookingId
-      this.openDialog(dialogName)
+    setBookingAndOpenDialog(activeId: number, dialogName: string): void {
+      this.activeId = activeId
+      this.openModalDialog(dialogName)
     },
 
     // Reset all runtime state
     resetRuntimeState(): void {
-      this.bookingId = -1
+      this.activeId = -1
       this.logo = CONS.LOGOS.NO_LOGO
       this.resetTeleport()
     },

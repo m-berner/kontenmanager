@@ -15,6 +15,7 @@ import DeleteAccount from '@/components/dialogs/DeleteAccount.vue'
 import AddBookingType from '@/components/dialogs/AddBookingType.vue'
 import DeleteBookingType from '@/components/dialogs/DeleteBookingType.vue'
 import AddBooking from '@/components/dialogs/AddBooking.vue'
+import UpdateBooking from '@/components/dialogs/UpdateBooking.vue'
 import ExportDatabase from '@/components/dialogs/ExportDatabase.vue'
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
@@ -31,6 +32,7 @@ const ComponentsPlugin: Plugin = {
     app.component(CONS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType)
     app.component(CONS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType)
     app.component(CONS.DIALOGS.ADD_BOOKING, AddBooking)
+    app.component(CONS.DIALOGS.UPDATE_BOOKING, UpdateBooking)
     app.component(CONS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
     app.component(CONS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
     app.component(CONS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)

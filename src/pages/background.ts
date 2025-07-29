@@ -117,7 +117,7 @@ declare global {
     cExDate: string
     cDebit: number
     cCredit: number
-    cDescription?: string
+    cDescription: string
     cCount: number
     cBookingTypeID: number
     cAccountNumberID: number
@@ -248,6 +248,7 @@ export const useApp = () => {
     DB__UPDATE_ACCOUNT,
     DB__UPDATE_ACCOUNT__RESPONSE,
     DB__ADD_BOOKING,
+    DB__UPDATE_BOOKING,
     DB__ADD_BOOKING__RESPONSE,
     DB__ADD_BOOKING_TYPE,
     DB__ADD_BOOKING_TYPE__RESPONSE,
@@ -544,6 +545,7 @@ export const useApp = () => {
         ADD_BOOKING_TYPE: 'AddBookingType',
         DELETE_BOOKING_TYPE: 'DeleteBookingType',
         ADD_BOOKING: 'AddBooking',
+        UPDATE_BOOKING: 'UpdateBooking',
         DELETE_BOOKING: 'DeleteBooking',
         EXPORT_DATABASE: 'ExportDatabase',
         IMPORT_DATABASE: 'ImportDatabase',
@@ -1438,11 +1440,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
             const onError = (ev: Event): void => {
               if (ev instanceof ErrorEvent) {
-                reject(ev.message)
+                reject(ev)
               }
             }
             const requestTransaction = dbi.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite')
-            requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
             const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).put(record)
             requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
             requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
@@ -2520,9 +2521,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           resolve(response)
           break
         case CONS.MESSAGES.DB__UPDATE_STOCK:
-          await updateStock(appMessage.data)
+          const updateStockResponse = await updateStock(appMessage.data)
           response = JSON.stringify({
-            type: CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE
+            type: CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE,
+            data: updateStockResponse
           })
           resolve(response)
           break
@@ -2534,7 +2536,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           resolve(response)
           break
         case CONS.MESSAGES.DB__DELETE_STOCK:
-          console.error('sdfs', appMessage.data)
           await deleteStock(appMessage.data)
           response = JSON.stringify({
             type: CONS.MESSAGES.DB__DELETE_STOCK__RESPONSE

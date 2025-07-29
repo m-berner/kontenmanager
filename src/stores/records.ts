@@ -176,9 +176,17 @@ export const useRecordsStore = defineStore('records', {
 
     updateStock(stock: IStockStore): void {
       log('RECORDS: updateStock')
-      const index = this.getStockById(stock.cID)
+      const index = this.getStockById(stock?.cID ?? -1)
       if (index !== -1) {
         this.stocks[index] = {...stock}
+      }
+    },
+
+    updateBooking(booking: IBooking): void {
+      log('RECORDS: updateBooking')
+      const index = this.getBookingById(booking?.cID ?? -1)
+      if (index !== -1) {
+        this.bookings[index] = {...booking}
       }
     },
 

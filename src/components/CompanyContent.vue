@@ -126,8 +126,8 @@ const stocksMenuItems: StocksMenuItems[] = [
     'icon': '$showDividend'
   },
   {
-    'id': 'ConfigCompany',
-    'title': t('stocksTable.menuItems.config'),
+    'id': 'UpdateStock',
+    'title': t('stocksTable.menuItems.update'),
     'icon': '$tableEdit'
   },
   {
@@ -188,7 +188,7 @@ log('--- StocksTable.vue setup ---')
           <OptionMenu
             menuType="stocks"
             v-bind:menuItems="stocksMenuItems"
-            v-bind:recordID="item.cID">
+            v-bind:recordID="item.cID ?? -1">
           </OptionMenu>
         </td>
         <td>{{ item.cCompany }}</td>

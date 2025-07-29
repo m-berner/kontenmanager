@@ -6,7 +6,7 @@ const { CONS, log } = useApp();
 export const useRuntimeStore = defineStore('runtime', {
     state: () => {
         return {
-            bookingId: -1,
+            activeId: -1,
             logo: CONS.LOGOS.NO_LOGO,
             teleport: {
                 dialogName: '',
@@ -26,7 +26,7 @@ export const useRuntimeStore = defineStore('runtime', {
         };
     },
     getters: {
-        hasActiveBooking: (state) => state.bookingId !== -1,
+        hasActiveBooking: (state) => state.activeId !== -1,
         isDialogVisible: (state) => state.teleport.visibility,
         hasLogo: (state) => state.logo !== CONS.LOGOS.NO_LOGO,
     },
@@ -43,8 +43,8 @@ export const useRuntimeStore = defineStore('runtime', {
                 }
             }
         },
-        setBookingId(value) {
-            this.bookingId = value;
+        setActiveId(value) {
+            this.activeId = value;
         },
         setTeleport(entry) {
             this.teleport = {
@@ -60,7 +60,7 @@ export const useRuntimeStore = defineStore('runtime', {
                 visibility: false,
             };
         },
-        openDialog(dialogName, showOkButton = true) {
+        openModalDialog(dialogName, showOkButton = true) {
             this.teleport = {
                 dialogName,
                 okButton: showOkButton,
@@ -80,14 +80,14 @@ export const useRuntimeStore = defineStore('runtime', {
             };
         },
         clearBooking() {
-            this.bookingId = -1;
+            this.activeId = -1;
         },
-        setBookingAndOpenDialog(bookingId, dialogName) {
-            this.bookingId = bookingId;
-            this.openDialog(dialogName);
+        setBookingAndOpenDialog(activeId, dialogName) {
+            this.activeId = activeId;
+            this.openModalDialog(dialogName);
         },
         resetRuntimeState() {
-            this.bookingId = -1;
+            this.activeId = -1;
             this.logo = CONS.LOGOS.NO_LOGO;
             this.resetTeleport();
         },

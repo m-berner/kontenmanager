@@ -65,6 +65,27 @@
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?"
     },
+    "updateBooking": {
+      "title": "Buchung bearbeiten",
+      "dateLabel": "Buchungstag",
+      "exDateLabel": "Ex-Tag",
+      "descriptionLabel": "Bemerkung",
+      "creditLabel": "Haben",
+      "debitLabel": "Soll",
+      "countLabel": "Anzahl",
+      "unitQuotationLabel": "Stückpreis",
+      "bookingTypeLabel": "Buchungstyp",
+      "feeLabel": "Gebühr",
+      "taxLabel": "Steuer",
+      "soliLabel": "Soli",
+      "stockLabel": "Unternehmen",
+      "marketPlaceLabel": "Handelsplatz",
+      "transactionTaxLabel": "Transaktionssteuer",
+      "sourceTaxLabel": "Quellensteuer",
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
+      "success": "Buchung wurde hinzugefügt",
+      "error": "Eingabe Fehler?"
+    },
     "deleteBooking": {
       "title": "Buchung",
       "ask": "jetzt löschen?",
@@ -95,6 +116,20 @@
       "title": "Unternehmen entfernen",
       "success": "Unternehmen wurde hinzugefügt",
       "error": "Unternehmen existiert bereits"
+    },
+    "updateStock": {
+      "title": "Unternehmen bearbeiten",
+      "isin": "ISIN",
+      "wkn": "WKN",
+      "symbol": "Kürzel",
+      "company": "Unternehmen",
+      "fadeOut": "Ausblenden",
+      "firstPage": "Erste Seite",
+      "meetingDay": "Hauptversammlung",
+      "quarterDay": "Quartalszahlen",
+      "url": "URL",
+      "success": "Unternehmen wurde akualisiert",
+      "error": "Fehler"
     },
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
@@ -175,7 +210,7 @@
     "menuItems": {
       "delete": "Unternehmen löschen",
       "dividend": "Dividenden Übersicht",
-      "config": "Unternehmen konfigurieren",
+      "update": "Unternehmen konfigurieren",
       "link": "Externen Link öffnen"
     },
     "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
