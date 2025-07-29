@@ -14,45 +14,46 @@ export const useApp = () => {
         MESSAGES[MESSAGES["DB__ADD_BOOKING__RESPONSE"] = 10] = "DB__ADD_BOOKING__RESPONSE";
         MESSAGES[MESSAGES["DB__ADD_BOOKING_TYPE"] = 11] = "DB__ADD_BOOKING_TYPE";
         MESSAGES[MESSAGES["DB__ADD_BOOKING_TYPE__RESPONSE"] = 12] = "DB__ADD_BOOKING_TYPE__RESPONSE";
-        MESSAGES[MESSAGES["DB__ADD_STOCK"] = 13] = "DB__ADD_STOCK";
-        MESSAGES[MESSAGES["DB__ADD_STOCK__RESPONSE"] = 14] = "DB__ADD_STOCK__RESPONSE";
-        MESSAGES[MESSAGES["DB__UPDATE_STOCK"] = 15] = "DB__UPDATE_STOCK";
-        MESSAGES[MESSAGES["DB__UPDATE_STOCK__RESPONSE"] = 16] = "DB__UPDATE_STOCK__RESPONSE";
-        MESSAGES[MESSAGES["DB__DELETE_ACCOUNT"] = 17] = "DB__DELETE_ACCOUNT";
-        MESSAGES[MESSAGES["DB__DELETE_ACCOUNT__RESPONSE"] = 18] = "DB__DELETE_ACCOUNT__RESPONSE";
-        MESSAGES[MESSAGES["DB__DELETE_BOOKING"] = 19] = "DB__DELETE_BOOKING";
-        MESSAGES[MESSAGES["DB__DELETE_BOOKING__RESPONSE"] = 20] = "DB__DELETE_BOOKING__RESPONSE";
-        MESSAGES[MESSAGES["DB__DELETE_BOOKING_TYPE"] = 21] = "DB__DELETE_BOOKING_TYPE";
-        MESSAGES[MESSAGES["DB__DELETE_BOOKING_TYPE__RESPONSE"] = 22] = "DB__DELETE_BOOKING_TYPE__RESPONSE";
-        MESSAGES[MESSAGES["DB__DELETE_STOCK"] = 23] = "DB__DELETE_STOCK";
-        MESSAGES[MESSAGES["DB__DELETE_STOCK__RESPONSE"] = 24] = "DB__DELETE_STOCK__RESPONSE";
-        MESSAGES[MESSAGES["STORAGE__GET_ALL"] = 25] = "STORAGE__GET_ALL";
-        MESSAGES[MESSAGES["STORAGE__GET_ALL__RESPONSE"] = 26] = "STORAGE__GET_ALL__RESPONSE";
-        MESSAGES[MESSAGES["DB__ADD_STORES"] = 27] = "DB__ADD_STORES";
-        MESSAGES[MESSAGES["DB__ADD_STORES_25"] = 28] = "DB__ADD_STORES_25";
-        MESSAGES[MESSAGES["OPTIONS__SET_SKIN"] = 29] = "OPTIONS__SET_SKIN";
-        MESSAGES[MESSAGES["OPTIONS__SET_SERVICE"] = 30] = "OPTIONS__SET_SERVICE";
-        MESSAGES[MESSAGES["OPTIONS__SET_INDEXES"] = 31] = "OPTIONS__SET_INDEXES";
-        MESSAGES[MESSAGES["OPTIONS__SET_MATERIALS"] = 32] = "OPTIONS__SET_MATERIALS";
-        MESSAGES[MESSAGES["OPTIONS__SET_EXCHANGES"] = 33] = "OPTIONS__SET_EXCHANGES";
-        MESSAGES[MESSAGES["OPTIONS__SET_MARKETS"] = 34] = "OPTIONS__SET_MARKETS";
-        MESSAGES[MESSAGES["DB__EXPORT"] = 35] = "DB__EXPORT";
-        MESSAGES[MESSAGES["STORAGE__SET_ID"] = 36] = "STORAGE__SET_ID";
-        MESSAGES[MESSAGES["STORAGE__SET_ID__RESPONSE"] = 37] = "STORAGE__SET_ID__RESPONSE";
-        MESSAGES[MESSAGES["OPTIONS__SET_SKIN__RESPONSE"] = 38] = "OPTIONS__SET_SKIN__RESPONSE";
-        MESSAGES[MESSAGES["OPTIONS__SET_SERVICE__RESPONSE"] = 39] = "OPTIONS__SET_SERVICE__RESPONSE";
-        MESSAGES[MESSAGES["OPTIONS__SET_INDEXES__RESPONSE"] = 40] = "OPTIONS__SET_INDEXES__RESPONSE";
-        MESSAGES[MESSAGES["OPTIONS__SET_MATERIALS__RESPONSE"] = 41] = "OPTIONS__SET_MATERIALS__RESPONSE";
-        MESSAGES[MESSAGES["OPTIONS__SET_MARKETS__RESPONSE"] = 42] = "OPTIONS__SET_MARKETS__RESPONSE";
-        MESSAGES[MESSAGES["OPTIONS__SET_EXCHANGES__RESPONSE"] = 43] = "OPTIONS__SET_EXCHANGES__RESPONSE";
-        MESSAGES[MESSAGES["FETCH__COMPANY_DATA"] = 44] = "FETCH__COMPANY_DATA";
-        MESSAGES[MESSAGES["FETCH__EXCHANGES_BASE_DATA"] = 45] = "FETCH__EXCHANGES_BASE_DATA";
-        MESSAGES[MESSAGES["FETCH__INDEXES_DATA"] = 46] = "FETCH__INDEXES_DATA";
-        MESSAGES[MESSAGES["FETCH__MATERIALS_DATA"] = 47] = "FETCH__MATERIALS_DATA";
-        MESSAGES[MESSAGES["FETCH__EXCHANGES_DATA"] = 48] = "FETCH__EXCHANGES_DATA";
-        MESSAGES[MESSAGES["FETCH__DAILY_CHANGES_DATA"] = 49] = "FETCH__DAILY_CHANGES_DATA";
-        MESSAGES[MESSAGES["FETCH__DATES_DATA"] = 50] = "FETCH__DATES_DATA";
-        MESSAGES[MESSAGES["FETCH__MIN_RATE_MAX_DATA"] = 51] = "FETCH__MIN_RATE_MAX_DATA";
+        MESSAGES[MESSAGES["DB__UPDATE_BOOKING__RESPONSE"] = 13] = "DB__UPDATE_BOOKING__RESPONSE";
+        MESSAGES[MESSAGES["DB__ADD_STOCK"] = 14] = "DB__ADD_STOCK";
+        MESSAGES[MESSAGES["DB__ADD_STOCK__RESPONSE"] = 15] = "DB__ADD_STOCK__RESPONSE";
+        MESSAGES[MESSAGES["DB__UPDATE_STOCK"] = 16] = "DB__UPDATE_STOCK";
+        MESSAGES[MESSAGES["DB__UPDATE_STOCK__RESPONSE"] = 17] = "DB__UPDATE_STOCK__RESPONSE";
+        MESSAGES[MESSAGES["DB__DELETE_ACCOUNT"] = 18] = "DB__DELETE_ACCOUNT";
+        MESSAGES[MESSAGES["DB__DELETE_ACCOUNT__RESPONSE"] = 19] = "DB__DELETE_ACCOUNT__RESPONSE";
+        MESSAGES[MESSAGES["DB__DELETE_BOOKING"] = 20] = "DB__DELETE_BOOKING";
+        MESSAGES[MESSAGES["DB__DELETE_BOOKING__RESPONSE"] = 21] = "DB__DELETE_BOOKING__RESPONSE";
+        MESSAGES[MESSAGES["DB__DELETE_BOOKING_TYPE"] = 22] = "DB__DELETE_BOOKING_TYPE";
+        MESSAGES[MESSAGES["DB__DELETE_BOOKING_TYPE__RESPONSE"] = 23] = "DB__DELETE_BOOKING_TYPE__RESPONSE";
+        MESSAGES[MESSAGES["DB__DELETE_STOCK"] = 24] = "DB__DELETE_STOCK";
+        MESSAGES[MESSAGES["DB__DELETE_STOCK__RESPONSE"] = 25] = "DB__DELETE_STOCK__RESPONSE";
+        MESSAGES[MESSAGES["STORAGE__GET_ALL"] = 26] = "STORAGE__GET_ALL";
+        MESSAGES[MESSAGES["STORAGE__GET_ALL__RESPONSE"] = 27] = "STORAGE__GET_ALL__RESPONSE";
+        MESSAGES[MESSAGES["DB__ADD_STORES"] = 28] = "DB__ADD_STORES";
+        MESSAGES[MESSAGES["DB__ADD_STORES_25"] = 29] = "DB__ADD_STORES_25";
+        MESSAGES[MESSAGES["OPTIONS__SET_SKIN"] = 30] = "OPTIONS__SET_SKIN";
+        MESSAGES[MESSAGES["OPTIONS__SET_SERVICE"] = 31] = "OPTIONS__SET_SERVICE";
+        MESSAGES[MESSAGES["OPTIONS__SET_INDEXES"] = 32] = "OPTIONS__SET_INDEXES";
+        MESSAGES[MESSAGES["OPTIONS__SET_MATERIALS"] = 33] = "OPTIONS__SET_MATERIALS";
+        MESSAGES[MESSAGES["OPTIONS__SET_EXCHANGES"] = 34] = "OPTIONS__SET_EXCHANGES";
+        MESSAGES[MESSAGES["OPTIONS__SET_MARKETS"] = 35] = "OPTIONS__SET_MARKETS";
+        MESSAGES[MESSAGES["DB__EXPORT"] = 36] = "DB__EXPORT";
+        MESSAGES[MESSAGES["STORAGE__SET_ID"] = 37] = "STORAGE__SET_ID";
+        MESSAGES[MESSAGES["STORAGE__SET_ID__RESPONSE"] = 38] = "STORAGE__SET_ID__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_SKIN__RESPONSE"] = 39] = "OPTIONS__SET_SKIN__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_SERVICE__RESPONSE"] = 40] = "OPTIONS__SET_SERVICE__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_INDEXES__RESPONSE"] = 41] = "OPTIONS__SET_INDEXES__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_MATERIALS__RESPONSE"] = 42] = "OPTIONS__SET_MATERIALS__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_MARKETS__RESPONSE"] = 43] = "OPTIONS__SET_MARKETS__RESPONSE";
+        MESSAGES[MESSAGES["OPTIONS__SET_EXCHANGES__RESPONSE"] = 44] = "OPTIONS__SET_EXCHANGES__RESPONSE";
+        MESSAGES[MESSAGES["FETCH__COMPANY_DATA"] = 45] = "FETCH__COMPANY_DATA";
+        MESSAGES[MESSAGES["FETCH__EXCHANGES_BASE_DATA"] = 46] = "FETCH__EXCHANGES_BASE_DATA";
+        MESSAGES[MESSAGES["FETCH__INDEXES_DATA"] = 47] = "FETCH__INDEXES_DATA";
+        MESSAGES[MESSAGES["FETCH__MATERIALS_DATA"] = 48] = "FETCH__MATERIALS_DATA";
+        MESSAGES[MESSAGES["FETCH__EXCHANGES_DATA"] = 49] = "FETCH__EXCHANGES_DATA";
+        MESSAGES[MESSAGES["FETCH__DAILY_CHANGES_DATA"] = 50] = "FETCH__DAILY_CHANGES_DATA";
+        MESSAGES[MESSAGES["FETCH__DATES_DATA"] = 51] = "FETCH__DATES_DATA";
+        MESSAGES[MESSAGES["FETCH__MIN_RATE_MAX_DATA"] = 52] = "FETCH__MIN_RATE_MAX_DATA";
     })(MESSAGES || (MESSAGES = {}));
     return {
         CONS: Object.freeze({
@@ -1186,6 +1187,26 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
+            updateBooking: async (record) => {
+                return new Promise(async (resolve, reject) => {
+                    if (dbi != null) {
+                        const onSuccess = async (ev) => {
+                            if (ev.target instanceof IDBRequest) {
+                                resolve('Booking updated');
+                            }
+                        };
+                        const onError = (ev) => {
+                            if (ev instanceof ErrorEvent) {
+                                reject(ev);
+                            }
+                        };
+                        const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
+                        const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).put(record);
+                        requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+                        requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    }
+                });
+            },
             deleteStock: async (id) => {
                 log('BACKGROUND: deleteStock');
                 return new Promise(async (resolve, reject) => {
@@ -1777,7 +1798,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
             }
         };
     };
-    const { truncateTables, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, exportToStores, importStores, deleteStock, open } = useDatabase();
+    const { truncateTables, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, updateBooking, exportToStores, importStores, deleteStock, open } = useDatabase();
     const { fetchCompanyData, fetchMinRateMaxData, fetchDailyChangeData, fetchExchangesData, fetchMaterialData, fetchIndexData, fetchDateData } = useFetch();
     let dbi;
     const onInstall = async () => {
@@ -2008,6 +2029,14 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     response = JSON.stringify({
                         type: CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE,
                         data: updateStockResponse
+                    });
+                    resolve(response);
+                    break;
+                case CONS.MESSAGES.DB__UPDATE_BOOKING:
+                    const updateBookingResponse = await updateBooking(appMessage.data);
+                    response = JSON.stringify({
+                        type: CONS.MESSAGES.DB__UPDATE_BOOKING__RESPONSE,
+                        data: updateBookingResponse
                     });
                     resolve(response);
                     break;

@@ -85,7 +85,6 @@ const onClickOk = async (): Promise<void> => {
       }))
       const addAccountData: IAccount = JSON.parse(addAccountResponse).data
       records.addAccount(addAccountData)
-      runtime.setLogo()
       settings.setActiveAccountId(addAccountData.cID)
       await notice([t('dialogs.AddAccount.success')])
       mResetState()

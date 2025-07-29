@@ -1,13 +1,10 @@
 import { defineStore } from 'pinia';
 import { useApp } from '@/pages/background';
-import { useRecordsStore } from '@/stores/records';
-import { useSettingsStore } from '@/stores/settings';
-const { CONS, log } = useApp();
+const { log } = useApp();
 export const useRuntimeStore = defineStore('runtime', {
     state: () => {
         return {
             activeId: -1,
-            logo: CONS.LOGOS.NO_LOGO,
             teleport: {
                 dialogName: '',
                 okButton: true,
@@ -27,22 +24,9 @@ export const useRuntimeStore = defineStore('runtime', {
     },
     getters: {
         hasActiveBooking: (state) => state.activeId !== -1,
-        isDialogVisible: (state) => state.teleport.visibility,
-        hasLogo: (state) => state.logo !== CONS.LOGOS.NO_LOGO,
+        isDialogVisible: (state) => state.teleport.visibility
     },
     actions: {
-        setLogo() {
-            const records = useRecordsStore();
-            const settings = useSettingsStore();
-            this.logo = CONS.LOGOS.NO_LOGO;
-            if (settings.activeAccountId > -1) {
-                const accountIndex = records.getAccountIndexById(settings.activeAccountId);
-                if (accountIndex !== -1) {
-                    const account = records.accounts[accountIndex];
-                    this.logo = account.cLogoUrl;
-                }
-            }
-        },
         setActiveId(value) {
             this.activeId = value;
         },
@@ -59,6 +43,11 @@ export const useRuntimeStore = defineStore('runtime', {
                 okButton: true,
                 visibility: false,
             };
+        },
+        resetOptionsMenuColors() {
+            for (const m of this.optionMenuColors.keys()) {
+                this.optionMenuColors.set(m, '');
+            }
         },
         openModalDialog(dialogName, showOkButton = true) {
             this.teleport = {
@@ -88,17 +77,7 @@ export const useRuntimeStore = defineStore('runtime', {
         },
         resetRuntimeState() {
             this.activeId = -1;
-            this.logo = CONS.LOGOS.NO_LOGO;
             this.resetTeleport();
-        },
-        updateLogoSafely() {
-            try {
-                this.setLogo();
-            }
-            catch (error) {
-                log('ERROR: Failed to update logo', { info: error });
-                this.logo = CONS.LOGOS.NO_LOGO;
-            }
         },
         setExchangesUsd(value) {
             this.exchanges.curUsd = value;

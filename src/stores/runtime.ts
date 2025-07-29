@@ -7,8 +7,6 @@
  */
 import {defineStore} from 'pinia'
 import {useApp} from '@/pages/background'
-import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 
 type TTelePort = {
   dialogName: string
@@ -24,7 +22,6 @@ type TInfos = {
 
 interface IRuntimeStore {
   activeId: number
-  logo: string
   teleport: TTelePort
   infoBar: TInfos
   exchanges: {
@@ -34,13 +31,12 @@ interface IRuntimeStore {
   optionMenuColors: Map<number, string>
 }
 
-const {CONS, log} = useApp()
+const {log} = useApp()
 
 export const useRuntimeStore = defineStore('runtime', {
   state: (): IRuntimeStore => {
     return {
       activeId: -1,
-      logo: CONS.LOGOS.NO_LOGO,
       teleport: {
         dialogName: '',
         okButton: true,
@@ -67,27 +63,9 @@ export const useRuntimeStore = defineStore('runtime', {
     //exchangesCurEur: (state: IRuntimeStore): number => state.exchanges.curEur,
     // Computed properties for commonly used derived state
     hasActiveBooking: (state: IRuntimeStore): boolean => state.activeId !== -1,
-    isDialogVisible: (state: IRuntimeStore): boolean => state.teleport.visibility,
-    //optionMenuColors: (state: IRuntimeStore): Map<number, string> => state.optionMenuColors,
-    //logo: (state: IRuntimeStore): string => state.logo,
-
-    hasLogo: (state: IRuntimeStore): boolean => state.logo !== CONS.LOGOS.NO_LOGO,
-    //teleport: (state: IRuntimeStore): TTelePort => state.teleport
+    isDialogVisible: (state: IRuntimeStore): boolean => state.teleport.visibility
   },
   actions: {
-    setLogo(): void {
-      const records = useRecordsStore()
-      const settings = useSettingsStore()
-
-      this.logo = CONS.LOGOS.NO_LOGO
-      if (settings.activeAccountId > -1) {
-        const accountIndex = records.getAccountIndexById(settings.activeAccountId)
-        if (accountIndex !== -1) {
-          const account: IAccount = records.accounts[accountIndex]
-          this.logo = account.cLogoUrl
-        }
-      }
-    },
     setActiveId(value: number): void {
       this.activeId = value
     },
@@ -104,6 +82,11 @@ export const useRuntimeStore = defineStore('runtime', {
         dialogName: '',
         okButton: true,
         visibility: false,
+      }
+    },
+    resetOptionsMenuColors(): void {
+      for (const m of this.optionMenuColors.keys()) {
+        this.optionMenuColors.set(m, '')
       }
     },
     // Additional utility methods
@@ -143,20 +126,8 @@ export const useRuntimeStore = defineStore('runtime', {
     // Reset all runtime state
     resetRuntimeState(): void {
       this.activeId = -1
-      this.logo = CONS.LOGOS.NO_LOGO
       this.resetTeleport()
     },
-
-    // Safe logo update with error handling
-    updateLogoSafely(): void {
-      try {
-        this.setLogo()
-      } catch (error) {
-        log('ERROR: Failed to update logo', {info: error})
-        this.logo = CONS.LOGOS.NO_LOGO
-      }
-    },
-
     setExchangesUsd(value: number) {
       this.exchanges.curUsd = value
     },

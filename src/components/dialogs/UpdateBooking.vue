@@ -75,6 +75,7 @@ const onClickOk = async (): Promise<void> => {
       }))
       const updateBookingResponse = JSON.parse(updateBookingResponseString)
       await notice([updateBookingResponse.data])
+      runtime.resetOptionsMenuColors()
       runtime.resetTeleport()
     } catch (e) {
       console.error(e)
@@ -111,7 +112,7 @@ log('--- UpdateBooking.vue setup ---')
           required
           type="date"
           variant="outlined"
-          v-bind:label="t('dialogs.updateBooking.date')"
+          v-bind:label="t('dialogs.updateBooking.dateLabel')"
           v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
         ></v-text-field>
       </v-row>

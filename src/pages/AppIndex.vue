@@ -53,7 +53,6 @@ onBeforeMount(async (): Promise<void> => {
   if (dbGetStoresData.accounts.length > 0) {
     records.initStore(dbGetStoresData)
     settings.setActiveAccountId(records.accounts[0].cID)
-    runtime.setLogo()
     records.sumBookings()
   }
   const exchangesBaseResponseString = await browser.runtime.sendMessage(JSON.stringify({

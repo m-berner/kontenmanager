@@ -11,7 +11,6 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
-import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
   selected: number
@@ -21,7 +20,6 @@ const {t} = useI18n()
 const {CONS, log, notice} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const runtime = useRuntimeStore()
 
 const state: Reactive<IState> = reactive({
   selected: records.accounts.length > 0 ? records.accounts[0].cID : -1
@@ -49,7 +47,6 @@ const onClickOk = async (): Promise<void> => {
       settings.setActiveAccountId(-1)
       await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1}))
     }
-    runtime.setLogo()
     records.sumBookings()
     await notice([t('dialogs.deleteAccount.success')])
     state.selected = -1

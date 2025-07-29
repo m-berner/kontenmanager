@@ -11,7 +11,6 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
-import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
   swift: string
@@ -24,7 +23,6 @@ interface IState {
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
 const formRef = useTemplateRef('form-ref')
-const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
@@ -79,7 +77,6 @@ const onClickOk = async (): Promise<void> => {
         cStockAccount: state.stockAccount
       }
       records.updateAccount(account)
-      runtime.setLogo()
       await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
       }))

@@ -252,6 +252,7 @@ export const useApp = () => {
     DB__ADD_BOOKING__RESPONSE,
     DB__ADD_BOOKING_TYPE,
     DB__ADD_BOOKING_TYPE__RESPONSE,
+    DB__UPDATE_BOOKING__RESPONSE,
     DB__ADD_STOCK,
     DB__ADD_STOCK__RESPONSE,
     DB__UPDATE_STOCK,
@@ -1450,6 +1451,26 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           }
         })
       },
+      updateBooking: async (record: IBooking): Promise<string> => {
+        return new Promise(async (resolve, reject) => {
+          if (dbi != null) {
+            const onSuccess = async (ev: Event): Promise<void> => {
+              if (ev.target instanceof IDBRequest) {
+                resolve('Booking updated')
+              }
+            }
+            const onError = (ev: Event): void => {
+              if (ev instanceof ErrorEvent) {
+                reject(ev)
+              }
+            }
+            const requestTransaction = dbi.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite')
+            const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).put(record)
+            requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
+            requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
+          }
+        })
+      },
       deleteStock: async (id: number): Promise<string> => {
         log('BACKGROUND: deleteStock')
         // const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
@@ -2165,6 +2186,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
     deleteBookingType,
     addStock,
     updateStock,
+    updateBooking,
     exportToStores,
     importStores,
     deleteStock,
@@ -2525,6 +2547,14 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           response = JSON.stringify({
             type: CONS.MESSAGES.DB__UPDATE_STOCK__RESPONSE,
             data: updateStockResponse
+          })
+          resolve(response)
+          break
+        case CONS.MESSAGES.DB__UPDATE_BOOKING:
+          const updateBookingResponse = await updateBooking(appMessage.data)
+          response = JSON.stringify({
+            type: CONS.MESSAGES.DB__UPDATE_BOOKING__RESPONSE,
+            data: updateBookingResponse
           })
           resolve(response)
           break
