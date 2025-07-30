@@ -11,6 +11,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
+import {computed} from 'vue'
 //import {useRuntimeStore} from '@/stores/runtime'
 //import {ref} from 'vue'
 
@@ -21,17 +22,26 @@ const settings = useSettingsStore()
 const {CONS, log} = useApp()
 const {activeAccountId} = storeToRefs(settings)
 
-const mUpdateTitleBar = (): void => {
-  browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID}))
+const onUpdateTitleBar = async (): Promise<void> => {
+  await browser.runtime.sendMessage(JSON.stringify({
+    type: CONS.MESSAGES.STORAGE__SET_ID,
+    data: settings.activeAccountId
+  }))
+  const getStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
+    type: CONS.MESSAGES.DB__GET_STORES,
+    data: settings.activeAccountId
+  }))
+  records.initStore(JSON.parse(getStoresResponseString).data)
+  records.sumBookings()
 }
-const mLogoUrl = (): string => {
-  const ind = records.getAccountIndexById(activeAccountId.value)
+const getLogoUrl = computed((): string => {
+  const ind = records.getAccountIndexById(settings.activeAccountId)
   if (ind > -1) {
     return records.accounts[ind].cLogoUrl
   } else {
-    return "" //CONS.LOGOS.NO_LOGO
+    return ''
   }
-}
+})
 
 log('--- TitleBar.vue setup ---')
 </script>
@@ -50,16 +60,18 @@ log('--- TitleBar.vue setup ---')
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
-    v-if="activeAccountId > 0"
-    v-model="activeAccountId"
-    max-width="300"
-    v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
-    v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-    v-bind:items="records.accounts"
-    v-bind:label="t('titleBar.selectAccountLabel')"
-    v-on:update:modelValue="mUpdateTitleBar"
-    ><template v-slot:prepend>
-      <img alt="brandfetch.com logo" v-bind:src="mLogoUrl()">
-    </template></v-select>
+
+      v-model="activeAccountId"
+      max-width="300"
+      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
+      v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
+      v-bind:items="records.accounts"
+      v-bind:label="t('titleBar.selectAccountLabel')"
+      v-on:update:modelValue="onUpdateTitleBar"
+    >
+      <template v-slot:prepend>
+        <img alt="brandfetch.com logo" v-bind:src="getLogoUrl">
+      </template>
+    </v-select>
   </v-app-bar>
 </template>

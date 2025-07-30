@@ -22,7 +22,9 @@ export const useRecordsStore = defineStore('records', {
     },
     actions: {
         getAccountIndexById(ident) {
-            return this.accounts.findIndex((account) => account.cID === ident);
+            return this.accounts.map((account) => {
+                return account.cID;
+            }).findIndex(entry => entry === ident);
         },
         getBookingTypeNameById(ident) {
             const bookingType = this.bookingTypes.find((entry) => entry.cID === ident);
@@ -85,6 +87,7 @@ export const useRecordsStore = defineStore('records', {
                 const dateB = new Date(b.cDate).getTime();
                 return dateB - dateA;
             });
+            console.error(this.bookings);
         },
         addAccount(account) {
             log('RECORDS: addAccount');

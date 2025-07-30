@@ -871,7 +871,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     }
                 });
             },
-            exportToStores: async () => {
+            exportToStores: async (aid) => {
                 log('BACKGROUND: exportToStores');
                 const accounts = [];
                 const bookings = [];
@@ -879,7 +879,6 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                 const bookingTypes = [];
                 return new Promise(async (resolve, reject) => {
                     if (dbi != null) {
-                        const storage = await browser.storage.local.get([CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]);
                         const onComplete = async () => {
                             log('BACKGROUND: exportToStores: all database records sent to frontend!');
                             resolve({ accounts, bookings, stocks, bookingTypes });
@@ -898,7 +897,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         };
                         const onSuccessBookingTypeOpenCursor = (ev) => {
                             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                                if (ev.target.result.value.cAccountNumberID === storage[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]) {
+                                if (ev.target.result.value.cAccountNumberID === aid) {
                                     bookingTypes.push(ev.target.result.value);
                                 }
                                 ev.target.result.continue();
@@ -906,7 +905,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         };
                         const onSuccessBookingOpenCursor = (ev) => {
                             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                                if (ev.target.result.value.cAccountNumberID === storage[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]) {
+                                if (ev.target.result.value.cAccountNumberID === aid) {
                                     bookings.push(ev.target.result.value);
                                 }
                                 ev.target.result.continue();
@@ -914,7 +913,7 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         };
                         const onSuccessStockOpenCursor = (ev) => {
                             if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                                if (ev.target.result.value.cAccountNumberID === storage[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]) {
+                                if (ev.target.result.value.cAccountNumberID === aid) {
                                     stocks.push(ev.target.result.value);
                                 }
                                 ev.target.result.continue();
@@ -1943,11 +1942,10 @@ if (window.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     break;
                 case CONS.MESSAGES.STORAGE__SET_ID:
                     await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: appMessage.data });
-                    await exportToStores();
                     resolve('ID set');
                     break;
                 case CONS.MESSAGES.DB__GET_STORES:
-                    const stores = await exportToStores();
+                    const stores = await exportToStores(appMessage.data);
                     response = JSON.stringify({
                         type: CONS.MESSAGES.DB__GET_STORES__RESPONSE,
                         data: stores

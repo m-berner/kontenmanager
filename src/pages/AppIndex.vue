@@ -48,11 +48,13 @@ browser.storage.local.onChanged.addListener(onStorageChange)
 onBeforeMount(async (): Promise<void> => {
   const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__GET_ALL}))
   settings.initStore(theme, JSON.parse(storageResponseString).data)
-  const dbGetStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__GET_STORES}))
+  const dbGetStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
+    type: CONS.MESSAGES.DB__GET_STORES,
+    data: settings.activeAccountId
+  }))
   const dbGetStoresData: IStores = JSON.parse(dbGetStoresResponseString).data
   if (dbGetStoresData.accounts.length > 0) {
     records.initStore(dbGetStoresData)
-    settings.setActiveAccountId(records.accounts[0].cID)
     records.sumBookings()
   }
   const exchangesBaseResponseString = await browser.runtime.sendMessage(JSON.stringify({

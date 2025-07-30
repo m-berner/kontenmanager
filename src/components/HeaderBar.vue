@@ -10,10 +10,15 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
+import {useRecordsStore} from '@/stores/records'
+import {computed, onMounted} from 'vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
+const settings = useSettingsStore()
+const records = useRecordsStore()
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('HEADER_BAR: onIconClick')
@@ -116,6 +121,21 @@ const onIconClick = async (ev: Event): Promise<void> => {
     await parse(ev.target)
   }
 }
+const isStockAccount = computed((): boolean => {
+  const ind = records.getAccountIndexById(settings.activeAccountId)
+  if (ind > -1) {
+    return records.accounts[ind].cStockAccount
+  } else {
+    return false
+  }
+})
+
+onMounted(() => {
+
+//console.error(records.accounts[records.getAccountIndexById(settings.activeAccountId)].cStockAccount)
+// console.error(records.accounts, settings.activeAccountId, records.getAccountIndexById(2))
+
+})
 
 log('--- HeaderBar.vue setup ---')
 </script>
@@ -134,7 +154,10 @@ log('--- HeaderBar.vue setup ---')
         </template>
       </v-tooltip>
     </router-link>
-    <router-link class="router-link-active" to="/company">
+    <router-link
+      v-if="isStockAccount"
+      class="router-link-active"
+      to="/company">
       <v-tooltip location="top" v-bind:text="t('headerBar.home')">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
@@ -146,7 +169,9 @@ log('--- HeaderBar.vue setup ---')
       </v-tooltip>
     </router-link>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addStock')">
+    <v-tooltip
+      v-if="isStockAccount"
+      location="top" v-bind:text="t('headerBar.addStock')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
           v-bind:id="CONS.DIALOGS.ADD_STOCK"

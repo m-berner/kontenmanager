@@ -10,6 +10,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useSettingsStore} from '@/stores/settings'
+import {useRuntimeStore} from '@/stores/runtime'
 import {type Reactive, reactive, toRaw, type UnwrapRef} from 'vue'
 
 interface IEventTarget extends HTMLInputElement {
@@ -23,6 +24,7 @@ interface IState {
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 
 const state: Reactive<IState> = reactive({
   chosen_file: new Blob()
@@ -169,6 +171,7 @@ const onClickOk = async (): Promise<void> => {
           type: CONS.MESSAGES.DB__ADD_STORES,
           data: stores
         }))
+        runtime.resetTeleport()
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {
@@ -212,6 +215,7 @@ const onClickOk = async (): Promise<void> => {
           stocks: stocks
         }
         await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
+        runtime.resetTeleport()
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }

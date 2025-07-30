@@ -54,7 +54,9 @@ export const useRecordsStore = defineStore('records', {
 
   actions: {
     getAccountIndexById(ident: number): number {
-      return this.accounts.findIndex((account: IAccount) => account.cID === ident)
+      return this.accounts.map((account: IAccount) => {
+        return account.cID
+      }).findIndex(entry => entry === ident)
     },
 
     getBookingTypeNameById(ident: number): string {
@@ -133,6 +135,7 @@ export const useRecordsStore = defineStore('records', {
         const dateB = new Date(b.cDate).getTime()
         return dateB - dateA
       })
+      console.error(this.bookings)
     },
 
     addAccount(account: IAccount): void {
