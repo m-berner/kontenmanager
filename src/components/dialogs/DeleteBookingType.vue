@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 import {useRecordsStore} from '@/stores/records'
 
 interface IState {

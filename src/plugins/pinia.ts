@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createPinia, type Pinia} from 'pinia'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 
 interface IPinia {
   pinia: Pinia

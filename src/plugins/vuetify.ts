@@ -43,7 +43,7 @@ import {
   mdiShieldAccount,
   mdiTableLargeRemove
 } from '@mdi/js'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 
 interface IVuetify {
   vuetify: Plugin

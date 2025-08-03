@@ -10,7 +10,7 @@ import {defineExpose, type Reactive, reactive, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 
 interface IState {
   selected: number

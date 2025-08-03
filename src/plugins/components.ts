@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {type App, type Plugin} from 'vue'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 import AddStock from '@/components/dialogs/AddStock.vue'
 import UpdateStock from '@/components/dialogs/UpdateStock.vue'
 import AddAccount from '@/components/dialogs/AddAccount.vue'

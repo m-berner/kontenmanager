@@ -13,9 +13,7 @@
     "default_title": "KontenManager"
   },
   "background": {
-    "scripts": [
-      "pages/background.js"
-    ]
+    "page": "pages/background.html"
   },
   "permissions": [
     "downloads",

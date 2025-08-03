@@ -1,5 +1,5 @@
 import { createPinia } from 'pinia';
-import { useApp } from '@/pages/background';
+import { useApp } from '@/apis/useApp';
 const { log } = useApp();
 const piniaConfig = {
     pinia: createPinia()

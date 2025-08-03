@@ -5,11 +5,11 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import OptionsIndex from '@/pages/OptionsIndex.vue'
+import OptionsIndex from '@/components/OptionsIndex.vue'
 import {createApp} from 'vue'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 
 const {log} = useApp()
 

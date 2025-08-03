@@ -12,7 +12,7 @@ import {useRuntimeStore} from '@/stores/runtime'
 //import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 //import {storeToRefs} from 'pinia'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 
 interface IDrawerControl {
   id: number

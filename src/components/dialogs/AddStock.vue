@@ -9,7 +9,7 @@
 import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 

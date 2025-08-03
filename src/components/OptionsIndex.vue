@@ -9,7 +9,7 @@
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
 import {onBeforeMount, type Reactive, reactive} from 'vue'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 import DynamicList from '@/components/helper/DynamicList.vue'
 
 type ITabs = { title: string, id: string }
@@ -96,9 +96,9 @@ const setService = async (ev: Event): Promise<void> => {
     await browser.storage.local.set({[CONS.STORAGE.PROPS.SERVICE]: ev.target.value})
   }
 }
-const serviceLabels = (item: string) => {
+const serviceLabels = (item: string): string => {
   const service = CONS.SERVICES.MAP.get(item)
-  if (service !== undefined) {
+  if (service !== undefined && service?.NAME !== undefined) {
     return service.NAME
   } else {
     return 'Label not found'

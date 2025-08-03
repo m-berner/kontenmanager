@@ -10,7 +10,7 @@ import {defineExpose, onBeforeMount, onMounted, type Reactive, reactive, useTemp
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {CurrencyDisplay} from 'vue-currency-input'

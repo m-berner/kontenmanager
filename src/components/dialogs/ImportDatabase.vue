@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/pages/background'
+import {useApp} from '@/apis/useApp'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {type Reactive, reactive, toRaw, type UnwrapRef} from 'vue'
