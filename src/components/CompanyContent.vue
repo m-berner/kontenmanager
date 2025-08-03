@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import OptionMenu from '@/components/helper/OptionMenu.vue'
+import DotMenu from '@/components/helper/DotMenu.vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -185,11 +185,11 @@ log('--- StocksTable.vue setup ---')
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>
         <td>
-          <OptionMenu
+          <DotMenu
             menuType="stocks"
             v-bind:menuItems="stocksMenuItems"
             v-bind:recordID="item.cID ?? -1">
-          </OptionMenu>
+          </DotMenu>
         </td>
         <td>{{ item.cCompany }}</td>
         <td>{{ item.cISIN }}</td>

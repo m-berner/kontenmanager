@@ -57,6 +57,28 @@ const state: Reactive<IState> = reactive({
   marketPlace: ''
 })
 
+const resetState = () => {
+  state.bookDate = ''
+    state.exDate = ''
+    state.description = ''
+  state.debit = 0
+  state.credit = 0
+  state.count = 0
+  state.unitQuotation= 0
+  state.bookingTypeId= -1
+  state.accountTypeId= -1
+  state.stockId=0
+  state.soli = 0
+  state.tax = 0
+  state.fee = 0
+  state.sourceTax = 0
+  state.transactionTax = 0
+}
+const onFocus = () => {
+  if (formRef.value !== null && formRef.value.resetValidation !== null) {
+    formRef.value.resetValidation()
+  }
+}
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING : onClickOk')
   let booking: object = {}
@@ -150,21 +172,14 @@ const onClickOk = async (): Promise<void> => {
             cMarketPlace: ''
           }
       }
-      const addBookingResponse = await browser.runtime.sendMessage(JSON.stringify({
+      const addBookingResponseString = await browser.runtime.sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_BOOKING, data: booking
       }))
-      const addBookingData: IBooking = JSON.parse(addBookingResponse).data
+      const addBookingData: IBooking = JSON.parse(addBookingResponseString).data
       records.addBooking(addBookingData)
       await notice([t('dialogs.AddBooking.success')])
       // NOTE: CurrencyInput ensure 0 instead of null
-      state.debit = 0
-      state.credit = 0
-      state.soli = 0
-      state.tax = 0
-      state.fee = 0
-      state.sourceTax = 0
-      state.transactionTax = 0
-      formRef.value!.reset()
+      resetState()
     } catch (e) {
       console.error(e)
       await notice([t('dialogs.addBooking.error')])
@@ -184,7 +199,7 @@ onMounted(() => {
   state.fee = 0
   state.sourceTax = 0
   state.transactionTax = 0
-  formRef.value!.reset()
+  //formRef.value!.reset()
 })
 
 log('--- AddBooking.vue setup ---')
@@ -212,7 +227,7 @@ log('--- AddBooking.vue setup ---')
             v-bind:label="t('dialogs.addBooking.dateLabel')"
             v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
             variant="outlined"
-            v-on:focus="formRef!.value!.resetValidation()"
+            v-on:focus="onFocus"
           ></v-text-field>
         </v-col>
         <v-col>
@@ -303,7 +318,7 @@ log('--- AddBooking.vue setup ---')
             v-bind:label="t('dialogs.addBooking.exDateLabel')"
             v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
             variant="outlined"
-            v-on:focus="formRef!.value!.resetValidation()"
+            v-on:focus="onFocus"
           ></v-text-field>
         </v-col>
         <v-col>

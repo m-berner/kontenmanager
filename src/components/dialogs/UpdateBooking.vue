@@ -13,6 +13,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/pages/background'
 import {useRuntimeStore} from '@/stores/runtime'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
+import {CurrencyDisplay} from 'vue-currency-input'
 
 interface IState {
   id: number
@@ -25,7 +26,7 @@ interface IState {
 
 let currentBooking: IBooking
 const {t} = useI18n()
-const {CONS, log, notice, valDateRules, valRequiredRules} = useApp()
+const {CONS, getUI, log, notice, valDateRules, valRequiredRules} = useApp()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -111,9 +112,9 @@ log('--- UpdateBooking.vue setup ---')
           autofocus
           required
           type="date"
-          variant="outlined"
           v-bind:label="t('dialogs.updateBooking.dateLabel')"
           v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
+          variant="outlined"
         ></v-text-field>
       </v-row>
       <v-row>
@@ -138,7 +139,7 @@ log('--- UpdateBooking.vue setup ---')
           <CurrencyInput
             v-model="state.credit"
             v-bind:label="t('dialogs.addBooking.creditLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
+            v-bind:options="{ currency: getUI().currency, currencyDisplay: CurrencyDisplay.hidden, hideNegligibleDecimalDigitsOnFocus: true, hideGroupingSeparatorOnFocus: true, precision: { min: 2, max: 5 }, valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>

@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import OptionMenu from '@/components/helper/OptionMenu.vue'
+import DotMenu from '@/components/helper/DotMenu.vue'
 import {type Reactive, reactive} from 'vue'
 import type {DataTableHeader} from 'vuetify'
 
@@ -124,10 +124,10 @@ log('--- HomeContent.vue setup ---')
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>
         <td>
-          <OptionMenu
+          <DotMenu
             v-bind:menuItems="homeMenuItems"
             v-bind:recordID="item.cID"
-          ></OptionMenu>
+          ></DotMenu>
         </td>
         <td>{{ d(utcDate(item.cDate), 'short') }}</td>
         <td>{{ n(item.cDebit, 'currency') }}</td>

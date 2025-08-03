@@ -12,13 +12,10 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/pages/background'
 import {storeToRefs} from 'pinia'
 import {computed} from 'vue'
-//import {useRuntimeStore} from '@/stores/runtime'
-//import {ref} from 'vue'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-//const runtime = useRuntimeStore()
 const {CONS, log} = useApp()
 const {activeAccountId} = storeToRefs(settings)
 

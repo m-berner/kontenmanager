@@ -94,7 +94,7 @@ onMounted(() => {
   runtime.optionMenuColors.set(optionMenuProps.recordID, '')
 })
 
-log('--- OptionMenu.vue setup ---')
+log('--- DotMenu.vue setup ---')
 </script>
 
 <template>

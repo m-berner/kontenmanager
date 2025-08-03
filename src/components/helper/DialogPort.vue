@@ -11,7 +11,7 @@ import {useTemplateRef} from 'vue'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const dialogRef = useTemplateRef<{ onClickOk: null, title: string }>('dialog-ref')
+const dialogRef = useTemplateRef<{ onClickOk: () => Promise<void>, title: string }>('dialog-ref')
 const runtime = useRuntimeStore()
 </script>
 
