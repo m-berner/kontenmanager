@@ -15,7 +15,7 @@ interface IRecordsStore {
   bookingTypes: IBookingType[]
   stocks: IStockStore[]
   bookingSum: number
-  bookingSumField: string
+  //bookingSumField: string
   totalController: Record<string, number>
 }
 
@@ -26,25 +26,15 @@ export const useRecordsStore = defineStore('records', {
     accounts: [],
     bookings: [],
     bookingSum: 0,
-    bookingSumField: '',
     bookingTypes: [],
     stocks: [],
     totalController: CONS.RECORDS.CONTROLLER.TOTAL
   }),
 
   getters: {
-    // accounts: (state: IRecordsStore) => state.accounts,
-    // bookings: (state: IRecordsStore) => state.bookings,
-    // //bookingSum: (state: IRecordsStore) => state.bookingSum,
-    // //bookingSumField: (state: IRecordsStore) => state.bookingSumField,
-    // bookingTypes: (state: IRecordsStore) => state.bookingTypes,
-    // stocks: (state: IRecordsStore) => state.stocks,
-    // totalController: (state: IRecordsStore) => state.totalController,
-    // You can add getters here if needed
     getAccountById: (state) => (id: number): IAccount | undefined => {
       return state.accounts.find(account => account.cID === id)
     },
-
     getBookingByAccountId: (state) => (accountId: number): IBooking[] => {
       return state.bookings.filter(booking =>
         booking.cAccountNumberID === accountId
@@ -110,10 +100,6 @@ export const useRecordsStore = defineStore('records', {
       }
     },
 
-    setBookingSumField(value: string): void {
-      this.bookingSumField = value
-    },
-
     initStore(stores: IStores): void {
       log('RECORDS: initStore')
 
@@ -135,7 +121,6 @@ export const useRecordsStore = defineStore('records', {
         const dateB = new Date(b.cDate).getTime()
         return dateB - dateA
       })
-      console.error(this.bookings)
     },
 
     addAccount(account: IAccount): void {
@@ -221,7 +206,6 @@ export const useRecordsStore = defineStore('records', {
       this.bookingTypes.length = 0
       this.stocks.length = 0
       this.bookingSum = 0
-      this.bookingSumField = ''
     }
   }
 })

@@ -12,7 +12,7 @@ import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
-import {computed, onMounted} from 'vue'
+import {computed} from 'vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -25,91 +25,91 @@ const onIconClick = async (ev: Event): Promise<void> => {
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
-      case CONS.DIALOGS.ADD_STOCK:
+      case CONS.COMPONENTS.DIALOGS.ADD_STOCK:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_STOCK,
+          dialogName: CONS.COMPONENTS.DIALOGS.ADD_STOCK,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.UPDATE_STOCK:
+      case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.UPDATE_STOCK,
+          dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.DELETE_STOCK:
+      case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.DELETE_STOCK,
+          dialogName: CONS.COMPONENTS.DIALOGS.DELETE_STOCK,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.ADD_ACCOUNT:
+      case CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_ACCOUNT,
+          dialogName: CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.UPDATE_ACCOUNT:
+      case CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.UPDATE_ACCOUNT,
+          dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.DELETE_ACCOUNT:
+      case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.DELETE_ACCOUNT,
+          dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.ADD_BOOKING_TYPE:
+      case CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_BOOKING_TYPE,
+          dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.DELETE_BOOKING_TYPE:
+      case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.DELETE_BOOKING_TYPE,
+          dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.ADD_BOOKING:
+      case CONS.COMPONENTS.DIALOGS.ADD_BOOKING:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.ADD_BOOKING,
+          dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.EXPORT_DATABASE:
+      case CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.EXPORT_DATABASE,
+          dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.IMPORT_DATABASE:
+      case CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.IMPORT_DATABASE,
+          dialogName: CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.SHOW_ACCOUNTING:
+      case CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.SHOW_ACCOUNTING,
+          dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING,
           okButton: false,
           visibility: true
         })
         break
-      case CONS.DIALOGS.SETTING:
+      case CONS.COMPONENTS.DIALOGS.SETTING:
         await browser.runtime.openOptionsPage()
         break
       default:
@@ -128,13 +128,6 @@ const isStockAccount = computed((): boolean => {
   } else {
     return false
   }
-})
-
-onMounted(() => {
-
-//console.error(records.accounts[records.getAccountIndexById(settings.activeAccountId)].cStockAccount)
-// console.error(records.accounts, settings.activeAccountId, records.getAccountIndexById(2))
-
 })
 
 log('--- HeaderBar.vue setup ---')
@@ -174,7 +167,7 @@ log('--- HeaderBar.vue setup ---')
       location="top" v-bind:text="t('headerBar.addStock')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_STOCK"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_STOCK"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -187,7 +180,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_ACCOUNT"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -199,7 +192,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.updateAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.UPDATE_ACCOUNT"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -211,7 +204,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.deleteAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.DELETE_ACCOUNT"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -224,7 +217,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -237,7 +230,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.addBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.ADD_BOOKING_TYPE"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -249,7 +242,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.deleteBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.DELETE_BOOKING_TYPE"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -262,7 +255,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.exportToFile')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.EXPORT_DATABASE"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -274,7 +267,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.importDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.IMPORT_DATABASE"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -287,7 +280,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.showAccounting')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.SHOW_ACCOUNTING"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING"
           size="large"
           v-bind="props"
           variant="tonal"
@@ -300,7 +293,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.settings')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.DIALOGS.SETTING"
+          v-bind:id="CONS.COMPONENTS.DIALOGS.SETTING"
           icon="$settings"
           size="large"
           v-bind="props"

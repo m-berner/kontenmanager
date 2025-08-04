@@ -114,7 +114,7 @@
     },
     "deleteStock": {
       "title": "Unternehmen entfernen",
-      "success": "Unternehmen wurde hinzugefügt",
+      "success": "Unternehmen wurde entfernt",
       "error": "Unternehmen existiert bereits"
     },
     "updateStock": {
@@ -128,7 +128,7 @@
       "meetingDay": "Hauptversammlung",
       "quarterDay": "Quartalszahlen",
       "url": "URL",
-      "success": "Unternehmen wurde akualisiert",
+      "success": "Unternehmen wurde aktualisiert",
       "error": "Fehler"
     },
     "updateAccount": {
@@ -210,7 +210,7 @@
     "menuItems": {
       "delete": "Unternehmen löschen",
       "dividend": "Dividenden Übersicht",
-      "update": "Unternehmen konfigurieren",
+      "update": "Unternehmen aktualisieren",
       "link": "Externen Link öffnen"
     },
     "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
@@ -372,28 +372,13 @@
     }
   },
   "optionsPage": {
-    "tabs": [
-      {
-        "title": "Themen & Dienste",
-        "id": "register_ge"
-      },
-      {
-        "title": "Marktplätze",
-        "id": "register_mp"
-      },
-      {
-        "title": "Indizes",
-        "id": "register_ind"
-      },
-      {
-        "title": "Rohstoffe",
-        "id": "register_mat"
-      },
-      {
-        "title": "Währungen",
-        "id": "register_ex"
-      }
-    ],
+    "tabs": {
+      "ge": "Themen & Dienste",
+      "mp": "Marktplätze",
+      "ind": "Indizes",
+      "mat": "Rohstoffe",
+      "ex": "Währungen"
+    },
     "themeNames": {
       "earth": "Erde",
       "ocean": "Ozean",

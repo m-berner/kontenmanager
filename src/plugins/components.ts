@@ -24,18 +24,18 @@ const {CONS, log} = useApp()
 
 const ComponentsPlugin: Plugin = {
   install: (app: App) => {
-    app.component(CONS.DIALOGS.ADD_STOCK, AddStock)
-    app.component(CONS.DIALOGS.UPDATE_STOCK, UpdateStock)
-    app.component(CONS.DIALOGS.ADD_ACCOUNT, AddAccount)
-    app.component(CONS.DIALOGS.UPDATE_ACCOUNT, UpdateAccount)
-    app.component(CONS.DIALOGS.DELETE_ACCOUNT, DeleteAccount)
-    app.component(CONS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType)
-    app.component(CONS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType)
-    app.component(CONS.DIALOGS.ADD_BOOKING, AddBooking)
-    app.component(CONS.DIALOGS.UPDATE_BOOKING, UpdateBooking)
-    app.component(CONS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
-    app.component(CONS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
-    app.component(CONS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)
+    app.component(CONS.COMPONENTS.DIALOGS.ADD_STOCK, AddStock)
+    app.component(CONS.COMPONENTS.DIALOGS.UPDATE_STOCK, UpdateStock)
+    app.component(CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT, AddAccount)
+    app.component(CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT, UpdateAccount)
+    app.component(CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT, DeleteAccount)
+    app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType)
+    app.component(CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType)
+    app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING, AddBooking)
+    app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING, UpdateBooking)
+    app.component(CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
+    app.component(CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
+    app.component(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)
   }
 }
 

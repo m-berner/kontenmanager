@@ -372,28 +372,13 @@
     }
   },
   "optionsPage": {
-    "tabs": [
-      {
-        "title": "Themen & Dienste",
-        "id": "register_ge"
-      },
-      {
-        "title": "Marktplätze",
-        "id": "register_mp"
-      },
-      {
-        "title": "Indizes",
-        "id": "register_ind"
-      },
-      {
-        "title": "Rohstoffe",
-        "id": "register_mat"
-      },
-      {
-        "title": "Währungen",
-        "id": "register_ex"
-      }
-    ],
+    "tabs": {
+      "ge": "Themen & Dienste",
+      "mp": "Marktplätze",
+      "ind": "Indizes",
+      "mat": "Rohstoffe",
+      "ex": "Währungen"
+    },
     "themeNames": {
       "earth": "Erde",
       "ocean": "Ozean",

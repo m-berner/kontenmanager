@@ -46,7 +46,7 @@ log('--- TitleBar.vue setup ---')
 <template>
   <v-app-bar app color="secondary" v-bind:flat="true">
     <template v-slot:prepend>
-      <img alt="logo" src="../assets/icon48.png">
+      <img alt="logo" v-bind:src=CONS.COMPONENTS.TITLE_BAR.ICON>
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field

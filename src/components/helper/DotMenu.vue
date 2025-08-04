@@ -36,14 +36,14 @@ const onIconClick = async (ev: Event): Promise<void> => {
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
-      case CONS.DIALOGS.UPDATE_BOOKING:
+      case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.UPDATE_BOOKING,
+          dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.DELETE_BOOKING:
+      case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
         records.deleteBooking(optionMenuProps.recordID)
         records.sumBookings()
         await browser.runtime.sendMessage(JSON.stringify({
@@ -55,14 +55,14 @@ const onIconClick = async (ev: Event): Promise<void> => {
           runtime.optionMenuColors.set(m, '')
         }
         break
-      case CONS.DIALOGS.UPDATE_STOCK:
+      case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
         runtime.setTeleport({
-          dialogName: CONS.DIALOGS.UPDATE_STOCK,
+          dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
           okButton: true,
           visibility: true
         })
         break
-      case CONS.DIALOGS.DELETE_STOCK:
+      case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
         const deleteAble = records.bookings.filter((booking) => {
           return optionMenuProps.recordID === booking.cStockID
         })

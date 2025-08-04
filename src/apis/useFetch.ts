@@ -486,7 +486,6 @@ export const useFetch = () => {
           }
           _changes.push({...entry})
         }
-        console.error(trCollection, _changes)
       }
       return _changes
     },

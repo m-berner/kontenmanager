@@ -17,7 +17,7 @@ import zipPack from 'vite-plugin-zip-pack'
 export default defineConfig({
     plugins: [
         vue(),
-        vuetify({ autoImport: true }),
+        vuetify({autoImport: true}),
         viteStaticCopy({
             targets: [
                 {
@@ -51,7 +51,7 @@ export default defineConfig({
     build: {
         minify: false,
         cssMinify: false,
-        target: ['es2022', 'firefox132'],
+        target: ['es2022', 'firefox140'],
         assetsDir: 'assets',
         assetsInlineLimit: 0,
         emptyOutDir: false,

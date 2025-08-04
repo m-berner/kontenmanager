@@ -236,7 +236,7 @@ declare global {
 
 const {CONS, log} = useApp()
 
-if (window.document.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
+if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
   const {
     dbi,
     clearStores,
@@ -325,21 +325,21 @@ if (window.document.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.BOOKINGS.NAME,
             {
-              keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+              keyPath: [CONS.DB.STORES.BOOKINGS.FIELDS.ID, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID],
               autoIncrement: true
             }
           )
           const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.BOOKING_TYPES.NAME,
             {
-              keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+              keyPath: [CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID],
               autoIncrement: true
             }
           )
           const requestCreateStockStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.STOCKS.NAME,
             {
-              keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+              keyPath: [CONS.DB.STORES.STOCKS.FIELDS.ID, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID],
               autoIncrement: true
             }
           )
@@ -353,6 +353,7 @@ if (window.document.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
           requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, {unique: true})
           requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, {unique: false})
           requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, {unique: false})
+          requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k3`, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
         }
         // const updateDB = (): void => {
         //   log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')

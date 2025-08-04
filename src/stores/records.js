@@ -7,7 +7,6 @@ export const useRecordsStore = defineStore('records', {
         accounts: [],
         bookings: [],
         bookingSum: 0,
-        bookingSumField: '',
         bookingTypes: [],
         stocks: [],
         totalController: CONS.RECORDS.CONTROLLER.TOTAL
@@ -69,9 +68,6 @@ export const useRecordsStore = defineStore('records', {
                 this.bookingSum = 0;
             }
         },
-        setBookingSumField(value) {
-            this.bookingSumField = value;
-        },
         initStore(stores) {
             log('RECORDS: initStore');
             this.accounts.length = 0;
@@ -87,7 +83,6 @@ export const useRecordsStore = defineStore('records', {
                 const dateB = new Date(b.cDate).getTime();
                 return dateB - dateA;
             });
-            console.error(this.bookings);
         },
         addAccount(account) {
             log('RECORDS: addAccount');
@@ -161,7 +156,6 @@ export const useRecordsStore = defineStore('records', {
             this.bookingTypes.length = 0;
             this.stocks.length = 0;
             this.bookingSum = 0;
-            this.bookingSumField = '';
         }
     }
 });

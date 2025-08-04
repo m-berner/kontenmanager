@@ -2,7 +2,7 @@ import { useApp } from '@/apis/useApp';
 import { useDatabase } from '@/apis/useDatabase';
 import { useFetch } from '@/apis/useFetch';
 const { CONS, log } = useApp();
-if (window.document.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
+if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const { dbi, clearStores, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, updateBooking, exportStores, importStores, deleteStock, open } = useDatabase();
     const { fetchCompanyData, fetchMinRateMaxData, fetchDailyChangeData, fetchExchangesData, fetchMaterialData, fetchIndexData, fetchDateData } = useFetch();
     const onInstall = async () => {
@@ -60,15 +60,15 @@ if (window.document.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                         autoIncrement: true
                     });
                     const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
-                        keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+                        keyPath: [CONS.DB.STORES.BOOKINGS.FIELDS.ID, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID],
                         autoIncrement: true
                     });
                     const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
-                        keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+                        keyPath: [CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID],
                         autoIncrement: true
                     });
                     const requestCreateStockStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.STOCKS.NAME, {
-                        keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+                        keyPath: [CONS.DB.STORES.STOCKS.FIELDS.ID, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID],
                         autoIncrement: true
                     });
                     requestCreateAccountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
@@ -81,6 +81,7 @@ if (window.document.location.href.includes(CONS.DEFAULTS.BACKGROUND)) {
                     requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, { unique: true });
                     requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, { unique: false });
                     requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
+                    requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k3`, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
                 };
                 if (ev.oldVersion === 0) {
                     createDB();

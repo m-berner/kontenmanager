@@ -1,4 +1,4 @@
-**A webextension, which serves a portfolio of shares.**
+**A webextension, which serves private account management.**
 
 _For additional developer information see:_
 
@@ -10,7 +10,7 @@ _For additional developer information see:_
 _Developer environment:_
 
 - Windows 11
-- Node 23.1.0
+- Node v22.17.0
 
 To build the application run the "build" script.
 In case of complication see vite.config.js to

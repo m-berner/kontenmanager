@@ -16,7 +16,7 @@ type ITabs = { title: string, id: string }
 
 interface IOptionsIndex {
   tab: number
-  tabs: ITabs[]
+  //tabs: ITabs[]
   skin: string
   service: string
   exchanges: string[]
@@ -24,7 +24,7 @@ interface IOptionsIndex {
   markets: string[]
   materials: string[]
   themeKeys: string[]
-  themeNames: { [p: string]: string }
+  //themeNames: { [p: string]: string }
   serviceKeys: string[]
   indexesA: string[]
   indexesB: string[]
@@ -38,20 +38,20 @@ const {CONS, log} = useApp()
 
 const indexesKeysA: string[] = []
 const indexesKeysB: string[] = []
-const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES)
-for (let i = 0; i < indexesKeys.length; i++) {
-  if (i < indexesKeys.length / 2) {
-    indexesKeysA.push(indexesKeys[i])
+let j = 0
+for (let entry of CONS.SETTINGS.INDEXES.keys()) {
+  if (j < CONS.SETTINGS.INDEXES.size / 2) {
+    indexesKeysA.push(entry)
   } else {
-    indexesKeysB.push(indexesKeys[i])
+    indexesKeysB.push(entry)
   }
+  j++
 }
 
 const materialsKeysA: string[] = []
 const materialsKeysB: string[] = []
 let i = 0
 for (let entry of CONS.SETTINGS.MATERIALS.keys()) {
-  materialsKeysA.push(entry)
   if (i < CONS.SETTINGS.MATERIALS.size / 2) {
     materialsKeysA.push(entry)
   } else {
@@ -60,10 +60,8 @@ for (let entry of CONS.SETTINGS.MATERIALS.keys()) {
   i++
 }
 
-// noinspection TypeScriptValidateTypes
 const state: Reactive<IOptionsIndex> = reactive<IOptionsIndex>({
   tab: 0,
-  tabs: tm('optionsPage.tabs'),
   skin: '',
   service: '',
   exchanges: [],
@@ -71,7 +69,6 @@ const state: Reactive<IOptionsIndex> = reactive<IOptionsIndex>({
   markets: [],
   materials: [],
   themeKeys: Object.keys(theme.themes.value),
-  themeNames: tm(`optionsPage.themeNames`),
   serviceKeys: [...CONS.SERVICES.MAP.keys()],
   indexesA: indexesKeysA,
   indexesB: indexesKeysB,
@@ -104,6 +101,36 @@ const serviceLabels = (item: string): string => {
     return 'Label not found'
   }
 }
+const optionsTabs: ITabs[] = [
+  {
+    title: t('optionsPage.tabs.ge'),
+    id: 'register_ge'
+  },
+  {
+    title: t('optionsPage.tabs.mp'),
+    id: 'register_mp'
+  },
+  {
+    title: t('optionsPage.tabs.ind'),
+    id: 'register_ind'
+  },
+  {
+    title: t('optionsPage.tabs.mat'),
+    id: 'register_mat'
+  },
+  {
+    title: t('optionsPage.tabs.ex'),
+    id: 'register_ex'
+  }
+]
+const optionsThemeNames: { [p: string]: string } = {
+  earth: t('optionsPage.themeNames.earth'),
+  ocean: t('optionsPage.themeNames.ocean'),
+  sky: t('optionsPage.themeNames.sky'),
+  meadow: t('optionsPage.themeNames.meadow'),
+  dark: t('optionsPage.themeNames.dark'),
+  light: t('optionsPage.themeNames.light')
+}
 
 onBeforeMount(async (): Promise<void> => {
   const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__GET_ALL}))
@@ -124,7 +151,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
     <v-main>
       <v-container>
         <v-tabs v-model="state.tab" show-arrows>
-          <v-tab v-for="(item, i) in state.tabs" v-bind:key="item.id" v-bind:value="i">
+          <v-tab v-for="(item, i) in optionsTabs" v-bind:key="item.id" v-bind:value="i">
             {{ rt(item.title) }}
           </v-tab>
         </v-tabs>
@@ -136,7 +163,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                   <v-radio
                     v-for="item in state.themeKeys"
                     v-bind:key="item"
-                    v-bind:label="rt(state.themeNames[item])"
+                    v-bind:label="optionsThemeNames[item]"
                     v-bind:value="item"
                     v-on:click="setSkin"
                   ></v-radio>

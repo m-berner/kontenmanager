@@ -5,7 +5,6 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-
 export const useApp = () => {
   enum MESSAGES {
     DB__DELETE_ALL,
@@ -214,9 +213,6 @@ export const useApp = () => {
       CURRENT_VERSION: 26
     },
     DEFAULTS: {
-      BACKGROUND: 'background.html',
-      APP: 'app.html',
-      OPTIONS: 'options.html',
       CURRENCY: 'EUR',
       LANG: 'de',
       LOCALE: 'de-DE',
@@ -304,22 +300,32 @@ export const useApp = () => {
         }
       ]
     },
-    DIALOGS: {
-      ADD_ACCOUNT: 'AddAccount',
-      UPDATE_ACCOUNT: 'UpdateAccount',
-      DELETE_ACCOUNT: 'DeleteAccount',
-      ADD_STOCK: 'AddStock',
-      UPDATE_STOCK: 'UpdateStock',
-      DELETE_STOCK: 'DeleteStock',
-      ADD_BOOKING_TYPE: 'AddBookingType',
-      DELETE_BOOKING_TYPE: 'DeleteBookingType',
-      ADD_BOOKING: 'AddBooking',
-      UPDATE_BOOKING: 'UpdateBooking',
-      DELETE_BOOKING: 'DeleteBooking',
-      EXPORT_DATABASE: 'ExportDatabase',
-      IMPORT_DATABASE: 'ImportDatabase',
-      SHOW_ACCOUNTING: 'ShowAccounting',
-      SETTING: 'setting'
+    COMPONENTS: {
+      TITLE_BAR: {
+        ICON: "../assets/icon48.png"
+      },
+      DIALOGS: {
+        ADD_ACCOUNT: 'AddAccount',
+        UPDATE_ACCOUNT: 'UpdateAccount',
+        DELETE_ACCOUNT: 'DeleteAccount',
+        ADD_STOCK: 'AddStock',
+        UPDATE_STOCK: 'UpdateStock',
+        DELETE_STOCK: 'DeleteStock',
+        ADD_BOOKING_TYPE: 'AddBookingType',
+        DELETE_BOOKING_TYPE: 'DeleteBookingType',
+        ADD_BOOKING: 'AddBooking',
+        UPDATE_BOOKING: 'UpdateBooking',
+        DELETE_BOOKING: 'DeleteBooking',
+        EXPORT_DATABASE: 'ExportDatabase',
+        IMPORT_DATABASE: 'ImportDatabase',
+        SHOW_ACCOUNTING: 'ShowAccounting',
+        SETTING: 'setting'
+      }
+    },
+    PAGES: {
+      BACKGROUND: 'background.html',
+      APP: 'app.html',
+      OPTIONS: 'options.html',
     },
     DYNAMIC_LIST: {
       TYPES: {
