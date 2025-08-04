@@ -8,7 +8,7 @@ export const useSettingsStore = defineStore('settings', {
             skin: CONS.DEFAULTS.STORAGE.SKIN,
             bookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
             stocksPerPage: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE,
-            activeAccountId: -1,
+            activeAccountId: 0,
             partner: false,
             service: CONS.DEFAULTS.STORAGE.SERVICE,
             materials: CONS.DEFAULTS.STORAGE.MATERIALS,

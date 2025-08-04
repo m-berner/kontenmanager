@@ -30,7 +30,7 @@ export const useSettingsStore = defineStore('settings', {
       skin: CONS.DEFAULTS.STORAGE.SKIN,
       bookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
       stocksPerPage: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE,
-      activeAccountId: -1,
+      activeAccountId: 0,
       partner: false,
       service: CONS.DEFAULTS.STORAGE.SERVICE,
       materials: CONS.DEFAULTS.STORAGE.MATERIALS,
@@ -40,17 +40,7 @@ export const useSettingsStore = defineStore('settings', {
     }
   },
   getters: {
-    //activeAccountId: (state): number => state.activeAccountId,
-    // Computed properties for commonly used derived state
-    //partner: (state): boolean => state.partner,
-    //skin: (state): string => state.skin,
-    //bookingsPerPage: (state) => state.bookingsPerPage,
-    //stocksPerPage: (state) => state.stocksPerPage,
     hasActiveAccount: (state): boolean => state.activeAccountId !== -1,
-    //materials: (state) => state.materials,
-    //markets: (state) => state.markets,
-    //indexes: (state) => state.indexes,
-    //exchanges: (state) => state.exchanges
   },
   actions: {
     setActiveAccountId(value: number) {

@@ -102,7 +102,7 @@ export const useRecordsStore = defineStore('records', {
 
     initStore(stores: IStores): void {
       log('RECORDS: initStore')
-
+      const settings = useSettingsStore()
       // Clear existing data
       this.accounts.length = 0
       this.bookings.length = 0
@@ -110,8 +110,10 @@ export const useRecordsStore = defineStore('records', {
       this.stocks.length = 0
 
       // Set new data
+      this.accounts.push({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false})
       this.accounts.push(...stores.accounts)
       this.bookings.push(...stores.bookings)
+      this.bookingTypes.push({ cID: 0, cName:  '', cAccountNumberID: settings.activeAccountId })
       this.bookingTypes.push(...stores.bookingTypes)
       this.stocks.push(...stores.stocks)
 

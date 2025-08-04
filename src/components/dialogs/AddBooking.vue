@@ -46,8 +46,8 @@ const state: Reactive<IState> = reactive({
   description: '',
   count: 0,
   unitQuotation: 0,
-  bookingTypeId: -1,
-  accountTypeId: -1,
+  bookingTypeId: 0,
+  accountTypeId: 0,
   stockId: 0,
   sourceTax: 0,
   transactionTax: 0,
@@ -59,15 +59,15 @@ const state: Reactive<IState> = reactive({
 
 const resetState = () => {
   state.bookDate = ''
-    state.exDate = ''
-    state.description = ''
+  state.exDate = ''
+  state.description = ''
   state.debit = 0
   state.credit = 0
   state.count = 0
-  state.unitQuotation= 0
-  state.bookingTypeId= -1
-  state.accountTypeId= -1
-  state.stockId=0
+  state.unitQuotation = 0
+  state.bookingTypeId = 0
+  state.accountTypeId = -1
+  state.stockId = 0
   state.soli = 0
   state.tax = 0
   state.fee = 0
@@ -199,7 +199,7 @@ onMounted(() => {
   state.fee = 0
   state.sourceTax = 0
   state.transactionTax = 0
-  //formRef.value!.reset()
+  state.bookingTypeId = 0
 })
 
 log('--- AddBooking.vue setup ---')
@@ -223,10 +223,10 @@ log('--- AddBooking.vue setup ---')
             autofocus
             density="compact"
             required
+            variant="outlined"
             type="date"
             v-bind:label="t('dialogs.addBooking.dateLabel')"
             v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
-            variant="outlined"
             v-on:focus="onFocus"
           ></v-text-field>
         </v-col>
@@ -236,14 +236,14 @@ log('--- AddBooking.vue setup ---')
             density="compact"
             max-width="300"
             required
-            v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-            v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+            variant="outlined"
+            v-bind:itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+            v-bind:itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
             v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
             v-bind:label="t('dialogs.addBooking.bookingTypeLabel')"
             v-bind:menu=false
-            v-bind:menu-props="{ maxHeight: 250 }"
+            v-bind:menuProps="{ maxHeight: 250 }"
             v-bind:rules="valRequiredRules([t('validators.requiredRule', 0)])"
-            variant="outlined"
             v-on:update:modelValue="(ev) => {console.error('CHANGE', ev)}"
           ></v-select>
         </v-col>
@@ -256,8 +256,8 @@ log('--- AddBooking.vue setup ---')
             class="withoutSpinner"
             density="compact"
             type="number"
-            v-bind:label="t('dialogs.addBooking.countLabel')"
             variant="outlined"
+            v-bind:label="t('dialogs.addBooking.countLabel')"
           ></v-text-field>
         </v-col>
         <v-col>
@@ -314,10 +314,10 @@ log('--- AddBooking.vue setup ---')
             autofocus
             density="compact"
             required
+            variant="outlined"
             type="date"
             v-bind:label="t('dialogs.addBooking.exDateLabel')"
             v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
-            variant="outlined"
             v-on:focus="onFocus"
           ></v-text-field>
         </v-col>
@@ -337,6 +337,7 @@ log('--- AddBooking.vue setup ---')
             v-model="state.stockId"
             density="compact"
             max-width="300"
+            variant="outlined"
             v-bind:item-title="CONS.DB.STORES.STOCKS.FIELDS.COMPANY"
             v-bind:item-value="CONS.DB.STORES.STOCKS.FIELDS.ID"
             v-bind:items="records.stocks.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
@@ -344,7 +345,6 @@ log('--- AddBooking.vue setup ---')
             v-bind:menu=false
             v-bind:menu-props="{ maxHeight: 250 }"
             v-bind:rules="valRequiredRules([t('validators.requiredRule', 0)])"
-            variant="outlined"
           ></v-select>
         </v-col>
         <v-col>
@@ -353,11 +353,11 @@ log('--- AddBooking.vue setup ---')
             v-model="state.marketPlace"
             density="compact"
             max-width="300"
+            variant="outlined"
             v-bind:items="settings.markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
             v-bind:label="t('dialogs.addBooking.marketPlaceLabel')"
             v-bind:menu=false
-            v-bind:menu-props="{ maxHeight: 250 }"
-            variant="outlined"
+            v-bind:menuProps="{ maxHeight: 250 }"
           ></v-select>
         </v-col>
       </v-row>
@@ -385,8 +385,8 @@ log('--- AddBooking.vue setup ---')
             v-model="state.description"
             density="compact"
             required
-            v-bind:label="t('dialogs.addBooking.descriptionLabel')"
             variant="outlined"
+            v-bind:label="t('dialogs.addBooking.descriptionLabel')"
           ></v-text-field>
         </v-col>
       </v-row>

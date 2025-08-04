@@ -70,12 +70,15 @@ export const useRecordsStore = defineStore('records', {
         },
         initStore(stores) {
             log('RECORDS: initStore');
+            const settings = useSettingsStore();
             this.accounts.length = 0;
             this.bookings.length = 0;
             this.bookingTypes.length = 0;
             this.stocks.length = 0;
+            this.accounts.push({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false });
             this.accounts.push(...stores.accounts);
             this.bookings.push(...stores.bookings);
+            this.bookingTypes.push({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId });
             this.bookingTypes.push(...stores.bookingTypes);
             this.stocks.push(...stores.stocks);
             this.bookings.sort((a, b) => {

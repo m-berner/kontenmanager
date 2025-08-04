@@ -57,9 +57,10 @@ log('--- TitleBar.vue setup ---')
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
-
       v-model="activeAccountId"
       max-width="300"
+      density="compact"
+      variant="outlined"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
       v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
       v-bind:items="records.accounts"
