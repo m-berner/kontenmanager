@@ -100,6 +100,7 @@ onMounted(() => {
   state.credit = currentBooking.cCredit
   state.description = currentBooking.cDescription
 })
+
 log('--- UpdateBooking.vue setup ---')
 </script>
 

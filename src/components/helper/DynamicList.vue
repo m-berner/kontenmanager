@@ -67,7 +67,7 @@ const mRemoveItem = async (n: number): Promise<void> => {
     }
     state.list.splice(n, 1)
     state.newItem = ''
-    await browser.storage.local.set({storageItem})
+    await browser.storage.local.set(storageItem)
   }
 }
 

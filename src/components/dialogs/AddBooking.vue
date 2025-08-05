@@ -352,8 +352,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
             v-model="state.marketPlace"
             density="compact"
-            max-width="300"
-            variant="outlined"
+            max-width="350"
             v-bind:items="settings.markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
             v-bind:label="t('dialogs.addBooking.marketPlaceLabel')"
             v-bind:menu=false

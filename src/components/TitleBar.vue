@@ -51,6 +51,7 @@ log('--- TitleBar.vue setup ---')
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
       max-width="150"
+      hide-details
       v-bind:disabled="true"
       v-bind:label="t('titleBar.bookingsSumLabel')"
       v-bind:modelValue="n(records.bookingSum, 'currency')"
@@ -58,7 +59,8 @@ log('--- TitleBar.vue setup ---')
     <v-spacer></v-spacer>
     <v-select
       v-model="activeAccountId"
-      max-width="300"
+      max-width="350"
+      hide-details
       density="compact"
       variant="outlined"
       v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"

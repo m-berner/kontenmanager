@@ -171,7 +171,6 @@ const onClickOk = async (): Promise<void> => {
           type: CONS.MESSAGES.DB__ADD_STORES,
           data: stores
         }))
-        runtime.resetTeleport()
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {
@@ -215,10 +214,10 @@ const onClickOk = async (): Promise<void> => {
           stocks: stocks
         }
         await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
-        runtime.resetTeleport()
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }
+      runtime.resetTeleport()
     }
   }
   const fr: FileReader = new FileReader()
