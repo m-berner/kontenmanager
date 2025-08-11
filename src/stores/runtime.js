@@ -43,6 +43,9 @@ export const useRuntimeStore = defineStore('runtime', {
                 okButton: true,
                 visibility: false,
             };
+            for (const m of this.optionMenuColors.keys()) {
+                this.optionMenuColors.set(m, '');
+            }
         },
         resetOptionsMenuColors() {
             for (const m of this.optionMenuColors.keys()) {

@@ -6,26 +6,79 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {type CurrencyInputOptions, useCurrencyInput} from 'vue-currency-input'
+import {onMounted, type Reactive, reactive, watch} from 'vue'
+import {useI18n} from 'vue-i18n'
 
 interface CurrencyInputProps {
-  options: CurrencyInputOptions
+  modelValue: number
   label: string
   disabled?: boolean
 }
 
+interface IState {
+  unformattedValue: number
+  formattedValue: string
+  isFocused: boolean
+}
+
 const currencyInputProps = defineProps<CurrencyInputProps>()
-const {inputRef, formattedValue} = useCurrencyInput(currencyInputProps.options)
+const emit = defineEmits(['amount'])
+const {n} = useI18n()
+
+const state: Reactive<IState> = reactive({
+  unformattedValue: currencyInputProps.modelValue,
+  formattedValue: '',
+  isFocused: false
+})
+
+const formatCurrency = (value: number): string => {
+  if (!value) return ''
+  return n(value, 'currency')
+}
+
+const parseCurrency = (value: string): number => {
+  if (!value) return 0
+  return Number.parseFloat(value.replace(/[^0-9.-]+/g, ''))
+}
+
+const onFocus = (): void => {
+  state.isFocused = true
+  // Show raw number for editing
+  state.formattedValue = state.unformattedValue.toString()
+}
+
+const onBlur = (): void => {
+  state.isFocused = false
+  state.unformattedValue = parseCurrency(state.formattedValue)
+  state.formattedValue = formatCurrency(state.unformattedValue)
+}
+
+const onInput = (value: number): void => {
+  if (state.isFocused) {
+    state.unformattedValue = value
+  }
+}
+
+watch(() => state.unformattedValue, (value) => {
+  emit('amount', value)
+})
+
+onMounted(() => {
+  state.formattedValue = formatCurrency(state.unformattedValue)
+})
+
 </script>
 
 <template>
   <v-text-field
-    v-model="formattedValue"
-    ref="inputRef"
+    v-model="state.formattedValue"
     density="compact"
     type="text"
     variant="outlined"
     v-bind:disabled="currencyInputProps.disabled"
     v-bind:label="currencyInputProps.label"
+    v-on:blur="onBlur"
+    v-on:focus="onFocus"
+    v-on:input="onInput"
   ></v-text-field>
 </template>

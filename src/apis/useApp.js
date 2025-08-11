@@ -294,7 +294,7 @@ export const useApp = () => {
         },
         COMPONENTS: {
             TITLE_BAR: {
-                ICON: "../assets/icon48.png"
+                ICON: '../assets/icon48.png'
             },
             DIALOGS: {
                 ADD_ACCOUNT: 'AddAccount',
@@ -601,6 +601,11 @@ export const useApp = () => {
         valRequiredRules: (msgArray) => {
             return [
                 (v) => v !== null || msgArray[0]
+            ];
+        },
+        valPositiveIntegerRules: (msgArray) => {
+            return [
+                (v) => v > 0 || msgArray[0]
             ];
         },
         valBrandNameRules: (msgArray) => {

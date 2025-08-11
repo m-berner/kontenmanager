@@ -74,11 +74,12 @@ const resetState = () => {
   state.sourceTax = 0
   state.transactionTax = 0
 }
-const onFocus = () => {
-  if (formRef.value !== null && formRef.value.resetValidation !== null) {
-    formRef.value.resetValidation()
-  }
-}
+// const onFocus = () => {
+//   if (formRef.value !== null && formRef.value !== undefined && formRef.value.  .resetValidation !== null) {
+//     formRef.value.resetValidation()
+//   }
+// }
+
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING : onClickOk')
   let booking: object = {}
@@ -88,8 +89,8 @@ const onClickOk = async (): Promise<void> => {
     console.error('Form ref is null')
     return
   }
-  const formIs = await formRef.value.validate()
-  if (formIs.valid) {
+  //const formIs = await formRef.value.validate()
+  //if (formIs.valid) {
     try {
       costs = state.soli + state.transactionTax + state.tax + state.fee + state.sourceTax
       switch (state.bookingTypeId) {
@@ -184,7 +185,6 @@ const onClickOk = async (): Promise<void> => {
       console.error(e)
       await notice([t('dialogs.addBooking.error')])
     }
-  }
 }
 const title = t('dialogs.addBooking.title')
 defineExpose({onClickOk, title})
@@ -227,7 +227,6 @@ log('--- AddBooking.vue setup ---')
             type="date"
             v-bind:label="t('dialogs.addBooking.dateLabel')"
             v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
-            v-on:focus="onFocus"
           ></v-text-field>
         </v-col>
         <v-col>
@@ -265,8 +264,7 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
             v-model="state.unitQuotation"
             v-bind:label="t('dialogs.addBooking.unitQuotationLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0} }"
-          ></CurrencyInput>
+            ></CurrencyInput>
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -275,7 +273,6 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId > 3"
             v-model="state.credit"
             v-bind:label="t('dialogs.addBooking.creditLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
@@ -283,7 +280,6 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId > 3"
             v-model="state.debit"
             v-bind:label="t('dialogs.addBooking.debitLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
       </v-row>
@@ -293,7 +289,6 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId < 4 && state.bookingTypeId > 1"
             v-model="state.tax"
             v-bind:label="t('dialogs.addBooking.taxLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
@@ -301,7 +296,6 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId < 4 && state.bookingTypeId > 1"
             v-model="state.soli"
             v-bind:label="t('dialogs.addBooking.soliLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
       </v-row>
@@ -318,7 +312,6 @@ log('--- AddBooking.vue setup ---')
             type="date"
             v-bind:label="t('dialogs.addBooking.exDateLabel')"
             v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
-            v-on:focus="onFocus"
           ></v-text-field>
         </v-col>
         <v-col>
@@ -326,7 +319,6 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId === 3"
             v-model="state.sourceTax"
             v-bind:label="t('dialogs.addBooking.sourceTaxLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
       </v-row>
@@ -366,7 +358,6 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
             v-model="state.fee"
             v-bind:label="t('dialogs.addBooking.feeLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
         <v-col>
@@ -374,7 +365,6 @@ log('--- AddBooking.vue setup ---')
             v-if="state.bookingTypeId === 1"
             v-model="state.transactionTax"
             v-bind:label="t('dialogs.addBooking.transactionTaxLabel')"
-            v-bind:options="{ currency: 'EUR', valueRange: {min: 0}  }"
           ></CurrencyInput>
         </v-col>
       </v-row>

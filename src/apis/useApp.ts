@@ -5,6 +5,19 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+type TStringValidator = (v: string) => boolean | string
+type TNumberValidator = (v: number) => boolean | string
+
+interface IBrowserUI {
+  lang: string
+  region: string
+  locale: string
+  currency: string
+  curEur: string
+  curUsd: string
+  fontSize: string
+}
+
 export const useApp = () => {
   enum MESSAGES {
     DB__DELETE_ALL,
@@ -302,7 +315,7 @@ export const useApp = () => {
     },
     COMPONENTS: {
       TITLE_BAR: {
-        ICON: "../assets/icon48.png"
+        ICON: '../assets/icon48.png'
       },
       DIALOGS: {
         ADD_ACCOUNT: 'AddAccount',
@@ -581,45 +594,50 @@ export const useApp = () => {
 
   return {
     CONS: CONS,
-    valIbanRules: (msgArray: string[]): TValidator[] => {
+    valIbanRules: (msgArray: string[]): TStringValidator[] => {
       return [
         (v: string) => v !== null || msgArray[0],
         (v: string) => (v !== null && v.length < 13) || msgArray[1],
         (v: string) => v.match(/^(^[A-Z]{2}[0-9]{3,12})/g) !== null || msgArray[2]
       ]
     },
-    valNameRules: (msgArray: string[]): TValidator[] => {
+    valNameRules: (msgArray: string[]): TStringValidator[] => {
       return [
         (v: string) => v !== null || msgArray[0],
         (v: string) => (v !== null && v.length < 32) || msgArray[1],
         (v: string) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
       ]
     },
-    valSwiftRules: (msgArray: string[]): TValidator[] => {
+    valSwiftRules: (msgArray: string[]): TStringValidator[] => {
       return [
         (v: string) => v !== null || msgArray[0],
         (v: string) => (v !== null && v.length < 13) || msgArray[1],
         (v: string) => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
       ]
     },
-    valDateRules: (msgArray: string[]): TValidator[] => {
+    valDateRules: (msgArray: string[]): TStringValidator[] => {
       return [
         (v: string) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
       ]
     },
-    valCurrencyCodeRules: (msgArray: string[]): TValidator[] => {
+    valCurrencyCodeRules: (msgArray: string[]): TStringValidator[] => {
       return [
         (v: string) => v !== null || msgArray[0],
         (v: string) => (v !== null && v.length === 3) || msgArray[1],
         (v: string) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
       ]
     },
-    valRequiredRules: (msgArray: string[]): TValidator[] => {
+    valRequiredRules: (msgArray: string[]): TStringValidator[] => {
       return [
         (v: string) => v !== null || msgArray[0]
       ]
     },
-    valBrandNameRules: (msgArray: string[]): TValidator[] => {
+    valPositiveIntegerRules: (msgArray: string[]): TNumberValidator[] => {
+      return [
+        (v: number) => v > 0 || msgArray[0]
+      ]
+    },
+    valBrandNameRules: (msgArray: string[]): TStringValidator[] => {
       return [
         (v: string) => v !== null || msgArray[0]
       ]

@@ -84,7 +84,8 @@
       "sourceTaxLabel": "Quellensteuer",
       "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
       "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?"
+      "error": "Eingabe Fehler?",
+      "validators": ["ist erforderlich"]
     },
     "deleteBooking": {
       "title": "Buchung",

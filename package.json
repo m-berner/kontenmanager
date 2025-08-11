@@ -35,7 +35,6 @@
     "vite-plugin-vuetify": "2.1.1",
     "vite-plugin-zip-pack": "1.2.4",
     "vue": "3.5.13",
-    "vue-currency-input": "3.2.1",
     "vue-eslint-parser": "9.4.3",
     "vue-i18n": "11.1.2",
     "vue-router": "4.4.5",

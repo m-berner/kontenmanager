@@ -215,22 +215,10 @@ declare global {
     sMarkets: string[]
   }
 
-  type TValidator = (v: string) => string | boolean
-
   interface IService {
     NAME: string
     HOME: string
     QUOTE: string
-  }
-
-  interface IBrowserUI {
-    lang: string
-    region: string
-    locale: string
-    currency: string
-    curEur: string
-    curUsd: string
-    fontSize: string
   }
 }
 
