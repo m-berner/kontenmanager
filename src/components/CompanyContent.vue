@@ -174,7 +174,7 @@ log('--- StocksTable.vue setup ---')
     v-bind:headers="stocksHeaders"
     v-bind:hide-no-data="false"
     v-bind:hover="true"
-    v-bind:items="stocks"
+    v-bind:items="stocks.filter(rec => rec.cID>0)"
     v-bind:items-per-page="stocksPerPage"
     v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
     v-bind:items-per-page-text="t('stocksTable.itemsPerPageText')"

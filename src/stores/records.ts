@@ -115,6 +115,26 @@ export const useRecordsStore = defineStore('records', {
       this.bookings.push(...stores.bookings)
       this.bookingTypes.push({ cID: 0, cName:  '', cAccountNumberID: settings.activeAccountId })
       this.bookingTypes.push(...stores.bookingTypes)
+      this.stocks.push({
+        cID: 0,
+        cISIN: 'XX00000000000000000000',
+        cWKN: 'AAAAAAA',
+        cSymbol: 'WWW',
+        cFadeOut: 0,
+        cFirstPage: 0,
+        cURL: '',
+        cCompany: '',
+        cMeetingDay: '',
+        cQuarterDay: '',
+        cAccountNumberID: settings.activeAccountId,
+        mBuyValue: 0,
+        mMax: 0,
+        mMin: 0,
+        mChange: 0,
+        mEuroChange: 0,
+        mPortfolio: 0,
+        mValue: 0
+      })
       this.stocks.push(...stores.stocks)
 
       // Sort bookings by date (newest first)

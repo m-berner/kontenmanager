@@ -94,7 +94,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
               settings.setActiveAccountId(records.accounts[1].cID)
               await browser.runtime.sendMessage(JSON.stringify({
                 type: CONS.MESSAGES.STORAGE__SET_ID,
-                data: toRaw(records.accounts[1])
+                data: toRaw(records.accounts[1].cID)
               }))
             } else {
               settings.setActiveAccountId(0)
