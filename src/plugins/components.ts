@@ -11,7 +11,6 @@ import AddStock from '@/components/dialogs/AddStock.vue'
 import UpdateStock from '@/components/dialogs/UpdateStock.vue'
 import AddAccount from '@/components/dialogs/AddAccount.vue'
 import UpdateAccount from '@/components/dialogs/UpdateAccount.vue'
-import DeleteAccount from '@/components/dialogs/DeleteAccount.vue'
 import AddBookingType from '@/components/dialogs/AddBookingType.vue'
 import DeleteBookingType from '@/components/dialogs/DeleteBookingType.vue'
 import AddBooking from '@/components/dialogs/AddBooking.vue'
@@ -28,7 +27,6 @@ const ComponentsPlugin: Plugin = {
     app.component(CONS.COMPONENTS.DIALOGS.UPDATE_STOCK, UpdateStock)
     app.component(CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT, AddAccount)
     app.component(CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT, UpdateAccount)
-    app.component(CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT, DeleteAccount)
     app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType)
     app.component(CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType)
     app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING, AddBooking)

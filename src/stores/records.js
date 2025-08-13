@@ -87,6 +87,10 @@ export const useRecordsStore = defineStore('records', {
                 return dateB - dateA;
             });
         },
+        setBookingSum(value) {
+            log('RECORDS: setBookingSum');
+            this.bookingSum = value;
+        },
         addAccount(account) {
             log('RECORDS: addAccount');
             this.accounts.push(account);

@@ -39,6 +39,7 @@ const getLogoUrl = computed((): string => {
     return ''
   }
 })
+const balance = computed(() => n(records.bookingSum, 'currency'))
 
 log('--- TitleBar.vue setup ---')
 </script>
@@ -54,7 +55,7 @@ log('--- TitleBar.vue setup ---')
       hide-details
       v-bind:disabled="true"
       v-bind:label="t('titleBar.bookingsSumLabel')"
-      v-bind:modelValue="n(records.bookingSum, 'currency')"
+      v-bind:modelValue="balance"
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select

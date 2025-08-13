@@ -125,6 +125,11 @@ export const useRecordsStore = defineStore('records', {
       })
     },
 
+    setBookingSum(value: number): void {
+      log('RECORDS: setBookingSum')
+      this.bookingSum = value
+    },
+
     addAccount(account: IAccount): void {
       log('RECORDS: addAccount')
       this.accounts.push(account)

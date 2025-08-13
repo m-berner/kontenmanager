@@ -135,14 +135,14 @@ log('--- UpdateBooking.vue setup ---')
           <CurrencyInput
             v-model="state.credit"
             v-bind:label="t('dialogs.addBooking.creditLabel')"
-            v-on:amount="(c) => { state.credit = c }"
+            v-on:amount="(a) => { state.credit = a }"
           ></CurrencyInput>
         </v-col>
         <v-col>
           <CurrencyInput
             v-model="state.debit"
             v-bind:label="t('dialogs.addBooking.debitLabel')"
-            v-on:amount="(d) => { state.debit = d }"
+            v-on:amount="(a) => { state.debit = a }"
           ></CurrencyInput>
         </v-col>
       </v-row>

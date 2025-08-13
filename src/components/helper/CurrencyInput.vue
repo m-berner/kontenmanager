@@ -25,16 +25,16 @@ const currencyInputProps = defineProps<CurrencyInputProps>()
 const emit = defineEmits(['amount'])
 const {n} = useI18n()
 
-const state: Reactive<IState> = reactive({
-  unformattedValue: currencyInputProps.modelValue,
-  formattedValue: '',
-  isFocused: false
-})
-
 const formatCurrency = (value: number): string => {
   if (!value) return ''
   return n(value, 'currency')
 }
+
+const state: Reactive<IState> = reactive({
+  unformattedValue: currencyInputProps.modelValue,
+  formattedValue: formatCurrency(currencyInputProps.modelValue),
+  isFocused: false
+})
 
 const parseCurrency = (value: string): number => {
   if (!value) return 0
@@ -75,6 +75,7 @@ onMounted(() => {
     density="compact"
     type="text"
     variant="outlined"
+    hide-details
     v-bind:disabled="currencyInputProps.disabled"
     v-bind:label="currencyInputProps.label"
     v-on:blur="onBlur"
