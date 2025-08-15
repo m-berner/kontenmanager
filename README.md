@@ -10,7 +10,7 @@ _For additional developer information see:_
 _Developer environment:_
 
 - Windows 11
-- Node v22.17.0
+- Node v22.17.1
 
 To build the application run the "build" script.
 In case of complication see vite.config.js to
