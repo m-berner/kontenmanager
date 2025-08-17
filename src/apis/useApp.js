@@ -178,7 +178,7 @@ export const useApp = () => {
                     }
                 },
                 BOOKING_TYPES: {
-                    NAME: 'booking_types',
+                    NAME: 'bookingTypes',
                     FIELDS: {
                         ID: 'cID',
                         NAME: 'cName',

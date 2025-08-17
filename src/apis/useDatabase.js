@@ -80,7 +80,7 @@ export const useDatabase = () => {
                                 }
                             }
                             buffer += i === 0 ? '],\n' : '';
-                            buffer += '"booking_types":[\n';
+                            buffer += '"bookingTypes":[\n';
                             for (i = 0; i < bookingTypes.length; i++) {
                                 buffer += JSON.stringify(bookingTypes[i]);
                                 if (i === bookingTypes.length - 1) {

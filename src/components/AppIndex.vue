@@ -28,16 +28,16 @@ const onStorageChange = (changes: Record<string, browser.storage.StorageChange>)
       settings.setService(changes[changesKey[0]].newValue)
       break
     case CONS.STORAGE.PROPS.INDEXES:
-      settings.setService(changes[changesKey[0]].newValue)
+      settings.setIndexes(changes[changesKey[0]].newValue)
       break
     case CONS.STORAGE.PROPS.MARKETS:
-      settings.setService(changes[changesKey[0]].newValue)
+      settings.setMarkets(changes[changesKey[0]].newValue)
       break
     case CONS.STORAGE.PROPS.MATERIALS:
-      settings.setService(changes[changesKey[0]].newValue)
+      settings.setMaterials(changes[changesKey[0]].newValue)
       break
     case CONS.STORAGE.PROPS.EXCHANGES:
-      settings.setService(changes[changesKey[0]].newValue)
+      settings.setExchanges(changes[changesKey[0]].newValue)
       break
     default:
   }
@@ -49,6 +49,7 @@ onBeforeMount(async (): Promise<void> => {
   const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({
     type: CONS.MESSAGES.STORAGE__GET_ALL
   }))
+  console.error(theme, JSON.parse(storageResponseString))
   settings.initStore(theme, JSON.parse(storageResponseString).data)
   const dbGetStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
     type: CONS.MESSAGES.DB__GET_STORES,

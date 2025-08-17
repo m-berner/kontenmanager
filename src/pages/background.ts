@@ -176,7 +176,7 @@ declare global {
     }
     accounts: IAccount[]
     bookings: IBooking[]
-    booking_types: IBookingType[]
+    bookingTypes: IBookingType[]
     stocks: IStock[] & Stockmanager.IStock[]
     transfers?: IBooking[] & Stockmanager.ITransfer[]
   }
@@ -259,34 +259,34 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const installStorageLocal = async () => {
       const storageLocal = await browser.storage.local.get()
       if (storageLocal[CONS.STORAGE.PROPS.SKIN] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.SKIN]]: CONS.DEFAULTS.STORAGE.SKIN})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.SKIN]: CONS.DEFAULTS.STORAGE.SKIN})
       }
       if (storageLocal[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]]: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID})
       }
       if (storageLocal[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE]]: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
       }
       if (storageLocal[CONS.STORAGE.PROPS.STOCKS_PER_PAGE] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.STOCKS_PER_PAGE]]: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE})
       }
       if (storageLocal[CONS.STORAGE.PROPS.PARTNER] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.PARTNER]]: CONS.DEFAULTS.STORAGE.PARTNER})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.PARTNER]: CONS.DEFAULTS.STORAGE.PARTNER})
       }
       if (storageLocal[CONS.STORAGE.PROPS.SERVICE] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.SERVICE]]: CONS.DEFAULTS.STORAGE.SERVICE})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.STORAGE.SERVICE})
       }
       if (storageLocal[CONS.STORAGE.PROPS.EXCHANGES] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.EXCHANGES]]: CONS.DEFAULTS.STORAGE.EXCHANGES})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.STORAGE.EXCHANGES})
       }
       if (storageLocal[CONS.STORAGE.PROPS.INDEXES] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.INDEXES]]: CONS.DEFAULTS.STORAGE.INDEXES})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.STORAGE.INDEXES})
       }
       if (storageLocal[CONS.STORAGE.PROPS.MARKETS] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.MARKETS]]: CONS.DEFAULTS.STORAGE.MARKETS})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.STORAGE.MARKETS})
       }
       if (storageLocal[CONS.STORAGE.PROPS.MATERIALS] === undefined) {
-        await browser.storage.local.set({[storageLocal[CONS.STORAGE.PROPS.MATERIALS]]: CONS.DEFAULTS.STORAGE.MATERIALS})
+        await browser.storage.local.set({[CONS.STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.STORAGE.MATERIALS})
       }
       console.log('BACKGROUND: installStorageLocal: DONE')
     }
@@ -313,21 +313,21 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
           const requestCreateBookingStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.BOOKINGS.NAME,
             {
-              keyPath: [CONS.DB.STORES.BOOKINGS.FIELDS.ID, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID],
+              keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
               autoIncrement: true
             }
           )
           const requestCreateBookingTypeStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.BOOKING_TYPES.NAME,
             {
-              keyPath: [CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID],
+              keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
               autoIncrement: true
             }
           )
           const requestCreateStockStore = dbOpenRequest.result.createObjectStore(
             CONS.DB.STORES.STOCKS.NAME,
             {
-              keyPath: [CONS.DB.STORES.STOCKS.FIELDS.ID, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID],
+              keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
               autoIncrement: true
             }
           )
@@ -488,7 +488,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
       switch (appMessage.type) {
         case CONS.MESSAGES.STORAGE__GET_ALL:
           const storageLocal1 = await browser.storage.local.get()
-          response = JSON.stringify({
+            response = JSON.stringify({
             type: CONS.MESSAGES.STORAGE__GET_ALL__RESPONSE,
             data: storageLocal1
           })
