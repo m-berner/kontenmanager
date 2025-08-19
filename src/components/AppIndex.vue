@@ -18,7 +18,8 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log, getUI} = useApp()
-const onStorageChange = (changes: Record<string, browser.storage.StorageChange>): void => {
+
+const onStorageChange = (changes: { [p: string]: browser.storage.StorageChange }): void => {
   const changesKey = Object.keys(changes)
   switch (changesKey[0]) {
     case CONS.STORAGE.PROPS.SKIN:
@@ -42,10 +43,9 @@ const onStorageChange = (changes: Record<string, browser.storage.StorageChange>)
     default:
   }
 }
-
 browser.storage.local.onChanged.addListener(onStorageChange)
 
-onBeforeMount(async (): Promise<void> => {
+onBeforeMount(async () => {
   const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({
     type: CONS.MESSAGES.STORAGE__GET_ALL
   }))
@@ -55,7 +55,7 @@ onBeforeMount(async (): Promise<void> => {
     type: CONS.MESSAGES.DB__GET_STORES,
     data: settings.activeAccountId
   }))
-  const dbGetStoresData: IStores = JSON.parse(dbGetStoresResponseString).data
+  const dbGetStoresData = JSON.parse(dbGetStoresResponseString).data
   if (dbGetStoresData.accounts.length > 0) {
     records.initStore(dbGetStoresData)
     records.sumBookings()

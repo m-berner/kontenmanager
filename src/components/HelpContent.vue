@@ -9,13 +9,6 @@
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/apis/useApp'
 
-interface IContent {
-  title: string
-  subtitle: string
-  content: string
-  icon: string
-}
-
 const {rt, t, tm} = useI18n()
 const {log} = useApp()
 

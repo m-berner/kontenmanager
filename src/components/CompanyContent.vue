@@ -6,19 +6,14 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {DataTableHeader} from 'vuetify'
 import DotMenu from '@/components/helper/DotMenu.vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/apis/useApp'
-import type {DataTableHeader} from 'vuetify'
-
-type StocksMenuItems = {
-  readonly title: string
-  readonly id: string
-  readonly icon: string
-}
+import {computed} from "vue";
 
 // Store setup with proper typing
 const {log} = useApp()
@@ -45,7 +40,7 @@ const settings = useSettingsStore()
 //})
 
 const {stocksPerPage} = storeToRefs(settings)
-const {stocks} = storeToRefs(records)
+//const {stocks} = storeToRefs(records)
 const stocksHeaders: DataTableHeader[] = [
   {
     title: t('stocksTable.headers.action'),
@@ -137,8 +132,8 @@ const stocksMenuItems: StocksMenuItems[] = [
   }
 ]
 // Fixed: Use a function that returns a function for proper ref handling
-const mSetDynamicStyleWinLoss = () => {
-  return (el: HTMLElement | null): void => {
+const setDynamicStyleWinLoss = computed(() => {
+  return el => {
     if (el !== null) {
       // Use nextTick to ensure DOM is updated
       //await nextTick()
@@ -151,16 +146,17 @@ const mSetDynamicStyleWinLoss = () => {
       el.classList.add('font-weight-bold')
     }
   }
-}
+})
 // const onUpdatePageHandler = async (page: number): Promise<void> => {
 //   log('COMPANY_CONTENT: onUpdatePageHandler', {info: page})
 //   //records.setActiveStocksPage(page)
 //   //await records.updateWrapper()
 // }
-const onUpdateItemsPerPage = (count: number): void => {
+//const stocksFilter = (rec: IStockStore, index: number, ar: IStockStore[]): boolean => rec.cID>0
+const onUpdateItemsPerPage = count => {
   settings.setStocksPerPage(count)
 }
-const onUpdatePage = (page: number): void => {
+const onUpdatePage = page => {
   console.error(page)
 }
 
@@ -169,26 +165,26 @@ log('--- StocksTable.vue setup ---')
 
 <template>
   <v-data-table
-    density="compact"
-    item-key="cID"
-    v-bind:headers="stocksHeaders"
-    v-bind:hide-no-data="false"
-    v-bind:hover="true"
-    v-bind:items="stocks.filter(rec => rec.cID>0)"
-    v-bind:items-per-page="stocksPerPage"
-    v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-    v-bind:items-per-page-text="t('stocksTable.itemsPerPageText')"
-    v-bind:no-data-text="t('stocksTable.noDataText')"
-    v-on:update:items-per-page="onUpdateItemsPerPage"
-    v-on:update:page="onUpdatePage">
+      density="compact"
+      item-key="cID"
+      v-bind:headers="stocksHeaders"
+      v-bind:hide-no-data="false"
+      v-bind:hover="true"
+      v-bind:items="records.stocks.filter((rec: IStockStore): boolean => rec.cID > 0 )"
+      v-bind:items-per-page="stocksPerPage"
+      v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+      v-bind:items-per-page-text="t('stocksTable.itemsPerPageText')"
+      v-bind:no-data-text="t('stocksTable.noDataText')"
+      v-on:update:items-per-page="onUpdateItemsPerPage"
+      v-on:update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>
         <td>
           <DotMenu
-            menuType="stocks"
-            v-bind:menuItems="stocksMenuItems"
-            v-bind:recordID="item.cID ?? -1">
+              menuType="stocks"
+              v-bind:menuItems="stocksMenuItems"
+              v-bind:recordID="item.cID ?? -1">
           </DotMenu>
         </td>
         <td>{{ item.cCompany }}</td>
@@ -201,7 +197,7 @@ log('--- StocksTable.vue setup ---')
         <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
         <v-tooltip location="left" v-bind:text="n((item.mChange ?? 0) / 100, 'percent')">
           <template v-slot:activator="{ props }">
-            <td v-bind="props" v-bind:class="mSetDynamicStyleWinLoss">
+            <td v-bind="props" v-bind:class="setDynamicStyleWinLoss">
               {{ n(item.mEuroChange ?? 0, 'currency') }}
             </td>
           </template>

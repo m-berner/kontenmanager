@@ -50,11 +50,12 @@
       "@types/firefox-webext-browser",
       "@types/firefox",
       "@types/chrome",
-      "@types/web"
+      "@types/web",
+      "vite/client"
     ],
     /* Bundler mode */
     "composite": false,
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": false,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,

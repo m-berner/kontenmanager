@@ -6,7 +6,8 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onMounted, type Reactive, reactive} from 'vue'
+import type {Reactive} from 'vue'
+import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
 //import {useSettingsStore} from '@/stores/settings'
@@ -14,20 +15,8 @@ import {useRecordsStore} from '@/stores/records'
 //import {storeToRefs} from 'pinia'
 import {useApp} from '@/apis/useApp'
 
-interface IDrawerControl {
-  id: number
-  title: string
-  value: string
-  class: string
-}
-
-interface IState {
-  show: boolean
-  drawerControls: IDrawerControl[]
-}
-
 const {n, t} = useI18n()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
 //const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -54,7 +43,7 @@ const usd = (mat: string, usd = true): number => {
 //     state.drawerControls[i] = {id: i, title: '', value: '', class: ''}
 //     // const percent =
 //     // elem === 'winloss' ? ' / ' + n(records.transfers.total_controller.winlossPercent ?? 0, 'percent') : ''
-//     state.drawerControls[i].id = i
+//     state.drawerControls[i].id = I
 //     state.drawerControls[i].title = t(`infoBar.drawerTitles.${CONS.DEFAULTS.DRAWER_KEYS[i]}`)
 //     state.drawerControls[i].value = n(records.transfers.total_controller[CONS.DEFAULTS.DRAWER_KEYS[i]], 'currency') // + percent,
 //     state.drawerControls[i].class = records.transfers.total_controller[CONS.DEFAULTS.DRAWER_KEYS[i]] < 0 ? CONS.DEFAULTS.DRAWER_KEYS[i] + '_minus' : CONS.DEFAULTS.DRAWER_KEYS[i]
@@ -68,7 +57,7 @@ const updateDrawerControls = (): void => {
       id: index,
       title: t(`infoBar.drawerTitles.${key}`),
       value: n(value, 'currency') +
-        (key === 'winLoss' ? ' / ' + n(records.totalController.winLossPercent ?? 0, 'percent') : ''),
+          (key === 'winLoss' ? ' / ' + n(records.totalController.winLossPercent ?? 0, 'percent') : ''),
       class: value < 0 ? `${key}_minus` : key
     }
   })
@@ -103,7 +92,7 @@ onMounted(() => {
 // noinspection JSDeprecatedSymbols
 //browser.runtime.onMessage.addListener(onMessageInfoBar)
 //}
-console.log('--- InfoBar.vue setup ---')
+log('--- InfoBar.vue setup ---')
 </script>
 
 <template>
@@ -112,11 +101,11 @@ console.log('--- InfoBar.vue setup ---')
     <v-card color="secondary" height="100%">
       <v-list lines="two">
         <v-list-item
-          v-for="item in state.drawerControls"
-          v-bind:key="item.id"
-          v-bind:class="item.class"
-          v-bind:subtitle="item.value"
-          v-bind:title="item.title"
+            v-for="item in state.drawerControls"
+            v-bind:key="item.id"
+            v-bind:class="item.class"
+            v-bind:subtitle="item.value"
+            v-bind:title="item.title"
         ></v-list-item>
       </v-list>
     </v-card>
