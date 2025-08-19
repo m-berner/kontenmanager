@@ -153,10 +153,10 @@ const setDynamicStyleWinLoss = computed(() => {
 //   //await records.updateWrapper()
 // }
 //const stocksFilter = (rec: IStockStore, index: number, ar: IStockStore[]): boolean => rec.cID>0
-const onUpdateItemsPerPage = count => {
+const onUpdateItemsPerPage = (count: number): void => {
   settings.setStocksPerPage(count)
 }
-const onUpdatePage = page => {
+const onUpdatePage = (page: number): void => {
   console.error(page)
 }
 
