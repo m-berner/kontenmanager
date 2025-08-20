@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createRouter, createWebHashHistory, type Router} from 'vue-router'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 
 interface IRouter {
     router: Router

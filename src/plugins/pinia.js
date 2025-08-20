@@ -1,5 +1,5 @@
 import { createPinia } from 'pinia';
-import { useApp } from '@/apis/useApp';
+import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 const piniaConfig = {
     pinia: createPinia()

@@ -5,9 +5,9 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {useApp} from '@/apis/useApp'
-import {useDatabase} from '@/apis/useDatabase'
-import {useFetch} from '@/apis/useFetch'
+import {useApp} from '@/composables/useApp'
+import {useDatabase} from '@/composables/useDatabase'
+import {useFetch} from '@/composables/useFetch'
 //import {useI18n} from "vue-i18n";
 //import {useRuntimeStore} from "@/stores/runtime";
 //import {useRecordsStore} from "@/stores/records";

@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'

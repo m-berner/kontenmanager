@@ -1,5 +1,5 @@
 import { createI18n } from 'vue-i18n';
-import { useApp } from '@/apis/useApp';
+import { useApp } from '@/composables/useApp';
 import deDE from '@/locales/de-DE.json';
 import enUS from '@/locales/en-US.json';
 const { log, getUI } = useApp();

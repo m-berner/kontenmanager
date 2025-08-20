@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {reactive, type Reactive, toRaw} from 'vue'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 
 interface DynamicListProps {
   title: string

@@ -1,5 +1,5 @@
 import {} from 'vue';
-import { useApp } from '@/apis/useApp';
+import { useApp } from '@/composables/useApp';
 import AddStock from '@/components/dialogs/AddStock.vue';
 import UpdateStock from '@/components/dialogs/UpdateStock.vue';
 import AddAccount from '@/components/dialogs/AddAccount.vue';

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useApp } from '@/apis/useApp';
+import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 export const useRuntimeStore = defineStore('runtime', {
     state: () => {

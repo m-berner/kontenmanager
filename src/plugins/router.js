@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { useApp } from '@/apis/useApp';
+import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 const routerInstance = createRouter({
     history: createWebHashHistory(),

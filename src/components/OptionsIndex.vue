@@ -9,7 +9,7 @@
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify'
 import {onBeforeMount, type Reactive, reactive} from 'vue'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 import DynamicList from '@/components/helper/DynamicList.vue'
 
 type ITabs = { title: string, id: string }

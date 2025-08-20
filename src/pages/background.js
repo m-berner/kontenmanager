@@ -1,6 +1,6 @@
-import { useApp } from '@/apis/useApp';
-import { useDatabase } from '@/apis/useDatabase';
-import { useFetch } from '@/apis/useFetch';
+import { useApp } from '@/composables/useApp';
+import { useDatabase } from '@/composables/useDatabase';
+import { useFetch } from '@/composables/useFetch';
 const { CONS, log } = useApp();
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const { clearStores, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, updateBooking, exportStores, importStores, deleteStock, open } = useDatabase();

@@ -9,7 +9,7 @@
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 import {storeToRefs} from 'pinia'
 import {computed} from 'vue'
 

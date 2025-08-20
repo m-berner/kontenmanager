@@ -591,155 +591,170 @@ export const useApp = () => {
             ONCE: {once: true}
         }
     })
-    return {
-        CONS: CONS,
-        valIbanRules: (msgArray: string[]): TStringValidator[] => {
-            return [
-                (v: string) => v !== null || msgArray[0],
-                (v: string) => (v !== null && v.length < 13) || msgArray[1],
-                (v: string) => v.match(/^(^[A-Z]{2}[0-9]{3,12})/g) !== null || msgArray[2]
-            ]
-        },
-        valNameRules: (msgArray: string[]): TStringValidator[] => {
-            return [
-                (v: string) => v !== null || msgArray[0],
-                (v: string) => (v !== null && v.length < 32) || msgArray[1],
-                (v: string) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
-            ]
-        },
-        valSwiftRules: (msgArray: string[]): TStringValidator[] => {
-            return [
-                (v: string) => v !== null || msgArray[0],
-                (v: string) => (v !== null && v.length < 13) || msgArray[1],
-                (v: string) => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
-            ]
-        },
-        valDateRules: (msgArray: string[]): TStringValidator[] => {
-            return [
-                (v: string) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
-            ]
-        },
-        valCurrencyCodeRules: (msgArray: string[]): TStringValidator[] => {
-            return [
-                (v: string) => v !== null || msgArray[0],
-                (v: string) => (v !== null && v.length === 3) || msgArray[1],
-                (v: string) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
-            ]
-        },
-        valRequiredRules: (msgArray: string[]): TStringValidator[] => {
-            return [
-                (v: string) => v !== null || msgArray[0]
-            ]
-        },
-        valPositiveIntegerRules: (msgArray: string[]): TNumberValidator[] => {
-            return [
-                (v: number) => v > 0 || msgArray[0]
-            ]
-        },
-        valBrandNameRules: (msgArray: string[]): TStringValidator[] => {
-            return [
-                (v: string) => v !== null || msgArray[0]
-            ]
-        },
-        getUI: (): IBrowserUI => {
-            const result = {
-                lang: '',
-                region: '',
-                locale: '',
-                currency: '',
-                curUsd: '',
-                curEur: '',
-                fontSize: ''
-            }
-            // Check if browser.i18n is available (browser extension context)
-            const uiLang = (typeof browser !== 'undefined' && browser.i18n?.getUILanguage?.())
-                ? browser.i18n.getUILanguage().toLowerCase()
-                : CONS.DEFAULTS.LOCALE
+    const valIbanRules = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => v !== null || msgArray[0],
+            (v: string) => (v !== null && v.length < 13) || msgArray[1],
+            (v: string) => v.match(/^(^[A-Z]{2}[0-9]{3,12})/g) !== null || msgArray[2]
+        ]
+    }
+    const valNameRules = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => v !== null || msgArray[0],
+            (v: string) => (v !== null && v.length < 32) || msgArray[1],
+            (v: string) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
+        ]
+    }
+    const valSwiftRules = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => v !== null || msgArray[0],
+            (v: string) => (v !== null && v.length < 13) || msgArray[1],
+            (v: string) => v.match(/[^a-zA-Z0-9]/g) === null || msgArray[2]
+        ]
+    }
+    const valDateRules = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
+        ]
+    }
+    const valCurrencyCodeRules = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => v !== null || msgArray[0],
+            (v: string) => (v !== null && v.length === 3) || msgArray[1],
+            (v: string) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
+        ]
+    }
+    const valRequiredRules = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => v !== null || msgArray[0]
+        ]
+    }
+    const valPositiveIntegerRules = (msgArray: string[]): TNumberValidator[] => {
+        return [
+            (v: number) => v > 0 || msgArray[0]
+        ]
+    }
+    const valBrandNameRules = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => v !== null || msgArray[0]
+        ]
+    }
+    const getUI = (): IBrowserUI => {
+        const result = {
+            lang: '',
+            region: '',
+            locale: '',
+            currency: '',
+            curUsd: '',
+            curEur: '',
+            fontSize: ''
+        }
+        // Check if browser.i18n is available (browser extension context)
+        const uiLang = (typeof browser !== 'undefined' && browser.i18n?.getUILanguage?.())
+            ? browser.i18n.getUILanguage().toLowerCase()
+            : CONS.DEFAULTS.LOCALE
 
-            if (uiLang.includes('-')) {
-                result.lang = uiLang.split('-')[0]
-                result.region = uiLang.split('-')[1].toUpperCase()
-                result.locale = uiLang
-                result.currency = CONS.CURRENCIES.CODE.get(uiLang.split('-')[1]) ?? CONS.DEFAULTS.CURRENCY
+        if (uiLang.includes('-')) {
+            result.lang = uiLang.split('-')[0]
+            result.region = uiLang.split('-')[1].toUpperCase()
+            result.locale = uiLang
+            result.currency = CONS.CURRENCIES.CODE.get(uiLang.split('-')[1]) ?? CONS.DEFAULTS.CURRENCY
+        } else {
+            result.lang = uiLang
+            result.region = uiLang.toUpperCase()
+            result.locale = uiLang + '-' + uiLang.toUpperCase()
+            result.currency = CONS.CURRENCIES.CODE.get(uiLang) ?? CONS.DEFAULTS.CURRENCY
+        }
+        result.curEur = result.currency + CONS.CURRENCIES.EUR
+        result.curUsd = result.currency + CONS.CURRENCIES.USD
+        result.fontSize = window
+            .getComputedStyle(document.body, null)
+            .getPropertyValue('font-size')
+        return result
+    }
+    const notice = async (messages: string[]): Promise<void> => {
+        const msg = messages.join('\n')
+        const notificationOption: browser.notifications.CreateNotificationOptions =
+            {
+                type: 'basic',
+                iconUrl: 'assets/icon16.png',
+                title: 'KontenManager',
+                message: msg
+            }
+        await browser.notifications.create(notificationOption)
+    }
+    const utcDate = (iso: string): Date => {
+        return new Date(`${iso}T00:00:00.000`)
+    }
+    const toISODate = (ms: number): string => {
+        return new Date(ms).toISOString().substring(0, 10)
+    }
+    const toNumber = (str: string | boolean | number | undefined | null): number => {
+        let result = 0
+        if (str !== null && str !== undefined) {
+            const a = str.toString().replace(/,$/g, '')
+            const b = a.split(',')
+            if (b.length === 2) {
+                const tmp2 = a
+                    .trim()
+                    .replace(/\s|\.|\t|%/g, '')
+                    .replace(',', '.')
+                result = Number.isNaN(Number.parseFloat(tmp2))
+                    ? 0
+                    : Number.parseFloat(tmp2)
+            } else if (b.length > 2) {
+                let tmp: string = ''
+                for (let i = b.length - 1; i > 0; i--) {
+                    tmp += b[i]
+                }
+                const tmp2 = tmp + '.' + b[0]
+                result = Number.isNaN(Number.parseFloat(tmp2))
+                    ? 0
+                    : Number.parseFloat(tmp2)
             } else {
-                result.lang = uiLang
-                result.region = uiLang.toUpperCase()
-                result.locale = uiLang + '-' + uiLang.toUpperCase()
-                result.currency = CONS.CURRENCIES.CODE.get(uiLang) ?? CONS.DEFAULTS.CURRENCY
-            }
-            result.curEur = result.currency + CONS.CURRENCIES.EUR
-            result.curUsd = result.currency + CONS.CURRENCIES.USD
-            result.fontSize = window
-                .getComputedStyle(document.body, null)
-                .getPropertyValue('font-size')
-            return result
-        },
-        notice: async (messages: string[]): Promise<void> => {
-            const msg = messages.join('\n')
-            const notificationOption: browser.notifications.CreateNotificationOptions =
-                {
-                    type: 'basic',
-                    iconUrl: 'assets/icon16.png',
-                    title: 'KontenManager',
-                    message: msg
-                }
-            await browser.notifications.create(notificationOption)
-        },
-        utcDate: (iso: string): Date => {
-            return new Date(`${iso}T00:00:00.000`)
-        },
-        toISODate: (ms: number): string => {
-            return new Date(ms).toISOString().substring(0, 10)
-        },
-        toNumber: (str: string | boolean | number | undefined | null): number => {
-            let result = 0
-            if (str !== null && str !== undefined) {
-                const a = str.toString().replace(/,$/g, '')
-                const b = a.split(',')
-                if (b.length === 2) {
-                    const tmp2 = a
-                        .trim()
-                        .replace(/\s|\.|\t|%/g, '')
-                        .replace(',', '.')
-                    result = Number.isNaN(Number.parseFloat(tmp2))
-                        ? 0
-                        : Number.parseFloat(tmp2)
-                } else if (b.length > 2) {
-                    let tmp: string = ''
-                    for (let i = b.length - 1; i > 0; i--) {
-                        tmp += b[i]
-                    }
-                    const tmp2 = tmp + '.' + b[0]
-                    result = Number.isNaN(Number.parseFloat(tmp2))
-                        ? 0
-                        : Number.parseFloat(tmp2)
-                } else {
-                    result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
-                }
-            }
-            return result
-        },
-        mean: (nar: number[]): number => {
-            let sum = 0
-            let len: number = nar.length
-            for (const n of nar) {
-                if (n !== 0 && !Number.isNaN(n)) {
-                    sum += n
-                } else {
-                    len--
-                }
-            }
-            return len > 0 ? sum / len : 0
-        },
-        log: (msg: string, mode?: { info: unknown }) => {
-            const localDebug = localStorage.getItem(CONS.STORAGE.PROPS.DEBUG)
-            if (Number.parseInt(localDebug ?? '0') > 0) {
-                if (mode?.info !== undefined) {
-                    console.info(msg, mode?.info)
-                } else {
-                    console.log(msg)
-                }
+                result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
             }
         }
+        return result
+    }
+    const mean = (nar: number[]): number => {
+        let sum = 0
+        let len: number = nar.length
+        for (const n of nar) {
+            if (n !== 0 && !Number.isNaN(n)) {
+                sum += n
+            } else {
+                len--
+            }
+        }
+        return len > 0 ? sum / len : 0
+    }
+    const log = (msg: string, mode?: { info: unknown }) => {
+        const localDebug = localStorage.getItem(CONS.STORAGE.PROPS.DEBUG)
+        if (Number.parseInt(localDebug ?? '0') > 0) {
+            if (mode?.info !== undefined) {
+                console.info(msg, mode?.info)
+            } else {
+                console.log(msg)
+            }
+        }
+    }
+    return {
+        CONS,
+        valIbanRules,
+        valNameRules,
+        valSwiftRules,
+        valDateRules,
+        valCurrencyCodeRules,
+        valRequiredRules,
+        valPositiveIntegerRules,
+        valBrandNameRules,
+        getUI,
+        notice,
+        utcDate,
+        toISODate,
+        toNumber,
+        mean,
+        log
     }
 }

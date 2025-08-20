@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 
 const {rt, t, tm} = useI18n()
 const {log} = useApp()

@@ -9,7 +9,7 @@
 import {defineExpose, onMounted, type Reactive, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
 

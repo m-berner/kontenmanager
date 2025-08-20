@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useApp } from '@/apis/useApp';
+import { useApp } from '@/composables/useApp';
 import { useSettingsStore } from '@/stores/settings';
 const { CONS, log } = useApp();
 export const useRecordsStore = defineStore('records', {

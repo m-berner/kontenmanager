@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'

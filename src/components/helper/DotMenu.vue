@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {onMounted} from 'vue'

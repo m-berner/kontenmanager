@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createI18n, type I18n} from 'vue-i18n'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 import deDE from '@/locales/de-DE.json'
 import enUS from '@/locales/en-US.json'
 

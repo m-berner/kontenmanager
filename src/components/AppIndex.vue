@@ -9,7 +9,7 @@
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useTheme} from 'vuetify'
-import {useApp} from '@/apis/useApp'
+import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 import {onBeforeMount} from 'vue'
 

@@ -2,7 +2,7 @@ import OptionsIndex from '@/components/OptionsIndex.vue';
 import { createApp } from 'vue';
 import vuetifyPlugin from '@/plugins/vuetify';
 import i18nPlugin from '@/plugins/i18n';
-import { useApp } from '@/apis/useApp';
+import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 const op = createApp(OptionsIndex);
 op.config.errorHandler = (err) => {
