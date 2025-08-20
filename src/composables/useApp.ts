@@ -315,7 +315,7 @@ export const useApp = () => {
         },
         COMPONENTS: {
             TITLE_BAR: {
-                ICON: '../assets/icon48.png'
+                LOGO: '../assets/icon64.png'
             },
             DIALOGS: {
                 ADD_ACCOUNT: 'AddAccount',
