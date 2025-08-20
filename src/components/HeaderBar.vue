@@ -66,24 +66,24 @@ const onIconClick = async (ev: Event): Promise<void> => {
           try {
             for (let i = 0; i < records.bookings.length; i++) {
               records.deleteBooking(records.bookings[i].cID)
-                await browser.runtime.sendMessage(JSON.stringify({
-                  type: CONS.MESSAGES.DB__DELETE_BOOKING,
-                  data: toRaw(settings.activeAccountId)
-                }))
+              await browser.runtime.sendMessage(JSON.stringify({
+                type: CONS.MESSAGES.DB__DELETE_BOOKING,
+                data: toRaw(settings.activeAccountId)
+              }))
             }
             for (let i = 0; i < records.bookingTypes.length; i++) {
-                records.deleteBookingType(records.bookingTypes[i].cID)
-                await browser.runtime.sendMessage(JSON.stringify({
-                  type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE,
-                  data: toRaw(settings.activeAccountId)
-                }))
+              records.deleteBookingType(records.bookingTypes[i].cID)
+              await browser.runtime.sendMessage(JSON.stringify({
+                type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE,
+                data: toRaw(settings.activeAccountId)
+              }))
             }
             for (let i = 0; i < records.stocks.length; i++) {
-                records.deleteStock(records.stocks[i].cID)
-                await browser.runtime.sendMessage(JSON.stringify({
-                  type: CONS.MESSAGES.DB__DELETE_STOCK,
-                  data: toRaw(settings.activeAccountId)
-                }))
+              records.deleteStock(records.stocks[i].cID)
+              await browser.runtime.sendMessage(JSON.stringify({
+                type: CONS.MESSAGES.DB__DELETE_STOCK,
+                data: toRaw(settings.activeAccountId)
+              }))
             }
             records.deleteAccount(settings.activeAccountId)
             await browser.runtime.sendMessage(JSON.stringify({
@@ -186,38 +186,38 @@ log('--- HeaderBar.vue setup ---')
       <v-tooltip location="top" v-bind:text="t('headerBar.home')">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
-            icon="$home"
-            size="large"
-            v-bind="props"
-            variant="tonal"></v-app-bar-nav-icon>
+              icon="$home"
+              size="large"
+              v-bind="props"
+              variant="tonal"></v-app-bar-nav-icon>
         </template>
       </v-tooltip>
     </router-link>
     <router-link
-      v-if="isStockAccount"
-      class="router-link-active"
-      to="/company">
+        v-if="isStockAccount"
+        class="router-link-active"
+        to="/company">
       <v-tooltip location="top" v-bind:text="t('headerBar.home')">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
-            icon="$home"
-            size="large"
-            v-bind="props"
-            variant="tonal"></v-app-bar-nav-icon>
+              icon="$home"
+              size="large"
+              v-bind="props"
+              variant="tonal"></v-app-bar-nav-icon>
         </template>
       </v-tooltip>
     </router-link>
     <v-spacer></v-spacer>
     <v-tooltip
-      v-if="isStockAccount"
-      location="top" v-bind:text="t('headerBar.addStock')">
+        v-if="isStockAccount"
+        location="top" v-bind:text="t('headerBar.addStock')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_STOCK"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_STOCK"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$addStock"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -226,11 +226,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$addAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -238,11 +238,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.updateAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$updateAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -250,11 +250,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.deleteAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$deleteAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -263,11 +263,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$addBooking"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -276,11 +276,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.addBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$addBookingType"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -288,11 +288,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.deleteBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$deleteBookingType"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -301,11 +301,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.exportToFile')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$exportToFile"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -313,11 +313,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.importDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$importDatabase"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -326,11 +326,11 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.showAccounting')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick">
+            v-bind:id="CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick">
           <v-icon icon="$showAccounting"></v-icon>
         </v-app-bar-nav-icon>
       </template>
@@ -339,12 +339,12 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip location="top" v-bind:text="t('headerBar.settings')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-          v-bind:id="CONS.COMPONENTS.DIALOGS.SETTING"
-          icon="$settings"
-          size="large"
-          v-bind="props"
-          variant="tonal"
-          v-on:click="onIconClick"></v-app-bar-nav-icon>
+            v-bind:id="CONS.COMPONENTS.DIALOGS.SETTING"
+            icon="$settings"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            v-on:click="onIconClick"></v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>

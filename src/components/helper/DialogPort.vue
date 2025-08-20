@@ -29,13 +29,13 @@ const runtime = useRuntimeStore()
           <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
             <template v-slot:activator="{ props }">
               <v-btn
-                v-if="runtime.teleport.okButton"
-                class="ml-auto"
-                icon="$check"
-                type="submit"
-                v-bind="props"
-                variant="outlined"
-                v-on:click="dialogRef?.onClickOk"
+                  v-if="runtime.teleport.okButton"
+                  class="ml-auto"
+                  icon="$check"
+                  type="submit"
+                  v-bind="props"
+                  variant="outlined"
+                  v-on:click="dialogRef?.onClickOk"
               ></v-btn>
             </template>
           </v-tooltip>
@@ -43,11 +43,11 @@ const runtime = useRuntimeStore()
           <v-tooltip location="bottom" v-bind:text="t('dialogs.cancel')">
             <template v-slot:activator="{ props }">
               <v-btn
-                class="ml-auto"
-                icon="$close"
-                v-bind="props"
-                variant="outlined"
-                v-on:click="runtime.resetTeleport"
+                  class="ml-auto"
+                  icon="$close"
+                  v-bind="props"
+                  variant="outlined"
+                  v-on:click="runtime.resetTeleport"
               ></v-btn>
             </template>
           </v-tooltip>

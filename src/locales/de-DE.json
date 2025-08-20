@@ -85,7 +85,9 @@
       "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?",
-      "validators": ["ist erforderlich"]
+      "validators": [
+        "ist erforderlich"
+      ]
     },
     "deleteBooking": {
       "title": "Buchung",

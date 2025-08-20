@@ -19,8 +19,8 @@ export default [
         plugins: {
             '@stylistic/ts': stylisticTs
         }, rules: {
-            'indent': ['error', 2, {'SwitchCase': 1}],
-            '@stylistic/ts/indent': ['error', 2, {'SwitchCase': 1}],
+            'indent': ['error', 4, {'SwitchCase': 1}],
+            '@stylistic/ts/indent': ['error', 4, {'SwitchCase': 1}],
             'semi': ['error', 'never'],
             '@stylistic/ts/semi': ['error', 'never']
         }
@@ -62,8 +62,10 @@ export default [
         }
     }, {
         files: ['**/*.{html,ts}'],
-        parserOptions: {
-            parser: tseslint.parser
+        languageOptions: {
+            parserOptions: {
+                parser: tseslint.parser
+            }
         },
         rules: {
             '@typescript-eslint/no-namespace': 0

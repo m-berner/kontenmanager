@@ -128,35 +128,35 @@ log('--- AddStock.vue setup ---')
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
-        v-model="state.isin"
-        autofocus
-        required
-        variant="outlined"
-        v-bind:counter="12"
-        v-bind:label="t('dialogs.addStock.isin')"
-        v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-        v-on:update:modelValue="onIsin"
+          v-model="state.isin"
+          autofocus
+          required
+          variant="outlined"
+          v-bind:counter="12"
+          v-bind:label="t('dialogs.addStock.isin')"
+          v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+          v-on:update:modelValue="onIsin"
       ></v-text-field>
       <v-text-field
-        v-model="state.company"
-        required
-        variant="outlined"
-        v-bind:disabled="state.auto"
-        v-bind:label="t('dialogs.addStock.company')"
+          v-model="state.company"
+          required
+          variant="outlined"
+          v-bind:disabled="state.auto"
+          v-bind:label="t('dialogs.addStock.company')"
       ></v-text-field>
       <v-text-field
-        v-model="state.wkn"
-        required
-        variant="outlined"
-        v-bind:disabled="state.auto"
-        v-bind:label="t('dialogs.addStock.wkn')"
+          v-model="state.wkn"
+          required
+          variant="outlined"
+          v-bind:disabled="state.auto"
+          v-bind:label="t('dialogs.addStock.wkn')"
       ></v-text-field>
       <v-text-field
-        v-model="state.symbol"
-        required
-        variant="outlined"
-        v-bind:disabled="state.auto"
-        v-bind:label="t('dialogs.addStock.symbol')"
+          v-model="state.symbol"
+          required
+          variant="outlined"
+          v-bind:disabled="state.auto"
+          v-bind:label="t('dialogs.addStock.symbol')"
       ></v-text-field>
     </v-card-text>
   </v-form>

@@ -49,10 +49,10 @@ log('--- ShowAccounting.vue setup ---')
   <v-form>
     <v-list height="440">
       <v-list-item
-        v-for="entry in state._result"
-        :key="entry.title"
-        :subtitle="entry.subtitle"
-        :title="entry.title"></v-list-item>
+          v-for="entry in state._result"
+          :key="entry.title"
+          :subtitle="entry.subtitle"
+          :title="entry.title"></v-list-item>
     </v-list>
   </v-form>
 </template>

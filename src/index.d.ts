@@ -8,8 +8,8 @@
 
 // NOTE: This project uses vue3 option components only.
 declare module '*.vue' {
-  import {type ComponentOptions} from 'vue'
-  const component: ComponentOptions
-  // noinspection JSUnusedGlobalSymbols
-  export default component
+    import {type ComponentOptions} from 'vue'
+    const component: ComponentOptions
+    // noinspection JSUnusedGlobalSymbols
+    export default component
 }

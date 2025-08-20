@@ -1,9 +1,11 @@
 import { useApp } from '@/apis/useApp';
 const { CONS, log, notice } = useApp();
 export const useDatabase = () => {
-    let dbi;
+    let dbi = null;
     return {
-        dbi: () => { return dbi; },
+        dbi: () => {
+            return dbi;
+        },
         clearStores: async () => {
             log('BACKGROUND: clearStores');
             return new Promise(async (resolve, reject) => {
@@ -286,7 +288,7 @@ export const useDatabase = () => {
                     reject(ev);
                 };
                 const onSuccess = (ev) => {
-                    if (ev.target instanceof IDBOpenDBRequest) {
+                    if (ev.target instanceof IDBOpenDBRequest && ev.target.result) {
                         dbi = ev.target.result;
                         const onVersionChangeSuccess = () => {
                             if (dbi != null) {

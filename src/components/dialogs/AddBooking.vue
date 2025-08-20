@@ -212,172 +212,172 @@ log('--- AddBooking.vue setup ---')
       <v-row>
         <v-col>
           <v-text-field
-            ref="date-input"
-            v-model="state.bookDate"
-            autofocus
-            density="compact"
-            required
-            type="date"
-            v-bind:label="t('dialogs.addBooking.dateLabel')"
-            v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
-            variant="outlined"
+              ref="date-input"
+              v-model="state.bookDate"
+              autofocus
+              density="compact"
+              required
+              type="date"
+              v-bind:label="t('dialogs.addBooking.dateLabel')"
+              v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
+              variant="outlined"
           ></v-text-field>
         </v-col>
         <v-col>
           <v-select
-            v-model="state.bookingTypeId"
-            density="compact"
-            max-width="300"
-            required
-            v-bind:itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-            v-bind:itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-            v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
-            v-bind:label="t('dialogs.addBooking.bookingTypeLabel')"
-            v-bind:menu=false
-            v-bind:menuProps="{ maxHeight: 250 }"
-            v-bind:rules="valRequiredRules([t('validators.requiredRule', 0)])"
-            variant="outlined"
-            v-on:update:modelValue="(ev) => {console.error('CHANGE', ev)}"
+              v-model="state.bookingTypeId"
+              density="compact"
+              max-width="300"
+              required
+              v-bind:itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+              v-bind:itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+              v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+              v-bind:label="t('dialogs.addBooking.bookingTypeLabel')"
+              v-bind:menu=false
+              v-bind:menuProps="{ maxHeight: 250 }"
+              v-bind:rules="valRequiredRules([t('validators.requiredRule', 0)])"
+              variant="outlined"
+              v-on:update:modelValue="(ev) => {console.error('CHANGE', ev)}"
           ></v-select>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <v-text-field
-            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
-            v-model="state.count"
-            class="withoutSpinner"
-            density="compact"
-            type="number"
-            v-bind:label="t('dialogs.addBooking.countLabel')"
-            variant="outlined"
+              v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
+              v-model="state.count"
+              class="withoutSpinner"
+              density="compact"
+              type="number"
+              v-bind:label="t('dialogs.addBooking.countLabel')"
+              variant="outlined"
           ></v-text-field>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
-            v-model="state.unitQuotation"
-            v-bind:label="t('dialogs.addBooking.unitQuotationLabel')"
-            v-on:amount="(a) => { state.unitQuotation = a }"
+              v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
+              v-model="state.unitQuotation"
+              v-bind:label="t('dialogs.addBooking.unitQuotationLabel')"
+              v-on:amount="(a) => { state.unitQuotation = a }"
           ></CurrencyInput>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-            v-if="state.bookingTypeId > 3"
-            v-model="state.credit"
-            v-bind:label="t('dialogs.addBooking.creditLabel')"
-            v-on:amount="(a) => { state.credit = a }"
+              v-if="state.bookingTypeId > 3"
+              v-model="state.credit"
+              v-bind:label="t('dialogs.addBooking.creditLabel')"
+              v-on:amount="(a) => { state.credit = a }"
           ></CurrencyInput>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state.bookingTypeId > 3"
-            v-model="state.debit"
-            v-bind:label="t('dialogs.addBooking.debitLabel')"
-            v-on:amount="(a) => { state.debit = a }"
+              v-if="state.bookingTypeId > 3"
+              v-model="state.debit"
+              v-bind:label="t('dialogs.addBooking.debitLabel')"
+              v-on:amount="(a) => { state.debit = a }"
           ></CurrencyInput>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 1"
-            v-model="state.tax"
-            v-bind:label="t('dialogs.addBooking.taxLabel')"
-            v-on:amount="(a) => { state.tax = a }"
+              v-if="state.bookingTypeId < 4 && state.bookingTypeId > 1"
+              v-model="state.tax"
+              v-bind:label="t('dialogs.addBooking.taxLabel')"
+              v-on:amount="(a) => { state.tax = a }"
           ></CurrencyInput>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 1"
-            v-model="state.soli"
-            v-bind:label="t('dialogs.addBooking.soliLabel')"
-            v-on:amount="(a) => { state.soli = a }"
+              v-if="state.bookingTypeId < 4 && state.bookingTypeId > 1"
+              v-model="state.soli"
+              v-bind:label="t('dialogs.addBooking.soliLabel')"
+              v-on:amount="(a) => { state.soli = a }"
           ></CurrencyInput>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <v-text-field
-            v-if="state.bookingTypeId === 3"
-            ref="date-input"
-            v-model="state.exDate"
-            autofocus
-            density="compact"
-            required
-            type="date"
-            v-bind:label="t('dialogs.addBooking.exDateLabel')"
-            v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
-            variant="outlined"
+              v-if="state.bookingTypeId === 3"
+              ref="date-input"
+              v-model="state.exDate"
+              autofocus
+              density="compact"
+              required
+              type="date"
+              v-bind:label="t('dialogs.addBooking.exDateLabel')"
+              v-bind:rules="valDateRules([t('validators.dateRules', 0)])"
+              variant="outlined"
           ></v-text-field>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state.bookingTypeId === 3"
-            v-model="state.sourceTax"
-            v-bind:label="t('dialogs.addBooking.sourceTaxLabel')"
-            v-on:amount="(a) => { state.sourceTax = a }"
+              v-if="state.bookingTypeId === 3"
+              v-model="state.sourceTax"
+              v-bind:label="t('dialogs.addBooking.sourceTaxLabel')"
+              v-on:amount="(a) => { state.sourceTax = a }"
           ></CurrencyInput>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <v-select
-            v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
-            v-model="state.stockId"
-            density="compact"
-            max-width="300"
-            v-bind:item-title="CONS.DB.STORES.STOCKS.FIELDS.COMPANY"
-            v-bind:item-value="CONS.DB.STORES.STOCKS.FIELDS.ID"
-            v-bind:items="records.stocks.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
-            v-bind:label="t('dialogs.addBooking.stockLabel')"
-            v-bind:menu=false
-            v-bind:menu-props="{ maxHeight: 250 }"
-            v-bind:rules="valRequiredRules([t('validators.requiredRule', 0)])"
-            variant="outlined"
+              v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
+              v-model="state.stockId"
+              density="compact"
+              max-width="300"
+              v-bind:item-title="CONS.DB.STORES.STOCKS.FIELDS.COMPANY"
+              v-bind:item-value="CONS.DB.STORES.STOCKS.FIELDS.ID"
+              v-bind:items="records.stocks.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
+              v-bind:label="t('dialogs.addBooking.stockLabel')"
+              v-bind:menu=false
+              v-bind:menu-props="{ maxHeight: 250 }"
+              v-bind:rules="valRequiredRules([t('validators.requiredRule', 0)])"
+              variant="outlined"
           ></v-select>
         </v-col>
         <v-col>
           <v-select
-            v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
-            v-model="state.marketPlace"
-            density="compact"
-            max-width="350"
-            v-bind:items="settings.markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
-            v-bind:label="t('dialogs.addBooking.marketPlaceLabel')"
-            v-bind:menu=false
-            v-bind:menuProps="{ maxHeight: 250 }"
+              v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
+              v-model="state.marketPlace"
+              density="compact"
+              max-width="350"
+              v-bind:items="settings.markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
+              v-bind:label="t('dialogs.addBooking.marketPlaceLabel')"
+              v-bind:menu=false
+              v-bind:menuProps="{ maxHeight: 250 }"
           ></v-select>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-            v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
-            v-model="state.fee"
-            v-bind:label="t('dialogs.addBooking.feeLabel')"
-            v-on:amount="(a) => { state.fee = a }"
+              v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
+              v-model="state.fee"
+              v-bind:label="t('dialogs.addBooking.feeLabel')"
+              v-on:amount="(a) => { state.fee = a }"
           ></CurrencyInput>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-if="state.bookingTypeId === 1"
-            v-model="state.transactionTax"
-            v-bind:label="t('dialogs.addBooking.transactionTaxLabel')"
-            v-on:amount="(a) => { state.transactionTax = a }"
+              v-if="state.bookingTypeId === 1"
+              v-model="state.transactionTax"
+              v-bind:label="t('dialogs.addBooking.transactionTaxLabel')"
+              v-on:amount="(a) => { state.transactionTax = a }"
           ></CurrencyInput>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
           <v-text-field
-            v-model="state.description"
-            density="compact"
-            required
-            v-bind:label="t('dialogs.addBooking.descriptionLabel')"
-            variant="outlined"
+              v-model="state.description"
+              density="compact"
+              required
+              v-bind:label="t('dialogs.addBooking.descriptionLabel')"
+              variant="outlined"
           ></v-text-field>
         </v-col>
       </v-row>

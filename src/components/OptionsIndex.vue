@@ -161,22 +161,22 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               <v-col cols="12" md="6" sm="6">
                 <v-radio-group v-model="state.skin" column>
                   <v-radio
-                    v-for="item in state.themeKeys"
-                    v-bind:key="item"
-                    v-bind:label="optionsThemeNames[item]"
-                    v-bind:value="item"
-                    v-on:click="setSkin"
+                      v-for="item in state.themeKeys"
+                      v-bind:key="item"
+                      v-bind:label="optionsThemeNames[item]"
+                      v-bind:value="item"
+                      v-on:click="setSkin"
                   ></v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="12" md="6" sm="6">
                 <v-radio-group v-model="state.service" column>
                   <v-radio
-                    v-for="item in state.serviceKeys"
-                    v-bind:key="item"
-                    v-bind:label="serviceLabels(item)"
-                    v-bind:value="item"
-                    v-on:click="setService"
+                      v-for="item in state.serviceKeys"
+                      v-bind:key="item"
+                      v-bind:label="serviceLabels(item)"
+                      v-bind:value="item"
+                      v-on:click="setService"
                   ></v-radio>
                 </v-radio-group>
               </v-col>
@@ -186,10 +186,10 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
             <v-row class="pa-10" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
-                  v-bind:label="t('optionsPage.markets.label')"
-                  v-bind:list="state.markets"
-                  v-bind:title="t('optionsPage.markets.title')"
-                  v-bind:type="CONS.DYNAMIC_LIST.TYPES.MARKETS"
+                    v-bind:label="t('optionsPage.markets.label')"
+                    v-bind:list="state.markets"
+                    v-bind:title="t('optionsPage.markets.title')"
+                    v-bind:type="CONS.DYNAMIC_LIST.TYPES.MARKETS"
                 ></DynamicList>
               </v-col>
             </v-row>
@@ -198,24 +198,24 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
             <v-row>
               <v-col>
                 <v-checkbox
-                  v-for="item in state.indexesA"
-                  v-bind:key="item"
-                  v-model="state.indexes"
-                  hide-details
-                  v-bind:label="CONS.SETTINGS.INDEXES.get(item)"
-                  v-bind:value="item"
-                  v-on:change="setIndexes"
+                    v-for="item in state.indexesA"
+                    v-bind:key="item"
+                    v-model="state.indexes"
+                    hide-details
+                    v-bind:label="CONS.SETTINGS.INDEXES.get(item)"
+                    v-bind:value="item"
+                    v-on:change="setIndexes"
                 ></v-checkbox>
               </v-col>
               <v-col>
                 <v-checkbox
-                  v-for="item in state.indexesB"
-                  v-bind:key="item"
-                  v-model="state.indexes"
-                  hide-details
-                  v-bind:label="CONS.SETTINGS.INDEXES.get(item)"
-                  v-bind:value="item"
-                  v-on:change="setIndexes"
+                    v-for="item in state.indexesB"
+                    v-bind:key="item"
+                    v-model="state.indexes"
+                    hide-details
+                    v-bind:label="CONS.SETTINGS.INDEXES.get(item)"
+                    v-bind:value="item"
+                    v-on:change="setIndexes"
                 ></v-checkbox>
               </v-col>
             </v-row>
@@ -225,25 +225,25 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               <v-col>
                 <!--suppress TypeScriptValidateTypes -->
                 <v-checkbox
-                  v-for="item in state.materialsA"
-                  v-bind:key="item"
-                  v-model="state.materials"
-                  hide-details
-                  v-bind:label="rt(tm('optionsPage.materials')[item])"
-                  v-bind:value="item"
-                  v-on:change="setMaterials"
+                    v-for="item in state.materialsA"
+                    v-bind:key="item"
+                    v-model="state.materials"
+                    hide-details
+                    v-bind:label="rt(tm('optionsPage.materials')[item])"
+                    v-bind:value="item"
+                    v-on:change="setMaterials"
                 ></v-checkbox>
               </v-col>
               <v-col>
                 <!--suppress TypeScriptValidateTypes -->
                 <v-checkbox
-                  v-for="item in state.materialsB"
-                  v-bind:key="item"
-                  v-model="state.materials"
-                  hide-details
-                  v-bind:label="rt(tm('optionsPage.materials')[item])"
-                  v-bind:value="item"
-                  v-on:change="setMaterials"
+                    v-for="item in state.materialsB"
+                    v-bind:key="item"
+                    v-model="state.materials"
+                    hide-details
+                    v-bind:label="rt(tm('optionsPage.materials')[item])"
+                    v-bind:value="item"
+                    v-on:change="setMaterials"
                 ></v-checkbox>
               </v-col>
             </v-row>
@@ -252,10 +252,10 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
             <v-row class="pa-12" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
-                  v-bind:label="t('optionsPage.exchanges.label')"
-                  v-bind:list="state.exchanges"
-                  v-bind:title="t('optionsPage.exchanges.title')"
-                  v-bind:type="CONS.DYNAMIC_LIST.TYPES.EXCHANGES"
+                    v-bind:label="t('optionsPage.exchanges.label')"
+                    v-bind:list="state.exchanges"
+                    v-bind:title="t('optionsPage.exchanges.title')"
+                    v-bind:type="CONS.DYNAMIC_LIST.TYPES.EXCHANGES"
                 ></DynamicList>
               </v-col>
             </v-row>

@@ -6,7 +6,10 @@ import componentsPlugin from '@/plugins/components';
 import routerPlugin from '@/plugins/router';
 import piniaPlugin from '@/plugins/pinia';
 import { useApp } from '@/apis/useApp';
+import { useDatabase } from '@/apis/useDatabase';
 const { CONS, log } = useApp();
+const { open, dbi } = useDatabase();
+await open();
 const app = createApp(AppIndex);
 app.config.errorHandler = (err) => {
     console.error(err);
@@ -21,9 +24,9 @@ app.use(piniaPlugin.pinia);
 app.use(routerPlugin.router);
 app.mount('#app');
 const keyStrokeController = [];
-const onBeforeUnload = async () => {
+const onBeforeUnload = () => {
     log('BACKGROUND: onBeforeUnload');
-    await browser.runtime.sendMessage(JSON.stringify({ type: CONS.MESSAGES.DB__CLOSE }));
+    dbi()?.close();
 };
 const onKeyDown = async (ev) => {
     keyStrokeController.push(ev.key);

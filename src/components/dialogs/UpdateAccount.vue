@@ -36,7 +36,7 @@ const state: Reactive<IState> = reactive({
 
 const mResetState = () => {
   state.swift = ''
-  state.number= ''
+  state.number = ''
   state.logoUrl = ''
   state.logoSearchName = ''
   state.stockAccount = false
@@ -110,36 +110,36 @@ log('--- UpdateAccount.vue setup ---')
 <template>
   <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
     <v-switch
-      v-model="state.stockAccount"
-      color="red"
-      variant="outlined"
-      v-bind:label="t('dialogs.updateAccount.stockAccountLabel')"></v-switch>
+        v-model="state.stockAccount"
+        color="red"
+        variant="outlined"
+        v-bind:label="t('dialogs.updateAccount.stockAccountLabel')"></v-switch>
     <v-text-field
-      ref="swift-input"
-      v-model="state.swift"
-      autofocus
-      required
-      variant="outlined"
-      v-bind:label="t('dialogs.updateAccount.swiftLabel')"
-      v-bind:rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
+        ref="swift-input"
+        v-model="state.swift"
+        autofocus
+        required
+        variant="outlined"
+        v-bind:label="t('dialogs.updateAccount.swiftLabel')"
+        v-bind:rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
     ></v-text-field>
     <v-text-field
-      v-model="state.number"
-      required
-      variant="outlined"
-      v-bind:label="t('dialogs.updateAccount.accountNumberLabel')"
-      v-bind:placeholder="t('dialogs.updateAccount.accountNumberPlaceholder')"
-      v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-      v-on:update:modelValue="onUpdateLogoSearchName"
+        v-model="state.number"
+        required
+        variant="outlined"
+        v-bind:label="t('dialogs.updateAccount.accountNumberLabel')"
+        v-bind:placeholder="t('dialogs.updateAccount.accountNumberPlaceholder')"
+        v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+        v-on:update:modelValue="onUpdateLogoSearchName"
     ></v-text-field>
     <v-text-field
-      v-model="state.logoSearchName"
-      placeholder="z. B. ing.com"
-      required
-      variant="outlined"
-      v-bind:label="t('dialogs.updateAccount.logoLabel')"
-      v-bind:rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
-      v-on:input="onInputLogoUrl"
+        v-model="state.logoSearchName"
+        placeholder="z. B. ing.com"
+        required
+        variant="outlined"
+        v-bind:label="t('dialogs.updateAccount.logoLabel')"
+        v-bind:rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
+        v-on:input="onInputLogoUrl"
     ></v-text-field>
     <img alt="brandfetch.com logo" v-bind:src="state.logoUrl">
   </v-form>

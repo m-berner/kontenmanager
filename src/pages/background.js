@@ -3,7 +3,7 @@ import { useDatabase } from '@/apis/useDatabase';
 import { useFetch } from '@/apis/useFetch';
 const { CONS, log } = useApp();
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
-    const { dbi, clearStores, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, updateBooking, exportStores, importStores, deleteStock, open } = useDatabase();
+    const { clearStores, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, updateBooking, exportStores, importStores, deleteStock, open } = useDatabase();
     const { fetchCompanyData, fetchMinRateMaxData, fetchDailyChangeData, fetchExchangesData, fetchMaterialData, fetchIndexData, fetchDateData } = useFetch();
     const onInstall = async () => {
         console.log('BACKGROUND: onInstall');
@@ -128,15 +128,6 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                         data: storageLocal1
                     });
                     resolve(response);
-                    break;
-                case CONS.MESSAGES.DB__CLOSE:
-                    if (dbi() !== undefined) {
-                        dbi().close();
-                        resolve('DB closed');
-                    }
-                    else {
-                        resolve('No DB open');
-                    }
                     break;
                 case CONS.MESSAGES.DB__DELETE_ALL:
                     await clearStores();

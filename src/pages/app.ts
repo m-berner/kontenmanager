@@ -13,14 +13,17 @@ import componentsPlugin from '@/plugins/components'
 import routerPlugin from '@/plugins/router'
 import piniaPlugin from '@/plugins/pinia'
 import {useApp} from '@/apis/useApp'
+import {useDatabase} from '@/apis/useDatabase'
 
 const {CONS, log} = useApp()
+const {open, dbi} = useDatabase()
+await open()
 const app = createApp(AppIndex)
 app.config.errorHandler = (err: unknown) => {
-  console.error(err)
+    console.error(err)
 }
 app.config.warnHandler = (msg: string) => {
-  console.warn(msg)
+    console.warn(msg)
 }
 app.use(componentsPlugin)
 app.use(vuetifyPlugin.vuetify)
@@ -30,37 +33,37 @@ app.use(routerPlugin.router)
 app.mount('#app')
 
 const keyStrokeController: string[] = []
-const onBeforeUnload = async (): Promise<void> => {
-  log('BACKGROUND: onBeforeUnload')
-  await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__CLOSE}))
+const onBeforeUnload = (): void => {
+    log('BACKGROUND: onBeforeUnload')
+    dbi()?.close()
 }
 const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
-  keyStrokeController.push(ev.key)
-  log('BACKGROUND: onKeyDown')
-  if (
-    keyStrokeController.includes('Control') &&
-    keyStrokeController.includes('Alt') &&
-    ev.key === 'r'
-  ) {
-    await browser.storage.local.clear()
-  }
-  if (
-    keyStrokeController.includes('Control') &&
-    keyStrokeController.includes('Alt') &&
-    ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0
-  ) {
-    localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '0')
-  }
-  if (
-    keyStrokeController.includes('Control') &&
-    keyStrokeController.includes('Alt') &&
-    ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0)
-  ) {
-    localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '1')
-  }
+    keyStrokeController.push(ev.key)
+    log('BACKGROUND: onKeyDown')
+    if (
+        keyStrokeController.includes('Control') &&
+        keyStrokeController.includes('Alt') &&
+        ev.key === 'r'
+    ) {
+        await browser.storage.local.clear()
+    }
+    if (
+        keyStrokeController.includes('Control') &&
+        keyStrokeController.includes('Alt') &&
+        ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0
+    ) {
+        localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '0')
+    }
+    if (
+        keyStrokeController.includes('Control') &&
+        keyStrokeController.includes('Alt') &&
+        ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0)
+    ) {
+        localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '1')
+    }
 }
 const onKeyUp = (ev: KeyboardEvent): void => {
-  keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
+    keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
 }
 
 window.addEventListener('keydown', onKeyDown, false)

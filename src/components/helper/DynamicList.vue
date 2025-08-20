@@ -78,26 +78,26 @@ log('--- DynamicList.vue setup ---')
   <v-card color="secondary" v-bind:title="dynamicListProps.title">
     <v-list bg-color="secondary">
       <v-list-item
-        v-for="(item, i) in state.list"
-        v-bind:key="item"
-        hide-details
-        v-bind:title="item">
+          v-for="(item, i) in state.list"
+          v-bind:key="item"
+          hide-details
+          v-bind:title="item">
         <template v-slot:prepend>
           <v-btn
-            class="mr-3"
-            icon="$close"
-            v-on:click="mRemoveItem(i)"></v-btn>
+              class="mr-3"
+              icon="$close"
+              v-on:click="mRemoveItem(i)"></v-btn>
         </template>
       </v-list-item>
     </v-list>
     <v-card-actions>
       <v-text-field
-        v-model="state.newItem"
-        type="text"
-        v-bind:autofocus="true"
-        v-bind:clearable="true"
-        v-bind:label="dynamicListProps.label"
-        v-bind:placeholder="dynamicListProps.placeholder">
+          v-model="state.newItem"
+          type="text"
+          v-bind:autofocus="true"
+          v-bind:clearable="true"
+          v-bind:label="dynamicListProps.label"
+          v-bind:placeholder="dynamicListProps.placeholder">
         <template v-slot:append>
           <v-btn class="ml-3"
                  color="primary"

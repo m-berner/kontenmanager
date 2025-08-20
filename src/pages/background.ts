@@ -254,7 +254,6 @@ const {CONS, log} = useApp()
 
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const {
-        dbi,
         clearStores,
         exportToFile,
         addAccount,
@@ -522,14 +521,14 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                     })
                     resolve(response)
                     break
-                case CONS.MESSAGES.DB__CLOSE:
-                    if (dbi() !== undefined) {
-                        dbi().close()
-                        resolve('DB closed')
-                    } else {
-                        resolve('No DB open')
-                    }
-                    break
+                // case CONS.MESSAGES.DB__CLOSE:
+                //     if (dbi() !== undefined) {
+                //         dbi().close()
+                //         resolve('DB closed')
+                //     } else {
+                //         resolve('No DB open')
+                //     }
+                //     break
                 case CONS.MESSAGES.DB__DELETE_ALL:
                     await clearStores()
                     resolve('DB empty')

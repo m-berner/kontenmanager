@@ -104,55 +104,55 @@ log('--- UpdateBooking.vue setup ---')
     <v-container>
       <v-row>
         <v-text-field
-          v-model="state.date"
-          autofocus
-          required
-          type="date"
-          v-bind:label="t('dialogs.updateBooking.dateLabel')"
-          variant="outlined"
+            v-model="state.date"
+            autofocus
+            required
+            type="date"
+            v-bind:label="t('dialogs.updateBooking.dateLabel')"
+            variant="outlined"
         ></v-text-field>
       </v-row>
       <v-row>
         <v-select
-          v-model="state.bookingTypeId"
-          density="compact"
-          maxWidth="300"
-          required
-          v-bind:itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-          v-bind:itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-          v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
-          v-bind:label="t('dialogs.addBooking.bookingTypeLabel')"
-          v-bind:menu=false
-          v-bind:menuProps="{ maxHeight: 250 }"
-          v-bind:rules="valPositiveIntegerRules([t('dialogs.updateBooking.validators[0]')])"
-          validate-on="input"
-          variant="outlined"
-          v-on:update:modelValue="(ev) => {console.error('CHANGE', ev, state.bookingTypeId)}"
+            v-model="state.bookingTypeId"
+            density="compact"
+            maxWidth="300"
+            required
+            v-bind:itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+            v-bind:itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+            v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+            v-bind:label="t('dialogs.addBooking.bookingTypeLabel')"
+            v-bind:menu=false
+            v-bind:menuProps="{ maxHeight: 250 }"
+            v-bind:rules="valPositiveIntegerRules([t('dialogs.updateBooking.validators[0]')])"
+            validate-on="input"
+            variant="outlined"
+            v-on:update:modelValue="(ev) => {console.error('CHANGE', ev, state.bookingTypeId)}"
         ></v-select>
       </v-row>
       <v-row cols="2" sm="2">
         <v-col>
           <CurrencyInput
-            v-model="state.credit"
-            v-bind:label="t('dialogs.addBooking.creditLabel')"
-            v-on:amount="(a) => { state.credit = a }"
+              v-model="state.credit"
+              v-bind:label="t('dialogs.addBooking.creditLabel')"
+              v-on:amount="(a) => { state.credit = a }"
           ></CurrencyInput>
         </v-col>
         <v-col>
           <CurrencyInput
-            v-model="state.debit"
-            v-bind:label="t('dialogs.addBooking.debitLabel')"
-            v-on:amount="(a) => { state.debit = a }"
+              v-model="state.debit"
+              v-bind:label="t('dialogs.addBooking.debitLabel')"
+              v-on:amount="(a) => { state.debit = a }"
           ></CurrencyInput>
         </v-col>
       </v-row>
       <v-row>
         <v-text-field
-          v-model="state.description"
-          density="compact"
-          required
-          v-bind:label="t('dialogs.addBooking.descriptionLabel')"
-          variant="outlined"
+            v-model="state.description"
+            density="compact"
+            required
+            v-bind:label="t('dialogs.addBooking.descriptionLabel')"
+            variant="outlined"
         ></v-text-field>
       </v-row>
     </v-container>

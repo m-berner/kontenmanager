@@ -71,15 +71,15 @@ onMounted(() => {
 
 <template>
   <v-text-field
-    v-model="state.formattedValue"
-    density="compact"
-    type="text"
-    variant="outlined"
-    hide-details
-    v-bind:disabled="currencyInputProps.disabled"
-    v-bind:label="currencyInputProps.label"
-    v-on:blur="onBlur"
-    v-on:focus="onFocus"
-    v-on:input="onInput"
+      v-model="state.formattedValue"
+      density="compact"
+      type="text"
+      variant="outlined"
+      hide-details
+      v-bind:disabled="currencyInputProps.disabled"
+      v-bind:label="currencyInputProps.label"
+      v-on:blur="onBlur"
+      v-on:focus="onFocus"
+      v-on:input="onInput"
   ></v-text-field>
 </template>

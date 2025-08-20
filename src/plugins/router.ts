@@ -9,60 +9,60 @@ import {createRouter, createWebHashHistory, type Router} from 'vue-router'
 import {useApp} from '@/apis/useApp'
 
 interface IRouter {
-  router: Router
+    router: Router
 }
 
 const {log} = useApp()
 
 const routerInstance = createRouter({
-  history: createWebHashHistory(),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      components: {
-        default: () => import('@/components/HomeContent.vue'),
-        title: () => import('@/components/TitleBar.vue'),
-        header: () => import ('@/components/HeaderBar.vue'),
-        footer: () => import('@/components/FooterBar.vue')
-      }
-    },
-    {
-      path: '/company',
-      name: 'company',
-      components: {
-        default: () => import('@/components/CompanyContent.vue'),
-        title: () => import('@/components/TitleBar.vue'),
-        header: () => import ('@/components/HeaderBar.vue'),
-        info: () => import ('@/components/InfoBar.vue'),
-        footer: () => import('@/components/FooterBar.vue')
-      }
-    },
-    {
-      path: '/help',
-      name: 'help',
-      components: {
-        default: () => import('@/components/HelpContent.vue'),
-        title: () => import('@/components/TitleBar.vue'),
-        header: () => import ('@/components/HeaderBar.vue'),
-        footer: () => import('@/components/FooterBar.vue')
-      }
-    },
-    {
-      path: '/privacy',
-      name: 'privacy',
-      components: {
-        default: () => import('@/components/PrivacyContent.vue'),
-        title: () => import('@/components/TitleBar.vue'),
-        header: () => import ('@/components/HeaderBar.vue'),
-        footer: () => import('@/components/FooterBar.vue')
-      }
-    }
-  ]
+    history: createWebHashHistory(),
+    routes: [
+        {
+            path: '/',
+            name: 'home',
+            components: {
+                default: () => import('@/components/HomeContent.vue'),
+                title: () => import('@/components/TitleBar.vue'),
+                header: () => import ('@/components/HeaderBar.vue'),
+                footer: () => import('@/components/FooterBar.vue')
+            }
+        },
+        {
+            path: '/company',
+            name: 'company',
+            components: {
+                default: () => import('@/components/CompanyContent.vue'),
+                title: () => import('@/components/TitleBar.vue'),
+                header: () => import ('@/components/HeaderBar.vue'),
+                info: () => import ('@/components/InfoBar.vue'),
+                footer: () => import('@/components/FooterBar.vue')
+            }
+        },
+        {
+            path: '/help',
+            name: 'help',
+            components: {
+                default: () => import('@/components/HelpContent.vue'),
+                title: () => import('@/components/TitleBar.vue'),
+                header: () => import ('@/components/HeaderBar.vue'),
+                footer: () => import('@/components/FooterBar.vue')
+            }
+        },
+        {
+            path: '/privacy',
+            name: 'privacy',
+            components: {
+                default: () => import('@/components/PrivacyContent.vue'),
+                title: () => import('@/components/TitleBar.vue'),
+                header: () => import ('@/components/HeaderBar.vue'),
+                footer: () => import('@/components/FooterBar.vue')
+            }
+        }
+    ]
 })
 
 const routerConfig: IRouter = {
-  router: routerInstance
+    router: routerInstance
 }
 
 export default routerConfig

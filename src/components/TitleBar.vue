@@ -51,24 +51,24 @@ log('--- TitleBar.vue setup ---')
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
-      max-width="150"
-      hide-details
-      v-bind:disabled="true"
-      v-bind:label="t('titleBar.bookingsSumLabel')"
-      v-bind:modelValue="balance"
+        max-width="150"
+        hide-details
+        v-bind:disabled="true"
+        v-bind:label="t('titleBar.bookingsSumLabel')"
+        v-bind:modelValue="balance"
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
-      v-model="activeAccountId"
-      max-width="350"
-      hide-details
-      density="compact"
-      variant="outlined"
-      v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
-      v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-      v-bind:items="records.accounts"
-      v-bind:label="t('titleBar.selectAccountLabel')"
-      v-on:update:modelValue="onUpdateTitleBar"
+        v-model="activeAccountId"
+        max-width="350"
+        hide-details
+        density="compact"
+        variant="outlined"
+        v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
+        v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
+        v-bind:items="records.accounts"
+        v-bind:label="t('titleBar.selectAccountLabel')"
+        v-on:update:modelValue="onUpdateTitleBar"
     >
       <template v-slot:prepend>
         <img alt="brandfetch.com logo" v-bind:src="getLogoUrl">

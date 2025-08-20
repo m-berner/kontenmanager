@@ -13,7 +13,7 @@ import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/apis/useApp'
-import {computed} from "vue";
+import {computed} from 'vue'
 
 // Store setup with proper typing
 const {log} = useApp()
@@ -133,7 +133,7 @@ const stocksMenuItems: StocksMenuItems[] = [
 ]
 // Fixed: Use a function that returns a function for proper ref handling
 const setDynamicStyleWinLoss = computed(() => {
-  return el => {
+  return (el: HTMLElement | null): void => {
     if (el !== null) {
       // Use nextTick to ensure DOM is updated
       //await nextTick()

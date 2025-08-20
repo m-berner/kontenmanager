@@ -71,17 +71,17 @@ log('--- AddBookingType.vue setup ---')
       {{ t('dialogs.addBookingType.message') }}
     </v-text-field>
     <v-combobox
-      ref="name-input"
-      v-model="state.bookingTypeName"
-      max-width="300"
-      v-bind:disabled="settings.activeAccountId === -1"
-      v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-      v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-      v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
-      v-bind:label="t('dialogs.addBookingType.label')"
-      v-bind:menu=true
-      v-bind:menu-props="{ maxHeight: 250 }"
-      v-bind:rules="valNameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
+        ref="name-input"
+        v-model="state.bookingTypeName"
+        max-width="300"
+        v-bind:disabled="settings.activeAccountId === -1"
+        v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+        v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+        v-bind:items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+        v-bind:label="t('dialogs.addBookingType.label')"
+        v-bind:menu=true
+        v-bind:menu-props="{ maxHeight: 250 }"
+        v-bind:rules="valNameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
     ></v-combobox>
   </v-form>
 </template>
