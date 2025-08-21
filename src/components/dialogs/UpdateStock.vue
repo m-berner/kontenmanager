@@ -113,16 +113,16 @@ log('--- UpdateStock.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
     <v-container>
       <v-row>
         <v-text-field
             v-model="state.isin"
             autofocus
             required
-            v-bind:counter="12"
-            v-bind:label="t('dialogs.updateStock.isin')"
-            v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+            :counter="12"
+            :label="t('dialogs.updateStock.isin')"
+            :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
             variant="outlined"
         ></v-text-field>
       </v-row>
@@ -130,7 +130,7 @@ log('--- UpdateStock.vue setup ---')
         <v-text-field
             v-model="state.company"
             required
-            v-bind:label="t('dialogs.updateStock.company')"
+            :label="t('dialogs.updateStock.company')"
             variant="outlined"
         ></v-text-field>
       </v-row>
@@ -139,7 +139,7 @@ log('--- UpdateStock.vue setup ---')
           <v-text-field
               v-model="state.wkn"
               required
-              v-bind:label="t('dialogs.updateStock.wkn')"
+              :label="t('dialogs.updateStock.wkn')"
               variant="outlined"
           ></v-text-field>
         </v-col>
@@ -147,7 +147,7 @@ log('--- UpdateStock.vue setup ---')
           <v-text-field
               v-model="state.symbol"
               required
-              v-bind:label="t('dialogs.updateStock.symbol')"
+              :label="t('dialogs.updateStock.symbol')"
               variant="outlined"
           ></v-text-field>
         </v-col>
@@ -156,14 +156,14 @@ log('--- UpdateStock.vue setup ---')
         <v-col>
           <v-text-field
               v-model="state.meetingDay"
-              v-bind:label="t('dialogs.updateStock.meetingDay')"
+              :label="t('dialogs.updateStock.meetingDay')"
               variant="outlined"
           ></v-text-field>
         </v-col>
         <v-col>
           <v-text-field
               v-model="state.quarterDay"
-              v-bind:label="t('dialogs.updateStock.quarterDay')"
+              :label="t('dialogs.updateStock.quarterDay')"
               variant="outlined"
           ></v-text-field>
         </v-col>
@@ -172,14 +172,14 @@ log('--- UpdateStock.vue setup ---')
         <v-col>
           <v-checkbox
               v-model="state.fadeOut"
-              v-bind:label="t('dialogs.updateStock.fadeOut')"
+              :label="t('dialogs.updateStock.fadeOut')"
               variant="outlined"
           ></v-checkbox>
         </v-col>
         <v-col>
           <v-checkbox
               v-model="state.firstPage"
-              v-bind:label="t('dialogs.updateStock.firstPage')"
+              :label="t('dialogs.updateStock.firstPage')"
               variant="outlined"
           ></v-checkbox>
         </v-col>
@@ -187,7 +187,7 @@ log('--- UpdateStock.vue setup ---')
       <v-row>
         <v-text-field
             v-model="state.url"
-            v-bind:label="t('dialogs.updateStock.url')"
+            :label="t('dialogs.updateStock.url')"
             variant="outlined"
         ></v-text-field>
       </v-row>

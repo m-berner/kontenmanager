@@ -48,7 +48,7 @@ log('--- DeleteBooking.vue setup ---')
 </script>
 
 <template>
-  <v-form validate-on="submit" v-on:submit.prevent>
+  <v-form validate-on="submit" @submit.prevent>
     <p class="text-align-center">{{ records.getBookingTextById(state.bookingId) }}</p>
     <p class="text-align-center">{{ t('dialogs.deleteBooking.ask') }}</p>
   </v-form>

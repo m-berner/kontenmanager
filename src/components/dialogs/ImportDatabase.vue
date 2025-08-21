@@ -235,18 +235,18 @@ log('--- ImportDatabase.vue setup ---')
 </script>
 
 <template>
-  <v-form validate-on="submit" v-on:submit.prevent>
+  <v-form validate-on="submit" @submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
-          v-bind:label="t('dialogs.importDatabase.messageDelete')"
+          :label="t('dialogs.importDatabase.messageDelete')"
           variant="plain"
       ></v-text-field>
       <v-file-input
           accept=".json"
-          v-bind:clearable="true"
-          v-bind:label="t('dialogs.importDatabase.label')"
+          :clearable="true"
+          :label="t('dialogs.importDatabase.label')"
           variant="outlined"
-          v-on:change="(ev: IEventTarget) => { state.chosen_file = ev.target.files[0] }"></v-file-input>
+          @change="(ev: IEventTarget) => { state.chosen_file = ev.target.files[0] }"></v-file-input>
     </v-card-text>
   </v-form>
 </template>

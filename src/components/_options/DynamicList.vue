@@ -6,13 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {reactive, type Reactive, toRaw} from 'vue'
+import {computed, onBeforeMount, reactive, type Reactive, toRaw} from 'vue'
 import {useApp} from '@/composables/useApp'
+import {useI18n} from 'vue-i18n'
 
 interface DynamicListProps {
-  title: string
-  list: string[]
-  label: string
   type: symbol
   hint?: string
   placeholder?: string
@@ -21,18 +19,49 @@ interface DynamicListProps {
 interface IState {
   newItem: string
   list: string[]
+  markets: string[]
+  exchanges: string[]
 }
 
+const {t} = useI18n()
 const {CONS, log} = useApp()
 const dynamicListProps = defineProps<DynamicListProps>()
 
 const state: Reactive<IState> = reactive<IState>({
   newItem: '',
-  list: [...dynamicListProps.list]
+  list: [],
+  markets: [],
+  exchanges: []
 })
 
-const mAddItem = async (item: string): Promise<void> => {
-  log('DYNAMIC_LIST: mAddItem')
+const label = computed((): string => {
+  let resultLabel = 'Error'
+  switch (dynamicListProps.type) {
+    case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
+      resultLabel = t('optionsPage.exchanges.label')
+      break
+    case CONS.DYNAMIC_LIST.TYPES.MARKETS:
+      resultLabel = t('optionsPage.markets.label')
+      break
+  }
+  return resultLabel
+})
+
+const title = computed((): string => {
+  let resultTitle = 'Error'
+  switch (dynamicListProps.type) {
+    case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
+      resultTitle = t('optionsPage.exchanges.title')
+      break
+    case CONS.DYNAMIC_LIST.TYPES.MARKETS:
+      resultTitle = t('optionsPage.markets.title')
+      break
+  }
+  return resultTitle
+})
+
+const addItem = async (item: string): Promise<void> => {
+  log('DYNAMIC_LIST: addItem')
   if (!state.list?.includes(item)) {
     let newItem = ''
     let storageItem = {}
@@ -52,8 +81,8 @@ const mAddItem = async (item: string): Promise<void> => {
     await browser.storage.local.set(storageItem)
   }
 }
-const mRemoveItem = async (n: number): Promise<void> => {
-  log('DYNAMIC_LIST: mRemoveItem')
+const removeItem = async (n: number): Promise<void> => {
+  log('DYNAMIC_LIST: removeItem')
   if (n > 0) {
     let storageItem = {}
     switch (dynamicListProps.type) {
@@ -71,22 +100,34 @@ const mRemoveItem = async (n: number): Promise<void> => {
   }
 }
 
+onBeforeMount(async () => {
+  const storage = await browser.storage.local.get([CONS.STORAGE.PROPS.MARKETS, CONS.STORAGE.PROPS.EXCHANGES])
+  switch (dynamicListProps.type) {
+    case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
+      state.list = storage[CONS.STORAGE.PROPS.EXCHANGES]
+      break
+    case CONS.DYNAMIC_LIST.TYPES.MARKETS:
+      state.list = storage[CONS.STORAGE.PROPS.MARKETS]
+      break
+  }
+})
+
 log('--- DynamicList.vue setup ---')
 </script>
 
 <template>
-  <v-card color="secondary" v-bind:title="dynamicListProps.title">
+  <v-card color="secondary" :title="title">
     <v-list bg-color="secondary">
       <v-list-item
           v-for="(item, i) in state.list"
-          v-bind:key="item"
+          :key="item"
           hide-details
-          v-bind:title="item">
+          :title="item">
         <template v-slot:prepend>
           <v-btn
               class="mr-3"
               icon="$close"
-              v-on:click="mRemoveItem(i)"></v-btn>
+              @click="removeItem(i)"></v-btn>
         </template>
       </v-list-item>
     </v-list>
@@ -94,15 +135,15 @@ log('--- DynamicList.vue setup ---')
       <v-text-field
           v-model="state.newItem"
           type="text"
-          v-bind:autofocus="true"
-          v-bind:clearable="true"
-          v-bind:label="dynamicListProps.label"
-          v-bind:placeholder="dynamicListProps.placeholder">
+          :autofocus="true"
+          :clearable="true"
+          :label="label"
+          :placeholder="dynamicListProps.placeholder">
         <template v-slot:append>
           <v-btn class="ml-3"
                  color="primary"
                  icon="$add"
-                 v-on:click="mAddItem(state.newItem)"></v-btn>
+                 @click="addItem(state.newItem)"></v-btn>
         </template>
       </v-text-field>
     </v-card-actions>

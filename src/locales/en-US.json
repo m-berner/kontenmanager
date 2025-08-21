@@ -3,6 +3,10 @@
     "title": "KontenManager",
     "bookingsSumLabel": "Kontostand",
     "selectAccountLabel": "IBAN",
+    "iconsAlt": {
+      "logo": "logo",
+      "brandfetch": "brandfetch.com logo"
+    },
     "error": "Es wurde noch kein Konto angelegt?"
   },
   "headerBar": {

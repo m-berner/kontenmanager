@@ -167,24 +167,24 @@ log('--- StocksTable.vue setup ---')
   <v-data-table
       density="compact"
       item-key="cID"
-      v-bind:headers="stocksHeaders"
-      v-bind:hide-no-data="false"
-      v-bind:hover="true"
-      v-bind:items="records.stocks.filter((rec: IStockStore): boolean => rec.cID > 0 )"
-      v-bind:items-per-page="stocksPerPage"
-      v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-      v-bind:items-per-page-text="t('stocksTable.itemsPerPageText')"
-      v-bind:no-data-text="t('stocksTable.noDataText')"
-      v-on:update:items-per-page="onUpdateItemsPerPage"
-      v-on:update:page="onUpdatePage">
+      :headers="stocksHeaders"
+      :hide-no-data="false"
+      :hover="true"
+      :items="records.stocks.filter((rec: IStockStore): boolean => rec.cID > 0 )"
+      :items-per-page="stocksPerPage"
+      :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+      :items-per-page-text="t('stocksTable.itemsPerPageText')"
+      :no-data-text="t('stocksTable.noDataText')"
+      @update:items-per-page="onUpdateItemsPerPage"
+      @update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>
         <td>
           <DotMenu
               menuType="stocks"
-              v-bind:menuItems="stocksMenuItems"
-              v-bind:recordID="item.cID ?? -1">
+              :menuItems="stocksMenuItems"
+              :recordID="item.cID ?? -1">
           </DotMenu>
         </td>
         <td>{{ item.cCompany }}</td>
@@ -195,9 +195,9 @@ log('--- StocksTable.vue setup ---')
         <td v-else></td>
         <td>{{ item.mPortfolio }}</td>
         <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
-        <v-tooltip location="left" v-bind:text="n((item.mChange ?? 0) / 100, 'percent')">
+        <v-tooltip location="left" :text="n((item.mChange ?? 0) / 100, 'percent')">
           <template v-slot:activator="{ props }">
-            <td v-bind="props" v-bind:class="setDynamicStyleWinLoss">
+            <td v-bind="props" :class="setDynamicStyleWinLoss">
               {{ n(item.mEuroChange ?? 0, 'currency') }}
             </td>
           </template>

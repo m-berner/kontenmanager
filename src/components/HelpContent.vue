@@ -32,7 +32,7 @@ log('--- HelpContent.vue setup ---')
               content: rt(entry.content),
               icon: rt(entry.icon)
             }
-          })" v-bind:key="rt(item.title)">
+          })" :key="rt(item.title)">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -53,7 +53,7 @@ log('--- HelpContent.vue setup ---')
               subtitle: '',
               icon: rt(entry.icon)
             }
-          })" v-bind:key="rt(item.title)">
+          })" :key="rt(item.title)">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -74,7 +74,7 @@ log('--- HelpContent.vue setup ---')
               subtitle: rt(entry.subtitle),
               icon: rt(entry.icon)
             }
-          })" v-bind:key="rt(item.title)">
+          })" :key="rt(item.title)">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}
@@ -95,7 +95,7 @@ log('--- HelpContent.vue setup ---')
               subtitle: rt(entry.subtitle),
               icon: rt(entry.icon)
             }
-          })" v-bind:key="rt(item.title)">
+          })" :key="rt(item.title)">
             <v-card-title>
               <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
               {{ rt(item.title) }}

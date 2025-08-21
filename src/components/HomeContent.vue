@@ -104,29 +104,29 @@ log('--- HomeContent.vue setup ---')
       prepend-inner-icon="$magnify"
       single-line
       variant="outlined"
-      v-bind:label="t('appPage.search')"
+      :label="t('appPage.search')"
   ></v-text-field>
   <v-data-table
       density="compact"
       item-key="cID"
-      v-bind:headers="homeHeaders"
-      v-bind:hide-no-data="false"
-      v-bind:hover="true"
-      v-bind:items="bookings"
-      v-bind:items-per-page="bookingsPerPage"
-      v-bind:items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-      v-bind:items-per-page-text="t('appPage.itemsPerPageText')"
-      v-bind:no-data-text="t('appPage.noDataText')"
-      v-bind:search="state.search"
-      v-on:update:items-per-page="onUpdateItemsPerPage"
-      v-on:update:page="onUpdatePage">
+      :headers="homeHeaders"
+      :hide-no-data="false"
+      :hover="true"
+      :items="bookings"
+      :items-per-page="bookingsPerPage"
+      :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+      :items-per-page-text="t('appPage.itemsPerPageText')"
+      :no-data-text="t('appPage.noDataText')"
+      :search="state.search"
+      @update:items-per-page="onUpdateItemsPerPage"
+      @update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>
         <td>
           <DotMenu
-              v-bind:menuItems="homeMenuItems"
-              v-bind:recordID="item.cID"
+              :menuItems="homeMenuItems"
+              :recordID="item.cID"
           ></DotMenu>
         </td>
         <td>{{ d(utcDate(item.cDate), 'short') }}</td>

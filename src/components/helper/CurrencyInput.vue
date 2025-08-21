@@ -76,10 +76,10 @@ onMounted(() => {
       type="text"
       variant="outlined"
       hide-details
-      v-bind:disabled="currencyInputProps.disabled"
-      v-bind:label="currencyInputProps.label"
-      v-on:blur="onBlur"
-      v-on:focus="onFocus"
-      v-on:input="onInput"
+      :disabled="currencyInputProps.disabled"
+      :label="currencyInputProps.label"
+      @blur="onBlur"
+      @focus="onFocus"
+      @input="onInput"
   ></v-text-field>
 </template>

@@ -7,100 +7,22 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useTheme} from 'vuetify'
-import {onBeforeMount, type Reactive, reactive} from 'vue'
+import {type Ref, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
-import DynamicList from '@/components/helper/DynamicList.vue'
+import DynamicList from '@/components/_options/DynamicList.vue'
+import ThemeSelector from '@/components/_options/ThemeSelector.vue'
+import ServiceSelector from '@/components/_options/ServiceSelector.vue'
+import CheckboxGrid from '@/components/_options/CheckboxGrid.vue'
 
-type ITabs = { title: string, id: string }
-
-interface IOptionsIndex {
-  tab: number
-  //tabs: ITabs[]
-  skin: string
-  service: string
-  exchanges: string[]
-  indexes: string[]
-  markets: string[]
-  materials: string[]
-  themeKeys: string[]
-  //themeNames: { [p: string]: string }
-  serviceKeys: string[]
-  indexesA: string[]
-  indexesB: string[]
-  materialsA: string[]
-  materialsB: string[]
+interface ITabs {
+  title: string,
+  id: string
 }
 
-const {rt, t, tm} = useI18n()
-const theme = useTheme()
+const {rt, t} = useI18n()
 const {CONS, log} = useApp()
 
-const indexesKeysA: string[] = []
-const indexesKeysB: string[] = []
-let j = 0
-for (let entry of CONS.SETTINGS.INDEXES.keys()) {
-  if (j < CONS.SETTINGS.INDEXES.size / 2) {
-    indexesKeysA.push(entry)
-  } else {
-    indexesKeysB.push(entry)
-  }
-  j++
-}
-
-const materialsKeysA: string[] = []
-const materialsKeysB: string[] = []
-let i = 0
-for (let entry of CONS.SETTINGS.MATERIALS.keys()) {
-  if (i < CONS.SETTINGS.MATERIALS.size / 2) {
-    materialsKeysA.push(entry)
-  } else {
-    materialsKeysB.push(entry)
-  }
-  i++
-}
-
-const state: Reactive<IOptionsIndex> = reactive<IOptionsIndex>({
-  tab: 0,
-  skin: '',
-  service: '',
-  exchanges: [],
-  indexes: [],
-  markets: [],
-  materials: [],
-  themeKeys: Object.keys(theme.themes.value),
-  serviceKeys: [...CONS.SERVICES.MAP.keys()],
-  indexesA: indexesKeysA,
-  indexesB: indexesKeysB,
-  materialsA: materialsKeysA,
-  materialsB: materialsKeysB
-})
-
-const setIndexes = async (): Promise<void> => {
-  await browser.storage.local.set({[CONS.STORAGE.PROPS.INDEXES]: state.indexes})
-}
-const setMaterials = async (): Promise<void> => {
-  await browser.storage.local.set({[CONS.STORAGE.PROPS.MATERIALS]: state.materials})
-}
-const setSkin = async (ev: Event): Promise<void> => {
-  if (ev.target instanceof HTMLInputElement) {
-    theme.global.name.value = ev.target.value
-    await browser.storage.local.set({[CONS.STORAGE.PROPS.SKIN]: ev.target.value})
-  }
-}
-const setService = async (ev: Event): Promise<void> => {
-  if (ev.target instanceof HTMLInputElement) {
-    await browser.storage.local.set({[CONS.STORAGE.PROPS.SERVICE]: ev.target.value})
-  }
-}
-const serviceLabels = (item: string): string => {
-  const service = CONS.SERVICES.MAP.get(item)
-  if (service !== undefined && service?.NAME !== undefined) {
-    return service.NAME
-  } else {
-    return 'Label not found'
-  }
-}
+const tab: Ref<number> = ref(0)
 const optionsTabs: ITabs[] = [
   {
     title: t('optionsPage.tabs.ge'),
@@ -123,139 +45,58 @@ const optionsTabs: ITabs[] = [
     id: 'register_ex'
   }
 ]
-const optionsThemeNames: { [p: string]: string } = {
-  earth: t('optionsPage.themeNames.earth'),
-  ocean: t('optionsPage.themeNames.ocean'),
-  sky: t('optionsPage.themeNames.sky'),
-  meadow: t('optionsPage.themeNames.meadow'),
-  dark: t('optionsPage.themeNames.dark'),
-  light: t('optionsPage.themeNames.light')
-}
-
-onBeforeMount(async (): Promise<void> => {
-  const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__GET_ALL}))
-  const storageResponseData = JSON.parse(storageResponseString).data
-  state.skin = storageResponseData[CONS.STORAGE.PROPS.SKIN]
-  state.service = storageResponseData[CONS.STORAGE.PROPS.SERVICE]
-  state.indexes = storageResponseData[CONS.STORAGE.PROPS.INDEXES]
-  state.materials = storageResponseData[CONS.STORAGE.PROPS.MATERIALS]
-  state.markets = storageResponseData[CONS.STORAGE.PROPS.MARKETS]
-  state.exchanges = storageResponseData[CONS.STORAGE.PROPS.EXCHANGES]
-})
 
 log('--- OptionsIndex.vue setup ---', {info: window.location.href})
 </script>
 
 <template>
-  <v-app v-bind:flat="true">
+  <v-app flat>
     <v-main>
       <v-container>
-        <v-tabs v-model="state.tab" show-arrows>
-          <v-tab v-for="(item, i) in optionsTabs" v-bind:key="item.id" v-bind:value="i">
+        <v-tabs v-model="tab" show-arrows>
+          <v-tab v-for="(item, index) in optionsTabs" :key="item.id" :value="index">
             {{ rt(item.title) }}
           </v-tab>
         </v-tabs>
-        <v-tabs-window v-model="state.tab" class="pa-5">
-          <v-tabs-window-item v-bind:value="0">
+        <v-tabs-window v-model="tab" class="pa-5">
+          <v-tabs-window-item :value="0">
             <v-row>
               <v-col cols="12" md="6" sm="6">
-                <v-radio-group v-model="state.skin" column>
-                  <v-radio
-                      v-for="item in state.themeKeys"
-                      v-bind:key="item"
-                      v-bind:label="optionsThemeNames[item]"
-                      v-bind:value="item"
-                      v-on:click="setSkin"
-                  ></v-radio>
-                </v-radio-group>
+                <ThemeSelector />
               </v-col>
               <v-col cols="12" md="6" sm="6">
-                <v-radio-group v-model="state.service" column>
-                  <v-radio
-                      v-for="item in state.serviceKeys"
-                      v-bind:key="item"
-                      v-bind:label="serviceLabels(item)"
-                      v-bind:value="item"
-                      v-on:click="setService"
-                  ></v-radio>
-                </v-radio-group>
+                <ServiceSelector />
               </v-col>
             </v-row>
           </v-tabs-window-item>
-          <v-tabs-window-item v-bind:value="1">
+          <v-tabs-window-item :value="1">
             <v-row class="pa-10" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
-                    v-bind:label="t('optionsPage.markets.label')"
-                    v-bind:list="state.markets"
-                    v-bind:title="t('optionsPage.markets.title')"
-                    v-bind:type="CONS.DYNAMIC_LIST.TYPES.MARKETS"
+                    :type="CONS.DYNAMIC_LIST.TYPES.MARKETS"
                 ></DynamicList>
               </v-col>
             </v-row>
           </v-tabs-window-item>
-          <v-tabs-window-item v-bind:value="2">
+          <v-tabs-window-item :value="2">
             <v-row>
-              <v-col>
-                <v-checkbox
-                    v-for="item in state.indexesA"
-                    v-bind:key="item"
-                    v-model="state.indexes"
-                    hide-details
-                    v-bind:label="CONS.SETTINGS.INDEXES.get(item)"
-                    v-bind:value="item"
-                    v-on:change="setIndexes"
-                ></v-checkbox>
-              </v-col>
-              <v-col>
-                <v-checkbox
-                    v-for="item in state.indexesB"
-                    v-bind:key="item"
-                    v-model="state.indexes"
-                    hide-details
-                    v-bind:label="CONS.SETTINGS.INDEXES.get(item)"
-                    v-bind:value="item"
-                    v-on:change="setIndexes"
-                ></v-checkbox>
-              </v-col>
+                <CheckboxGrid
+                  :type = "CONS.CHECKBOX_GRID.TYPES.INDEXES"
+                ></CheckboxGrid>
             </v-row>
           </v-tabs-window-item>
-          <v-tabs-window-item v-bind:value="3">
+          <v-tabs-window-item :value="3">
             <v-row>
-              <v-col>
-                <!--suppress TypeScriptValidateTypes -->
-                <v-checkbox
-                    v-for="item in state.materialsA"
-                    v-bind:key="item"
-                    v-model="state.materials"
-                    hide-details
-                    v-bind:label="rt(tm('optionsPage.materials')[item])"
-                    v-bind:value="item"
-                    v-on:change="setMaterials"
-                ></v-checkbox>
-              </v-col>
-              <v-col>
-                <!--suppress TypeScriptValidateTypes -->
-                <v-checkbox
-                    v-for="item in state.materialsB"
-                    v-bind:key="item"
-                    v-model="state.materials"
-                    hide-details
-                    v-bind:label="rt(tm('optionsPage.materials')[item])"
-                    v-bind:value="item"
-                    v-on:change="setMaterials"
-                ></v-checkbox>
-              </v-col>
+              <CheckboxGrid
+                  :type = "CONS.CHECKBOX_GRID.TYPES.MATERIALS"
+              ></CheckboxGrid>
             </v-row>
           </v-tabs-window-item>
-          <v-tabs-window-item v-bind:value="4">
+          <v-tabs-window-item :value="4">
             <v-row class="pa-12" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
-                    v-bind:label="t('optionsPage.exchanges.label')"
-                    v-bind:list="state.exchanges"
-                    v-bind:title="t('optionsPage.exchanges.title')"
-                    v-bind:type="CONS.DYNAMIC_LIST.TYPES.EXCHANGES"
+                    :type="CONS.DYNAMIC_LIST.TYPES.EXCHANGES"
                 ></DynamicList>
               </v-col>
             </v-row>

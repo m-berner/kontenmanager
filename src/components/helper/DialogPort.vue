@@ -17,16 +17,16 @@ const runtime = useRuntimeStore()
 
 <template>
   <Teleport to="body">
-    <v-dialog v-bind:modelValue="runtime.teleport.visibility" v-bind:persistent="true" width="500">
+    <v-dialog :modelValue="runtime.teleport.visibility" :persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
           {{ dialogRef?.title }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <component v-bind:is="runtime.teleport.dialogName" ref="dialog-ref"></component>
+          <component :is="runtime.teleport.dialogName" ref="dialog-ref"></component>
         </v-card-text>
         <v-card-actions class="pa-5">
-          <v-tooltip location="bottom" v-bind:text="t('dialogs.ok')">
+          <v-tooltip location="bottom" :text="t('dialogs.ok')">
             <template v-slot:activator="{ props }">
               <v-btn
                   v-if="runtime.teleport.okButton"
@@ -35,19 +35,19 @@ const runtime = useRuntimeStore()
                   type="submit"
                   v-bind="props"
                   variant="outlined"
-                  v-on:click="dialogRef?.onClickOk"
+                  @click="dialogRef?.onClickOk"
               ></v-btn>
             </template>
           </v-tooltip>
           <v-spacer></v-spacer>
-          <v-tooltip location="bottom" v-bind:text="t('dialogs.cancel')">
+          <v-tooltip location="bottom" :text="t('dialogs.cancel')">
             <template v-slot:activator="{ props }">
               <v-btn
                   class="ml-auto"
                   icon="$close"
                   v-bind="props"
                   variant="outlined"
-                  v-on:click="runtime.resetTeleport"
+                  @click="runtime.resetTeleport"
               ></v-btn>
             </template>
           </v-tooltip>

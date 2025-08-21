@@ -26,11 +26,11 @@ log('--- ExportDatabase.vue setup ---')
 </script>
 
 <template>
-  <v-form validate-on="submit" v-on:submit.prevent>
+  <v-form validate-on="submit" @submit.prevent>
     <v-card-text class="pa-5">
       <v-textarea
-          v-bind:disabled="true"
-          v-bind:modelValue="t('dialogs.exportDialog', { filename: fn })"
+          :disabled="true"
+          :modelValue="t('dialogs.exportDialog', { filename: fn })"
           variant="outlined"
       ></v-textarea>
     </v-card-text>

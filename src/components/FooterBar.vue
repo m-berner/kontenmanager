@@ -30,11 +30,11 @@ log('--- FooterBar.vue setup ---')
         <div>{{ t('footer.privacy') }}</div>
       </router-link>
     </v-btn>
-    <v-btn color="white" v-bind:href="CONS.SYSTEM.MAILTO">
+    <v-btn color="white" :href="CONS.SYSTEM.MAILTO">
       <v-icon icon="$mail"></v-icon>
       <div>{{ t('footer.mail') }}</div>
     </v-btn>
-    <v-btn color="white" v-bind:disabled="true">
+    <v-btn color="white" :disabled="true">
       <v-icon icon="$mdiCopyright"></v-icon>
       <div class="nowrap">{{ CONS.SYSTEM.COPYRIGHT }}</div>
     </v-btn>

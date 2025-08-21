@@ -96,35 +96,35 @@ log('--- InfoBar.vue setup ---')
 </script>
 
 <template>
-  <v-navigation-drawer v-model="state.show" app color="secondary" height="100%" v-bind:floating="true"
+  <v-navigation-drawer v-model="state.show" app color="secondary" height="100%" :floating="true"
                        width="180">
     <v-card color="secondary" height="100%">
       <v-list lines="two">
         <v-list-item
             v-for="item in state.drawerControls"
-            v-bind:key="item.id"
-            v-bind:class="item.class"
-            v-bind:subtitle="item.value"
-            v-bind:title="item.title"
+            :key="item.id"
+            :class="item.class"
+            :subtitle="item.value"
+            :title="item.title"
         ></v-list-item>
       </v-list>
     </v-card>
   </v-navigation-drawer>
-  <v-app-bar app color="secondary" v-bind:flat="true">
-    <v-app-bar-nav-icon variant="text" v-on:click="state.show = !state.show"></v-app-bar-nav-icon>
+  <v-app-bar app color="secondary" :flat="true">
+    <v-app-bar-nav-icon variant="text" @click="state.show = !state.show"></v-app-bar-nav-icon>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>
-        <v-list-item v-for="item in runtime.infoBar.exchanges.keys()" v-bind:key="item">
+        <v-list-item v-for="item in runtime.infoBar.exchanges.keys()" :key="item">
           <v-list-item-title>{{ item }}</v-list-item-title>
           <v-list-item-subtitle>{{ n(runtime.infoBar.exchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in runtime.infoBar.indexes.keys()" v-bind:key="item">
+        <v-list-item v-for="item in runtime.infoBar.indexes.keys()" :key="item">
           <v-list-item-title>{{ CONS.SETTINGS.INDEXES.get(item) }}</v-list-item-title>
           <v-list-item-subtitle>{{ n(runtime.infoBar.indexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in runtime.infoBar.materials.keys()" v-bind:key="item">
+        <v-list-item v-for="item in runtime.infoBar.materials.keys()" :key="item">
           <v-list-item-title>{{ t('optionsPage.materials.' + item) }}</v-list-item-title>
           <v-list-item-subtitle
           >{{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}

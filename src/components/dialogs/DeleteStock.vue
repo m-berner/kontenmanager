@@ -50,17 +50,17 @@ log('--- DeleteAccount.vue setup ---')
 </script>
 
 <template>
-  <v-form validate-on="submit" v-on:submit.prevent>
+  <v-form validate-on="submit" @submit.prevent>
     <v-select
         v-if="records.stocks.length > 0"
         v-model="state.selected"
         density="compact"
         required
         variant="outlined"
-        v-bind:item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
-        v-bind:item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-        v-bind:items="records.stocks"
-        v-bind:label="t('dialogs.deleteStock.accountNumberLabel')"
+        :item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
+        :item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
+        :items="records.stocks"
+        :label="t('dialogs.deleteStock.accountNumberLabel')"
     ></v-select>
     <v-text-field
         v-else

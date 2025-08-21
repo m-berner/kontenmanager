@@ -78,7 +78,7 @@ log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>
 
 <template>
-  <v-app v-bind:flat="true">
+  <v-app :flat="true">
     <router-view name="title"></router-view>
     <router-view name="header"></router-view>
     <router-view name="info"></router-view>

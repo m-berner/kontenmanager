@@ -324,6 +324,12 @@ export const useApp = () => {
                 EXCHANGES: Symbol.for('exchanges')
             }
         },
+        CHECKBOX_GRID: {
+            TYPES: {
+                INDEXES: Symbol.for('indexes'),
+                MATERIALS: Symbol.for('materials')
+            }
+        },
         EVENTS: {
             ABORT: 'abort',
             BEFOREUNLOAD: 'beforeunload',

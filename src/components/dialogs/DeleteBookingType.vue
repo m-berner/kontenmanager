@@ -50,15 +50,15 @@ log('--- DeleteBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
     <v-select
         v-model="state.selected"
         density="compact"
         required
-        v-bind:item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-        v-bind:item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-        v-bind:items="records.bookingTypes"
-        v-bind:label="t('dialogs.deleteBookingType.label')"
+        :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+        :item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+        :items="records.bookingTypes"
+        :label="t('dialogs.deleteBookingType.label')"
         variant="outlined"
     ></v-select>
   </v-form>

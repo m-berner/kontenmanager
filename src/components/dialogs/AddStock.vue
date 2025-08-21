@@ -125,61 +125,61 @@ log('--- AddStock.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
           v-model="state.isin"
           autofocus
           required
           variant="outlined"
-          v-bind:counter="12"
-          v-bind:label="t('dialogs.addStock.isin')"
-          v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-          v-on:update:modelValue="onIsin"
+          :counter="12"
+          :label="t('dialogs.addStock.isin')"
+          :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+          @update:modelValue="onIsin"
       ></v-text-field>
       <v-text-field
           v-model="state.company"
           required
           variant="outlined"
-          v-bind:disabled="state.auto"
-          v-bind:label="t('dialogs.addStock.company')"
+          :disabled="state.auto"
+          :label="t('dialogs.addStock.company')"
       ></v-text-field>
       <v-text-field
           v-model="state.wkn"
           required
           variant="outlined"
-          v-bind:disabled="state.auto"
-          v-bind:label="t('dialogs.addStock.wkn')"
+          :disabled="state.auto"
+          :label="t('dialogs.addStock.wkn')"
       ></v-text-field>
       <v-text-field
           v-model="state.symbol"
           required
           variant="outlined"
-          v-bind:disabled="state.auto"
-          v-bind:label="t('dialogs.addStock.symbol')"
+          :disabled="state.auto"
+          :label="t('dialogs.addStock.symbol')"
       ></v-text-field>
     </v-card-text>
   </v-form>
-  <!--<v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+  <!--<v-form ref="form-ref" validate-on="submit" @submit.prevent>
     <v-switch
       v-model="state._stockAccount"
       color="red"
-      v-bind:label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
+      :label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
     <v-text-field
       ref="swift-input"
       v-model="state._swift"
       autofocus
       required
-      v-bind:label="t('dialogs.addAccount.swiftLabel')"
-      v-bind:rules="VALIDATORS.swiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
+      :label="t('dialogs.addAccount.swiftLabel')"
+      :rules="VALIDATORS.swiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
       variant="outlined"
     ></v-text-field>
     <v-text-field
       v-model="state._number"
       required
-      v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
-      v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
-      v-bind:rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+      :label="t('dialogs.addAccount.accountNumberLabel')"
+      :placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
+      :rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
       variant="outlined"
     ></v-text-field>
     <v-text-field
@@ -187,8 +187,8 @@ log('--- AddStock.vue setup ---')
       autofocus
       placeholder="z. B. ing.com"
       required
-      v-bind:label="t('dialogs.addAccount.logoLabel')"
-      v-bind:rules="VALIDATORS.brandNameRules([t('validators.brandNameRules', 0)])"
+      :label="t('dialogs.addAccount.logoLabel')"
+      :rules="VALIDATORS.brandNameRules([t('validators.brandNameRules', 0)])"
       variant="outlined"
     ></v-text-field>
   </v-form>-->

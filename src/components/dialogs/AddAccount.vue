@@ -107,40 +107,40 @@ log('--- AddAccount.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" v-on:submit.prevent>
+  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
     <v-switch
         v-model="state.stockAccount"
         color="red"
-        v-bind:label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
+        :label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
     <v-text-field
         v-model="state.swift"
         autofocus
         required
         variant="outlined"
-        v-bind:label="t('dialogs.addAccount.swiftLabel')"
-        v-bind:rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
+        :label="t('dialogs.addAccount.swiftLabel')"
+        :rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
     ></v-text-field>
     <v-text-field
         v-model="state.accountNumber"
         required
         variant="outlined"
-        v-bind:label="t('dialogs.addAccount.accountNumberLabel')"
-        v-bind:placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
-        v-bind:rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-        v-on:update:modelValue="onUpdateIbanMask"
+        :label="t('dialogs.addAccount.accountNumberLabel')"
+        :placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
+        :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+        @update:modelValue="onUpdateIbanMask"
     ></v-text-field>
     <v-text-field
         v-model="state.logoSearchName"
         placeholder="z. B. ing.com"
         required
         variant="outlined"
-        v-bind:label="t('dialogs.addAccount.logoLabel')"
-        v-bind:rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
-        v-on:input="onInputLogoName"
+        :label="t('dialogs.addAccount.logoLabel')"
+        :rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
+        @input="onInputLogoName"
     ></v-text-field>
     <img
         alt="logo"
         style="max-width: 48px; max-height: 48px;"
-        v-bind:src="state.logoUrl">
+        :src="state.logoUrl">
   </v-form>
 </template>

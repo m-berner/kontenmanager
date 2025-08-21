@@ -73,7 +73,7 @@ export const useApp = () => {
         FETCH__DAILY_CHANGES_DATA,
         FETCH__DATES_DATA,
         FETCH__MIN_RATE_MAX_DATA
-    }
+    } // TODO use symbols?
 
     const CONS = Object.freeze({
         CURRENCIES: {
@@ -344,6 +344,12 @@ export const useApp = () => {
             TYPES: {
                 MARKETS: Symbol.for('markets'),
                 EXCHANGES: Symbol.for('exchanges')
+            }
+        },
+        CHECKBOX_GRID: {
+            TYPES: {
+                INDEXES: Symbol.for('indexes'),
+                MATERIALS: Symbol.for('materials')
             }
         },
         EVENTS: {

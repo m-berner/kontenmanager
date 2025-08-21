@@ -180,10 +180,10 @@ log('--- HeaderBar.vue setup ---')
 </script>
 
 <template>
-  <v-app-bar app height="75" v-bind:flat="true">
+  <v-app-bar app height="75" :flat="true">
     <v-spacer></v-spacer>
     <router-link class="router-link-active" to="/">
-      <v-tooltip location="top" v-bind:text="t('headerBar.home')">
+      <v-tooltip location="top" :text="t('headerBar.home')">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
               icon="$home"
@@ -197,7 +197,7 @@ log('--- HeaderBar.vue setup ---')
         v-if="isStockAccount"
         class="router-link-active"
         to="/company">
-      <v-tooltip location="top" v-bind:text="t('headerBar.home')">
+      <v-tooltip location="top" :text="t('headerBar.home')">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
               icon="$home"
@@ -210,141 +210,141 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer></v-spacer>
     <v-tooltip
         v-if="isStockAccount"
-        location="top" v-bind:text="t('headerBar.addStock')">
+        location="top" :text="t('headerBar.addStock')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_STOCK"
+            :id="CONS.COMPONENTS.DIALOGS.ADD_STOCK"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$addStock"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addAccount')">
+    <v-tooltip location="top" :text="t('headerBar.addAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT"
+            :id="CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$addAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
-    <v-tooltip location="top" v-bind:text="t('headerBar.updateAccount')">
+    <v-tooltip location="top" :text="t('headerBar.updateAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT"
+            :id="CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$updateAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
-    <v-tooltip location="top" v-bind:text="t('headerBar.deleteAccount')">
+    <v-tooltip location="top" :text="t('headerBar.deleteAccount')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT"
+            :id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$deleteAccount"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addBooking')">
+    <v-tooltip location="top" :text="t('headerBar.addBooking')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING"
+            :id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$addBooking"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.addBookingType')">
+    <v-tooltip location="top" :text="t('headerBar.addBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE"
+            :id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$addBookingType"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
-    <v-tooltip location="top" v-bind:text="t('headerBar.deleteBookingType')">
+    <v-tooltip location="top" :text="t('headerBar.deleteBookingType')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE"
+            :id="CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$deleteBookingType"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.exportToFile')">
+    <v-tooltip location="top" :text="t('headerBar.exportToFile')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE"
+            :id="CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$exportToFile"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
-    <v-tooltip location="top" v-bind:text="t('headerBar.importDatabase')">
+    <v-tooltip location="top" :text="t('headerBar.importDatabase')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE"
+            :id="CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$importDatabase"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.showAccounting')">
+    <v-tooltip location="top" :text="t('headerBar.showAccounting')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING"
+            :id="CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick">
+            @click="onIconClick">
           <v-icon icon="$showAccounting"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-tooltip location="top" v-bind:text="t('headerBar.settings')">
+    <v-tooltip location="top" :text="t('headerBar.settings')">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            v-bind:id="CONS.COMPONENTS.DIALOGS.SETTING"
+            :id="CONS.COMPONENTS.DIALOGS.SETTING"
             icon="$settings"
             size="large"
             v-bind="props"
             variant="tonal"
-            v-on:click="onIconClick"></v-app-bar-nav-icon>
+            @click="onIconClick"></v-app-bar-nav-icon>
       </template>
     </v-tooltip>
     <v-spacer></v-spacer>
