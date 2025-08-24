@@ -9,10 +9,10 @@
 import {useI18n} from 'vue-i18n'
 import {type Ref, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
-import DynamicList from '@/components/_options/DynamicList.vue'
-import ThemeSelector from '@/components/_options/ThemeSelector.vue'
-import ServiceSelector from '@/components/_options/ServiceSelector.vue'
-import CheckboxGrid from '@/components/_options/CheckboxGrid.vue'
+import DynamicList from '@/components/helper/options/DynamicList.vue'
+import ThemeSelector from '@/components/helper/options/ThemeSelector.vue'
+import ServiceSelector from '@/components/helper/options/ServiceSelector.vue'
+import CheckboxGrid from '@/components/helper/options/CheckboxGrid.vue'
 
 interface ITabs {
   title: string,

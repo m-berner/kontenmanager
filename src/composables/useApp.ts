@@ -21,7 +21,6 @@ interface IBrowserUI {
 export const useApp = () => {
     enum MESSAGES {
         DB__DELETE_ALL,
-        // DB__CLOSE,
         DB__GET_STORES,
         DB__GET_STORES__RESPONSE,
         DB__ADD_ACCOUNT,
@@ -46,25 +45,9 @@ export const useApp = () => {
         DB__DELETE_BOOKING_TYPE__RESPONSE,
         DB__DELETE_STOCK,
         DB__DELETE_STOCK__RESPONSE,
-        //STORAGE__GET_ALL,
-        //STORAGE__GET_ALL__RESPONSE,
         DB__ADD_STORES,
         DB__ADD_STORES_25,
-        OPTIONS__SET_SKIN,
-        OPTIONS__SET_SERVICE,
-        OPTIONS__SET_INDEXES,
-        OPTIONS__SET_MATERIALS,
-        OPTIONS__SET_EXCHANGES,
-        OPTIONS__SET_MARKETS,
         DB__EXPORT,
-        //STORAGE__SET_ID,
-        //STORAGE__SET_ID__RESPONSE,
-        OPTIONS__SET_SKIN__RESPONSE,
-        OPTIONS__SET_SERVICE__RESPONSE,
-        OPTIONS__SET_INDEXES__RESPONSE,
-        OPTIONS__SET_MATERIALS__RESPONSE,
-        OPTIONS__SET_MARKETS__RESPONSE,
-        OPTIONS__SET_EXCHANGES__RESPONSE,
         FETCH__COMPANY_DATA,
         FETCH__EXCHANGES_BASE_DATA,
         FETCH__INDEXES_DATA,
@@ -73,7 +56,7 @@ export const useApp = () => {
         FETCH__DAILY_CHANGES_DATA,
         FETCH__DATES_DATA,
         FETCH__MIN_RATE_MAX_DATA
-    } // TODO use symbols?
+    }
 
     const CONS = Object.freeze({
         CURRENCIES: {
