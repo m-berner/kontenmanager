@@ -36,13 +36,15 @@ log('--- PrivacyContent.vue setup ---')
 </script>
 
 <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="7" sm="7">
-        <ContentCard
-            :title="t('privacyContent.title')"
-            :data="data"></ContentCard>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-sheet class="sheet" color="surface-light">
+    <v-container>
+      <v-row justify="center">
+        <v-col cols="7" sm="7">
+          <ContentCard
+              :title="t('privacyContent.title')"
+              :data="data"></ContentCard>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-sheet>
 </template>

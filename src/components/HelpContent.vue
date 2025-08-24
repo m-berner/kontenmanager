@@ -173,10 +173,3 @@ log('--- HelpContent.vue setup ---')
     </v-container>
   </v-sheet>
 </template>
-
-<style scoped>
-.sheet {
-  overflow: auto;
-  height: calc(100vh - 300px);
-}
-</style>
