@@ -121,14 +121,6 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
             const appMessage = JSON.parse(appMsg);
             let response;
             switch (appMessage.type) {
-                case CONS.MESSAGES.STORAGE__GET_ALL:
-                    const storageLocal1 = await browser.storage.local.get();
-                    response = JSON.stringify({
-                        type: CONS.MESSAGES.STORAGE__GET_ALL__RESPONSE,
-                        data: storageLocal1
-                    });
-                    resolve(response);
-                    break;
                 case CONS.MESSAGES.DB__DELETE_ALL:
                     await clearStores();
                     resolve('DB empty');
@@ -136,10 +128,6 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                 case CONS.MESSAGES.DB__EXPORT:
                     await exportToFile(appMessage.data);
                     resolve('DB exported');
-                    break;
-                case CONS.MESSAGES.STORAGE__SET_ID:
-                    await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: appMessage.data });
-                    resolve('ID set');
                     break;
                 case CONS.MESSAGES.DB__GET_STORES:
                     const stores = await exportStores(appMessage.data);

@@ -8,9 +8,145 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {computed, type ComputedRef} from 'vue'
+import ContentCard from '@/components/helper/ContentCard.vue'
 
-const {rt, t, tm} = useI18n()
+const {t} = useI18n()
 const {log} = useApp()
+
+const requests: ComputedRef<IContent[]> = computed(() => [
+  {
+    title: t('helpContent.requests.title.0'),
+    content: t('helpContent.requests.content.0'),
+    icon: t('helpContent.requests.icon.0')
+  },
+  {
+    title: t('helpContent.requests.title.1'),
+    content: t('helpContent.requests.content.1'),
+    icon: t('helpContent.requests.icon.1')
+  }
+])
+const toolBar: ComputedRef<IContent[]> = computed(() => [
+  {
+    title: t('helpContent.toolBar.title.0'),
+    content: t('helpContent.toolBar.content.0'),
+    icon: t('helpContent.toolBar.icon.0')
+  },
+  {
+    title: t('helpContent.toolBar.title.1'),
+    content: t('helpContent.toolBar.content.1'),
+    icon: t('helpContent.toolBar.icon.1')
+  },
+  {
+    title: t('helpContent.toolBar.title.2'),
+    content: t('helpContent.toolBar.content.2'),
+    icon: t('helpContent.toolBar.icon.2')
+  },
+  {
+    title: t('helpContent.toolBar.title.3'),
+    content: t('helpContent.toolBar.content.3'),
+    icon: t('helpContent.toolBar.icon.3')
+  },
+  {
+    title: t('helpContent.toolBar.title.4'),
+    content: t('helpContent.toolBar.content.4'),
+    icon: t('helpContent.toolBar.icon.4')
+  },
+  {
+    title: t('helpContent.toolBar.title.5'),
+    content: t('helpContent.toolBar.content.5'),
+    icon: t('helpContent.toolBar.icon.5')
+  },
+  {
+    title: t('helpContent.toolBar.title.6'),
+    content: t('helpContent.toolBar.content.6'),
+    icon: t('helpContent.toolBar.icon.6')
+  },
+  {
+    title: t('helpContent.toolBar.title.7'),
+    content: t('helpContent.toolBar.content.7'),
+    icon: t('helpContent.toolBar.icon.7')
+  },
+  {
+    title: t('helpContent.toolBar.title.8'),
+    content: t('helpContent.toolBar.content.8'),
+    icon: t('helpContent.toolBar.icon.8')
+  },
+  {
+    title: t('helpContent.toolBar.title.9'),
+    content: t('helpContent.toolBar.content.9'),
+    icon: t('helpContent.toolBar.icon.9')
+  },
+  {
+    title: t('helpContent.toolBar.title.10'),
+    content: t('helpContent.toolBar.content.10'),
+    icon: t('helpContent.toolBar.icon.10')
+  },
+  {
+    title: t('helpContent.toolBar.title.11'),
+    content: t('helpContent.toolBar.content.11'),
+    icon: t('helpContent.toolBar.icon.11')
+  },
+  {
+    title: t('helpContent.toolBar.title.12'),
+    content: t('helpContent.toolBar.content.12'),
+    icon: t('helpContent.toolBar.icon.12')
+  },
+  {
+    title: t('helpContent.toolBar.title.13'),
+    content: t('helpContent.toolBar.content.13'),
+    icon: t('helpContent.toolBar.icon.13')
+  },
+  {
+    title: t('helpContent.toolBar.title.14'),
+    content: t('helpContent.toolBar.content.14'),
+    icon: t('helpContent.toolBar.icon.14')
+  }
+])
+const companyBar: ComputedRef<IContent[]> = computed(() => [
+  {
+    title: t('helpContent.companyBar.title.0'),
+    content: '',
+    icon: t('helpContent.companyBar.icon.0')
+  },
+  {
+    title: t('helpContent.companyBar.title.1'),
+    content: '',
+    icon: t('helpContent.companyBar.icon.1')
+  },
+  {
+    title: t('helpContent.companyBar.title.2'),
+    content: '',
+    icon: t('helpContent.companyBar.icon.2')
+  },
+  {
+    title: t('helpContent.companyBar.title.3'),
+    content: '',
+    icon: t('helpContent.companyBar.icon.3')
+  },
+  {
+    title: t('helpContent.companyBar.title.4'),
+    content: '',
+    icon: t('helpContent.companyBar.icon.4')
+  },
+  {
+    title: t('helpContent.companyBar.title.5'),
+    content: '',
+    icon: t('helpContent.companyBar.icon.5')
+  },
+])
+const transferBar: ComputedRef<IContent[]> = computed(() => [
+  {
+    title: t('helpContent.transferBar.title.0'),
+    content: t('helpContent.transferBar.content.0'),
+    icon: t('helpContent.transferBar.icon.0')
+  },
+  {
+    title: t('helpContent.transferBar.title.1'),
+    content: t('helpContent.transferBar.content.1'),
+    icon: t('helpContent.transferBar.icon.1')
+  }
+])
 
 log('--- HelpContent.vue setup ---')
 </script>
@@ -20,90 +156,18 @@ log('--- HelpContent.vue setup ---')
     <v-container>
       <v-row justify="center">
         <v-col cols="8" s="8">
-          <v-card color="secondary">
-            <v-card-title>
-              {{ t('helpContent.requestsTitle') }}
-            </v-card-title>
-          </v-card>
-          <v-card v-for="item in tm('helpContent.requests').map((entry: IContent): IContent => {
-            return {
-              title: rt(entry.title),
-              subtitle: '',
-              content: rt(entry.content),
-              icon: rt(entry.icon)
-            }
-          })" :key="rt(item.title)">
-            <v-card-title>
-              <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
-              {{ rt(item.title) }}
-            </v-card-title>
-            <v-card-text>
-              {{ rt(item.content) }}
-            </v-card-text>
-          </v-card>
-          <v-card color="secondary">
-            <v-card-title>
-              {{ t('helpContent.toolBarTitle') }}
-            </v-card-title>
-          </v-card>
-          <v-card v-for="item in tm('helpContent.toolBar').map((entry: IContent): IContent => {
-            return {
-              title: rt(entry.title),
-              content: rt(entry.content),
-              subtitle: '',
-              icon: rt(entry.icon)
-            }
-          })" :key="rt(item.title)">
-            <v-card-title>
-              <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
-              {{ rt(item.title) }}
-            </v-card-title>
-            <v-card-text>
-              {{ rt(item.content) }}
-            </v-card-text>
-          </v-card>
-          <v-card color="secondary">
-            <v-card-title>
-              {{ t('helpContent.companyBarTitle') }}
-            </v-card-title>
-          </v-card>
-          <v-card v-for="item in tm('helpContent.companyBar').map((entry: IContent): IContent => {
-            return {
-              title: rt(entry.title),
-              content: '',
-              subtitle: rt(entry.subtitle),
-              icon: rt(entry.icon)
-            }
-          })" :key="rt(item.title)">
-            <v-card-title>
-              <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
-              {{ rt(item.title) }}
-            </v-card-title>
-            <v-card-text>
-              {{ rt(item.subtitle) }}
-            </v-card-text>
-          </v-card>
-          <v-card color="secondary">
-            <v-card-title>
-              {{ t('helpContent.transferBarTitle') }}
-            </v-card-title>
-          </v-card>
-          <v-card v-for="item in tm('helpContent.transferBar').map((entry: IContent): IContent => {
-            return {
-              title: rt(entry.title),
-              content: '',
-              subtitle: rt(entry.subtitle),
-              icon: rt(entry.icon)
-            }
-          })" :key="rt(item.title)">
-            <v-card-title>
-              <v-icon v-if="rt(item.icon).length > 0">{{ rt(item.icon) }}</v-icon>
-              {{ rt(item.title) }}
-            </v-card-title>
-            <v-card-text>
-              {{ rt(item.subtitle) }}
-            </v-card-text>
-          </v-card>
+          <ContentCard
+              :title="t('helpContent.requestsTitle')"
+              :data="requests"></ContentCard>
+          <ContentCard
+              :title="t('helpContent.toolBarTitle')"
+              :data="toolBar"></ContentCard>
+          <ContentCard
+              :title="t('helpContent.companyBarTitle')"
+              :data="companyBar"></ContentCard>
+          <ContentCard
+              :title="t('helpContent.transferBarTitle')"
+              :data="transferBar"></ContentCard>
         </v-col>
       </v-row>
     </v-container>

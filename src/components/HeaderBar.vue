@@ -92,13 +92,15 @@ const onIconClick = async (ev: Event): Promise<void> => {
             }))
             if (records.accounts.length > 1) {
               settings.setActiveAccountId(records.accounts[1].cID)
-              await browser.runtime.sendMessage(JSON.stringify({
-                type: CONS.MESSAGES.STORAGE__SET_ID,
-                data: toRaw(records.accounts[1].cID)
-              }))
+              // await browser.runtime.sendMessage(JSON.stringify({
+              //   type: CONS.MESSAGES.STORAGE__SET_ID,
+              //   data: toRaw(records.accounts[1].cID)
+              // }))
+              await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: toRaw(records.accounts[1].cID)})
             } else {
               settings.setActiveAccountId(0)
-              await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: 0}))
+              await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: 0})
+              //await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: 0}))
             }
             const getStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
               type: CONS.MESSAGES.DB__GET_STORES,

@@ -8,9 +8,29 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import ContentCard from '@/components/helper/ContentCard.vue'
+import {computed, type ComputedRef} from 'vue'
 
 const {t} = useI18n()
 const {log} = useApp()
+
+const data: ComputedRef<IContent[]> = computed(() => [
+  {
+    title: t('privacyContent.data.title.0'),
+    content: t('privacyContent.data.content.0'),
+    icon: ''
+  },
+  {
+    title: t('privacyContent.data.title.1'),
+    content: t('privacyContent.data.content.1'),
+    icon: ''
+  },
+  {
+    title: t('privacyContent.data.title.2'),
+    content: t('privacyContent.data.content.2'),
+    icon: ''
+  }
+])
 
 log('--- PrivacyContent.vue setup ---')
 </script>
@@ -19,30 +39,9 @@ log('--- PrivacyContent.vue setup ---')
   <v-container>
     <v-row justify="center">
       <v-col cols="7" sm="7">
-        <v-card>
-          <v-card-title>
-            {{ t('privacyContent.local.title') }}
-          </v-card-title>
-          <v-card-text>
-            {{ t('privacyContent.local.content') }}
-          </v-card-text>
-        </v-card>
-        <v-card>
-          <v-card-title>
-            {{ t('privacyContent.public.title') }}
-          </v-card-title>
-          <v-card-text>
-            {{ t('privacyContent.public.content') }}
-          </v-card-text>
-        </v-card>
-        <v-card>
-          <v-card-title>
-            {{ t('privacyContent.connections.title') }}
-          </v-card-title>
-          <v-card-text>
-            {{ t('privacyContent.connections.content') }}
-          </v-card-text>
-        </v-card>
+        <ContentCard
+            :title="t('privacyContent.title')"
+            :data="data"></ContentCard>
       </v-col>
     </v-row>
   </v-container>

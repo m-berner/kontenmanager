@@ -363,7 +363,6 @@ export const useDatabase = () => {
         //   return account.cID === id
         // })
         // TODO only allowed for accounts with no bookings, stocks, bookingTypes
-        // TODO replace tm(
         return new Promise(async (resolve, reject) => {
             if (db != null) {
                 const onSuccess = (): void => {

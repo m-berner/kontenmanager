@@ -20,10 +20,7 @@ const {CONS, log} = useApp()
 const {activeAccountId} = storeToRefs(settings)
 
 const onUpdateTitleBar = async (): Promise<void> => {
-  await browser.runtime.sendMessage(JSON.stringify({
-    type: CONS.MESSAGES.STORAGE__SET_ID,
-    data: settings.activeAccountId
-  }))
+  await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: settings.activeAccountId})
   const getStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
     type: CONS.MESSAGES.DB__GET_STORES,
     data: settings.activeAccountId

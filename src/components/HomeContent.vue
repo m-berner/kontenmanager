@@ -13,7 +13,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/helper/DotMenu.vue'
 import {type Reactive, reactive} from 'vue'
-import type {DataTableHeader} from 'vuetify'
+import {type DataTableHeader} from 'vuetify'
 
 type HomeMenuItem = {
   readonly id: string

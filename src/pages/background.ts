@@ -226,7 +226,6 @@ declare global {
 
     interface IContent {
         title: string
-        subtitle: string
         content: string
         icon: string
     }
@@ -513,14 +512,14 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
             const appMessage = JSON.parse(appMsg)
             let response: string
             switch (appMessage.type) {
-                case CONS.MESSAGES.STORAGE__GET_ALL:
-                    const storageLocal1 = await browser.storage.local.get()
-                    response = JSON.stringify({
-                        type: CONS.MESSAGES.STORAGE__GET_ALL__RESPONSE,
-                        data: storageLocal1
-                    })
-                    resolve(response)
-                    break
+                // case CONS.MESSAGES.STORAGE__GET_ALL:
+                //     const storageLocal1 = await browser.storage.local.get()
+                //     response = JSON.stringify({
+                //         type: CONS.MESSAGES.STORAGE__GET_ALL__RESPONSE,
+                //         data: storageLocal1
+                //     })
+                //     resolve(response)
+                //     break
                 // case CONS.MESSAGES.DB__CLOSE:
                 //     if (dbi() !== undefined) {
                 //         dbi().close()
@@ -537,11 +536,11 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                     await exportToFile(appMessage.data)
                     resolve('DB exported')
                     break
-                case CONS.MESSAGES.STORAGE__SET_ID:
-                    await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: appMessage.data})
-                    //await exportStores()
-                    resolve('ID set')
-                    break
+                // case CONS.MESSAGES.STORAGE__SET_ID:
+                //     await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: appMessage.data})
+                //     //await exportStores()
+                //     resolve('ID set')
+                //     break
                 case CONS.MESSAGES.DB__GET_STORES:
                     const stores = await exportStores(appMessage.data)
                     response = JSON.stringify({

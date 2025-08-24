@@ -46,11 +46,12 @@ const onStorageChange = (changes: { [p: string]: browser.storage.StorageChange }
 browser.storage.local.onChanged.addListener(onStorageChange)
 
 onBeforeMount(async () => {
-  const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({
-    type: CONS.MESSAGES.STORAGE__GET_ALL
-  }))
-  console.error(theme, JSON.parse(storageResponseString))
-  settings.initStore(theme, JSON.parse(storageResponseString).data)
+  // const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({
+  //   type: CONS.MESSAGES.STORAGE__GET_ALL
+  // }))
+  const storage = await browser.storage.local.get()
+  //settings.initStore(theme, JSON.parse(storageResponseString).data)
+  settings.initStore(theme, storage)
   const dbGetStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
     type: CONS.MESSAGES.DB__GET_STORES,
     data: settings.activeAccountId

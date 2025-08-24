@@ -39,13 +39,15 @@ const onClickOk = async (): Promise<void> => {
     }))
     if (records.accounts.length > 0) {
       settings.setActiveAccountId(records.accounts[0].cID)
-      await browser.runtime.sendMessage(JSON.stringify({
-        type: CONS.MESSAGES.STORAGE__SET_ID,
-        data: toRaw(records.accounts[0])
-      }))
+      // await browser.runtime.sendMessage(JSON.stringify({
+      //   type: CONS.MESSAGES.STORAGE__SET_ID,
+      //   data: toRaw(records.accounts[0])
+      // }))
+      await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: toRaw(records.accounts[0])})
     } else {
       settings.setActiveAccountId(-1)
-      await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1}))
+      //await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1}))
+      await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: 0})
     }
     //runtime.setLogo()
     records.sumBookings()

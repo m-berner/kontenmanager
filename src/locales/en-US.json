@@ -224,158 +224,123 @@
     "itemsPerPageText": "Einträge pro Seite:"
   },
   "helpContent": {
-    "title": "Mein GiroKonto Hilfe",
+    "title": "KontenManager Hilfe",
     "requestsTitle": "Anforderungen",
-    "requests": [
-      {
-        "title": "Einstellungen - Datenschutz - Chronik",
-        "content": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
-        "icon": ""
+    "requests": {
+      "title": {
+        "0": "Einstellungen - Datenschutz - Chronik",
+        "1": "KontenManager starten"
       },
-      {
-        "title": "Mein GiroKonto starten",
-        "content": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden.",
-        "icon": "$sm"
+      "content": {
+        "0": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
+        "1": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden."
+      },
+      "icon": {
+        "0": "",
+        "1": "$sm"
       }
-    ],
+    },
     "toolBarTitle": "Werkzeugleiste",
-    "toolBar": [
-      {
-        "title": "Startseite",
-        "content": "Klicken, um zur Startseite zurückzukehren.",
-        "icon": "$home"
+    "toolBar": {
+      "title": {
+        "0": "Startseite",
+        "1": "Buchungen",
+        "2": "Kurse aktualisieren",
+        "3": "Unternehmen hinzufügen",
+        "4": "Unternehmen entfernen",
+        "5": "Unternehmen einblenden",
+        "6": "Einzahlung",
+        "7": "Auszahlung",
+        "8": "Tagesveränderungen",
+        "9": "Tagesveränderungen (alle)",
+        "10": "Datenbank exportieren",
+        "11": "Datenbank importieren",
+        "12": "Buchungen",
+        "13": "Jahres-Berechnungen",
+        "14": "Einstellungen"
       },
-      {
-        "title": "Buchungen",
-        "content": "Klicken, um auf die Buchungsseite zu gelangen.",
-        "icon": "$transfersTable"
+      "content": {
+        "0": "Klicken, um zur Startseite zurückzukehren.",
+        "1": "Klicken, um auf die Buchungsseite zu gelangen.",
+        "2": "Klicken, um die Kurse zu aktualisieren.",
+        "3": "Klicken, um den erforderlichen Dialog zu öffnen.",
+        "4": "Klicken, um den erforderlichen Dialog zu öffnen.",
+        "5": "Klicken, um den erforderlichen Dialog zu öffnen.",
+        "6": "Klicken um den erforderlichen Dialog zu öffner.",
+        "7": "Klicken, um den erforderlichen Dialog zu öffnen.",
+        "8": "Klicken, um die Tagesveränderungen anzuzeigen.",
+        "9": "Klicken, um alle Tagesveränderungen anzuzeigen.",
+        "10": "Klicken, um den erforderlichen Dialog zu exportieren.",
+        "11": "Klicken, um den erforderlichen Dialog zu importieren.",
+        "12": "Klicken, um die Buchungen anzuzeigen.",
+        "13": "Klicken, um die Jahres-Berechnungen anzuzeigen.",
+        "14": "Klicken, um das KontenManager-Einstellungen-Tab anzuzeigen."
       },
-      {
-        "title": "Kurse aktualisieren",
-        "content": "Klicken, um die Kurse zu aktualisieren.",
-        "icon": "$reload"
-      },
-      {
-        "title": "Unternehmen hinzufügen",
-        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
-        "icon": "$addAccount"
-      },
-      {
-        "title": "Unternehmen entfernen",
-        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
-        "icon": "$deleteStock"
-      },
-      {
-        "title": "Unternehmen einblenden",
-        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
-        "icon": "$fadeinStock"
-      },
-      {
-        "title": "Einzahlung",
-        "content": "Klicken um den erforderlichen Dialog zu öffner.",
-        "icon": "$cashPlus"
-      },
-      {
-        "title": "Auszahlung",
-        "content": "Klicken, um den erforderlichen Dialog zu öffnen.",
-        "icon": "$cashMinus"
-      },
-      {
-        "title": "Tagesveränderungen",
-        "content": "Klicken, um die Tagesveränderungen anzuzeigen.",
-        "icon": "$dailyChanges"
-      },
-      {
-        "title": "Tagesveränderungen (alle)",
-        "content": "Klicken, um alle Tagesveränderungen anzuzeigen.",
-        "icon": "$dailyChangesAll"
-      },
-      {
-        "title": "Datenbank exportieren",
-        "content": "Klicken, um den erforderlichen Dialog zu exportieren.",
-        "icon": "$exportToFile"
-      },
-      {
-        "title": "Datenbank importieren",
-        "content": "Klicken, um den erforderlichen Dialog zu importieren.",
-        "icon": "$importDatabase"
-      },
-      {
-        "title": "Buchungen",
-        "content": "Klicken, um die Buchungen anzuzeigen.",
-        "icon": "$transfersTable"
-      },
-      {
-        "title": "Jahres-Berechnungen",
-        "content": "Klicken, um die Jahres-Berechnungen anzuzeigen.",
-        "icon": "$showAccounting"
-      },
-      {
-        "title": "Einstellungen",
-        "content": "Klicken, um das KontenManager-Einstellungen-Tab anzuzeigen.",
-        "icon": "$settings"
+      "icon": {
+        "0": "$home",
+        "1": "$transfersTable",
+        "2": "$reload",
+        "3": "$addAccount",
+        "4": "$deleteStock",
+        "5": "$fadeinStock",
+        "6": "$cashPlus",
+        "7": "$cashMinus",
+        "8": "$dailyChanges",
+        "9": "$dailyChangesAll",
+        "10": "$exportToFile",
+        "11": "$importDatabase",
+        "12": "$transfersTable",
+        "13": "$showAccounting",
+        "14": "$settings"
       }
-    ],
+    },
     "companyBarTitle": "Unternehmen Aktionen",
-    "companyBar": [
-      {
-        "title": "Aktien kaufen",
-        "subtitle": "",
-        "icon": "$addAccount"
+    "companyBar": {
+      "title": {
+        "0": "Aktien kaufen",
+        "1": "Aktien verkaufen",
+        "2": "Dividenden Einnahmen",
+        "3": "Dividenden-Übersicht",
+        "4": "Unternehmen konfigurieren",
+        "5": "Unternehmen-Brokerseite"
       },
-      {
-        "title": "Aktien verkaufen",
-        "subtitle": "",
-        "icon": "$sellStock"
-      },
-      {
-        "title": "Dividenden Einnahmen",
-        "subtitle": "",
-        "icon": "$addDividend"
-      },
-      {
-        "title": "Dividenden-Übersicht",
-        "subtitle": "",
-        "icon": "$addDividend"
-      },
-      {
-        "title": "Unternehmen konfigurieren",
-        "subtitle": "",
-        "icon": "$addDividend"
-      },
-      {
-        "title": "Unternehmen-Brokerseite",
-        "subtitle": "",
-        "icon": "$link"
+      "content": {},
+      "icon": {
+        "0": "$addAccount",
+        "1": "$sellStock",
+        "2": "$addDividend",
+        "3": "$addDividend",
+        "4": "$addDividend",
+        "5": "$link"
       }
-    ],
+    },
     "transferBarTitle": "Buchungen Aktionen",
-    "transferBar": [
-      {
-        "title": "Buchung löschen",
-        "subtitle": "",
-        "icon": "$removeDocument"
+    "transferBar": {
+      "title": {
+        "0": "Buchung löschen",
+        "1": "Buchung korrigieren"
       },
-      {
-        "title": "Buchung korrigieren",
-        "subtitle": "",
-        "icon": "$editDocument"
+      "content": {},
+      "icon": {
+        "0": "$removeDocument",
+        "1": "$editDocument"
       }
-    ]
+    }
   },
   "privacyContent": {
     "title": "KontenManager Datenschutz Richtlinien",
-    "local": {
-      "title": "Lokale Daten",
-      "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert."
-    },
-    "public": {
-      "title": "Öffentliche Daten",
-      "content": "Nur Bank-Logos von brandfetch.com werden verwendet und über das Internet abgerufen. KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben."
-    },
-    "connections": {
-      "title": "Internetverbindungen",
-      "content": "Verbindungen werden nur hergestellt, um Bank-Logos von brandfetch.com herunterzuladen."
+    "data": {
+      "title": {
+        "0": "Lokale Daten",
+        "1": "Öffentliche Daten",
+        "2": "Internetverbindungen"
+      },
+      "content": {
+        "0": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
+        "1": "Nur Bank-Logos von brandfetch.com werden verwendet und über das Internet abgerufen. KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
+        "2": "Verbindungen werden nur hergestellt, um Bank-Logos von brandfetch.com herunterzuladen."
+      },
+      "icon": {}
     }
   },
   "optionsPage": {
