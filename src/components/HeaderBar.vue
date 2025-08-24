@@ -202,7 +202,7 @@ log('--- HeaderBar.vue setup ---')
       <v-tooltip location="top" :text="t('headerBar.home')">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
-              icon="$home"
+              icon="$showCompany"
               size="large"
               v-bind="props"
               variant="tonal"></v-app-bar-nav-icon>
@@ -220,7 +220,7 @@ log('--- HeaderBar.vue setup ---')
             v-bind="props"
             variant="tonal"
             @click="onIconClick">
-          <v-icon icon="$addStock"></v-icon>
+          <v-icon icon="$addCompany"></v-icon>
         </v-app-bar-nav-icon>
       </template>
     </v-tooltip>

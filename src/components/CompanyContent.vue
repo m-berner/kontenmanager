@@ -113,7 +113,7 @@ const stocksMenuItems: StocksMenuItems[] = [
   {
     'id': 'DeleteStock',
     'title': t('stocksTable.menuItems.delete'),
-    'icon': '$tableRemove'
+    'icon': '$deleteCompany'
   },
   {
     'id': 'ShowDividend',
@@ -123,7 +123,7 @@ const stocksMenuItems: StocksMenuItems[] = [
   {
     'id': 'UpdateStock',
     'title': t('stocksTable.menuItems.update'),
-    'icon': '$tableEdit'
+    'icon': '$updateCompany'
   },
   {
     'id': 'ExternalLink',

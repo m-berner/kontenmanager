@@ -73,12 +73,12 @@ const homeMenuItems: HomeMenuItem[] = [
   {
     id: 'DeleteBooking',
     title: t('appPage.menuItems.delete'),
-    icon: '$tableRemove'
+    icon: '$deleteBooking'
   },
   {
     id: 'UpdateBooking',
     title: t('appPage.menuItems.update'),
-    icon: '$tableRemove'
+    icon: '$updateBooking'
   }
 ]
 

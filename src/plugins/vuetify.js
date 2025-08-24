@@ -2,7 +2,7 @@ import {} from 'vue';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-import { mdiBookPlus, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCreditCardEdit, mdiCreditCardPlus, mdiCreditCardRemove, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiImageEdit, mdiImageMinus, mdiImagePlus, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiTableLargeRemove } from '@mdi/js';
+import { mdiBookEdit, mdiBookPlus, mdiBookRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiAccountPlus, mdiAccountRemove, mdiAccountEdit, mdiStorePlus, mdiStoreEdit, mdiStoreMinus, mdiStore, mdiBellPlus } from '@mdi/js';
 import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 const vuetifyInstance = createVuetify({
@@ -101,6 +101,8 @@ const vuetifyInstance = createVuetify({
             euro: mdiCurrencyEur,
             reload: mdiReload,
             addBooking: mdiBookPlus,
+            updateBooking: mdiBookEdit,
+            deleteBooking: mdiBookRemove,
             addBookingType: mdiFilterPlus,
             editBookingType: mdiFilterCog,
             deleteBookingType: mdiFilterRemove,
@@ -115,19 +117,20 @@ const vuetifyInstance = createVuetify({
             remove: mdiDelete,
             check: mdiCheck,
             dots: mdiDotsVertical,
-            tableRemove: mdiTableLargeRemove,
+            addCompany: mdiStorePlus,
+            updateCompany: mdiStoreEdit,
+            deleteCompany: mdiStoreMinus,
+            showCompany: mdiStore,
             removeDocument: mdiFileDocumentMinus,
             editDocument: mdiFileDocumentEdit,
             help: mdiHelpCircle,
             privacy: mdiShieldAccount,
             mail: mdiEmail,
             magnify: mdiMagnify,
-            addAccount: mdiCreditCardPlus,
-            updateAccount: mdiCreditCardEdit,
-            deleteAccount: mdiCreditCardRemove,
-            addStock: mdiImagePlus,
-            updateStock: mdiImageEdit,
-            deleteStock: mdiImageMinus
+            addAccount: mdiAccountPlus,
+            updateAccount: mdiAccountEdit,
+            deleteAccount: mdiAccountRemove,
+            showDividend: mdiBellPlus
         }
     }
 });

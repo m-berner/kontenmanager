@@ -281,7 +281,7 @@
         "1": "$transfersTable",
         "2": "$reload",
         "3": "$addAccount",
-        "4": "$deleteStock",
+        "4": "$deleteCompany",
         "5": "$fadeinStock",
         "6": "$cashPlus",
         "7": "$cashMinus",
