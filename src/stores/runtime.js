@@ -54,7 +54,7 @@ export const useRuntimeStore = defineStore('runtime', {
         },
         openModalDialog(dialogName, showOkButton = true) {
             this.teleport = {
-                dialogName,
+                dialogName: dialogName,
                 okButton: showOkButton,
                 visibility: true
             };
@@ -73,14 +73,6 @@ export const useRuntimeStore = defineStore('runtime', {
         },
         clearBooking() {
             this.activeId = -1;
-        },
-        setBookingAndOpenDialog(activeId, dialogName) {
-            this.activeId = activeId;
-            this.openModalDialog(dialogName);
-        },
-        resetRuntimeState() {
-            this.activeId = -1;
-            this.resetTeleport();
         },
         setExchangesUsd(value) {
             this.exchanges.curUsd = value;

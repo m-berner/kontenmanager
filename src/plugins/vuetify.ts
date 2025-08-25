@@ -10,8 +10,13 @@ import {createVuetify} from 'vuetify'
 import 'vuetify/styles'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
 import {
+    mdiAccountEdit,
+    mdiAccountPlus,
+    mdiAccountRemove,
+    mdiBellPlus,
     mdiBookEdit,
-    mdiBookPlus, mdiBookRemove,
+    mdiBookPlus,
+    mdiBookRemove,
     mdiCalculator,
     mdiCheck,
     mdiClose,
@@ -36,13 +41,10 @@ import {
     mdiPlus,
     mdiReload,
     mdiShieldAccount,
-    mdiAccountPlus,
-    mdiAccountRemove,
-    mdiAccountEdit,
-    mdiStorePlus,
+    mdiStore,
     mdiStoreEdit,
     mdiStoreMinus,
-    mdiStore, mdiBellPlus
+    mdiStorePlus
 } from '@mdi/js'
 import {useApp} from '@/composables/useApp'
 

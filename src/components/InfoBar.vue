@@ -96,7 +96,7 @@ log('--- InfoBar.vue setup ---')
 </script>
 
 <template>
-  <v-navigation-drawer v-model="state.show" app color="secondary" height="100%" :floating="true"
+  <v-navigation-drawer v-model="state.show" :floating="true" app color="secondary" height="100%"
                        width="180">
     <v-card color="secondary" height="100%">
       <v-list lines="two">
@@ -110,7 +110,7 @@ log('--- InfoBar.vue setup ---')
       </v-list>
     </v-card>
   </v-navigation-drawer>
-  <v-app-bar app color="secondary" :flat="true">
+  <v-app-bar :flat="true" app color="secondary">
     <v-app-bar-nav-icon variant="text" @click="state.show = !state.show"></v-app-bar-nav-icon>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>

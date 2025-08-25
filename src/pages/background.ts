@@ -8,9 +8,6 @@
 import {useApp} from '@/composables/useApp'
 import {useDatabase} from '@/composables/useDatabase'
 import {useFetch} from '@/composables/useFetch'
-//import {useI18n} from "vue-i18n";
-//import {useRuntimeStore} from "@/stores/runtime";
-//import {useRecordsStore} from "@/stores/records";
 
 declare global {
     namespace Stockmanager {
@@ -198,13 +195,6 @@ declare global {
         stocks: IStockStore[]
     }
 
-    interface IDrawerControls {
-        id: number
-        title: string
-        value: string
-        class: string
-    }
-
     interface IStorageLocal {
         sActiveAccountId: number
         sBookingsPerPage: number
@@ -236,7 +226,7 @@ declare global {
         readonly icon: string
     }
 
-    interface IDrawerControl {
+    interface _IDrawerControl {
         id: number
         title: string
         value: string
@@ -245,7 +235,7 @@ declare global {
 
     interface IState {
         show: boolean
-        drawerControls: IDrawerControl[]
+        drawerControls: _IDrawerControl[]
     }
 }
 
@@ -279,7 +269,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
         fetchIndexData,
         fetchDateData
     } = useFetch()
-    // NOTE: onInstall runs at addon install, addon update and firefox update
+    // NOTE: onInstall runs at the installation or update of the add-on. And it runs on firefox update.
     const onInstall = async (): Promise<void> => {
         console.log('BACKGROUND: onInstall')
         const installStorageLocal = async () => {
@@ -462,7 +452,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                 //   // }
                 // }
                 // const updateStorageLocal = async () => {
-                //   const storageKeys = Object.keys(CONS.DEFAULTS.STORAGE)
+                //   const storageKeys = Object.keys( CONS.DEFAULTS.STORAGE )
                 //   const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
                 //   const storage: IStorageLocal = await browser.storage.local.get(storageKeys)
                 //   for (let i = 0; i < storageKeys.length; i++) {
@@ -491,7 +481,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
         log('BACKGROUND: onClick')
         await open()
         const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.SYSTEM.INDEX)}`})
-        // NOTE: any async webextension API call which triggers a corresponding event listener will reload background.js.
+        // NOTE: any async webextension API call, which triggers a corresponding event listener reloads background.js.
         if (foundTabs.length === 0) {
             const extensionTab = await browser.tabs.create({
                 url: browser.runtime.getURL(CONS.SYSTEM.INDEX),

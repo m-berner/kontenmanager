@@ -157,17 +157,17 @@ log('--- HelpContent.vue setup ---')
       <v-row justify="center">
         <v-col cols="8" s="8">
           <ContentCard
-              :title="t('helpContent.requestsTitle')"
-              :data="requests"></ContentCard>
+              :data="requests"
+              :title="t('helpContent.requestsTitle')"></ContentCard>
           <ContentCard
-              :title="t('helpContent.toolBarTitle')"
-              :data="toolBar"></ContentCard>
+              :data="toolBar"
+              :title="t('helpContent.toolBarTitle')"></ContentCard>
           <ContentCard
-              :title="t('helpContent.companyBarTitle')"
-              :data="companyBar"></ContentCard>
+              :data="companyBar"
+              :title="t('helpContent.companyBarTitle')"></ContentCard>
           <ContentCard
-              :title="t('helpContent.transferBarTitle')"
-              :data="transferBar"></ContentCard>
+              :data="transferBar"
+              :title="t('helpContent.transferBarTitle')"></ContentCard>
         </v-col>
       </v-row>
     </v-container>

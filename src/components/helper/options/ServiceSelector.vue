@@ -37,8 +37,8 @@ log('--- ServiceSelector.vue setup ---')
 
 <template>
   <v-radio-group
-      column
       v-model="service"
+      column
       @update:modelValue="setService">
     <v-radio
         v-for="item in [...CONS.SERVICES.MAP.keys()]"

@@ -101,9 +101,9 @@ log('--- DotMenu.vue setup ---')
   <v-menu>
     <template v-slot:activator="{ props }">
       <v-btn
+          :color="runtime.optionMenuColors.get(optionMenuProps.recordID ?? -1)"
           icon="$dots"
           v-bind="props"
-          :color="runtime.optionMenuColors.get(optionMenuProps.recordID ?? -1)"
           @click="onButtonClick"
       ></v-btn>
     </template>
@@ -113,11 +113,11 @@ log('--- DotMenu.vue setup ---')
             v-for="item in optionMenuProps.menuItems"
             :id="rt(item.id)"
             :key="rt(item.title)"
-            class="pointer"
-            v-bind="props"
             :base-color="isHovering ? 'orange' : ''"
             :prepend-icon="rt(item.icon)"
             :title="rt(item.title)"
+            class="pointer"
+            v-bind="props"
             @click="onIconClick"
         ></v-list-item>
       </v-hover>

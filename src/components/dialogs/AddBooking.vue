@@ -214,21 +214,18 @@ log('--- AddBooking.vue setup ---')
           <v-text-field
               ref="date-input"
               v-model="state.bookDate"
+              :label="t('dialogs.addBooking.dateLabel')"
+              :rules="valDateRules([t('validators.dateRules', 0)])"
               autofocus
               density="compact"
               required
               type="date"
-              :label="t('dialogs.addBooking.dateLabel')"
-              :rules="valDateRules([t('validators.dateRules', 0)])"
               variant="outlined"
           ></v-text-field>
         </v-col>
         <v-col>
           <v-select
               v-model="state.bookingTypeId"
-              density="compact"
-              max-width="300"
-              required
               :itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
               :itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
               :items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
@@ -236,6 +233,9 @@ log('--- AddBooking.vue setup ---')
               :menu=false
               :menuProps="{ maxHeight: 250 }"
               :rules="valRequiredRules([t('validators.requiredRule', 0)])"
+              density="compact"
+              max-width="300"
+              required
               variant="outlined"
               @update:modelValue="(ev) => {console.error('CHANGE', ev)}"
           ></v-select>
@@ -246,10 +246,10 @@ log('--- AddBooking.vue setup ---')
           <v-text-field
               v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
               v-model="state.count"
+              :label="t('dialogs.addBooking.countLabel')"
               class="withoutSpinner"
               density="compact"
               type="number"
-              :label="t('dialogs.addBooking.countLabel')"
               variant="outlined"
           ></v-text-field>
         </v-col>
@@ -304,12 +304,12 @@ log('--- AddBooking.vue setup ---')
               v-if="state.bookingTypeId === 3"
               ref="date-input"
               v-model="state.exDate"
+              :label="t('dialogs.addBooking.exDateLabel')"
+              :rules="valDateRules([t('validators.dateRules', 0)])"
               autofocus
               density="compact"
               required
               type="date"
-              :label="t('dialogs.addBooking.exDateLabel')"
-              :rules="valDateRules([t('validators.dateRules', 0)])"
               variant="outlined"
           ></v-text-field>
         </v-col>
@@ -327,15 +327,15 @@ log('--- AddBooking.vue setup ---')
           <v-select
               v-if="state.bookingTypeId < 4 && state.bookingTypeId > 0"
               v-model="state.stockId"
-              density="compact"
-              max-width="300"
               :item-title="CONS.DB.STORES.STOCKS.FIELDS.COMPANY"
               :item-value="CONS.DB.STORES.STOCKS.FIELDS.ID"
-              :items="records.stocks.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
+              :items="records.stocks.sort((a: IStockStore, b: IStockStore): number => { return a.cCompany.localeCompare(b.cCompany) })"
               :label="t('dialogs.addBooking.stockLabel')"
               :menu=false
               :menu-props="{ maxHeight: 250 }"
               :rules="valRequiredRules([t('validators.requiredRule', 0)])"
+              density="compact"
+              max-width="300"
               variant="outlined"
           ></v-select>
         </v-col>
@@ -343,12 +343,12 @@ log('--- AddBooking.vue setup ---')
           <v-select
               v-if="state.bookingTypeId < 3 && state.bookingTypeId > 0"
               v-model="state.marketPlace"
-              density="compact"
-              max-width="350"
               :items="settings.markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
               :label="t('dialogs.addBooking.marketPlaceLabel')"
               :menu=false
               :menuProps="{ maxHeight: 250 }"
+              density="compact"
+              max-width="350"
           ></v-select>
         </v-col>
       </v-row>
@@ -374,9 +374,9 @@ log('--- AddBooking.vue setup ---')
         <v-col cols="12">
           <v-text-field
               v-model="state.description"
+              :label="t('dialogs.addBooking.descriptionLabel')"
               density="compact"
               required
-              :label="t('dialogs.addBooking.descriptionLabel')"
               variant="outlined"
           ></v-text-field>
         </v-col>

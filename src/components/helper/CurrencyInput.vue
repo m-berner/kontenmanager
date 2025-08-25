@@ -72,12 +72,12 @@ onMounted(() => {
 <template>
   <v-text-field
       v-model="state.formattedValue"
-      density="compact"
-      type="text"
-      variant="outlined"
-      hide-details
       :disabled="currencyInputProps.disabled"
       :label="currencyInputProps.label"
+      density="compact"
+      hide-details
+      type="text"
+      variant="outlined"
       @blur="onBlur"
       @focus="onFocus"
       @input="onInput"

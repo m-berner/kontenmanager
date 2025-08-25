@@ -73,7 +73,6 @@ log('--- AddBookingType.vue setup ---')
     <v-combobox
         ref="name-input"
         v-model="state.bookingTypeName"
-        max-width="300"
         :disabled="settings.activeAccountId === -1"
         :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
@@ -82,6 +81,7 @@ log('--- AddBookingType.vue setup ---')
         :menu=true
         :menu-props="{ maxHeight: 250 }"
         :rules="valNameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
+        max-width="300"
     ></v-combobox>
   </v-form>
 </template>

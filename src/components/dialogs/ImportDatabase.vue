@@ -242,9 +242,9 @@ log('--- ImportDatabase.vue setup ---')
           variant="plain"
       ></v-text-field>
       <v-file-input
-          accept=".json"
           :clearable="true"
           :label="t('dialogs.importDatabase.label')"
+          accept=".json"
           variant="outlined"
           @change="(ev: IEventTarget) => { state.chosen_file = ev.target.files[0] }"></v-file-input>
     </v-card-text>

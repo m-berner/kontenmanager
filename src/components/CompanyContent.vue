@@ -131,7 +131,7 @@ const stocksMenuItems: StocksMenuItems[] = [
     'icon': '$link'
   }
 ]
-// Fixed: Use a function that returns a function for proper ref handling
+// Fixed: use a function that returns a function for proper ref handling
 const setDynamicStyleWinLoss = computed(() => {
   return (el: HTMLElement | null): void => {
     if (el !== null) {
@@ -165,8 +165,6 @@ log('--- StocksTable.vue setup ---')
 
 <template>
   <v-data-table
-      density="compact"
-      item-key="cID"
       :headers="stocksHeaders"
       :hide-no-data="false"
       :hover="true"
@@ -175,6 +173,8 @@ log('--- StocksTable.vue setup ---')
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('stocksTable.itemsPerPageText')"
       :no-data-text="t('stocksTable.noDataText')"
+      density="compact"
+      item-key="cID"
       @update:items-per-page="onUpdateItemsPerPage"
       @update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
@@ -182,9 +182,9 @@ log('--- StocksTable.vue setup ---')
         <td class="d-none">{{ item.cID }}</td>
         <td>
           <DotMenu
-              menuType="stocks"
               :menuItems="stocksMenuItems"
-              :recordID="item.cID ?? -1">
+              :recordID="item.cID ?? -1"
+              menuType="stocks">
           </DotMenu>
         </td>
         <td>{{ item.cCompany }}</td>
@@ -195,9 +195,9 @@ log('--- StocksTable.vue setup ---')
         <td v-else></td>
         <td>{{ item.mPortfolio }}</td>
         <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
-        <v-tooltip location="left" :text="n((item.mChange ?? 0) / 100, 'percent')">
+        <v-tooltip :text="n((item.mChange ?? 0) / 100, 'percent')" location="left">
           <template v-slot:activator="{ props }">
-            <td v-bind="props" :class="setDynamicStyleWinLoss">
+            <td :class="setDynamicStyleWinLoss" v-bind="props">
               {{ n(item.mEuroChange ?? 0, 'currency') }}
             </td>
           </template>

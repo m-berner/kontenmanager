@@ -12,6 +12,5 @@ _Developer environment:_
 - Windows 11
 - Node v24.0.2
 
-To build the application run the "build" script.
-In case of complication see vite.config.js to
-for example stop creating a .xpi archive at the end.
+To build the app run the “build” script.
+In case of complication see vite.config.js or tsconfig.json.

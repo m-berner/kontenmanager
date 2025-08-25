@@ -15,7 +15,6 @@ interface IRecordsStore {
     bookingTypes: IBookingType[]
     stocks: IStockStore[]
     bookingSum: number
-    //bookingSumField: string
     totalController: Record<string, number>
 }
 
@@ -72,7 +71,7 @@ export const useRecordsStore = defineStore('records', {
         },
 
         getStockById(ident: number): number {
-            return this.stocks.findIndex((entry: IStock) => entry.cID === ident)
+            return this.stocks.findIndex((entry: IStockStore) => entry.cID === ident)
         },
 
         sumBookings(): void {

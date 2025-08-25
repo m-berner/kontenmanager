@@ -111,36 +111,36 @@ log('--- UpdateAccount.vue setup ---')
   <v-form ref="form-ref" validate-on="submit" @submit.prevent>
     <v-switch
         v-model="state.stockAccount"
+        :label="t('dialogs.updateAccount.stockAccountLabel')"
         color="red"
-        variant="outlined"
-        :label="t('dialogs.updateAccount.stockAccountLabel')"></v-switch>
+        variant="outlined"></v-switch>
     <v-text-field
         ref="swift-input"
         v-model="state.swift"
+        :label="t('dialogs.updateAccount.swiftLabel')"
+        :rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
         autofocus
         required
         variant="outlined"
-        :label="t('dialogs.updateAccount.swiftLabel')"
-        :rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
     ></v-text-field>
     <v-text-field
         v-model="state.number"
-        required
-        variant="outlined"
         :label="t('dialogs.updateAccount.accountNumberLabel')"
         :placeholder="t('dialogs.updateAccount.accountNumberPlaceholder')"
         :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+        required
+        variant="outlined"
         @update:modelValue="onUpdateLogoSearchName"
     ></v-text-field>
     <v-text-field
         v-model="state.logoSearchName"
+        :label="t('dialogs.updateAccount.logoLabel')"
+        :rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
         placeholder="z. B. ing.com"
         required
         variant="outlined"
-        :label="t('dialogs.updateAccount.logoLabel')"
-        :rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
         @input="onInputLogoUrl"
     ></v-text-field>
-    <img alt="brandfetch.com logo" :src="state.logoUrl">
+    <img :src="state.logoUrl" alt="brandfetch.com logo">
   </v-form>
 </template>

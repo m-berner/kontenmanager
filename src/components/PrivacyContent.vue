@@ -41,8 +41,8 @@ log('--- PrivacyContent.vue setup ---')
       <v-row justify="center">
         <v-col cols="7" sm="7">
           <ContentCard
-              :title="t('privacyContent.title')"
-              :data="data"></ContentCard>
+              :data="data"
+              :title="t('privacyContent.title')"></ContentCard>
         </v-col>
       </v-row>
     </v-container>

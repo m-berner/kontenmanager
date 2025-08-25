@@ -129,34 +129,34 @@ log('--- AddStock.vue setup ---')
     <v-card-text class="pa-5">
       <v-text-field
           v-model="state.isin"
-          autofocus
-          required
-          variant="outlined"
           :counter="12"
           :label="t('dialogs.addStock.isin')"
           :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+          autofocus
+          required
+          variant="outlined"
           @update:modelValue="onIsin"
       ></v-text-field>
       <v-text-field
           v-model="state.company"
-          required
-          variant="outlined"
           :disabled="state.auto"
           :label="t('dialogs.addStock.company')"
+          required
+          variant="outlined"
       ></v-text-field>
       <v-text-field
           v-model="state.wkn"
-          required
-          variant="outlined"
           :disabled="state.auto"
           :label="t('dialogs.addStock.wkn')"
+          required
+          variant="outlined"
       ></v-text-field>
       <v-text-field
           v-model="state.symbol"
-          required
-          variant="outlined"
           :disabled="state.auto"
           :label="t('dialogs.addStock.symbol')"
+          required
+          variant="outlined"
       ></v-text-field>
     </v-card-text>
   </v-form>

@@ -105,19 +105,16 @@ log('--- UpdateBooking.vue setup ---')
       <v-row>
         <v-text-field
             v-model="state.date"
+            :label="t('dialogs.updateBooking.dateLabel')"
             autofocus
             required
             type="date"
-            :label="t('dialogs.updateBooking.dateLabel')"
             variant="outlined"
         ></v-text-field>
       </v-row>
       <v-row>
         <v-select
             v-model="state.bookingTypeId"
-            density="compact"
-            maxWidth="300"
-            required
             :itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
             :itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
             :items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
@@ -125,6 +122,9 @@ log('--- UpdateBooking.vue setup ---')
             :menu=false
             :menuProps="{ maxHeight: 250 }"
             :rules="valPositiveIntegerRules([t('dialogs.updateBooking.validators[0]')])"
+            density="compact"
+            maxWidth="300"
+            required
             validate-on="input"
             variant="outlined"
             @update:modelValue="(ev) => {console.error('CHANGE', ev, state.bookingTypeId)}"
@@ -149,9 +149,9 @@ log('--- UpdateBooking.vue setup ---')
       <v-row>
         <v-text-field
             v-model="state.description"
+            :label="t('dialogs.addBooking.descriptionLabel')"
             density="compact"
             required
-            :label="t('dialogs.addBooking.descriptionLabel')"
             variant="outlined"
         ></v-text-field>
       </v-row>

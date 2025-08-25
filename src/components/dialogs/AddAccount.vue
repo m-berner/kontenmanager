@@ -110,37 +110,37 @@ log('--- AddAccount.vue setup ---')
   <v-form ref="form-ref" validate-on="submit" @submit.prevent>
     <v-switch
         v-model="state.stockAccount"
-        color="red"
-        :label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
+        :label="t('dialogs.addAccount.stockAccountLabel')"
+        color="red"></v-switch>
     <v-text-field
         v-model="state.swift"
+        :label="t('dialogs.addAccount.swiftLabel')"
+        :rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
         autofocus
         required
         variant="outlined"
-        :label="t('dialogs.addAccount.swiftLabel')"
-        :rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
     ></v-text-field>
     <v-text-field
         v-model="state.accountNumber"
-        required
-        variant="outlined"
         :label="t('dialogs.addAccount.accountNumberLabel')"
         :placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
         :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+        required
+        variant="outlined"
         @update:modelValue="onUpdateIbanMask"
     ></v-text-field>
     <v-text-field
         v-model="state.logoSearchName"
+        :label="t('dialogs.addAccount.logoLabel')"
+        :rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
         placeholder="z. B. ing.com"
         required
         variant="outlined"
-        :label="t('dialogs.addAccount.logoLabel')"
-        :rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
         @input="onInputLogoName"
     ></v-text-field>
     <img
+        :src="state.logoUrl"
         alt="logo"
-        style="max-width: 48px; max-height: 48px;"
-        :src="state.logoUrl">
+        style="max-width: 48px; max-height: 48px;">
   </v-form>
 </template>

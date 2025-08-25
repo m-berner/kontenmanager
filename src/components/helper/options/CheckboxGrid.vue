@@ -88,9 +88,9 @@ log('--- CheckboxGrid.vue setup ---')
         v-for="item in boxes.A"
         :key="item"
         v-model="checked"
-        hide-details
         :label="setLabel(item)"
         :value="item"
+        hide-details
         @change="setChecked"
     ></v-checkbox>
   </v-col>
@@ -99,9 +99,9 @@ log('--- CheckboxGrid.vue setup ---')
         v-for="item in boxes.B"
         :key="item"
         v-model="checked"
-        hide-details
         :label="setLabel(item)"
         :value="item"
+        hide-details
         @change="setChecked"
     ></v-checkbox>
   </v-col>

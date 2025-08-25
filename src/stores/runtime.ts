@@ -8,13 +8,13 @@
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
 
-type TTelePort = {
+interface ITeleport {
     dialogName: string
     okButton: boolean
     visibility: boolean
 }
 
-type TInfos = {
+interface IInfos {
     exchanges: Map<string, number>
     indexes: Map<string, number>
     materials: Map<string, number>
@@ -22,8 +22,8 @@ type TInfos = {
 
 interface IRuntimeStore {
     activeId: number
-    teleport: TTelePort
-    infoBar: TInfos
+    teleport: ITeleport
+    infoBar: IInfos
     exchanges: {
         curUsd: number
         curEur: number
@@ -55,13 +55,6 @@ export const useRuntimeStore = defineStore('runtime', {
         }
     },
     getters: {
-        //materials: (state: IRuntimeStore): Map<string, number> => state.infoBar.materials,
-        //exchanges: (state: IRuntimeStore): Map<string, number> => state.infoBar.exchanges,
-        //indexes: (state: IRuntimeStore): Map<string, number> => state.infoBar.indexes,
-        //activeId: (state: IRuntimeStore): number => state.activeId,
-        //exchangesCurUsd: (state: IRuntimeStore): number => state.exchanges.curUsd,
-        //exchangesCurEur: (state: IRuntimeStore): number => state.exchanges.curEur,
-        // Computed properties for commonly used derived state
         hasActiveBooking: (state: IRuntimeStore): boolean => state.activeId !== -1,
         isDialogVisible: (state: IRuntimeStore): boolean => state.teleport.visibility
     },
@@ -69,8 +62,7 @@ export const useRuntimeStore = defineStore('runtime', {
         setActiveId(value: number): void {
             this.activeId = value
         },
-        setTeleport(entry: TTelePort): void {
-            // Create a copy to avoid mutation issues
+        setTeleport(entry: ITeleport): void {
             this.teleport = {
                 dialogName: entry.dialogName,
                 okButton: entry.okButton,
@@ -92,44 +84,27 @@ export const useRuntimeStore = defineStore('runtime', {
                 this.optionMenuColors.set(m, '')
             }
         },
-        // Additional utility methods
         openModalDialog(dialogName: string, showOkButton: boolean = true): void {
             this.teleport = {
-                dialogName,
+                dialogName: dialogName,
                 okButton: showOkButton,
                 visibility: true
             }
         },
-
         closeDialog(): void {
             this.teleport.visibility = false
         },
-
         toggleDialog(): void {
             this.teleport.visibility = !this.teleport.visibility
         },
-
-        updateDialogConfig(config: Partial<TTelePort>): void {
+        updateDialogConfig(config: Partial<ITeleport>): void {
             this.teleport = {
                 ...this.teleport,
                 ...config
             }
         },
-
         clearBooking(): void {
             this.activeId = -1
-        },
-
-        // Set both booking and open related dialog
-        setBookingAndOpenDialog(activeId: number, dialogName: string): void {
-            this.activeId = activeId
-            this.openModalDialog(dialogName)
-        },
-
-        // Reset all runtime state
-        resetRuntimeState(): void {
-            this.activeId = -1
-            this.resetTeleport()
         },
         setExchangesUsd(value: number) {
             this.exchanges.curUsd = value

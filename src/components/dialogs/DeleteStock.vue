@@ -54,13 +54,13 @@ log('--- DeleteAccount.vue setup ---')
     <v-select
         v-if="records.stocks.length > 0"
         v-model="state.selected"
-        density="compact"
-        required
-        variant="outlined"
         :item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
         :item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.stocks"
         :label="t('dialogs.deleteStock.accountNumberLabel')"
+        density="compact"
+        required
+        variant="outlined"
     ></v-select>
     <v-text-field
         v-else

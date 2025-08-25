@@ -116,13 +116,13 @@ log('--- DynamicList.vue setup ---')
 </script>
 
 <template>
-  <v-card color="secondary" :title="title">
+  <v-card :title="title" color="secondary">
     <v-list bg-color="secondary">
       <v-list-item
           v-for="(item, i) in state.list"
           :key="item"
-          hide-details
-          :title="item">
+          :title="item"
+          hide-details>
         <template v-slot:prepend>
           <v-btn
               class="mr-3"
@@ -134,11 +134,11 @@ log('--- DynamicList.vue setup ---')
     <v-card-actions>
       <v-text-field
           v-model="state.newItem"
-          type="text"
           :autofocus="true"
           :clearable="true"
           :label="label"
-          :placeholder="dynamicListProps.placeholder">
+          :placeholder="dynamicListProps.placeholder"
+          type="text">
         <template v-slot:append>
           <v-btn class="ml-3"
                  color="primary"

@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {type Ref, ref} from 'vue'
+import {computed, type ComputedRef, type Ref, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import DynamicList from '@/components/helper/options/DynamicList.vue'
 import ThemeSelector from '@/components/helper/options/ThemeSelector.vue'
@@ -23,7 +23,7 @@ const {rt, t} = useI18n()
 const {CONS, log} = useApp()
 
 const tab: Ref<number> = ref(0)
-const optionsTabs: ITabs[] = [
+const optionsTabs: ComputedRef<ITabs[]> = computed(() => [
   {
     title: t('optionsPage.tabs.ge'),
     id: 'register_ge'
@@ -44,7 +44,7 @@ const optionsTabs: ITabs[] = [
     title: t('optionsPage.tabs.ex'),
     id: 'register_ex'
   }
-]
+])
 
 log('--- OptionsIndex.vue setup ---', {info: window.location.href})
 </script>
@@ -62,10 +62,10 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
           <v-tabs-window-item :value="0">
             <v-row>
               <v-col cols="12" md="6" sm="6">
-                <ThemeSelector />
+                <ThemeSelector/>
               </v-col>
               <v-col cols="12" md="6" sm="6">
-                <ServiceSelector />
+                <ServiceSelector/>
               </v-col>
             </v-row>
           </v-tabs-window-item>
@@ -80,15 +80,15 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
           </v-tabs-window-item>
           <v-tabs-window-item :value="2">
             <v-row>
-                <CheckboxGrid
-                  :type = "CONS.CHECKBOX_GRID.TYPES.INDEXES"
-                ></CheckboxGrid>
+              <CheckboxGrid
+                  :type="CONS.CHECKBOX_GRID.TYPES.INDEXES"
+              ></CheckboxGrid>
             </v-row>
           </v-tabs-window-item>
           <v-tabs-window-item :value="3">
             <v-row>
               <CheckboxGrid
-                  :type = "CONS.CHECKBOX_GRID.TYPES.MATERIALS"
+                  :type="CONS.CHECKBOX_GRID.TYPES.MATERIALS"
               ></CheckboxGrid>
             </v-row>
           </v-tabs-window-item>

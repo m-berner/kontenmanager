@@ -42,32 +42,32 @@ log('--- TitleBar.vue setup ---')
 </script>
 
 <template>
-  <v-app-bar app color="secondary" :flat="true">
+  <v-app-bar :flat="true" app color="secondary">
     <template v-slot:prepend>
-      <img alt="t('titleBar.iconsAlt.logo')" :src=CONS.COMPONENTS.TITLE_BAR.LOGO>
+      <img :src=CONS.COMPONENTS.TITLE_BAR.LOGO alt="t('titleBar.iconsAlt.logo')">
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
-        max-width="150"
-        hide-details
         :disabled="true"
         :label="t('titleBar.bookingsSumLabel')"
         :modelValue="balance"
+        hide-details
+        max-width="150"
     ></v-text-field>
     <v-spacer></v-spacer>
     <v-select
         v-model="activeAccountId"
-        max-width="350"
-        hide-details
-        density="compact"
-        variant="outlined"
         :item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
         :item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.accounts"
         :label="t('titleBar.selectAccountLabel')"
+        density="compact"
+        hide-details
+        max-width="350"
+        variant="outlined"
         @update:modelValue="onUpdateTitleBar">
       <template v-slot:prepend>
-        <img alt="t('titleBar.iconsAlt.brandfetch')" :src="logoUrl">
+        <img :src="logoUrl" alt="t('titleBar.iconsAlt.brandfetch')">
       </template>
     </v-select>
   </v-app-bar>

@@ -99,16 +99,14 @@ log('--- HomeContent.vue setup ---')
 <template>
   <v-text-field
       v-model="state.search"
+      :label="t('appPage.search')"
       density="compact"
       hide-details
       prepend-inner-icon="$magnify"
       single-line
       variant="outlined"
-      :label="t('appPage.search')"
   ></v-text-field>
   <v-data-table
-      density="compact"
-      item-key="cID"
       :headers="homeHeaders"
       :hide-no-data="false"
       :hover="true"
@@ -118,6 +116,8 @@ log('--- HomeContent.vue setup ---')
       :items-per-page-text="t('appPage.itemsPerPageText')"
       :no-data-text="t('appPage.noDataText')"
       :search="state.search"
+      density="compact"
+      item-key="cID"
       @update:items-per-page="onUpdateItemsPerPage"
       @update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">

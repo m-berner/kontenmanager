@@ -118,19 +118,19 @@ log('--- UpdateStock.vue setup ---')
       <v-row>
         <v-text-field
             v-model="state.isin"
-            autofocus
-            required
             :counter="12"
             :label="t('dialogs.updateStock.isin')"
             :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+            autofocus
+            required
             variant="outlined"
         ></v-text-field>
       </v-row>
       <v-row>
         <v-text-field
             v-model="state.company"
-            required
             :label="t('dialogs.updateStock.company')"
+            required
             variant="outlined"
         ></v-text-field>
       </v-row>
@@ -138,16 +138,16 @@ log('--- UpdateStock.vue setup ---')
         <v-col>
           <v-text-field
               v-model="state.wkn"
-              required
               :label="t('dialogs.updateStock.wkn')"
+              required
               variant="outlined"
           ></v-text-field>
         </v-col>
         <v-col>
           <v-text-field
               v-model="state.symbol"
-              required
               :label="t('dialogs.updateStock.symbol')"
+              required
               variant="outlined"
           ></v-text-field>
         </v-col>

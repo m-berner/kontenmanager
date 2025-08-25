@@ -43,8 +43,8 @@ log('--- ThemeSelector.vue setup ---')
 
 <template>
   <v-radio-group
-      column
       v-model="skin"
+      column
       @update:modelValue="setSkin">
     <v-radio
         v-for="item in Object.keys(theme.themes.value)"
