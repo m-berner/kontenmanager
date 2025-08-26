@@ -6,7 +6,6 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {DataTableHeader} from 'vuetify'
 import DotMenu from '@/components/helper/DotMenu.vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -18,30 +17,12 @@ import {computed} from 'vue'
 // Store setup with proper typing
 const {log} = useApp()
 const {d, n, t} = useI18n()
-const {CONS, toNumber} = useApp()
+const {CONS} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-//const runtime = useRuntimeStore()
-// Use storeToRefs for reactive store properties
-//const {_is_stocks_loading} = storeToRefs(runtime)
-//const {stocksPerPage} = storeToRefs(settings)
-//const {stocks} = storeToRefs(records)
-// Computed properties with proper typing
-//const tableHeaders: ComputedRef<TableHeader[]> = computed(() => {
-// const headers = t('stocksTable.headers')
-// headers.map((item: { title: string, align: string, sortable: boolean, key: string }) => ({
-//   title: rt(item.title),
-//   align: rt(item.align) as 'start' | 'center' | 'end' | undefined,
-//   sortable: item.sortable,
-//   key: rt(item.key)
-// }))
-//return tm<'stocksTable.headers'>('stocksTable.headers') //as Array<TableHeader>
-//})
-
 const {stocksPerPage} = storeToRefs(settings)
-//const {stocks} = storeToRefs(records)
-const stocksHeaders: DataTableHeader[] = [
+const stocksHeaders = [
   {
     title: t('stocksTable.headers.action'),
     align: 'start',
@@ -131,28 +112,11 @@ const stocksMenuItems: StocksMenuItems[] = [
     'icon': '$link'
   }
 ]
-// Fixed: use a function that returns a function for proper ref handling
-const setDynamicStyleWinLoss = computed(() => {
-  return (el: HTMLElement | null): void => {
-    if (el !== null) {
-      // Use nextTick to ensure DOM is updated
-      //await nextTick()
-      const value = toNumber(el.textContent)
-      if (value < 0) {
-        el.classList.add('color-red')
-      } else if (value > 0) {
-        el.classList.add('color-black')
-      }
-      el.classList.add('font-weight-bold')
-    }
-  }
-})
-// const onUpdatePageHandler = async (page: number): Promise<void> => {
-//   log('COMPANY_CONTENT: onUpdatePageHandler', {info: page})
-//   //records.setActiveStocksPage(page)
-//   //await records.updateWrapper()
-// }
-//const stocksFilter = (rec: IStockStore, index: number, ar: IStockStore[]): boolean => rec.cID>0
+const winLossClass = computed(() => (value: number) => ({
+  'color-red font-weight-bold': value < 0,
+  'color-black font-weight-bold': value >= 0
+}))
+
 const onUpdateItemsPerPage = (count: number): void => {
   settings.setStocksPerPage(count)
 }
@@ -197,7 +161,7 @@ log('--- StocksTable.vue setup ---')
         <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
         <v-tooltip :text="n((item.mChange ?? 0) / 100, 'percent')" location="left">
           <template v-slot:activator="{ props }">
-            <td :class="setDynamicStyleWinLoss" v-bind="props">
+            <td :class="winLossClass(item.mEuroChange)" v-bind="props">
               {{ n(item.mEuroChange ?? 0, 'currency') }}
             </td>
           </template>

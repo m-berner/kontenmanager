@@ -7,15 +7,17 @@
   -->
 <script lang="ts" setup>
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useTheme} from 'vuetify/framework'
 import {useI18n} from 'vue-i18n'
-import {onBeforeMount, type Ref, ref} from 'vue'
+import {onBeforeMount, ref} from 'vue'
 
 const {t} = useI18n()
 const theme = useTheme()
 const {CONS, log} = useApp()
+const {getStorage, setStorage} = useBrowser()
 
-const skin: Ref<string> = ref('ocean')// TODO default...
+const skin = ref('ocean')// TODO default...
 
 const themeNames: { [p: string]: string } = {
   earth: t('optionsPage.themeNames.earth'),
@@ -29,12 +31,12 @@ const themeNames: { [p: string]: string } = {
 const setSkin = async (skin: string | null): Promise<void> => {
   if (skin !== null) {
     theme.global.name.value = skin
-    await browser.storage.local.set({[CONS.STORAGE.PROPS.SKIN]: skin})
+    await setStorage(CONS.STORAGE.PROPS.SKIN, skin)
   }
 }
 
 onBeforeMount(async () => {
-  const storageSkin = await browser.storage.local.get([CONS.STORAGE.PROPS.SKIN])
+  const storageSkin = await getStorage([CONS.STORAGE.PROPS.SKIN])
   skin.value = storageSkin[CONS.STORAGE.PROPS.SKIN]
 })
 

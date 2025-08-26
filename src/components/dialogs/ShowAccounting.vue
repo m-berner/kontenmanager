@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
@@ -19,7 +19,7 @@ const {n, t} = useI18n()
 const records = useRecordsStore()
 const {log} = useApp()
 
-const state: Reactive<IShowAccounting> = reactive<IShowAccounting>({
+const state: IShowAccounting = reactive<IShowAccounting>({
   _result: []
 })
 const cAddEntryToResult = (value: { title: string, subtitle: string }) => {

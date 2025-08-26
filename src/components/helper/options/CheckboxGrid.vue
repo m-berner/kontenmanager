@@ -8,7 +8,8 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {computed, onBeforeMount, type Ref, ref, toRaw} from 'vue'
+import {useBrowser} from '@/composables/useBrowser'
+import {computed, defineProps, onBeforeMount, ref, toRaw} from 'vue'
 
 interface CheckboxGridProps {
   type: symbol
@@ -16,9 +17,10 @@ interface CheckboxGridProps {
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
+const {getStorage, setStorage} = useBrowser()
 
 const checkboxGridProps = defineProps<CheckboxGridProps>()
-const checked: Ref<string[]> = ref([])
+const checked = ref([])
 
 const indexesKeys: string[] = Array.from(CONS.SETTINGS.INDEXES.keys())
 const materialsKeys: string[] = Array.from(CONS.SETTINGS.MATERIALS.keys())
@@ -56,19 +58,19 @@ const setLabel = (item: string): string | undefined => {
 }
 
 const setChecked = async (): Promise<void> => {
-  const checkedBoxes = toRaw(checked.value)
+  const checkedBoxes = toRaw(checked)
   switch (checkboxGridProps.type) {
     case CONS.CHECKBOX_GRID.TYPES.INDEXES:
-      await browser.storage.local.set({[CONS.STORAGE.PROPS.INDEXES]: checkedBoxes})
+      await setStorage(CONS.STORAGE.PROPS.INDEXES, checkedBoxes)
       break
     case CONS.CHECKBOX_GRID.TYPES.MATERIALS:
-      await browser.storage.local.set({[CONS.STORAGE.PROPS.MATERIALS]: checkedBoxes})
+      await setStorage(CONS.STORAGE.PROPS.MATERIALS, checkedBoxes)
       break
   }
 }
 
 onBeforeMount(async () => {
-  const storage = await browser.storage.local.get([CONS.STORAGE.PROPS.INDEXES, CONS.STORAGE.PROPS.MATERIALS])
+  const storage = await getStorage([CONS.STORAGE.PROPS.INDEXES, CONS.STORAGE.PROPS.MATERIALS])
   switch (checkboxGridProps.type) {
     case CONS.CHECKBOX_GRID.TYPES.INDEXES:
       checked.value = storage[CONS.STORAGE.PROPS.INDEXES]

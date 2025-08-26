@@ -74,7 +74,7 @@ const vuetifyInstance = createVuetify({
             dark: {
                 dark: true,
                 colors: {
-                    background: '#121212', // Fixed: should be dark for dark theme
+                    background: '#121212',
                     primary: '#23222B',
                     surface: '#23222B',
                     secondary: '#e0e0e0',
@@ -128,10 +128,9 @@ const vuetifyInstance = createVuetify({
                 colors: {
                     background: '#e0e0e0',
                     primary: '#378222',
-                    surface: '#378222', // Fixed: was '#378D22' (inconsistent)
+                    surface: '#378222',
                     secondary: '#e0e0e0',
-                    // Note: 'topbar' is not a standard Vuetify color token
-                    // Consider using a CSS custom property or component-specific styling
+                    // Consider using a CSS custom property or component-specific styling.
                     warning: 'orange',
                     error: 'orange',
                     info: 'yellow',

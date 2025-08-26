@@ -6,11 +6,12 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 
 interface IState {
   swift: string
@@ -22,11 +23,12 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
+const {sendMessage} = useBrowser()
 const formRef = useTemplateRef('form-ref')
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   swift: '',
   number: '',
   logoUrl: '',
@@ -42,7 +44,7 @@ const mResetState = () => {
   state.stockAccount = false
 }
 const onInputLogoUrl = () => {
-  state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+  state.logoUrl = `${CONS.URLS.LOGO[0]}/${state.logoSearchName}/${CONS.URLS.LOGO[1]}`
 }
 const onUpdateLogoSearchName = (iban: string) => {
   if (iban) {
@@ -66,7 +68,7 @@ const onClickOk = async (): Promise<void> => {
     console.error('Form ref is null')
     return
   }
-  const formIs = await formRef.value.validate()
+  const formIs = formRef.value.validate()
   if (formIs.valid) {
     try {
       const account = {
@@ -77,7 +79,7 @@ const onClickOk = async (): Promise<void> => {
         cStockAccount: state.stockAccount
       }
       records.updateAccount(account)
-      await browser.runtime.sendMessage(JSON.stringify({
+      await sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
       }))
       await notice([t('dialogs.UpdateAccount.success')])
@@ -141,6 +143,6 @@ log('--- UpdateAccount.vue setup ---')
         variant="outlined"
         @input="onInputLogoUrl"
     ></v-text-field>
-    <img :src="state.logoUrl" alt="brandfetch.com logo">
+    <img :src="state.logoUrl" alt=`${CONS.URLS.LOGO[0]}`>
   </v-form>
 </template>

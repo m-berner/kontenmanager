@@ -9,29 +9,25 @@
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
-import {type Reactive, reactive, toRaw, type UnwrapRef} from 'vue'
+import {defineExpose, reactive, toRaw, type UnwrapRef} from 'vue'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: UnwrapRef<Blob>[] }
-}
-
-interface IState {
-  chosen_file: Blob
 }
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
+const {sendMessage} = useBrowser()
 
-const state: Reactive<IState> = reactive({
-  chosen_file: new Blob()
-})
+const chosen_file: Blob = reactive(new Blob())
 
 const onClickOk = async (): Promise<void> => {
-  log('IMPORT_DATABASE: onClickOk', {info: state.chosen_file})
+  log('IMPORT_DATABASE: onClickOk', {info: chosen_file})
   const {notice, toISODate} = useApp()
   const records = useRecordsStore()
   const onError = async (): Promise<void> => {
@@ -85,14 +81,14 @@ const onClickOk = async (): Promise<void> => {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.IMPORT_MIN_VERSION.toString()})])
       } else if (backupObject.sm.cDBVersion === CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
-        await browser.runtime.sendMessage(JSON.stringify({
+        await sendMessage(JSON.stringify({
           type: CONS.MESSAGES.DB__DELETE_ALL
         }))
         const account: IAccount = {
           cID: activeId,
           cSwift: 'KMKLPJJ9099',
           cNumber: 'XX13120300001064506999',
-          cLogoUrl: CONS.LOGOS.NO_LOGO,
+          cLogoUrl: CONS.URLS.NO_LOGO,
           cStockAccount: true
         }
         records.addAccount(account)
@@ -167,7 +163,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypes: bookingTypes,
           stocks: stocks
         }
-        await browser.runtime.sendMessage(JSON.stringify({
+        await sendMessage(JSON.stringify({
           type: CONS.MESSAGES.DB__ADD_STORES,
           data: stores
         }))
@@ -214,7 +210,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypes: bookingTypes,
           stocks: stocks
         }
-        await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
+        await sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }
@@ -224,8 +220,8 @@ const onClickOk = async (): Promise<void> => {
   const fr: FileReader = new FileReader()
   fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
   fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-  if (state.chosen_file.size > 0) {
-    fr.readAsText(state.chosen_file, 'UTF-8')
+  if (chosen_file.size > 0) {
+    fr.readAsText(chosen_file, 'UTF-8')
   }
 }
 const title = t('dialogs.importDatabase.title')
@@ -246,7 +242,7 @@ log('--- ImportDatabase.vue setup ---')
           :label="t('dialogs.importDatabase.label')"
           accept=".json"
           variant="outlined"
-          @change="(ev: IEventTarget) => { state.chosen_file = ev.target.files[0] }"></v-file-input>
+          @change="(ev: IEventTarget) => { chosen_file = ev.target.files[0] }"></v-file-input>
     </v-card-text>
   </v-form>
 </template>

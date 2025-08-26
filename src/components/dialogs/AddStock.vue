@@ -6,10 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 
@@ -23,12 +24,13 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules} = useApp()
+const {sendMessage} = useBrowser()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   isin: '',
   company: '',
   wkn: '',
@@ -45,7 +47,7 @@ const mResetState = (): void => {
 }
 const onIsin = async (): Promise<void> => {
   if (state.isin !== '' && state.isin?.length === 12) {
-    const addStockResponse = await browser.runtime.sendMessage(JSON.stringify({
+    const addStockResponse = await sendMessage(JSON.stringify({
       type: CONS.MESSAGES.FETCH__COMPANY_DATA,
       data: state.isin
     }))
@@ -61,7 +63,7 @@ const onClickOk = async (): Promise<void> => {
     console.error('Form ref is null')
     return
   }
-  const formIs = await formRef.value.validate()
+  const formIs = formRef.value.validate()
   if (formIs.valid) {
     try {
       const stock: Omit<IStockStore, 'cID'> = {
@@ -83,7 +85,7 @@ const onClickOk = async (): Promise<void> => {
         mValue: 0,
         mMax: 0
       }
-      const addStockResponse = await browser.runtime.sendMessage(JSON.stringify({
+      const addStockResponse = await sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
       }))
       const addStockData: IStock = JSON.parse(addStockResponse).data

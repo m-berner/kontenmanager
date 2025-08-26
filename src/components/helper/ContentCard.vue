@@ -7,6 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useApp} from '@/composables/useApp'
+import {defineProps} from 'vue'
 
 interface PropsContentCard {
   title: string

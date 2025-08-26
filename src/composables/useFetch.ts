@@ -6,6 +6,8 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
+
 
 interface IUrlWithId {
     url: string
@@ -13,6 +15,7 @@ interface IUrlWithId {
 }
 
 const {CONS, mean, notice, toNumber} = useApp()
+const {getStorage} = useBrowser()
 
 export const useFetch = () => {
     const fetchCompanyData = async (isin: string): Promise<FetchedResources.ICompanyData> => {
@@ -87,12 +90,12 @@ export const useFetch = () => {
     const fetchMinRateMaxData = async (storageOnline: FetchedResources.TIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> => {
         console.log('BACKGROUND: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
-            const storageService = await browser.storage.local.get(CONS.STORAGE.PROPS.SERVICE)
-            const serviceName = storageService[CONS.STORAGE.PROPS.SERVICE].name
+            const storageService = await getStorage([CONS.STORAGE.PROPS.SERVICE])
+            const serviceName = storageService[CONS.STORAGE.PROPS.SERVICE] as string
             const _fnet = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
-                        const firstResponse = await fetch(urlObj.url) // .then(async (firstResponse) => {
+                        const firstResponse = await fetch(urlObj.url)
                         const secondResponse = await fetch(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
                         const onlineDocument = new DOMParser().parseFromString(
@@ -140,7 +143,7 @@ export const useFetch = () => {
             const _ard = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
-                        const firstResponse = await fetch(urlObj.url) // .then(async (firstResponse) => {
+                        const firstResponse = await fetch(urlObj.url)
                         const firstResponseText = await firstResponse.text()
                         const firstResponseDocument = new DOMParser().parseFromString(
                             firstResponseText,
@@ -234,7 +237,7 @@ export const useFetch = () => {
             const _goyax = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
-                        const firstResponse = await fetch(urlObj.url) // .then(async (firstResponse) => {
+                        const firstResponse = await fetch(urlObj.url)
                         const secondResponse = await fetch(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
                         const onlineDocument = new DOMParser().parseFromString(
@@ -273,7 +276,7 @@ export const useFetch = () => {
             const _acheck = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
-                        const firstResponse = await fetch(urlObj.url) // .then(async (firstResponse) => {
+                        const firstResponse = await fetch(urlObj.url)
                         let onlineCurrency = ''
                         const secondResponse = await fetch(firstResponse.url)
                         const secondResponseText = await secondResponse.text()

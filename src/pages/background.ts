@@ -6,7 +6,8 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {useApp} from '@/composables/useApp'
-import {useDatabase} from '@/composables/useDatabase'
+import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 
 declare global {
@@ -240,6 +241,7 @@ declare global {
 }
 
 const {CONS, log} = useApp()
+const {getStorage, setStorage} = useBrowser()
 
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const {
@@ -259,7 +261,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
         importStores,
         deleteStock,
         open
-    } = useDatabase()
+    } = useIndexedDB()
     const {
         fetchCompanyData,
         fetchMinRateMaxData,
@@ -273,36 +275,36 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const onInstall = async (): Promise<void> => {
         console.log('BACKGROUND: onInstall')
         const installStorageLocal = async () => {
-            const storageLocal = await browser.storage.local.get()
+            const storageLocal = await getStorage()
             if (storageLocal[CONS.STORAGE.PROPS.SKIN] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.SKIN]: CONS.DEFAULTS.STORAGE.SKIN})
+                await setStorage(CONS.STORAGE.PROPS.SKIN, CONS.DEFAULTS.STORAGE.SKIN)
             }
             if (storageLocal[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID})
+                await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID)
             }
             if (storageLocal[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE})
+                await setStorage(CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE, CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE)
             }
             if (storageLocal[CONS.STORAGE.PROPS.STOCKS_PER_PAGE] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE})
+                await setStorage(CONS.STORAGE.PROPS.STOCKS_PER_PAGE, CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE)
             }
             if (storageLocal[CONS.STORAGE.PROPS.PARTNER] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.PARTNER]: CONS.DEFAULTS.STORAGE.PARTNER})
+                await setStorage(CONS.STORAGE.PROPS.PARTNER, CONS.DEFAULTS.STORAGE.PARTNER)
             }
             if (storageLocal[CONS.STORAGE.PROPS.SERVICE] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.STORAGE.SERVICE})
+                await setStorage(CONS.STORAGE.PROPS.SERVICE, CONS.DEFAULTS.STORAGE.SERVICE)
             }
             if (storageLocal[CONS.STORAGE.PROPS.EXCHANGES] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.STORAGE.EXCHANGES})
+                await setStorage(CONS.STORAGE.PROPS.EXCHANGES, CONS.DEFAULTS.STORAGE.EXCHANGES)
             }
             if (storageLocal[CONS.STORAGE.PROPS.INDEXES] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.STORAGE.INDEXES})
+                await setStorage(CONS.STORAGE.PROPS.INDEXES, CONS.DEFAULTS.STORAGE.INDEXES)
             }
             if (storageLocal[CONS.STORAGE.PROPS.MARKETS] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.STORAGE.MARKETS})
+                await setStorage(CONS.STORAGE.PROPS.MARKETS, CONS.DEFAULTS.STORAGE.MARKETS)
             }
             if (storageLocal[CONS.STORAGE.PROPS.MATERIALS] === undefined) {
-                await browser.storage.local.set({[CONS.STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.STORAGE.MATERIALS})
+                await setStorage(CONS.STORAGE.PROPS.MATERIALS, CONS.DEFAULTS.STORAGE.MATERIALS)
             }
             console.log('BACKGROUND: installStorageLocal: DONE')
         }
@@ -451,7 +453,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                 //   //   }
                 //   // }
                 // }
-                // const updateStorageLocal = async () => {
+                // const setStorageLocal = async () => {
                 //   const storageKeys = Object.keys( CONS.DEFAULTS.STORAGE )
                 //   const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
                 //   const storage: IStorageLocal = await browser.storage.local.get(storageKeys)
@@ -542,13 +544,13 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                 case CONS.MESSAGES.DB__ADD_STORES_25:
                     const importStoresData25: IStores = appMessage.data
                     await importStores(importStoresData25, false)
-                    await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: importStoresData25.accounts[0].cID})
+                    await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, importStoresData25.accounts[0].cID)
                     resolve('Stores added')
                     break
                 case CONS.MESSAGES.DB__ADD_STORES:
                     const importStoresData: IStores = appMessage.data
                     await importStores(importStoresData)
-                    await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: importStoresData.accounts[0].cID})
+                    await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, importStoresData.accounts[0].cID)
                     resolve('Stores added')
                     break
                 case CONS.MESSAGES.DB__ADD_ACCOUNT:
@@ -557,10 +559,10 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                     if (typeof addAccountID === 'number') {
                         const completeAccount: IAccount = {cID: addAccountID, ...addAccountData}
                         response = JSON.stringify({
-                            //type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
+                            type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
                             data: completeAccount
                         })
-                        await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addAccountID})
+                        await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
                         resolve(response)
                     }
                     break

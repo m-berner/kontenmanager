@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRecordsStore} from '@/stores/records'
@@ -20,7 +20,7 @@ const {CONS, log, notice} = useApp()
 const records = useRecordsStore()
 const formRef = useTemplateRef('form-ref')
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   selected: -1
 })
 const onClickOk = async (): Promise<void> => {

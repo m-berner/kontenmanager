@@ -12,8 +12,7 @@ import {useApp} from '@/composables/useApp'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/helper/DotMenu.vue'
-import {type Reactive, reactive} from 'vue'
-import {type DataTableHeader} from 'vuetify'
+import {reactive} from 'vue'
 
 type HomeMenuItem = {
   readonly id: string
@@ -31,7 +30,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {bookings} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
-const homeHeaders: DataTableHeader[] = [
+const homeHeaders = [
   {
     title: t('appPage.headers.action'),
     align: 'start',
@@ -82,7 +81,7 @@ const homeMenuItems: HomeMenuItem[] = [
   }
 ]
 
-const state: Reactive<IState> = reactive<IState>({
+const state: IState = reactive<IState>({
   search: ''
 })
 

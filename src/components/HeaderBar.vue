@@ -8,6 +8,7 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import DialogPort from '@/components/helper/DialogPort.vue'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
@@ -16,6 +17,7 @@ import {computed, toRaw} from 'vue'
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
+const {sendMessage, setStorage, openOptionsPage} = useBrowser()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -66,43 +68,38 @@ const onIconClick = async (ev: Event): Promise<void> => {
           try {
             for (let i = 0; i < records.bookings.length; i++) {
               records.deleteBooking(records.bookings[i].cID)
-              await browser.runtime.sendMessage(JSON.stringify({
+              await sendMessage(JSON.stringify({
                 type: CONS.MESSAGES.DB__DELETE_BOOKING,
                 data: toRaw(settings.activeAccountId)
               }))
             }
             for (let i = 0; i < records.bookingTypes.length; i++) {
               records.deleteBookingType(records.bookingTypes[i].cID)
-              await browser.runtime.sendMessage(JSON.stringify({
+              await sendMessage(JSON.stringify({
                 type: CONS.MESSAGES.DB__DELETE_BOOKING_TYPE,
                 data: toRaw(settings.activeAccountId)
               }))
             }
             for (let i = 0; i < records.stocks.length; i++) {
               records.deleteStock(records.stocks[i].cID)
-              await browser.runtime.sendMessage(JSON.stringify({
+              await sendMessage(JSON.stringify({
                 type: CONS.MESSAGES.DB__DELETE_STOCK,
                 data: toRaw(settings.activeAccountId)
               }))
             }
             records.deleteAccount(settings.activeAccountId)
-            await browser.runtime.sendMessage(JSON.stringify({
+            await sendMessage(JSON.stringify({
               type: CONS.MESSAGES.DB__DELETE_ACCOUNT,
               data: toRaw(settings.activeAccountId)
             }))
             if (records.accounts.length > 1) {
               settings.setActiveAccountId(records.accounts[1].cID)
-              // await browser.runtime.sendMessage(JSON.stringify({
-              //   type: CONS.MESSAGES.STORAGE__SET_ID,
-              //   data: toRaw(records.accounts[1].cID)
-              // }))
-              await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: toRaw(records.accounts[1].cID)})
+              await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, toRaw(records.accounts[1].cID))
             } else {
               settings.setActiveAccountId(0)
-              await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: 0})
-              //await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: 0}))
+              await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, 0)
             }
-            const getStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
+            const getStoresResponseString = await sendMessage(JSON.stringify({
               type: CONS.MESSAGES.DB__GET_STORES,
               data: settings.activeAccountId
             }))
@@ -158,7 +155,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         break
       case CONS.COMPONENTS.DIALOGS.SETTING:
-        await browser.runtime.openOptionsPage()
+        await openOptionsPage()
         break
       default:
         loop += 1

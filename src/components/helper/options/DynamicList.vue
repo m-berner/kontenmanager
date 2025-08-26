@@ -6,8 +6,9 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, onBeforeMount, reactive, type Reactive, toRaw} from 'vue'
+import {computed, defineProps, onBeforeMount, reactive, toRaw} from 'vue'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useI18n} from 'vue-i18n'
 
 interface DynamicListProps {
@@ -25,9 +26,10 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
+const {getStorage, setStorage} = useBrowser()
 const dynamicListProps = defineProps<DynamicListProps>()
 
-const state: Reactive<IState> = reactive<IState>({
+const state: IState = reactive<IState>({
   newItem: '',
   list: [],
   markets: [],
@@ -63,45 +65,39 @@ const title = computed((): string => {
 const addItem = async (item: string): Promise<void> => {
   log('DYNAMIC_LIST: addItem')
   if (!state.list?.includes(item)) {
-    let newItem = ''
-    let storageItem = {}
     switch (dynamicListProps.type) {
       case CONS.DYNAMIC_LIST.TYPES.MARKETS:
-        newItem = item
-        storageItem = {[CONS.STORAGE.PROPS.MARKETS]: toRaw(state.list)}
+        state.list.push(item)
+        await setStorage(CONS.STORAGE.PROPS.MARKETS, toRaw(state.list))
         break
       case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        newItem = item.toUpperCase()
-        storageItem = {[CONS.STORAGE.PROPS.EXCHANGES]: toRaw(state.list)}
+        state.list.push(item.toUpperCase())
+        await setStorage(CONS.STORAGE.PROPS.EXCHANGES, toRaw(state.list))
         break
       default:
     }
-    state.list.push(newItem)
     state.newItem = ''
-    await browser.storage.local.set(storageItem)
   }
 }
 const removeItem = async (n: number): Promise<void> => {
   log('DYNAMIC_LIST: removeItem')
   if (n > 0) {
-    let storageItem = {}
     switch (dynamicListProps.type) {
       case CONS.DYNAMIC_LIST.TYPES.MARKETS:
-        storageItem = {[CONS.STORAGE.PROPS.MARKETS]: toRaw(state.list)}
+        await setStorage(CONS.STORAGE.PROPS.MARKETS, toRaw(state.list))
         break
       case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        storageItem = {[CONS.STORAGE.PROPS.EXCHANGES]: toRaw(state.list)}
+        await setStorage(CONS.STORAGE.PROPS.EXCHANGES, toRaw(state.list))
         break
       default:
     }
     state.list.splice(n, 1)
     state.newItem = ''
-    await browser.storage.local.set(storageItem)
   }
 }
 
 onBeforeMount(async () => {
-  const storage = await browser.storage.local.get([CONS.STORAGE.PROPS.MARKETS, CONS.STORAGE.PROPS.EXCHANGES])
+  const storage = await getStorage([CONS.STORAGE.PROPS.MARKETS, CONS.STORAGE.PROPS.EXCHANGES])
   switch (dynamicListProps.type) {
     case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
       state.list = storage[CONS.STORAGE.PROPS.EXCHANGES]

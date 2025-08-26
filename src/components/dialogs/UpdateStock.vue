@@ -6,11 +6,12 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
@@ -28,12 +29,13 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules} = useApp()
+const {sendMessage} = useBrowser()
 const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   id: -1,
   isin: '',
   company: '',
@@ -52,7 +54,7 @@ const onClickOk = async (): Promise<void> => {
     console.error('Form ref is null')
     return
   }
-  const formIs = await formRef.value.validate()
+  const formIs = formRef.value.validate()
   if (formIs.valid) {
     try {
       const stock: IStock = {
@@ -79,7 +81,7 @@ const onClickOk = async (): Promise<void> => {
         mMax: 0
       }
       records.updateStock(stockStore)
-      const updateStockResponseString = await browser.runtime.sendMessage(JSON.stringify({
+      const updateStockResponseString = await sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__UPDATE_STOCK,
         data: stock
       }))

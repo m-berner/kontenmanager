@@ -13,10 +13,10 @@ import componentsPlugin from '@/plugins/components'
 import routerPlugin from '@/plugins/router'
 import piniaPlugin from '@/plugins/pinia'
 import {useApp} from '@/composables/useApp'
-import {useDatabase} from '@/composables/useDatabase'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 
 const {CONS, log} = useApp()
-const {open, dbi} = useDatabase()
+const {open, dbi} = useIndexedDB()
 await open()
 const app = createApp(AppIndex)
 app.config.errorHandler = (err: unknown) => {

@@ -1,6 +1,6 @@
 import { useApp } from '@/composables/useApp';
 const { CONS, log, notice } = useApp();
-export const useDatabase = () => {
+export const useIndexedDB = () => {
     let db = null;
     const dbi = () => {
         return db;

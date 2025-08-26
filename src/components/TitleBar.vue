@@ -10,6 +10,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {storeToRefs} from 'pinia'
 import {computed} from 'vue'
 
@@ -17,11 +18,12 @@ const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {CONS, log} = useApp()
+const {sendMessage, setStorage} = useBrowser()
 const {activeAccountId} = storeToRefs(settings)
 
 const onUpdateTitleBar = async (): Promise<void> => {
-  await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: settings.activeAccountId})
-  const getStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
+  await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
+  const getStoresResponseString = await sendMessage(JSON.stringify({
     type: CONS.MESSAGES.DB__GET_STORES,
     data: settings.activeAccountId
   }))

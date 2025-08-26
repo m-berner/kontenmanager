@@ -38,7 +38,15 @@ export const useRecordsStore = defineStore('records', {
             return state.bookings.filter(booking =>
                 booking.cAccountNumberID === accountId
             )
-        }
+        },
+        getBookingTextById: (state) => (ident: number): string => {
+            const booking = state.bookings.find((entry: IBooking) => entry.cID === ident)
+            if (booking) {
+                return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`
+            } else {
+                throw new Error('getBookingTextById: No booking found for given ID')
+            }
+        },
     },
 
     actions: {
@@ -57,7 +65,7 @@ export const useRecordsStore = defineStore('records', {
             return this.bookingTypes.findIndex((entry: IBookingType) => entry.cID === ident)
         },
 
-        getBookingTextById(ident: number): string {
+        getBookingTextByIdd(ident: number): string {
             const booking = this.bookings.find((entry: IBooking) => entry.cID === ident)
             if (booking) {
                 return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`
@@ -136,7 +144,7 @@ export const useRecordsStore = defineStore('records', {
             })
             this.stocks.push(...stores.stocks)
 
-            // Sort bookings by date (newest first)
+            // Sort bookings by date: newest first
             this.bookings.sort((a: IBooking, b: IBooking) => {
                 const dateA = new Date(a.cDate).getTime()
                 const dateB = new Date(b.cDate).getTime()

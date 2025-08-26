@@ -6,9 +6,10 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -23,12 +24,13 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
+const {sendMessage} = useBrowser()
 const formRef = useTemplateRef<HTMLFormElement>('form-ref')
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   swift: '',
   accountNumber: '',
   logoUrl: '',
@@ -45,7 +47,7 @@ const mResetState = (): void => {
 }
 const onInputLogoName = (): void => {
   if (state.logoSearchName && state.logoSearchName.trim()) {
-    state.logoUrl = `https://cdn.brandfetch.io/${state.logoSearchName.trim()}/w/48/h/48?c=1idV74s2UaSDMRIQg-7`
+    state.logoUrl = `${CONS.URLS.LOGO[0]}/${state.logoSearchName.trim()}/${CONS.URLS.LOGO[1]}`
   } else {
     state.logoUrl = ''
   }
@@ -71,7 +73,7 @@ const onClickOk = async (): Promise<void> => {
     console.error('Form ref is null')
     return
   }
-  const formIs = await formRef.value.validate()
+  const formIs = formRef.value.validate()
   if (formIs.valid) {
     try {
       const account: Omit<IAccount, 'cID'> = {
@@ -80,7 +82,7 @@ const onClickOk = async (): Promise<void> => {
         cLogoUrl: state.logoUrl,
         cStockAccount: state.stockAccount
       }
-      const addAccountResponse = await browser.runtime.sendMessage(JSON.stringify({
+      const addAccountResponse = await sendMessage(JSON.stringify({
         type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
       }))
       const addAccountData: IAccount = JSON.parse(addAccountResponse).data

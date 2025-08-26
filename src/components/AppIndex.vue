@@ -10,6 +10,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useRuntimeStore} from '@/stores/runtime'
 import {onBeforeMount} from 'vue'
 
@@ -18,8 +19,9 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const theme = useTheme()
 const {CONS, log, getUI} = useApp()
+const {getStorage, sendMessage, onStorageChanged} = useBrowser()
 
-const onStorageChange = (changes: { [p: string]: browser.storage.StorageChange }): void => {
+const onStorageChange = (changes): void => {
   const changesKey = Object.keys(changes)
   switch (changesKey[0]) {
     case CONS.STORAGE.PROPS.SKIN:
@@ -43,16 +45,12 @@ const onStorageChange = (changes: { [p: string]: browser.storage.StorageChange }
     default:
   }
 }
-browser.storage.local.onChanged.addListener(onStorageChange)
+onStorageChanged(onStorageChange)
 
 onBeforeMount(async () => {
-  // const storageResponseString = await browser.runtime.sendMessage(JSON.stringify({
-  //   type: CONS.MESSAGES.STORAGE__GET_ALL
-  // }))
-  const storage = await browser.storage.local.get()
-  //settings.initStore(theme, JSON.parse(storageResponseString).data)
+  const storage = await getStorage()
   settings.initStore(theme, storage)
-  const dbGetStoresResponseString = await browser.runtime.sendMessage(JSON.stringify({
+  const dbGetStoresResponseString = await sendMessage(JSON.stringify({
     type: CONS.MESSAGES.DB__GET_STORES,
     data: settings.activeAccountId
   }))
@@ -61,7 +59,7 @@ onBeforeMount(async () => {
     records.initStore(dbGetStoresData)
     records.sumBookings()
   }
-  const exchangesBaseResponseString = await browser.runtime.sendMessage(JSON.stringify({
+  const exchangesBaseResponseString = await sendMessage(JSON.stringify({
     type: CONS.MESSAGES.FETCH__EXCHANGES_BASE_DATA,
     data: [getUI().curUsd, getUI().curEur],
   }))

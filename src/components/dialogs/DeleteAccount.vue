@@ -6,11 +6,12 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, type Reactive, reactive, toRaw} from 'vue'
+import {defineExpose, reactive, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 
 interface IState {
   selected: number
@@ -18,10 +19,11 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
+const {sendMessage, setStorage} = useBrowser()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   selected: records.accounts.length > 0 ? records.accounts[0].cID : -1
 })
 
@@ -33,21 +35,16 @@ const onClickOk = async (): Promise<void> => {
   }
   try {
     records.deleteAccount(state.selected)
-    await browser.runtime.sendMessage(JSON.stringify({
+    await sendMessage(JSON.stringify({
       type: CONS.MESSAGES.DB__DELETE_ACCOUNT,
       data: toRaw(state.selected)
     }))
     if (records.accounts.length > 0) {
       settings.setActiveAccountId(records.accounts[0].cID)
-      // await browser.runtime.sendMessage(JSON.stringify({
-      //   type: CONS.MESSAGES.STORAGE__SET_ID,
-      //   data: toRaw(records.accounts[0])
-      // }))
-      await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: toRaw(records.accounts[0])})
+      await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, toRaw(records.accounts[0].cID))
     } else {
       settings.setActiveAccountId(-1)
-      //await browser.runtime.sendMessage(JSON.stringify({type: CONS.MESSAGES.STORAGE__SET_ID, data: -1}))
-      await browser.storage.local.set({[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: 0})
+      await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, 0)
     }
     //runtime.setLogo()
     records.sumBookings()

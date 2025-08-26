@@ -6,11 +6,12 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useRuntimeStore} from '@/stores/runtime'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 
@@ -26,12 +27,13 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valPositiveIntegerRules} = useApp()
+const {sendMessage} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
 const currentBooking = records.bookings[records.getBookingById(runtime.activeId)]
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   id: currentBooking.cID,
   bookingTypeId: currentBooking.cBookingTypeID,
   date: currentBooking.cDate,
@@ -68,7 +70,7 @@ const onClickOk = async (): Promise<void> => {
     }
     records.updateBooking(booking)
     records.sumBookings()
-    const updateBookingResponseString = await browser.runtime.sendMessage(JSON.stringify({
+    const updateBookingResponseString = await sendMessage(JSON.stringify({
       type: CONS.MESSAGES.DB__UPDATE_BOOKING,
       data: booking
     }))
@@ -86,14 +88,6 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_BOOKING: onMounted')
-  //runtime.setCredit(currentBooking.cCredit)
-  // currentBooking = records.bookings[records.getBookingById(runtime.activeId)]
-  // state.id = currentBooking.cID
-  // state.bookingTypeId = currentBooking.cBookingTypeID
-  // state.date = currentBooking.cDate
-  // state.debit = currentBooking.cDebit
-  // state.credit = currentBooking.cCredit
-  // state.description = currentBooking.cDescription
 })
 
 log('--- UpdateBooking.vue setup ---')

@@ -6,10 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, type Reactive, reactive} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
 
@@ -35,10 +36,11 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valRequiredRules, valDateRules} = useApp()
+const {sendMessage} = useBrowser()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   bookDate: '',
   exDate: '',
   credit: 0,
@@ -151,8 +153,8 @@ const onClickOk = async (): Promise<void> => {
       default:
         booking = {
           cDate: state.bookDate,
-          cCredit: state.credit === undefined ? 0 : state.credit,
-          cDebit: state.debit === undefined ? 0 : state.debit,
+          cCredit: state.credit,
+          cDebit: state.debit,
           cDescription: state.description,
           cBookingTypeID: state.bookingTypeId,
           cStockID: 0,
@@ -167,13 +169,12 @@ const onClickOk = async (): Promise<void> => {
           cMarketPlace: ''
         }
     }
-    const addBookingResponseString = await browser.runtime.sendMessage(JSON.stringify({
+    const addBookingResponseString = await sendMessage(JSON.stringify({
       type: CONS.MESSAGES.DB__ADD_BOOKING, data: booking
     }))
     const addBookingData: IBooking = JSON.parse(addBookingResponseString).data
     records.addBooking(addBookingData)
     await notice([t('dialogs.AddBooking.success')])
-    // NOTE: CurrencyInput ensure 0 instead of null
     resetState()
   } catch (e) {
     console.error(e)
@@ -185,7 +186,6 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_BOOKING: onMounted')
-  // NOTE: CurrencyInput ensure 0 instead of null
   state.debit = 0
   state.credit = 0
   state.soli = 0

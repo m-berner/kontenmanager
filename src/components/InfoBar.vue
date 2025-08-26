@@ -6,7 +6,6 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {Reactive} from 'vue'
 import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -18,11 +17,9 @@ import {useApp} from '@/composables/useApp'
 const {n, t} = useI18n()
 const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
-//const settings = useSettingsStore()
 const records = useRecordsStore()
-// const {materials} = storeToRefs(settings)
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   show: true,
   drawerControls: CONS.DEFAULTS.DRAWER_CONTROLS.map(() => ({
     id: 0,
@@ -37,20 +34,8 @@ const usd = (mat: string, usd = true): number => {
   }
   return (runtime.infoBar.materials.get(mat) ?? 0) / runtime.exchanges.curUsd
 }
-// const updateDrawerControls = (): void => {
-//   console.log('INFOBAR: updateDrawerControls')
-//   for (let i = 0; i < CONS.DEFAULTS.DRAWER_KEYS.length; i++) {
-//     state.drawerControls[i] = {id: i, title: '', value: '', class: ''}
-//     // const percent =
-//     // elem === 'winloss' ? ' / ' + n(records.transfers.total_controller.winlossPercent ?? 0, 'percent') : ''
-//     state.drawerControls[i].id = I
-//     state.drawerControls[i].title = t(`infoBar.drawerTitles.${CONS.DEFAULTS.DRAWER_KEYS[i]}`)
-//     state.drawerControls[i].value = n(records.transfers.total_controller[CONS.DEFAULTS.DRAWER_KEYS[i]], 'currency') // + percent,
-//     state.drawerControls[i].class = records.transfers.total_controller[CONS.DEFAULTS.DRAWER_KEYS[i]] < 0 ? CONS.DEFAULTS.DRAWER_KEYS[i] + '_minus' : CONS.DEFAULTS.DRAWER_KEYS[i]
-//   }
-// }
 const updateDrawerControls = (): void => {
-  console.log('INFOBAR: updateDrawerControls')
+  console.log('INFO_BAR: updateDrawerControls')
   state.drawerControls = CONS.DEFAULTS.DRAWER_KEYS.map((key, index) => {
     const value = records.totalController[key] ?? 0
     return {
@@ -62,36 +47,11 @@ const updateDrawerControls = (): void => {
     }
   })
 }
-// Typed watch handlers
-// watch(
-//   () => records.bookings.total_controller.dividends,
-//   updateDrawerControls,
-//   {immediate: true}
-// )
-// watch(
-//   () => records.bookings.total_controller.depot,
-//   updateDrawerControls
-// )
-// watch(
-//   () => records.bookings.total_controller.account,
-//   updateDrawerControls
-// )
+
 onMounted(() => {
   updateDrawerControls()
 })
-//         break
-//     }
-//   }
-// }
-//
-// watch(() => records.bookings.total_controller.dividends, updateDrawerControls)
-// watch(() => records.bookings.total_controller.depot, updateDrawerControls)
-// watch(() => records.bookings.total_controller.account, updateDrawerControls)
 
-//if (!browser.runtime.onMessage.hasListener(onMessageInfoBar)) {
-// noinspection JSDeprecatedSymbols
-//browser.runtime.onMessage.addListener(onMessageInfoBar)
-//}
 log('--- InfoBar.vue setup ---')
 </script>
 

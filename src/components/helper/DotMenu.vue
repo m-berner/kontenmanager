@@ -8,9 +8,10 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
-import {onMounted} from 'vue'
+import {onMounted, defineProps} from 'vue'
 
 interface PropsOptionMenu {
   recordID: number
@@ -18,6 +19,7 @@ interface PropsOptionMenu {
 }
 
 const {CONS, log, notice} = useApp()
+const {sendMessage} = useBrowser()
 const optionMenuProps = defineProps<PropsOptionMenu>()
 const {rt, t} = useI18n()
 const runtime = useRuntimeStore()
@@ -46,7 +48,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
         records.deleteBooking(optionMenuProps.recordID)
         records.sumBookings()
-        await browser.runtime.sendMessage(JSON.stringify({
+        await sendMessage(JSON.stringify({
           type: CONS.MESSAGES.DB__DELETE_BOOKING,
           data: optionMenuProps.recordID
         }))
@@ -68,7 +70,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         if (deleteAble.length === 0) {
           records.deleteStock(optionMenuProps.recordID)
-          await browser.runtime.sendMessage(JSON.stringify({
+          await sendMessage(JSON.stringify({
             type: CONS.MESSAGES.DB__DELETE_STOCK,
             data: optionMenuProps.recordID
           }))

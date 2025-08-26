@@ -4,13 +4,10 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/kontenmanager@gmx.de" />
-      <excludeFolder url="file://$MODULE_DIR$/meingirokonto@gmx.de" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
-      <excludeFolder url="file://$MODULE_DIR$/releases/chrome" />
-      <excludeFolder url="file://$MODULE_DIR$/releases/edge" />
-      <excludeFolder url="file://$MODULE_DIR$/releases/firefox" />
-      <excludeFolder url="file://$MODULE_DIR$/releases/opera" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/releases" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

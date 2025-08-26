@@ -351,7 +351,8 @@ export const useApp = () => {
             SUC: 'success',
             UPG: 'upgradeneeded'
         },
-        LOGOS: {
+        URLS: {
+            LOGO: ['https://cdn.brandfetch.io','w/48/h/48?c=1idV74s2UaSDMRIQg-7'],
             NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
         },
         MESSAGES: MESSAGES,
@@ -490,7 +491,7 @@ export const useApp = () => {
                     title: '11'
                 }
                 // {
-                //   value: -1,
+                //   value: 1,
                 //   title: 'Alle'
                 // }
             ],
@@ -638,7 +639,7 @@ export const useApp = () => {
             curEur: '',
             fontSize: ''
         }
-        // Check if browser.i18n is available (browser extension context)
+        // Check if browser.i18n API exists
         const uiLang = (typeof browser !== 'undefined' && browser.i18n?.getUILanguage?.())
             ? browser.i18n.getUILanguage().toLowerCase()
             : CONS.DEFAULTS.LOCALE

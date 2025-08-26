@@ -36,7 +36,7 @@ export default [
     }, {
         files: ['**/*.vue'],
         languageOptions: {
-            parser: pluginVue.parser,
+            parser: pluginVue,
             parserOptions: {
                 parser: tseslint.parser,
                 ecmaVersion: 2022,
@@ -56,7 +56,7 @@ export default [
         rules: {
             '@typescript-eslint/no-unused-vars': 'warn',
             '@typescript-eslint/no-unused-expressions': 'off',
-            'vue/multi-word-component-names': 'off',
+            //'vue/multi-word-component-names': 'off',
             'indent': ['error', 2, {'SwitchCase': 1}],
             'semi': ['error', 'never']
         }

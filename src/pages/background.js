@@ -1,7 +1,9 @@
 import { useApp } from '@/composables/useApp';
+import { useBrowserStorage } from '@/composables/useBrowserStorage';
 import { useDatabase } from '@/composables/useDatabase';
 import { useFetch } from '@/composables/useFetch';
 const { CONS, log } = useApp();
+const { updateStorage } = useBrowserStorage();
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const { clearStores, exportToFile, addAccount, updateAccount, deleteAccount, addBooking, deleteBooking, addBookingType, deleteBookingType, addStock, updateStock, updateBooking, exportStores, importStores, deleteStock, open } = useDatabase();
     const { fetchCompanyData, fetchMinRateMaxData, fetchDailyChangeData, fetchExchangesData, fetchMaterialData, fetchIndexData, fetchDateData } = useFetch();
@@ -10,34 +12,34 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
         const installStorageLocal = async () => {
             const storageLocal = await browser.storage.local.get();
             if (storageLocal[CONS.STORAGE.PROPS.SKIN] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.SKIN]: CONS.DEFAULTS.STORAGE.SKIN });
+                await updateStorage(CONS.STORAGE.PROPS.SKIN, CONS.DEFAULTS.STORAGE.SKIN);
             }
             if (storageLocal[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID });
+                await updateStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID);
             }
             if (storageLocal[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE });
+                await updateStorage(CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE, CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE);
             }
             if (storageLocal[CONS.STORAGE.PROPS.STOCKS_PER_PAGE] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE });
+                await updateStorage(CONS.STORAGE.PROPS.STOCKS_PER_PAGE, CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE);
             }
             if (storageLocal[CONS.STORAGE.PROPS.PARTNER] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.PARTNER]: CONS.DEFAULTS.STORAGE.PARTNER });
+                await updateStorage(CONS.STORAGE.PROPS.PARTNER, CONS.DEFAULTS.STORAGE.PARTNER);
             }
             if (storageLocal[CONS.STORAGE.PROPS.SERVICE] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.STORAGE.SERVICE });
+                await updateStorage(CONS.STORAGE.PROPS.SERVICE, CONS.DEFAULTS.STORAGE.SERVICE);
             }
             if (storageLocal[CONS.STORAGE.PROPS.EXCHANGES] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.STORAGE.EXCHANGES });
+                await updateStorage(CONS.STORAGE.PROPS.EXCHANGES, CONS.DEFAULTS.STORAGE.EXCHANGES);
             }
             if (storageLocal[CONS.STORAGE.PROPS.INDEXES] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.STORAGE.INDEXES });
+                await updateStorage(CONS.STORAGE.PROPS.INDEXES, CONS.DEFAULTS.STORAGE.INDEXES);
             }
             if (storageLocal[CONS.STORAGE.PROPS.MARKETS] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.STORAGE.MARKETS });
+                await updateStorage(CONS.STORAGE.PROPS.MARKETS, CONS.DEFAULTS.STORAGE.MARKETS);
             }
             if (storageLocal[CONS.STORAGE.PROPS.MATERIALS] === undefined) {
-                await browser.storage.local.set({ [CONS.STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.STORAGE.MATERIALS });
+                await updateStorage(CONS.STORAGE.PROPS.MATERIALS, CONS.DEFAULTS.STORAGE.MATERIALS);
             }
             console.log('BACKGROUND: installStorageLocal: DONE');
         };
@@ -140,13 +142,13 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                 case CONS.MESSAGES.DB__ADD_STORES_25:
                     const importStoresData25 = appMessage.data;
                     await importStores(importStoresData25, false);
-                    await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: importStoresData25.accounts[0].cID });
+                    await updateStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, importStoresData25.accounts[0].cID);
                     resolve('Stores added');
                     break;
                 case CONS.MESSAGES.DB__ADD_STORES:
                     const importStoresData = appMessage.data;
                     await importStores(importStoresData);
-                    await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: importStoresData.accounts[0].cID });
+                    await updateStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, importStoresData.accounts[0].cID);
                     resolve('Stores added');
                     break;
                 case CONS.MESSAGES.DB__ADD_ACCOUNT:
@@ -155,9 +157,10 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                     if (typeof addAccountID === 'number') {
                         const completeAccount = { cID: addAccountID, ...addAccountData };
                         response = JSON.stringify({
+                            type: CONS.MESSAGES.DB__ADD_ACCOUNT__RESPONSE,
                             data: completeAccount
                         });
-                        await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: addAccountID });
+                        await updateStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID);
                         resolve(response);
                     }
                     break;

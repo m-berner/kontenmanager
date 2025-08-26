@@ -9,7 +9,7 @@ import {useApp} from '@/composables/useApp'
 
 const {CONS, log, notice} = useApp()
 
-export const useDatabase = () => {
+export const useIndexedDB = () => {
     let db: IDBDatabase | null = null
     const dbi = (): IDBDatabase | null => {
         return db

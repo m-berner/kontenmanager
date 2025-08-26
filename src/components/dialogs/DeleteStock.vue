@@ -6,10 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, type Reactive, reactive, toRaw} from 'vue'
+import {defineExpose, reactive, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 
 interface IState {
   selected: number
@@ -17,9 +18,10 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
+const {sendMessage} = useBrowser()
 const records = useRecordsStore()
 
-const state: Reactive<IState> = reactive({
+const state: IState = reactive({
   selected: records.stocks.length > 0 ? records.stocks[0].cID : -1
 })
 
@@ -33,7 +35,7 @@ const onClickOk = async (): Promise<void> => {
     // TODO in all delete dialogs,move to background!
     // TODO sendMessage to delete from DB
     records.deleteStock(state.selected)
-    await browser.runtime.sendMessage(JSON.stringify({
+    await sendMessage(JSON.stringify({
       type: CONS.MESSAGES.DB__DELETE_STOCK,
       data: toRaw(state.selected)
     }))
