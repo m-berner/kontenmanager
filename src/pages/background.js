@@ -6,7 +6,7 @@ const { getStorage, setStorage } = useBrowser();
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const { open } = useIndexedDB();
     const onInstall = async () => {
-        console.log('BACKGROUND: onInstall');
+        log('BACKGROUND: onInstall');
         const installStorageLocal = async () => {
             const storageLocal = await getStorage();
             if (storageLocal[CONS.STORAGE.PROPS.SKIN] === undefined) {

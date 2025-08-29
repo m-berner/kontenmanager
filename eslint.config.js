@@ -157,7 +157,8 @@ export default [
         // Specific configuration for Vue files
         files: ['**/*.ts'],
         rules: {
-            'indent': ['error', 4, {'SwitchCase': 1}]
+            'indent': ['error', 4, {'SwitchCase': 1}],
+            'func-call-spacing': 'never'
         }
     },
     {

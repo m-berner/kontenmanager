@@ -96,7 +96,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
             }
             await notice([t('dialogs.deleteAccount.success')])
           } catch (e) {
-            console.error(e)
+            log('HEADER_BAR: onIconClick', {error: e})
             await notice([t('dialogs.deleteAccount.error')])
           }
         }

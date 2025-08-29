@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -16,7 +17,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const { open } = useIndexedDB()
     // NOTE: onInstall runs at the installation or update of the add-on. And it runs on firefox update.
     const onInstall = async (): Promise<void> => {
-        console.log('BACKGROUND: onInstall')
+        log('BACKGROUND: onInstall')
         const installStorageLocal = async () => {
             const storageLocal = await getStorage()
             if (storageLocal[CONS.STORAGE.PROPS.SKIN] === undefined) {
@@ -104,111 +105,6 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
                     requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, {unique: false})
                     requestCreateStockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k3`, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
                 }
-                // const updateDB = (): void => {
-                //   log('BACKGROUND: onInstall: onUpgradeNeeded: updateDB')
-                //   // const optFalse: IDBIndexParameters = {unique: false}
-                //   // const onSuccessStocks = (ev: TIDBRequestEvent): void => {
-                //   //   log(
-                //   //     'BACKGROUND: onInstall: onUpgradeNeeded: createDB: onSuccessStocks'
-                //   //   )
-                //   //   const cursor: IDBCursorWithValue | null = ev.target.result
-                //   //   if (cursor !== null) {
-                //   //     const stock: IStock = cursor.value
-                //   //     cursor.update(migrateStock({...stock}))
-                //   //     cursor.continue()
-                //   //   } else {
-                //   //     stocksOpenCursorRequest?.removeEventListener(
-                //   //       CONS.EVENTS.SUC,
-                //   //       onSuccessStocks,
-                //   //       false
-                //   //     )
-                //   //     const onSuccessTransfers = (ev: TIDBRequestEvent): void => {
-                //   //       log(
-                //   //         'BACKGROUND: onUpgradeNeeded: fCreateDB: onSuccessTransfers'
-                //   //       )
-                //   //       const cursor: IDBCursorWithValue | null = ev.target.result
-                //   //       if (cursor !== null) {
-                //   //         const transfer: ITransfer = cursor.value
-                //   //         cursor.update(migrateTransfer({...transfer}))
-                //   //         cursor.continue()
-                //   //       } else {
-                //   //         stocksOpenCursorRequest?.removeEventListener(
-                //   //           CONS.EVENTS.SUC,
-                //   //           onSuccessTransfers,
-                //   //           false
-                //   //         )
-                //   //       }
-                //   //     }
-                //   //     if (dbOpenRequest?.transaction === null) {
-                //   //       console.error('BACKGROUND: open database error')
-                //   //     } else if (
-                //   //       !dbOpenRequest.transaction
-                //   //         ?.objectStore(CONS.DB.STORES.S)
-                //   //         .indexNames.contains('stocks_k2')
-                //   //     ) {
-                //   //       dbOpenRequest.transaction
-                //   //         ?.objectStore(CONS.DB.STORES.S)
-                //   //         .createIndex('stocks_k2', 'cFadeOut', optFalse)
-                //   //     }
-                //   //     const requestTransfersOpenCursor:
-                //   //       | IDBRequest<IDBCursorWithValue | null>
-                //   //       | undefined = dbOpenRequest.transaction?.objectStore(CONS.DB.STORES.T).openCursor()
-                //   //     requestTransfersOpenCursor?.addEventListener(
-                //   //       CONS.EVENTS.SUC,
-                //   //       onSuccessTransfers,
-                //   //       false
-                //   //     )
-                //   //   }
-                //   // }
-                //   // const onErrorStocks = (err: ErrorEvent): void => {
-                //   //   stocksOpenCursorRequest?.removeEventListener(
-                //   //     CONS.EVENTS.ERR,
-                //   //     onError,
-                //   //     false
-                //   //   )
-                //   //   console.error(err.message)
-                //   // }
-                //   // const stocksOpenCursorRequest:
-                //   //   | IDBRequest<IDBCursorWithValue | null>
-                //   //   | undefined = dbOpenRequest?.transaction?.objectStore(CONS.DB.STORES.S).openCursor()
-                //   // stocksOpenCursorRequest?.addEventListener(
-                //   //   CONS.EVENTS.ERR,
-                //   //   onErrorStocks,
-                //   //   false
-                //   // )
-                //   // stocksOpenCursorRequest?.addEventListener(
-                //   //   CONS.EVENTS.SUC,
-                //   //   onSuccessStocks,
-                //   //   false
-                //   // )
-                //   // for (
-                //   //   let i = 0;
-                //   //   i < dbOpenRequest.result.objectStoreNames.length;
-                //   //   i++
-                //   // ) {
-                //   //   if (
-                //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.S &&
-                //   //     dbOpenRequest.result.objectStoreNames[i] !== CONS.DB.STORES.T
-                //   //   ) {
-                //   //     dbOpenRequest.result.deleteObjectStore(
-                //   //       dbOpenRequest.result.objectStoreNames[i]
-                //   //     )
-                //   //   }
-                //   // }
-                // }
-                // const setStorageLocal = async () => {
-                //   const storageKeys = Object.keys( CONS.DEFAULTS.STORAGE )
-                //   const storageValues = Object.values(CONS.DEFAULTS.STORAGE)
-                //   const storage: IStorageLocal = await browser.storage.local.get(storageKeys)
-                //   for (let i = 0; i < storageKeys.length; i++) {
-                //     if (storage[storageKeys[i]] === undefined) {
-                //       await browser.storage.local.set({
-                //         [storageKeys[i]]: storageValues[i]
-                //       })
-                //     }
-                //   }
-                // }
-                //
                 if (ev.oldVersion === 0) {
                     createDB()
                 } else if (ev.oldVersion > 25) {

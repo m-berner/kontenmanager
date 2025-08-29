@@ -122,7 +122,7 @@ const onUpdateItemsPerPage = (count: number): void => {
   settings.setStocksPerPage(count)
 }
 const onUpdatePage = (page: number): void => {
-  console.error(page)
+  log('COMPANY_CONTENT: onUpdatePage', {info: page})
 }
 
 log('--- StocksTable.vue setup ---')

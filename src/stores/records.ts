@@ -46,7 +46,7 @@ export const useRecordsStore = defineStore('records', {
             } else {
                 throw new Error('getBookingTextById: No booking found for given ID')
             }
-        },
+        }
     },
 
     actions: {

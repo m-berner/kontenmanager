@@ -90,7 +90,7 @@ const onUpdateItemsPerPage = (count: number): void => {
   settings.setBookingsPerPage(count)
 }
 const onUpdatePage = (page: number): void => {
-  console.error(page)
+  log('HOME_CONTENT: onUpdatePage', {info: page})
 }
 
 log('--- HomeContent.vue setup ---')

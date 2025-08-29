@@ -1,43 +1,4 @@
 export const useApp = () => {
-    let MESSAGES;
-    (function (MESSAGES) {
-        MESSAGES[MESSAGES["DB__DELETE_ALL"] = 0] = "DB__DELETE_ALL";
-        MESSAGES[MESSAGES["DB__GET_STORES"] = 1] = "DB__GET_STORES";
-        MESSAGES[MESSAGES["DB__GET_STORES__RESPONSE"] = 2] = "DB__GET_STORES__RESPONSE";
-        MESSAGES[MESSAGES["DB__ADD_ACCOUNT"] = 3] = "DB__ADD_ACCOUNT";
-        MESSAGES[MESSAGES["DB__ADD_ACCOUNT__RESPONSE"] = 4] = "DB__ADD_ACCOUNT__RESPONSE";
-        MESSAGES[MESSAGES["DB__UPDATE_ACCOUNT"] = 5] = "DB__UPDATE_ACCOUNT";
-        MESSAGES[MESSAGES["DB__UPDATE_ACCOUNT__RESPONSE"] = 6] = "DB__UPDATE_ACCOUNT__RESPONSE";
-        MESSAGES[MESSAGES["DB__ADD_BOOKING"] = 7] = "DB__ADD_BOOKING";
-        MESSAGES[MESSAGES["DB__UPDATE_BOOKING"] = 8] = "DB__UPDATE_BOOKING";
-        MESSAGES[MESSAGES["DB__ADD_BOOKING__RESPONSE"] = 9] = "DB__ADD_BOOKING__RESPONSE";
-        MESSAGES[MESSAGES["DB__ADD_BOOKING_TYPE"] = 10] = "DB__ADD_BOOKING_TYPE";
-        MESSAGES[MESSAGES["DB__ADD_BOOKING_TYPE__RESPONSE"] = 11] = "DB__ADD_BOOKING_TYPE__RESPONSE";
-        MESSAGES[MESSAGES["DB__UPDATE_BOOKING__RESPONSE"] = 12] = "DB__UPDATE_BOOKING__RESPONSE";
-        MESSAGES[MESSAGES["DB__ADD_STOCK"] = 13] = "DB__ADD_STOCK";
-        MESSAGES[MESSAGES["DB__ADD_STOCK__RESPONSE"] = 14] = "DB__ADD_STOCK__RESPONSE";
-        MESSAGES[MESSAGES["DB__UPDATE_STOCK"] = 15] = "DB__UPDATE_STOCK";
-        MESSAGES[MESSAGES["DB__UPDATE_STOCK__RESPONSE"] = 16] = "DB__UPDATE_STOCK__RESPONSE";
-        MESSAGES[MESSAGES["DB__DELETE_ACCOUNT"] = 17] = "DB__DELETE_ACCOUNT";
-        MESSAGES[MESSAGES["DB__DELETE_ACCOUNT__RESPONSE"] = 18] = "DB__DELETE_ACCOUNT__RESPONSE";
-        MESSAGES[MESSAGES["DB__DELETE_BOOKING"] = 19] = "DB__DELETE_BOOKING";
-        MESSAGES[MESSAGES["DB__DELETE_BOOKING__RESPONSE"] = 20] = "DB__DELETE_BOOKING__RESPONSE";
-        MESSAGES[MESSAGES["DB__DELETE_BOOKING_TYPE"] = 21] = "DB__DELETE_BOOKING_TYPE";
-        MESSAGES[MESSAGES["DB__DELETE_BOOKING_TYPE__RESPONSE"] = 22] = "DB__DELETE_BOOKING_TYPE__RESPONSE";
-        MESSAGES[MESSAGES["DB__DELETE_STOCK"] = 23] = "DB__DELETE_STOCK";
-        MESSAGES[MESSAGES["DB__DELETE_STOCK__RESPONSE"] = 24] = "DB__DELETE_STOCK__RESPONSE";
-        MESSAGES[MESSAGES["DB__ADD_STORES"] = 25] = "DB__ADD_STORES";
-        MESSAGES[MESSAGES["DB__ADD_STORES_25"] = 26] = "DB__ADD_STORES_25";
-        MESSAGES[MESSAGES["DB__EXPORT"] = 27] = "DB__EXPORT";
-        MESSAGES[MESSAGES["FETCH__COMPANY_DATA"] = 28] = "FETCH__COMPANY_DATA";
-        MESSAGES[MESSAGES["FETCH__EXCHANGES_BASE_DATA"] = 29] = "FETCH__EXCHANGES_BASE_DATA";
-        MESSAGES[MESSAGES["FETCH__INDEXES_DATA"] = 30] = "FETCH__INDEXES_DATA";
-        MESSAGES[MESSAGES["FETCH__MATERIALS_DATA"] = 31] = "FETCH__MATERIALS_DATA";
-        MESSAGES[MESSAGES["FETCH__EXCHANGES_DATA"] = 32] = "FETCH__EXCHANGES_DATA";
-        MESSAGES[MESSAGES["FETCH__DAILY_CHANGES_DATA"] = 33] = "FETCH__DAILY_CHANGES_DATA";
-        MESSAGES[MESSAGES["FETCH__DATES_DATA"] = 34] = "FETCH__DATES_DATA";
-        MESSAGES[MESSAGES["FETCH__MIN_RATE_MAX_DATA"] = 35] = "FETCH__MIN_RATE_MAX_DATA";
-    })(MESSAGES || (MESSAGES = {}));
     const CONS = Object.freeze({
         CURRENCIES: {
             EUR: 'EUR',
@@ -300,7 +261,7 @@ export const useApp = () => {
         PAGES: {
             BACKGROUND: 'background.html',
             APP: 'app.html',
-            OPTIONS: 'options.html',
+            OPTIONS: 'options.html'
         },
         DYNAMIC_LIST: {
             TYPES: {
@@ -334,7 +295,6 @@ export const useApp = () => {
             LOGO: ['https://cdn.brandfetch.io', 'w/48/h/48?c=1idV74s2UaSDMRIQg-7'],
             NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
         },
-        MESSAGES: MESSAGES,
         RECORDS: {
             CONTROLLER: {
                 TOTAL: {
@@ -446,7 +406,7 @@ export const useApp = () => {
             FX: {
                 NAME: 'fx-rate',
                 HOME: 'https://fx-rate.net/qwsaq',
-                QUOTE: 'https://fx-rate.net/calculator/?c_input=',
+                QUOTE: 'https://fx-rate.net/calculator/?c_input='
             }
         },
         SETTINGS: {
@@ -500,7 +460,7 @@ export const useApp = () => {
                 ['sn', 'Zinnpreis'],
                 ['pb', 'Bleipreis'],
                 ['pd', 'Palladiumpreis']
-            ]),
+            ])
         },
         STATES: {
             DONE: 'complete',
@@ -623,7 +583,7 @@ export const useApp = () => {
         else {
             result.lang = uiLang;
             result.region = uiLang.toUpperCase();
-            result.locale = uiLang + '-' + uiLang.toUpperCase();
+            result.locale = `${uiLang}-${uiLang.toUpperCase()}`;
             result.currency = CONS.CURRENCIES.CODE.get(uiLang) ?? CONS.DEFAULTS.CURRENCY;
         }
         result.curEur = result.currency + CONS.CURRENCIES.EUR;
@@ -668,7 +628,7 @@ export const useApp = () => {
                 for (let i = b.length - 1; i > 0; i--) {
                     tmp += b[i];
                 }
-                const tmp2 = tmp + '.' + b[0];
+                const tmp2 = `${tmp}.${b[0]}`;
                 result = Number.isNaN(Number.parseFloat(tmp2))
                     ? 0
                     : Number.parseFloat(tmp2);
@@ -697,6 +657,9 @@ export const useApp = () => {
         if (Number.parseInt(localDebug ?? '0') > 0) {
             if (mode?.info !== undefined) {
                 console.info(msg, mode?.info);
+            }
+            else if (mode?.error !== undefined) {
+                console.error(msg, mode?.error);
             }
             else {
                 console.log(msg);

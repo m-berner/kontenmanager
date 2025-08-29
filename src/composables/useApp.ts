@@ -5,8 +5,8 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-type TStringValidator = (v: string) => boolean | string
-type TNumberValidator = (v: number) => boolean | string
+type TStringValidator = (_v: string) => boolean | string
+type TNumberValidator = (_v: number) => boolean | string
 
 interface IBrowserUI {
     lang: string
@@ -19,45 +19,6 @@ interface IBrowserUI {
 }
 
 export const useApp = () => {
-    enum MESSAGES {
-        DB__DELETE_ALL,
-        DB__GET_STORES,
-        DB__GET_STORES__RESPONSE,
-        DB__ADD_ACCOUNT,
-        DB__ADD_ACCOUNT__RESPONSE,
-        DB__UPDATE_ACCOUNT,
-        DB__UPDATE_ACCOUNT__RESPONSE,
-        DB__ADD_BOOKING,
-        DB__UPDATE_BOOKING,
-        DB__ADD_BOOKING__RESPONSE,
-        DB__ADD_BOOKING_TYPE,
-        DB__ADD_BOOKING_TYPE__RESPONSE,
-        DB__UPDATE_BOOKING__RESPONSE,
-        DB__ADD_STOCK,
-        DB__ADD_STOCK__RESPONSE,
-        DB__UPDATE_STOCK,
-        DB__UPDATE_STOCK__RESPONSE,
-        DB__DELETE_ACCOUNT,
-        DB__DELETE_ACCOUNT__RESPONSE,
-        DB__DELETE_BOOKING,
-        DB__DELETE_BOOKING__RESPONSE,
-        DB__DELETE_BOOKING_TYPE,
-        DB__DELETE_BOOKING_TYPE__RESPONSE,
-        DB__DELETE_STOCK,
-        DB__DELETE_STOCK__RESPONSE,
-        DB__ADD_STORES,
-        DB__ADD_STORES_25,
-        DB__EXPORT,
-        FETCH__COMPANY_DATA,
-        FETCH__EXCHANGES_BASE_DATA,
-        FETCH__INDEXES_DATA,
-        FETCH__MATERIALS_DATA,
-        FETCH__EXCHANGES_DATA,
-        FETCH__DAILY_CHANGES_DATA,
-        FETCH__DATES_DATA,
-        FETCH__MIN_RATE_MAX_DATA
-    }
-
     const CONS = Object.freeze({
         CURRENCIES: {
             EUR: 'EUR',
@@ -321,7 +282,7 @@ export const useApp = () => {
         PAGES: {
             BACKGROUND: 'background.html',
             APP: 'app.html',
-            OPTIONS: 'options.html',
+            OPTIONS: 'options.html'
         },
         DYNAMIC_LIST: {
             TYPES: {
@@ -355,7 +316,6 @@ export const useApp = () => {
             LOGO: ['https://cdn.brandfetch.io', 'w/48/h/48?c=1idV74s2UaSDMRIQg-7'],
             NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
         },
-        MESSAGES: MESSAGES,
         RECORDS: {
             CONTROLLER: {
                 TOTAL: {
@@ -469,7 +429,7 @@ export const useApp = () => {
             FX: {
                 NAME: 'fx-rate',
                 HOME: 'https://fx-rate.net/qwsaq',
-                QUOTE: 'https://fx-rate.net/calculator/?c_input=',
+                QUOTE: 'https://fx-rate.net/calculator/?c_input='
             }
         },
         SETTINGS: {
@@ -527,7 +487,7 @@ export const useApp = () => {
                 ['sn', 'Zinnpreis'],
                 ['pb', 'Bleipreis'],
                 ['pd', 'Palladiumpreis']
-            ]),
+            ])
         },
         STATES: {
             DONE: 'complete',
@@ -652,7 +612,7 @@ export const useApp = () => {
         } else {
             result.lang = uiLang
             result.region = uiLang.toUpperCase()
-            result.locale = uiLang + '-' + uiLang.toUpperCase()
+            result.locale = `${uiLang}-${uiLang.toUpperCase()}`
             result.currency = CONS.CURRENCIES.CODE.get(uiLang) ?? CONS.DEFAULTS.CURRENCY
         }
         result.curEur = result.currency + CONS.CURRENCIES.EUR
@@ -697,7 +657,7 @@ export const useApp = () => {
                 for (let i = b.length - 1; i > 0; i--) {
                     tmp += b[i]
                 }
-                const tmp2 = tmp + '.' + b[0]
+                const tmp2 = `${tmp}.${b[0]}`
                 result = Number.isNaN(Number.parseFloat(tmp2))
                     ? 0
                     : Number.parseFloat(tmp2)
@@ -719,12 +679,17 @@ export const useApp = () => {
         }
         return len > 0 ? sum / len : 0
     }
-    const log = (msg: string, mode?: { info: unknown }) => {
+    const log = (msg: string, mode?: { info?: unknown, error?: unknown }) => {
         const localDebug = localStorage.getItem(CONS.STORAGE.PROPS.DEBUG)
         if (Number.parseInt(localDebug ?? '0') > 0) {
             if (mode?.info !== undefined) {
+                // eslint-disable-next-line no-console
                 console.info(msg, mode?.info)
+            } else if (mode?.error !== undefined) {
+                // eslint-disable-next-line no-console
+                console.error(msg, mode?.error)
             } else {
+                // eslint-disable-next-line no-console
                 console.log(msg)
             }
         }
