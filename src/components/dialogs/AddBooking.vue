@@ -10,7 +10,7 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
 
@@ -36,7 +36,7 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valRequiredRules, valDateRules} = useApp()
-const {sendMessage} = useBrowser()
+const {addBooking} = useIndexedDB()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
@@ -80,7 +80,7 @@ const resetState = () => {
 
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING : onClickOk')
-  let booking: object = {}
+  let booking: Omit<IBooking, 'cID'>
   let costs: number = 0
   let result: number = 0
   if (!state.isFormValid) {
@@ -169,13 +169,13 @@ const onClickOk = async (): Promise<void> => {
           cMarketPlace: ''
         }
     }
-    const addBookingResponseString = await sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.DB__ADD_BOOKING, data: booking
-    }))
-    const addBookingData: IBooking = JSON.parse(addBookingResponseString).data
-    records.addBooking(addBookingData)
-    await notice([t('dialogs.AddBooking.success')])
-    resetState()
+    const addBookingID = await addBooking(booking)
+    if (typeof addBookingID === 'number') {
+      const completeBooking: IBooking = {cID: addBookingID, ...booking}
+      records.addBooking(completeBooking)
+      await notice([t('dialogs.AddBooking.success')])
+      resetState()
+    }
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.addBooking.error')])
@@ -221,7 +221,7 @@ log('--- AddBooking.vue setup ---')
               required
               type="date"
               variant="outlined"
-          ></v-text-field>
+          />
         </v-col>
         <v-col>
           <v-select
@@ -238,7 +238,7 @@ log('--- AddBooking.vue setup ---')
               required
               variant="outlined"
               @update:modelValue="(ev) => {console.error('CHANGE', ev)}"
-          ></v-select>
+          />
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -251,7 +251,7 @@ log('--- AddBooking.vue setup ---')
               density="compact"
               type="number"
               variant="outlined"
-          ></v-text-field>
+          />
         </v-col>
         <v-col>
           <CurrencyInput
@@ -259,7 +259,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.unitQuotation"
               :label="t('dialogs.addBooking.unitQuotationLabel')"
               @amount="(a) => { state.unitQuotation = a }"
-          ></CurrencyInput>
+          />
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -269,7 +269,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.credit"
               :label="t('dialogs.addBooking.creditLabel')"
               @amount="(a) => { state.credit = a }"
-          ></CurrencyInput>
+          />
         </v-col>
         <v-col>
           <CurrencyInput
@@ -277,7 +277,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.debit"
               :label="t('dialogs.addBooking.debitLabel')"
               @amount="(a) => { state.debit = a }"
-          ></CurrencyInput>
+          />
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -287,7 +287,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.tax"
               :label="t('dialogs.addBooking.taxLabel')"
               @amount="(a) => { state.tax = a }"
-          ></CurrencyInput>
+          />
         </v-col>
         <v-col>
           <CurrencyInput
@@ -295,7 +295,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.soli"
               :label="t('dialogs.addBooking.soliLabel')"
               @amount="(a) => { state.soli = a }"
-          ></CurrencyInput>
+          />
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -311,7 +311,7 @@ log('--- AddBooking.vue setup ---')
               required
               type="date"
               variant="outlined"
-          ></v-text-field>
+          />
         </v-col>
         <v-col>
           <CurrencyInput
@@ -319,7 +319,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.sourceTax"
               :label="t('dialogs.addBooking.sourceTaxLabel')"
               @amount="(a) => { state.sourceTax = a }"
-          ></CurrencyInput>
+          />
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -337,7 +337,7 @@ log('--- AddBooking.vue setup ---')
               density="compact"
               max-width="300"
               variant="outlined"
-          ></v-select>
+          />
         </v-col>
         <v-col>
           <v-select
@@ -349,7 +349,7 @@ log('--- AddBooking.vue setup ---')
               :menuProps="{ maxHeight: 250 }"
               density="compact"
               max-width="350"
-          ></v-select>
+          />
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -359,7 +359,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.fee"
               :label="t('dialogs.addBooking.feeLabel')"
               @amount="(a) => { state.fee = a }"
-          ></CurrencyInput>
+          />
         </v-col>
         <v-col>
           <CurrencyInput
@@ -367,7 +367,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.transactionTax"
               :label="t('dialogs.addBooking.transactionTaxLabel')"
               @amount="(a) => { state.transactionTax = a }"
-          ></CurrencyInput>
+          />
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -378,7 +378,7 @@ log('--- AddBooking.vue setup ---')
               density="compact"
               required
               variant="outlined"
-          ></v-text-field>
+          />
         </v-col>
       </v-row>
     </v-container>

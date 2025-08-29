@@ -10,6 +10,7 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -25,7 +26,8 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
-const {sendMessage} = useBrowser()
+const {setStorage} = useBrowser()
+const {addAccount} = useIndexedDB()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -81,15 +83,16 @@ const onClickOk = async (): Promise<void> => {
       cLogoUrl: state.logoUrl,
       cStockAccount: state.stockAccount
     }
-    const addAccountResponse = await sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.DB__ADD_ACCOUNT, data: account
-    }))
-    const addAccountData: IAccount = JSON.parse(addAccountResponse).data
-    records.addAccount(addAccountData)
-    settings.setActiveAccountId(addAccountData.cID)
-    await notice([t('dialogs.AddAccount.success')])
-    mResetState()
-    runtime.resetTeleport()
+    const addAccountID = await addAccount(account)
+    if (typeof addAccountID === 'number') {
+      const completeAccount: IAccount = {cID: addAccountID, ...account}
+      records.addAccount(completeAccount)
+      settings.setActiveAccountId(addAccountID)
+      await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
+      await notice([t('dialogs.AddAccount.success')])
+      mResetState()
+      runtime.resetTeleport()
+    }
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.addAccount.error')])

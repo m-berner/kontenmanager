@@ -77,7 +77,7 @@ export const useSettingsStore = defineStore('settings', {
             this.skin = value
         },
         initStore(theme: ThemeInstance, storage: { [p: string]: string | number | boolean | string[] }): void {
-            log('SETTINGS: initStore')
+            log('SETTINGS: initStore', {info: storage})
             if (theme?.global?.name) {
                 theme.global.name.value = storage.sSkin as string
             }

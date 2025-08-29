@@ -10,7 +10,8 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useFetch} from '@/composables/useFetch'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 
@@ -24,8 +25,9 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, valIbanRules} = useApp()
-const {sendMessage} = useBrowser()
+const {log, notice, valIbanRules} = useApp()
+const {addStock} = useIndexedDB()
+const {fetchCompanyData} = useFetch()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -48,14 +50,10 @@ const mResetState = (): void => {
 }
 const onIsin = async (): Promise<void> => {
   if (state.isin !== '' && state.isin?.length === 12) {
-    const addStockResponse = await sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.FETCH__COMPANY_DATA,
-      data: state.isin
-    }))
-    const addStock = JSON.parse(addStockResponse).data
-    state.company = addStock.company
-    state.wkn = addStock.wkn.toUpperCase()
-    state.symbol = addStock.symbol.toUpperCase()
+    const fetchedCompanyData: FetchedResources.ICompanyData = await fetchCompanyData(state.isin)
+    state.company = fetchedCompanyData.company
+    state.wkn = fetchedCompanyData.wkn.toUpperCase()
+    state.symbol = fetchedCompanyData.symbol.toUpperCase()
   }
 }
 const onClickOk = async (): Promise<void> => {
@@ -84,30 +82,30 @@ const onClickOk = async (): Promise<void> => {
       mValue: 0,
       mMax: 0
     }
-    const addStockResponse = await sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
-    }))
-    const addStockData: IStock = JSON.parse(addStockResponse).data
-    const test = records.stocks.filter((stock) => {
-      return stock.cISIN === addStockData.cISIN
+    const test = records.stocks.filter((s) => {
+      return s.cISIN === stock.cISIN
     })
     if (test.length > 0) {
       await notice(['Unternehmen existiert bereits'])
       return
     }
-    records.addStock({
-      ...addStockData,
-      mPortfolio: 0,
-      mChange: 0,
-      mBuyValue: 0,
-      mEuroChange: 0,
-      mMin: 0,
-      mValue: 0,
-      mMax: 0
-    })
-    await notice([t('dialogs.addStock.success')])
-    mResetState()
-    runtime.resetTeleport()
+    const addStockID = await addStock(stock)
+    if (typeof addStockID === 'number') {
+      const completeStock: IStock = {cID: addStockID, ...stock}
+      records.addStock({
+        ...completeStock,
+        mPortfolio: 0,
+        mChange: 0,
+        mBuyValue: 0,
+        mEuroChange: 0,
+        mMin: 0,
+        mValue: 0,
+        mMax: 0
+      })
+      await notice([t('dialogs.addStock.success')])
+      mResetState()
+      runtime.resetTeleport()
+    }
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.addStock.error')])

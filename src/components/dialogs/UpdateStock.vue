@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
@@ -29,8 +29,8 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, valIbanRules} = useApp()
-const {sendMessage} = useBrowser()
+const {log, notice, valIbanRules} = useApp()
+const {updateStock} = useIndexedDB()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -80,12 +80,8 @@ const onClickOk = async (): Promise<void> => {
       mMax: 0
     }
     records.updateStock(stockStore)
-    const updateStockResponseString = await sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.DB__UPDATE_STOCK,
-      data: stock
-    }))
-    const updateStockResponse = JSON.parse(updateStockResponseString)
-    await notice([updateStockResponse.data])
+    const updateStockResponse = await updateStock(stock)
+    await notice([updateStockResponse])
     runtime.resetTeleport()
   } catch (e) {
     console.error(e)

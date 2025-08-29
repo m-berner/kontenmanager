@@ -90,7 +90,6 @@ export default [
             'comma-dangle': ['error', 'never'],
             'quotes': ['error', 'single'],
             'semi': ['error', 'never'],
-            //'indent': ['error', 2, {'SwitchCase': 1}],
             'space-before-function-paren': ['error', 'always'],
             'keyword-spacing': 'error',
             'space-infix-ops': 'error',
@@ -114,9 +113,9 @@ export default [
             vue: pluginVue
         },
         rules: {
-            'indent': ['error', 2, { SwitchCase: 1 }],
-            'vue/script-indent': ['error', 2, { switchCase: 1, baseIndent: 0}],
-            //'vue/html-indent': ['error', 0, {'baseIndent': 2}],
+            //'indent': ['error', 2],
+            'vue/script-indent': ['error', 2, {'switchCase': 1}],
+            //'vue/html-indent': ['error', 2],
             'vue/multi-word-component-names': 'error',
             'vue/component-definition-name-casing': ['error', 'PascalCase'],
             'vue/component-name-in-template-casing': ['error', 'PascalCase'],
@@ -158,7 +157,7 @@ export default [
         // Specific configuration for Vue files
         files: ['**/*.ts'],
         rules: {
-            'indent': ['error', 1, {baseIndent: 2, 'SwitchCase': 1}]
+            'indent': ['error', 4, {'SwitchCase': 1}]
         }
     },
     {

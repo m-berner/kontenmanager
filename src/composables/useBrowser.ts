@@ -16,7 +16,7 @@ export const useBrowser = ()=> {
             throw error
         }
     }
-    const getStorage = async (keys: string[] = []): Promise<{ [p: string]: string | boolean |  number | string[] }> => {
+    const getStorage = async (keys: string[]|null = null): Promise<{ [p: string]: string | boolean |  number | string[] }> => {
         try {
             return await browser.storage.local.get(keys)
         } catch (error) {

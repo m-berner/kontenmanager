@@ -8,7 +8,7 @@ export const useBrowser = () => {
             throw error;
         }
     };
-    const getStorage = async (keys = []) => {
+    const getStorage = async (keys = null) => {
         try {
             return await browser.storage.local.get(keys);
         }

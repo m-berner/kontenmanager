@@ -111,7 +111,7 @@ export const useIndexedDB = () => {
                     const blobUrl = URL.createObjectURL(blob);
                     const op = {
                         url: blobUrl,
-                        filename: filename
+                        filename
                     };
                     const onDownloadChange = (change) => {
                         log('BACKGROUND: onDownloadChange');

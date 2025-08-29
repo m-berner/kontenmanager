@@ -10,6 +10,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {type UnwrapRef, computed, defineExpose, reactive, toRaw} from 'vue'
@@ -22,7 +23,8 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
-const {sendMessage} = useBrowser()
+const {setStorage} = useBrowser()
+const {clearStores, importStores} = useIndexedDB()
 
 let chosen_file: Blob = reactive(new Blob())
 const onChange = computed(ev => { chosen_file = (ev as IEventTarget).target.files[0] })
@@ -82,9 +84,7 @@ const onClickOk = async (): Promise<void> => {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.IMPORT_MIN_VERSION.toString()})])
       } else if (backupObject.sm.cDBVersion === CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
-        await sendMessage(JSON.stringify({
-          type: CONS.MESSAGES.DB__DELETE_ALL
-        }))
+        await clearStores()
         const account: IAccount = {
           cID: activeId,
           cSwift: 'KMKLPJJ9099',
@@ -164,10 +164,8 @@ const onClickOk = async (): Promise<void> => {
           bookingTypes,
           stocks
         }
-        await sendMessage(JSON.stringify({
-          type: CONS.MESSAGES.DB__ADD_STORES,
-          data: stores
-        }))
+        await importStores(stores)
+        await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, stores.accounts[0].cID)
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {
@@ -211,7 +209,8 @@ const onClickOk = async (): Promise<void> => {
           bookingTypes,
           stocks
         }
-        await sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
+        await importStores(stores)
+        await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, stores.accounts[0].cID)
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }

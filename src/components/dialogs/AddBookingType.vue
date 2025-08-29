@@ -10,7 +10,7 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
@@ -20,7 +20,7 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valNameRules} = useApp()
-const {sendMessage} = useBrowser()
+const {addBookingType} = useIndexedDB()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
@@ -37,17 +37,15 @@ const onClickOk = async (): Promise<void> => {
   }
   try {
     const bookingType = {
-      cID: -1,
       cName: state.bookingTypeName.trim(),
       cAccountNumberID: settings.activeAccountId
     }
-    records.addBookingType(bookingType)
-    const addBookingTypeResponse = await sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE, data: bookingType
-    }))
-    const addBookingTypeData: IBookingType = JSON.parse(addBookingTypeResponse).data
-    records.addBookingType(addBookingTypeData)
-    await notice([t('dialogs.AddBookingType.success')])
+    const addBookingTypeID = await addBookingType(bookingType)
+    if (typeof addBookingTypeID === 'number') {
+      const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
+      records.addBookingType(completeBookingType)
+      await notice([t('dialogs.AddBookingType.success')])
+    }
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.addBookingType.error')])

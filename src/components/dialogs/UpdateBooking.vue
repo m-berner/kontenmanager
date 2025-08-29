@@ -11,9 +11,9 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
 import {useRuntimeStore} from '@/stores/runtime'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 
 interface IState {
   id: number
@@ -27,7 +27,7 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valPositiveIntegerRules} = useApp()
-const {sendMessage} = useBrowser()
+const {updateBooking} = useIndexedDB()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -70,12 +70,8 @@ const onClickOk = async (): Promise<void> => {
     }
     records.updateBooking(booking)
     records.sumBookings()
-    const updateBookingResponseString = await sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.DB__UPDATE_BOOKING,
-      data: booking
-    }))
-    const updateBookingResponse = JSON.parse(updateBookingResponseString)
-    await notice([updateBookingResponse.data])
+    const updateBookingResponse = await updateBooking(booking)
+    await notice([updateBookingResponse])
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()
   } catch (e) {

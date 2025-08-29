@@ -8,18 +8,18 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import {defineExpose} from 'vue'
-import {useBrowser} from '@/composables/useBrowser'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
-const {sendMessage} = useBrowser()
+const {exportToFile} = useIndexedDB()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
 
-const onClickOk = (): void => {
+const onClickOk = async (): Promise<void> => {
   log('EXPORT_DATABASE : onClickOk')
-  sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__EXPORT, data: fn}))
+  await exportToFile(fn)
 }
 const title = t('dialogs.exportToFile.title')
 

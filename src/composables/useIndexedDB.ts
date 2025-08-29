@@ -119,7 +119,7 @@ export const useIndexedDB = () => {
                     const blobUrl = URL.createObjectURL(blob) // create url reference for blob object
                     const op: browser.downloads._DownloadOptions = {
                         url: blobUrl,
-                        filename: filename
+                        filename
                     }
                     const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
                         log('BACKGROUND: onDownloadChange')
@@ -177,7 +177,7 @@ export const useIndexedDB = () => {
             }
         })
     }
-    const exportStores = async (aid: number): Promise<IStores | string> => {
+    const exportStores = async (aid: number): Promise<IStores> => {
         log('BACKGROUND: exportStores')
         const accounts: IAccount[] = []
         const bookings: IBooking[] = []
@@ -237,7 +237,7 @@ export const useIndexedDB = () => {
             }
         })
     }
-    const importStores = async (stores: IStores, all = true) => {
+    const importStores = async (stores: IStoresDB, all = true) => {
         log('BACKGROUND: importStores', {info: db})
         return new Promise(async (resolve, reject) => {
             if (db != null) {

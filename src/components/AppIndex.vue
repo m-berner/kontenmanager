@@ -11,15 +11,19 @@ import {useSettingsStore} from '@/stores/settings'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useFetch} from '@/composables/useFetch'
 import {useRuntimeStore} from '@/stores/runtime'
 import {onBeforeMount} from 'vue'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
+const {exportStores} = useIndexedDB()
 const theme = useTheme()
 const {CONS, log, getUI} = useApp()
-const {getStorage, sendMessage, onStorageChanged} = useBrowser()
+const {getStorage, onStorageChanged} = useBrowser()
+const {fetchExchangesData} = useFetch()
 
 const onStorageChange = (changes: browser.storage.StorageChange): void => {
   const changesKey = Object.keys(changes)
@@ -50,25 +54,18 @@ onStorageChanged(onStorageChange)
 onBeforeMount(async () => {
   const storage = await getStorage()
   settings.initStore(theme, storage)
-  const dbGetStoresResponseString = await sendMessage(JSON.stringify({
-    type: CONS.MESSAGES.DB__GET_STORES,
-    data: settings.activeAccountId
-  }))
-  const dbGetStoresData = JSON.parse(dbGetStoresResponseString).data
-  if (dbGetStoresData.accounts.length > 0) {
-    records.initStore(dbGetStoresData)
+  const stores = await exportStores(settings.activeAccountId)
+  if (stores.accounts.length > 0) {
+    records.initStore(stores)
     records.sumBookings()
   }
-  const exchangesBaseResponseString = await sendMessage(JSON.stringify({
-    type: CONS.MESSAGES.FETCH__EXCHANGES_BASE_DATA,
-    data: [getUI().curUsd, getUI().curEur]
-  }))
-  const exchangesBaseResponseData = JSON.parse(exchangesBaseResponseString).data
-  for (let i = 0; i < exchangesBaseResponseData.length; i++) {
-    if (exchangesBaseResponseData[i].key.includes('USD')) {
-      runtime.setExchangesUsd(exchangesBaseResponseData[i].value)
+  const exchangesBaseData: FetchedResources.IExchangesData[] = await fetchExchangesData([getUI().curUsd, getUI().curEur])
+
+  for (let i = 0; i < exchangesBaseData.length; i++) {
+    if (exchangesBaseData[i].key.includes('USD')) {
+      runtime.setExchangesUsd(exchangesBaseData[i].value)
     } else {
-      runtime.setExchangesEur(exchangesBaseResponseData[i].value)
+      runtime.setExchangesEur(exchangesBaseData[i].value)
     }
   }
 })

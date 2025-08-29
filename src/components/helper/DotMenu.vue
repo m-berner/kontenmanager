@@ -8,19 +8,19 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
-import {onMounted, defineProps} from 'vue'
+import {defineProps, onMounted} from 'vue'
 
 interface PropsOptionMenu {
   recordID: number
   menuItems: Record<string, string>[]
 }
 
-const {CONS, log, notice} = useApp()
-const {sendMessage} = useBrowser()
 const optionMenuProps = defineProps<PropsOptionMenu>()
+const {CONS, log, notice} = useApp()
+const {deleteBooking, deleteStock} = useIndexedDB()
 const {rt, t} = useI18n()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
@@ -48,10 +48,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
         records.deleteBooking(optionMenuProps.recordID)
         records.sumBookings()
-        await sendMessage(JSON.stringify({
-          type: CONS.MESSAGES.DB__DELETE_BOOKING,
-          data: optionMenuProps.recordID
-        }))
+        await deleteBooking(optionMenuProps.recordID)
         await notice([t('dialogs.deleteBooking.success')])
         for (const m of runtime.optionMenuColors.keys()) {
           runtime.optionMenuColors.set(m, '')
@@ -70,10 +67,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         if (deleteAble.length === 0) {
           records.deleteStock(optionMenuProps.recordID)
-          await sendMessage(JSON.stringify({
-            type: CONS.MESSAGES.DB__DELETE_STOCK,
-            data: optionMenuProps.recordID
-          }))
+          await deleteStock(optionMenuProps.recordID)
           await notice([t('dialogs.deleteStock.success')])
         } else {
           await notice(['Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.'])
@@ -107,7 +101,7 @@ log('--- DotMenu.vue setup ---')
           icon="$dots"
           v-bind="props"
           @click="onButtonClick"
-      ></v-btn>
+      />
     </template>
     <v-list>
       <v-hover v-slot:default="{ props, isHovering }">
@@ -121,7 +115,7 @@ log('--- DotMenu.vue setup ---')
             class="pointer"
             v-bind="props"
             @click="onIconClick"
-        ></v-list-item>
+        />
       </v-hover>
     </v-list>
   </v-menu>

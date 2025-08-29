@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 
 interface IState {
   swift: string
@@ -24,7 +24,7 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
-const {sendMessage} = useBrowser()
+const {updateAccount} = useIndexedDB()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
@@ -78,9 +78,7 @@ const onClickOk = async (): Promise<void> => {
       cStockAccount: state.stockAccount
     }
     records.updateAccount(account)
-    await sendMessage(JSON.stringify({
-      type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
-    }))
+    await updateAccount(account)
     await notice([t('dialogs.UpdateAccount.success')])
     mResetState()
   } catch (e) {

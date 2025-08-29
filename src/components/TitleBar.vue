@@ -11,6 +11,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 import {storeToRefs} from 'pinia'
 import {computed} from 'vue'
 
@@ -18,17 +19,17 @@ const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {CONS, log} = useApp()
-const {sendMessage, setStorage} = useBrowser()
+const {setStorage} = useBrowser()
+const {exportStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
 
 const onUpdateTitleBar = async (): Promise<void> => {
   await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
-  const getStoresResponseString = await sendMessage(JSON.stringify({
-    type: CONS.MESSAGES.DB__GET_STORES,
-    data: settings.activeAccountId
-  }))
-  records.initStore(JSON.parse(getStoresResponseString).data)
-  records.sumBookings()
+  const stores = await exportStores(settings.activeAccountId)
+  if (stores.accounts.length > 0) {
+    records.initStore(stores)
+    records.sumBookings()
+  }
 }
 const logoUrl = computed((): string => {
   const ind = records.getAccountIndexById(settings.activeAccountId)
@@ -70,7 +71,7 @@ log('--- TitleBar.vue setup ---')
         @update:model-value="onUpdateTitleBar"
     >
       <template #prepend>
-        <img :src="logoUrl" alt="t('titleBar.iconsAlt.brandfetch')"/>
+        <img :src="logoUrl" :alt="t('titleBar.iconsAlt.brandfetch')"/>
       </template>
     </v-select>
   </v-app-bar>
