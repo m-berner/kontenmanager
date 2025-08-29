@@ -1,5 +1,7 @@
 import { useApp } from '@/composables/useApp';
+import { useBrowser } from '@/composables/useBrowser';
 const { CONS, mean, notice, toNumber } = useApp();
+const { getStorage } = useBrowser();
 export const useFetch = () => {
     const fetchCompanyData = async (isin) => {
         return new Promise(async (resolve, reject) => {
@@ -67,8 +69,8 @@ export const useFetch = () => {
     const fetchMinRateMaxData = async (storageOnline) => {
         console.log('BACKGROUND: fetchMinRateMaxData');
         return new Promise(async (resolve, reject) => {
-            const storageService = await browser.storage.local.get(CONS.STORAGE.PROPS.SERVICE);
-            const serviceName = storageService[CONS.STORAGE.PROPS.SERVICE].name;
+            const storageService = await getStorage([CONS.STORAGE.PROPS.SERVICE]);
+            const serviceName = storageService[CONS.STORAGE.PROPS.SERVICE];
             const _fnet = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
                     const firstResponse = await fetch(urlObj.url);

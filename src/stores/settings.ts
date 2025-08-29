@@ -76,21 +76,21 @@ export const useSettingsStore = defineStore('settings', {
             }
             this.skin = value
         },
-        initStore(theme: ThemeInstance, storage: { [p: string]: never }): void {
+        initStore(theme: ThemeInstance, storage: { [p: string]: string | number | boolean | string[] }): void {
             log('SETTINGS: initStore')
             if (theme?.global?.name) {
-                theme.global.name.value = storage.sSkin
+                theme.global.name.value = storage.sSkin as string
             }
-            this.skin = storage.sSkin
-            this.bookingsPerPage = storage.sBookingsPerPage
-            this.stocksPerPage = storage.sStocksPerPage
-            this.activeAccountId = storage.sActiveAccountId
-            this.partner = storage.sPartner
-            this.service = storage.sService
-            this.materials = [...storage.sMaterials]
-            this.markets = [...storage.sMarkets]
-            this.indexes = [...storage.sIndexes]
-            this.exchanges = [...storage.sExchanges]
+            this.skin = storage.sSkin as string
+            this.bookingsPerPage = storage.sBookingsPerPage as number
+            this.stocksPerPage = storage.sStocksPerPage as number
+            this.activeAccountId = storage.sActiveAccountId as number
+            this.partner = storage.sPartner as boolean
+            this.service = storage.sService as string
+            this.materials = [...storage.sMaterials as string[]]
+            this.markets = [...storage.sMarkets as string[]]
+            this.indexes = [...storage.sIndexes as string[]]
+            this.exchanges = [...storage.sExchanges as string[]]
         },
         updatePagination(bookings: number, stocks: number): void {
             this.bookingsPerPage = bookings

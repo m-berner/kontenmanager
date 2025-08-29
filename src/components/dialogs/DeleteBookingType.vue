@@ -6,33 +6,41 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRecordsStore} from '@/stores/records'
+import {useRuntimeStore} from '@/stores/runtime'
 
 interface IState {
   selected: number
+  isFormValid: boolean
 }
 
 const {t} = useI18n()
 const {CONS, log, notice} = useApp()
 const records = useRecordsStore()
-const formRef = useTemplateRef('form-ref')
+const runtime = useRuntimeStore()
 
 const state: IState = reactive({
-  selected: -1
+  selected: -1,
+  isFormValid: false
 })
+
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE : onClickOk')
+  if (!state.isFormValid) {
+    await notice(['Invalid Form!'])
+    return
+  }
   try {
     if (state.selected > 1) {
-      await records.deleteBookingType(state.selected)
-      formRef.value?.reset()
+      records.deleteBookingType(state.selected)
       await notice([t('dialogs.deleteBookingType.success')])
     } else {
       await notice(['Start kann nicht entfernt werden'])
     }
+    runtime.resetTeleport()
   } catch (e) {
     console.error(e)
     await notice([t('dialogs.deleteBookingType.error')])
@@ -43,14 +51,13 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('DELETE_BOOKING_TYPE: onMounted')
-  formRef.value?.reset()
 })
 
 log('--- DeleteBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
+  <v-form v-model="state.isFormValid" validate-on="submit">
     <v-select
         v-model="state.selected"
         :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"

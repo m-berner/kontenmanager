@@ -330,7 +330,8 @@ export const useApp = () => {
             SUC: 'success',
             UPG: 'upgradeneeded'
         },
-        LOGOS: {
+        URLS: {
+            LOGO: ['https://cdn.brandfetch.io', 'w/48/h/48?c=1idV74s2UaSDMRIQg-7'],
             NO_LOGO: 'https://cdn.brandfetch.io/brandfetch.com/w/48/h/48?c=1idV74s2UaSDMRIQg-7'
         },
         MESSAGES: MESSAGES,

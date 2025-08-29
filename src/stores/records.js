@@ -17,7 +17,16 @@ export const useRecordsStore = defineStore('records', {
         },
         getBookingByAccountId: (state) => (accountId) => {
             return state.bookings.filter(booking => booking.cAccountNumberID === accountId);
-        }
+        },
+        getBookingTextById: (state) => (ident) => {
+            const booking = state.bookings.find((entry) => entry.cID === ident);
+            if (booking) {
+                return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`;
+            }
+            else {
+                throw new Error('getBookingTextById: No booking found for given ID');
+            }
+        },
     },
     actions: {
         getAccountIndexById(ident) {
@@ -32,7 +41,7 @@ export const useRecordsStore = defineStore('records', {
         getBookingTypeById(ident) {
             return this.bookingTypes.findIndex((entry) => entry.cID === ident);
         },
-        getBookingTextById(ident) {
+        getBookingTextByIdd(ident) {
             const booking = this.bookings.find((entry) => entry.cID === ident);
             if (booking) {
                 return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`;

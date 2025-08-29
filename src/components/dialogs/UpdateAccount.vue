@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -19,12 +19,12 @@ interface IState {
   logoUrl: string
   logoSearchName: string
   stockAccount: boolean
+  isFormValid: boolean
 }
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
 const {sendMessage} = useBrowser()
-const formRef = useTemplateRef('form-ref')
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
@@ -33,7 +33,8 @@ const state: IState = reactive({
   number: '',
   logoUrl: '',
   logoSearchName: '',
-  stockAccount: false
+  stockAccount: false,
+  isFormValid: false
 })
 
 const mResetState = () => {
@@ -55,7 +56,7 @@ const onUpdateLogoSearchName = (iban: string) => {
       if (i === 0) {
         masked = withoutSpace.slice(i * 4, (i + 1) * 4).toUpperCase()
       } else {
-        masked += ' ' + withoutSpace.slice(i * 4, (i + 1) * 4)
+        masked += ` ${withoutSpace.slice(i * 4, (i + 1) * 4)}`
       }
     }
     state.number = masked
@@ -64,30 +65,27 @@ const onUpdateLogoSearchName = (iban: string) => {
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_ACCOUNT : onClickOk')
-  if (!formRef.value) {
-    console.error('Form ref is null')
+  if (!state.isFormValid) {
+    await notice(['Invalid Form!'])
     return
   }
-  const formIs = formRef.value.validate()
-  if (formIs.valid) {
-    try {
-      const account = {
-        cID: settings.activeAccountId,
-        cSwift: state.swift.trim().toUpperCase(),
-        cNumber: state.number.replace(/\s/g, ''),
-        cLogoUrl: state.logoUrl,
-        cStockAccount: state.stockAccount
-      }
-      records.updateAccount(account)
-      await sendMessage(JSON.stringify({
-        type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
-      }))
-      await notice([t('dialogs.UpdateAccount.success')])
-      mResetState()
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.updateAccount.error')])
+  try {
+    const account = {
+      cID: settings.activeAccountId,
+      cSwift: state.swift.trim().toUpperCase(),
+      cNumber: state.number.replace(/\s/g, ''),
+      cLogoUrl: state.logoUrl,
+      cStockAccount: state.stockAccount
     }
+    records.updateAccount(account)
+    await sendMessage(JSON.stringify({
+      type: CONS.MESSAGES.DB__UPDATE_ACCOUNT, data: account
+    }))
+    await notice([t('dialogs.UpdateAccount.success')])
+    mResetState()
+  } catch (e) {
+    console.error(e)
+    await notice([t('dialogs.updateAccount.error')])
   }
 }
 const title = t('dialogs.updateAccount.title')
@@ -115,7 +113,7 @@ log('--- UpdateAccount.vue setup ---')
         v-model="state.stockAccount"
         :label="t('dialogs.updateAccount.stockAccountLabel')"
         color="red"
-        variant="outlined"></v-switch>
+        variant="outlined"/>
     <v-text-field
         ref="swift-input"
         v-model="state.swift"
@@ -124,7 +122,7 @@ log('--- UpdateAccount.vue setup ---')
         autofocus
         required
         variant="outlined"
-    ></v-text-field>
+    />
     <v-text-field
         v-model="state.number"
         :label="t('dialogs.updateAccount.accountNumberLabel')"
@@ -133,7 +131,7 @@ log('--- UpdateAccount.vue setup ---')
         required
         variant="outlined"
         @update:modelValue="onUpdateLogoSearchName"
-    ></v-text-field>
+    />
     <v-text-field
         v-model="state.logoSearchName"
         :label="t('dialogs.updateAccount.logoLabel')"
@@ -142,7 +140,7 @@ log('--- UpdateAccount.vue setup ---')
         required
         variant="outlined"
         @input="onInputLogoUrl"
-    ></v-text-field>
-    <img :src="state.logoUrl" alt=`${CONS.URLS.LOGO[0]}`>
+    />
+    <img :src="state.logoUrl" alt="CONS.URLS.LOGO[0]" />
   </v-form>
 </template>

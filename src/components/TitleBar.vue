@@ -45,18 +45,18 @@ log('--- TitleBar.vue setup ---')
 
 <template>
   <v-app-bar :flat="true" app color="secondary">
-    <template v-slot:prepend>
-      <img :src=CONS.COMPONENTS.TITLE_BAR.LOGO alt="t('titleBar.iconsAlt.logo')">
+    <template #prepend>
+      <img :src="CONS.COMPONENTS.TITLE_BAR.LOGO" alt="t('titleBar.iconsAlt.logo')"/>
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
         :disabled="true"
         :label="t('titleBar.bookingsSumLabel')"
-        :modelValue="balance"
+        :model-value="balance"
         hide-details
         max-width="150"
-    ></v-text-field>
-    <v-spacer></v-spacer>
+    />
+    <v-spacer/>
     <v-select
         v-model="activeAccountId"
         :item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
@@ -67,9 +67,10 @@ log('--- TitleBar.vue setup ---')
         hide-details
         max-width="350"
         variant="outlined"
-        @update:modelValue="onUpdateTitleBar">
-      <template v-slot:prepend>
-        <img :src="logoUrl" alt="t('titleBar.iconsAlt.brandfetch')">
+        @update:model-value="onUpdateTitleBar"
+    >
+      <template #prepend>
+        <img :src="logoUrl" alt="t('titleBar.iconsAlt.brandfetch')"/>
       </template>
     </v-select>
   </v-app-bar>

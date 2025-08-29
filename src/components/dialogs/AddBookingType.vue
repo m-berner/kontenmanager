@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
@@ -15,45 +15,42 @@ import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
   bookingTypeName: string
+  isFormValid: false
 }
 
 const {t} = useI18n()
 const {CONS, log, notice, valNameRules} = useApp()
 const {sendMessage} = useBrowser()
-const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
 const state: IState = reactive({
-  bookingTypeName: ''
+  bookingTypeName: '',
+  isFormValid: false
 })
 
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: onClickOk')
-  if (!formRef.value) {
-    console.error('Form ref is null')
+  if (!state.isFormValid) {
+    await notice(['Invalid Form!'])
     return
   }
-  const formIs = formRef.value.validate()
-  if (formIs.valid) {
-    try {
-      const bookingType = {
-        cID: -1,
-        cName: state.bookingTypeName.trim(),
-        cAccountNumberID: settings.activeAccountId
-      }
-      records.addBookingType(bookingType)
-      const addBookingTypeResponse = await sendMessage(JSON.stringify({
-        type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE, data: bookingType
-      }))
-      const addBookingTypeData: IBookingType = JSON.parse(addBookingTypeResponse).data
-      records.addBookingType(addBookingTypeData)
-      await notice([t('dialogs.AddBookingType.success')])
-      formRef.value!.reset()
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.addBookingType.error')])
+  try {
+    const bookingType = {
+      cID: -1,
+      cName: state.bookingTypeName.trim(),
+      cAccountNumberID: settings.activeAccountId
     }
+    records.addBookingType(bookingType)
+    const addBookingTypeResponse = await sendMessage(JSON.stringify({
+      type: CONS.MESSAGES.DB__ADD_BOOKING_TYPE, data: bookingType
+    }))
+    const addBookingTypeData: IBookingType = JSON.parse(addBookingTypeResponse).data
+    records.addBookingType(addBookingTypeData)
+    await notice([t('dialogs.AddBookingType.success')])
+  } catch (e) {
+    console.error(e)
+    await notice([t('dialogs.addBookingType.error')])
   }
 }
 const title = t('dialogs.addBookingType.title')
@@ -61,7 +58,6 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_BOOKING_TYPE: onMounted')
-  formRef.value!.reset()
 })
 
 log('--- AddBookingType.vue setup ---')
@@ -84,6 +80,6 @@ log('--- AddBookingType.vue setup ---')
         :menu-props="{ maxHeight: 250 }"
         :rules="valNameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
         max-width="300"
-    ></v-combobox>
+    />
   </v-form>
 </template>

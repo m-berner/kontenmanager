@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -25,12 +25,12 @@ interface IState {
   fadeOut: boolean
   firstPage: boolean
   url: string
+  isFormValid: boolean
 }
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules} = useApp()
 const {sendMessage} = useBrowser()
-const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -45,53 +45,51 @@ const state: IState = reactive({
   quarterDay: '',
   fadeOut: false,
   firstPage: false,
-  url: ''
+  url: '',
+  isFormValid: false
 })
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
-  if (!formRef.value) {
-    console.error('Form ref is null')
+  if (!state.isFormValid) {
+    await notice(['Invalid Form!'])
     return
   }
-  const formIs = formRef.value.validate()
-  if (formIs.valid) {
-    try {
-      const stock: IStock = {
-        cID: state.id,
-        cISIN: state.isin,
-        cCompany: state.company,
-        cWKN: state.wkn,
-        cSymbol: state.symbol,
-        cMeetingDay: state.meetingDay,
-        cQuarterDay: state.quarterDay,
-        cFadeOut: state.fadeOut ? 1 : 0,
-        cFirstPage: state.firstPage ? 1 : 0,
-        cURL: state.url,
-        cAccountNumberID: settings.activeAccountId
-      }
-      const stockStore: IStockStore = {
-        ...stock,
-        mPortfolio: 0,
-        mChange: 0,
-        mBuyValue: 0,
-        mEuroChange: 0,
-        mMin: 0,
-        mValue: 0,
-        mMax: 0
-      }
-      records.updateStock(stockStore)
-      const updateStockResponseString = await sendMessage(JSON.stringify({
-        type: CONS.MESSAGES.DB__UPDATE_STOCK,
-        data: stock
-      }))
-      const updateStockResponse = JSON.parse(updateStockResponseString)
-      await notice([updateStockResponse.data])
-      runtime.resetTeleport()
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.updateStock.error')])
+  try {
+    const stock: IStock = {
+      cID: state.id,
+      cISIN: state.isin,
+      cCompany: state.company,
+      cWKN: state.wkn,
+      cSymbol: state.symbol,
+      cMeetingDay: state.meetingDay,
+      cQuarterDay: state.quarterDay,
+      cFadeOut: state.fadeOut ? 1 : 0,
+      cFirstPage: state.firstPage ? 1 : 0,
+      cURL: state.url,
+      cAccountNumberID: settings.activeAccountId
     }
+    const stockStore: IStockStore = {
+      ...stock,
+      mPortfolio: 0,
+      mChange: 0,
+      mBuyValue: 0,
+      mEuroChange: 0,
+      mMin: 0,
+      mValue: 0,
+      mMax: 0
+    }
+    records.updateStock(stockStore)
+    const updateStockResponseString = await sendMessage(JSON.stringify({
+      type: CONS.MESSAGES.DB__UPDATE_STOCK,
+      data: stock
+    }))
+    const updateStockResponse = JSON.parse(updateStockResponseString)
+    await notice([updateStockResponse.data])
+    runtime.resetTeleport()
+  } catch (e) {
+    console.error(e)
+    await notice([t('dialogs.updateStock.error')])
   }
 }
 const title = t('dialogs.updateStock.title')
@@ -126,7 +124,7 @@ log('--- UpdateStock.vue setup ---')
             autofocus
             required
             variant="outlined"
-        ></v-text-field>
+        />
       </v-row>
       <v-row>
         <v-text-field
@@ -134,7 +132,7 @@ log('--- UpdateStock.vue setup ---')
             :label="t('dialogs.updateStock.company')"
             required
             variant="outlined"
-        ></v-text-field>
+        />
       </v-row>
       <v-row cols="2" sm="2">
         <v-col>
@@ -143,7 +141,7 @@ log('--- UpdateStock.vue setup ---')
               :label="t('dialogs.updateStock.wkn')"
               required
               variant="outlined"
-          ></v-text-field>
+          />
         </v-col>
         <v-col>
           <v-text-field
@@ -151,7 +149,7 @@ log('--- UpdateStock.vue setup ---')
               :label="t('dialogs.updateStock.symbol')"
               required
               variant="outlined"
-          ></v-text-field>
+          />
         </v-col>
       </v-row>
       <v-row cols="2" sm="2">
@@ -160,14 +158,14 @@ log('--- UpdateStock.vue setup ---')
               v-model="state.meetingDay"
               :label="t('dialogs.updateStock.meetingDay')"
               variant="outlined"
-          ></v-text-field>
+          />
         </v-col>
         <v-col>
           <v-text-field
               v-model="state.quarterDay"
               :label="t('dialogs.updateStock.quarterDay')"
               variant="outlined"
-          ></v-text-field>
+          />
         </v-col>
       </v-row>
       <v-row cols="2" sm="2">
@@ -176,14 +174,14 @@ log('--- UpdateStock.vue setup ---')
               v-model="state.fadeOut"
               :label="t('dialogs.updateStock.fadeOut')"
               variant="outlined"
-          ></v-checkbox>
+          />
         </v-col>
         <v-col>
           <v-checkbox
               v-model="state.firstPage"
               :label="t('dialogs.updateStock.firstPage')"
               variant="outlined"
-          ></v-checkbox>
+          />
         </v-col>
       </v-row>
       <v-row>
@@ -191,7 +189,7 @@ log('--- UpdateStock.vue setup ---')
             v-model="state.url"
             :label="t('dialogs.updateStock.url')"
             variant="outlined"
-        ></v-text-field>
+        />
       </v-row>
     </v-container>
   </v-form>

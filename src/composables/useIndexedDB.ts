@@ -131,7 +131,7 @@ export const useIndexedDB = () => {
                             URL.revokeObjectURL(blobUrl) // release blob object
                         }
                     }
-                    browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up blob object after download.
+                    browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up a blob object after the download.
                     await browser.downloads.download(op) // writing blob object into download file
                     await notice(['Database exported!'])
                     resolve('BACKGROUND: exportToFile: done!')
@@ -404,12 +404,6 @@ export const useIndexedDB = () => {
         })
     }
     const deleteBookingType = async (id: number): Promise<string> => {
-        // const indexOfBookingType = this._booking_types.all.findIndex((bookingType: IBookingType) => {
-        //   return bookingType.cID === id
-        // })
-        // const indexOfBookingTypePerAccount = this._booking_types.per_account.findIndex((bookingType: IBookingType) => {
-        //   return bookingType.cID === id
-        // })
         return new Promise(async (resolve, reject) => {
             if (db != null) {
                 const onSuccess = (): void => {

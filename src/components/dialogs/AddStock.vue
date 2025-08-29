@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive, useTemplateRef} from 'vue'
+import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
@@ -20,12 +20,12 @@ interface IState {
   wkn: string
   symbol: string
   auto: boolean
+  isFormValid: boolean
 }
 
 const {t} = useI18n()
 const {CONS, log, notice, valIbanRules} = useApp()
 const {sendMessage} = useBrowser()
-const formRef = useTemplateRef('form-ref')
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -35,7 +35,8 @@ const state: IState = reactive({
   company: '',
   wkn: '',
   symbol: '',
-  auto: true
+  auto: true,
+  isFormValid: false
 })
 
 const mResetState = (): void => {
@@ -59,60 +60,57 @@ const onIsin = async (): Promise<void> => {
 }
 const onClickOk = async (): Promise<void> => {
   log('ADD_STOCK : onClickOk')
-  if (!formRef.value) {
-    console.error('Form ref is null')
+  if (!state.isFormValid) {
+    await notice(['Invalid Form!'])
     return
   }
-  const formIs = formRef.value.validate()
-  if (formIs.valid) {
-    try {
-      const stock: Omit<IStockStore, 'cID'> = {
-        cCompany: state.company.trim(),
-        cISIN: state.isin,
-        cWKN: state.wkn,
-        cSymbol: state.symbol,
-        cMeetingDay: '',
-        cQuarterDay: '',
-        cFadeOut: 0,
-        cFirstPage: 0,
-        cURL: '',
-        cAccountNumberID: settings.activeAccountId,
-        mPortfolio: 0,
-        mChange: 0,
-        mBuyValue: 0,
-        mEuroChange: 0,
-        mMin: 0,
-        mValue: 0,
-        mMax: 0
-      }
-      const addStockResponse = await sendMessage(JSON.stringify({
-        type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
-      }))
-      const addStockData: IStock = JSON.parse(addStockResponse).data
-      const test = records.stocks.filter((stock) => {
-        return stock.cISIN === addStockData.cISIN
-      })
-      if (test.length > 0) {
-        await notice(['Unternehmen existiert bereits'])
-        return
-      }
-      records.addStock({
-        ...addStockData,
-        mPortfolio: 0,
-        mChange: 0,
-        mBuyValue: 0,
-        mEuroChange: 0,
-        mMin: 0,
-        mValue: 0,
-        mMax: 0
-      })
-      await notice([t('dialogs.addStock.success')])
-      mResetState()
-      runtime.resetTeleport()
-    } catch (e) {
-      console.error(e)
-      await notice([t('dialogs.addStock.error')])
+  try {
+    const stock: Omit<IStockStore, 'cID'> = {
+      cCompany: state.company.trim(),
+      cISIN: state.isin,
+      cWKN: state.wkn,
+      cSymbol: state.symbol,
+      cMeetingDay: '',
+      cQuarterDay: '',
+      cFadeOut: 0,
+      cFirstPage: 0,
+      cURL: '',
+      cAccountNumberID: settings.activeAccountId,
+      mPortfolio: 0,
+      mChange: 0,
+      mBuyValue: 0,
+      mEuroChange: 0,
+      mMin: 0,
+      mValue: 0,
+      mMax: 0
     }
+    const addStockResponse = await sendMessage(JSON.stringify({
+      type: CONS.MESSAGES.DB__ADD_STOCK, data: stock
+    }))
+    const addStockData: IStock = JSON.parse(addStockResponse).data
+    const test = records.stocks.filter((stock) => {
+      return stock.cISIN === addStockData.cISIN
+    })
+    if (test.length > 0) {
+      await notice(['Unternehmen existiert bereits'])
+      return
+    }
+    records.addStock({
+      ...addStockData,
+      mPortfolio: 0,
+      mChange: 0,
+      mBuyValue: 0,
+      mEuroChange: 0,
+      mMin: 0,
+      mValue: 0,
+      mMax: 0
+    })
+    await notice([t('dialogs.addStock.success')])
+    mResetState()
+    runtime.resetTeleport()
+  } catch (e) {
+    console.error(e)
+    await notice([t('dialogs.addStock.error')])
   }
 }
 const title = t('dialogs.addStock.title')
@@ -127,7 +125,7 @@ log('--- AddStock.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
+  <v-form v-model="state.isFormValid" validate-on="submit">
     <v-card-text class="pa-5">
       <v-text-field
           v-model="state.isin"
@@ -138,60 +136,28 @@ log('--- AddStock.vue setup ---')
           required
           variant="outlined"
           @update:modelValue="onIsin"
-      ></v-text-field>
+      />
       <v-text-field
           v-model="state.company"
           :disabled="state.auto"
           :label="t('dialogs.addStock.company')"
           required
           variant="outlined"
-      ></v-text-field>
+      />
       <v-text-field
           v-model="state.wkn"
           :disabled="state.auto"
           :label="t('dialogs.addStock.wkn')"
           required
           variant="outlined"
-      ></v-text-field>
+      />
       <v-text-field
           v-model="state.symbol"
           :disabled="state.auto"
           :label="t('dialogs.addStock.symbol')"
           required
           variant="outlined"
-      ></v-text-field>
+      />
     </v-card-text>
   </v-form>
-  <!--<v-form ref="form-ref" validate-on="submit" @submit.prevent>
-    <v-switch
-      v-model="state._stockAccount"
-      color="red"
-      :label="t('dialogs.addAccount.stockAccountLabel')"></v-switch>
-    <v-text-field
-      ref="swift-input"
-      v-model="state._swift"
-      autofocus
-      required
-      :label="t('dialogs.addAccount.swiftLabel')"
-      :rules="VALIDATORS.swiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
-      variant="outlined"
-    ></v-text-field>
-    <v-text-field
-      v-model="state._number"
-      required
-      :label="t('dialogs.addAccount.accountNumberLabel')"
-      :placeholder="t('dialogs.addAccount.accountNumberPlaceholder')"
-      :rules="VALIDATORS.ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-      variant="outlined"
-    ></v-text-field>
-    <v-text-field
-      v-model="state._brandFetchName"
-      autofocus
-      placeholder="z. B. ing.com"
-      required
-      :label="t('dialogs.addAccount.logoLabel')"
-      :rules="VALIDATORS.brandNameRules([t('validators.brandNameRules', 0)])"
-      variant="outlined"
-    ></v-text-field>
-  </v-form>-->
 </template>

@@ -13,6 +13,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/helper/DotMenu.vue'
 import {reactive} from 'vue'
+import {type VDataTableHeaders} from 'vuetify/components'
 
 type HomeMenuItem = {
   readonly id: string
@@ -30,7 +31,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {bookings} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
-const homeHeaders = [
+const homeHeaders: VDataTableHeaders[] = [
   {
     title: t('appPage.headers.action'),
     align: 'start',
@@ -104,7 +105,7 @@ log('--- HomeContent.vue setup ---')
       prepend-inner-icon="$magnify"
       single-line
       variant="outlined"
-  ></v-text-field>
+  />
   <v-data-table
       :headers="homeHeaders"
       :hide-no-data="false"
@@ -126,7 +127,7 @@ log('--- HomeContent.vue setup ---')
           <DotMenu
               :menuItems="homeMenuItems"
               :recordID="item.cID"
-          ></DotMenu>
+          />
         </td>
         <td>{{ d(utcDate(item.cDate), 'short') }}</td>
         <td>{{ n(item.cDebit, 'currency') }}</td>

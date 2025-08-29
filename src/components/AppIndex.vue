@@ -21,26 +21,26 @@ const theme = useTheme()
 const {CONS, log, getUI} = useApp()
 const {getStorage, sendMessage, onStorageChanged} = useBrowser()
 
-const onStorageChange = (changes): void => {
+const onStorageChange = (changes: browser.storage.StorageChange): void => {
   const changesKey = Object.keys(changes)
   switch (changesKey[0]) {
     case CONS.STORAGE.PROPS.SKIN:
-      settings.setSkin(theme, changes[changesKey[0]].newValue)
+      settings.setSkin(theme, changes.newValue)
       break
     case CONS.STORAGE.PROPS.SERVICE:
-      settings.setService(changes[changesKey[0]].newValue)
+      settings.setService(changes.newValue)
       break
     case CONS.STORAGE.PROPS.INDEXES:
-      settings.setIndexes(changes[changesKey[0]].newValue)
+      settings.setIndexes(changes.newValue)
       break
     case CONS.STORAGE.PROPS.MARKETS:
-      settings.setMarkets(changes[changesKey[0]].newValue)
+      settings.setMarkets(changes.newValue)
       break
     case CONS.STORAGE.PROPS.MATERIALS:
-      settings.setMaterials(changes[changesKey[0]].newValue)
+      settings.setMaterials(changes.newValue)
       break
     case CONS.STORAGE.PROPS.EXCHANGES:
-      settings.setExchanges(changes[changesKey[0]].newValue)
+      settings.setExchanges(changes.newValue)
       break
     default:
   }
@@ -78,12 +78,12 @@ log('--- AppIndex.vue setup ---', {info: window.location.href})
 
 <template>
   <v-app :flat="true">
-    <router-view name="title"></router-view>
-    <router-view name="header"></router-view>
-    <router-view name="info"></router-view>
+    <router-view name="title"/>
+    <router-view name="header"/>
+    <router-view name="info"/>
     <v-main>
-      <router-view></router-view>
+      <router-view/>
     </v-main>
-    <router-view name="footer"></router-view>
+    <router-view name="footer"/>
   </v-app>
 </template>

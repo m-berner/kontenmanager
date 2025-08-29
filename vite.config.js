@@ -5,9 +5,8 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-
 import {defineConfig} from 'vite'
-import {fileURLToPath, URL} from 'url'
+import {URL, fileURLToPath} from 'url'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
 import {viteStaticCopy} from 'vite-plugin-static-copy'

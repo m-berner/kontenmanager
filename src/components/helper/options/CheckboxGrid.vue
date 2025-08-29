@@ -15,11 +15,11 @@ interface CheckboxGridProps {
   type: symbol
 }
 
+const checkboxGridProps = defineProps<CheckboxGridProps>()
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const checkboxGridProps = defineProps<CheckboxGridProps>()
 const checked = ref([])
 
 const indexesKeys: string[] = Array.from(CONS.SETTINGS.INDEXES.keys())
@@ -94,7 +94,7 @@ log('--- CheckboxGrid.vue setup ---')
         :value="item"
         hide-details
         @change="setChecked"
-    ></v-checkbox>
+    />
   </v-col>
   <v-col>
     <v-checkbox
@@ -105,6 +105,6 @@ log('--- CheckboxGrid.vue setup ---')
         :value="item"
         hide-details
         @change="setChecked"
-    ></v-checkbox>
+    />
   </v-col>
 </template>

@@ -27,7 +27,7 @@ interface IState {
 
 const {t} = useI18n()
 const {CONS, log, notice, valPositiveIntegerRules} = useApp()
-const {sendMessage} = useApp()
+const {sendMessage} = useBrowser()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -104,7 +104,7 @@ log('--- UpdateBooking.vue setup ---')
             required
             type="date"
             variant="outlined"
-        ></v-text-field>
+        />
       </v-row>
       <v-row>
         <v-select
@@ -122,7 +122,7 @@ log('--- UpdateBooking.vue setup ---')
             validate-on="input"
             variant="outlined"
             @update:modelValue="(ev) => {console.error('CHANGE', ev, state.bookingTypeId)}"
-        ></v-select>
+        />
       </v-row>
       <v-row cols="2" sm="2">
         <v-col>
@@ -130,14 +130,14 @@ log('--- UpdateBooking.vue setup ---')
               v-model="state.credit"
               :label="t('dialogs.addBooking.creditLabel')"
               @amount="(a) => { state.credit = a }"
-          ></CurrencyInput>
+          />
         </v-col>
         <v-col>
           <CurrencyInput
               v-model="state.debit"
               :label="t('dialogs.addBooking.debitLabel')"
               @amount="(a) => { state.debit = a }"
-          ></CurrencyInput>
+          />
         </v-col>
       </v-row>
       <v-row>
@@ -147,7 +147,7 @@ log('--- UpdateBooking.vue setup ---')
             density="compact"
             required
             variant="outlined"
-        ></v-text-field>
+        />
       </v-row>
     </v-container>
   </v-form>
