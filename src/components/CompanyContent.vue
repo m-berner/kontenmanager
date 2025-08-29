@@ -13,6 +13,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {computed} from 'vue'
+import {type DataTableHeader} from 'vuetify'
 
 // Store setup with proper typing
 const {log} = useApp()
@@ -22,7 +23,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 
 const {stocksPerPage} = storeToRefs(settings)
-const stocksHeaders = [
+const stocksHeaders: DataTableHeader[] = [
   {
     title: t('stocksTable.headers.action'),
     align: 'start',
@@ -148,15 +149,14 @@ log('--- StocksTable.vue setup ---')
           <DotMenu
               :menuItems="stocksMenuItems"
               :recordID="item.cID ?? -1"
-              menuType="stocks">
-          </DotMenu>
+              menuType="stocks"/>
         </td>
         <td>{{ item.cCompany }}</td>
         <td>{{ item.cISIN }}</td>
         <td v-if="new Date(item.cQuarterDay).getTime() > 0">{{ d(new Date(item.cQuarterDay), 'short') }}</td>
-        <td v-else></td>
+        <td v-else/>
         <td v-if="new Date(item.cMeetingDay).getTime() > 0">{{ d(new Date(item.cMeetingDay), 'short') }}</td>
-        <td v-else></td>
+        <td v-else/>
         <td>{{ item.mPortfolio }}</td>
         <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
         <v-tooltip :text="n((item.mChange ?? 0) / 100, 'percent')" location="left">

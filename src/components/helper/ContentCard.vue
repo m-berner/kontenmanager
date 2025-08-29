@@ -14,9 +14,8 @@ interface PropsContentCard {
   data: IContent[]
 }
 
-const {log} = useApp()
-
 const contentCardProps = defineProps<PropsContentCard>()
+const {log} = useApp()
 
 log('--- HelpContent.vue setup ---')
 </script>
@@ -29,7 +28,7 @@ log('--- HelpContent.vue setup ---')
   </v-card>
   <v-card v-for="item in contentCardProps.data" :key="item.title">
     <v-card-title>
-      <v-icon v-if="item.icon" :icon="item.icon"></v-icon>
+      <v-icon v-if="item.icon" :icon="item.icon"/>
       {{ item.title }}
     </v-card-title>
     <v-card-text>

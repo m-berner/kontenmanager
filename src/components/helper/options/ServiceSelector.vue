@@ -31,7 +31,7 @@ const serviceLabels = (item: string): string => {
 
 onBeforeMount(async () => {
   const storageService = await getStorage([CONS.STORAGE.PROPS.SERVICE])
-  service.value = storageService[CONS.STORAGE.PROPS.SERVICE]
+  service.value = storageService[CONS.STORAGE.PROPS.SERVICE] as string
 })
 
 log('--- ServiceSelector.vue setup ---')

@@ -19,23 +19,23 @@ log('--- FooterBar.vue setup ---')
   <v-bottom-navigation color="primary">
     <v-btn color="white">
       <router-link class="router-link-active" to="/help">
-        <v-icon icon="$help"></v-icon>
+        <v-icon icon="$help"/>
         <div>{{ t('footer.help') }}</div>
       </router-link>
     </v-btn>
     <v-btn color="white">
       <router-link class="router-link-active" to="/privacy">
         <v-icon icon="
-        $privacy"></v-icon>
+        $privacy"/>
         <div>{{ t('footer.privacy') }}</div>
       </router-link>
     </v-btn>
     <v-btn :href="CONS.SYSTEM.MAILTO" color="white">
-      <v-icon icon="$mail"></v-icon>
+      <v-icon icon="$mail"/>
       <div>{{ t('footer.mail') }}</div>
     </v-btn>
     <v-btn :disabled="true" color="white">
-      <v-icon icon="$mdiCopyright"></v-icon>
+      <v-icon icon="$mdiCopyright"/>
       <div class="nowrap">{{ CONS.SYSTEM.COPYRIGHT }}</div>
     </v-btn>
   </v-bottom-navigation>

@@ -12,7 +12,7 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
-import {defineExpose, reactive, toRaw, type UnwrapRef} from 'vue'
+import {type UnwrapRef, computed, defineExpose, reactive, toRaw} from 'vue'
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: UnwrapRef<Blob>[] }
@@ -24,7 +24,8 @@ const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 const {sendMessage} = useBrowser()
 
-const chosen_file: Blob = reactive(new Blob())
+let chosen_file: Blob = reactive(new Blob())
+const onChange = computed(ev => { chosen_file = (ev as IEventTarget).target.files[0] })
 
 const onClickOk = async (): Promise<void> => {
   log('IMPORT_DATABASE: onClickOk', {info: chosen_file})
@@ -97,11 +98,11 @@ const onClickOk = async (): Promise<void> => {
         bookingTypes.push({cID: 3, cName: 'Dividende', cAccountNumberID: activeId})
         bookingTypes.push({cID: 4, cName: 'Einzahlung', cAccountNumberID: activeId})
         bookingTypes.push({cID: 5, cName: 'Auszahlung', cAccountNumberID: activeId})
-        for (let entry of bookingTypes) {
+        for (const entry of bookingTypes) {
           records.addBookingType(entry)
         }
         for (smStock of backupObject.stocks) {
-          let stockClone: IStock = {} as IStock
+          const stockClone: IStock = {} as IStock
           let stockCloneStore: IStockStore = {} as IStockStore
           stockClone.cID = smStock.cID
           stockClone.cAccountNumberID = activeId
@@ -129,8 +130,8 @@ const onClickOk = async (): Promise<void> => {
           records.addStock(stockCloneStore)
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
-          let transferClone: IBooking = {} as IBooking
-          let smTransfer: Stockmanager.ITransfer = backupObject.transfers[i]
+          const transferClone: IBooking = {} as IBooking
+          const smTransfer: Stockmanager.ITransfer = backupObject.transfers[i]
           transferClone.cID = i + 1
           transferClone.cAccountNumberID = activeId
           transferClone.cStockID = smTransfer.cStockID
@@ -159,9 +160,9 @@ const onClickOk = async (): Promise<void> => {
         records.sumBookings()
         const stores: IStoresDB = {
           accounts: toRaw(records.accounts),
-          bookings: bookings,
-          bookingTypes: bookingTypes,
-          stocks: stocks
+          bookings,
+          bookingTypes,
+          stocks
         }
         await sendMessage(JSON.stringify({
           type: CONS.MESSAGES.DB__ADD_STORES,
@@ -177,7 +178,7 @@ const onClickOk = async (): Promise<void> => {
         for (stock of backupObject.stocks) {
           stocks.push(stock)
           if (stock.cAccountNumberID === activeId) {
-            let stockClone = {
+            const stockClone = {
               ...stock,
               mPortfolio: 0,
               mChange: 0,
@@ -205,10 +206,10 @@ const onClickOk = async (): Promise<void> => {
         settings.setActiveAccountId(activeId)
         records.sumBookings()
         const stores: IStoresDB = {
-          accounts: accounts,
-          bookings: bookings,
-          bookingTypes: bookingTypes,
-          stocks: stocks
+          accounts,
+          bookings,
+          bookingTypes,
+          stocks
         }
         await sendMessage(JSON.stringify({type: CONS.MESSAGES.DB__ADD_STORES, data: stores}))
       } else {
@@ -236,13 +237,13 @@ log('--- ImportDatabase.vue setup ---')
       <v-text-field
           :label="t('dialogs.importDatabase.messageDelete')"
           variant="plain"
-      ></v-text-field>
+      />
       <v-file-input
           :clearable="true"
           :label="t('dialogs.importDatabase.label')"
           accept=".json"
           variant="outlined"
-          @change="(ev: IEventTarget) => { chosen_file = ev.target.files[0] }"></v-file-input>
+          @change="onChange"/>
     </v-card-text>
   </v-form>
 </template>

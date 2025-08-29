@@ -13,7 +13,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/helper/DotMenu.vue'
 import {reactive} from 'vue'
-import {type VDataTableHeaders} from 'vuetify/components'
+import {type DataTableHeader} from 'vuetify'
 
 type HomeMenuItem = {
   readonly id: string
@@ -31,7 +31,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {bookings} = storeToRefs(records)
 const {bookingsPerPage} = storeToRefs(settings)
-const homeHeaders: VDataTableHeaders[] = [
+const homeHeaders: DataTableHeader[] = [
   {
     title: t('appPage.headers.action'),
     align: 'start',

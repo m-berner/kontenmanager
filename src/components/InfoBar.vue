@@ -41,8 +41,7 @@ const updateDrawerControls = (): void => {
     return {
       id: index,
       title: t(`infoBar.drawerTitles.${key}`),
-      value: n(value, 'currency') +
-          (key === 'winLoss' ? ' / ' + n(records.totalController.winLossPercent ?? 0, 'percent') : ''),
+      value: key === 'winLoss' ? `${n(value, 'currency')} ' / ' ${n(records.totalController.winLossPercent ?? 0, 'percent')}` : '',
       class: value < 0 ? `${key}_minus` : key
     }
   })
@@ -56,8 +55,13 @@ log('--- InfoBar.vue setup ---')
 </script>
 
 <template>
-  <v-navigation-drawer v-model="state.show" :floating="true" app color="secondary" height="100%"
-                       width="180">
+  <v-navigation-drawer
+      v-model="state.show"
+      :floating="true"
+      app
+      color="secondary"
+      height="100%"
+      width="180">
     <v-card color="secondary" height="100%">
       <v-list lines="two">
         <v-list-item
@@ -66,12 +70,12 @@ log('--- InfoBar.vue setup ---')
             :class="item.class"
             :subtitle="item.value"
             :title="item.title"
-        ></v-list-item>
+        />
       </v-list>
     </v-card>
   </v-navigation-drawer>
   <v-app-bar :flat="true" app color="secondary">
-    <v-app-bar-nav-icon variant="text" @click="state.show = !state.show"></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon variant="text" @click="state.show = !state.show"/>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>
         <v-list-item v-for="item in runtime.infoBar.exchanges.keys()" :key="item">

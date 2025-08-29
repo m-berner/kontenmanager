@@ -35,7 +35,7 @@ log('--- ExportDatabase.vue setup ---')
           :disabled="true"
           :modelValue="t('dialogs.exportDialog', { filename: fn })"
           variant="outlined"
-      ></v-textarea>
+      />
     </v-card-text>
   </v-form>
 </template>

@@ -37,7 +37,7 @@ const setSkin = async (skin: string | null): Promise<void> => {
 
 onBeforeMount(async () => {
   const storageSkin = await getStorage([CONS.STORAGE.PROPS.SKIN])
-  skin.value = storageSkin[CONS.STORAGE.PROPS.SKIN]
+  skin.value = storageSkin[CONS.STORAGE.PROPS.SKIN] as string
 })
 
 log('--- ThemeSelector.vue setup ---')

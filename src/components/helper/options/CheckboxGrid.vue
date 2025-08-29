@@ -9,10 +9,14 @@
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import {computed, defineProps, onBeforeMount, ref, toRaw} from 'vue'
+import {computed, defineProps, onBeforeMount, reactive, toRaw} from 'vue'
 
 interface CheckboxGridProps {
   type: symbol
+}
+
+interface IState {
+  checked: string[]
 }
 
 const checkboxGridProps = defineProps<CheckboxGridProps>()
@@ -20,7 +24,9 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const checked = ref([])
+const state: IState = reactive({
+  checked: []
+})
 
 const indexesKeys: string[] = Array.from(CONS.SETTINGS.INDEXES.keys())
 const materialsKeys: string[] = Array.from(CONS.SETTINGS.MATERIALS.keys())
@@ -58,7 +64,7 @@ const setLabel = (item: string): string | undefined => {
 }
 
 const setChecked = async (): Promise<void> => {
-  const checkedBoxes = toRaw(checked)
+  const checkedBoxes = toRaw(state.checked)
   switch (checkboxGridProps.type) {
     case CONS.CHECKBOX_GRID.TYPES.INDEXES:
       await setStorage(CONS.STORAGE.PROPS.INDEXES, checkedBoxes)
@@ -73,10 +79,10 @@ onBeforeMount(async () => {
   const storage = await getStorage([CONS.STORAGE.PROPS.INDEXES, CONS.STORAGE.PROPS.MATERIALS])
   switch (checkboxGridProps.type) {
     case CONS.CHECKBOX_GRID.TYPES.INDEXES:
-      checked.value = storage[CONS.STORAGE.PROPS.INDEXES]
+      state.checked = storage[CONS.STORAGE.PROPS.INDEXES] as string[]
       break
     case CONS.CHECKBOX_GRID.TYPES.MATERIALS:
-      checked.value = storage[CONS.STORAGE.PROPS.MATERIALS]
+      state.checked = storage[CONS.STORAGE.PROPS.MATERIALS] as string[]
       break
   }
 })
@@ -89,7 +95,7 @@ log('--- CheckboxGrid.vue setup ---')
     <v-checkbox
         v-for="item in boxes.A"
         :key="item"
-        v-model="checked"
+        v-model="state.checked"
         :label="setLabel(item)"
         :value="item"
         hide-details
@@ -100,7 +106,7 @@ log('--- CheckboxGrid.vue setup ---')
     <v-checkbox
         v-for="item in boxes.B"
         :key="item"
-        v-model="checked"
+        v-model="state.checked"
         :label="setLabel(item)"
         :value="item"
         hide-details

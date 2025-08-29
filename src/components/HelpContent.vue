@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {computed, type ComputedRef} from 'vue'
+import {type ComputedRef, computed} from 'vue'
 import ContentCard from '@/components/helper/ContentCard.vue'
 
 const {t} = useI18n()
@@ -133,7 +133,7 @@ const companyBar: ComputedRef<IContent[]> = computed(() => [
     title: t('helpContent.companyBar.title.5'),
     content: '',
     icon: t('helpContent.companyBar.icon.5')
-  },
+  }
 ])
 const transferBar: ComputedRef<IContent[]> = computed(() => [
   {
@@ -158,16 +158,16 @@ log('--- HelpContent.vue setup ---')
         <v-col cols="8" s="8">
           <ContentCard
               :data="requests"
-              :title="t('helpContent.requestsTitle')"></ContentCard>
+              :title="t('helpContent.requestsTitle')"/>
           <ContentCard
               :data="toolBar"
-              :title="t('helpContent.toolBarTitle')"></ContentCard>
+              :title="t('helpContent.toolBarTitle')"/>
           <ContentCard
               :data="companyBar"
-              :title="t('helpContent.companyBarTitle')"></ContentCard>
+              :title="t('helpContent.companyBarTitle')"/>
           <ContentCard
               :data="transferBar"
-              :title="t('helpContent.transferBarTitle')"></ContentCard>
+              :title="t('helpContent.transferBarTitle')"/>
         </v-col>
       </v-row>
     </v-container>

@@ -61,7 +61,7 @@ onBeforeMount(async () => {
   }
   const exchangesBaseResponseString = await sendMessage(JSON.stringify({
     type: CONS.MESSAGES.FETCH__EXCHANGES_BASE_DATA,
-    data: [getUI().curUsd, getUI().curEur],
+    data: [getUI().curUsd, getUI().curEur]
   }))
   const exchangesBaseResponseData = JSON.parse(exchangesBaseResponseString).data
   for (let i = 0; i < exchangesBaseResponseData.length; i++) {

@@ -100,10 +100,10 @@ onBeforeMount(async () => {
   const storage = await getStorage([CONS.STORAGE.PROPS.MARKETS, CONS.STORAGE.PROPS.EXCHANGES])
   switch (dynamicListProps.type) {
     case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
-      state.list = storage[CONS.STORAGE.PROPS.EXCHANGES]
+      state.list = storage[CONS.STORAGE.PROPS.EXCHANGES] as string[]
       break
     case CONS.DYNAMIC_LIST.TYPES.MARKETS:
-      state.list = storage[CONS.STORAGE.PROPS.MARKETS]
+      state.list = storage[CONS.STORAGE.PROPS.MARKETS] as string[]
       break
   }
 })
