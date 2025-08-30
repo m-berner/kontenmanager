@@ -3,7 +3,6 @@
   "packageManager": "yarn@4.9.2",
   "type": "module",
   "devDependencies": {
-    "@eslint/eslintrc": "3.3.1",
     "@mdi/font": "7.4.47",
     "@mdi/js": "7.4.47",
     "@types/chrome": "0.1.4",
@@ -13,7 +12,6 @@
     "@typescript-eslint/eslint-plugin": "8.40.0",
     "@typescript-eslint/parser": "8.40.0",
     "@vitejs/plugin-vue": "6.0.1",
-    "@vue/language-server": "2.2.10",
     "@vue/eslint-config-typescript": "14.6.0",
     "@web-types/vue": "3.0.0-1",
     "@web-types/vuetify": "2.0.15-1",

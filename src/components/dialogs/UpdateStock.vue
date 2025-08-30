@@ -13,6 +13,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
+import type {IStock, IStockStore} from '@/types.d'
 
 interface IState {
   id: number
@@ -84,7 +85,7 @@ const onClickOk = async (): Promise<void> => {
     await notice([updateStockResponse])
     runtime.resetTeleport()
   } catch (e) {
-    console.error(e)
+    log('UPDATE_STOCK: onClickOk', {error: e})
     await notice([t('dialogs.updateStock.error')])
   }
 }

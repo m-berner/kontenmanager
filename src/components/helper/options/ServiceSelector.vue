@@ -47,6 +47,6 @@ log('--- ServiceSelector.vue setup ---')
         :key="item"
         :label="serviceLabels(item)"
         :value="item"
-    ></v-radio>
+    />
   </v-radio-group>
 </template>

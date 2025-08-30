@@ -14,6 +14,18 @@ import {useRecordsStore} from '@/stores/records'
 //import {storeToRefs} from 'pinia'
 import {useApp} from '@/composables/useApp'
 
+export interface _IDrawerControl {
+  id: number
+  title: string
+  value: string
+  class: string
+}
+
+interface IState {
+  show: boolean
+  drawerControls: _IDrawerControl[]
+}
+
 const {n, t} = useI18n()
 const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
@@ -35,7 +47,7 @@ const usd = (mat: string, usd = true): number => {
   return (runtime.infoBar.materials.get(mat) ?? 0) / runtime.exchanges.curUsd
 }
 const updateDrawerControls = (): void => {
-  console.log('INFO_BAR: updateDrawerControls')
+  log('INFO_BAR: updateDrawerControls')
   state.drawerControls = CONS.DEFAULTS.DRAWER_KEYS.map((key, index) => {
     const value = records.totalController[key] ?? 0
     return {

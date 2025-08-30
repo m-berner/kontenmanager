@@ -82,7 +82,7 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.UpdateAccount.success')])
     mResetState()
   } catch (e) {
-    console.error(e)
+    log('UPDATE_ACCOUNT: onClickOk', {error: e})
     await notice([t('dialogs.updateAccount.error')])
   }
 }
@@ -139,6 +139,6 @@ log('--- UpdateAccount.vue setup ---')
         variant="outlined"
         @input="onInputLogoUrl"
     />
-    <img :src="state.logoUrl" alt="CONS.URLS.LOGO[0]" />
+    <img :src="state.logoUrl" alt="CONS.URLS.LOGO[0]"/>
   </v-form>
 </template>

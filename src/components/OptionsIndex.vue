@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {computed, type ComputedRef, type Ref, ref} from 'vue'
+import {type ComputedRef, type Ref, computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import DynamicList from '@/components/helper/options/DynamicList.vue'
 import ThemeSelector from '@/components/helper/options/ThemeSelector.vue'
@@ -74,7 +74,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
                     :type="CONS.DYNAMIC_LIST.TYPES.MARKETS"
-                ></DynamicList>
+                />
               </v-col>
             </v-row>
           </v-tabs-window-item>
@@ -82,14 +82,14 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
             <v-row>
               <CheckboxGrid
                   :type="CONS.CHECKBOX_GRID.TYPES.INDEXES"
-              ></CheckboxGrid>
+              />
             </v-row>
           </v-tabs-window-item>
           <v-tabs-window-item :value="3">
             <v-row>
               <CheckboxGrid
                   :type="CONS.CHECKBOX_GRID.TYPES.MATERIALS"
-              ></CheckboxGrid>
+              />
             </v-row>
           </v-tabs-window-item>
           <v-tabs-window-item :value="4">
@@ -97,7 +97,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
                     :type="CONS.DYNAMIC_LIST.TYPES.EXCHANGES"
-                ></DynamicList>
+                />
               </v-col>
             </v-row>
           </v-tabs-window-item>

@@ -10,6 +10,7 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
+import type {IBooking} from '@/types.d'
 
 interface IShowAccounting {
   _result: Array<{ title: string, subtitle: string }>
@@ -52,7 +53,7 @@ log('--- ShowAccounting.vue setup ---')
           v-for="entry in state._result"
           :key="entry.title"
           :subtitle="entry.subtitle"
-          :title="entry.title"></v-list-item>
+          :title="entry.title"/>
     </v-list>
   </v-form>
 </template>

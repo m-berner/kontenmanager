@@ -9,7 +9,8 @@
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import ContentCard from '@/components/helper/ContentCard.vue'
-import {computed, type ComputedRef} from 'vue'
+import {type ComputedRef, computed} from 'vue'
+import type {IContent} from '@/types.d'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -42,7 +43,7 @@ log('--- PrivacyContent.vue setup ---')
         <v-col cols="7" sm="7">
           <ContentCard
               :data="data"
-              :title="t('privacyContent.title')"></ContentCard>
+              :title="t('privacyContent.title')"/>
         </v-col>
       </v-row>
     </v-container>

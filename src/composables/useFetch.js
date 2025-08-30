@@ -1,6 +1,6 @@
 import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
-const { CONS, mean, notice, toNumber } = useApp();
+const { CONS, log, mean, notice, toNumber } = useApp();
 const { getStorage } = useBrowser();
 export const useFetch = () => {
     const fetchCompanyData = async (isin) => {
@@ -67,7 +67,7 @@ export const useFetch = () => {
         });
     };
     const fetchMinRateMaxData = async (storageOnline) => {
-        console.log('BACKGROUND: fetchMinRateMaxData');
+        log('BACKGROUND: fetchMinRateMaxData');
         return new Promise(async (resolve, reject) => {
             const storageService = await getStorage([CONS.STORAGE.PROPS.SERVICE]);
             const serviceName = storageService[CONS.STORAGE.PROPS.SERVICE];
@@ -331,15 +331,15 @@ export const useFetch = () => {
         });
     };
     const fetchDailyChangeData = async (table, mode = CONS.SERVICES.TGATE.CHANGES.SMALL) => {
-        console.log('BACKGROUND: fetchDailyChangesData');
+        log('BACKGROUND: fetchDailyChangesData');
         let valuestr;
         let company;
         let sDocument;
         let trCollection;
-        let url = CONS.SERVICES.TGATE.CHB_URL ?? '' + table;
+        let url = `${CONS.SERVICES.TGATE.CHB_URL} ?? ''${table}`;
         let selector = '#kursliste_abc > tr';
         if (mode === CONS.SERVICES.TGATE.CHANGES.SMALL) {
-            url = CONS.SERVICES.TGATE.CHS_URL ?? '' + table;
+            url = `${CONS.SERVICES.TGATE.CHS_URL} ?? ''${table}`;
             selector = '#kursliste_daten > tr';
         }
         const convertHTMLEntities = (str) => {
@@ -406,7 +406,7 @@ export const useFetch = () => {
         return _changes;
     };
     const fetchExchangesData = async (exchangeCodes) => {
-        console.log('BACKGROUND: fetchExchangesData');
+        log('BACKGROUND: fetchExchangesData');
         const service = CONS.SERVICES.FX;
         const fExUrl = (code) => {
             if (service !== undefined) {
@@ -442,7 +442,7 @@ export const useFetch = () => {
         });
     };
     const fetchMaterialData = async () => {
-        console.log('BACKGROUND: fetchMaterialData');
+        log('BACKGROUND: fetchMaterialData');
         return new Promise(async (resolve, reject) => {
             const materials = [];
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '');
@@ -469,7 +469,7 @@ export const useFetch = () => {
         });
     };
     const fetchIndexData = async () => {
-        console.log('BACKGROUND: fetchIndexData');
+        log('BACKGROUND: fetchIndexData');
         return new Promise(async (resolve, reject) => {
             const indexes = [];
             const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES);
@@ -499,7 +499,7 @@ export const useFetch = () => {
         });
     };
     const fetchDateData = async (obj) => {
-        console.log('BACKGROUND: fetchDatesData');
+        log('BACKGROUND: fetchDatesData');
         const gmqf = { gm: 0, qf: 0 };
         const parseGermanDate = (germanDateString) => {
             const parts = germanDateString.match(/(\d+)/g) ?? ['01', '01', '1970'];
@@ -508,22 +508,22 @@ export const useFetch = () => {
             const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01';
             return new Date(`${year}-${month}-${day}`).getTime();
         };
-        const firstResponse = await fetch('https://www.finanzen.net/suchergebnis.asp?_search=' + obj.isin);
+        const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${obj.isin}`);
         if (firstResponse.url.length === 0 ||
             !firstResponse.ok ||
             firstResponse.status >= CONS.STATES.SRV ||
             (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-            console.error('BACKGROUND: fetchDatesData: First request failed');
+            log('BACKGROUND: fetchDatesData: First request failed', { error: 'SYstem' });
         }
         else {
             const atoms = firstResponse.url.split('/');
             const stockName = atoms[atoms.length - 1].replace('-aktie', '');
-            const secondResponse = await fetch('https://www.finanzen.net/termine/' + stockName);
+            const secondResponse = await fetch(`https://www.finanzen.net/termine/${stockName}`);
             if (!secondResponse.ok ||
                 secondResponse.status >= CONS.STATES.SRV ||
                 (secondResponse.status > 0 &&
                     secondResponse.status < CONS.STATES.SUCCESS)) {
-                console.error('BACKGROUND: fetchDatesData: Second request failed');
+                log('BACKGROUND: fetchDatesData: Second request failed');
             }
             else {
                 const secondResponseText = await secondResponse.text();

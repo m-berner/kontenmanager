@@ -24,11 +24,10 @@ interface IState {
   exchanges: string[]
 }
 
+const dynamicListProps = defineProps<DynamicListProps>()
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
-const dynamicListProps = defineProps<DynamicListProps>()
-
 const state: IState = reactive<IState>({
   newItem: '',
   list: [],
@@ -123,7 +122,7 @@ log('--- DynamicList.vue setup ---')
           <v-btn
               class="mr-3"
               icon="$close"
-              @click="removeItem(i)"></v-btn>
+              @click="removeItem(i)"/>
         </template>
       </v-list-item>
     </v-list>
@@ -139,7 +138,7 @@ log('--- DynamicList.vue setup ---')
           <v-btn class="ml-3"
                  color="primary"
                  icon="$add"
-                 @click="addItem(state.newItem)"></v-btn>
+                 @click="addItem(state.newItem)"/>
         </template>
       </v-text-field>
     </v-card-actions>

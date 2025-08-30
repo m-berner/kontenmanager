@@ -13,6 +13,7 @@ import {useApp} from '@/composables/useApp'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useSettingsStore} from '@/stores/settings'
+import type {IBooking, IBookingType, IStockStore} from '@/types.d'
 
 interface IState {
   bookDate: string
@@ -177,7 +178,7 @@ const onClickOk = async (): Promise<void> => {
       resetState()
     }
   } catch (e) {
-    console.error(e)
+    log('ADD_BOOKING: onClickOk', {error: e})
     await notice([t('dialogs.addBooking.error')])
   }
 }

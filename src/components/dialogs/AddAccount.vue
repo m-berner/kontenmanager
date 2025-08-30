@@ -14,6 +14,7 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
+import type {IAccount} from '@/types.d'
 
 interface IState {
   swift: string
@@ -94,7 +95,7 @@ const onClickOk = async (): Promise<void> => {
       runtime.resetTeleport()
     }
   } catch (e) {
-    console.error(e)
+    log('ADD_ACCOUNT: onClickOk', {error: e})
     await notice([t('dialogs.addAccount.error')])
   }
 }

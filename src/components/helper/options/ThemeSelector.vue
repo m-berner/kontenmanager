@@ -53,6 +53,6 @@ log('--- ThemeSelector.vue setup ---')
         :key="item"
         :label="themeNames[item]"
         :value="item"
-    ></v-radio>
+    />
   </v-radio-group>
 </template>

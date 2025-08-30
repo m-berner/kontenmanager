@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {createPinia, type Pinia} from 'pinia'
+import {type Pinia, createPinia} from 'pinia'
 import {useApp} from '@/composables/useApp'
 
 interface IPinia {

@@ -14,6 +14,53 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {type UnwrapRef, computed, defineExpose, reactive, toRaw} from 'vue'
+import type {IAccount, IBooking, IBookingType, IStock, IStockStore, IStoresDB} from '@/types.d'
+
+namespace StockManager {
+  export interface IStock {
+    cID: number
+    cCompany: string
+    cISIN: string
+    cWKN: string
+    cSym: string
+    cMeetingDay: number
+    cQuarterDay: number
+    cFadeOut: number
+    cFirstPage: number
+    cURL: string
+  }
+
+  export interface ITransfer {
+    cID: number
+    cStockID: number
+    cDate: number
+    cExDay: number
+    cUnitQuotation: number
+    cAmount: number
+    cCount: number
+    cFees: number
+    cSTax: number
+    cFTax: number
+    cTax: number
+    cSoli: number
+    cMarketPlace: string
+    cDescription: string
+    cType: number
+  }
+}
+
+interface IBackup {
+  sm: {
+    cVersion: number
+    cDBVersion: number
+    cEngine: string
+  }
+  accounts: IAccount[]
+  bookings: IBooking[]
+  bookingTypes: IBookingType[]
+  stocks: IStock[] & StockManager.IStock[]
+  transfers?: IBooking[] & StockManager.ITransfer[]
+}
 
 interface IEventTarget extends HTMLInputElement {
   target: { files: UnwrapRef<Blob>[] }
@@ -48,9 +95,9 @@ const onClickOk = async (): Promise<void> => {
       let booking: IBooking
       let bookingType: IBookingType
       let stock: IStock
-      let smStock: Stockmanager.IStock
+      let smStock: StockManager.IStock
       let activeId = 1
-      const getCreditDebit = (rec: Stockmanager.ITransfer): number => {
+      const getCreditDebit = (rec: StockManager.ITransfer): number => {
         let result: number
         switch (rec.cType) {
           case 1:
@@ -131,7 +178,7 @@ const onClickOk = async (): Promise<void> => {
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
           const transferClone: IBooking = {} as IBooking
-          const smTransfer: Stockmanager.ITransfer = backupObject.transfers[i]
+          const smTransfer: StockManager.ITransfer = backupObject.transfers[i]
           transferClone.cID = i + 1
           transferClone.cAccountNumberID = activeId
           transferClone.cStockID = smTransfer.cStockID

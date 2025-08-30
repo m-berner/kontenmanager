@@ -12,6 +12,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useSettingsStore} from '@/stores/settings'
+import type {IBookingType} from '@/types.d'
 
 interface IState {
   bookingTypeName: string
@@ -47,7 +48,7 @@ const onClickOk = async (): Promise<void> => {
       await notice([t('dialogs.AddBookingType.success')])
     }
   } catch (e) {
-    console.error(e)
+    log('ADD_BOOKING_TYPE: onClickOk', {error: e})
     await notice([t('dialogs.addBookingType.error')])
   }
 }

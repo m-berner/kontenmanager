@@ -8,6 +8,7 @@
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
+import type {IAccount, IBooking, IBookingType, IStockStore, IStores} from '@/types.d'
 
 interface IRecordsStore {
     accounts: IAccount[]

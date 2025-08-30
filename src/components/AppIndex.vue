@@ -15,6 +15,7 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useRuntimeStore} from '@/stores/runtime'
 import {onBeforeMount} from 'vue'
+import {type FetchedResources} from '@/types.d'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -54,9 +55,7 @@ onStorageChanged(onStorageChange)
 onBeforeMount(async () => {
   const storage = await getStorage()
   settings.initStore(theme, storage)
-  console.error('JJJZZJZZ', settings.activeAccountId)
   const stores = await exportStores(settings.activeAccountId)
-  console.error('lllll', stores, settings.activeAccountId)
   if (stores.accounts.length > 0) {
     records.initStore(stores)
     records.sumBookings()

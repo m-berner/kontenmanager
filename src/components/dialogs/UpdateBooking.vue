@@ -14,6 +14,7 @@ import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useIndexedDB} from '@/composables/useIndexedDB'
+import type {IBooking, IBookingType} from '@/types.d'
 
 interface IState {
   id: number
@@ -75,7 +76,7 @@ const onClickOk = async (): Promise<void> => {
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()
   } catch (e) {
-    console.error(e)
+    log('UPDATE_BOOKING: onClickOk', {error: e})
     await notice([t('dialogs.updateBooking.error')])
   }
 }

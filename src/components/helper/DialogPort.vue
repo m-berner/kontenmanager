@@ -23,7 +23,7 @@ const runtime = useRuntimeStore()
           {{ dialogRef?.title }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <component :is="runtime.teleport.dialogName" ref="dialog-ref"></component>
+          <component :is="runtime.teleport.dialogName" ref="dialog-ref"/>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip :text="t('dialogs.ok')" location="bottom">
@@ -36,10 +36,10 @@ const runtime = useRuntimeStore()
                   v-bind="props"
                   variant="outlined"
                   @click="dialogRef?.onClickOk"
-              ></v-btn>
+              />
             </template>
           </v-tooltip>
-          <v-spacer></v-spacer>
+          <v-spacer/>
           <v-tooltip :text="t('dialogs.cancel')" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
@@ -48,7 +48,7 @@ const runtime = useRuntimeStore()
                   v-bind="props"
                   variant="outlined"
                   @click="runtime.resetTeleport"
-              ></v-btn>
+              />
             </template>
           </v-tooltip>
         </v-card-actions>

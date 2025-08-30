@@ -14,6 +14,7 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
+import {type FetchedResources, type IStock, type IStockStore} from '@/types.d'
 
 interface IState {
   isin: string
@@ -107,7 +108,7 @@ const onClickOk = async (): Promise<void> => {
       runtime.resetTeleport()
     }
   } catch (e) {
-    console.error(e)
+    log('ADD_STOCK: onClickOk', {error: e})
     await notice([t('dialogs.addStock.error')])
   }
 }

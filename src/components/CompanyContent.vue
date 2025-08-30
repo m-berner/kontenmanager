@@ -14,6 +14,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {computed} from 'vue'
 import {type DataTableHeader} from 'vuetify'
+import type {IStockStore, StocksMenuItems} from '@/types.d'
 
 // Store setup with proper typing
 const {log} = useApp()
