@@ -20,12 +20,10 @@ const {open, dbi} = useIndexedDB()
 await open()
 const app = createApp(AppIndex)
 app.config.errorHandler = (err: unknown) => {
-    // eslint-disable-next-line no-console
-    console.error(err)
+    log('APP: errorHandler', {error: err})
 }
 app.config.warnHandler = (msg: string) => {
-    // eslint-disable-next-line no-console
-    console.warn(msg)
+    log('APP: warnHandler', {warn: msg})
 }
 app.use(componentsPlugin)
 app.use(vuetifyPlugin.vuetify)

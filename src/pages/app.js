@@ -12,10 +12,10 @@ const { open, dbi } = useIndexedDB();
 await open();
 const app = createApp(AppIndex);
 app.config.errorHandler = (err) => {
-    console.error(err);
+    log('APP: errorHandler', { error: err });
 };
 app.config.warnHandler = (msg) => {
-    console.warn(msg);
+    log('APP: warnHandler', { warn: msg });
 };
 app.use(componentsPlugin);
 app.use(vuetifyPlugin.vuetify);

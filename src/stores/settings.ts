@@ -40,7 +40,7 @@ export const useSettingsStore = defineStore('settings', {
         }
     },
     getters: {
-        hasActiveAccount: (state): boolean => state.activeAccountId !== -1,
+        hasActiveAccount: (state): boolean => state.activeAccountId !== -1
     },
     actions: {
         setActiveAccountId(value: number) {

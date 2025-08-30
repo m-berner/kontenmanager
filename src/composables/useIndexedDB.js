@@ -1,7 +1,7 @@
 import { useApp } from '@/composables/useApp';
 const { CONS, log, notice } = useApp();
+let db;
 export const useIndexedDB = () => {
-    let db = null;
     const dbi = () => {
         return db;
     };
@@ -174,7 +174,6 @@ export const useIndexedDB = () => {
         const stocks = [];
         const bookingTypes = [];
         return new Promise(async (resolve, reject) => {
-            console.error('GKGKGK', db);
             if (db != null) {
                 const onComplete = async () => {
                     log('USE_INDEXED_DB: exportStores: all database records sent to frontend!');

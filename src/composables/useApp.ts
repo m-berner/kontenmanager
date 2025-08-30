@@ -679,12 +679,15 @@ export const useApp = () => {
         }
         return len > 0 ? sum / len : 0
     }
-    const log = (msg: string, mode?: { info?: unknown, error?: unknown }) => {
+    const log = (msg: string, mode?: { info?: unknown, warn?: unknown, error?: unknown }) => {
         const localDebug = localStorage.getItem(CONS.STORAGE.PROPS.DEBUG)
         if (Number.parseInt(localDebug ?? '0') > 0) {
             if (mode?.info !== undefined) {
                 // eslint-disable-next-line no-console
                 console.info(msg, mode?.info)
+            } else if (mode?.warn !== undefined) {
+                // eslint-disable-next-line no-console
+                console.warn(msg, mode?.warn)
             } else if (mode?.error !== undefined) {
                 // eslint-disable-next-line no-console
                 console.error(msg, mode?.error)

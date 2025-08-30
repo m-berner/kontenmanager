@@ -18,7 +18,7 @@ export const useSettingsStore = defineStore('settings', {
         };
     },
     getters: {
-        hasActiveAccount: (state) => state.activeAccountId !== -1,
+        hasActiveAccount: (state) => state.activeAccountId !== -1
     },
     actions: {
         setActiveAccountId(value) {

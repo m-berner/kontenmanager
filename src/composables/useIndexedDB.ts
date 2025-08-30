@@ -9,8 +9,9 @@ import {useApp} from '@/composables/useApp'
 
 const {CONS, log, notice} = useApp()
 
+let db: IDBDatabase | null
+
 export const useIndexedDB = () => {
-    let db: IDBDatabase | null = null
     const dbi = (): IDBDatabase | null => {
         return db
     }
@@ -184,7 +185,6 @@ export const useIndexedDB = () => {
         const stocks: IStockStore[] = []
         const bookingTypes: IBookingType[] = []
         return new Promise(async (resolve, reject) => {
-            console.error('GKGKGK', db)
             if (db != null) {
                 //const storage = await browser.storage.local.get([CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID])
                 const onComplete = async (): Promise<void> => {

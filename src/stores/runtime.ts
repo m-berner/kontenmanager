@@ -59,7 +59,7 @@ export const useRuntimeStore = defineStore('runtime', {
         isDialogVisible: (state: IRuntimeStore): boolean => state.teleport.visibility
     },
     actions: {
-        setActiveId (value: number): void {
+        setActiveId(value: number): void {
             this.activeId = value
         },
         setTeleport(entry: ITeleport): void {

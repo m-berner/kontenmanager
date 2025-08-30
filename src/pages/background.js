@@ -1,10 +1,8 @@
 import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
-import { useIndexedDB } from '@/composables/useIndexedDB';
 const { CONS, log } = useApp();
 const { getStorage, setStorage } = useBrowser();
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
-    const { open } = useIndexedDB();
     const onInstall = async () => {
         log('BACKGROUND: onInstall');
         const installStorageLocal = async () => {
@@ -39,22 +37,22 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
             if (storageLocal[CONS.STORAGE.PROPS.MATERIALS] === undefined) {
                 await setStorage(CONS.STORAGE.PROPS.MATERIALS, CONS.DEFAULTS.STORAGE.MATERIALS);
             }
-            console.log('BACKGROUND: installStorageLocal: DONE');
+            log('BACKGROUND: installStorageLocal: DONE');
         };
         const onSuccess = (ev) => {
             if (ev.target instanceof IDBRequest) {
                 ev.target.result.close();
             }
-            console.log('BACKGROUND: onInstall: DONE');
+            log('BACKGROUND: onInstall: DONE');
         };
         const onError = (ev) => {
-            console.error('BACKGROUND: onError: ', ev);
+            log('BACKGROUND: onError: ', { error: ev });
         };
         const onUpgradeNeeded = async (ev) => {
             if (ev instanceof IDBVersionChangeEvent) {
-                console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.newVersion);
+                log('BACKGROUND: onInstall: onUpgradeNeeded', { info: ev.newVersion });
                 const createDB = () => {
-                    console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
+                    log('BACKGROUND: onInstall: onUpgradeNeeded: createDB');
                     const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
                         keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
                         autoIncrement: true
@@ -98,7 +96,6 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     };
     const onClick = async () => {
         log('BACKGROUND: onClick');
-        await open();
         const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.SYSTEM.INDEX)}` });
         if (foundTabs.length === 0) {
             const extensionTab = await browser.tabs.create({
@@ -119,4 +116,4 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     browser.action.onClicked.addListener(onClick);
     log('--- PAGE_SCRIPT background.js ---', { info: window.document.location.href });
 }
-log('--- PAGE_SCRIPT background.js ---');
+log('--- PAGE_SCRIPT background.js (does nothing) ---');

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -8,13 +7,11 @@
  */
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import {useIndexedDB} from '@/composables/useIndexedDB'
 
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
-    const { open } = useIndexedDB()
     // NOTE: onInstall runs at the installation or update of the add-on. And it runs on firefox update.
     const onInstall = async (): Promise<void> => {
         log('BACKGROUND: onInstall')
@@ -50,22 +47,22 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
             if (storageLocal[CONS.STORAGE.PROPS.MATERIALS] === undefined) {
                 await setStorage(CONS.STORAGE.PROPS.MATERIALS, CONS.DEFAULTS.STORAGE.MATERIALS)
             }
-            console.log('BACKGROUND: installStorageLocal: DONE')
+            log('BACKGROUND: installStorageLocal: DONE')
         }
         const onSuccess = (ev: Event): void => {
             if (ev.target instanceof IDBRequest) {
                 ev.target.result.close()
             }
-            console.log('BACKGROUND: onInstall: DONE')
+            log('BACKGROUND: onInstall: DONE')
         }
         const onError = (ev: Event): void => {
-            console.error('BACKGROUND: onError: ', ev)
+            log('BACKGROUND: onError: ', {error: ev})
         }
         const onUpgradeNeeded = async (ev: Event): Promise<void> => {
             if (ev instanceof IDBVersionChangeEvent) {
-                console.info('BACKGROUND: onInstall: onUpgradeNeeded', ev.newVersion)
+                log('BACKGROUND: onInstall: onUpgradeNeeded', {info: ev.newVersion})
                 const createDB = (): void => {
-                    console.log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
+                    log('BACKGROUND: onInstall: onUpgradeNeeded: createDB')
                     const requestCreateAccountStore = dbOpenRequest.result.createObjectStore(
                         CONS.DB.STORES.ACCOUNTS.NAME,
                         {
@@ -120,7 +117,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     }
     const onClick = async (): Promise<void> => {
         log('BACKGROUND: onClick')
-        await open()
+        //await open()
         const foundTabs = await browser.tabs.query({url: `${browser.runtime.getURL(CONS.SYSTEM.INDEX)}`})
         // NOTE: An event listener called by an API reloads the background.js script.
         if (foundTabs.length === 0) {
@@ -144,4 +141,4 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     log('--- PAGE_SCRIPT background.js ---', {info: window.document.location.href})
 }
 
-log('--- PAGE_SCRIPT background.js ---')
+log('--- PAGE_SCRIPT background.js (does nothing) ---')

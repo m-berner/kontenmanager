@@ -658,6 +658,9 @@ export const useApp = () => {
             if (mode?.info !== undefined) {
                 console.info(msg, mode?.info);
             }
+            else if (mode?.warn !== undefined) {
+                console.warn(msg, mode?.warn);
+            }
             else if (mode?.error !== undefined) {
                 console.error(msg, mode?.error);
             }
