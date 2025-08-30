@@ -73,7 +73,7 @@ log('--- TitleBar.vue setup ---')
         @update:model-value="onUpdateTitleBar"
     >
       <template #prepend>
-        <img :src="logoUrl" :alt="t('titleBar.iconsAlt.brandfetch')"/>
+        <img :alt="t('titleBar.iconsAlt.brandfetch')" :src="logoUrl"/>
       </template>
     </v-select>
   </v-app-bar>

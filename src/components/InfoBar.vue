@@ -9,9 +9,7 @@
 import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
-//import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
-//import {storeToRefs} from 'pinia'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 

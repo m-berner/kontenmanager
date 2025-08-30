@@ -18,6 +18,7 @@ const {log} = useNotification()
 const {exportToFile} = useIndexedDB()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
+const localeText = t('dialogs.exportDialog', { filename: fn })
 
 const onClickOk = async (): Promise<void> => {
   log('EXPORT_DATABASE : onClickOk')
@@ -35,7 +36,7 @@ log('--- ExportDatabase.vue setup ---')
     <v-card-text class="pa-5">
       <v-textarea
           :disabled="true"
-          :modelValue="t('dialogs.exportDialog', { filename: fn })"
+          :modelValue="localeText"
           variant="outlined"
       />
     </v-card-text>

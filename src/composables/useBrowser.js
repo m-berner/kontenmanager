@@ -4,7 +4,6 @@ export const useBrowser = () => {
             await browser.storage.local.set({ [key]: value });
         }
         catch (error) {
-            console.error('Storage update failed:', error);
             throw error;
         }
     };
@@ -13,15 +12,16 @@ export const useBrowser = () => {
             return await browser.storage.local.get(keys);
         }
         catch (error) {
-            console.error('Storage get failed:', error);
             throw error;
         }
     };
     const openOptionsPage = async () => {
-        return browser.runtime.openOptionsPage();
-    };
-    const sendMessage = (message) => {
-        return browser.runtime.sendMessage(JSON.stringify(message));
+        try {
+            return await browser.runtime.openOptionsPage();
+        }
+        catch (error) {
+            throw error;
+        }
     };
     const onStorageChanged = (callback) => {
         browser.storage.local.onChanged.addListener(callback);
@@ -41,5 +41,5 @@ export const useBrowser = () => {
         }
         return result;
     };
-    return { getChar5Locale, getStorage, sendMessage, setStorage, onStorageChanged, openOptionsPage };
+    return { getChar5Locale, getStorage, setStorage, onStorageChanged, openOptionsPage };
 };
