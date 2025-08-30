@@ -15,12 +15,12 @@ export const useIndexedDB = () => {
         return db
     }
     const clearStores = async (): Promise<string> => {
-        log('BACKGROUND: clearStores')
+        log('USE_INDEXED_DB: clearStores')
         return new Promise(async (resolve, reject) => {
             if (db !== null) {
                 const onComplete = async (): Promise<void> => {
                     await notice(['Database is empty!'])
-                    resolve('BACKGROUND: database is empty!')
+                    resolve('USE_INDEXED_DB: database is empty!')
                 }
                 const onAbort = (): void => {
                     reject(requestTransaction.error)
@@ -33,16 +33,16 @@ export const useIndexedDB = () => {
                 requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
                 requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
                 const onSuccessClearBookings = (): void => {
-                    log('BACKGROUND: bookings dropped')
+                    log('USE_INDEXED_DB: bookings dropped')
                 }
                 const onSuccessClearAccounts = (): void => {
-                    log('BACKGROUND: accounts dropped')
+                    log('USE_INDEXED_DB: accounts dropped')
                 }
                 const onSuccessClearBookingTypes = (): void => {
-                    log('BACKGROUND: booking types dropped')
+                    log('USE_INDEXED_DB: booking types dropped')
                 }
                 const onSuccessClearStocks = (): void => {
-                    log('BACKGROUND: stocks dropped')
+                    log('USE_INDEXED_DB: stocks dropped')
                 }
                 const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
                 requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
@@ -56,7 +56,7 @@ export const useIndexedDB = () => {
         })
     }
     const exportToFile = async (filename: string): Promise<string> => {
-        log('BACKGROUND: exportToFile')
+        log('USE_INDEXED_DB: exportToFile')
         const accounts: IAccount[] = []
         const bookings: IBooking[] = []
         const stocks: IStock[] = []
@@ -64,7 +64,7 @@ export const useIndexedDB = () => {
         return new Promise(async (resolve, reject) => {
             if (db !== null) {
                 const onComplete = async (): Promise<void> => {
-                    log('BACKGROUND: exportToFile: data read!')
+                    log('USE_INDEXED_DB: exportToFile: data read!')
                     const stringifyDB = (): string => {
                         let buffer: string
                         let i: number
@@ -122,7 +122,7 @@ export const useIndexedDB = () => {
                         filename
                     }
                     const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
-                        log('BACKGROUND: onDownloadChange')
+                        log('USE_INDEXED_DB: onDownloadChange')
                         browser.downloads.onChanged.removeListener(onDownloadChange)
                         if (
                             (change.state !== undefined && change.id > 0) ||
@@ -134,7 +134,7 @@ export const useIndexedDB = () => {
                     browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up a blob object after the download.
                     await browser.downloads.download(op) // writing blob object into download file
                     await notice(['Database exported!'])
-                    resolve('BACKGROUND: exportToFile: done!')
+                    resolve('USE_INDEXED_DB: exportToFile: done!')
                 }
                 const onAbort = (): void => {
                     reject(requestTransaction.error)
@@ -178,16 +178,17 @@ export const useIndexedDB = () => {
         })
     }
     const exportStores = async (aid: number): Promise<IStores> => {
-        log('BACKGROUND: exportStores')
+        log('USE_INDEXED_DB: exportStores')
         const accounts: IAccount[] = []
         const bookings: IBooking[] = []
         const stocks: IStockStore[] = []
         const bookingTypes: IBookingType[] = []
         return new Promise(async (resolve, reject) => {
+            console.error('GKGKGK', db)
             if (db != null) {
                 //const storage = await browser.storage.local.get([CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID])
                 const onComplete = async (): Promise<void> => {
-                    log('BACKGROUND: exportStores: all database records sent to frontend!')
+                    log('USE_INDEXED_DB: exportStores: all database records sent to frontend!')
                     resolve({accounts, bookings, stocks, bookingTypes})
                 }
                 const onAbort = (): void => {
@@ -238,12 +239,12 @@ export const useIndexedDB = () => {
         })
     }
     const importStores = async (stores: IStoresDB, all = true) => {
-        log('BACKGROUND: importStores', {info: db})
+        log('USE_INDEXED_DB: importStores', {info: db})
         return new Promise(async (resolve, reject) => {
             if (db != null) {
                 const onComplete = async (): Promise<void> => {
                     await notice(['All memory records are added to the database!'])
-                    resolve('BACKGROUND: importStores: all memory records are added to the database!')
+                    resolve('USE_INDEXED_DB: importStores: all memory records are added to the database!')
                 }
                 const onAbort = (): void => {
                     reject(requestTransaction.error)
@@ -256,25 +257,25 @@ export const useIndexedDB = () => {
                 requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
                 requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
                 const onSuccessClearBookings = (): void => {
-                    log('BACKGROUND: bookings dropped')
+                    log('USE_INDEXED_DB: bookings dropped')
                     for (let i = 0; i < stores.bookings.length; i++) {
                         requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
                     }
                 }
                 const onSuccessClearAccounts = (): void => {
-                    log('BACKGROUND: accounts dropped')
+                    log('USE_INDEXED_DB: accounts dropped')
                     for (let i = 0; i < stores.accounts.length; i++) {
                         requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accounts[i]})
                     }
                 }
                 const onSuccessClearBookingTypes = (): void => {
-                    log('BACKGROUND: booking types dropped')
+                    log('USE_INDEXED_DB: booking types dropped')
                     for (let i = 0; i < stores.bookingTypes.length; i++) {
                         requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
                     }
                 }
                 const onSuccessClearStocks = (): void => {
-                    log('BACKGROUND: stocks dropped')
+                    log('USE_INDEXED_DB: stocks dropped')
                     for (let i = 0; i < stores.stocks.length; i++) {
                         requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocks[i]})
                     }
@@ -307,11 +308,11 @@ export const useIndexedDB = () => {
                         }
                     }
                     db.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE)
-                    resolve('BACKGROUND: database opened successfully!')
+                    log('USE_INDEXED_DB: open: database ready', {info: db})
+                    resolve('USE_INDEXED_DB: database opened successfully!')
                 }
             }
             const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.CURRENT_VERSION)
-            log('BACKGROUND: open: database ready', {info: db})
             openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE)
             openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
         })
@@ -523,7 +524,7 @@ export const useIndexedDB = () => {
         })
     }
     const deleteStock = async (id: number): Promise<string> => {
-        log('BACKGROUND: deleteStock')
+        log('USE_INDEXED_DB: deleteStock')
         // const indexOfBooking = this._bookings.all.findIndex((booking: IBooking) => {
         //   return booking.cID === id
         // })

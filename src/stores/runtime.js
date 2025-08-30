@@ -41,7 +41,7 @@ export const useRuntimeStore = defineStore('runtime', {
             this.teleport = {
                 dialogName: '',
                 okButton: true,
-                visibility: false,
+                visibility: false
             };
             for (const m of this.optionMenuColors.keys()) {
                 this.optionMenuColors.set(m, '');
@@ -54,7 +54,7 @@ export const useRuntimeStore = defineStore('runtime', {
         },
         openModalDialog(dialogName, showOkButton = true) {
             this.teleport = {
-                dialogName: dialogName,
+                dialogName,
                 okButton: showOkButton,
                 visibility: true
             };
@@ -79,7 +79,7 @@ export const useRuntimeStore = defineStore('runtime', {
         },
         setExchangesEur(value) {
             this.exchanges.curEur = value;
-        },
+        }
     }
 });
 log('--- STORE runtime.js ---');

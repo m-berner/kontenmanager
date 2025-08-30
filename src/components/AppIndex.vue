@@ -54,13 +54,14 @@ onStorageChanged(onStorageChange)
 onBeforeMount(async () => {
   const storage = await getStorage()
   settings.initStore(theme, storage)
+  console.error('JJJZZJZZ', settings.activeAccountId)
   const stores = await exportStores(settings.activeAccountId)
+  console.error('lllll', stores, settings.activeAccountId)
   if (stores.accounts.length > 0) {
     records.initStore(stores)
     records.sumBookings()
   }
   const exchangesBaseData: FetchedResources.IExchangesData[] = await fetchExchangesData([getUI().curUsd, getUI().curEur])
-
   for (let i = 0; i < exchangesBaseData.length; i++) {
     if (exchangesBaseData[i].key.includes('USD')) {
       runtime.setExchangesUsd(exchangesBaseData[i].value)

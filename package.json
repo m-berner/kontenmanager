@@ -12,6 +12,7 @@
     "@types/web": "0.0.262",
     "@typescript-eslint/eslint-plugin": "8.40.0",
     "@typescript-eslint/parser": "8.40.0",
+    "@stylistic": "",
     "@vitejs/plugin-vue": "6.0.1",
     "@vue/language-server": "2.2.10",
     "@vue/eslint-config-typescript": "14.6.0",

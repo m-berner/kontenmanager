@@ -108,7 +108,7 @@ export const useRecordsStore = defineStore('records', {
         },
 
         initStore(stores: IStores): void {
-            log('RECORDS: initStore')
+            log('RECORDS: initStore', {info: stores})
             const settings = useSettingsStore()
             // Clear existing data
             this.accounts.length = 0

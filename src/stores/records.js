@@ -26,7 +26,7 @@ export const useRecordsStore = defineStore('records', {
             else {
                 throw new Error('getBookingTextById: No booking found for given ID');
             }
-        },
+        }
     },
     actions: {
         getAccountIndexById(ident) {
@@ -78,7 +78,7 @@ export const useRecordsStore = defineStore('records', {
             }
         },
         initStore(stores) {
-            log('RECORDS: initStore');
+            log('RECORDS: initStore', { info: stores });
             const settings = useSettingsStore();
             this.accounts.length = 0;
             this.bookings.length = 0;

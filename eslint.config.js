@@ -158,7 +158,7 @@ export default [
         files: ['**/*.ts'],
         rules: {
             'indent': ['error', 4, {'SwitchCase': 1}],
-            'func-call-spacing': 'never'
+            'func-call-spacing': 'off'
         }
     },
     {
