@@ -1,6 +1,8 @@
-import { useApp } from '@/composables/useApp';
+import { useConstant } from '@/composables/useConstant';
 import { useBrowser } from '@/composables/useBrowser';
-const { CONS, log } = useApp();
+import { useNotification } from '@/composables/useNotification';
+const { CONS } = useConstant();
+const { log } = useNotification();
 const { getStorage, setStorage } = useBrowser();
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const onInstall = async () => {

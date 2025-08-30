@@ -8,7 +8,9 @@
 <script lang="ts" setup>
 import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
+import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
+import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/helper/DotMenu.vue'
@@ -26,7 +28,9 @@ interface IState {
 }
 
 const {d, n, t} = useI18n()
-const {CONS, log, utcDate} = useApp()
+const {CONS} = useConstant()
+const {utcDate} = useApp()
+const {log} = useNotification()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {bookings} = storeToRefs(records)

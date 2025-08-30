@@ -9,7 +9,8 @@
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useTheme} from 'vuetify'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
@@ -22,7 +23,8 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const {exportStores} = useIndexedDB()
 const theme = useTheme()
-const {CONS, log, getUI} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 const {getStorage, onStorageChanged} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
@@ -53,6 +55,9 @@ const onStorageChange = (changes: browser.storage.StorageChange): void => {
 onStorageChanged(onStorageChange)
 
 onBeforeMount(async () => {
+  const cur = CONS.CURRENCIES.CODE.get(browser.i18n.getUILanguage())
+  const curEur = `${cur}${CONS.CURRENCIES.EUR}`
+  const curUsd = `${cur}${CONS.CURRENCIES.USD}`
   const storage = await getStorage()
   settings.initStore(theme, storage)
   const stores = await exportStores(settings.activeAccountId)
@@ -60,15 +65,17 @@ onBeforeMount(async () => {
     records.initStore(stores)
     records.sumBookings()
   }
-  const exchangesBaseData: FetchedResources.IExchangesData[] = await fetchExchangesData([getUI().curUsd, getUI().curEur])
+  const exchangesBaseData: FetchedResources.IExchangesData[] = await fetchExchangesData([curUsd, curEur])
   for (let i = 0; i < exchangesBaseData.length; i++) {
-    if (exchangesBaseData[i].key.includes('USD')) {
+    if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
       runtime.setExchangesUsd(exchangesBaseData[i].value)
     } else {
       runtime.setExchangesEur(exchangesBaseData[i].value)
     }
   }
 })
+
+// TODO console.error(CONS.CURRENCIES.CODE.get(browser.i18n.getUILanguage()))
 
 log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>

@@ -8,7 +8,8 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {type ComputedRef, type Ref, computed, ref} from 'vue'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import DynamicList from '@/components/helper/options/DynamicList.vue'
 import ThemeSelector from '@/components/helper/options/ThemeSelector.vue'
 import ServiceSelector from '@/components/helper/options/ServiceSelector.vue'
@@ -20,7 +21,8 @@ interface ITabs {
 }
 
 const {rt, t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 
 const tab: Ref<number> = ref(0)
 const optionsTabs: ComputedRef<ITabs[]> = computed(() => [

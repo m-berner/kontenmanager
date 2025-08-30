@@ -8,7 +8,9 @@
 <script lang="ts" setup>
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
+import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
+import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useSettingsStore} from '@/stores/settings'
@@ -67,18 +69,21 @@ interface IEventTarget extends HTMLInputElement {
 }
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {toISODate} = useApp()
+const {log, notice} = useNotification()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 const {setStorage} = useBrowser()
 const {clearStores, importStores} = useIndexedDB()
 
 let chosen_file: Blob = reactive(new Blob())
-const onChange = computed(ev => { chosen_file = (ev as IEventTarget).target.files[0] })
+const onChange = computed(ev => {
+  chosen_file = (ev as IEventTarget).target.files[0]
+})
 
 const onClickOk = async (): Promise<void> => {
   log('IMPORT_DATABASE: onClickOk', {info: chosen_file})
-  const {notice, toISODate} = useApp()
   const records = useRecordsStore()
   const onError = async (): Promise<void> => {
     await notice(['IMPORT_DATABASE: onError: FileReader'])

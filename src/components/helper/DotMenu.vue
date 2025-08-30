@@ -7,7 +7,8 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
@@ -19,7 +20,8 @@ interface PropsOptionMenu {
 }
 
 const optionMenuProps = defineProps<PropsOptionMenu>()
-const {CONS, log, notice} = useApp()
+const {CONS} = useConstant()
+const {log, notice} = useNotification()
 const {deleteBooking, deleteStock} = useIndexedDB()
 const {rt, t} = useI18n()
 const runtime = useRuntimeStore()

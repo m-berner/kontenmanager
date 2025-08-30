@@ -1,17 +1,12 @@
 import { createI18n } from 'vue-i18n';
-import { useApp } from '@/composables/useApp';
 import deDE from '@/locales/de-DE.json';
 import enUS from '@/locales/en-US.json';
-const { log, getUI } = useApp();
-const getInitialLocale = () => {
-    const uiLocale = getUI().locale;
-    if (uiLocale.startsWith('de')) {
-        return 'de-DE';
-    }
-    return 'en-US';
-};
+import { useNotification } from '@/composables/useNotification';
+import { useBrowser } from '@/composables/useBrowser';
+const { log } = useNotification();
+const { getChar5Locale } = useBrowser();
 const i18nInstance = createI18n({
-    locale: getInitialLocale(),
+    locale: getChar5Locale(),
     fallbackLocale: 'en-US',
     messages: {
         'de-DE': deDE,

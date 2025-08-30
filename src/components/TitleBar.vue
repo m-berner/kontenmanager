@@ -9,7 +9,8 @@
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {storeToRefs} from 'pinia'
@@ -18,7 +19,8 @@ import {computed} from 'vue'
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 const {setStorage} = useBrowser()
 const {exportStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)

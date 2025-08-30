@@ -7,8 +7,9 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
 import {useBrowser} from '@/composables/useBrowser'
+import {useNotification} from '@/composables/useNotification'
 import {computed, defineProps, onBeforeMount, reactive, toRaw} from 'vue'
 
 interface CheckboxGridProps {
@@ -21,7 +22,9 @@ interface IState {
 
 const checkboxGridProps = defineProps<CheckboxGridProps>()
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
+
 const {getStorage, setStorage} = useBrowser()
 
 const state: IState = reactive({

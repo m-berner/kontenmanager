@@ -1,4 +1,3 @@
-
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -10,33 +9,44 @@
 export const useBrowser = () => {
     const setStorage = async (key: string, value: string | number | boolean | string[]): Promise<void> => {
         try {
-            await browser.storage.local.set({ [key]: value })
+            await browser.storage.local.set({[key]: value})
         } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Storage update failed:', error)
             throw error
         }
     }
-    const getStorage = async (keys: string[]|null = null): Promise<{ [p: string]: string | boolean |  number | string[] }> => {
+    const getStorage = async (keys: string[] | null = null): Promise<{
+        [p: string]: string | boolean | number | string[]
+    }> => {
         try {
             return await browser.storage.local.get(keys)
         } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Storage get failed:', error)
             throw error
         }
     }
     const openOptionsPage = async (): Promise<void> => {
-        return browser.runtime.openOptionsPage()
-    }
-    const sendMessage = (message: string) => {
-        return browser.runtime.sendMessage(JSON.stringify(message))
+        try {
+            return await browser.runtime.openOptionsPage()
+        } catch (error) {
+            throw error
+        }
     }
     const onStorageChanged = (callback: (_changes: browser.storage.StorageChange) => void) => {
         browser.storage.local.onChanged.addListener(callback)
         // Return cleanup function
         return () => browser.storage.local.onChanged.removeListener(callback)
     }
+    const getChar5Locale = (): string => {
+        const defaultLanguage = navigator.languages[0]
+        let result = ''
+        if (defaultLanguage.length === 5) {
+            result = defaultLanguage
+        } else if (defaultLanguage.length === 2) {
+            result = `${defaultLanguage}-${defaultLanguage.toUpperCase()}`
+        } else {
+            throw new Error('Could not read the browser language!')
+        }
+        return result
+    }
 
-    return { getStorage, sendMessage, setStorage, onStorageChanged, openOptionsPage }
+    return {getChar5Locale, getStorage, setStorage, onStorageChanged, openOptionsPage}
 }

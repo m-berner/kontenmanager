@@ -7,7 +7,8 @@
  */
 import {defineStore} from 'pinia'
 import {type ThemeInstance} from 'vuetify'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 
 interface ISettingsStore {
     skin: string
@@ -22,7 +23,8 @@ interface ISettingsStore {
     exchanges: string[]
 }
 
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 
 export const useSettingsStore = defineStore('settings', {
     state: (): ISettingsStore => {

@@ -7,8 +7,9 @@
   -->
 <script lang="ts" setup>
 import {computed, defineProps, onBeforeMount, reactive, toRaw} from 'vue'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
 import {useBrowser} from '@/composables/useBrowser'
+import {useNotification} from '@/composables/useNotification'
 import {useI18n} from 'vue-i18n'
 
 interface DynamicListProps {
@@ -26,7 +27,8 @@ interface IState {
 
 const dynamicListProps = defineProps<DynamicListProps>()
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 const {getStorage, setStorage} = useBrowser()
 const state: IState = reactive<IState>({
   newItem: '',

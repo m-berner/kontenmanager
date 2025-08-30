@@ -7,13 +7,13 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useNotification} from '@/composables/useNotification'
 import ContentCard from '@/components/helper/ContentCard.vue'
 import {type ComputedRef, computed} from 'vue'
 import type {IContent} from '@/types.d'
 
 const {t} = useI18n()
-const {log} = useApp()
+const {log} = useNotification()
 
 const data: ComputedRef<IContent[]> = computed(() => [
   {

@@ -12,7 +12,8 @@ import {useRuntimeStore} from '@/stores/runtime'
 //import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 //import {storeToRefs} from 'pinia'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 
 export interface _IDrawerControl {
   id: number
@@ -27,7 +28,8 @@ interface IState {
 }
 
 const {n, t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
 

@@ -6,9 +6,10 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {type I18n, createI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
 import deDE from '@/locales/de-DE.json'
 import enUS from '@/locales/en-US.json'
+import {useNotification} from '@/composables/useNotification'
+import {useBrowser} from '@/composables/useBrowser'
 
 type MessageSchema = typeof deDE
 
@@ -16,19 +17,11 @@ interface II18n {
     i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
 }
 
-const {log, getUI} = useApp()
-
-const getInitialLocale = (): 'de-DE' | 'en-US' => {
-    const uiLocale = getUI().locale
-    // Map common locale variations to supported locales
-    if (uiLocale.startsWith('de')) {
-        return 'de-DE'
-    }
-    return 'en-US' // Default fallback
-}
+const {log} = useNotification()
+const {getChar5Locale} = useBrowser()
 
 const i18nInstance = createI18n<[MessageSchema], 'de-DE' | 'en-US'>({
-    locale: getInitialLocale(),
+    locale: getChar5Locale(),
     fallbackLocale: 'en-US',
     messages: {
         'de-DE': deDE,

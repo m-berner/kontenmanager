@@ -9,12 +9,13 @@
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/composables/useApp'
+import {useNotification} from '@/composables/useNotification'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {type FetchedResources, type IStock, type IStockStore} from '@/types.d'
+import {useValidation} from '@/composables/useValidation'
 
 interface IState {
   isin: string
@@ -26,9 +27,10 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {log, notice, valIbanRules} = useApp()
+const {log, notice} = useNotification()
 const {addStock} = useIndexedDB()
 const {fetchCompanyData} = useFetch()
+const {valIbanRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()

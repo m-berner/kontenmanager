@@ -6,11 +6,13 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {onBeforeMount, ref} from 'vue'
 
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 const {getStorage, setStorage} = useBrowser()
 
 const service = ref('goyax') //  TODO default...

@@ -8,9 +8,11 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useValidation} from '@/composables/useValidation'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -26,9 +28,11 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
+const {CONS} = useConstant()
+const {log, notice} = useNotification()
 const {setStorage} = useBrowser()
 const {addAccount} = useIndexedDB()
+const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()

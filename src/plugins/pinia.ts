@@ -6,13 +6,13 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {type Pinia, createPinia} from 'pinia'
-import {useApp} from '@/composables/useApp'
+import {useNotification} from '@/composables/useNotification'
 
 interface IPinia {
     pinia: Pinia
 }
 
-const {log} = useApp()
+const {log} = useNotification()
 
 const piniaConfig: IPinia = {
     pinia: createPinia()

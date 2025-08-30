@@ -11,15 +11,15 @@ import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {computed} from 'vue'
 import {type DataTableHeader} from 'vuetify'
 import type {IStockStore, StocksMenuItems} from '@/types.d'
 
-// Store setup with proper typing
-const {log} = useApp()
+const {log} = useNotification()
 const {d, n, t} = useI18n()
-const {CONS} = useApp()
+const {CONS} = useConstant()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 

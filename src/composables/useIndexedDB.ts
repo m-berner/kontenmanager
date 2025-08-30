@@ -5,10 +5,12 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
 import type {IAccount, IBooking, IBookingType, IStock, IStockStore, IStores, IStoresDB} from '@/types.d'
+import {useNotification} from '@/composables/useNotification'
 
-const {CONS, log, notice} = useApp()
+const {CONS} = useConstant()
+const {log, notice} = useNotification()
 
 let db: IDBDatabase | null
 

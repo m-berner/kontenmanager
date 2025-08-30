@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineProps, defineEmits, onMounted, reactive, watch} from 'vue'
+import {defineEmits, defineProps, onMounted, reactive, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 
 interface CurrencyInputProps {
@@ -22,7 +22,7 @@ interface IState {
 }
 
 const currencyInputProps = defineProps<CurrencyInputProps>()
-const emit = defineEmits(['amount'])
+const emit = defineEmits<{ 'amount': [value: number] }>()
 const {n} = useI18n()
 
 const formatCurrency = (value: number): string => {
@@ -81,5 +81,5 @@ onMounted(() => {
       @blur="onBlur"
       @focus="onFocus"
       @input="onInput"
-  ></v-text-field>
+  />
 </template>

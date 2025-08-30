@@ -7,7 +7,8 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import DialogPort from '@/components/helper/DialogPort.vue'
@@ -17,7 +18,8 @@ import {useRecordsStore} from '@/stores/records'
 import {computed, toRaw} from 'vue'
 
 const {t} = useI18n()
-const {CONS, log, notice} = useApp()
+const {CONS} = useConstant()
+const {log, notice} = useNotification()
 const {setStorage, openOptionsPage} = useBrowser()
 const {deleteAccount, deleteBooking, deleteBookingType, deleteStock, exportStores} = useIndexedDB()
 const runtime = useRuntimeStore()

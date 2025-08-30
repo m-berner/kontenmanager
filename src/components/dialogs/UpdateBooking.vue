@@ -10,11 +10,13 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
 import {useRuntimeStore} from '@/stores/runtime'
 import CurrencyInput from '@/components/helper/CurrencyInput.vue'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import type {IBooking, IBookingType} from '@/types.d'
+import {useValidation} from '@/composables/useValidation'
+import {useNotification} from '@/composables/useNotification'
 
 interface IState {
   id: number
@@ -27,8 +29,10 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, valPositiveIntegerRules} = useApp()
+const {CONS} = useConstant()
+const {log, notice} = useNotification()
 const {updateBooking} = useIndexedDB()
+const {valPositiveIntegerRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()

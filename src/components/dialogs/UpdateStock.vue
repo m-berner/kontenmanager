@@ -10,10 +10,11 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useApp} from '@/composables/useApp'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import type {IStock, IStockStore} from '@/types.d'
+import {useValidation} from '@/composables/useValidation'
+import {useNotification} from '@/composables/useNotification'
 
 interface IState {
   id: number
@@ -30,8 +31,9 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {log, notice, valIbanRules} = useApp()
+const {log, notice} = useNotification()
 const {updateStock} = useIndexedDB()
+const {valIbanRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()

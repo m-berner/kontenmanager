@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {defineStore} from 'pinia'
-import {useApp} from '@/composables/useApp'
+import {useNotification} from '@/composables/useNotification'
 
 interface ITeleport {
     dialogName: string
@@ -31,7 +31,7 @@ interface IRuntimeStore {
     optionMenuColors: Map<number, string>
 }
 
-const {log} = useApp()
+const {log} = useNotification()
 
 export const useRuntimeStore = defineStore('runtime', {
     state: (): IRuntimeStore => {

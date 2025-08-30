@@ -10,8 +10,10 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
 import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useValidation} from '@/composables/useValidation'
+import {useNotification} from '@/composables/useNotification'
 
 interface IState {
   swift: string
@@ -23,8 +25,10 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice, valIbanRules, valSwiftRules, valBrandNameRules} = useApp()
+const {CONS} = useConstant()
+const {log, notice} = useNotification()
 const {updateAccount} = useIndexedDB()
+const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 

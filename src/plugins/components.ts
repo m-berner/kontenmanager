@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {type App, type Plugin} from 'vue'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
 import AddStock from '@/components/dialogs/AddStock.vue'
 import UpdateStock from '@/components/dialogs/UpdateStock.vue'
 import AddAccount from '@/components/dialogs/AddAccount.vue'
@@ -18,8 +18,10 @@ import UpdateBooking from '@/components/dialogs/UpdateBooking.vue'
 import ExportDatabase from '@/components/dialogs/ExportDatabase.vue'
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
+import {useNotification} from '@/composables/useNotification'
 
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 
 const ComponentsPlugin: Plugin = {
     install: (app: App) => {

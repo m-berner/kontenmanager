@@ -1,6 +1,10 @@
-import { useApp } from '@/composables/useApp';
+import { useConstant } from '@/composables/useConstant';
 import { useBrowser } from '@/composables/useBrowser';
-const { CONS, log, mean, notice, toNumber } = useApp();
+import { useNotification } from '@/composables/useNotification';
+import { useApp } from '@/composables/useApp';
+const { mean, toNumber } = useApp();
+const { CONS } = useConstant();
+const { log, notice } = useNotification();
 const { getStorage } = useBrowser();
 export const useFetch = () => {
     const fetchCompanyData = async (isin) => {

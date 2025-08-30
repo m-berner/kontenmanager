@@ -1,5 +1,7 @@
-import { useApp } from '@/composables/useApp';
-const { CONS, log, notice } = useApp();
+import { useConstant } from '@/composables/useConstant';
+import { useNotification } from '@/composables/useNotification';
+const { CONS } = useConstant();
+const { log, notice } = useNotification();
 let db;
 export const useIndexedDB = () => {
     const dbi = () => {

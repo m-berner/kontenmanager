@@ -6,7 +6,8 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {defineStore} from 'pinia'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useSettingsStore} from '@/stores/settings'
 import type {IAccount, IBooking, IBookingType, IStockStore, IStores} from '@/types.d'
 
@@ -19,7 +20,8 @@ interface IRecordsStore {
     totalController: Record<string, number>
 }
 
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 
 export const useRecordsStore = defineStore('records', {
     state: (): IRecordsStore => ({

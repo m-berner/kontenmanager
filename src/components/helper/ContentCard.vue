@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {useApp} from '@/composables/useApp'
+import {useNotification} from '@/composables/useNotification'
 import {defineProps} from 'vue'
 import type {IContent} from '@/types.d'
 
@@ -16,7 +16,7 @@ interface PropsContentCard {
 }
 
 const contentCardProps = defineProps<PropsContentCard>()
-const {log} = useApp()
+const {log} = useNotification()
 
 log('--- HelpContent.vue setup ---')
 </script>

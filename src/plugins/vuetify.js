@@ -3,8 +3,8 @@ import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
 import { mdiAccountEdit, mdiAccountPlus, mdiAccountRemove, mdiBellPlus, mdiBookEdit, mdiBookPlus, mdiBookRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiStore, mdiStoreEdit, mdiStoreMinus, mdiStorePlus } from '@mdi/js';
-import { useApp } from '@/composables/useApp';
-const { log } = useApp();
+import { useNotification } from '@/composables/useNotification';
+const { log } = useNotification();
 const vuetifyInstance = createVuetify({
     theme: {
         defaultTheme: 'ocean',

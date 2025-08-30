@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
-import { useApp } from '@/composables/useApp';
+import { useConstant } from '@/composables/useConstant';
+import { useNotification } from '@/composables/useNotification';
 import { useSettingsStore } from '@/stores/settings';
-const { CONS, log } = useApp();
+const { CONS } = useConstant();
+const { log } = useNotification();
 export const useRecordsStore = defineStore('records', {
     state: () => ({
         accounts: [],

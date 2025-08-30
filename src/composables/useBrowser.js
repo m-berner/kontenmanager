@@ -27,5 +27,19 @@ export const useBrowser = () => {
         browser.storage.local.onChanged.addListener(callback);
         return () => browser.storage.local.onChanged.removeListener(callback);
     };
-    return { getStorage, sendMessage, setStorage, onStorageChanged, openOptionsPage };
+    const getChar5Locale = () => {
+        const defaultLanguage = navigator.languages[0];
+        let result = '';
+        if (defaultLanguage.length === 5) {
+            result = defaultLanguage;
+        }
+        else if (defaultLanguage.length === 2) {
+            result = `${defaultLanguage}-${defaultLanguage.toUpperCase()}`;
+        }
+        else {
+            throw new Error('Could not read the browser language!');
+        }
+        return result;
+    };
+    return { getChar5Locale, getStorage, sendMessage, setStorage, onStorageChanged, openOptionsPage };
 };

@@ -7,11 +7,11 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useTemplateRef} from 'vue'
 import {useRuntimeStore} from '@/stores/runtime'
+import {ref} from 'vue'
 
 const {t} = useI18n()
-const dialogRef = useTemplateRef<{ onClickOk: () => Promise<void>, title: string }>('dialog-ref')
+const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
 const runtime = useRuntimeStore()
 </script>
 
@@ -23,7 +23,7 @@ const runtime = useRuntimeStore()
           {{ dialogRef?.title }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <component :is="runtime.teleport.dialogName" ref="dialog-ref"/>
+          <component :is="runtime.teleport.dialogName" ref="dialogRef"/>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip :text="t('dialogs.ok')" location="bottom">

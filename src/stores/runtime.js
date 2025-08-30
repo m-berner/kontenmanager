@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { useApp } from '@/composables/useApp';
-const { log } = useApp();
+import { useNotification } from '@/composables/useNotification';
+const { log } = useNotification();
 export const useRuntimeStore = defineStore('runtime', {
     state: () => {
         return {

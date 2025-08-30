@@ -9,8 +9,8 @@
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/composables/useApp'
 import type {IBooking} from '@/types.d'
+import {useNotification} from '@/composables/useNotification'
 
 interface IShowAccounting {
   _result: Array<{ title: string, subtitle: string }>
@@ -18,7 +18,7 @@ interface IShowAccounting {
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {log} = useApp()
+const {log} = useNotification()
 
 const state: IShowAccounting = reactive<IShowAccounting>({
   _result: []

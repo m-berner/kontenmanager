@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
 import {} from 'vuetify';
-import { useApp } from '@/composables/useApp';
-const { CONS, log } = useApp();
+import { useConstant } from '@/composables/useConstant';
+import { useNotification } from '@/composables/useNotification';
+const { CONS } = useConstant();
+const { log } = useNotification();
 export const useSettingsStore = defineStore('settings', {
     state: () => {
         return {

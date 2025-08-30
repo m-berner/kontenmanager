@@ -6,7 +6,8 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useTheme} from 'vuetify/framework'
 import {useI18n} from 'vue-i18n'
@@ -14,7 +15,8 @@ import {onBeforeMount, ref} from 'vue'
 
 const {t} = useI18n()
 const theme = useTheme()
-const {CONS, log} = useApp()
+const {CONS} = useConstant()
+const {log} = useNotification()
 const {getStorage, setStorage} = useBrowser()
 
 const skin = ref('ocean')// TODO default...

@@ -5,9 +5,11 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
 import {useBrowser} from '@/composables/useBrowser'
 import type {FetchedResources} from '@/types.d'
+import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
 interface IService {
     NAME: string
@@ -20,7 +22,9 @@ interface IUrlWithId {
     id: number
 }
 
-const {CONS, log, mean, notice, toNumber} = useApp()
+const {mean, toNumber} = useApp()
+const {CONS} = useConstant()
+const {log, notice} = useNotification()
 const {getStorage} = useBrowser()
 
 export const useFetch = () => {
@@ -634,7 +638,7 @@ export const useFetch = () => {
             firstResponse.status >= CONS.STATES.SRV ||
             (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
         ) {
-            log('BACKGROUND: fetchDatesData: First request failed', { error: 'SYstem'})
+            log('BACKGROUND: fetchDatesData: First request failed', {error: 'SYstem'})
         } else {
             const atoms = firstResponse.url.split('/')
             const stockName = atoms[atoms.length - 1].replace('-aktie', '')

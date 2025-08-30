@@ -8,7 +8,8 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useConstant} from '@/composables/useConstant'
+import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 
@@ -18,7 +19,8 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS, log, notice} = useApp()
+const {CONS} = useConstant()
+const {log, notice} = useNotification()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
@@ -42,7 +44,7 @@ const onClickOk = async (): Promise<void> => {
     }
     runtime.resetTeleport()
   } catch (e) {
-    console.error(e)
+    log('DELETE_BOOKING: onClickOk', {error: e})
     await notice([t('dialogs.deleteBookingType.error')])
   }
 }
@@ -67,6 +69,6 @@ log('--- DeleteBookingType.vue setup ---')
         density="compact"
         required
         variant="outlined"
-    ></v-select>
+    />
   </v-form>
 </template>
