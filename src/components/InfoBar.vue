@@ -87,7 +87,10 @@ log('--- InfoBar.vue setup ---')
     </v-card>
   </v-navigation-drawer>
   <v-app-bar flat app color="secondary">
-    <v-app-bar-nav-icon variant="text" @click="state.show = !state.show"/>
+    <v-app-bar-nav-icon
+        variant="text"
+        icon="$home"
+        @click="state.show = !state.show"/>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>
         <v-list-item v-for="item in runtime.infoBar.exchanges.keys()" :key="item">

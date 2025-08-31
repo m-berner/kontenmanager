@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {computed, type ComputedRef, type Ref, ref} from 'vue'
+import {type ComputedRef, type Ref, computed, ref} from 'vue'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import DynamicList from '@/components/helper/options/DynamicList.vue'
