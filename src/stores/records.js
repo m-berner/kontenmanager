@@ -8,7 +8,6 @@ export const useRecordsStore = defineStore('records', {
     state: () => ({
         accounts: [],
         bookings: [],
-        bookingSum: 0,
         bookingTypes: [],
         stocks: [],
         totalController: CONS.RECORDS.CONTROLLER.TOTAL
@@ -62,12 +61,11 @@ export const useRecordsStore = defineStore('records', {
             const settings = useSettingsStore();
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);
             if (activeAccountIndex === -1) {
-                this.bookingSum = 0;
-                return;
+                return 0;
             }
             const bookingsPerAccount = [...this.bookings];
             if (bookingsPerAccount.length > 0) {
-                this.bookingSum = bookingsPerAccount
+                return bookingsPerAccount
                     .map((entry) => {
                     const fees = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee;
                     const balance = entry.cCredit - entry.cDebit;
@@ -76,7 +74,7 @@ export const useRecordsStore = defineStore('records', {
                     .reduce((acc, cur) => acc + cur, 0);
             }
             else {
-                this.bookingSum = 0;
+                return 0;
             }
         },
         initStore(stores) {
@@ -117,10 +115,6 @@ export const useRecordsStore = defineStore('records', {
                 const dateB = new Date(b.cDate).getTime();
                 return dateB - dateA;
             });
-        },
-        setBookingSum(value) {
-            log('RECORDS: setBookingSum');
-            this.bookingSum = value;
         },
         addAccount(account) {
             log('RECORDS: addAccount');
@@ -193,7 +187,6 @@ export const useRecordsStore = defineStore('records', {
             this.bookings.length = 0;
             this.bookingTypes.length = 0;
             this.stocks.length = 0;
-            this.bookingSum = 0;
         }
     }
 });

@@ -30,7 +30,7 @@ export const useBrowser = () => {
             throw error
         }
     }
-    const onStorageChanged = (callback: (_changes: browser.storage.StorageChange) => void) => {
+    const onStorageChanged = (callback: (_changes: { [key: string]: browser.storage.StorageChange }) => void) => {
         browser.storage.local.onChanged.addListener(callback)
         // Return cleanup function
         return () => browser.storage.local.onChanged.removeListener(callback)

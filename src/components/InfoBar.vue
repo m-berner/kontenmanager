@@ -86,7 +86,7 @@ log('--- InfoBar.vue setup ---')
       </v-list>
     </v-card>
   </v-navigation-drawer>
-  <v-app-bar :flat="true" app color="secondary">
+  <v-app-bar flat app color="secondary">
     <v-app-bar-nav-icon variant="text" @click="state.show = !state.show"/>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>

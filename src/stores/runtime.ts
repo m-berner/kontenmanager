@@ -55,8 +55,7 @@ export const useRuntimeStore = defineStore('runtime', {
         }
     },
     getters: {
-        hasActiveBooking: (state: IRuntimeStore): boolean => state.activeId !== -1,
-        isDialogVisible: (state: IRuntimeStore): boolean => state.teleport.visibility
+        //
     },
     actions: {
         setActiveId(value: number): void {
@@ -90,21 +89,6 @@ export const useRuntimeStore = defineStore('runtime', {
                 okButton: showOkButton,
                 visibility: true
             }
-        },
-        closeDialog(): void {
-            this.teleport.visibility = false
-        },
-        toggleDialog(): void {
-            this.teleport.visibility = !this.teleport.visibility
-        },
-        updateDialogConfig(config: Partial<ITeleport>): void {
-            this.teleport = {
-                ...this.teleport,
-                ...config
-            }
-        },
-        clearBooking(): void {
-            this.activeId = -1
         },
         setExchangesUsd(value: number) {
             this.exchanges.curUsd = value

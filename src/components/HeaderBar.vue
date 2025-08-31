@@ -170,7 +170,7 @@ log('--- HeaderBar.vue setup ---')
 </script>
 
 <template>
-  <v-app-bar :flat="true" app height="75">
+  <v-app-bar flat app height="75">
     <v-spacer/>
     <router-link class="router-link-active" to="/">
       <v-tooltip :text="t('headerBar.home')" location="top">
@@ -208,9 +208,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$addCompany"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$addCompany"/>
       </template>
     </v-tooltip>
     <v-spacer/>
@@ -221,9 +220,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$addAccount"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$addAccount"/>
       </template>
     </v-tooltip>
     <v-tooltip :text="t('headerBar.updateAccount')" location="top">
@@ -233,9 +231,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$updateAccount"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$updateAccount"/>
       </template>
     </v-tooltip>
     <v-tooltip :text="t('headerBar.deleteAccount')" location="top">
@@ -245,9 +242,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$deleteAccount"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$deleteAccount"/>
       </template>
     </v-tooltip>
     <v-spacer/>
@@ -258,9 +254,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$addBooking"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$addBooking"/>
       </template>
     </v-tooltip>
     <v-spacer/>
@@ -271,9 +266,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$addBookingType"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$addBookingType"/>
       </template>
     </v-tooltip>
     <v-tooltip :text="t('headerBar.deleteBookingType')" location="top">
@@ -283,9 +277,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$deleteBookingType"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$deleteBookingType"/>
       </template>
     </v-tooltip>
     <v-spacer/>
@@ -296,9 +289,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$exportToFile"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$exportToFile"/>
       </template>
     </v-tooltip>
     <v-tooltip :text="t('headerBar.importDatabase')" location="top">
@@ -308,9 +300,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$importDatabase"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$importDatabase"/>
       </template>
     </v-tooltip>
     <v-spacer/>
@@ -321,9 +312,8 @@ log('--- HeaderBar.vue setup ---')
             size="large"
             v-bind="props"
             variant="tonal"
-            @click="onIconClick">
-          <v-icon icon="$showAccounting"/>
-        </v-app-bar-nav-icon>
+            @click="onIconClick"
+            icon="$showAccounting"/>
       </template>
     </v-tooltip>
     <v-spacer/>

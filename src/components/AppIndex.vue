@@ -16,7 +16,7 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useRuntimeStore} from '@/stores/runtime'
 import {onBeforeMount} from 'vue'
-import {type FetchedResources} from '@/types.d'
+import type {FetchedResources} from '@/types'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -28,31 +28,31 @@ const {log} = useNotification()
 const {getStorage, onStorageChanged} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
-const onStorageChange = (changes: browser.storage.StorageChange): void => {
+const changeHandler = (changes: { [key: string]: browser.storage.StorageChange}): void => {
   const changesKey = Object.keys(changes)
   switch (changesKey[0]) {
     case CONS.STORAGE.PROPS.SKIN:
-      settings.setSkin(theme, changes.newValue)
+      settings.setSkin(theme, changes[CONS.STORAGE.PROPS.SKIN].newValue)
       break
     case CONS.STORAGE.PROPS.SERVICE:
-      settings.setService(changes.newValue)
+      settings.setService(changes[CONS.STORAGE.PROPS.SERVICE].newValue)
       break
     case CONS.STORAGE.PROPS.INDEXES:
-      settings.setIndexes(changes.newValue)
+      settings.setIndexes(changes[CONS.STORAGE.PROPS.INDEXES].newValue)
       break
     case CONS.STORAGE.PROPS.MARKETS:
-      settings.setMarkets(changes.newValue)
+      settings.setMarkets(changes[CONS.STORAGE.PROPS.MARKETS].newValue)
       break
     case CONS.STORAGE.PROPS.MATERIALS:
-      settings.setMaterials(changes.newValue)
+      settings.setMaterials(changes[CONS.STORAGE.PROPS.MATERIALS].newValue)
       break
     case CONS.STORAGE.PROPS.EXCHANGES:
-      settings.setExchanges(changes.newValue)
+      settings.setExchanges(changes[CONS.STORAGE.PROPS.EXCHANGES].newValue)
       break
     default:
   }
 }
-onStorageChanged(onStorageChange)
+onStorageChanged(changeHandler)
 
 onBeforeMount(async () => {
   const cur = CONS.CURRENCIES.CODE.get(browser.i18n.getUILanguage())
@@ -74,8 +74,6 @@ onBeforeMount(async () => {
     }
   }
 })
-
-// TODO console.error(CONS.CURRENCIES.CODE.get(browser.i18n.getUILanguage()))
 
 log('--- AppIndex.vue setup ---', {info: window.location.href})
 </script>

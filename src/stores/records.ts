@@ -16,7 +16,6 @@ interface IRecordsStore {
     bookings: IBooking[]
     bookingTypes: IBookingType[]
     stocks: IStockStore[]
-    bookingSum: number
     totalController: Record<string, number>
 }
 
@@ -27,7 +26,6 @@ export const useRecordsStore = defineStore('records', {
     state: (): IRecordsStore => ({
         accounts: [],
         bookings: [],
-        bookingSum: 0,
         bookingTypes: [],
         stocks: [],
         totalController: CONS.RECORDS.CONTROLLER.TOTAL
@@ -85,20 +83,20 @@ export const useRecordsStore = defineStore('records', {
             return this.stocks.findIndex((entry: IStockStore) => entry.cID === ident)
         },
 
-        sumBookings(): void {
+        sumBookings(): number {
             const settings = useSettingsStore()
             const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId)
 
             if (activeAccountIndex === -1) {
-                this.bookingSum = 0
-                return
+                //this.bookingSum = 0
+                return 0
             }
 
             // Filter bookings for the active account if needed
             const bookingsPerAccount = [...this.bookings]
 
             if (bookingsPerAccount.length > 0) {
-                this.bookingSum = bookingsPerAccount
+                return bookingsPerAccount
                     .map((entry: IBooking) => {
                         const fees = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee
                         const balance = entry.cCredit - entry.cDebit
@@ -106,7 +104,7 @@ export const useRecordsStore = defineStore('records', {
                     })
                     .reduce((acc: number, cur: number) => acc + cur, 0)
             } else {
-                this.bookingSum = 0
+                return 0
             }
         },
 
@@ -153,11 +151,6 @@ export const useRecordsStore = defineStore('records', {
                 const dateB = new Date(b.cDate).getTime()
                 return dateB - dateA
             })
-        },
-
-        setBookingSum(value: number): void {
-            log('RECORDS: setBookingSum')
-            this.bookingSum = value
         },
 
         addAccount(account: IAccount): void {
@@ -242,7 +235,6 @@ export const useRecordsStore = defineStore('records', {
             this.bookings.length = 0
             this.bookingTypes.length = 0
             this.stocks.length = 0
-            this.bookingSum = 0
         }
     }
 })

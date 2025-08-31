@@ -143,6 +143,6 @@ log('--- UpdateAccount.vue setup ---')
         variant="outlined"
         @input="onInputLogoUrl"
     />
-    <img :src="state.logoUrl" alt="CONS.URLS.LOGO[0]"/>
+    <img :src="state.logoUrl" :alt="CONS.URLS.LOGO[0]"/>
   </v-form>
 </template>

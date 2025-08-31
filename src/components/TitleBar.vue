@@ -41,15 +41,15 @@ const logoUrl = computed((): string => {
     return ''
   }
 })
-const balance = computed(() => n(records.bookingSum, 'currency'))
+const balance = computed(() => n(records.sumBookings(), 'currency'))
 
 log('--- TitleBar.vue setup ---')
 </script>
 
 <template>
-  <v-app-bar :flat="true" app color="secondary">
+  <v-app-bar flat app color="secondary">
     <template #prepend>
-      <img :src="CONS.COMPONENTS.TITLE_BAR.LOGO" alt="t('titleBar.iconsAlt.logo')"/>
+      <img :src="CONS.COMPONENTS.TITLE_BAR.LOGO" :alt="t('titleBar.iconsAlt.logo')"/>
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field

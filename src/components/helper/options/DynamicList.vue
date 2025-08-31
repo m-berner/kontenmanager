@@ -30,6 +30,7 @@ const {t} = useI18n()
 const {CONS} = useConstant()
 const {log} = useNotification()
 const {getStorage, setStorage} = useBrowser()
+
 const state: IState = reactive<IState>({
   newItem: '',
   list: [],
@@ -46,6 +47,7 @@ const label = computed((): string => {
     case CONS.DYNAMIC_LIST.TYPES.MARKETS:
       resultLabel = t('optionsPage.markets.label')
       break
+    default:
   }
   return resultLabel
 })
@@ -59,6 +61,7 @@ const title = computed((): string => {
     case CONS.DYNAMIC_LIST.TYPES.MARKETS:
       resultTitle = t('optionsPage.markets.title')
       break
+    default:
   }
   return resultTitle
 })
@@ -83,6 +86,8 @@ const addItem = async (item: string): Promise<void> => {
 const removeItem = async (n: number): Promise<void> => {
   log('DYNAMIC_LIST: removeItem')
   if (n > 0) {
+    state.list.splice(n, 1)
+    state.newItem = ''
     switch (dynamicListProps.type) {
       case CONS.DYNAMIC_LIST.TYPES.MARKETS:
         await setStorage(CONS.STORAGE.PROPS.MARKETS, toRaw(state.list))
@@ -92,8 +97,6 @@ const removeItem = async (n: number): Promise<void> => {
         break
       default:
     }
-    state.list.splice(n, 1)
-    state.newItem = ''
   }
 }
 

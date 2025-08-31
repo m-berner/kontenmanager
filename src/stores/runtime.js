@@ -22,10 +22,7 @@ export const useRuntimeStore = defineStore('runtime', {
             optionMenuColors: new Map()
         };
     },
-    getters: {
-        hasActiveBooking: (state) => state.activeId !== -1,
-        isDialogVisible: (state) => state.teleport.visibility
-    },
+    getters: {},
     actions: {
         setActiveId(value) {
             this.activeId = value;
@@ -58,21 +55,6 @@ export const useRuntimeStore = defineStore('runtime', {
                 okButton: showOkButton,
                 visibility: true
             };
-        },
-        closeDialog() {
-            this.teleport.visibility = false;
-        },
-        toggleDialog() {
-            this.teleport.visibility = !this.teleport.visibility;
-        },
-        updateDialogConfig(config) {
-            this.teleport = {
-                ...this.teleport,
-                ...config
-            };
-        },
-        clearBooking() {
-            this.activeId = -1;
         },
         setExchangesUsd(value) {
             this.exchanges.curUsd = value;

@@ -91,18 +91,23 @@ export interface IStores {
     stocks: IStockStore[]
 }
 
-// interface IStorageLocal {
-//     sActiveAccountId: number
-//     sBookingsPerPage: number
-//     sStocksPerPage: number
-//     sPartner: boolean
-//     sSkin: string
-//     sService: string
-//     sExchanges: string[]
-//     sMaterials: string[]
-//     sIndexes: string[]
-//     sMarkets: string[]
-// }
+interface _IChanges {
+    oldValue: string[]
+    newValue: string[]
+}
+
+export interface IStorageLocal {
+    'sActiveAccountId': number
+    'sBookingsPerPage': number
+    'sStocksPerPage': number
+    'sPartner': boolean
+    'sSkin': string
+    'sService': string
+    sExchanges: _IChanges
+    'sMaterials': _IChanges
+    'sIndexes': _IChanges
+    'sMarkets': _IChanges
+}
 
 export interface IContent {
     title: string
