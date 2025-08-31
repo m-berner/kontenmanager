@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {type Router, createRouter, createWebHashHistory} from 'vue-router'
+import {createRouter, createWebHashHistory, type Router} from 'vue-router'
 import {useNotification} from '@/composables/useNotification'
 
 interface IRouter {

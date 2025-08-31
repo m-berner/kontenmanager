@@ -13,7 +13,6 @@ import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {storeToRefs} from 'pinia'
 import {computed} from 'vue'
 
 const {n, t} = useI18n()
@@ -23,7 +22,6 @@ const {CONS} = useConstant()
 const {log} = useNotification()
 const {setStorage} = useBrowser()
 const {exportStores} = useIndexedDB()
-const {activeAccountId} = storeToRefs(settings)
 
 const onUpdateTitleBar = async (): Promise<void> => {
   await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
@@ -41,7 +39,9 @@ const logoUrl = computed((): string => {
     return ''
   }
 })
-const balance = computed(() => n(records.sumBookings(), 'currency'))
+const balance = computed((): string => {
+  return n(records.sumBookings(), 'currency')
+})
 
 log('--- TitleBar.vue setup ---')
 </script>
@@ -57,11 +57,10 @@ log('--- TitleBar.vue setup ---')
         :label="t('titleBar.bookingsSumLabel')"
         :model-value="balance"
         hide-details
-        max-width="150"
-    />
+        max-width="150"/>
     <v-spacer/>
     <v-select
-        v-model="activeAccountId"
+        v-model="settings.activeAccountId"
         :item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
         :item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.accounts"
@@ -70,8 +69,7 @@ log('--- TitleBar.vue setup ---')
         hide-details
         max-width="350"
         variant="outlined"
-        @update:model-value="onUpdateTitleBar"
-    >
+        @update:model-value="onUpdateTitleBar">
       <template #prepend>
         <img :alt="t('titleBar.iconsAlt.brandfetch')" :src="logoUrl"/>
       </template>

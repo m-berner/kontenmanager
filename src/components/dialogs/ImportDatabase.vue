@@ -15,7 +15,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
-import {type UnwrapRef, computed, defineExpose, reactive, toRaw} from 'vue'
+import {computed, defineExpose, reactive, toRaw, type UnwrapRef} from 'vue'
 import type {IAccount, IBooking, IBookingType, IStock, IStockStore, IStoresDB} from '@/types.d'
 
 namespace StockManager {

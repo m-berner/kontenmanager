@@ -28,7 +28,7 @@ const {log} = useNotification()
 const {getStorage, onStorageChanged} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
-const changeHandler = (changes: { [key: string]: browser.storage.StorageChange}): void => {
+const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }): void => {
   const changesKey = Object.keys(changes)
   switch (changesKey[0]) {
     case CONS.STORAGE.PROPS.SKIN:
