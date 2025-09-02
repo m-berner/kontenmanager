@@ -8,7 +8,6 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
@@ -25,7 +24,6 @@ interface IState {
 }
 
 const {t} = useI18n()
-const {CONS} = useConstant()
 const {log, notice} = useNotification()
 const {updateAccount} = useIndexedDB()
 const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
@@ -50,7 +48,7 @@ const mResetState = () => {
 }
 //TODO see AddAccount...
 const onInputLogoUrl = () => {
-  state.logoUrl = `${CONS.URLS.LOGO[0]}/${state.logoSearchName}/${CONS.URLS.LOGO[1]}`
+  state.logoUrl = '' //`${CONS.URLS.LOGO[0]}/${state.logoSearchName}/${CONS.URLS.LOGO[1]}`
 }
 const onUpdateLogoSearchName = (iban: string) => {
   if (iban) {
@@ -144,6 +142,6 @@ log('--- UpdateAccount.vue setup ---')
         variant="outlined"
         @input="onInputLogoUrl"
     />
-    <img :alt="CONS.URLS.LOGO[0]" :src="state.logoUrl"/>
+    <img :src="state.logoUrl" alt="" />
   </v-form>
 </template>

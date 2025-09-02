@@ -142,8 +142,8 @@ const onClickOk = async (): Promise<void> => {
           cID: activeId,
           cSwift: 'KMKLPJJ9099',
           cNumber: 'XX13120300001064506999',
-          cLogoUrl: CONS.URLS.NO_LOGO,
-          cStockAccount: true
+          cLogoUrl: '', // TOOD cUrl
+          cStockAccount: true // TODO withDepot
         }
         records.addAccount(account)
         bookingTypes.push({cID: 1, cName: 'Aktienkauf', cAccountNumberID: activeId})
