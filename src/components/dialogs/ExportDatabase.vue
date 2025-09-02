@@ -6,11 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {defineExpose} from 'vue'
 
 const {t} = useI18n()
 const {CONS} = useConstant()

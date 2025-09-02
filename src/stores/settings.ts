@@ -5,8 +5,8 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {ThemeInstance} from 'vuetify'
 import {defineStore} from 'pinia'
-import {type ThemeInstance} from 'vuetify'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 

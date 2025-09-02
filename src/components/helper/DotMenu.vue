@@ -6,13 +6,13 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
-import {defineProps, onMounted} from 'vue'
+import {useRuntimeStore} from '@/stores/runtime'
 
 interface PropsOptionMenu {
   recordID: number

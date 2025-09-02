@@ -6,6 +6,8 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {type DataTableHeader} from 'vuetify'
+import {reactive} from 'vue'
 import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
@@ -14,8 +16,7 @@ import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/helper/DotMenu.vue'
-import {reactive} from 'vue'
-import {type DataTableHeader} from 'vuetify'
+
 
 type HomeMenuItem = {
   readonly id: string

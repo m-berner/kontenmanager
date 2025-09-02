@@ -8,12 +8,12 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import {useConstant} from '@/composables/useConstant'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
+import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
   swift: string
@@ -48,6 +48,7 @@ const mResetState = () => {
   state.logoSearchName = ''
   state.stockAccount = false
 }
+//TODO see AddAccount...
 const onInputLogoUrl = () => {
   state.logoUrl = `${CONS.URLS.LOGO[0]}/${state.logoSearchName}/${CONS.URLS.LOGO[1]}`
 }
@@ -143,6 +144,6 @@ log('--- UpdateAccount.vue setup ---')
         variant="outlined"
         @input="onInputLogoUrl"
     />
-    <img :src="state.logoUrl" :alt="CONS.URLS.LOGO[0]"/>
+    <img :alt="CONS.URLS.LOGO[0]" :src="state.logoUrl"/>
   </v-form>
 </template>

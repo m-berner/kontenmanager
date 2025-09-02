@@ -6,15 +6,15 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IBookingType} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useRecordsStore} from '@/stores/records'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {useSettingsStore} from '@/stores/settings'
-import type {IBookingType} from '@/types.d'
 import {useValidation} from '@/composables/useValidation'
+import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
   bookingTypeName: string

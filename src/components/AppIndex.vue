@@ -6,17 +6,17 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
+import type {FetchedResources} from '@/types'
+import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
+import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {onBeforeMount} from 'vue'
-import type {FetchedResources} from '@/types'
+import {useSettingsStore} from '@/stores/settings'
 
 const settings = useSettingsStore()
 const records = useRecordsStore()

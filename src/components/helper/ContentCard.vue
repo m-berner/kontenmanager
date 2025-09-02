@@ -6,9 +6,9 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {useNotification} from '@/composables/useNotification'
-import {defineProps} from 'vue'
 import type {IContent} from '@/types.d'
+import {defineProps} from 'vue'
+import {useNotification} from '@/composables/useNotification'
 
 interface PropsContentCard {
   title: string

@@ -5,7 +5,8 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {createPinia, type Pinia} from 'pinia'
+import type {Pinia} from 'pinia'
+import {createPinia} from 'pinia'
 import {useNotification} from '@/composables/useNotification'
 
 interface IPinia {

@@ -6,11 +6,12 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IContent} from '@/types.d'
+import type {ComputedRef} from 'vue'
+import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useNotification} from '@/composables/useNotification'
-import {computed, type ComputedRef} from 'vue'
 import ContentCard from '@/components/helper/ContentCard.vue'
-import type {IContent} from '@/types.d'
 
 const {t} = useI18n()
 const {log} = useNotification()

@@ -5,9 +5,9 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {FetchedResources} from '@/types.d'
 import {useConstant} from '@/composables/useConstant'
 import {useBrowser} from '@/composables/useBrowser'
-import type {FetchedResources} from '@/types.d'
 import {useNotification} from '@/composables/useNotification'
 import {useApp} from '@/composables/useApp'
 

@@ -5,11 +5,12 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {IAccount, IBooking, IBookingType, IStockStore, IStores} from '@/types.d'
 import {defineStore} from 'pinia'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useSettingsStore} from '@/stores/settings'
-import type {IAccount, IBooking, IBookingType, IStockStore, IStores} from '@/types.d'
+
 
 interface IRecordsStore {
     accounts: IAccount[]

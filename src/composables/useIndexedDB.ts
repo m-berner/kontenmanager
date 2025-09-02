@@ -5,8 +5,8 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {useConstant} from '@/composables/useConstant'
 import type {IAccount, IBooking, IBookingType, IStock, IStockStore, IStores, IStoresDB} from '@/types.d'
+import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 
 const {CONS} = useConstant()

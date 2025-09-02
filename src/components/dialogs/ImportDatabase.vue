@@ -6,17 +6,18 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {useRecordsStore} from '@/stores/records'
+import type {IAccount, IBooking, IBookingType, IStock, IStockStore, IStoresDB} from '@/types.d'
+import type {UnwrapRef} from 'vue'
+import {computed, defineExpose, reactive, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {useSettingsStore} from '@/stores/settings'
+import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {computed, defineExpose, reactive, toRaw, type UnwrapRef} from 'vue'
-import type {IAccount, IBooking, IBookingType, IStock, IStockStore, IStoresDB} from '@/types.d'
+import {useSettingsStore} from '@/stores/settings'
 
 namespace StockManager {
   export interface IStock {

@@ -6,10 +6,10 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {onBeforeMount, ref} from 'vue'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {onBeforeMount, ref} from 'vue'
 
 const {CONS} = useConstant()
 const {log} = useNotification()

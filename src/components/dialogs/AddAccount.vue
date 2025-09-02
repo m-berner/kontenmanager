@@ -203,56 +203,56 @@ log('--- AddAccount.vue setup ---')
 <template>
   <v-form
       v-model="isFormValid"
-      validate-on="submit"
-      class="pa-4">
+      class="pa-4"
+      validate-on="submit">
     <!-- Account Type Switch -->
     <v-switch
         v-model="accountData.withDepot"
         :label="t('dialogs.addAccount.withDepotLabel')"
-        color="primary"
-        class="mb-4"/>
+        class="mb-4"
+        color="primary"/>
 
     <!-- SWIFT Code Field -->
     <v-text-field
         v-model="accountData.swift"
+        :counter="11"
         :label="t('dialogs.addAccount.swiftLabel')"
         :rules="swiftValidationRules"
-        :counter="11"
         autofocus
+        class="mb-4"
         required
         variant="outlined"
-        class="mb-4"
         @input="accountData.swift = accountData.swift.toUpperCase()"/>
 
     <!-- Account Number Field -->
     <v-text-field
         v-model="accountData.iban"
+        :error="!isAccountNumberUnique"
+        :error-messages="!isAccountNumberUnique ? [t('validators.numberExists')] : []"
         :label="t('dialogs.addAccount.numberLabel')"
         :placeholder="t('dialogs.addAccount.numberPlaceholder')"
         :rules="enhancedIbanRules"
-        :error="!isAccountNumberUnique"
-        :error-messages="!isAccountNumberUnique ? [t('validators.numberExists')] : []"
+        class="mb-4"
         required
         variant="outlined"
-        class="mb-4"
         @update:modelValue="onUpdateIbanMask"/>
 
     <!-- Account Url Field -->
     <v-text-field
         v-model="accountData.url"
         :label="t('dialogs.addAccount.urlLabel')"
-        :rules="brandNameValidationRules"
         :placeholder="CONS.PLACEHOLDER.ADD_ACCOUNT_URL"
+        :rules="brandNameValidationRules"
+        class="mb-4"
         required
-        variant="outlined"
-        class="mb-4"/>
+        variant="outlined"/>
 
     <!-- Logo Preview -->
     <div class="d-flex align-center mb-4">
-      <v-avatar size="48" class="me-3" color="white">
+      <v-avatar class="me-3" color="white" size="48">
         <v-img
-            :src="logoUrl"
-            :alt="t('dialogs.addAccount.logoPreview')"/>
+            :alt="t('dialogs.addAccount.logoPreview')"
+            :src="logoUrl"/>
       </v-avatar>
 
       <div class="text-caption">
@@ -265,8 +265,8 @@ log('--- AddAccount.vue setup ---')
     <!-- Form Summary aktien konto ja/nein, logoUrl -->
     <v-card
         v-if="accountData.swift || accountData.iban"
-        variant="outlined"
-        class="pa-3 mb-4">
+        class="pa-3 mb-4"
+        variant="outlined">
       <v-card-subtitle>{{ t('dialogs.addAccount.preview') }}</v-card-subtitle>
       <v-card-text>
         <div class="d-flex flex-column gap-2">

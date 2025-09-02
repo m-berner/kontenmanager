@@ -6,12 +6,12 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {onBeforeMount, ref} from 'vue'
+import {useI18n} from 'vue-i18n'
+import {useTheme} from 'vuetify/framework'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useTheme} from 'vuetify/framework'
-import {useI18n} from 'vue-i18n'
-import {onBeforeMount, ref} from 'vue'
 
 const {t} = useI18n()
 const theme = useTheme()

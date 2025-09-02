@@ -1,6 +1,7 @@
-import { type Ref, computed } from 'vue'
+import type {Ref} from 'vue'
+import {computed} from 'vue'
 
-export const useDomain = (url: Ref<string|null>) => {
+export const useDomain = (url: Ref<string | null>) => {
     const domain = computed(() => {
         if (!url.value) return null
 
@@ -38,5 +39,5 @@ export const useDomain = (url: Ref<string|null>) => {
         }
     })
 
-    return { domain, subdomain }
+    return {domain, subdomain}
 }

@@ -6,11 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IBooking} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useRecordsStore} from '@/stores/records'
-import type {IBooking} from '@/types.d'
 import {useNotification} from '@/composables/useNotification'
+import {useRecordsStore} from '@/stores/records'
 
 interface IShowAccounting {
   _result: Array<{ title: string, subtitle: string }>

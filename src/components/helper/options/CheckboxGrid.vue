@@ -6,11 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {computed, defineProps, onBeforeMount, reactive, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useBrowser} from '@/composables/useBrowser'
 import {useNotification} from '@/composables/useNotification'
-import {computed, defineProps, onBeforeMount, reactive, toRaw} from 'vue'
 
 interface CheckboxGridProps {
   type: symbol

@@ -6,14 +6,14 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
+import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {computed} from 'vue'
+import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
@@ -47,9 +47,9 @@ log('--- TitleBar.vue setup ---')
 </script>
 
 <template>
-  <v-app-bar flat app color="secondary">
+  <v-app-bar app color="secondary" flat>
     <template #prepend>
-      <img :src="CONS.COMPONENTS.TITLE_BAR.LOGO" :alt="t('titleBar.iconsAlt.logo')"/>
+      <img :alt="t('titleBar.iconsAlt.logo')" :src="CONS.COMPONENTS.TITLE_BAR.LOGO"/>
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field

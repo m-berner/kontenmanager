@@ -6,15 +6,15 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IStock, IStockStore} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {useRuntimeStore} from '@/stores/runtime'
-import type {IStock, IStockStore} from '@/types.d'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
+import {useRecordsStore} from '@/stores/records'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
   id: number

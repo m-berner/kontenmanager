@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import {} from 'vuetify';
 import { useConstant } from '@/composables/useConstant';
 import { useNotification } from '@/composables/useNotification';
 const { CONS } = useConstant();

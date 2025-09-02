@@ -6,15 +6,15 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createApp} from 'vue'
-import AppIndex from '@/components/AppIndex.vue'
+import {useConstant} from '@/composables/useConstant'
+import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useNotification} from '@/composables/useNotification'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
 import componentsPlugin from '@/plugins/components'
 import routerPlugin from '@/plugins/router'
 import piniaPlugin from '@/plugins/pinia'
-import {useConstant} from '@/composables/useConstant'
-import {useIndexedDB} from '@/composables/useIndexedDB'
-import {useNotification} from '@/composables/useNotification'
+import AppIndex from '@/components/AppIndex.vue'
 
 const {CONS} = useConstant()
 const {log} = useNotification()

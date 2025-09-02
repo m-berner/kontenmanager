@@ -8,10 +8,10 @@
 <script lang="ts" setup>
 import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useRecordsStore} from '@/stores/records'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
+import {useRecordsStore} from '@/stores/records'
+import {useRuntimeStore} from '@/stores/runtime'
 
 export interface _IDrawerControl {
   id: number
@@ -86,10 +86,10 @@ log('--- InfoBar.vue setup ---')
       </v-list>
     </v-card>
   </v-navigation-drawer>
-  <v-app-bar flat app color="secondary">
+  <v-app-bar app color="secondary" flat>
     <v-app-bar-nav-icon
-        variant="text"
         icon="$home"
+        variant="text"
         @click="state.show = !state.show"/>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>

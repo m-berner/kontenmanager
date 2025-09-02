@@ -6,16 +6,16 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import DotMenu from '@/components/helper/DotMenu.vue'
+import type {IStockStore, StocksMenuItems} from '@/types.d'
+import type {DataTableHeader} from 'vuetify'
+import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
-import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {computed} from 'vue'
-import {type DataTableHeader} from 'vuetify'
-import type {IStockStore, StocksMenuItems} from '@/types.d'
+import {useRecordsStore} from '@/stores/records'
+import {useSettingsStore} from '@/stores/settings'
+import DotMenu from '@/components/helper/DotMenu.vue'
 
 const {log} = useNotification()
 const {d, n, t} = useI18n()

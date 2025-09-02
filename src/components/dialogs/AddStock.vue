@@ -6,16 +6,16 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {type FetchedResources, type IStock, type IStockStore} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useRecordsStore} from '@/stores/records'
 import {useNotification} from '@/composables/useNotification'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
-import {useSettingsStore} from '@/stores/settings'
-import {useRuntimeStore} from '@/stores/runtime'
-import {type FetchedResources, type IStock, type IStockStore} from '@/types.d'
 import {useValidation} from '@/composables/useValidation'
+import {useRecordsStore} from '@/stores/records'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 
 interface IState {
   isin: string

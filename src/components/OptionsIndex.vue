@@ -6,8 +6,9 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {ComputedRef, Ref} from 'vue'
+import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {type ComputedRef, type Ref, computed, ref} from 'vue'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import DynamicList from '@/components/helper/options/DynamicList.vue'

@@ -1,5 +1,5 @@
-import {} from 'vue';
 import { useConstant } from '@/composables/useConstant';
+import { useNotification } from '@/composables/useNotification';
 import AddStock from '@/components/dialogs/AddStock.vue';
 import UpdateStock from '@/components/dialogs/UpdateStock.vue';
 import AddAccount from '@/components/dialogs/AddAccount.vue';
@@ -11,7 +11,6 @@ import UpdateBooking from '@/components/dialogs/UpdateBooking.vue';
 import ExportDatabase from '@/components/dialogs/ExportDatabase.vue';
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue';
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue';
-import { useNotification } from '@/composables/useNotification';
 const { CONS } = useConstant();
 const { log } = useNotification();
 const ComponentsPlugin = {
