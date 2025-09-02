@@ -1,4 +1,5 @@
 import { computed } from 'vue';
+console.error('--------------------öööööööööööööööööööööööööööööö');
 export const useDomain = (url) => {
     const domain = computed(() => {
         if (!url.value)
