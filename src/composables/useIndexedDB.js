@@ -48,29 +48,6 @@ export const useIndexedDB = () => {
             }
         });
     };
-    const clearStoresN = async (stores) => {
-        log('USE_INDEXED_DB: clearStores');
-        return new Promise(async (resolve, reject) => {
-            if (db !== null) {
-                const onComplete = async () => {
-                    resolve('USE_INDEXED_DB: database is empty!');
-                };
-                const onAbort = () => {
-                    reject(requestTransaction.error);
-                };
-                const onError = () => {
-                    reject(requestTransaction.error);
-                };
-                const requestTransaction = db.transaction(stores, 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
-                requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                stores.forEach((store) => {
-                    requestTransaction.objectStore(store).clear();
-                });
-            }
-        });
-    };
     const exportToFile = async (filename) => {
         log('USE_INDEXED_DB: exportToFile');
         const accounts = [];
@@ -552,7 +529,6 @@ export const useIndexedDB = () => {
     return {
         dbi,
         clearStores,
-        clearStoresN,
         exportToFile,
         exportStores,
         importStores,
