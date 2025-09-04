@@ -10,7 +10,7 @@ import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useBookingsStore, useStocksStore} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 
@@ -22,7 +22,8 @@ interface PropsOptionMenu {
 const optionMenuProps = defineProps<PropsOptionMenu>()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {deleteBooking, deleteStock} = useIndexedDB()
+const {deleteBooking} = useBookingsStore()
+const {deleteStock} = useStocksStore()
 const {rt, t} = useI18n()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()

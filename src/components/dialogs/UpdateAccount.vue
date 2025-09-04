@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useAccountsStore} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
@@ -25,7 +25,7 @@ interface IState {
 
 const {t} = useI18n()
 const {log, notice} = useNotification()
-const {updateAccount} = useIndexedDB()
+const {updateAccount} = useAccountsStore()
 const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -109,7 +109,10 @@ log('--- UpdateAccount.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
+  <v-form
+      ref="form-ref"
+      validate-on="submit"
+      @submit.prevent>
     <v-switch
         v-model="state.stockAccount"
         :label="t('dialogs.updateAccount.stockAccountLabel')"
@@ -142,6 +145,6 @@ log('--- UpdateAccount.vue setup ---')
         variant="outlined"
         @input="onInputLogoUrl"
     />
-    <img :src="state.logoUrl" alt="" />
+    <img :src="state.logoUrl" alt=""/>
   </v-form>
 </template>

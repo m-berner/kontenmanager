@@ -11,7 +11,7 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useBookingTypesStore} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -24,7 +24,7 @@ interface IState {
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {addBookingType} = useIndexedDB()
+const {addBookingType} = useBookingTypesStore()
 const {valNameRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -67,7 +67,10 @@ log('--- AddBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
+  <v-form
+      ref="form-ref"
+      validate-on="submit"
+      @submit.prevent>
     <v-text-field v-if="settings.activeAccountId === -1">
       {{ t('dialogs.addBookingType.message') }}
     </v-text-field>

@@ -10,8 +10,8 @@ import piniaPlugin from '@/plugins/pinia';
 import AppIndex from '@/components/AppIndex.vue';
 const { CONS } = useConstant();
 const { log } = useNotification();
-const { open, dbi } = useIndexedDB();
-await open();
+const { getDB } = useIndexedDB();
+const db = await getDB();
 const app = createApp(AppIndex);
 app.config.errorHandler = (err) => {
     log('APP: errorHandler', { error: err });
@@ -28,7 +28,7 @@ app.mount('#app');
 const keyStrokeController = [];
 const onBeforeUnload = () => {
     log('BACKGROUND: onBeforeUnload');
-    dbi()?.close();
+    db.close();
 };
 const onKeyDown = async (ev) => {
     keyStrokeController.push(ev.key);

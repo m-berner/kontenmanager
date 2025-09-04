@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useAccountsStore, useBookingTypesStore, useBookingsStore, useStocksStore} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -21,7 +21,10 @@ const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
 const {setStorage, openOptionsPage} = useBrowser()
-const {deleteAccount, deleteBooking, deleteBookingType, deleteStock, exportStores} = useIndexedDB()
+const {deleteAccount, getAllAccounts} = useAccountsStore()
+const {deleteBooking, getAllBookings} = useBookingsStore()
+const {deleteBookingType, getAllBookingTypes} = useBookingTypesStore()
+const {deleteStock, getAllStocks} = useStocksStore()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -72,15 +75,15 @@ const onIconClick = async (ev: Event): Promise<void> => {
           try {
             for (let i = 0; i < records.bookings.length; i++) {
               records.deleteBooking(records.bookings[i].cID)
-              await deleteBooking(toRaw(settings.activeAccountId))
+              await deleteBooking(records.bookings[i].cID)
             }
             for (let i = 0; i < records.bookingTypes.length; i++) {
               records.deleteBookingType(records.bookingTypes[i].cID)
-              await deleteBookingType(toRaw(settings.activeAccountId))
+              await deleteBookingType(records.bookingTypes[i].cID)
             }
             for (let i = 0; i < records.stocks.length; i++) {
               records.deleteStock(records.stocks[i].cID)
-              await deleteStock(toRaw(settings.activeAccountId))
+              await deleteStock(records.stocks[i].cID)
             }
             records.deleteAccount(settings.activeAccountId)
             await deleteAccount(toRaw(settings.activeAccountId))
@@ -91,7 +94,16 @@ const onIconClick = async (ev: Event): Promise<void> => {
               settings.setActiveAccountId(0)
               await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, 0)
             }
-            const stores = await exportStores(settings.activeAccountId)
+            const accounts = await getAllAccounts()
+            const bookings = await getAllBookings()
+            const bookingTypes = await getAllBookingTypes()
+            const stocks = await getAllStocks()
+            const stores = {
+              accounts,
+              bookings,
+              bookingTypes,
+              stocks
+            }
             if (stores.accounts.length > 0) {
               records.initStore(stores)
               records.sumBookings()

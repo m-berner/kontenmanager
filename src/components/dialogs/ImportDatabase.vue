@@ -14,7 +14,7 @@ import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useAccountsStore, useBookingsStore, useBookingTypesStore, useStocksStore} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
@@ -76,7 +76,11 @@ const {log, notice} = useNotification()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 const {setStorage} = useBrowser()
-const {clearStores, importStores} = useIndexedDB()
+//const {clearStores, importStores} = useIndexedDB()
+const {clearAllAccounts} = useAccountsStore()
+const {clearAllBookings} = useBookingsStore()
+const {clearAllBookingTypes} = useBookingTypesStore()
+const {clearAllStocks} = useStocksStore()
 
 let chosen_file: Blob = reactive(new Blob())
 const onChange = computed(ev => {
@@ -86,6 +90,63 @@ const onChange = computed(ev => {
 const onClickOk = async (): Promise<void> => {
   log('IMPORT_DATABASE: onClickOk', {info: chosen_file})
   const records = useRecordsStore()
+
+  const importStores = async (stores: IStoresDB, all = true) => {
+    log('USE_INDEXED_DB: importStores', {info: db})
+    return new Promise(async (resolve, reject) => {
+      if (db != null) {
+        const onComplete = async (): Promise<void> => {
+          await notice(['All memory records are added to the database!'])
+          resolve('USE_INDEXED_DB: importStores: all memory records are added to the database!')
+        }
+        const onAbort = (): void => {
+          reject(requestTransaction.error)
+        }
+        const onError = (ev: Event): void => {
+          reject(ev)
+        }
+        const requestTransaction = db.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite')
+        requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE)
+        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
+        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
+        const onSuccessClearBookings = (): void => {
+          log('USE_INDEXED_DB: bookings dropped')
+          for (let i = 0; i < stores.bookings.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
+          }
+        }
+        const onSuccessClearAccounts = (): void => {
+          log('USE_INDEXED_DB: accounts dropped')
+          for (let i = 0; i < stores.accounts.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accounts[i]})
+          }
+        }
+        const onSuccessClearBookingTypes = (): void => {
+          log('USE_INDEXED_DB: booking types dropped')
+          for (let i = 0; i < stores.bookingTypes.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
+          }
+        }
+        const onSuccessClearStocks = (): void => {
+          log('USE_INDEXED_DB: stocks dropped')
+          for (let i = 0; i < stores.stocks.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocks[i]})
+          }
+        }
+        const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
+        requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE)
+        if (all) {
+          const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear()
+          requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
+        }
+        const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear()
+        requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
+        const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear()
+        requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE)
+      }
+    })
+  }
+
   const onError = async (): Promise<void> => {
     await notice(['IMPORT_DATABASE: onError: FileReader'])
   }
@@ -137,7 +198,10 @@ const onClickOk = async (): Promise<void> => {
         await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.DB.IMPORT_MIN_VERSION.toString()})])
       } else if (backupObject.sm.cDBVersion === CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
-        await clearStores()
+        await clearAllAccounts()
+        await clearAllBookings()
+        await clearAllBookingTypes()
+        await clearAllStocks()
         const account: IAccount = {
           cID: activeId,
           cSwift: 'KMKLPJJ9099',
@@ -284,7 +348,9 @@ log('--- ImportDatabase.vue setup ---')
 </script>
 
 <template>
-  <v-form validate-on="submit" @submit.prevent>
+  <v-form
+      validate-on="submit"
+      @submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
           :label="t('dialogs.importDatabase.messageDelete')"

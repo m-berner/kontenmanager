@@ -13,7 +13,7 @@ import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useAccountsStore} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useFavicon} from '@/composables/useFavicon'
 import {useDomain} from '@/composables/useDomain'
@@ -32,7 +32,7 @@ const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
 const {setStorage} = useBrowser()
-const {addAccount} = useIndexedDB()
+const {addAccount} = useAccountsStore()
 
 const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const runtime = useRuntimeStore()
@@ -204,7 +204,8 @@ log('--- AddAccount.vue setup ---')
   <v-form
       v-model="isFormValid"
       class="pa-4"
-      validate-on="submit">
+      validate-on="submit"
+      @submit.prevent>
     <!-- Account Type Switch -->
     <v-switch
         v-model="accountData.withDepot"

@@ -9,7 +9,7 @@
 import type {IStock, IStockStore} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useStocksStore} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
@@ -32,7 +32,7 @@ interface IState {
 
 const {t} = useI18n()
 const {log, notice} = useNotification()
-const {updateStock} = useIndexedDB()
+const {updateStock} = useStocksStore()
 const {valIbanRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -84,7 +84,7 @@ const onClickOk = async (): Promise<void> => {
     }
     records.updateStock(stockStore)
     const updateStockResponse = await updateStock(stock)
-    await notice([updateStockResponse])
+    await notice([updateStockResponse as string])
     runtime.resetTeleport()
   } catch (e) {
     log('UPDATE_STOCK: onClickOk', {error: e})
@@ -112,7 +112,10 @@ log('--- UpdateStock.vue setup ---')
 </script>
 
 <template>
-  <v-form ref="form-ref" validate-on="submit" @submit.prevent>
+  <v-form
+      ref="form-ref"
+      validate-on="submit"
+      @submit.prevent>
     <v-container>
       <v-row>
         <v-text-field

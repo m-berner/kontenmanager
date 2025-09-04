@@ -12,7 +12,7 @@ import {useTheme} from 'vuetify'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useAccountsStore, useBookingTypesStore, useBookingsStore, useStocksStore} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -21,7 +21,10 @@ import {useSettingsStore} from '@/stores/settings'
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
-const {exportStores} = useIndexedDB()
+const {getAllAccounts} = useAccountsStore()
+const {getAllBookings} = useBookingsStore()
+const {getAllBookingTypes} = useBookingTypesStore()
+const {getAllStocks} = useStocksStore()
 const theme = useTheme()
 const {CONS} = useConstant()
 const {log} = useNotification()
@@ -60,7 +63,16 @@ onBeforeMount(async () => {
   const curUsd = `${cur}${CONS.CURRENCIES.USD}`
   const storage = await getStorage()
   settings.initStore(theme, storage)
-  const stores = await exportStores(settings.activeAccountId)
+  const accounts = await getAllAccounts()
+  const bookings = await getAllBookings()
+  const bookingTypes = await getAllBookingTypes()
+  const stocks = await getAllStocks()
+  const stores = {
+    accounts,
+    bookings,
+    bookingTypes,
+    stocks
+  }
   if (stores.accounts.length > 0) {
     records.initStore(stores)
     records.sumBookings()

@@ -18,8 +18,10 @@ import AppIndex from '@/components/AppIndex.vue'
 
 const {CONS} = useConstant()
 const {log} = useNotification()
-const {open, dbi} = useIndexedDB()
-await open()
+//const {open, dbi} = useIndexedDB()
+//await open()
+const {getDB} = useIndexedDB()
+const db = await getDB()
 const app = createApp(AppIndex)
 app.config.errorHandler = (err: unknown) => {
     log('APP: errorHandler', {error: err})
@@ -37,7 +39,7 @@ app.mount('#app')
 const keyStrokeController: string[] = []
 const onBeforeUnload = (): void => {
     log('BACKGROUND: onBeforeUnload')
-    dbi()?.close()
+    db.close()
 }
 const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
     keyStrokeController.push(ev.key)

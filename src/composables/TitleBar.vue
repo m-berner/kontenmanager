@@ -11,7 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useAccountsStore, useBookingTypesStore, useBookingsStore, useStocksStore} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
@@ -21,11 +21,23 @@ const settings = useSettingsStore()
 const {CONS} = useConstant()
 const {log} = useNotification()
 const {setStorage} = useBrowser()
-const {exportStores} = useIndexedDB()
+const {getAllAccounts} = useAccountsStore()
+const {getAllBookings} = useBookingsStore()
+const {getAllBookingTypes} = useBookingTypesStore()
+const {getAllStocks} = useStocksStore()
 
 const onUpdateTitleBar = async (): Promise<void> => {
   await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
-  const stores = await exportStores(settings.activeAccountId)
+  const accounts = await getAllAccounts()
+  const bookings = await getAllBookings()
+  const bookingTypes = await getAllBookingTypes()
+  const stocks = await getAllStocks()
+  const stores = {
+    accounts,
+    bookings,
+    bookingTypes,
+    stocks
+  }
   if (stores.accounts.length > 0) {
     records.initStore(stores)
     records.sumBookings()

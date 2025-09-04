@@ -1,3 +1,4 @@
+import { useConstant } from '@/composables/useConstant';
 export const useBrowser = () => {
     const setStorage = async (key, value) => {
         try {
@@ -41,5 +42,39 @@ export const useBrowser = () => {
         }
         return result;
     };
-    return { getChar5Locale, getStorage, setStorage, onStorageChanged, openOptionsPage };
+    const installStorageLocal = async () => {
+        const { CONS } = useConstant();
+        const storageLocal = await browser.storage.local.get();
+        if (storageLocal[CONS.STORAGE.PROPS.SKIN] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.SKIN]: CONS.DEFAULTS.STORAGE.SKIN });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.STOCKS_PER_PAGE] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.PARTNER] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.PARTNER]: CONS.DEFAULTS.STORAGE.PARTNER });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.SERVICE] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.STORAGE.SERVICE });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.EXCHANGES] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.STORAGE.EXCHANGES });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.INDEXES] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.STORAGE.INDEXES });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.MARKETS] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.STORAGE.MARKETS });
+        }
+        if (storageLocal[CONS.STORAGE.PROPS.MATERIALS] === undefined) {
+            await browser.storage.local.set({ [CONS.STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.STORAGE.MATERIALS });
+        }
+    };
+    return { getChar5Locale, getStorage, setStorage, installStorageLocal, onStorageChanged, openOptionsPage };
 };

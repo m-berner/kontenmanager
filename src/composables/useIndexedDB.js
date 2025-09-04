@@ -1,548 +1,455 @@
+import { ref } from 'vue';
 import { useConstant } from '@/composables/useConstant';
 import { useNotification } from '@/composables/useNotification';
+let dbInstance = null;
+let dbPromise = null;
 const { CONS } = useConstant();
-const { log, notice } = useNotification();
-let db;
-export const useIndexedDB = () => {
-    const dbi = () => {
-        return db;
+const { log } = useNotification();
+export function useIndexedDB(dbName = CONS.DB.NAME, version = CONS.DB.CURRENT_VERSION) {
+    const isConnected = ref(false);
+    const error = ref(null);
+    const isLoading = ref(false);
+    const _setupDatabase = (db) => {
+        if (!db.objectStoreNames.contains(CONS.DB.STORES.ACCOUNTS.NAME)) {
+            const accountStore = db.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
+                keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+                autoIncrement: true
+            });
+            accountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
+        }
+        if (!db.objectStoreNames.contains(CONS.DB.STORES.BOOKINGS.NAME)) {
+            const bookingStore = db.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
+                keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+                autoIncrement: true
+            });
+            bookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, { unique: false });
+            bookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID, { unique: false });
+            bookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+            bookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k4`, CONS.DB.STORES.BOOKINGS.FIELDS.STOCK_ID, { unique: false });
+        }
+        if (!db.objectStoreNames.contains(CONS.DB.STORES.BOOKING_TYPES.NAME)) {
+            const bookingTypeStore = db.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
+                keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+                autoIncrement: true
+            });
+            bookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+        }
+        if (!db.objectStoreNames.contains(CONS.DB.STORES.STOCKS.NAME)) {
+            const stockStore = db.createObjectStore(CONS.DB.STORES.STOCKS.NAME, {
+                keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+                autoIncrement: true
+            });
+            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, { unique: true });
+            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, { unique: true });
+            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, { unique: false });
+            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
+            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k3`, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+        }
     };
-    const clearStores = async () => {
-        log('USE_INDEXED_DB: clearStores');
-        return new Promise(async (resolve, reject) => {
-            if (db !== null) {
-                const onComplete = async () => {
-                    await notice(['Database is empty!']);
-                    resolve('USE_INDEXED_DB: database is empty!');
+    const getDB = async () => {
+        if (dbInstance && !dbInstance.db) {
+            dbInstance = null;
+            dbPromise = null;
+        }
+        if (!dbPromise) {
+            isLoading.value = true;
+            error.value = null;
+            dbPromise = new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, version);
+                request.onerror = () => {
+                    error.value = request.error;
+                    isLoading.value = false;
+                    reject(request.error);
                 };
-                const onAbort = () => {
-                    reject(requestTransaction.error);
-                };
-                const onError = () => {
-                    reject(requestTransaction.error);
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
-                requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                const onSuccessClearBookings = () => {
-                    log('USE_INDEXED_DB: bookings dropped');
-                };
-                const onSuccessClearAccounts = () => {
-                    log('USE_INDEXED_DB: accounts dropped');
-                };
-                const onSuccessClearBookingTypes = () => {
-                    log('USE_INDEXED_DB: booking types dropped');
-                };
-                const onSuccessClearStocks = () => {
-                    log('USE_INDEXED_DB: stocks dropped');
-                };
-                const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
-                requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
-                const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
-                requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
-                const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
-                requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
-                const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
-                requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
-            }
-        });
-    };
-    const exportToFile = async (filename) => {
-        log('USE_INDEXED_DB: exportToFile');
-        const accounts = [];
-        const bookings = [];
-        const stocks = [];
-        const bookingTypes = [];
-        return new Promise(async (resolve, reject) => {
-            if (db !== null) {
-                const onComplete = async () => {
-                    log('USE_INDEXED_DB: exportToFile: data read!');
-                    const stringifyDB = () => {
-                        let buffer;
-                        let i;
-                        buffer = '"accounts":[\n';
-                        for (i = 0; i < accounts.length; i++) {
-                            buffer += JSON.stringify(accounts[i]);
-                            if (i === accounts.length - 1) {
-                                buffer += '\n],\n';
-                            }
-                            else {
-                                buffer += ',\n';
-                            }
-                        }
-                        buffer += i === 0 ? '],\n' : '';
-                        buffer += '"stocks":[\n';
-                        for (i = 0; i < stocks.length; i++) {
-                            buffer += JSON.stringify(stocks[i]);
-                            if (i === stocks.length - 1) {
-                                buffer += '\n],\n';
-                            }
-                            else {
-                                buffer += ',\n';
-                            }
-                        }
-                        buffer += i === 0 ? '],\n' : '';
-                        buffer += '"bookingTypes":[\n';
-                        for (i = 0; i < bookingTypes.length; i++) {
-                            buffer += JSON.stringify(bookingTypes[i]);
-                            if (i === bookingTypes.length - 1) {
-                                buffer += '\n],\n';
-                            }
-                            else {
-                                buffer += ',\n';
-                            }
-                        }
-                        buffer += i === 0 ? '],\n' : '';
-                        buffer += '"bookings":[\n';
-                        for (i = 0; i < bookings.length; i++) {
-                            buffer += JSON.stringify(bookings[i]);
-                            if (i === bookings.length - 1) {
-                                buffer += '\n]\n';
-                            }
-                            else {
-                                buffer += ',\n';
-                            }
-                        }
-                        return buffer;
+                request.onsuccess = () => {
+                    const db = request.result;
+                    db.onversionchange = () => {
+                        log('Database version changed, closing connection');
+                        db.close();
+                        dbInstance = null;
+                        dbPromise = null;
+                        isConnected.value = false;
                     };
-                    let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`;
-                    buffer += stringifyDB();
-                    buffer += '}';
-                    const blob = new Blob([buffer], { type: 'application/json' });
-                    const blobUrl = URL.createObjectURL(blob);
-                    const op = {
-                        url: blobUrl,
-                        filename
+                    db.onclose = () => {
+                        log('Database connection closed');
+                        isConnected.value = false;
                     };
-                    const onDownloadChange = (change) => {
-                        log('USE_INDEXED_DB: onDownloadChange');
-                        browser.downloads.onChanged.removeListener(onDownloadChange);
-                        if ((change.state !== undefined && change.id > 0) ||
-                            (change.state !== undefined && change.state.current === CONS.EVENTS.COMP)) {
-                            URL.revokeObjectURL(blobUrl);
-                        }
-                    };
-                    browser.downloads.onChanged.addListener(onDownloadChange);
-                    await browser.downloads.download(op);
-                    await notice(['Database exported!']);
-                    resolve('USE_INDEXED_DB: exportToFile: done!');
+                    dbInstance = { db };
+                    isConnected.value = true;
+                    isLoading.value = false;
+                    resolve(db);
                 };
-                const onAbort = () => {
-                    reject(requestTransaction.error);
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly');
-                requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                const onSuccessAccountOpenCursor = (ev) => {
-                    if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                        accounts.push(ev.target.result.value);
-                        ev.target.result.continue();
+                request.onupgradeneeded = (ev) => {
+                    if (ev.target !== null && ev.target instanceof IDBRequest) {
+                        const db = ev.target.result;
+                        _setupDatabase(db);
                     }
                 };
-                const onSuccessBookingTypeOpenCursor = (ev) => {
-                    if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                        bookingTypes.push(ev.target.result.value);
-                        ev.target.result.continue();
-                    }
-                };
-                const onSuccessBookingOpenCursor = (ev) => {
-                    if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                        bookings.push(ev.target.result.value);
-                        ev.target.result.continue();
-                    }
-                };
-                const onSuccessStockOpenCursor = (ev) => {
-                    if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                        stocks.push(ev.target.result.value);
-                        ev.target.result.continue();
-                    }
-                };
-                const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
-                requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
-                const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
-                requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false);
-                const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
-                requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
-                const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
-                requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
-            }
-        });
+            });
+        }
+        return dbPromise;
     };
-    const exportStores = async (aid) => {
-        log('USE_INDEXED_DB: exportStores');
-        const accounts = [];
-        const bookings = [];
-        const stocks = [];
-        const bookingTypes = [];
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onComplete = async () => {
-                    log('USE_INDEXED_DB: exportStores: all database records sent to frontend!');
-                    resolve({ accounts, bookings, stocks, bookingTypes });
-                };
-                const onAbort = () => {
-                    reject(requestTransaction.error);
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.STOCKS.NAME], 'readonly');
-                requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                const onSuccessAccountOpenCursor = (ev) => {
-                    if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                        accounts.push(ev.target.result.value);
-                        ev.target.result.continue();
-                    }
-                };
-                const onSuccessBookingTypeOpenCursor = (ev) => {
-                    if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                        if (ev.target.result.value.cAccountNumberID === aid) {
-                            bookingTypes.push(ev.target.result.value);
-                        }
-                        ev.target.result.continue();
-                    }
-                };
-                const onSuccessBookingOpenCursor = (ev) => {
-                    if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                        if (ev.target.result.value.cAccountNumberID === aid) {
-                            bookings.push(ev.target.result.value);
-                        }
-                        ev.target.result.continue();
-                    }
-                };
-                const onSuccessStockOpenCursor = (ev) => {
-                    if (ev.target instanceof IDBRequest && ev.target.result instanceof IDBCursorWithValue) {
-                        if (ev.target.result.value.cAccountNumberID === aid) {
-                            stocks.push(ev.target.result.value);
-                        }
-                        ev.target.result.continue();
-                    }
-                };
-                const requestAccountOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).openCursor();
-                requestAccountOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessAccountOpenCursor, false);
-                const requestBookingTypeOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).openCursor();
-                requestBookingTypeOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingTypeOpenCursor, false);
-                const requestBookingOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).openCursor();
-                requestBookingOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessBookingOpenCursor, false);
-                const requestStockOpenCursor = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).openCursor();
-                requestStockOpenCursor.addEventListener(CONS.EVENTS.SUC, onSuccessStockOpenCursor, false);
-            }
-        });
-    };
-    const importStores = async (stores, all = true) => {
-        log('USE_INDEXED_DB: importStores', { info: db });
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onComplete = async () => {
-                    await notice(['All memory records are added to the database!']);
-                    resolve('USE_INDEXED_DB: importStores: all memory records are added to the database!');
-                };
-                const onAbort = () => {
-                    reject(requestTransaction.error);
-                };
-                const onError = (ev) => {
-                    reject(ev);
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.ACCOUNTS.NAME, CONS.DB.STORES.BOOKING_TYPES.NAME, CONS.DB.STORES.BOOKINGS.NAME, CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.COMP, onComplete, CONS.SYSTEM.ONCE);
-                requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE);
-                requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE);
-                const onSuccessClearBookings = () => {
-                    log('USE_INDEXED_DB: bookings dropped');
-                    for (let i = 0; i < stores.bookings.length; i++) {
-                        requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({ ...stores.bookings[i] });
-                    }
-                };
-                const onSuccessClearAccounts = () => {
-                    log('USE_INDEXED_DB: accounts dropped');
-                    for (let i = 0; i < stores.accounts.length; i++) {
-                        requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({ ...stores.accounts[i] });
-                    }
-                };
-                const onSuccessClearBookingTypes = () => {
-                    log('USE_INDEXED_DB: booking types dropped');
-                    for (let i = 0; i < stores.bookingTypes.length; i++) {
-                        requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({ ...stores.bookingTypes[i] });
-                    }
-                };
-                const onSuccessClearStocks = () => {
-                    log('USE_INDEXED_DB: stocks dropped');
-                    for (let i = 0; i < stores.stocks.length; i++) {
-                        requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({ ...stores.stocks[i] });
-                    }
-                };
-                const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear();
-                requestClearBookings.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookings, CONS.SYSTEM.ONCE);
-                if (all) {
-                    const requestClearAccount = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).clear();
-                    requestClearAccount.addEventListener(CONS.EVENTS.SUC, onSuccessClearAccounts, CONS.SYSTEM.ONCE);
-                }
-                const requestClearBookingTypes = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).clear();
-                requestClearBookingTypes.addEventListener(CONS.EVENTS.SUC, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE);
-                const requestClearStocks = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).clear();
-                requestClearStocks.addEventListener(CONS.EVENTS.SUC, onSuccessClearStocks, CONS.SYSTEM.ONCE);
-            }
-        });
-    };
-    const open = async () => {
-        return new Promise(async (resolve, reject) => {
-            const onError = (ev) => {
-                reject(ev);
+    const performTransaction = async (storeName, mode, operations) => {
+        try {
+            const db = await getDB();
+            const transaction = db.transaction(storeName, mode);
+            transaction.onerror = () => {
+                error.value = transaction.error;
+                throw transaction.error;
             };
-            const onSuccess = (ev) => {
-                if (ev.target instanceof IDBOpenDBRequest && ev.target.result) {
-                    db = ev.target.result;
-                    const onVersionChangeSuccess = () => {
-                        if (db != null) {
-                            db.close();
-                            notice(['Database is outdated, please reload the page.']);
-                        }
-                    };
-                    db.addEventListener('versionchange', onVersionChangeSuccess, CONS.SYSTEM.ONCE);
-                    log('USE_INDEXED_DB: open: database ready', { info: db });
-                    resolve('USE_INDEXED_DB: database opened successfully!');
-                }
-            };
-            const openDBRequest = indexedDB.open(CONS.DB.NAME, CONS.DB.CURRENT_VERSION);
-            openDBRequest.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            openDBRequest.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
+            return await operations(transaction);
+        }
+        catch (err) {
+            error.value = err;
+            throw err;
+        }
+    };
+    const add = async (storeName, data) => {
+        return performTransaction(storeName, 'readwrite', (transaction) => {
+            return new Promise((resolve, reject) => {
+                const store = transaction.objectStore(storeName);
+                const request = store.add(data);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
         });
     };
-    const addAccount = async (record) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = async (ev) => {
-                    if (ev.target instanceof IDBRequest) {
-                        resolve(ev.target.result);
-                    }
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev.message);
-                    }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add(record);
-                requestAdd.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
+    const get = async (storeName, key) => {
+        return performTransaction(storeName, 'readonly', (transaction) => {
+            return new Promise((resolve, reject) => {
+                const store = transaction.objectStore(storeName);
+                const request = store.get(key);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
         });
     };
-    const updateAccount = async (record) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = async (ev) => {
-                    if (ev.target instanceof IDBRequest) {
-                        resolve('Account updated');
-                    }
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev.message);
-                    }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).put(record);
-                requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
+    const getAll = async (storeName) => {
+        return performTransaction(storeName, 'readonly', (transaction) => {
+            return new Promise((resolve, reject) => {
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
         });
     };
-    const deleteAccount = async (id) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = () => {
-                    resolve('Account deleted');
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev.message);
-                    }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.ACCOUNTS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).delete(id);
-                requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
+    const update = async (storeName, data) => {
+        return performTransaction(storeName, 'readwrite', (transaction) => {
+            return new Promise((resolve, reject) => {
+                const store = transaction.objectStore(storeName);
+                const request = store.put(data);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
         });
     };
-    const addBookingType = async (record) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = (ev) => {
-                    if (ev.target instanceof IDBRequest) {
-                        resolve(ev.target.result);
-                    }
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev.message);
-                    }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add(record);
-                requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
+    const remove = async (storeName, key) => {
+        return performTransaction(storeName, 'readwrite', (transaction) => {
+            return new Promise((resolve, reject) => {
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(key);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
         });
     };
-    const deleteBookingType = async (id) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = () => {
-                    resolve('Booking type deleted');
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev.message);
+    const batchOperations = async (storeName, operations) => {
+        return performTransaction(storeName, 'readwrite', async (transaction) => {
+            const store = transaction.objectStore(storeName);
+            const results = [];
+            for (const operation of operations) {
+                const { type, data, key } = operation;
+                const promise = new Promise((resolve, reject) => {
+                    let request;
+                    switch (type) {
+                        case 'add':
+                            request = store.add(data);
+                            break;
+                        case 'put':
+                            request = store.put(data);
+                            break;
+                        case 'delete':
+                            request = store.delete(key);
+                            break;
+                        default:
+                            reject(new Error(`Unknown operation type: ${type}`));
+                            return;
                     }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.BOOKING_TYPES.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).delete(id);
-                requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                results.push(await promise);
             }
+            return results;
         });
     };
-    const addBooking = async (record) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = (ev) => {
-                    if (ev.target instanceof IDBRequest) {
-                        resolve(ev.target.result);
-                    }
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev.message);
-                    }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add(record);
-                requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
+    const getByIndex = async (storeName, indexName, value) => {
+        return performTransaction(storeName, 'readonly', (transaction) => {
+            return new Promise((resolve, reject) => {
+                const store = transaction.objectStore(storeName);
+                const index = store.index(indexName);
+                const request = index.get(value);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
         });
     };
-    const updateBooking = async (record) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = async (ev) => {
-                    if (ev.target instanceof IDBRequest) {
-                        resolve('Booking updated');
-                    }
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev);
-                    }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
-                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).put(record);
-                requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
-        });
-    };
-    const deleteBooking = async (id) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = () => {
-                    resolve('Booking deleted');
-                };
-                const onError = (ev) => {
-                    reject(ev);
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.BOOKINGS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).delete(id);
-                requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
-        });
-    };
-    const addStock = async (record) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = (ev) => {
-                    if (ev.target instanceof IDBRequest) {
-                        resolve(ev.target.result);
-                    }
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev.message);
-                    }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestAdd = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add(record);
-                requestAdd.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
-        });
-    };
-    const updateStock = async (record) => {
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = async (ev) => {
-                    if (ev.target instanceof IDBRequest) {
-                        resolve('Stock updated');
-                    }
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev);
-                    }
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                const requestUpdate = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).put(record);
-                requestUpdate.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                requestUpdate.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
-        });
-    };
-    const deleteStock = async (id) => {
-        log('USE_INDEXED_DB: deleteStock');
-        return new Promise(async (resolve, reject) => {
-            if (db != null) {
-                const onSuccess = () => {
-                    resolve('Stock deleted');
-                    return;
-                };
-                const onError = (ev) => {
-                    if (ev instanceof ErrorEvent) {
-                        reject(ev.message);
-                    }
-                    return;
-                };
-                const requestTransaction = db.transaction([CONS.DB.STORES.STOCKS.NAME], 'readwrite');
-                requestTransaction.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                const requestDelete = requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).delete(id);
-                requestDelete.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE);
-                requestDelete.addEventListener(CONS.EVENTS.SUC, onSuccess, CONS.SYSTEM.ONCE);
-            }
+    const clear = async (storeName) => {
+        return performTransaction(storeName, 'readwrite', (transaction) => {
+            return new Promise((resolve, reject) => {
+                const store = transaction.objectStore(storeName);
+                const request = store.clear();
+                request.onsuccess = () => resolve(`Store: ${storeName} cleared`);
+                request.onerror = () => reject(request.error);
+            });
         });
     };
     return {
-        dbi,
-        clearStores,
-        exportToFile,
-        exportStores,
-        importStores,
-        open,
+        isConnected,
+        error,
+        isLoading,
+        getDB,
+        performTransaction,
+        add,
+        get,
+        getAll,
+        update,
+        remove,
+        clear,
+        batchOperations,
+        getByIndex
+    };
+}
+export function useAccountsStore() {
+    const db = useIndexedDB();
+    const addAccount = async (accountData) => {
+        try {
+            return await db.add(CONS.DB.STORES.ACCOUNTS.NAME, accountData);
+        }
+        catch (err) {
+            log('Failed to add account:', { error: err });
+            throw err;
+        }
+    };
+    const getAllAccounts = async () => {
+        try {
+            return await db.getAll(CONS.DB.STORES.ACCOUNTS.NAME);
+        }
+        catch (err) {
+            log('Failed to get all accounts:', { error: err });
+            throw err;
+        }
+    };
+    const updateAccount = async (accountData) => {
+        try {
+            return await db.update(CONS.DB.STORES.ACCOUNTS.NAME, accountData);
+        }
+        catch (err) {
+            log('Failed to update account:', { error: err });
+            throw err;
+        }
+    };
+    const deleteAccount = async (accountId) => {
+        try {
+            return await db.remove(CONS.DB.STORES.ACCOUNTS.NAME, accountId);
+        }
+        catch (err) {
+            log('Failed to delete account:', { error: err });
+            throw err;
+        }
+    };
+    const clearAllAccounts = async () => {
+        try {
+            return await db.clear(CONS.DB.STORES.ACCOUNTS.NAME);
+        }
+        catch (err) {
+            log('Failed to delete account:', { error: err });
+            throw err;
+        }
+    };
+    return {
+        isConnected: db.isConnected,
+        error: db.error,
+        isLoading: db.isLoading,
         addAccount,
         updateAccount,
         deleteAccount,
-        addBookingType,
-        deleteBookingType,
+        getAllAccounts,
+        clearAllAccounts
+    };
+}
+export function useBookingsStore() {
+    const db = useIndexedDB();
+    const addBooking = async (bookingData) => {
+        try {
+            return await db.add(CONS.DB.STORES.BOOKINGS.NAME, bookingData);
+        }
+        catch (err) {
+            log('Failed to add booking:', { error: err });
+            throw err;
+        }
+    };
+    const getAllBookings = async () => {
+        try {
+            return await db.getAll(CONS.DB.STORES.BOOKINGS.NAME);
+        }
+        catch (err) {
+            log('Failed to get all bookings:', { error: err });
+            throw err;
+        }
+    };
+    const updateBooking = async (bookingData) => {
+        try {
+            return await db.update(CONS.DB.STORES.ACCOUNTS.NAME, bookingData);
+        }
+        catch (err) {
+            log('Failed to update booking:', { error: err });
+            throw err;
+        }
+    };
+    const deleteBooking = async (bookingId) => {
+        try {
+            return await db.remove(CONS.DB.STORES.BOOKINGS.NAME, bookingId);
+        }
+        catch (err) {
+            log('Failed to delete booking:', { error: err });
+            throw err;
+        }
+    };
+    const clearAllBookings = async () => {
+        try {
+            return await db.clear(CONS.DB.STORES.BOOKINGS.NAME);
+        }
+        catch (err) {
+            log('Failed to delete booking:', { error: err });
+            throw err;
+        }
+    };
+    return {
+        isConnected: db.isConnected,
+        error: db.error,
+        isLoading: db.isLoading,
         addBooking,
         updateBooking,
         deleteBooking,
+        getAllBookings,
+        clearAllBookings
+    };
+}
+export function useBookingTypesStore() {
+    const db = useIndexedDB();
+    const addBookingType = async (bookingTypeData) => {
+        try {
+            return await db.add(CONS.DB.STORES.BOOKING_TYPES.NAME, bookingTypeData);
+        }
+        catch (err) {
+            log('Failed to add bookingType:', { error: err });
+            throw err;
+        }
+    };
+    const getAllBookingTypes = async () => {
+        try {
+            return await db.getAll(CONS.DB.STORES.BOOKING_TYPES.NAME);
+        }
+        catch (err) {
+            log('Failed to get all bookingTypes:', { error: err });
+            throw err;
+        }
+    };
+    const updateBookingType = async (bookingTypeData) => {
+        try {
+            return await db.update(CONS.DB.STORES.BOOKING_TYPES.NAME, bookingTypeData);
+        }
+        catch (err) {
+            log('Failed to update bookingType:', { error: err });
+            throw err;
+        }
+    };
+    const deleteBookingType = async (bookingTypeId) => {
+        try {
+            return await db.remove(CONS.DB.STORES.BOOKING_TYPES.NAME, bookingTypeId);
+        }
+        catch (err) {
+            log('Failed to delete bookingType:', { error: err });
+            throw err;
+        }
+    };
+    const clearAllBookingTypes = async () => {
+        try {
+            return await db.clear(CONS.DB.STORES.BOOKING_TYPES.NAME);
+        }
+        catch (err) {
+            log('Failed to delete bookingType:', { error: err });
+            throw err;
+        }
+    };
+    return {
+        isConnected: db.isConnected,
+        error: db.error,
+        isLoading: db.isLoading,
+        addBookingType,
+        updateBookingType,
+        deleteBookingType,
+        getAllBookingTypes,
+        clearAllBookingTypes
+    };
+}
+export function useStocksStore() {
+    const db = useIndexedDB();
+    const addStock = async (stockData) => {
+        try {
+            return await db.add(CONS.DB.STORES.STOCKS.NAME, stockData);
+        }
+        catch (err) {
+            log('Failed to add stock:', { error: err });
+            throw err;
+        }
+    };
+    const getAllStocks = async () => {
+        try {
+            return await db.getAll(CONS.DB.STORES.STOCKS.NAME);
+        }
+        catch (err) {
+            log('Failed to get all stocks:', { error: err });
+            throw err;
+        }
+    };
+    const updateStock = async (stockData) => {
+        try {
+            return await db.update(CONS.DB.STORES.STOCKS.NAME, stockData);
+        }
+        catch (err) {
+            log('Failed to update stock:', { error: err });
+            throw err;
+        }
+    };
+    const deleteStock = async (stockId) => {
+        try {
+            return await db.remove(CONS.DB.STORES.STOCKS.NAME, stockId);
+        }
+        catch (err) {
+            log('Failed to delete stock:', { error: err });
+            throw err;
+        }
+    };
+    const clearAllStocks = async () => {
+        try {
+            return await db.clear(CONS.DB.STORES.STOCKS.NAME);
+        }
+        catch (err) {
+            log('Failed to delete stock:', { error: err });
+            throw err;
+        }
+    };
+    return {
+        isConnected: db.isConnected,
+        error: db.error,
+        isLoading: db.isLoading,
         addStock,
         updateStock,
-        deleteStock
+        deleteStock,
+        getAllStocks,
+        clearAllStocks
     };
-};
+}

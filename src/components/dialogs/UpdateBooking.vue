@@ -10,7 +10,7 @@ import type {IBooking, IBookingType} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useBookingsStore} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
@@ -31,7 +31,7 @@ interface IState {
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {updateBooking} = useIndexedDB()
+const {updateBooking} = useBookingsStore()
 const {valPositiveIntegerRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -76,7 +76,7 @@ const onClickOk = async (): Promise<void> => {
     records.updateBooking(booking)
     records.sumBookings()
     const updateBookingResponse = await updateBooking(booking)
-    await notice([updateBookingResponse])
+    await notice([updateBookingResponse as string])
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()
   } catch (e) {
@@ -95,7 +95,10 @@ log('--- UpdateBooking.vue setup ---')
 </script>
 
 <template>
-  <v-form v-model="state.isFormValid" validate-on="submit">
+  <v-form
+      v-model="state.isFormValid"
+      validate-on="submit"
+      @submit.prevent>
     <v-container>
       <v-row>
         <v-text-field

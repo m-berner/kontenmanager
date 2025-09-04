@@ -59,7 +59,10 @@ log('--- DeleteBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-form v-model="state.isFormValid" validate-on="submit">
+  <v-form
+      v-model="state.isFormValid"
+      validate-on="submit"
+      @submit.prevent>
     <v-select
         v-model="state.selected"
         :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"

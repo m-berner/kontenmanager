@@ -17,7 +17,7 @@ const runtime = useRuntimeStore()
 
 <template>
   <Teleport to="body">
-    <v-dialog :modelValue="runtime.teleport.visibility" :persistent="true" width="500">
+    <v-dialog :model-value="runtime.teleport.visibility" :persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
           {{ dialogRef?.title }}

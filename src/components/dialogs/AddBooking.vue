@@ -11,7 +11,7 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useBookingsStore} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -40,7 +40,7 @@ interface IState {
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {addBooking} = useIndexedDB()
+const {addBooking} = useBookingsStore()
 const {valRequiredRules, valDateRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -205,7 +205,10 @@ log('--- AddBooking.vue setup ---')
 </script>
 
 <template>
-  <v-form v-model="state.isFormValid" validate-on="submit">
+  <v-form
+      v-model="state.isFormValid"
+      validate-on="submit"
+      @submit.prevent>
     <v-container>
       <v-row justify="center">
         <v-col cols="6">

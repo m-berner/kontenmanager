@@ -10,7 +10,7 @@ import {type FetchedResources, type IStock, type IStockStore} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useNotification} from '@/composables/useNotification'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useStocksStore} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
@@ -28,7 +28,7 @@ interface IState {
 
 const {t} = useI18n()
 const {log, notice} = useNotification()
-const {addStock} = useIndexedDB()
+const {addStock} = useStocksStore()
 const {fetchCompanyData} = useFetch()
 const {valIbanRules} = useValidation()
 const records = useRecordsStore()
@@ -126,7 +126,10 @@ log('--- AddStock.vue setup ---')
 </script>
 
 <template>
-  <v-form v-model="state.isFormValid" validate-on="submit">
+  <v-form
+      v-model="state.isFormValid"
+      validate-on="submit"
+      @submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
           v-model="state.isin"

@@ -10,35 +10,111 @@ import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useAccountsStore, useBookingsStore, useBookingTypesStore, useStocksStore} from '@/composables/useIndexedDB'
+import type {IAccount, IBooking, IBookingType, IStock} from '@/types'
 
 const {t} = useI18n()
 const {CONS} = useConstant()
-const {log} = useNotification()
-const {exportToFile} = useIndexedDB()
+const {log, notice} = useNotification()
+const {getAllAccounts} = useAccountsStore()
+const {getAllBookings} = useBookingsStore()
+const {getAllBookingTypes} = useBookingTypesStore()
+const {getAllStocks} = useStocksStore()
+
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
 const localeText = t('dialogs.exportDialog', {filename: fn})
 
 const onClickOk = async (): Promise<void> => {
   log('EXPORT_DATABASE : onClickOk')
-  await exportToFile(fn)
+  const accounts: IAccount[] = await getAllAccounts()
+  const bookings: IBooking[] = await getAllBookings()
+  const stocks: IStock[] = await getAllStocks()
+  const bookingTypes: IBookingType[] = await getAllBookingTypes()
+  const stringifyDB = (): string => {
+    let buffer: string
+    let i: number
+    buffer = '"accounts":[\n'
+    for (i = 0; i < accounts.length; i++) {
+      buffer += JSON.stringify(accounts[i])
+      if (i === accounts.length - 1) {
+        buffer += '\n],\n'
+      } else {
+        buffer += ',\n'
+      }
+    }
+    buffer += i === 0 ? '],\n' : ''
+
+    buffer += '"stocks":[\n'
+    for (i = 0; i < stocks.length; i++) {
+      buffer += JSON.stringify(stocks[i])
+      if (i === stocks.length - 1) {
+        buffer += '\n],\n'
+      } else {
+        buffer += ',\n'
+      }
+    }
+    buffer += i === 0 ? '],\n' : ''
+    buffer += '"bookingTypes":[\n'
+    for (i = 0; i < bookingTypes.length; i++) {
+      buffer += JSON.stringify(bookingTypes[i])
+      if (i === bookingTypes.length - 1) {
+        buffer += '\n],\n'
+      } else {
+        buffer += ',\n'
+      }
+    }
+    buffer += i === 0 ? '],\n' : ''
+    buffer += '"bookings":[\n'
+    for (i = 0; i < bookings.length; i++) {
+      buffer += JSON.stringify(bookings[i])
+      if (i === bookings.length - 1) {
+        buffer += '\n]\n'
+      } else {
+        buffer += ',\n'
+      }
+    }
+    return buffer
+  }
+  let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`
+  buffer += stringifyDB()
+  buffer += '}'
+
+  const blob = new Blob([buffer], {type: 'application/json'}) // create blob object with all stores data
+  const blobUrl = URL.createObjectURL(blob) // create url reference for blob object
+  const op: browser.downloads._DownloadOptions = {
+    url: blobUrl,
+    filename: fn
+  }
+
+  await browser.downloads.download(op) // writing blob object into download file
+  await notice(['Database exported!'])
+  const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
+    log('USE_INDEXED_DB: onDownloadChange')
+    browser.downloads.onChanged.removeListener(onDownloadChange)
+    if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMP)) {
+      URL.revokeObjectURL(blobUrl) // release blob object
+    }
+  }
+  browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up a blob object after the download.
 }
 const title = t('dialogs.exportToFile.title')
-
 defineExpose({onClickOk, title})
 
 log('--- ExportDatabase.vue setup ---')
 </script>
 
 <template>
-  <v-form validate-on="submit" @submit.prevent>
-    <v-card-text class="pa-5">
-      <v-textarea
-          :disabled="true"
-          :modelValue="localeText"
-          variant="outlined"
-      />
-    </v-card-text>
+  <v-form
+      validate-on="submit"
+      @submit.prevent>
+    <v-card>
+      <v-card-text class="pa-5">
+        <v-textarea
+            :disabled="true"
+            :model-value="localeText"
+            variant="outlined"/>
+      </v-card-text>
+    </v-card>
   </v-form>
 </template>
