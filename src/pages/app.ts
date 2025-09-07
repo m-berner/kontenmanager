@@ -18,8 +18,6 @@ import AppIndex from '@/components/AppIndex.vue'
 
 const {CONS} = useConstant()
 const {log} = useNotification()
-//const {open, dbi} = useIndexedDB()
-//await open()
 const {getDB} = useIndexedDB()
 const db = await getDB()
 const app = createApp(AppIndex)

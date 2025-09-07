@@ -9,12 +9,12 @@
 import type {IContent} from '@/types.d'
 import {defineProps} from 'vue'
 
-interface PropsContentCard {
+interface ContentCardProps {
   title: string
   data: IContent[]
 }
 
-const contentCardProps = defineProps<PropsContentCard>()
+const contentCardProps = defineProps<ContentCardProps>()
 </script>
 
 <template>

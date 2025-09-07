@@ -28,6 +28,7 @@ const {getAllBookingTypes} = useBookingTypesDB()
 const {getAllStocks} = useStocksDB()
 
 const onUpdateTitleBar = async (): Promise<void> => {
+  log('TITLEBAR: onUpdateTitleBar')
   await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
   const accounts: IAccountDB[] = await getAllAccounts()
   const bookings: IBookingDB[] = await getAllBookings()
@@ -84,6 +85,7 @@ log('--- TitleBar.vue setup ---')
         max-width="150"/>
     <v-spacer/>
     <v-select
+        v-if="settings.activeAccountId > 0"
         v-model="settings.activeAccountId"
         :item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
         :item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"

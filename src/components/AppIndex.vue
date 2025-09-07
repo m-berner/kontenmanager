@@ -6,7 +6,14 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {FetchedResources, IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory} from '@/types'
+import type {
+  IAccountDB,
+  IBookingDB,
+  IBookingTypeDB,
+  IExchangeData,
+  IStockDB,
+  IStockOnlyMemory
+} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useConstant} from '@/composables/useConstant'
@@ -88,7 +95,7 @@ onBeforeMount(async () => {
     records.initStore(stores)
     records.bookings.sumBookings()
   }
-  const exchangesBaseData: FetchedResources.IExchangeData[] = await fetchExchangesData([curUsd, curEur])
+  const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
   for (let i = 0; i < exchangesBaseData.length; i++) {
     if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
       runtime.setExchangeUsd(exchangesBaseData[i].value)

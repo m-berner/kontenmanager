@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -16,10 +15,10 @@ const {log} = useNotification()
 
 const op = createApp(OptionsIndex)
 op.config.errorHandler = (err: unknown) => {
-    console.error(err)
+    log('PAGE_SCRIPTS options.js', {error: err})
 }
 op.config.warnHandler = (msg: string) => {
-    console.warn(msg)
+    log('PAGE_SCRIPTS options.js', {warn: msg})
 }
 op.use(vuetifyPlugin.vuetify)
 op.use(i18nPlugin.i18n)

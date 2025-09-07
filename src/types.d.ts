@@ -63,13 +63,6 @@ export interface IStoresDB {
     stocksDB: IStockDB[]
 }
 
-export interface IStoresDB {
-    accountsDB: IAccountDB[],
-    bookingsDB: IBookingDB[],
-    bookingTypesDB: IBookingTypeDB[],
-    stocksDB: IStockDB[]
-}
-
 export interface IAccount {
     // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
     cID: number
@@ -133,22 +126,33 @@ export interface IStores {
     stocks: IStock[]
 }
 
-interface _IChanges {
-    oldValue: string[]
-    newValue: string[]
+export interface IExchangeData {
+    key: string,
+    value: number
 }
 
-export interface IStorageLocal {
-    'sActiveAccountId': number
-    'sBookingsPerPage': number
-    'sStocksPerPage': number
-    'sPartner': boolean
-    'sSkin': string
-    'sService': string
-    'sExchanges': _IChanges
-    'sMaterials': _IChanges
-    'sIndexes': _IChanges
-    'sMarkets': _IChanges
+// interface _IChanges {
+//     oldValue: string[]
+//     newValue: string[]
+// }
+//
+// export interface IStorageLocal {
+//     'sActiveAccountId': number
+//     'sBookingsPerPage': number
+//     'sStocksPerPage': number
+//     'sPartner': boolean
+//     'sSkin': string
+//     'sService': string
+//     'sExchanges': _IChanges
+//     'sMaterials': _IChanges
+//     'sIndexes': _IChanges
+//     'sMarkets': _IChanges
+// }
+
+export interface ICompanyData {
+    company: string
+    wkn: string
+    symbol: string
 }
 
 export interface IContent {
@@ -169,12 +173,6 @@ export namespace FetchedResources {
         isin: string
     }
 
-    export interface ICompanyData {
-        company: string
-        wkn: string
-        symbol: string
-    }
-
     export interface IMinRateMaxData {
         id: number,
         isin: string,
@@ -191,11 +189,6 @@ export namespace FetchedResources {
             change: number,
             stringChange: string
         }
-    }
-
-    export interface IExchangeData {
-        key: string,
-        value: number
     }
 
     export interface IMaterialData {

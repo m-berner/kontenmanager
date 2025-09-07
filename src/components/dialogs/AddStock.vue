@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {FetchedResources, IStock} from '@/types.d'
+import type {ICompanyData, IStock} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -66,7 +66,7 @@ const validateForm = (): boolean => {
 
 const onIsin = async (): Promise<void> => {
   if (formularData.isin !== '' && formularData.isin?.length === 12) {
-    const fetchedCompanyData: FetchedResources.ICompanyData = await fetchCompanyData(formularData.isin)
+    const fetchedCompanyData: ICompanyData = await fetchCompanyData(formularData.isin)
     formularData.company = fetchedCompanyData.company
     formularData.wkn = fetchedCompanyData.wkn.toUpperCase()
     formularData.symbol = fetchedCompanyData.symbol.toUpperCase()

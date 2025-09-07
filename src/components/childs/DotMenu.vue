@@ -15,12 +15,12 @@ import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 
-interface PropsOptionMenu {
+interface OptionMenuProps {
   recordID: number
   menuItems: IMenuItem[]
 }
 
-const optionMenuProps = defineProps<PropsOptionMenu>()
+const optionMenuProps = defineProps<OptionMenuProps>()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
 const {deleteBooking} = useBookingsDB()

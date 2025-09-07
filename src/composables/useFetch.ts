@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {FetchedResources} from '@/types.d'
+import type {FetchedResources, ICompanyData, IExchangeData} from '@/types.d'
 import {useConstant} from '@/composables/useConstant'
 import {useBrowser} from '@/composables/useBrowser'
 import {useNotification} from '@/composables/useNotification'
@@ -28,7 +28,7 @@ const {log, notice} = useNotification()
 const {getStorage} = useBrowser()
 
 export const useFetch = () => {
-    const fetchCompanyData = async (isin: string): Promise<FetchedResources.ICompanyData> => {
+    const fetchCompanyData = async (isin: string): Promise<ICompanyData> => {
         return new Promise(async (resolve, reject) => {
             let sDocument: Document
             let company = ''
@@ -38,7 +38,7 @@ export const useFetch = () => {
             const service: IService | undefined = CONS.SERVICES.TGATE
             let tables: NodeListOf<HTMLTableRowElement>
             let firstResponse: Response
-            let result: FetchedResources.ICompanyData = {
+            let result: ICompanyData = {
                 company: '',
                 wkn: '',
                 symbol: ''
@@ -501,7 +501,7 @@ export const useFetch = () => {
         }
         return _changes
     }
-    const fetchExchangesData = async (exchangeCodes: string[]): Promise<FetchedResources.IExchangeData[]> => {
+    const fetchExchangesData = async (exchangeCodes: string[]): Promise<IExchangeData[]> => {
         log('BACKGROUND: fetchExchangesData')
         const service = CONS.SERVICES.FX
         const fExUrl = (code: string): string => {
@@ -511,8 +511,8 @@ export const useFetch = () => {
                 throw new Error('Undefined service constant!')
             }
         }
-        return new Promise(async (resolve, reject): Promise<FetchedResources.IExchangeData[]> => {
-            const result: FetchedResources.IExchangeData[] = []
+        return new Promise(async (resolve, reject): Promise<IExchangeData[]> => {
+            const result: IExchangeData[] = []
             for (let i = 0; i < exchangeCodes.length; i++) {
                 const firstResponse = await fetch(fExUrl(exchangeCodes[i]))
                 if (
