@@ -6,20 +6,19 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {Ref} from 'vue'
 import {onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify/framework'
 import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 
 const {t} = useI18n()
 const theme = useTheme()
 const {CONS} = useConstant()
-const {log} = useNotification()
 const {getStorage, setStorage} = useBrowser()
 
-const skin = ref('ocean')// TODO default...
+const skin: Ref<string> = ref('ocean')// TODO default...
 
 const themeNames: { [p: string]: string } = {
   earth: t('optionsPage.themeNames.earth'),
@@ -41,8 +40,6 @@ onBeforeMount(async () => {
   const storageSkin = await getStorage([CONS.STORAGE.PROPS.SKIN])
   skin.value = storageSkin[CONS.STORAGE.PROPS.SKIN] as string
 })
-
-log('--- ThemeSelector.vue setup ---')
 </script>
 
 <template>

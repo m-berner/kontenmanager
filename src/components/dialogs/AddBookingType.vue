@@ -7,7 +7,8 @@
   -->
 <script lang="ts" setup>
 import type {IBookingType} from '@/types.d'
-import {defineExpose, onMounted, reactive} from 'vue'
+import type {Ref} from 'vue'
+import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
@@ -15,11 +16,6 @@ import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-
-interface IState {
-  bookingTypeName: string
-  isFormValid: false
-}
 
 const {t} = useI18n()
 const {CONS} = useConstant()
@@ -29,20 +25,25 @@ const {valNameRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const state: IState = reactive({
-  bookingTypeName: '',
-  isFormValid: false
-})
+const formularName: Ref<string> = ref('')
+const isFormValid: Ref<boolean> = ref(false)
 
+const validateForm = (): boolean => {
+  if (!isFormValid.value) {
+    //TODO one message for all dialogs?
+    notice([t('dialogs.addBookingType.invalidForm')])
+    return false
+  }
+
+  return true
+}
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: onClickOk')
-  if (!state.isFormValid) {
-    await notice(['Invalid Form!'])
-    return
-  }
+  if (!validateForm()) return
+
   try {
     const bookingType = {
-      cName: state.bookingTypeName.trim(),
+      cName: formularName.value.trim(),
       cAccountNumberID: settings.activeAccountId
     }
     const addBookingTypeID = await addBookingType(bookingType)
@@ -76,7 +77,7 @@ log('--- AddBookingType.vue setup ---')
     </v-text-field>
     <v-combobox
         ref="name-input"
-        v-model="state.bookingTypeName"
+        v-model="formularName"
         :disabled="settings.activeAccountId === -1"
         :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"

@@ -21,7 +21,7 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
-interface IAccountData {
+interface IFormularData {
   swift: string
   iban: string
   url: string
@@ -38,7 +38,7 @@ const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
-const accountData: Reactive<IAccountData> = reactive({
+const formularData: Reactive<IFormularData> = reactive({
   swift: '',
   iban: '',
   url: '',
@@ -69,8 +69,8 @@ const brandNameValidationRules = computed(() => valBrandNameRules(validationMess
 
 // Check if account iban already exists
 const isAccountNumberUnique = computed(() => {
-  if (!accountData.iban) return true
-  const cleanAccountNumber = accountData.iban.replace(/\s/g, '')
+  if (!formularData.iban) return true
+  const cleanAccountNumber = formularData.iban.replace(/\s/g, '')
   return !records.accounts.items.some(account => account.cNumber === cleanAccountNumber && account.cID !== 0
   )
 })
@@ -82,7 +82,7 @@ const enhancedIbanRules = computed(() => [
 ])
 
 const reset = (): void => {
-  Object.assign(accountData, {
+  Object.assign(formularData, {
     swift: '',
     number: '',
     url: '',
@@ -105,15 +105,12 @@ const validateForm = (): boolean => {
   return true
 }
 
-const logoUrl: Ref<string> = ref('')
-const onInputUrl = (): string => {
-  log('ADD_ACCOUNT: onInputLogoName')
-  const {url} = toRefs(accountData)
-  const {domain} = useDomain(url)
-  domainName.value = domain.value
-  const {faviconUrl} = useFavicon(domainName.value ?? '')
-  return faviconUrl.value
-}
+const createAccountObject = (): Omit<IAccount, 'cID'> => ({
+  cSwift: formularData.swift.trim().toUpperCase(),
+  cNumber: formularData.iban.replace(/\s/g, ''),
+  cLogoUrl: formularData.url,
+  cStockAccount: formularData.withDepot
+})
 
 const formatIban = (iban: string): string => {
   if (!iban) return ''
@@ -134,16 +131,19 @@ const formatIban = (iban: string): string => {
   return masked
 }
 
-const onUpdateIbanMask = (iban: string): void => {
-  accountData.iban = formatIban(iban)
+const logoUrl: Ref<string> = ref('')
+const onInputUrl = (): string => {
+  log('ADD_ACCOUNT: onInputLogoName')
+  const {url} = toRefs(formularData)
+  const {domain} = useDomain(url)
+  domainName.value = domain.value
+  const {faviconUrl} = useFavicon(domainName.value ?? '')
+  return faviconUrl.value
 }
 
-const createAccountObject = (): Omit<IAccount, 'cID'> => ({
-  cSwift: accountData.swift.trim().toUpperCase(),
-  cNumber: accountData.iban.replace(/\s/g, ''),
-  cLogoUrl: accountData.url,
-  cStockAccount: accountData.withDepot
-})
+const onUpdateIbanMask = (iban: string): void => {
+  formularData.iban = formatIban(iban)
+}
 
 const onClickOk = async (): Promise<void> => {
   log('ADD_ACCOUNT: onClickOk')
@@ -181,12 +181,12 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_ACCOUNT: onMounted')
-  //resetState()
+  reset()
 })
 
 // Watch for logo search name changes with debouncing
 let logoTimeout: NodeJS.Timeout
-watch(() => accountData.url, async () => {
+watch(() => formularData.url, async () => {
   if (logoTimeout !== undefined) {
     clearTimeout(logoTimeout)
   }
@@ -206,14 +206,14 @@ log('--- AddAccount.vue setup ---')
       @submit.prevent>
     <!-- Account Type Switch -->
     <v-switch
-        v-model="accountData.withDepot"
+        v-model="formularData.withDepot"
         :label="t('dialogs.addAccount.withDepotLabel')"
         class="mb-4"
         color="primary"/>
 
     <!-- SWIFT Code Field -->
     <v-text-field
-        v-model="accountData.swift"
+        v-model="formularData.swift"
         :counter="11"
         :label="t('dialogs.addAccount.swiftLabel')"
         :rules="swiftValidationRules"
@@ -221,11 +221,11 @@ log('--- AddAccount.vue setup ---')
         class="mb-4"
         required
         variant="outlined"
-        @input="accountData.swift = accountData.swift.toUpperCase()"/>
+        @input="formularData.swift = formularData.swift.toUpperCase()"/>
 
     <!-- Account Number Field -->
     <v-text-field
-        v-model="accountData.iban"
+        v-model="formularData.iban"
         :error="!isAccountNumberUnique"
         :error-messages="!isAccountNumberUnique ? [t('validators.numberExists')] : []"
         :label="t('dialogs.addAccount.numberLabel')"
@@ -238,7 +238,7 @@ log('--- AddAccount.vue setup ---')
 
     <!-- Account Url Field -->
     <v-text-field
-        v-model="accountData.url"
+        v-model="formularData.url"
         :label="t('dialogs.addAccount.urlLabel')"
         :placeholder="CONS.PLACEHOLDER.ADD_ACCOUNT_URL"
         :rules="brandNameValidationRules"
@@ -263,25 +263,25 @@ log('--- AddAccount.vue setup ---')
 
     <!-- Form Summary aktien konto ja/nein, logoUrl -->
     <v-card
-        v-if="accountData.swift || accountData.iban"
+        v-if="formularData.swift || formularData.iban"
         class="pa-3 mb-4"
         variant="outlined">
       <v-card-subtitle>{{ t('dialogs.addAccount.preview') }}</v-card-subtitle>
       <v-card-text>
         <div class="d-flex flex-column gap-2">
-          <div v-if="accountData.swift">
-            <strong>{{ t('dialogs.addAccount.swiftLabel') }}:</strong> {{ accountData.swift }}
+          <div v-if="formularData.swift">
+            <strong>{{ t('dialogs.addAccount.swiftLabel') }}:</strong> {{ formularData.swift }}
           </div>
-          <div v-if="accountData.iban">
-            <strong>{{ t('dialogs.addAccount.numberLabel') }}:</strong> {{ accountData.iban }}
+          <div v-if="formularData.iban">
+            <strong>{{ t('dialogs.addAccount.numberLabel') }}:</strong> {{ formularData.iban }}
           </div>
-          <div v-if="accountData.url">
-            <strong>{{ t('dialogs.addAccount.urlLabel') }}:</strong> {{ accountData.url }}
+          <div v-if="formularData.url">
+            <strong>{{ t('dialogs.addAccount.urlLabel') }}:</strong> {{ formularData.url }}
           </div>
           <div>
             <strong>{{ t('dialogs.addAccount.accountTypeLabel') }}:</strong>
             {{
-              accountData.withDepot ? t('dialogs.addAccount.withDepot') : t('dialogs.addAccount.regularAccount')
+              formularData.withDepot ? t('dialogs.addAccount.withDepot') : t('dialogs.addAccount.regularAccount')
             }}
           </div>
         </div>

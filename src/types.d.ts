@@ -117,7 +117,6 @@ export interface IStockOnlyMemory {
 }
 
 export interface IStock extends IStockDB {
-    cAccountNumberID: number
     mPortfolio: number
     mChange: number
     mBuyValue: number

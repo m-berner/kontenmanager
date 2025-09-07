@@ -6,17 +6,13 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive} from 'vue'
+import type {Ref} from 'vue'
+import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-
-interface IState {
-  selected: number
-  isFormValid: boolean
-}
 
 const {t} = useI18n()
 const {CONS} = useConstant()
@@ -24,20 +20,25 @@ const {log, notice} = useNotification()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const state: IState = reactive({
-  selected: -1,
-  isFormValid: false
-})
+const selected: Ref<number> = ref(-1)
+const isFormValid: Ref<boolean> = ref(false)
+
+const validateForm = (): boolean => {
+  if (!isFormValid.value) {
+    notice([t('dialogs.addAccount.invalidForm')])
+    return false
+  }
+
+  return true
+}
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE : onClickOk')
-  if (!state.isFormValid) {
-    await notice(['Invalid Form!'])
-    return
-  }
+  if (!validateForm()) return
+
   try {
-    if (state.selected > 1) {
-      records.bookingTypes.deleteBookingType(state.selected)
+    if (selected.value > 1) {
+      records.bookingTypes.deleteBookingType(selected.value)
       await notice([t('dialogs.deleteBookingType.success')])
     } else {
       await notice(['Start kann nicht entfernt werden'])
@@ -60,11 +61,11 @@ log('--- DeleteBookingType.vue setup ---')
 
 <template>
   <v-form
-      v-model="state.isFormValid"
+      v-model="isFormValid"
       validate-on="submit"
       @submit.prevent>
     <v-select
-        v-model="state.selected"
+        v-model="selected"
         :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"

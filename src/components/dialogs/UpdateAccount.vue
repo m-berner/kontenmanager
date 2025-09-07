@@ -6,7 +6,8 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, onMounted, reactive} from 'vue'
+import type {Ref} from 'vue'
+import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -14,13 +15,12 @@ import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
-interface IState {
+interface IFormularData {
   swift: string
   number: string
   logoUrl: string
   logoSearchName: string
   stockAccount: boolean
-  isFormValid: boolean
 }
 
 const {t} = useI18n()
@@ -30,25 +30,35 @@ const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
-const state: IState = reactive({
+const formularData: IFormularData = reactive({
   swift: '',
   number: '',
   logoUrl: '',
   logoSearchName: '',
-  stockAccount: false,
-  isFormValid: false
+  stockAccount: false
 })
+const isFormValid: Ref<boolean> = ref(false)
 
-const mResetState = () => {
-  state.swift = ''
-  state.number = ''
-  state.logoUrl = ''
-  state.logoSearchName = ''
-  state.stockAccount = false
+const reset = () => {
+  formularData.swift = ''
+  formularData.number = ''
+  formularData.logoUrl = ''
+  formularData.logoSearchName = ''
+  formularData.stockAccount = false
 }
+
+const validateForm = (): boolean => {
+  if (!isFormValid.value) {
+    notice([t('dialogs.addAccount.invalidForm')])
+    return false
+  }
+
+  return true
+}
+
 //TODO see AddAccount...
 const onInputLogoUrl = () => {
-  state.logoUrl = '' //`${CONS.URLS.LOGO[0]}/${state.logoSearchName}/${CONS.URLS.LOGO[1]}`
+  formularData.logoUrl = '' //`${CONS.URLS.LOGO[0]}/${formularData.logoSearchName}/${CONS.URLS.LOGO[1]}`
 }
 const onUpdateLogoSearchName = (iban: string) => {
   if (iban) {
@@ -62,28 +72,26 @@ const onUpdateLogoSearchName = (iban: string) => {
         masked += ` ${withoutSpace.slice(i * 4, (i + 1) * 4)}`
       }
     }
-    state.number = masked
+    formularData.number = masked
   }
 }
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_ACCOUNT : onClickOk')
-  if (!state.isFormValid) {
-    await notice(['Invalid Form!'])
-    return
-  }
+  if (!validateForm()) return
+
   try {
     const account = {
       cID: settings.activeAccountId,
-      cSwift: state.swift.trim().toUpperCase(),
-      cNumber: state.number.replace(/\s/g, ''),
-      cLogoUrl: state.logoUrl,
-      cStockAccount: state.stockAccount
+      cSwift: formularData.swift.trim().toUpperCase(),
+      cNumber: formularData.number.replace(/\s/g, ''),
+      cLogoUrl: formularData.logoUrl,
+      cStockAccount: formularData.stockAccount
     }
     records.accounts.updateAccount(account)
     await updateAccount(account)
     await notice([t('dialogs.UpdateAccount.success')])
-    mResetState()
+    reset()
   } catch (e) {
     log('UPDATE_ACCOUNT: onClickOk', {error: e})
     await notice([t('dialogs.updateAccount.error')])
@@ -97,11 +105,11 @@ onMounted(() => {
   const accountIndex = records.accounts.getAccountIndexById(settings.activeAccountId)
   if (accountIndex !== -1) {
     const currentAccount = records.accounts.items[accountIndex]
-    state.swift = currentAccount.cSwift
-    state.number = currentAccount.cNumber
-    state.logoUrl = currentAccount.cLogoUrl
-    state.logoSearchName = ''
-    state.stockAccount = currentAccount.cStockAccount
+    formularData.swift = currentAccount.cSwift
+    formularData.number = currentAccount.cNumber
+    formularData.logoUrl = currentAccount.cLogoUrl
+    formularData.logoSearchName = ''
+    formularData.stockAccount = currentAccount.cStockAccount
   }
 })
 
@@ -114,13 +122,13 @@ log('--- UpdateAccount.vue setup ---')
       validate-on="submit"
       @submit.prevent>
     <v-switch
-        v-model="state.stockAccount"
+        v-model="formularData.stockAccount"
         :label="t('dialogs.updateAccount.stockAccountLabel')"
         color="red"
         variant="outlined"/>
     <v-text-field
         ref="swift-input"
-        v-model="state.swift"
+        v-model="formularData.swift"
         :label="t('dialogs.updateAccount.swiftLabel')"
         :rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
         autofocus
@@ -128,7 +136,7 @@ log('--- UpdateAccount.vue setup ---')
         variant="outlined"
     />
     <v-text-field
-        v-model="state.number"
+        v-model="formularData.number"
         :label="t('dialogs.updateAccount.accountNumberLabel')"
         :placeholder="t('dialogs.updateAccount.accountNumberPlaceholder')"
         :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
@@ -137,7 +145,7 @@ log('--- UpdateAccount.vue setup ---')
         @update:modelValue="onUpdateLogoSearchName"
     />
     <v-text-field
-        v-model="state.logoSearchName"
+        v-model="formularData.logoSearchName"
         :label="t('dialogs.updateAccount.logoLabel')"
         :rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
         placeholder="z. B. ing.com"
@@ -145,6 +153,6 @@ log('--- UpdateAccount.vue setup ---')
         variant="outlined"
         @input="onInputLogoUrl"
     />
-    <img :src="state.logoUrl" alt=""/>
+    <img :src="formularData.logoUrl" alt=""/>
   </v-form>
 </template>

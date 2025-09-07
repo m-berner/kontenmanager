@@ -6,7 +6,8 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, defineProps, onBeforeMount, reactive, toRaw} from 'vue'
+import type {Ref} from 'vue'
+import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useBrowser} from '@/composables/useBrowser'
@@ -18,25 +19,16 @@ interface DynamicListProps {
   placeholder?: string
 }
 
-interface IState {
-  newItem: string
-  list: string[]
-  markets: string[]
-  exchanges: string[]
-}
-
 const dynamicListProps = defineProps<DynamicListProps>()
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log} = useNotification()
 const {getStorage, setStorage} = useBrowser()
 
-const state: IState = reactive<IState>({
-  newItem: '',
-  list: [],
-  markets: [],
-  exchanges: []
-})
+const newItem: Ref<string>  = ref('')
+const list: Ref<string[]> = ref([])
+//const markets: Ref<string[]> = ref([])
+//const exchanges: Ref<string[]> = ref([])
 
 const label = computed((): string => {
   let resultLabel = 'Error'
@@ -68,32 +60,32 @@ const title = computed((): string => {
 
 const addItem = async (item: string): Promise<void> => {
   log('DYNAMIC_LIST: addItem')
-  if (!state.list?.includes(item)) {
+  if (!list.value?.includes(item)) {
     switch (dynamicListProps.type) {
       case CONS.DYNAMIC_LIST.TYPES.MARKETS:
-        state.list.push(item)
-        await setStorage(CONS.STORAGE.PROPS.MARKETS, toRaw(state.list))
+        list.value.push(item)
+        await setStorage(CONS.STORAGE.PROPS.MARKETS, list.value)
         break
       case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        state.list.push(item.toUpperCase())
-        await setStorage(CONS.STORAGE.PROPS.EXCHANGES, toRaw(state.list))
+        list.value.push(item.toUpperCase())
+        await setStorage(CONS.STORAGE.PROPS.EXCHANGES, list.value)
         break
       default:
     }
-    state.newItem = ''
+    newItem.value = ''
   }
 }
 const removeItem = async (n: number): Promise<void> => {
   log('DYNAMIC_LIST: removeItem')
   if (n > 0) {
-    state.list.splice(n, 1)
-    state.newItem = ''
+    list.value.splice(n, 1)
+    newItem.value = ''
     switch (dynamicListProps.type) {
       case CONS.DYNAMIC_LIST.TYPES.MARKETS:
-        await setStorage(CONS.STORAGE.PROPS.MARKETS, toRaw(state.list))
+        await setStorage(CONS.STORAGE.PROPS.MARKETS, list.value)
         break
       case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        await setStorage(CONS.STORAGE.PROPS.EXCHANGES, toRaw(state.list))
+        await setStorage(CONS.STORAGE.PROPS.EXCHANGES, list.value)
         break
       default:
     }
@@ -104,22 +96,20 @@ onBeforeMount(async () => {
   const storage = await getStorage([CONS.STORAGE.PROPS.MARKETS, CONS.STORAGE.PROPS.EXCHANGES])
   switch (dynamicListProps.type) {
     case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
-      state.list = storage[CONS.STORAGE.PROPS.EXCHANGES] as string[]
+      list.value = storage[CONS.STORAGE.PROPS.EXCHANGES] as string[]
       break
     case CONS.DYNAMIC_LIST.TYPES.MARKETS:
-      state.list = storage[CONS.STORAGE.PROPS.MARKETS] as string[]
+      list.value = storage[CONS.STORAGE.PROPS.MARKETS] as string[]
       break
   }
 })
-
-log('--- DynamicList.vue setup ---')
 </script>
 
 <template>
   <v-card :title="title" color="secondary">
     <v-list bg-color="secondary">
       <v-list-item
-          v-for="(item, i) in state.list"
+          v-for="(item, i) in list"
           :key="item"
           :title="item"
           hide-details>
@@ -133,7 +123,7 @@ log('--- DynamicList.vue setup ---')
     </v-list>
     <v-card-actions>
       <v-text-field
-          v-model="state.newItem"
+          v-model="newItem"
           :autofocus="true"
           :clearable="true"
           :label="label"
@@ -143,7 +133,7 @@ log('--- DynamicList.vue setup ---')
           <v-btn class="ml-3"
                  color="primary"
                  icon="$add"
-                 @click="addItem(state.newItem)"/>
+                 @click="addItem(newItem)"/>
         </template>
       </v-text-field>
     </v-card-actions>

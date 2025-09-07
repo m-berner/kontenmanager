@@ -7,7 +7,8 @@
   -->
 <script lang="ts" setup>
 import type {FetchedResources, IStock} from '@/types.d'
-import {defineExpose, onMounted, reactive} from 'vue'
+import type {Ref} from 'vue'
+import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useNotification} from '@/composables/useNotification'
 import {useStocksDB} from '@/composables/useIndexedDB'
@@ -17,13 +18,12 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 
-interface IState {
+interface IFormularData {
   isin: string
   company: string
   wkn: string
   symbol: string
   auto: boolean
-  isFormValid: boolean
 }
 
 const {t} = useI18n()
@@ -35,42 +35,54 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const state: IState = reactive({
+const formularData: IFormularData = reactive({
   isin: '',
   company: '',
   wkn: '',
   symbol: '',
-  auto: true,
-  isFormValid: false
+  auto: true
 })
+const isFormValid: Ref<boolean> = ref(false)
 
-const mResetState = (): void => {
-  state.isin = ''
-  state.company = ''
-  state.wkn = ''
-  state.symbol = ''
-  state.auto = false
+const reset = (): void => {
+  Object.assign(formularData, {
+    isin: '',
+    company: '',
+    wkn: '',
+    symbol: '',
+    auto: false
+  })
+  isFormValid.value = false
 }
+
+const validateForm = (): boolean => {
+  if (!isFormValid.value) {
+    notice([t('dialogs.addAccount.invalidForm')])
+    return false
+  }
+
+  return true
+}
+
 const onIsin = async (): Promise<void> => {
-  if (state.isin !== '' && state.isin?.length === 12) {
-    const fetchedCompanyData: FetchedResources.ICompanyData = await fetchCompanyData(state.isin)
-    state.company = fetchedCompanyData.company
-    state.wkn = fetchedCompanyData.wkn.toUpperCase()
-    state.symbol = fetchedCompanyData.symbol.toUpperCase()
+  if (formularData.isin !== '' && formularData.isin?.length === 12) {
+    const fetchedCompanyData: FetchedResources.ICompanyData = await fetchCompanyData(formularData.isin)
+    formularData.company = fetchedCompanyData.company
+    formularData.wkn = fetchedCompanyData.wkn.toUpperCase()
+    formularData.symbol = fetchedCompanyData.symbol.toUpperCase()
   }
 }
+
 const onClickOk = async (): Promise<void> => {
   log('ADD_STOCK : onClickOk')
-  if (!state.isFormValid) {
-    await notice(['Invalid Form!'])
-    return
-  }
+  if (!validateForm()) return
+
   try {
     const stock: Omit<IStock, 'cID'> = {
-      cCompany: state.company.trim(),
-      cISIN: state.isin,
-      cWKN: state.wkn,
-      cSymbol: state.symbol,
+      cCompany: formularData.company.trim(),
+      cISIN: formularData.isin,
+      cWKN: formularData.wkn,
+      cSymbol: formularData.symbol,
       cMeetingDay: '',
       cQuarterDay: '',
       cFadeOut: 0,
@@ -106,7 +118,7 @@ const onClickOk = async (): Promise<void> => {
         mMax: 0
       })
       await notice([t('dialogs.addStock.success')])
-      mResetState()
+      reset()
       runtime.resetTeleport()
     }
   } catch (e) {
@@ -114,12 +126,14 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.addStock.error')])
   }
 }
+
 const title = t('dialogs.addStock.title')
+
 defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_STOCK: onMounted')
-  mResetState()
+  reset()
 })
 
 log('--- AddStock.vue setup ---')
@@ -127,12 +141,12 @@ log('--- AddStock.vue setup ---')
 
 <template>
   <v-form
-      v-model="state.isFormValid"
+      v-model="isFormValid"
       validate-on="submit"
       @submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
-          v-model="state.isin"
+          v-model="formularData.isin"
           :counter="12"
           :label="t('dialogs.addStock.isin')"
           :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
@@ -142,22 +156,22 @@ log('--- AddStock.vue setup ---')
           @update:modelValue="onIsin"
       />
       <v-text-field
-          v-model="state.company"
-          :disabled="state.auto"
+          v-model="formularData.company"
+          :disabled="formularData.auto"
           :label="t('dialogs.addStock.company')"
           required
           variant="outlined"
       />
       <v-text-field
-          v-model="state.wkn"
-          :disabled="state.auto"
+          v-model="formularData.wkn"
+          :disabled="formularData.auto"
           :label="t('dialogs.addStock.wkn')"
           required
           variant="outlined"
       />
       <v-text-field
-          v-model="state.symbol"
-          :disabled="state.auto"
+          v-model="formularData.symbol"
+          :disabled="formularData.auto"
           :label="t('dialogs.addStock.symbol')"
           required
           variant="outlined"

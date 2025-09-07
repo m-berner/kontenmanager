@@ -7,24 +7,20 @@
   -->
 <script lang="ts" setup>
 import type {IBooking} from '@/types.d'
-import {defineExpose, onMounted, reactive} from 'vue'
+import type {Ref} from 'vue'
+import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
-
-interface IShowAccounting {
-  _result: Array<{ title: string, subtitle: string }>
-}
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const {log} = useNotification()
 
-const state: IShowAccounting = reactive<IShowAccounting>({
-  _result: []
-})
-const cAddEntryToResult = (value: { title: string, subtitle: string }) => {
-  state._result.push(value)
+const _result: Ref<Array<{ title: string, subtitle: string }>> = ref([])
+
+const addEntryToResult = (value: { title: string, subtitle: string }) => {
+  _result.value.push(value)
 }
 const title = t('dialogs.showAccounting.title')
 
@@ -39,7 +35,7 @@ onMounted(() => {
     }).map((entry: IBooking) => {
       return entry.cCredit - entry.cDebit
     }).reduce((acc: number, cur: number) => acc + cur, 0)
-    cAddEntryToResult({title: records.bookingTypes.items[i].cName, subtitle: n(sums[i], 'currency')})
+    addEntryToResult({title: records.bookingTypes.items[i].cName, subtitle: n(sums[i], 'currency')})
   }
 })
 
@@ -50,7 +46,7 @@ log('--- ShowAccounting.vue setup ---')
   <v-form>
     <v-list height="440">
       <v-list-item
-          v-for="entry in state._result"
+          v-for="entry in _result"
           :key="entry.title"
           :subtitle="entry.subtitle"
           :title="entry.title"/>

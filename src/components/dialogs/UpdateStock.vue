@@ -7,7 +7,8 @@
   -->
 <script lang="ts" setup>
 import type {IStock, IStockDB} from '@/types.d'
-import {defineExpose, onMounted, reactive} from 'vue'
+import type {Ref} from 'vue'
+import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -16,7 +17,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 
-interface IState {
+interface IFormularData {
   id: number
   isin: string
   company: string
@@ -27,7 +28,6 @@ interface IState {
   fadeOut: boolean
   firstPage: boolean
   url: string
-  isFormValid: boolean
 }
 
 const {t} = useI18n()
@@ -38,7 +38,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const state: IState = reactive({
+const formularData: IFormularData = reactive({
   id: -1,
   isin: '',
   company: '',
@@ -48,28 +48,35 @@ const state: IState = reactive({
   quarterDay: '',
   fadeOut: false,
   firstPage: false,
-  url: '',
-  isFormValid: false
+  url: ''
 })
+const isFormValid: Ref<boolean> = ref(false)
+
+const validateForm = (): boolean => {
+  if (!isFormValid.value) {
+    notice([t('dialogs.addAccount.invalidForm')])
+    return false
+  }
+
+  return true
+}
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
-  if (!state.isFormValid) {
-    await notice(['Invalid Form!'])
-    return
-  }
+  if (!validateForm()) return
+
   try {
     const stock: IStockDB = {
-      cID: state.id,
-      cISIN: state.isin,
-      cCompany: state.company,
-      cWKN: state.wkn,
-      cSymbol: state.symbol,
-      cMeetingDay: state.meetingDay,
-      cQuarterDay: state.quarterDay,
-      cFadeOut: state.fadeOut ? 1 : 0,
-      cFirstPage: state.firstPage ? 1 : 0,
-      cURL: state.url,
+      cID: formularData.id,
+      cISIN: formularData.isin,
+      cCompany: formularData.company,
+      cWKN: formularData.wkn,
+      cSymbol: formularData.symbol,
+      cMeetingDay: formularData.meetingDay,
+      cQuarterDay: formularData.quarterDay,
+      cFadeOut: formularData.fadeOut ? 1 : 0,
+      cFirstPage: formularData.firstPage ? 1 : 0,
+      cURL: formularData.url,
       cAccountNumberID: settings.activeAccountId
     }
     const stockStore: IStock = {
@@ -91,23 +98,26 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.updateStock.error')])
   }
 }
+
 const title = t('dialogs.updateStock.title')
+
 defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
   const currentStock = records.stocks.items[records.stocks.getStockById(runtime.activeId)]
-  state.id = currentStock.cID
-  state.isin = currentStock.cISIN
-  state.company = currentStock.cCompany
-  state.wkn = currentStock.cWKN
-  state.symbol = currentStock.cSymbol
-  state.meetingDay = currentStock.cMeetingDay
-  state.quarterDay = currentStock.cQuarterDay
-  state.fadeOut = currentStock.cFadeOut === 1
-  state.firstPage = currentStock.cFirstPage === 1
-  state.url = currentStock.cURL
+  formularData.id = currentStock.cID
+  formularData.isin = currentStock.cISIN
+  formularData.company = currentStock.cCompany
+  formularData.wkn = currentStock.cWKN
+  formularData.symbol = currentStock.cSymbol
+  formularData.meetingDay = currentStock.cMeetingDay
+  formularData.quarterDay = currentStock.cQuarterDay
+  formularData.fadeOut = currentStock.cFadeOut === 1
+  formularData.firstPage = currentStock.cFirstPage === 1
+  formularData.url = currentStock.cURL
 })
+
 log('--- UpdateStock.vue setup ---')
 </script>
 
@@ -119,7 +129,7 @@ log('--- UpdateStock.vue setup ---')
     <v-container>
       <v-row>
         <v-text-field
-            v-model="state.isin"
+            v-model="formularData.isin"
             :counter="12"
             :label="t('dialogs.updateStock.isin')"
             :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
@@ -130,7 +140,7 @@ log('--- UpdateStock.vue setup ---')
       </v-row>
       <v-row>
         <v-text-field
-            v-model="state.company"
+            v-model="formularData.company"
             :label="t('dialogs.updateStock.company')"
             required
             variant="outlined"
@@ -139,7 +149,7 @@ log('--- UpdateStock.vue setup ---')
       <v-row cols="2" sm="2">
         <v-col>
           <v-text-field
-              v-model="state.wkn"
+              v-model="formularData.wkn"
               :label="t('dialogs.updateStock.wkn')"
               required
               variant="outlined"
@@ -147,7 +157,7 @@ log('--- UpdateStock.vue setup ---')
         </v-col>
         <v-col>
           <v-text-field
-              v-model="state.symbol"
+              v-model="formularData.symbol"
               :label="t('dialogs.updateStock.symbol')"
               required
               variant="outlined"
@@ -157,14 +167,14 @@ log('--- UpdateStock.vue setup ---')
       <v-row cols="2" sm="2">
         <v-col>
           <v-text-field
-              v-model="state.meetingDay"
+              v-model="formularData.meetingDay"
               :label="t('dialogs.updateStock.meetingDay')"
               variant="outlined"
           />
         </v-col>
         <v-col>
           <v-text-field
-              v-model="state.quarterDay"
+              v-model="formularData.quarterDay"
               :label="t('dialogs.updateStock.quarterDay')"
               variant="outlined"
           />
@@ -173,14 +183,14 @@ log('--- UpdateStock.vue setup ---')
       <v-row cols="2" sm="2">
         <v-col>
           <v-checkbox
-              v-model="state.fadeOut"
+              v-model="formularData.fadeOut"
               :label="t('dialogs.updateStock.fadeOut')"
               variant="outlined"
           />
         </v-col>
         <v-col>
           <v-checkbox
-              v-model="state.firstPage"
+              v-model="formularData.firstPage"
               :label="t('dialogs.updateStock.firstPage')"
               variant="outlined"
           />
@@ -188,7 +198,7 @@ log('--- UpdateStock.vue setup ---')
       </v-row>
       <v-row>
         <v-text-field
-            v-model="state.url"
+            v-model="formularData.url"
             :label="t('dialogs.updateStock.url')"
             variant="outlined"
         />

@@ -8,7 +8,6 @@
 <script lang="ts" setup>
 import type {IContent} from '@/types.d'
 import {defineProps} from 'vue'
-import {useNotification} from '@/composables/useNotification'
 
 interface PropsContentCard {
   title: string
@@ -16,9 +15,6 @@ interface PropsContentCard {
 }
 
 const contentCardProps = defineProps<PropsContentCard>()
-const {log} = useNotification()
-
-log('--- HelpContent.vue setup ---')
 </script>
 
 <template>

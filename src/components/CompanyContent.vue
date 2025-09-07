@@ -24,7 +24,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 
 const {stocksPerPage} = storeToRefs(settings)
-const stocksHeaders: DataTableHeader[] = [
+const stocksHeaders = computed<DataTableHeader[]>(() => [
   {
     title: t('stocksTable.headers.action'),
     align: 'start',
@@ -91,33 +91,35 @@ const stocksHeaders: DataTableHeader[] = [
     sortable: false,
     key: 'mMax'
   }
-]
-const stocksMenuItems: IMenuItem[] = [
+])
+const stocksMenuItems = computed<IMenuItem[]>(() => [
   {
-    'id': 'DeleteStock',
-    'title': t('stocksTable.menuItems.delete'),
-    'icon': '$deleteCompany'
+    id: 'DeleteStock',
+    title: t('stocksTable.menuItems.delete'),
+    icon: '$deleteCompany'
   },
   {
-    'id': 'ShowDividend',
-    'title': t('stocksTable.menuItems.dividend'),
-    'icon': '$showDividend'
+    id: 'ShowDividend',
+    title: t('stocksTable.menuItems.dividend'),
+    icon: '$showDividend'
   },
   {
-    'id': 'UpdateStock',
-    'title': t('stocksTable.menuItems.update'),
-    'icon': '$updateCompany'
+    id: 'UpdateStock',
+    title: t('stocksTable.menuItems.update'),
+    icon: '$updateCompany'
   },
   {
-    'id': 'ExternalLink',
-    'title': t('stocksTable.menuItems.link'),
-    'icon': '$link'
+    id: 'ExternalLink',
+    title: t('stocksTable.menuItems.link'),
+    icon: '$link'
   }
-]
-const winLossClass = computed(() => (value: number) => ({
-  'color-red font-weight-bold': value < 0,
-  'color-black font-weight-bold': value >= 0
-}))
+])
+const winLossClass = computed(() => {
+  return (value: number): Record<string, boolean> => ({
+    'color-red font-weight-bold': value < 0,
+    'color-black font-weight-bold': value >= 0
+  })
+})
 
 const onUpdateItemsPerPage = (count: number): void => {
   settings.setStocksPerPage(count)

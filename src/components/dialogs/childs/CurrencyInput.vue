@@ -6,19 +6,14 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineEmits, defineProps, onMounted, reactive, watch} from 'vue'
+import type {Ref} from 'vue'
+import {defineEmits, defineProps, onMounted, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 
 interface CurrencyInputProps {
   modelValue: number
   label: string
   disabled?: boolean
-}
-
-interface IState {
-  unformattedValue: number
-  formattedValue: string
-  isFocused: boolean
 }
 
 const currencyInputProps = defineProps<CurrencyInputProps>()
@@ -30,48 +25,45 @@ const formatCurrency = (value: number): string => {
   return n(value, 'currency')
 }
 
-const state: IState = reactive({
-  unformattedValue: currencyInputProps.modelValue,
-  formattedValue: formatCurrency(currencyInputProps.modelValue),
-  isFocused: false
-})
-
 const parseCurrency = (value: string): number => {
   if (!value) return 0
   return Number.parseFloat(value.replace(/[^0-9.-]+/g, ''))
 }
 
+const unformattedValue: Ref<number> = ref(currencyInputProps.modelValue)
+const formattedValue: Ref<string> = ref(formatCurrency(currencyInputProps.modelValue))
+const isFocused: Ref<boolean> = ref(false)
+
 const onFocus = (): void => {
-  state.isFocused = true
+  isFocused.value = true
   // Show raw number for editing
-  state.formattedValue = state.unformattedValue.toString()
+  formattedValue.value = unformattedValue.value.toString()
 }
 
 const onBlur = (): void => {
-  state.isFocused = false
-  state.unformattedValue = parseCurrency(state.formattedValue)
-  state.formattedValue = formatCurrency(state.unformattedValue)
+  isFocused.value = false
+  unformattedValue.value = parseCurrency(formattedValue.value)
+  formattedValue.value = formatCurrency(unformattedValue.value)
 }
 
 const onInput = (value: number): void => {
-  if (state.isFocused) {
-    state.unformattedValue = value
+  if (isFocused.value) {
+    unformattedValue.value = value
   }
 }
 
-watch(() => state.unformattedValue, (value) => {
+onMounted(() => {
+  formattedValue.value = formatCurrency(unformattedValue.value)
+})
+
+watch(() => unformattedValue.value, (value) => {
   emit('amount', value)
 })
-
-onMounted(() => {
-  state.formattedValue = formatCurrency(state.unformattedValue)
-})
-
 </script>
 
 <template>
   <v-text-field
-      v-model="state.formattedValue"
+      v-model="formattedValue"
       :disabled="currencyInputProps.disabled"
       :label="currencyInputProps.label"
       density="compact"

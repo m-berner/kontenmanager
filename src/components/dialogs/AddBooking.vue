@@ -18,7 +18,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import CurrencyInput from '@/components/dialogs/childs/CurrencyInput.vue'
 
-interface IBookingData {
+interface IFormularData {
   bookDate: string
   exDate: string
   credit: number
@@ -45,7 +45,7 @@ const {valRequiredRules, valDateRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const bookingData: IBookingData = reactive({
+const formularData: IFormularData = reactive({
   bookDate: '',
   exDate: '',
   credit: 0,
@@ -66,7 +66,7 @@ const bookingData: IBookingData = reactive({
 const isFormValid: Ref<boolean> = ref(false)
 
 const reset = (): void => {
-  Object.assign(bookingData, {
+  Object.assign(formularData, {
     bookDate: '',
     exDate: '',
     description: '',
@@ -104,75 +104,75 @@ const onClickOk = async (): Promise<void> => {
   let result: number = 0
 
   try {
-    costs = bookingData.soli + bookingData.transactionTax + bookingData.tax + bookingData.fee + bookingData.sourceTax
-    switch (bookingData.bookingTypeId) {
+    costs = formularData.soli + formularData.transactionTax + formularData.tax + formularData.fee + formularData.sourceTax
+    switch (formularData.bookingTypeId) {
       case 1:
-        result = bookingData.count * bookingData.unitQuotation + costs
+        result = formularData.count * formularData.unitQuotation + costs
         booking = {
-          cDate: bookingData.bookDate,
+          cDate: formularData.bookDate,
           cCredit: result < 0 ? -result : 0,
           cDebit: result > 0 ? result : 0,
-          cDescription: bookingData.description,
-          cBookingTypeID: bookingData.bookingTypeId,
-          cStockID: bookingData.stockId,
+          cDescription: formularData.description,
+          cBookingTypeID: formularData.bookingTypeId,
+          cStockID: formularData.stockId,
           cAccountNumberID: settings.activeAccountId,
           cExDate: CONS.DEFAULTS.DATE,
-          cCount: bookingData.count,
-          cSoli: bookingData.soli,
-          cTax: bookingData.tax,
-          cFee: bookingData.fee,
-          cSourceTax: bookingData.sourceTax,
-          cTransactionTax: bookingData.transactionTax,
-          cMarketPlace: bookingData.marketPlace
+          cCount: formularData.count,
+          cSoli: formularData.soli,
+          cTax: formularData.tax,
+          cFee: formularData.fee,
+          cSourceTax: formularData.sourceTax,
+          cTransactionTax: formularData.transactionTax,
+          cMarketPlace: formularData.marketPlace
         }
         break
       case 2:
-        result = bookingData.count * bookingData.unitQuotation - costs
+        result = formularData.count * formularData.unitQuotation - costs
         booking = {
-          cDate: bookingData.bookDate,
+          cDate: formularData.bookDate,
           cCredit: result > 0 ? result : 0,
           cDebit: result < 0 ? -result : 0,
-          cDescription: bookingData.description,
-          cBookingTypeID: bookingData.bookingTypeId,
-          cStockID: bookingData.stockId,
+          cDescription: formularData.description,
+          cBookingTypeID: formularData.bookingTypeId,
+          cStockID: formularData.stockId,
           cAccountNumberID: settings.activeAccountId,
           cExDate: CONS.DEFAULTS.DATE,
-          cCount: bookingData.count,
-          cSoli: bookingData.soli,
-          cTax: bookingData.tax,
-          cFee: bookingData.fee,
-          cSourceTax: bookingData.sourceTax,
-          cTransactionTax: bookingData.transactionTax,
-          cMarketPlace: bookingData.marketPlace
+          cCount: formularData.count,
+          cSoli: formularData.soli,
+          cTax: formularData.tax,
+          cFee: formularData.fee,
+          cSourceTax: formularData.sourceTax,
+          cTransactionTax: formularData.transactionTax,
+          cMarketPlace: formularData.marketPlace
         }
         break
       case 3:
-        result = bookingData.count * bookingData.unitQuotation - costs
+        result = formularData.count * formularData.unitQuotation - costs
         booking = {
-          cDate: bookingData.bookDate,
+          cDate: formularData.bookDate,
           cCredit: result > 0 ? result : 0,
           cDebit: result < 0 ? -result : 0,
-          cDescription: bookingData.description,
-          cBookingTypeID: bookingData.bookingTypeId,
-          cStockID: bookingData.stockId,
+          cDescription: formularData.description,
+          cBookingTypeID: formularData.bookingTypeId,
+          cStockID: formularData.stockId,
           cAccountNumberID: settings.activeAccountId,
-          cExDate: bookingData.exDate,
-          cCount: bookingData.count,
-          cSoli: bookingData.soli,
-          cTax: bookingData.tax,
-          cFee: bookingData.fee,
-          cSourceTax: bookingData.sourceTax,
-          cTransactionTax: bookingData.transactionTax,
+          cExDate: formularData.exDate,
+          cCount: formularData.count,
+          cSoli: formularData.soli,
+          cTax: formularData.tax,
+          cFee: formularData.fee,
+          cSourceTax: formularData.sourceTax,
+          cTransactionTax: formularData.transactionTax,
           cMarketPlace: ''
         }
         break
       default:
         booking = {
-          cDate: bookingData.bookDate,
-          cCredit: bookingData.credit,
-          cDebit: bookingData.debit,
-          cDescription: bookingData.description,
-          cBookingTypeID: bookingData.bookingTypeId,
+          cDate: formularData.bookDate,
+          cCredit: formularData.credit,
+          cDebit: formularData.debit,
+          cDescription: formularData.description,
+          cBookingTypeID: formularData.bookingTypeId,
           cStockID: 0,
           cAccountNumberID: settings.activeAccountId,
           cExDate: CONS.DEFAULTS.DATE,
@@ -204,14 +204,7 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_BOOKING: onMounted')
-  // bookingData.debit = 0
-  // bookingData.credit = 0
-  // bookingData.soli = 0
-  // bookingData.tax = 0
-  // bookingData.fee = 0
-  // bookingData.sourceTax = 0
-  // bookingData.transactionTax = 0
-  // bookingData.bookingTypeId = 0
+  reset()
 })
 
 log('--- AddBooking.vue setup ---')
@@ -234,7 +227,7 @@ log('--- AddBooking.vue setup ---')
         <v-col>
           <v-text-field
               ref="date-input"
-              v-model="bookingData.bookDate"
+              v-model="formularData.bookDate"
               :label="t('dialogs.addBooking.dateLabel')"
               :rules="valDateRules([t('validators.dateRules', 0)])"
               autofocus
@@ -246,7 +239,7 @@ log('--- AddBooking.vue setup ---')
         </v-col>
         <v-col>
           <v-select
-              v-model="bookingData.bookingTypeId"
+              v-model="formularData.bookingTypeId"
               :itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
               :itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
               :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
@@ -265,8 +258,8 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <v-text-field
-              v-if="bookingData.bookingTypeId < 4 && bookingData.bookingTypeId > 0"
-              v-model="bookingData.count"
+              v-if="formularData.bookingTypeId < 4 && formularData.bookingTypeId > 0"
+              v-model="formularData.count"
               :label="t('dialogs.addBooking.countLabel')"
               class="withoutSpinner"
               density="compact"
@@ -276,55 +269,55 @@ log('--- AddBooking.vue setup ---')
         </v-col>
         <v-col>
           <CurrencyInput
-              v-if="bookingData.bookingTypeId < 4 && bookingData.bookingTypeId > 0"
-              v-model="bookingData.unitQuotation"
+              v-if="formularData.bookingTypeId < 4 && formularData.bookingTypeId > 0"
+              v-model="formularData.unitQuotation"
               :label="t('dialogs.addBooking.unitQuotationLabel')"
-              @amount="(a) => { bookingData.unitQuotation = a }"
+              @amount="(a) => { formularData.unitQuotation = a }"
           />
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-              v-if="bookingData.bookingTypeId > 3"
-              v-model="bookingData.credit"
+              v-if="formularData.bookingTypeId > 3"
+              v-model="formularData.credit"
               :label="t('dialogs.addBooking.creditLabel')"
-              @amount="(a) => { bookingData.credit = a }"
+              @amount="(a) => { formularData.credit = a }"
           />
         </v-col>
         <v-col>
           <CurrencyInput
-              v-if="bookingData.bookingTypeId > 3"
-              v-model="bookingData.debit"
+              v-if="formularData.bookingTypeId > 3"
+              v-model="formularData.debit"
               :label="t('dialogs.addBooking.debitLabel')"
-              @amount="(a) => { bookingData.debit = a }"
+              @amount="(a) => { formularData.debit = a }"
           />
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-              v-if="bookingData.bookingTypeId < 4 && bookingData.bookingTypeId > 1"
-              v-model="bookingData.tax"
+              v-if="formularData.bookingTypeId < 4 && formularData.bookingTypeId > 1"
+              v-model="formularData.tax"
               :label="t('dialogs.addBooking.taxLabel')"
-              @amount="(a) => { bookingData.tax = a }"
+              @amount="(a) => { formularData.tax = a }"
           />
         </v-col>
         <v-col>
           <CurrencyInput
-              v-if="bookingData.bookingTypeId < 4 && bookingData.bookingTypeId > 1"
-              v-model="bookingData.soli"
+              v-if="formularData.bookingTypeId < 4 && formularData.bookingTypeId > 1"
+              v-model="formularData.soli"
               :label="t('dialogs.addBooking.soliLabel')"
-              @amount="(a) => { bookingData.soli = a }"
+              @amount="(a) => { formularData.soli = a }"
           />
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <v-text-field
-              v-if="bookingData.bookingTypeId === 3"
+              v-if="formularData.bookingTypeId === 3"
               ref="date-input"
-              v-model="bookingData.exDate"
+              v-model="formularData.exDate"
               :label="t('dialogs.addBooking.exDateLabel')"
               :rules="valDateRules([t('validators.dateRules', 0)])"
               autofocus
@@ -336,18 +329,18 @@ log('--- AddBooking.vue setup ---')
         </v-col>
         <v-col>
           <CurrencyInput
-              v-if="bookingData.bookingTypeId === 3"
-              v-model="bookingData.sourceTax"
+              v-if="formularData.bookingTypeId === 3"
+              v-model="formularData.sourceTax"
               :label="t('dialogs.addBooking.sourceTaxLabel')"
-              @amount="(a) => { bookingData.sourceTax = a }"
+              @amount="(a) => { formularData.sourceTax = a }"
           />
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="6">
           <v-select
-              v-if="bookingData.bookingTypeId < 4 && bookingData.bookingTypeId > 0"
-              v-model="bookingData.stockId"
+              v-if="formularData.bookingTypeId < 4 && formularData.bookingTypeId > 0"
+              v-model="formularData.stockId"
               :item-title="CONS.DB.STORES.STOCKS.FIELDS.COMPANY"
               :item-value="CONS.DB.STORES.STOCKS.FIELDS.ID"
               :items="records.stocks.items.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
@@ -362,8 +355,8 @@ log('--- AddBooking.vue setup ---')
         </v-col>
         <v-col>
           <v-select
-              v-if="bookingData.bookingTypeId < 3 && bookingData.bookingTypeId > 0"
-              v-model="bookingData.marketPlace"
+              v-if="formularData.bookingTypeId < 3 && formularData.bookingTypeId > 0"
+              v-model="formularData.marketPlace"
               :items="settings.markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
               :label="t('dialogs.addBooking.marketPlaceLabel')"
               :menu=false
@@ -376,25 +369,25 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <CurrencyInput
-              v-if="bookingData.bookingTypeId < 3 && bookingData.bookingTypeId > 0"
-              v-model="bookingData.fee"
+              v-if="formularData.bookingTypeId < 3 && formularData.bookingTypeId > 0"
+              v-model="formularData.fee"
               :label="t('dialogs.addBooking.feeLabel')"
-              @amount="(a) => { bookingData.fee = a }"
+              @amount="(a) => { formularData.fee = a }"
           />
         </v-col>
         <v-col>
           <CurrencyInput
-              v-if="bookingData.bookingTypeId === 1"
-              v-model="bookingData.transactionTax"
+              v-if="formularData.bookingTypeId === 1"
+              v-model="formularData.transactionTax"
               :label="t('dialogs.addBooking.transactionTaxLabel')"
-              @amount="(a) => { bookingData.transactionTax = a }"
+              @amount="(a) => { formularData.transactionTax = a }"
           />
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="12">
           <v-text-field
-              v-model="bookingData.description"
+              v-model="formularData.description"
               :label="t('dialogs.addBooking.descriptionLabel')"
               density="compact"
               required

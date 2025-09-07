@@ -93,8 +93,6 @@ const onIconClick = async (ev: Event): Promise<void> => {
 onMounted(() => {
   runtime.optionMenuColors.set(optionMenuProps.recordID, '')
 })
-
-log('--- DotMenu.vue setup ---')
 </script>
 
 <template>

@@ -7,7 +7,8 @@
   -->
 <script lang="ts" setup>
 import type {IBooking, IBookingType} from '@/types.d'
-import {defineExpose, onMounted, reactive} from 'vue'
+import type {Ref} from 'vue'
+import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useBookingsDB} from '@/composables/useIndexedDB'
@@ -18,14 +19,13 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 import CurrencyInput from '@/components/dialogs/childs/CurrencyInput.vue'
 
-interface IState {
+interface IFormularData {
   id: number
   bookingTypeId: number
   credit: number
   debit: number
   date: string
   description: string
-  isFormValid: boolean
 }
 
 const {t} = useI18n()
@@ -38,22 +38,29 @@ const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
 const currentBooking = records.bookings.items[records.bookings.getBookingIndexById(runtime.activeId)]
-const state: IState = reactive({
+const state: IFormularData = reactive({
   id: currentBooking.cID,
   bookingTypeId: currentBooking.cBookingTypeID,
   date: currentBooking.cDate,
   debit: currentBooking.cDebit,
   credit: currentBooking.cCredit,
-  description: currentBooking.cDescription,
-  isFormValid: false
+  description: currentBooking.cDescription
 })
+const isFormValid: Ref<boolean> = ref(false)
+
+const validateForm = (): boolean => {
+  if (!isFormValid.value) {
+    notice([t('dialogs.addAccount.invalidForm')])
+    return false
+  }
+
+  return true
+}
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING : onClickOk')
-  if (!state.isFormValid) {
-    await notice(['Invalid Form!'])
-    return
-  }
+  if (!validateForm()) return
+
   try {
     const booking: IBooking = {
       cID: state.id,
@@ -96,7 +103,7 @@ log('--- UpdateBooking.vue setup ---')
 
 <template>
   <v-form
-      v-model="state.isFormValid"
+      v-model="isFormValid"
       validate-on="submit"
       @submit.prevent>
     <v-container>

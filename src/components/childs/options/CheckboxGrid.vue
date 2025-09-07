@@ -6,30 +6,22 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, defineProps, onBeforeMount, reactive, toRaw} from 'vue'
+import type {Ref} from 'vue'
+import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useBrowser} from '@/composables/useBrowser'
-import {useNotification} from '@/composables/useNotification'
 
 interface CheckboxGridProps {
   type: symbol
 }
 
-interface IState {
-  checked: string[]
-}
-
 const checkboxGridProps = defineProps<CheckboxGridProps>()
 const {t} = useI18n()
 const {CONS} = useConstant()
-const {log} = useNotification()
-
 const {getStorage, setStorage} = useBrowser()
 
-const state: IState = reactive({
-  checked: []
-})
+const checked: Ref<string[]> = ref([])
 
 const indexesKeys: string[] = Array.from(CONS.SETTINGS.INDEXES.keys())
 const materialsKeys: string[] = Array.from(CONS.SETTINGS.MATERIALS.keys())
@@ -67,7 +59,7 @@ const setLabel = (item: string): string | undefined => {
 }
 
 const setChecked = async (): Promise<void> => {
-  const checkedBoxes = toRaw(state.checked)
+  const checkedBoxes = checked.value
   switch (checkboxGridProps.type) {
     case CONS.CHECKBOX_GRID.TYPES.INDEXES:
       await setStorage(CONS.STORAGE.PROPS.INDEXES, checkedBoxes)
@@ -82,15 +74,13 @@ onBeforeMount(async () => {
   const storage = await getStorage([CONS.STORAGE.PROPS.INDEXES, CONS.STORAGE.PROPS.MATERIALS])
   switch (checkboxGridProps.type) {
     case CONS.CHECKBOX_GRID.TYPES.INDEXES:
-      state.checked = storage[CONS.STORAGE.PROPS.INDEXES] as string[]
+      checked.value = storage[CONS.STORAGE.PROPS.INDEXES] as string[]
       break
     case CONS.CHECKBOX_GRID.TYPES.MATERIALS:
-      state.checked = storage[CONS.STORAGE.PROPS.MATERIALS] as string[]
+      checked.value = storage[CONS.STORAGE.PROPS.MATERIALS] as string[]
       break
   }
 })
-
-log('--- CheckboxGrid.vue setup ---')
 </script>
 
 <template>
@@ -98,7 +88,7 @@ log('--- CheckboxGrid.vue setup ---')
     <v-checkbox
         v-for="item in boxes.A"
         :key="item"
-        v-model="state.checked"
+        v-model="checked"
         :label="setLabel(item)"
         :value="item"
         hide-details
@@ -109,7 +99,7 @@ log('--- CheckboxGrid.vue setup ---')
     <v-checkbox
         v-for="item in boxes.B"
         :key="item"
-        v-model="state.checked"
+        v-model="checked"
         :label="setLabel(item)"
         :value="item"
         hide-details
