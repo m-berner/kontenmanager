@@ -6,53 +6,64 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type { IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory, IStores } from '@/types'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAccountsStore, useBookingTypesStore, useBookingsStore, useStocksStore} from '@/composables/useIndexedDB'
+import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {CONS} = useConstant()
 const {log} = useNotification()
 const {setStorage} = useBrowser()
-const {getAllAccounts} = useAccountsStore()
-const {getAllBookings} = useBookingsStore()
-const {getAllBookingTypes} = useBookingTypesStore()
-const {getAllStocks} = useStocksStore()
+const {getAllAccounts} = useAccountsDB()
+const {getAllBookings} = useBookingsDB()
+const {getAllBookingTypes} = useBookingTypesDB()
+const {getAllStocks} = useStocksDB()
 
 const onUpdateTitleBar = async (): Promise<void> => {
   await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
-  const accounts = await getAllAccounts()
-  const bookings = await getAllBookings()
-  const bookingTypes = await getAllBookingTypes()
-  const stocks = await getAllStocks()
-  const stores = {
+  const accounts: IAccountDB[] = await getAllAccounts()
+  const bookings: IBookingDB[] = await getAllBookings()
+  const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
+  const stocks: IStockDB[] = await getAllStocks()
+  const stocksOnlyMemory: IStockOnlyMemory = {
+    mPortfolio: 0,
+    mChange: 0,
+    mBuyValue: 0,
+    mEuroChange: 0,
+    mMin: 0,
+    mValue: 0,
+    mMax: 0
+  }
+  const stores: IStores = {
     accounts,
     bookings,
     bookingTypes,
-    stocks
+    stocks: stocks.map((stock) => {
+      return {...stock, ...stocksOnlyMemory}
+    })
   }
   if (stores.accounts.length > 0) {
     records.initStore(stores)
-    records.sumBookings()
+    records.bookings.sumBookings()
   }
 }
 const logoUrl = computed((): string => {
-  const ind = records.getAccountIndexById(settings.activeAccountId)
+  const ind = records.accounts.getAccountIndexById(settings.activeAccountId)
   if (ind > -1) {
-    return records.accounts[ind].cLogoUrl
+    return records.accounts.items[ind].cLogoUrl
   } else {
     return ''
   }
 })
 const balance = computed((): string => {
-  return n(records.sumBookings(), 'currency')
+  return n(records.bookings.sumBookings(), 'currency')
 })
 
 log('--- TitleBar.vue setup ---')
@@ -75,7 +86,7 @@ log('--- TitleBar.vue setup ---')
         v-model="settings.activeAccountId"
         :item-title="CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER"
         :item-value="CONS.DB.STORES.ACCOUNTS.FIELDS.ID"
-        :items="records.accounts"
+        :items="records.accounts.items"
         :label="t('titleBar.selectAccountLabel')"
         density="compact"
         hide-details

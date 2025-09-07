@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount, IBooking, IBookingType, IStock, IStockStore, IStoresDB} from '@/types.d'
+import type {IAccount, IBooking, IBookingType, IStock, IStoresDB} from '@/types.d'
 import type {UnwrapRef} from 'vue'
 import {computed, defineExpose, reactive, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -14,7 +14,8 @@ import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAccountsStore, useBookingsStore, useBookingTypesStore, useStocksStore} from '@/composables/useIndexedDB'
+import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
@@ -76,11 +77,11 @@ const {log, notice} = useNotification()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 const {setStorage} = useBrowser()
-//const {clearStores, importStores} = useIndexedDB()
-const {clearAllAccounts} = useAccountsStore()
-const {clearAllBookings} = useBookingsStore()
-const {clearAllBookingTypes} = useBookingTypesStore()
-const {clearAllStocks} = useStocksStore()
+const {getDB} = useIndexedDB()
+const {clearAllAccounts} = useAccountsDB()
+const {clearAllBookings} = useBookingsDB()
+const {clearAllBookingTypes} = useBookingTypesDB()
+const {clearAllStocks} = useStocksDB()
 
 let chosen_file: Blob = reactive(new Blob())
 const onChange = computed(ev => {
@@ -92,7 +93,8 @@ const onClickOk = async (): Promise<void> => {
   const records = useRecordsStore()
 
   const importStores = async (stores: IStoresDB, all = true) => {
-    log('USE_INDEXED_DB: importStores', {info: db})
+    log('USE_INDEXED_DB: importStores')
+    const db = getDB()
     return new Promise(async (resolve, reject) => {
       if (db != null) {
         const onComplete = async (): Promise<void> => {
@@ -209,18 +211,18 @@ const onClickOk = async (): Promise<void> => {
           cLogoUrl: '', // TOOD cUrl
           cStockAccount: true // TODO withDepot
         }
-        records.addAccount(account)
+        records.accounts.addAccount(account)
         bookingTypes.push({cID: 1, cName: 'Aktienkauf', cAccountNumberID: activeId})
         bookingTypes.push({cID: 2, cName: 'Aktienverkauf', cAccountNumberID: activeId})
         bookingTypes.push({cID: 3, cName: 'Dividende', cAccountNumberID: activeId})
         bookingTypes.push({cID: 4, cName: 'Einzahlung', cAccountNumberID: activeId})
         bookingTypes.push({cID: 5, cName: 'Auszahlung', cAccountNumberID: activeId})
         for (const entry of bookingTypes) {
-          records.addBookingType(entry)
+          records.bookingTypes.addBookingType(entry)
         }
         for (smStock of backupObject.stocks) {
           const stockClone: IStock = {} as IStock
-          let stockCloneStore: IStockStore = {} as IStockStore
+          let stockCloneStore: IStock = {} as IStock
           stockClone.cID = smStock.cID
           stockClone.cAccountNumberID = activeId
           stockClone.cSymbol = smStock.cSym
@@ -244,7 +246,7 @@ const onClickOk = async (): Promise<void> => {
             mValue: 0,
             mMax: 0
           }
-          records.addStock(stockCloneStore)
+          records.stocks.addStock(stockCloneStore)
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
           const transferClone: IBooking = {} as IBooking
@@ -265,16 +267,16 @@ const onClickOk = async (): Promise<void> => {
           transferClone.cSoli = smTransfer.cSoli
           transferClone.cDebit = smTransfer.cType === 1 || smTransfer.cType === 5 ? getCreditDebit(smTransfer) : 0
           transferClone.cCredit = smTransfer.cType === 2 || smTransfer.cType === 3 || smTransfer.cType === 4 ? getCreditDebit(smTransfer) : 0
-          records.addBooking(transferClone)
+          records.bookings.addBooking(transferClone)
           bookings.push(transferClone)
         }
-        records.bookings.sort((a: IBooking, b: IBooking) => {
+        records.bookings.items.sort((a: IBooking, b: IBooking) => {
           const A = new Date(a.cDate).getTime()
           const B = new Date(b.cDate).getTime()
           return B - A
         })
         settings.setActiveAccountId(activeId)
-        records.sumBookings()
+        records.bookings.sumBookings()
         const stores: IStoresDB = {
           accounts: toRaw(records.accounts),
           bookings,
@@ -286,10 +288,10 @@ const onClickOk = async (): Promise<void> => {
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {
-          records.addAccount(account)
+          records.accounts.addAccount(account)
           accounts.push(account)
         }
-        activeId = records.accounts[0].cID
+        activeId = records.accounts.items[0].cID
         for (stock of backupObject.stocks) {
           stocks.push(stock)
           if (stock.cAccountNumberID === activeId) {
@@ -303,23 +305,23 @@ const onClickOk = async (): Promise<void> => {
               mValue: 0,
               mMax: 0
             }
-            records.addStock(stockClone)
+            records.stocks.addStock(stockClone)
           }
         }
         for (bookingType of backupObject.bookingTypes) {
           if (bookingType.cAccountNumberID === activeId) {
-            records.addBookingType(bookingType)
+            records.bookingTypes.addBookingType(bookingType)
           }
           bookingTypes.push(bookingType)
         }
         for (booking of backupObject.bookings) {
           if (booking.cAccountNumberID === activeId) {
-            records.addBooking(booking)
+            records.bookings.addBooking(booking)
           }
           bookings.push(booking)
         }
         settings.setActiveAccountId(activeId)
-        records.sumBookings()
+        records.bookings.sumBookings()
         const stores: IStoresDB = {
           accounts,
           bookings,

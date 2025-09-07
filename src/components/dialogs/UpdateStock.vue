@@ -6,10 +6,10 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock, IStockStore} from '@/types.d'
+import type {IStock, IStockDB} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useStocksStore} from '@/composables/useIndexedDB'
+import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
@@ -32,7 +32,7 @@ interface IState {
 
 const {t} = useI18n()
 const {log, notice} = useNotification()
-const {updateStock} = useStocksStore()
+const {updateStock} = useStocksDB()
 const {valIbanRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -59,7 +59,7 @@ const onClickOk = async (): Promise<void> => {
     return
   }
   try {
-    const stock: IStock = {
+    const stock: IStockDB = {
       cID: state.id,
       cISIN: state.isin,
       cCompany: state.company,
@@ -72,7 +72,7 @@ const onClickOk = async (): Promise<void> => {
       cURL: state.url,
       cAccountNumberID: settings.activeAccountId
     }
-    const stockStore: IStockStore = {
+    const stockStore: IStock = {
       ...stock,
       mPortfolio: 0,
       mChange: 0,
@@ -82,7 +82,7 @@ const onClickOk = async (): Promise<void> => {
       mValue: 0,
       mMax: 0
     }
-    records.updateStock(stockStore)
+    records.stocks.updateStock(stockStore)
     const updateStockResponse = await updateStock(stock)
     await notice([updateStockResponse as string])
     runtime.resetTeleport()
@@ -96,7 +96,7 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks[records.getStockById(runtime.activeId)]
+  const currentStock = records.stocks.items[records.stocks.getStockById(runtime.activeId)]
   state.id = currentStock.cID
   state.isin = currentStock.cISIN
   state.company = currentStock.cCompany

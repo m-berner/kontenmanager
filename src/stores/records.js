@@ -1,193 +1,61 @@
 import { defineStore } from 'pinia';
-import { useConstant } from '@/composables/useConstant';
 import { useNotification } from '@/composables/useNotification';
+import { useAccounts } from '@/stores/childs/accounts';
+import { useBookings } from '@/stores/childs/bookings';
+import { useBookingTypes } from '@/stores/childs/bookingTypes';
+import { useStocks } from '@/stores/childs/stocks';
 import { useSettingsStore } from '@/stores/settings';
-const { CONS } = useConstant();
 const { log } = useNotification();
-export const useRecordsStore = defineStore('records', {
-    state: () => ({
-        accounts: [],
-        bookings: [],
-        bookingTypes: [],
-        stocks: [],
-        totalController: CONS.RECORDS.CONTROLLER.TOTAL
-    }),
-    getters: {
-        getAccountById: (state) => (id) => {
-            return state.accounts.find(account => account.cID === id);
-        },
-        getBookingByAccountId: (state) => (accountId) => {
-            return state.bookings.filter(booking => booking.cAccountNumberID === accountId);
-        },
-        getBookingTextById: (state) => (ident) => {
-            const booking = state.bookings.find((entry) => entry.cID === ident);
-            if (booking) {
-                return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`;
-            }
-            else {
-                throw new Error('getBookingTextById: No booking found for given ID');
-            }
-        }
-    },
-    actions: {
-        getAccountIndexById(ident) {
-            return this.accounts.map((account) => {
-                return account.cID;
-            }).findIndex(entry => entry === ident);
-        },
-        getBookingTypeNameById(ident) {
-            const bookingType = this.bookingTypes.find((entry) => entry.cID === ident);
-            return bookingType ? bookingType.cName : '';
-        },
-        getBookingTypeById(ident) {
-            return this.bookingTypes.findIndex((entry) => entry.cID === ident);
-        },
-        getBookingTextByIdd(ident) {
-            const booking = this.bookings.find((entry) => entry.cID === ident);
-            if (booking) {
-                return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`;
-            }
-            else {
-                throw new Error('getBookingTextById: No booking found for given ID');
-            }
-        },
-        getBookingById(ident) {
-            return this.bookings.findIndex((entry) => entry.cID === ident);
-        },
-        getStockById(ident) {
-            return this.stocks.findIndex((entry) => entry.cID === ident);
-        },
-        sumBookings() {
-            const settings = useSettingsStore();
-            const activeAccountIndex = this.getAccountIndexById(settings.activeAccountId);
-            if (activeAccountIndex === -1) {
-                return 0;
-            }
-            const bookingsPerAccount = [...this.bookings];
-            if (bookingsPerAccount.length > 0) {
-                return bookingsPerAccount
-                    .map((entry) => {
-                    const fees = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee;
-                    const balance = entry.cCredit - entry.cDebit;
-                    return fees + balance;
-                })
-                    .reduce((acc, cur) => acc + cur, 0);
-            }
-            else {
-                return 0;
-            }
-        },
-        initStore(stores) {
-            log('RECORDS: initStore', { info: stores });
-            const settings = useSettingsStore();
-            this.accounts.length = 0;
-            this.bookings.length = 0;
-            this.bookingTypes.length = 0;
-            this.stocks.length = 0;
-            this.accounts.push({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false });
-            this.accounts.push(...stores.accounts);
-            this.bookings.push(...stores.bookings);
-            this.bookingTypes.push({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId });
-            this.bookingTypes.push(...stores.bookingTypes);
-            this.stocks.push({
-                cID: 0,
-                cISIN: 'XX00000000000000000000',
-                cWKN: 'AAAAAAA',
-                cSymbol: 'WWW',
-                cFadeOut: 0,
-                cFirstPage: 0,
-                cURL: '',
-                cCompany: '',
-                cMeetingDay: '',
-                cQuarterDay: '',
-                cAccountNumberID: settings.activeAccountId,
-                mBuyValue: 0,
-                mMax: 0,
-                mMin: 0,
-                mChange: 0,
-                mEuroChange: 0,
-                mPortfolio: 0,
-                mValue: 0
-            });
-            this.stocks.push(...stores.stocks);
-            this.bookings.sort((a, b) => {
-                const dateA = new Date(a.cDate).getTime();
-                const dateB = new Date(b.cDate).getTime();
-                return dateB - dateA;
-            });
-        },
-        addAccount(account) {
-            log('RECORDS: addAccount');
-            this.accounts.push(account);
-        },
-        updateAccount(account) {
-            log('RECORDS: updateAccount');
-            const index = this.getAccountIndexById(account.cID);
-            if (index !== -1) {
-                this.accounts[index] = { ...account };
-            }
-        },
-        deleteAccount(ident) {
-            log('RECORDS: deleteAccount', { info: ident });
-            const index = this.getAccountIndexById(ident);
-            if (index !== -1) {
-                this.accounts.splice(index, 1);
-            }
-        },
-        addBooking(booking) {
-            log('RECORDS: addBooking');
-            this.bookings.unshift(booking);
-        },
-        deleteBooking(ident) {
-            log('RECORDS: deleteBooking', { info: ident });
-            const index = this.getBookingById(ident);
-            if (index !== -1) {
-                this.bookings.splice(index, 1);
-            }
-        },
-        addStock(stock) {
-            log('RECORDS: addStock');
-            this.stocks.push(stock);
-        },
-        updateStock(stock) {
-            log('RECORDS: updateStock');
-            const index = this.getStockById(stock?.cID ?? -1);
-            if (index !== -1) {
-                this.stocks[index] = { ...stock };
-            }
-        },
-        updateBooking(booking) {
-            log('RECORDS: updateBooking');
-            const index = this.getBookingById(booking?.cID ?? -1);
-            if (index !== -1) {
-                this.bookings[index] = { ...booking };
-            }
-        },
-        deleteStock(ident) {
-            log('RECORDS: deleteStock', { info: ident });
-            const index = this.getStockById(ident);
-            if (index !== -1) {
-                this.stocks.splice(index, 1);
-            }
-        },
-        addBookingType(bookingType) {
-            log('RECORDS: addBookingType');
-            this.bookingTypes.push(bookingType);
-        },
-        deleteBookingType(ident) {
-            log('RECORDS: deleteBookingType', { info: ident });
-            const index = this.getBookingTypeById(ident);
-            if (index !== -1) {
-                this.bookingTypes.splice(index, 1);
-            }
-        },
-        cleanStore() {
-            log('RECORDS: cleanStore');
-            this.accounts.length = 0;
-            this.bookings.length = 0;
-            this.bookingTypes.length = 0;
-            this.stocks.length = 0;
-        }
+export const useRecordsStore = defineStore('records', () => {
+    const accountsStore = useAccounts();
+    const bookingsStore = useBookings();
+    const bookingTypesStore = useBookingTypes();
+    const stocksStore = useStocks();
+    function initStore(stores) {
+        log('RECORDS: initStore', { info: stores });
+        const settings = useSettingsStore();
+        accountsStore.clean();
+        bookingsStore.clean();
+        bookingTypesStore.clean();
+        stocksStore.clean();
+        accountsStore.setAccounts(stores.accounts);
+        accountsStore.addAccount({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false }, true);
+        bookingsStore.setBookings(stores.bookings);
+        bookingTypesStore.setBookingTypes(stores.bookingTypes);
+        bookingTypesStore.addBookingType({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId }, true);
+        stocksStore.setStocks(stores.stocks);
+        stocksStore.addStock({
+            cID: 0,
+            cISIN: 'XX00000000000000000000',
+            cWKN: 'AAAAAAA',
+            cSymbol: 'WWW',
+            cFadeOut: 0,
+            cFirstPage: 0,
+            cURL: '',
+            cCompany: '',
+            cMeetingDay: '',
+            cQuarterDay: '',
+            cAccountNumberID: settings.activeAccountId,
+            mBuyValue: 0,
+            mMax: 0,
+            mMin: 0,
+            mChange: 0,
+            mEuroChange: 0,
+            mPortfolio: 0,
+            mValue: 0
+        }, true);
+        bookingsStore.items.sort((a, b) => {
+            const dateA = new Date(a.cDate).getTime();
+            const dateB = new Date(b.cDate).getTime();
+            return dateB - dateA;
+        });
     }
+    return {
+        accounts: accountsStore,
+        bookings: bookingsStore,
+        bookingTypes: bookingTypesStore,
+        stocks: stocksStore,
+        initStore
+    };
 });
 log('--- STORE records.ts ---');

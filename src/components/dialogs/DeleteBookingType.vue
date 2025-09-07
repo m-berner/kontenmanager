@@ -37,7 +37,7 @@ const onClickOk = async (): Promise<void> => {
   }
   try {
     if (state.selected > 1) {
-      records.deleteBookingType(state.selected)
+      records.bookingTypes.deleteBookingType(state.selected)
       await notice([t('dialogs.deleteBookingType.success')])
     } else {
       await notice(['Start kann nicht entfernt werden'])
@@ -67,7 +67,7 @@ log('--- DeleteBookingType.vue setup ---')
         v-model="state.selected"
         :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-        :items="records.bookingTypes"
+        :items="records.bookingTypes.items"
         :label="t('dialogs.deleteBookingType.label')"
         density="compact"
         required

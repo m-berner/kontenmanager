@@ -11,7 +11,7 @@ import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useBookingTypesStore} from '@/composables/useIndexedDB'
+import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -24,7 +24,7 @@ interface IState {
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {addBookingType} = useBookingTypesStore()
+const {addBookingType} = useBookingTypesDB()
 const {valNameRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -48,7 +48,7 @@ const onClickOk = async (): Promise<void> => {
     const addBookingTypeID = await addBookingType(bookingType)
     if (typeof addBookingTypeID === 'number') {
       const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
-      records.addBookingType(completeBookingType)
+      records.bookingTypes.addBookingType(completeBookingType)
       await notice([t('dialogs.AddBookingType.success')])
     }
   } catch (e) {
@@ -80,7 +80,7 @@ log('--- AddBookingType.vue setup ---')
         :disabled="settings.activeAccountId === -1"
         :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-        :items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+        :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
         :label="t('dialogs.addBookingType.label')"
         :menu=true
         :menu-props="{ maxHeight: 250 }"

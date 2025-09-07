@@ -97,7 +97,7 @@ export const useFetch = () => {
             }
         })
     }
-    const fetchMinRateMaxData = async (storageOnline: FetchedResources.TIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> => {
+    const fetchMinRateMaxData = async (storageOnline: FetchedResources.IIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> => {
         log('BACKGROUND: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
             const storageService = await getStorage([CONS.STORAGE.PROPS.SERVICE])
@@ -501,7 +501,7 @@ export const useFetch = () => {
         }
         return _changes
     }
-    const fetchExchangesData = async (exchangeCodes: string[]): Promise<FetchedResources.IExchangesData[]> => {
+    const fetchExchangesData = async (exchangeCodes: string[]): Promise<FetchedResources.IExchangeData[]> => {
         log('BACKGROUND: fetchExchangesData')
         const service = CONS.SERVICES.FX
         const fExUrl = (code: string): string => {
@@ -511,8 +511,8 @@ export const useFetch = () => {
                 throw new Error('Undefined service constant!')
             }
         }
-        return new Promise(async (resolve, reject): Promise<FetchedResources.IExchangesData[]> => {
-            const result: FetchedResources.IExchangesData[] = []
+        return new Promise(async (resolve, reject): Promise<FetchedResources.IExchangeData[]> => {
+            const result: FetchedResources.IExchangeData[] = []
             for (let i = 0; i < exchangeCodes.length; i++) {
                 const firstResponse = await fetch(fExUrl(exchangeCodes[i]))
                 if (
@@ -619,7 +619,7 @@ export const useFetch = () => {
             resolve(indexes)
         })
     }
-    const fetchDateData = async (obj: FetchedResources.TIdIsin): Promise<FetchedResources.IDatesData> => {
+    const fetchDateData = async (obj: FetchedResources.IIdIsin): Promise<FetchedResources.IDateData> => {
         log('BACKGROUND: fetchDatesData')
         const gmqf = {gm: 0, qf: 0}
         const parseGermanDate = (germanDateString: string): number => {

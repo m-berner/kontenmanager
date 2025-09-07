@@ -6,26 +6,21 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {type DataTableHeader} from 'vuetify'
-import {reactive} from 'vue'
-import {storeToRefs} from 'pinia'
+import type {DataTableHeader} from 'vuetify'
+import type {ComputedRef, Ref} from 'vue'
+import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import DotMenu from '@/components/helper/DotMenu.vue'
-
+import DotMenu from '@/components/dialogs/childs/DotMenu.vue'
 
 type HomeMenuItem = {
   readonly id: string
   readonly title: string
   readonly icon?: string
-}
-
-interface IState {
-  search: string
 }
 
 const {d, n, t} = useI18n()
@@ -34,9 +29,7 @@ const {utcDate} = useApp()
 const {log} = useNotification()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const {bookings} = storeToRefs(records)
-const {bookingsPerPage} = storeToRefs(settings)
-const homeHeaders: DataTableHeader[] = [
+const homeHeaders: ComputedRef<DataTableHeader[]> = computed(() => [
   {
     title: t('appPage.headers.action'),
     align: 'start',
@@ -73,8 +66,8 @@ const homeHeaders: DataTableHeader[] = [
     sortable: false,
     key: 'cBookingType'
   }
-]
-const homeMenuItems: HomeMenuItem[] = [
+])
+const homeMenuItems: ComputedRef<HomeMenuItem[]> = computed(() => [
   {
     id: 'DeleteBooking',
     title: t('appPage.menuItems.delete'),
@@ -85,11 +78,9 @@ const homeMenuItems: HomeMenuItem[] = [
     title: t('appPage.menuItems.update'),
     icon: '$updateBooking'
   }
-]
+])
 
-const state: IState = reactive<IState>({
-  search: ''
-})
+const search: Ref<string> = ref('')
 
 const onUpdateItemsPerPage = (count: number): void => {
   settings.setBookingsPerPage(count)
@@ -103,7 +94,7 @@ log('--- HomeContent.vue setup ---')
 
 <template>
   <v-text-field
-      v-model="state.search"
+      v-model="search"
       :label="t('appPage.search')"
       density="compact"
       hide-details
@@ -115,12 +106,12 @@ log('--- HomeContent.vue setup ---')
       :headers="homeHeaders"
       :hide-no-data="false"
       :hover="true"
-      :items="bookings"
-      :items-per-page="bookingsPerPage"
+      :items="records.bookings.items"
+      :items-per-page="settings.bookingsPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('appPage.itemsPerPageText')"
       :no-data-text="t('appPage.noDataText')"
-      :search="state.search"
+      :search="search"
       density="compact"
       item-key="cID"
       @update:items-per-page="onUpdateItemsPerPage"
@@ -138,7 +129,7 @@ log('--- HomeContent.vue setup ---')
         <td>{{ n(item.cDebit, 'currency') }}</td>
         <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>
-        <td>{{ records.getBookingTypeNameById(item.cBookingTypeID) }}</td>
+        <td>{{ records.bookingTypes.getBookingTypeNameById(item.cBookingTypeID) }}</td>
         <td class="d-none">{{ item.cAccountNumberID }}</td>
       </tr>
     </template>

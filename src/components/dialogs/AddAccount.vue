@@ -13,7 +13,7 @@ import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAccountsStore} from '@/composables/useIndexedDB'
+import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useFavicon} from '@/composables/useFavicon'
 import {useDomain} from '@/composables/useDomain'
@@ -32,7 +32,7 @@ const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
 const {setStorage} = useBrowser()
-const {addAccount} = useAccountsStore()
+const {addAccount} = useAccountsDB()
 
 const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const runtime = useRuntimeStore()
@@ -72,7 +72,7 @@ const brandNameValidationRules = computed(() => valBrandNameRules(validationMess
 const isAccountNumberUnique = computed(() => {
   if (!accountData.iban) return true
   const cleanAccountNumber = accountData.iban.replace(/\s/g, '')
-  return !records.accounts.some(account => account.cNumber === cleanAccountNumber && account.cID !== 0
+  return !records.accounts.items.some(account => account.cNumber === cleanAccountNumber && account.cID !== 0
   )
 })
 
@@ -159,7 +159,7 @@ const onClickOk = async (): Promise<void> => {
       const completeAccount: IAccount = {cID: addAccountID, ...account}
 
       // Update stores
-      records.addAccount(completeAccount)
+      records.accounts.addAccount(completeAccount)
       settings.setActiveAccountId(addAccountID)
 
       // Persist active account ID

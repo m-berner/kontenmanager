@@ -5,11 +5,11 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB} from '@/types'
 import type {Ref} from 'vue'
 import {ref} from 'vue'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import type {IAccount, IBooking, IBookingType, IStockStore} from '@/types'
 
 // Global database instance (shared across components)
 let dbInstance: { db: IDBDatabase } | null = null
@@ -304,8 +304,7 @@ export function useIndexedDB(dbName = CONS.DB.NAME, version = CONS.DB.CURRENT_VE
     }
 }
 
-// Usage in components
-export function useAccountsStore() {
+export function useAccountsDB() {
     const db = useIndexedDB()
 
     const addAccount = async (accountData: unknown) => {
@@ -317,7 +316,7 @@ export function useAccountsStore() {
         }
     }
 
-    const getAllAccounts = async (): Promise<IAccount[]> => {
+    const getAllAccounts = async (): Promise<IAccountDB[]> => {
         try {
             return await db.getAll(CONS.DB.STORES.ACCOUNTS.NAME)
         } catch (err) {
@@ -367,7 +366,7 @@ export function useAccountsStore() {
     }
 }
 
-export function useBookingsStore() {
+export function useBookingsDB() {
     const db = useIndexedDB()
 
     const addBooking = async (bookingData: unknown) => {
@@ -379,7 +378,7 @@ export function useBookingsStore() {
         }
     }
 
-    const getAllBookings = async (): Promise<IBooking[]> => {
+    const getAllBookings = async (): Promise<IBookingDB[]> => {
         try {
             return await db.getAll(CONS.DB.STORES.BOOKINGS.NAME)
         } catch (err) {
@@ -429,7 +428,7 @@ export function useBookingsStore() {
     }
 }
 
-export function useBookingTypesStore() {
+export function useBookingTypesDB() {
     const db = useIndexedDB()
 
     const addBookingType = async (bookingTypeData: unknown) => {
@@ -441,7 +440,7 @@ export function useBookingTypesStore() {
         }
     }
 
-    const getAllBookingTypes = async (): Promise<IBookingType[]> => {
+    const getAllBookingTypes = async (): Promise<IBookingTypeDB[]> => {
         try {
             return await db.getAll(CONS.DB.STORES.BOOKING_TYPES.NAME)
         } catch (err) {
@@ -491,7 +490,7 @@ export function useBookingTypesStore() {
     }
 }
 
-export function useStocksStore() {
+export function useStocksDB() {
     const db = useIndexedDB()
 
     const addStock = async (stockData: unknown) => {
@@ -503,7 +502,7 @@ export function useStocksStore() {
         }
     }
 
-    const getAllStocks = async (): Promise<IStockStore[]> => {
+    const getAllStocks = async (): Promise<IStockDB[]> => {
         try {
             return await db.getAll(CONS.DB.STORES.STOCKS.NAME)
         } catch (err) {

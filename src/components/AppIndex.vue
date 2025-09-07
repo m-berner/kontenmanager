@@ -6,13 +6,13 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {FetchedResources} from '@/types'
+import type {FetchedResources, IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAccountsStore, useBookingTypesStore, useBookingsStore, useStocksStore} from '@/composables/useIndexedDB'
+import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -21,10 +21,10 @@ import {useSettingsStore} from '@/stores/settings'
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
-const {getAllAccounts} = useAccountsStore()
-const {getAllBookings} = useBookingsStore()
-const {getAllBookingTypes} = useBookingTypesStore()
-const {getAllStocks} = useStocksStore()
+const {getAllAccounts} = useAccountsDB()
+const {getAllBookings} = useBookingsDB()
+const {getAllBookingTypes} = useBookingTypesDB()
+const {getAllStocks} = useStocksDB()
 const theme = useTheme()
 const {CONS} = useConstant()
 const {log} = useNotification()
@@ -63,26 +63,37 @@ onBeforeMount(async () => {
   const curUsd = `${cur}${CONS.CURRENCIES.USD}`
   const storage = await getStorage()
   settings.initStore(theme, storage)
-  const accounts = await getAllAccounts()
-  const bookings = await getAllBookings()
-  const bookingTypes = await getAllBookingTypes()
-  const stocks = await getAllStocks()
+  const accounts: IAccountDB[] = await getAllAccounts()
+  const bookings: IBookingDB[] = await getAllBookings()
+  const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
+  const stocks: IStockDB[] = await getAllStocks()
+  const stocksOnlyMemory: IStockOnlyMemory = {
+    mPortfolio: 0,
+    mChange: 0,
+    mBuyValue: 0,
+    mEuroChange: 0,
+    mMin: 0,
+    mValue: 0,
+    mMax: 0
+  }
   const stores = {
     accounts,
     bookings,
     bookingTypes,
-    stocks
+    stocks: stocks.map((stock) => {
+      return {...stock, ...stocksOnlyMemory}
+    })
   }
   if (stores.accounts.length > 0) {
     records.initStore(stores)
-    records.sumBookings()
+    records.bookings.sumBookings()
   }
-  const exchangesBaseData: FetchedResources.IExchangesData[] = await fetchExchangesData([curUsd, curEur])
+  const exchangesBaseData: FetchedResources.IExchangeData[] = await fetchExchangesData([curUsd, curEur])
   for (let i = 0; i < exchangesBaseData.length; i++) {
     if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
-      runtime.setExchangesUsd(exchangesBaseData[i].value)
+      runtime.setExchangeUsd(exchangesBaseData[i].value)
     } else {
-      runtime.setExchangesEur(exchangesBaseData[i].value)
+      runtime.setExchangeEur(exchangesBaseData[i].value)
     }
   }
 })

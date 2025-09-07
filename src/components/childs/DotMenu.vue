@@ -10,7 +10,7 @@ import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useBookingsStore, useStocksStore} from '@/composables/useIndexedDB'
+import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 
@@ -22,8 +22,8 @@ interface PropsOptionMenu {
 const optionMenuProps = defineProps<PropsOptionMenu>()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {deleteBooking} = useBookingsStore()
-const {deleteStock} = useStocksStore()
+const {deleteBooking} = useBookingsDB()
+const {deleteStock} = useStocksDB()
 const {rt, t} = useI18n()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
@@ -44,13 +44,13 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
-        records.deleteBooking(optionMenuProps.recordID)
-        records.sumBookings()
+        records.bookings.deleteBooking(optionMenuProps.recordID)
+        records.bookings.sumBookings()
         await deleteBooking(optionMenuProps.recordID)
         await notice([t('dialogs.deleteBooking.success')])
         for (const m of runtime.optionMenuColors.keys()) {
@@ -60,16 +60,16 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
-        const deleteAble = records.bookings.filter((booking) => {
+        const deleteAble = records.bookings.items.filter((booking) => {
           return optionMenuProps.recordID === booking.cStockID
         })
         if (deleteAble.length === 0) {
-          records.deleteStock(optionMenuProps.recordID)
+          records.stocks.deleteStock(optionMenuProps.recordID)
           await deleteStock(optionMenuProps.recordID)
           await notice([t('dialogs.deleteStock.success')])
         } else {

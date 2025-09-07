@@ -11,10 +11,10 @@ import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import DynamicList from '@/components/helper/options/DynamicList.vue'
-import ThemeSelector from '@/components/helper/options/ThemeSelector.vue'
-import ServiceSelector from '@/components/helper/options/ServiceSelector.vue'
-import CheckboxGrid from '@/components/helper/options/CheckboxGrid.vue'
+import DynamicList from '@/components/childs/options/DynamicList.vue'
+import ThemeSelector from '@/components/childs/options/ThemeSelector.vue'
+import ServiceSelector from '@/components/childs/options/ServiceSelector.vue'
+import CheckboxGrid from '@/components/childs/options/CheckboxGrid.vue'
 
 interface ITabs {
   title: string,

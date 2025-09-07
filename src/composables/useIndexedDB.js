@@ -221,7 +221,7 @@ export function useIndexedDB(dbName = CONS.DB.NAME, version = CONS.DB.CURRENT_VE
         getByIndex
     };
 }
-export function useAccountsStore() {
+export function useAccountsDB() {
     const db = useIndexedDB();
     const addAccount = async (accountData) => {
         try {
@@ -279,7 +279,7 @@ export function useAccountsStore() {
         clearAllAccounts
     };
 }
-export function useBookingsStore() {
+export function useBookingsDB() {
     const db = useIndexedDB();
     const addBooking = async (bookingData) => {
         try {
@@ -337,7 +337,7 @@ export function useBookingsStore() {
         clearAllBookings
     };
 }
-export function useBookingTypesStore() {
+export function useBookingTypesDB() {
     const db = useIndexedDB();
     const addBookingType = async (bookingTypeData) => {
         try {
@@ -395,7 +395,7 @@ export function useBookingTypesStore() {
         clearAllBookingTypes
     };
 }
-export function useStocksStore() {
+export function useStocksDB() {
     const db = useIndexedDB();
     const addStock = async (stockData) => {
         try {

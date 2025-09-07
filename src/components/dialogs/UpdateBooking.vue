@@ -10,13 +10,13 @@ import type {IBooking, IBookingType} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
-import {useBookingsStore} from '@/composables/useIndexedDB'
+import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
-import CurrencyInput from '@/components/helper/CurrencyInput.vue'
+import CurrencyInput from '@/components/dialogs/childs/CurrencyInput.vue'
 
 interface IState {
   id: number
@@ -31,13 +31,13 @@ interface IState {
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {updateBooking} = useBookingsStore()
+const {updateBooking} = useBookingsDB()
 const {valPositiveIntegerRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const currentBooking = records.bookings[records.getBookingById(runtime.activeId)]
+const currentBooking = records.bookings.items[records.bookings.getBookingById(runtime.activeId)]
 const state: IState = reactive({
   id: currentBooking.cID,
   bookingTypeId: currentBooking.cBookingTypeID,
@@ -73,8 +73,8 @@ const onClickOk = async (): Promise<void> => {
       cDebit: state.debit,
       cCredit: state.credit
     }
-    records.updateBooking(booking)
-    records.sumBookings()
+    records.bookings.updateBooking(booking)
+    records.bookings.sumBookings()
     const updateBookingResponse = await updateBooking(booking)
     await notice([updateBookingResponse as string])
     runtime.resetOptionsMenuColors()
@@ -115,7 +115,7 @@ log('--- UpdateBooking.vue setup ---')
             v-model="state.bookingTypeId"
             :itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
             :itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-            :items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+            :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
             :label="t('dialogs.addBooking.bookingTypeLabel')"
             :menu=false
             :menuProps="{ maxHeight: 250 }"

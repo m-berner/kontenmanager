@@ -5,11 +5,12 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-
-// NOTE: this project uses vue3 option components only.
 declare module '*.vue' {
-    import {type ComponentOptions} from 'vue'
-    const component: ComponentOptions
-    // noinspection JSUnusedGlobalSymbols
+    import type { DefineComponent } from 'vue'
+    const component: DefineComponent<
+        Record<string, any>, // props
+        Record<string, any>, // return from setup()
+        any // other component options
+    >
     export default component
 }

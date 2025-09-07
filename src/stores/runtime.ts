@@ -5,97 +5,81 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {Ref} from 'vue'
+import {ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useNotification} from '@/composables/useNotification'
 
 interface ITeleport {
     dialogName: string
-    okButton: boolean
-    visibility: boolean
-}
-
-interface IInfos {
-    exchanges: Map<string, number>
-    indexes: Map<string, number>
-    materials: Map<string, number>
-}
-
-interface IRuntimeStore {
-    activeId: number
-    teleport: ITeleport
-    infoBar: IInfos
-    exchanges: {
-        curUsd: number
-        curEur: number
-    }
-    optionMenuColors: Map<number, string>
+    dialogOk: boolean
+    dialogVisibility: boolean
 }
 
 const {log} = useNotification()
 
-export const useRuntimeStore = defineStore('runtime', {
-    state: (): IRuntimeStore => {
-        return {
-            activeId: -1,
-            teleport: {
-                dialogName: '',
-                okButton: true,
-                visibility: false
-            },
-            infoBar: {
-                exchanges: new Map(),
-                indexes: new Map(),
-                materials: new Map()
-            },
-            exchanges: {
-                curUsd: 1,
-                curEur: 1
-            },
-            optionMenuColors: new Map()
+export const useRuntimeStore = defineStore('runtime', () => {
+    const activeId: Ref<number> = ref(-1)
+    const optionMenuColors: Ref<Map<number, string>> = ref(new Map())
+    const dialogName: Ref<string> = ref('')
+    const dialogOk: Ref<boolean> = ref(true)
+    const dialogVisibility: Ref<boolean> = ref(false)
+    const infoExchanges: Ref<Map<string, number>> = ref(new Map())
+    const infoIndexes: Ref<Map<string, number>> = ref(new Map())
+    const infoMaterials: Ref<Map<string, number>> = ref(new Map())
+    const curUsd: Ref<number> = ref(1)
+    const curEur: Ref<number> = ref(1)
+
+    function setActiveId(value: number): void {
+        activeId.value = value
+    }
+
+    function setTeleport(entry: ITeleport): void {
+        dialogName.value = entry.dialogName
+        dialogOk.value = entry.dialogOk
+        dialogVisibility.value = entry.dialogVisibility
+    }
+
+    function resetTeleport(): void {
+        dialogName.value = ''
+        dialogOk.value = true
+        dialogVisibility.value = false
+        for (const m of optionMenuColors.value.keys()) {
+            optionMenuColors.value.set(m, '')
         }
-    },
-    getters: {
-        //
-    },
-    actions: {
-        setActiveId(value: number): void {
-            this.activeId = value
-        },
-        setTeleport(entry: ITeleport): void {
-            this.teleport = {
-                dialogName: entry.dialogName,
-                okButton: entry.okButton,
-                visibility: entry.visibility
-            }
-        },
-        resetTeleport(): void {
-            this.teleport = {
-                dialogName: '',
-                okButton: true,
-                visibility: false
-            }
-            for (const m of this.optionMenuColors.keys()) {
-                this.optionMenuColors.set(m, '')
-            }
-        },
-        resetOptionsMenuColors(): void {
-            for (const m of this.optionMenuColors.keys()) {
-                this.optionMenuColors.set(m, '')
-            }
-        },
-        openModalDialog(dialogName: string, showOkButton: boolean = true): void {
-            this.teleport = {
-                dialogName,
-                okButton: showOkButton,
-                visibility: true
-            }
-        },
-        setExchangesUsd(value: number) {
-            this.exchanges.curUsd = value
-        },
-        setExchangesEur(value: number) {
-            this.exchanges.curEur = value
+    }
+
+    function resetOptionsMenuColors(): void {
+        for (const m of optionMenuColors.value.keys()) {
+            optionMenuColors.value.set(m, '')
         }
+    }
+
+    function setExchangeUsd(value: number) {
+        curUsd.value = value
+    }
+
+    function setExchangeEur(value: number) {
+        curEur.value = value
+    }
+
+    return {
+        activeId,
+        optionMenuColors,
+        dialogName,
+        dialogOk,
+        dialogVisibility,
+        infoExchanges,
+        infoIndexes,
+        infoMaterials,
+        curUsd,
+        curEur,
+        setActiveId,
+        setTeleport,
+        resetTeleport,
+        resetOptionsMenuColors,
+        setExchangeUsd,
+        setExchangeEur
     }
 })
 

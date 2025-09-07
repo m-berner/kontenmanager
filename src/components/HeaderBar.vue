@@ -6,25 +6,26 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory} from '@/types'
 import {computed, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAccountsStore, useBookingTypesStore, useBookingsStore, useStocksStore} from '@/composables/useIndexedDB'
+import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import DialogPort from '@/components/helper/DialogPort.vue'
+import DialogPort from '@/components/dialogs/childs/DialogPort.vue'
 
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
 const {setStorage, openOptionsPage} = useBrowser()
-const {deleteAccount, getAllAccounts} = useAccountsStore()
-const {deleteBooking, getAllBookings} = useBookingsStore()
-const {deleteBookingType, getAllBookingTypes} = useBookingTypesStore()
-const {deleteStock, getAllStocks} = useStocksStore()
+const {deleteAccount, getAllAccounts} = useAccountsDB()
+const {deleteBooking, getAllBookings} = useBookingsDB()
+const {deleteBookingType, getAllBookingTypes} = useBookingTypesDB()
+const {deleteStock, getAllStocks} = useStocksDB()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -37,76 +38,87 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.COMPONENTS.DIALOGS.ADD_STOCK:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_STOCK,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.DELETE_STOCK,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT:
         const r = confirm('Möchten Sie das aktuelle Konto und\ndie dazugehörigen Datensätze löschen?')
         if (r) {
           try {
-            for (let i = 0; i < records.bookings.length; i++) {
-              records.deleteBooking(records.bookings[i].cID)
-              await deleteBooking(records.bookings[i].cID)
+            for (let i = 0; i < records.bookings.items.length; i++) {
+              records.bookings.deleteBooking(records.bookings.items[i].cID)
+              await deleteBooking(records.bookings.items[i].cID)
             }
-            for (let i = 0; i < records.bookingTypes.length; i++) {
-              records.deleteBookingType(records.bookingTypes[i].cID)
-              await deleteBookingType(records.bookingTypes[i].cID)
+            for (let i = 0; i < records.bookingTypes.items.length; i++) {
+              records.bookingTypes.deleteBookingType(records.bookingTypes.items[i].cID)
+              await deleteBookingType(records.bookingTypes.items[i].cID)
             }
-            for (let i = 0; i < records.stocks.length; i++) {
-              records.deleteStock(records.stocks[i].cID)
-              await deleteStock(records.stocks[i].cID)
+            for (let i = 0; i < records.stocks.items.length; i++) {
+              records.stocks.deleteStock(records.stocks.items[i].cID)
+              await deleteStock(records.stocks.items[i].cID)
             }
-            records.deleteAccount(settings.activeAccountId)
+            records.accounts.deleteAccount(settings.activeAccountId)
             await deleteAccount(toRaw(settings.activeAccountId))
-            if (records.accounts.length > 1) {
-              settings.setActiveAccountId(records.accounts[1].cID)
-              await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, toRaw(records.accounts[1].cID))
+            if (records.accounts.items.length > 1) {
+              settings.setActiveAccountId(records.accounts.items[1].cID)
+              await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, toRaw(records.accounts.items[1].cID))
             } else {
               settings.setActiveAccountId(0)
               await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, 0)
             }
-            const accounts = await getAllAccounts()
-            const bookings = await getAllBookings()
-            const bookingTypes = await getAllBookingTypes()
-            const stocks = await getAllStocks()
+            const accounts: IAccountDB[] = await getAllAccounts()
+            const bookings: IBookingDB[] = await getAllBookings()
+            const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
+            const stocks: IStockDB[] = await getAllStocks()
+            const stocksOnlyMemory: IStockOnlyMemory = {
+              mPortfolio: 0,
+              mChange: 0,
+              mBuyValue: 0,
+              mEuroChange: 0,
+              mMin: 0,
+              mValue: 0,
+              mMax: 0
+            }
             const stores = {
               accounts,
               bookings,
               bookingTypes,
-              stocks
+              stocks: stocks.map((stock) => {
+                return {...stock, ...stocksOnlyMemory}
+              })
             }
             if (stores.accounts.length > 0) {
               records.initStore(stores)
-              records.sumBookings()
+              records.bookings.sumBookings()
             }
             await notice([t('dialogs.deleteAccount.success')])
           } catch (e) {
@@ -118,43 +130,43 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE,
-          okButton: true,
-          visibility: true
+          dialogOk: true,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING,
-          okButton: false,
-          visibility: true
+          dialogOk: false,
+          dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.SETTING:
@@ -170,9 +182,9 @@ const onIconClick = async (ev: Event): Promise<void> => {
   }
 }
 const isStockAccount = computed((): boolean => {
-  const ind = records.getAccountIndexById(settings.activeAccountId)
+  const ind = records.accounts.getAccountIndexById(settings.activeAccountId)
   if (ind > -1) {
-    return records.accounts[ind].cStockAccount
+    return records.accounts.items[ind].cStockAccount
   } else {
     return false
   }

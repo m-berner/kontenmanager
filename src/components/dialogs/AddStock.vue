@@ -6,11 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {type FetchedResources, type IStock, type IStockStore} from '@/types.d'
+import type {FetchedResources, IStock} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useNotification} from '@/composables/useNotification'
-import {useStocksStore} from '@/composables/useIndexedDB'
+import {useStocksDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
@@ -28,7 +28,7 @@ interface IState {
 
 const {t} = useI18n()
 const {log, notice} = useNotification()
-const {addStock} = useStocksStore()
+const {addStock} = useStocksDB()
 const {fetchCompanyData} = useFetch()
 const {valIbanRules} = useValidation()
 const records = useRecordsStore()
@@ -66,7 +66,7 @@ const onClickOk = async (): Promise<void> => {
     return
   }
   try {
-    const stock: Omit<IStockStore, 'cID'> = {
+    const stock: Omit<IStock, 'cID'> = {
       cCompany: state.company.trim(),
       cISIN: state.isin,
       cWKN: state.wkn,
@@ -85,7 +85,7 @@ const onClickOk = async (): Promise<void> => {
       mValue: 0,
       mMax: 0
     }
-    const test = records.stocks.filter((s) => {
+    const test = records.stocks.items.filter((s) => {
       return s.cISIN === stock.cISIN
     })
     if (test.length > 0) {
@@ -95,7 +95,7 @@ const onClickOk = async (): Promise<void> => {
     const addStockID = await addStock(stock)
     if (typeof addStockID === 'number') {
       const completeStock: IStock = {cID: addStockID, ...stock}
-      records.addStock({
+      records.stocks.addStock({
         ...completeStock,
         mPortfolio: 0,
         mChange: 0,

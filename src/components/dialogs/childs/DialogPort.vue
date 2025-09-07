@@ -17,19 +17,19 @@ const runtime = useRuntimeStore()
 
 <template>
   <Teleport to="body">
-    <v-dialog :model-value="runtime.teleport.visibility" :persistent="true" width="500">
+    <v-dialog :model-value="runtime.dialogVisibility" :persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
           {{ dialogRef?.title }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <component :is="runtime.teleport.dialogName" ref="dialogRef"/>
+          <component :is="runtime.dialogName" ref="dialogRef"/>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip :text="t('dialogs.ok')" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
-                  v-if="runtime.teleport.okButton"
+                  v-if="runtime.dialogOk"
                   class="ml-auto"
                   icon="$check"
                   type="submit"

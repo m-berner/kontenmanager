@@ -6,20 +6,20 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB} from '@/types'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useAccountsStore, useBookingsStore, useBookingTypesStore, useStocksStore} from '@/composables/useIndexedDB'
-import type {IAccount, IBooking, IBookingType, IStock} from '@/types'
+import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {getAllAccounts} = useAccountsStore()
-const {getAllBookings} = useBookingsStore()
-const {getAllBookingTypes} = useBookingTypesStore()
-const {getAllStocks} = useStocksStore()
+const {getAllAccounts} = useAccountsDB()
+const {getAllBookings} = useBookingsDB()
+const {getAllBookingTypes} = useBookingTypesDB()
+const {getAllStocks} = useStocksDB()
 
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
@@ -27,10 +27,10 @@ const localeText = t('dialogs.exportDialog', {filename: fn})
 
 const onClickOk = async (): Promise<void> => {
   log('EXPORT_DATABASE : onClickOk')
-  const accounts: IAccount[] = await getAllAccounts()
-  const bookings: IBooking[] = await getAllBookings()
-  const stocks: IStock[] = await getAllStocks()
-  const bookingTypes: IBookingType[] = await getAllBookingTypes()
+  const accounts: IAccountDB[] = await getAllAccounts()
+  const bookings: IBookingDB[] = await getAllBookings()
+  const stocks: IStockDB[] = await getAllStocks()
+  const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
   const stringifyDB = (): string => {
     let buffer: string
     let i: number

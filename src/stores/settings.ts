@@ -6,121 +6,142 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {ThemeInstance} from 'vuetify'
+import type {Ref} from 'vue'
+import {ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 
-interface ISettingsStore {
-    skin: string
-    bookingsPerPage: number
-    stocksPerPage: number
-    activeAccountId: number
-    partner: boolean
-    service: string
-    materials: string[]
-    markets: string[]
-    indexes: string[]
-    exchanges: string[]
-}
-
 const {CONS} = useConstant()
 const {log} = useNotification()
 
-export const useSettingsStore = defineStore('settings', {
-    state: (): ISettingsStore => {
-        return {
-            skin: CONS.DEFAULTS.STORAGE.SKIN,
-            bookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
-            stocksPerPage: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE,
-            activeAccountId: 0,
-            partner: false,
-            service: CONS.DEFAULTS.STORAGE.SERVICE,
-            materials: CONS.DEFAULTS.STORAGE.MATERIALS,
-            markets: CONS.DEFAULTS.STORAGE.MARKETS,
-            indexes: CONS.DEFAULTS.STORAGE.INDEXES,
-            exchanges: CONS.DEFAULTS.STORAGE.EXCHANGES
+export const useSettingsStore = defineStore('settings', () => {
+    const skin: Ref<string> = ref(CONS.DEFAULTS.STORAGE.SKIN)
+    const bookingsPerPage: Ref<number> = ref(CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE)
+    const stocksPerPage: Ref<number> = ref(CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE)
+    const activeAccountId: Ref<number> = ref(0)
+    const partner: Ref<boolean> = ref(false)
+    const service: Ref<string> = ref(CONS.DEFAULTS.STORAGE.SERVICE)
+    const materials: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.MATERIALS)
+    const markets: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.MARKETS)
+    const indexes: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.INDEXES)
+    const exchanges: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.EXCHANGES)
+
+    function setActiveAccountId(value: number) {
+        activeAccountId.value = value
+    }
+
+    function setBookingsPerPage(value: number) {
+        bookingsPerPage.value = value
+    }
+
+    function setStocksPerPage(value: number) {
+        stocksPerPage.value = value
+    }
+
+    function setPartner(value: boolean) {
+        partner.value = value
+    }
+
+    function setService(value: string) {
+        service.value = value
+    }
+
+    function setMaterials(value: string[]) {
+        materials.value = value
+    }
+
+    function setMarkets(value: string[]) {
+        markets.value = value
+    }
+
+    function setIndexes(value: string[]) {
+        indexes.value = value
+    }
+
+    function setExchanges(value: string[]) {
+        exchanges.value = value
+    }
+
+    function setSkin(theme: ThemeInstance, value: string) {
+        if (theme?.global?.name) {
+            theme.global.name.value = value
         }
-    },
-    getters: {
-        hasActiveAccount: (state): boolean => state.activeAccountId !== -1
-    },
-    actions: {
-        setActiveAccountId(value: number) {
-            this.activeAccountId = value
-        },
-        setBookingsPerPage(value: number) {
-            this.bookingsPerPage = value
-        },
-        setStocksPerPage(value: number) {
-            this.stocksPerPage = value
-        },
-        setPartner(value: boolean) {
-            this.partner = value
-        },
-        setService(value: string) {
-            this.service = value
-        },
-        setMaterials(value: string[]) {
-            this.materials = [...value]
-        },
-        setMarkets(value: string[]) {
-            this.markets = [...value]
-        },
-        setIndexes(value: string[]) {
-            this.indexes = [...value]
-        },
-        setExchanges(value: string[]) {
-            this.exchanges = [...value]
-        },
-        setSkin(theme: ThemeInstance, value: string) {
-            if (theme?.global?.name) {
-                theme.global.name.value = value
-            }
-            this.skin = value
-        },
-        initStore(theme: ThemeInstance, storage: { [p: string]: string | number | boolean | string[] }): void {
-            log('SETTINGS: initStore', {info: storage})
-            if (theme?.global?.name) {
-                theme.global.name.value = storage.sSkin as string
-            }
-            this.skin = storage.sSkin as string
-            this.bookingsPerPage = storage.sBookingsPerPage as number
-            this.stocksPerPage = storage.sStocksPerPage as number
-            this.activeAccountId = storage.sActiveAccountId as number
-            this.partner = storage.sPartner as boolean
-            this.service = storage.sService as string
-            this.materials = [...storage.sMaterials as string[]]
-            this.markets = [...storage.sMarkets as string[]]
-            this.indexes = [...storage.sIndexes as string[]]
-            this.exchanges = [...storage.sExchanges as string[]]
-        },
-        updatePagination(bookings: number, stocks: number): void {
-            this.bookingsPerPage = bookings
-            this.stocksPerPage = stocks
-        },
-        updateMarketData(data: Partial<{
-            materials: string[]
-            markets: string[]
-            indexes: string[]
-            exchanges: string[]
-        }>): void {
-            if (data.materials) this.materials = [...data.materials]
-            if (data.markets) this.markets = [...data.markets]
-            if (data.indexes) this.indexes = [...data.indexes]
-            if (data.exchanges) this.exchanges = [...data.exchanges]
-        },
-        validateSettings(): boolean {
-            return (
-                this.bookingsPerPage > 0 &&
-                this.stocksPerPage > 0 &&
-                this.skin.length > 0 &&
-                this.service.length > 0 &&
-                Array.isArray(this.materials) &&
-                Array.isArray(this.markets) &&
-                Array.isArray(this.indexes) &&
-                Array.isArray(this.exchanges)
-            )
+        skin.value = value
+    }
+
+    function initStore(theme: ThemeInstance, storage: { [p: string]: string | number | boolean | string[] }): void {
+        log('SETTINGS: initStore', {info: storage})
+        if (theme?.global?.name) {
+            theme.global.name.value = storage.sSkin as string
         }
+        skin.value = storage.sSkin as string
+        bookingsPerPage.value = storage.sBookingsPerPage as number
+        stocksPerPage.value = storage.sStocksPerPage as number
+        activeAccountId.value = storage.sActiveAccountId as number
+        partner.value = storage.sPartner as boolean
+        service.value = storage.sService as string
+        materials.value = [...storage.sMaterials as string[]]
+        markets.value = [...storage.sMarkets as string[]]
+        indexes.value = [...storage.sIndexes as string[]]
+        exchanges.value = [...storage.sExchanges as string[]]
+    }
+
+    function updatePagination(bookings: number, stocks: number): void {
+        bookingsPerPage.value = bookings
+        stocksPerPage.value = stocks
+    }
+
+    function updateMarketData(data: Partial<{
+        materials: string[]
+        markets: string[]
+        indexes: string[]
+        exchanges: string[]
+    }>): void {
+        if (data.materials) materials.value = [...data.materials]
+        if (data.markets) markets.value = [...data.markets]
+        if (data.indexes) indexes.value = [...data.indexes]
+        if (data.exchanges) exchanges.value = [...data.exchanges]
+    }
+
+    function validateSettings(): boolean {
+        return (
+            bookingsPerPage.value > 0 &&
+            stocksPerPage.value > 0 &&
+            skin.value.length > 0 &&
+            service.value.length > 0 &&
+            Array.isArray(materials.value) &&
+            Array.isArray(markets.value) &&
+            Array.isArray(indexes.value) &&
+            Array.isArray(exchanges.value)
+        )
+    }
+
+    return {
+        skin,
+        bookingsPerPage,
+        stocksPerPage,
+        activeAccountId,
+        partner,
+        service,
+        materials,
+        markets,
+        indexes,
+        exchanges,
+        setActiveAccountId,
+        setBookingsPerPage,
+        setStocksPerPage,
+        setPartner,
+        setService,
+        setMaterials,
+        setMarkets,
+        setIndexes,
+        setExchanges,
+        setSkin,
+        initStore,
+        updatePagination,
+        updateMarketData,
+        validateSettings
     }
 })
 

@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useAccountsStore} from '@/composables/useIndexedDB'
+import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
@@ -25,7 +25,7 @@ interface IState {
 
 const {t} = useI18n()
 const {log, notice} = useNotification()
-const {updateAccount} = useAccountsStore()
+const {updateAccount} = useAccountsDB()
 const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -80,7 +80,7 @@ const onClickOk = async (): Promise<void> => {
       cLogoUrl: state.logoUrl,
       cStockAccount: state.stockAccount
     }
-    records.updateAccount(account)
+    records.accounts.updateAccount(account)
     await updateAccount(account)
     await notice([t('dialogs.UpdateAccount.success')])
     mResetState()
@@ -94,9 +94,9 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_ACCOUNT: onMounted')
-  const accountIndex = records.getAccountIndexById(settings.activeAccountId)
+  const accountIndex = records.accounts.getAccountIndexById(settings.activeAccountId)
   if (accountIndex !== -1) {
-    const currentAccount = records.accounts[accountIndex]
+    const currentAccount = records.accounts.items[accountIndex]
     state.swift = currentAccount.cSwift
     state.number = currentAccount.cNumber
     state.logoUrl = currentAccount.cLogoUrl

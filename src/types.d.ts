@@ -5,6 +5,71 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+export interface IAccountDB {
+    // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
+    cID: number
+    cSwift: string
+    cNumber: string
+    cLogoUrl: string
+    cStockAccount: boolean
+}
+
+export interface IBookingTypeDB {
+    // NOTE: correlates with CONS.DB.STORES.BOOKING_TYPES.FIELDS
+    cID: number
+    cName: string
+    cAccountNumberID: number
+}
+
+export interface IBookingDB {
+    // NOTE: correlates with CONS.DB.STORES.BOOKING.FIELDS
+    cID: number
+    cDate: string
+    cExDate: string
+    cDebit: number
+    cCredit: number
+    cDescription: string
+    cCount: number
+    cBookingTypeID: number
+    cAccountNumberID: number
+    cStockID: number
+    cSoli: number
+    cTax: number
+    cFee: number
+    cSourceTax: number
+    cTransactionTax: number
+    cMarketPlace: string
+}
+
+export interface IStockDB {
+    // NOTE: correlates with CONS.DB.STORES.STOCK.FIELDS
+    cID: number
+    cCompany: string
+    cISIN: string
+    cWKN: string
+    cSymbol: string
+    cFirstPage: number
+    cFadeOut: number
+    cMeetingDay: string
+    cQuarterDay: string
+    cURL: string
+    cAccountNumberID: number
+}
+
+export interface IStoresDB {
+    accountsDB: IAccountDB[],
+    bookingsDB: IBookingDB[],
+    bookingTypesDB: IBookingTypeDB[],
+    stocksDB: IStockDB[]
+}
+
+export interface IStoresDB {
+    accounts: IAccountDB[],
+    bookings: IBookingDB[],
+    bookingTypes: IBookingTypeDB[],
+    stocks: IStockDB[]
+}
+
 export interface IAccount {
     // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
     cID: number
@@ -41,32 +106,17 @@ export interface IBooking {
     cMarketPlace: string
 }
 
-export interface IStock {
-    // NOTE: correlates with CONS.DB.STORES.STOCK.FIELDS
-    cID: number
-    cCompany: string
-    cISIN: string
-    cWKN: string
-    cSymbol: string
-    cFirstPage: number
-    cFadeOut: number
-    cMeetingDay: string
-    cQuarterDay: string
-    cURL: string
-    cAccountNumberID: number
+export interface IStockOnlyMemory {
+    mPortfolio: number
+    mChange: number
+    mBuyValue: number
+    mEuroChange: number
+    mMin: number
+    mValue: number
+    mMax: number
 }
 
-export interface IStockStore {
-    cID: number
-    cCompany: string
-    cISIN: string
-    cWKN: string
-    cSymbol: string
-    cMeetingDay: string
-    cQuarterDay: string
-    cFadeOut: number
-    cFirstPage: number
-    cURL: string
+export interface IStock extends IStockDB{
     cAccountNumberID: number
     mPortfolio: number
     mChange: number
@@ -77,18 +127,11 @@ export interface IStockStore {
     mMax: number
 }
 
-export interface IStoresDB {
-    accounts: IAccount[],
-    bookings: IBooking[],
-    bookingTypes: IBookingType[],
-    stocks: IStock[]
-}
-
 export interface IStores {
     accounts: IAccount[],
     bookings: IBooking[],
     bookingTypes: IBookingType[],
-    stocks: IStockStore[]
+    stocks: IStock[]
 }
 
 interface _IChanges {
@@ -103,26 +146,26 @@ export interface IStorageLocal {
     'sPartner': boolean
     'sSkin': string
     'sService': string
-    sExchanges: _IChanges
+    'sExchanges': _IChanges
     'sMaterials': _IChanges
     'sIndexes': _IChanges
     'sMarkets': _IChanges
 }
 
 export interface IContent {
-    title: string
-    content: string
-    icon: string
+    readonly title: string
+    readonly content: string
+    readonly icon: string
 }
 
-export type StocksMenuItems = {
+export interface IStockMenuItem {
     readonly title: string
     readonly id: string
     readonly icon: string
 }
 
 export namespace FetchedResources {
-    export type TIdIsin = {
+    export interface IIdIsin {
         id: number
         isin: string
     }
@@ -151,7 +194,7 @@ export namespace FetchedResources {
         }
     }
 
-    export interface IExchangesData {
+    export interface IExchangeData {
         key: string,
         value: number
     }
@@ -166,7 +209,7 @@ export namespace FetchedResources {
         value: number
     }
 
-    export interface IDatesData {
+    export interface IDateData {
         key: number | undefined
         value: {
             qf: number

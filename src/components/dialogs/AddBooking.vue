@@ -6,16 +6,16 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking, IBookingType, IStockStore} from '@/types.d'
+import type {IBooking, IBookingType, IStock} from '@/types.d'
 import {defineExpose, onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useBookingsStore} from '@/composables/useIndexedDB'
+import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import CurrencyInput from '@/components/helper/CurrencyInput.vue'
+import CurrencyInput from '@/components/dialogs/childs/CurrencyInput.vue'
 
 interface IState {
   bookDate: string
@@ -40,7 +40,7 @@ interface IState {
 const {t} = useI18n()
 const {CONS} = useConstant()
 const {log, notice} = useNotification()
-const {addBooking} = useBookingsStore()
+const {addBooking} = useBookingsDB()
 const {valRequiredRules, valDateRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -177,7 +177,7 @@ const onClickOk = async (): Promise<void> => {
     const addBookingID = await addBooking(booking)
     if (typeof addBookingID === 'number') {
       const completeBooking: IBooking = {cID: addBookingID, ...booking}
-      records.addBooking(completeBooking)
+      records.bookings.addBooking(completeBooking)
       await notice([t('dialogs.AddBooking.success')])
       resetState()
     }
@@ -236,7 +236,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.bookingTypeId"
               :itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
               :itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
-              :items="records.bookingTypes.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+              :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
               :label="t('dialogs.addBooking.bookingTypeLabel')"
               :menu=false
               :menuProps="{ maxHeight: 250 }"
@@ -337,7 +337,7 @@ log('--- AddBooking.vue setup ---')
               v-model="state.stockId"
               :item-title="CONS.DB.STORES.STOCKS.FIELDS.COMPANY"
               :item-value="CONS.DB.STORES.STOCKS.FIELDS.ID"
-              :items="records.stocks.sort((a: IStockStore, b: IStockStore): number => { return a.cCompany.localeCompare(b.cCompany) })"
+              :items="records.stocks.items.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
               :label="t('dialogs.addBooking.stockLabel')"
               :menu=false
               :menu-props="{ maxHeight: 250 }"

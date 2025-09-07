@@ -10,7 +10,7 @@ import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
-import {useRecordsStore} from '@/stores/records'
+//import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 
 export interface _IDrawerControl {
@@ -23,13 +23,14 @@ export interface _IDrawerControl {
 interface IState {
   show: boolean
   drawerControls: _IDrawerControl[]
+  totalController: any
 }
 
 const {n, t} = useI18n()
 const {CONS} = useConstant()
 const {log} = useNotification()
 const runtime = useRuntimeStore()
-const records = useRecordsStore()
+//const records = useRecordsStore()
 
 const state: IState = reactive({
   show: true,
@@ -38,22 +39,23 @@ const state: IState = reactive({
     title: '',
     value: '',
     class: ''
-  }))
+  })),
+  totalController: {}
 })
 const usd = (mat: string, usd = true): number => {
   if (usd) {
-    return runtime.infoBar.materials.get(mat) ?? 0
+    return runtime.infoMaterials.get(mat) ?? 0
   }
-  return (runtime.infoBar.materials.get(mat) ?? 0) / runtime.exchanges.curUsd
+  return (runtime.infoMaterials.get(mat) ?? 0) / runtime.curUsd
 }
 const updateDrawerControls = (): void => {
   log('INFO_BAR: updateDrawerControls')
   state.drawerControls = CONS.DEFAULTS.DRAWER_KEYS.map((key, index) => {
-    const value = records.totalController[key] ?? 0
+    const value = state.totalController[key] ?? 0
     return {
       id: index,
       title: t(`infoBar.drawerTitles.${key}`),
-      value: key === 'winLoss' ? `${n(value, 'currency')} ' / ' ${n(records.totalController.winLossPercent ?? 0, 'percent')}` : '',
+      value: key === 'winLoss' ? `${n(value, 'currency')} ' / ' ${n(state.totalController.winLossPercent ?? 0, 'percent')}` : '',
       class: value < 0 ? `${key}_minus` : key
     }
   })
@@ -93,17 +95,17 @@ log('--- InfoBar.vue setup ---')
         @click="state.show = !state.show"/>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>
-        <v-list-item v-for="item in runtime.infoBar.exchanges.keys()" :key="item">
+        <v-list-item v-for="item in runtime.infoExchanges.keys()" :key="item">
           <v-list-item-title>{{ item }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n(runtime.infoBar.exchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ n(runtime.infoExchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in runtime.infoBar.indexes.keys()" :key="item">
+        <v-list-item v-for="item in runtime.infoIndexes.keys()" :key="item">
           <v-list-item-title>{{ CONS.SETTINGS.INDEXES.get(item) }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n(runtime.infoBar.indexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ n(runtime.infoIndexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in runtime.infoBar.materials.keys()" :key="item">
+        <v-list-item v-for="item in runtime.infoMaterials.keys()" :key="item">
           <v-list-item-title>{{ t('optionsPage.materials.' + item) }}</v-list-item-title>
           <v-list-item-subtitle
           >{{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}

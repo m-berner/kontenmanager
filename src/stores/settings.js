@@ -1,100 +1,118 @@
+import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useConstant } from '@/composables/useConstant';
 import { useNotification } from '@/composables/useNotification';
 const { CONS } = useConstant();
 const { log } = useNotification();
-export const useSettingsStore = defineStore('settings', {
-    state: () => {
-        return {
-            skin: CONS.DEFAULTS.STORAGE.SKIN,
-            bookingsPerPage: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE,
-            stocksPerPage: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE,
-            activeAccountId: 0,
-            partner: false,
-            service: CONS.DEFAULTS.STORAGE.SERVICE,
-            materials: CONS.DEFAULTS.STORAGE.MATERIALS,
-            markets: CONS.DEFAULTS.STORAGE.MARKETS,
-            indexes: CONS.DEFAULTS.STORAGE.INDEXES,
-            exchanges: CONS.DEFAULTS.STORAGE.EXCHANGES
-        };
-    },
-    getters: {
-        hasActiveAccount: (state) => state.activeAccountId !== -1
-    },
-    actions: {
-        setActiveAccountId(value) {
-            this.activeAccountId = value;
-        },
-        setBookingsPerPage(value) {
-            this.bookingsPerPage = value;
-        },
-        setStocksPerPage(value) {
-            this.stocksPerPage = value;
-        },
-        setPartner(value) {
-            this.partner = value;
-        },
-        setService(value) {
-            this.service = value;
-        },
-        setMaterials(value) {
-            this.materials = [...value];
-        },
-        setMarkets(value) {
-            this.markets = [...value];
-        },
-        setIndexes(value) {
-            this.indexes = [...value];
-        },
-        setExchanges(value) {
-            this.exchanges = [...value];
-        },
-        setSkin(theme, value) {
-            if (theme?.global?.name) {
-                theme.global.name.value = value;
-            }
-            this.skin = value;
-        },
-        initStore(theme, storage) {
-            log('SETTINGS: initStore', { info: storage });
-            if (theme?.global?.name) {
-                theme.global.name.value = storage.sSkin;
-            }
-            this.skin = storage.sSkin;
-            this.bookingsPerPage = storage.sBookingsPerPage;
-            this.stocksPerPage = storage.sStocksPerPage;
-            this.activeAccountId = storage.sActiveAccountId;
-            this.partner = storage.sPartner;
-            this.service = storage.sService;
-            this.materials = [...storage.sMaterials];
-            this.markets = [...storage.sMarkets];
-            this.indexes = [...storage.sIndexes];
-            this.exchanges = [...storage.sExchanges];
-        },
-        updatePagination(bookings, stocks) {
-            this.bookingsPerPage = bookings;
-            this.stocksPerPage = stocks;
-        },
-        updateMarketData(data) {
-            if (data.materials)
-                this.materials = [...data.materials];
-            if (data.markets)
-                this.markets = [...data.markets];
-            if (data.indexes)
-                this.indexes = [...data.indexes];
-            if (data.exchanges)
-                this.exchanges = [...data.exchanges];
-        },
-        validateSettings() {
-            return (this.bookingsPerPage > 0 &&
-                this.stocksPerPage > 0 &&
-                this.skin.length > 0 &&
-                this.service.length > 0 &&
-                Array.isArray(this.materials) &&
-                Array.isArray(this.markets) &&
-                Array.isArray(this.indexes) &&
-                Array.isArray(this.exchanges));
-        }
+export const useSettingsStore = defineStore('settings', () => {
+    const skin = ref(CONS.DEFAULTS.STORAGE.SKIN);
+    const bookingsPerPage = ref(CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE);
+    const stocksPerPage = ref(CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE);
+    const activeAccountId = ref(0);
+    const partner = ref(false);
+    const service = ref(CONS.DEFAULTS.STORAGE.SERVICE);
+    const materials = ref(CONS.DEFAULTS.STORAGE.MATERIALS);
+    const markets = ref(CONS.DEFAULTS.STORAGE.MARKETS);
+    const indexes = ref(CONS.DEFAULTS.STORAGE.INDEXES);
+    const exchanges = ref(CONS.DEFAULTS.STORAGE.EXCHANGES);
+    function setActiveAccountId(value) {
+        activeAccountId.value = value;
     }
+    function setBookingsPerPage(value) {
+        bookingsPerPage.value = value;
+    }
+    function setStocksPerPage(value) {
+        stocksPerPage.value = value;
+    }
+    function setPartner(value) {
+        partner.value = value;
+    }
+    function setService(value) {
+        service.value = value;
+    }
+    function setMaterials(value) {
+        materials.value = value;
+    }
+    function setMarkets(value) {
+        markets.value = value;
+    }
+    function setIndexes(value) {
+        indexes.value = value;
+    }
+    function setExchanges(value) {
+        exchanges.value = value;
+    }
+    function setSkin(theme, value) {
+        if (theme?.global?.name) {
+            theme.global.name.value = value;
+        }
+        skin.value = value;
+    }
+    function initStore(theme, storage) {
+        log('SETTINGS: initStore', { info: storage });
+        if (theme?.global?.name) {
+            theme.global.name.value = storage.sSkin;
+        }
+        skin.value = storage.sSkin;
+        bookingsPerPage.value = storage.sBookingsPerPage;
+        stocksPerPage.value = storage.sStocksPerPage;
+        activeAccountId.value = storage.sActiveAccountId;
+        partner.value = storage.sPartner;
+        service.value = storage.sService;
+        materials.value = [...storage.sMaterials];
+        markets.value = [...storage.sMarkets];
+        indexes.value = [...storage.sIndexes];
+        exchanges.value = [...storage.sExchanges];
+    }
+    function updatePagination(bookings, stocks) {
+        bookingsPerPage.value = bookings;
+        stocksPerPage.value = stocks;
+    }
+    function updateMarketData(data) {
+        if (data.materials)
+            materials.value = [...data.materials];
+        if (data.markets)
+            markets.value = [...data.markets];
+        if (data.indexes)
+            indexes.value = [...data.indexes];
+        if (data.exchanges)
+            exchanges.value = [...data.exchanges];
+    }
+    function validateSettings() {
+        return (bookingsPerPage.value > 0 &&
+            stocksPerPage.value > 0 &&
+            skin.value.length > 0 &&
+            service.value.length > 0 &&
+            Array.isArray(materials.value) &&
+            Array.isArray(markets.value) &&
+            Array.isArray(indexes.value) &&
+            Array.isArray(exchanges.value));
+    }
+    return {
+        skin,
+        bookingsPerPage,
+        stocksPerPage,
+        activeAccountId,
+        partner,
+        service,
+        materials,
+        markets,
+        indexes,
+        exchanges,
+        setActiveAccountId,
+        setBookingsPerPage,
+        setStocksPerPage,
+        setPartner,
+        setService,
+        setMaterials,
+        setMarkets,
+        setIndexes,
+        setExchanges,
+        setSkin,
+        initStore,
+        updatePagination,
+        updateMarketData,
+        validateSettings
+    };
 });
 log('--- STORE settings.js ---');
