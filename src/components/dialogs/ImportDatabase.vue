@@ -18,7 +18,7 @@ import type {
   IStoresDB
 } from '@/types.d'
 import type {UnwrapRef} from 'vue'
-import {computed, defineExpose, reactive} from 'vue'
+import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
@@ -92,13 +92,14 @@ const {clearAllBookings} = useBookingsDB()
 const {clearAllBookingTypes} = useBookingTypesDB()
 const {clearAllStocks} = useStocksDB()
 
-let chosen_file: Blob = reactive(new Blob())
-const onChange = computed(ev => {
-  chosen_file = (ev as IEventTarget).target.files[0]
-})
+const fileBlob = ref<Blob>(new Blob())
+
+const onChange = (ev: IEventTarget) => {
+  fileBlob.value = ev.target.files[0]
+}
 
 const onClickOk = async (): Promise<void> => {
-  log('IMPORT_DATABASE: onClickOk', {info: chosen_file})
+  log('IMPORT_DATABASE: onClickOk')
   const records = useRecordsStore()
 
   const importStores = async (stores: IStoresDB, all = true) => {
@@ -157,11 +158,10 @@ const onClickOk = async (): Promise<void> => {
       }
     })
   }
-
-  const onError = async (): Promise<void> => {
+  const onReaderError = async (): Promise<void> => {
     await notice(['IMPORT_DATABASE: onError: FileReader'])
   }
-  const onFileLoaded = async (): Promise<void> => {
+  const onReaderLoaded = async (): Promise<void> => {
     log('IMPORT_DATABASE: onFileLoaded')
     if (typeof fr.result === 'string') {
       const backupObject: IBackup = JSON.parse(fr.result)
@@ -347,14 +347,17 @@ const onClickOk = async (): Promise<void> => {
       runtime.resetTeleport()
     }
   }
+
   const fr: FileReader = new FileReader()
-  fr.addEventListener(CONS.EVENTS.LOAD, onFileLoaded, CONS.SYSTEM.ONCE)
-  fr.addEventListener(CONS.EVENTS.ERR, onError, CONS.SYSTEM.ONCE)
-  if (chosen_file.size > 0) {
-    fr.readAsText(chosen_file, 'UTF-8')
+  fr.addEventListener(CONS.EVENTS.LOAD, onReaderLoaded, CONS.SYSTEM.ONCE)
+  fr.addEventListener(CONS.EVENTS.ERR, onReaderError, CONS.SYSTEM.ONCE)
+  if (fileBlob.value.size > 0) {
+    fr.readAsText(fileBlob.value, 'UTF-8')
   }
 }
+
 const title = t('dialogs.importDatabase.title')
+
 defineExpose({onClickOk, title})
 
 log('--- ImportDatabase.vue setup ---')
