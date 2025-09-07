@@ -11,13 +11,16 @@ export const useRecordsStore = defineStore('records', () => {
     const bookingsStore = useBookings();
     const bookingTypesStore = useBookingTypes();
     const stocksStore = useStocks();
-    function initStore(stores) {
-        log('RECORDS: initStore', { info: stores });
-        const settings = useSettingsStore();
+    function cleanStore() {
         accountsStore.clean();
         bookingsStore.clean();
         bookingTypesStore.clean();
         stocksStore.clean();
+    }
+    function initStore(stores) {
+        log('RECORDS: initStore', { info: stores });
+        const settings = useSettingsStore();
+        cleanStore();
         accountsStore.setAccounts(stores.accounts);
         accountsStore.addAccount({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false }, true);
         bookingsStore.setBookings(stores.bookings);
@@ -55,7 +58,8 @@ export const useRecordsStore = defineStore('records', () => {
         bookings: bookingsStore,
         bookingTypes: bookingTypesStore,
         stocks: stocksStore,
-        initStore
+        initStore,
+        cleanStore
     };
 });
 log('--- STORE records.ts ---');

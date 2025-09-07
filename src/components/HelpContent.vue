@@ -11,7 +11,7 @@ import type {ComputedRef} from 'vue'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useNotification} from '@/composables/useNotification'
-import ContentCard from '@/components/dialogs/childs/ContentCard.vue'
+import ContentCard from '@/components/childs/ContentCard.vue'
 
 const {t} = useI18n()
 const {log} = useNotification()

@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 declare module '*.vue' {
-    import type { DefineComponent } from 'vue'
+    import type {DefineComponent} from 'vue'
     const component: DefineComponent<
         Record<string, any>, // props
         Record<string, any>, // return from setup()

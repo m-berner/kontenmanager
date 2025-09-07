@@ -6,6 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IMenuItem} from 'types.d'
 import type {DataTableHeader} from 'vuetify'
 import type {ComputedRef, Ref} from 'vue'
 import {computed, ref} from 'vue'
@@ -15,13 +16,7 @@ import {useApp} from '@/composables/useApp'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import DotMenu from '@/components/dialogs/childs/DotMenu.vue'
-
-type HomeMenuItem = {
-  readonly id: string
-  readonly title: string
-  readonly icon?: string
-}
+import DotMenu from '@/components/childs/DotMenu.vue'
 
 const {d, n, t} = useI18n()
 const {CONS} = useConstant()
@@ -67,7 +62,7 @@ const homeHeaders: ComputedRef<DataTableHeader[]> = computed(() => [
     key: 'cBookingType'
   }
 ])
-const homeMenuItems: ComputedRef<HomeMenuItem[]> = computed(() => [
+const homeMenuItems: ComputedRef<IMenuItem[]> = computed(() => [
   {
     id: 'DeleteBooking',
     title: t('appPage.menuItems.delete'),

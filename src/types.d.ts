@@ -64,10 +64,10 @@ export interface IStoresDB {
 }
 
 export interface IStoresDB {
-    accounts: IAccountDB[],
-    bookings: IBookingDB[],
-    bookingTypes: IBookingTypeDB[],
-    stocks: IStockDB[]
+    accountsDB: IAccountDB[],
+    bookingsDB: IBookingDB[],
+    bookingTypesDB: IBookingTypeDB[],
+    stocksDB: IStockDB[]
 }
 
 export interface IAccount {
@@ -116,7 +116,7 @@ export interface IStockOnlyMemory {
     mMax: number
 }
 
-export interface IStock extends IStockDB{
+export interface IStock extends IStockDB {
     cAccountNumberID: number
     mPortfolio: number
     mChange: number
@@ -158,7 +158,7 @@ export interface IContent {
     readonly icon: string
 }
 
-export interface IStockMenuItem {
+export interface IMenuItem {
     readonly title: string
     readonly id: string
     readonly icon: string

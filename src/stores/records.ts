@@ -23,15 +23,19 @@ export const useRecordsStore = defineStore('records', () => {
     const bookingTypesStore = useBookingTypes()
     const stocksStore = useStocks()
 
+    function cleanStore() {
+        accountsStore.clean()
+        bookingsStore.clean()
+        bookingTypesStore.clean()
+        stocksStore.clean()
+    }
+
     // Orchestrate operations across child stores
     function initStore(stores: IStores): void {
         log('RECORDS: initStore', {info: stores})
         const settings = useSettingsStore()
         // Clear existing data
-        accountsStore.clean()
-        bookingsStore.clean()
-        bookingTypesStore.clean()
-        stocksStore.clean()
+        cleanStore()
 
         // Set new data
         accountsStore.setAccounts(stores.accounts)
@@ -77,7 +81,8 @@ export const useRecordsStore = defineStore('records', () => {
         bookings: bookingsStore,
         bookingTypes: bookingTypesStore,
         stocks: stocksStore,
-        initStore
+        initStore,
+        cleanStore
     }
 })
 

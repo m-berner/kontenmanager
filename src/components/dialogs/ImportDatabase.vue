@@ -6,9 +6,19 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount, IBooking, IBookingType, IStock, IStoresDB} from '@/types.d'
+import type {
+  IAccount,
+  IAccountDB,
+  IBooking,
+  IBookingDB,
+  IBookingType,
+  IBookingTypeDB,
+  IStock,
+  IStockDB,
+  IStoresDB
+} from '@/types.d'
 import type {UnwrapRef} from 'vue'
-import {computed, defineExpose, reactive, toRaw} from 'vue'
+import {computed, defineExpose, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
@@ -94,7 +104,7 @@ const onClickOk = async (): Promise<void> => {
 
   const importStores = async (stores: IStoresDB, all = true) => {
     log('USE_INDEXED_DB: importStores')
-    const db = getDB()
+    const db = await getDB()
     return new Promise(async (resolve, reject) => {
       if (db != null) {
         const onComplete = async (): Promise<void> => {
@@ -113,26 +123,26 @@ const onClickOk = async (): Promise<void> => {
         requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
         const onSuccessClearBookings = (): void => {
           log('USE_INDEXED_DB: bookings dropped')
-          for (let i = 0; i < stores.bookings.length; i++) {
-            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookings[i]})
+          for (let i = 0; i < stores.bookingsDB.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).add({...stores.bookingsDB[i]})
           }
         }
         const onSuccessClearAccounts = (): void => {
           log('USE_INDEXED_DB: accounts dropped')
-          for (let i = 0; i < stores.accounts.length; i++) {
-            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accounts[i]})
+          for (let i = 0; i < stores.accountsDB.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.ACCOUNTS.NAME).add({...stores.accountsDB[i]})
           }
         }
         const onSuccessClearBookingTypes = (): void => {
           log('USE_INDEXED_DB: booking types dropped')
-          for (let i = 0; i < stores.bookingTypes.length; i++) {
-            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypes[i]})
+          for (let i = 0; i < stores.bookingTypesDB.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypesDB[i]})
           }
         }
         const onSuccessClearStocks = (): void => {
           log('USE_INDEXED_DB: stocks dropped')
-          for (let i = 0; i < stores.stocks.length; i++) {
-            requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocks[i]})
+          for (let i = 0; i < stores.stocksDB.length; i++) {
+            requestTransaction.objectStore(CONS.DB.STORES.STOCKS.NAME).add({...stores.stocksDB[i]})
           }
         }
         const requestClearBookings = requestTransaction.objectStore(CONS.DB.STORES.BOOKINGS.NAME).clear()
@@ -156,14 +166,14 @@ const onClickOk = async (): Promise<void> => {
     log('IMPORT_DATABASE: onFileLoaded')
     if (typeof fr.result === 'string') {
       const backupObject: IBackup = JSON.parse(fr.result)
-      const accounts: IAccount[] = []
-      const bookings: IBooking[] = []
-      const bookingTypes: IBookingType[] = []
-      const stocks: IStock[] = []
-      let account: IAccount
-      let booking: IBooking
-      let bookingType: IBookingType
-      let stock: IStock
+      const accounts: IAccountDB[] = []
+      const bookings: IBookingDB[] = []
+      const bookingTypes: IBookingTypeDB[] = []
+      const stocks: IStockDB[] = []
+      let account: IAccountDB
+      let booking: IBookingDB
+      let bookingType: IBookingTypeDB
+      let stock: IStockDB
       let smStock: StockManager.IStock
       let activeId = 1
       const getCreditDebit = (rec: StockManager.ITransfer): number => {
@@ -212,6 +222,7 @@ const onClickOk = async (): Promise<void> => {
           cStockAccount: true // TODO withDepot
         }
         records.accounts.addAccount(account)
+
         bookingTypes.push({cID: 1, cName: 'Aktienkauf', cAccountNumberID: activeId})
         bookingTypes.push({cID: 2, cName: 'Aktienverkauf', cAccountNumberID: activeId})
         bookingTypes.push({cID: 3, cName: 'Dividende', cAccountNumberID: activeId})
@@ -220,6 +231,7 @@ const onClickOk = async (): Promise<void> => {
         for (const entry of bookingTypes) {
           records.bookingTypes.addBookingType(entry)
         }
+
         for (smStock of backupObject.stocks) {
           const stockClone: IStock = {} as IStock
           let stockCloneStore: IStock = {} as IStock
@@ -278,13 +290,13 @@ const onClickOk = async (): Promise<void> => {
         settings.setActiveAccountId(activeId)
         records.bookings.sumBookings()
         const stores: IStoresDB = {
-          accounts: toRaw(records.accounts),
-          bookings,
-          bookingTypes,
-          stocks
+          accountsDB: accounts,
+          bookingsDB: bookings,
+          bookingTypesDB: bookingTypes,
+          stocksDB: stocks
         }
         await importStores(stores)
-        await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, stores.accounts[0].cID)
+        await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, stores.accountsDB[0].cID)
       } else if (backupObject.sm.cDBVersion > CONS.DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
         for (account of backupObject.accounts) {
@@ -323,13 +335,13 @@ const onClickOk = async (): Promise<void> => {
         settings.setActiveAccountId(activeId)
         records.bookings.sumBookings()
         const stores: IStoresDB = {
-          accounts,
-          bookings,
-          bookingTypes,
-          stocks
+          accountsDB: accounts,
+          bookingsDB: bookings,
+          bookingTypesDB: bookingTypes,
+          stocksDB: stocks
         }
         await importStores(stores)
-        await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, stores.accounts[0].cID)
+        await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, stores.accountsDB[0].cID)
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }

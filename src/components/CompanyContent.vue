@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock, IStockMenuItem} from '@/types.d'
+import type {IMenuItem, IStock} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -15,7 +15,7 @@ import {useConstant} from '@/composables/useConstant'
 import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
-import DotMenu from '@/components/dialogs/childs/DotMenu.vue'
+import DotMenu from '@/components/childs/DotMenu.vue'
 
 const {log} = useNotification()
 const {d, n, t} = useI18n()
@@ -92,7 +92,7 @@ const stocksHeaders: DataTableHeader[] = [
     key: 'mMax'
   }
 ]
-const stocksMenuItems: IStockMenuItem[] = [
+const stocksMenuItems: IMenuItem[] = [
   {
     'id': 'DeleteStock',
     'title': t('stocksTable.menuItems.delete'),

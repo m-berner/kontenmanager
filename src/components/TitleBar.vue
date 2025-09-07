@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type { IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory, IStores } from '@/types'
+import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory, IStores} from '@/types'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
@@ -15,6 +15,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
+
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()

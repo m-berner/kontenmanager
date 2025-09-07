@@ -6,6 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IMenuItem} from '@/types'
 import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useConstant} from '@/composables/useConstant'
@@ -16,7 +17,7 @@ import {useRuntimeStore} from '@/stores/runtime'
 
 interface PropsOptionMenu {
   recordID: number
-  menuItems: Record<string, string>[]
+  menuItems: IMenuItem[]
 }
 
 const optionMenuProps = defineProps<PropsOptionMenu>()

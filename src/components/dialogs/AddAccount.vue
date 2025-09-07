@@ -33,7 +33,6 @@ const {CONS} = useConstant()
 const {log, notice} = useNotification()
 const {setStorage} = useBrowser()
 const {addAccount} = useAccountsDB()
-
 const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
@@ -82,7 +81,7 @@ const enhancedIbanRules = computed(() => [
   () => isAccountNumberUnique.value || t('validators.numberExists')
 ])
 
-const resetState = (): void => {
+const reset = (): void => {
   Object.assign(accountData, {
     swift: '',
     number: '',
@@ -90,6 +89,20 @@ const resetState = (): void => {
     withDepot: false
   })
   isFormValid.value = false
+}
+
+const validateForm = (): boolean => {
+  if (!isFormValid.value) {
+    notice([t('dialogs.addAccount.invalidForm')])
+    return false
+  }
+
+  if (!isAccountNumberUnique.value) {
+    notice([t('validators.numberExists')])
+    return false
+  }
+
+  return true
 }
 
 const logoUrl: Ref<string> = ref('')
@@ -125,20 +138,6 @@ const onUpdateIbanMask = (iban: string): void => {
   accountData.iban = formatIban(iban)
 }
 
-const validateForm = (): boolean => {
-  if (!isFormValid.value) {
-    notice([t('dialogs.addAccount.invalidForm')])
-    return false
-  }
-
-  if (!isAccountNumberUnique.value) {
-    notice([t('validators.numberExists')])
-    return false
-  }
-
-  return true
-}
-
 const createAccountObject = (): Omit<IAccount, 'cID'> => ({
   cSwift: accountData.swift.trim().toUpperCase(),
   cNumber: accountData.iban.replace(/\s/g, ''),
@@ -148,7 +147,6 @@ const createAccountObject = (): Omit<IAccount, 'cID'> => ({
 
 const onClickOk = async (): Promise<void> => {
   log('ADD_ACCOUNT: onClickOk')
-
   if (!validateForm()) return
 
   try {
@@ -166,7 +164,7 @@ const onClickOk = async (): Promise<void> => {
       await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
 
       await notice([t('dialogs.addAccount.success')])
-      resetState()
+      reset()
       runtime.resetTeleport()
     } else {
       await notice(['Invalid account ID returned'])
@@ -181,6 +179,11 @@ const title = computed(() => t('dialogs.addAccount.title'))
 
 defineExpose({onClickOk, title})
 
+onMounted(() => {
+  log('ADD_ACCOUNT: onMounted')
+  //resetState()
+})
+
 // Watch for logo search name changes with debouncing
 let logoTimeout: NodeJS.Timeout
 watch(() => accountData.url, async () => {
@@ -190,11 +193,6 @@ watch(() => accountData.url, async () => {
   logoTimeout = setTimeout(() => {
     logoUrl.value = onInputUrl()
   }, 600)
-})
-
-onMounted(() => {
-  log('ADD_ACCOUNT: onMounted')
-  //resetState()
 })
 
 log('--- AddAccount.vue setup ---')

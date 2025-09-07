@@ -37,7 +37,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const currentBooking = records.bookings.items[records.bookings.getBookingById(runtime.activeId)]
+const currentBooking = records.bookings.items[records.bookings.getBookingIndexById(runtime.activeId)]
 const state: IState = reactive({
   id: currentBooking.cID,
   bookingTypeId: currentBooking.cBookingTypeID,
