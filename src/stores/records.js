@@ -12,6 +12,7 @@ export const useRecordsStore = defineStore('records', () => {
     const bookingTypesStore = useBookingTypes();
     const stocksStore = useStocks();
     function cleanStore() {
+        log('RECORDS: cleanStore');
         accountsStore.clean();
         bookingsStore.clean();
         bookingTypesStore.clean();
@@ -22,11 +23,11 @@ export const useRecordsStore = defineStore('records', () => {
         const settings = useSettingsStore();
         cleanStore();
         accountsStore.items = [...stores.accounts];
-        accountsStore.addAccount({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false }, true);
-        bookingsStore.items = [...stores.bookings];
-        bookingTypesStore.items = [...stores.bookingTypes];
+        accountsStore.addAccount({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false }, true);
+        bookingsStore.items = stores.bookings.filter((booking) => booking.cAccountNumberID === settings.activeAccountId);
+        bookingTypesStore.items = stores.bookingTypes.filter((bookingType) => bookingType.cAccountNumberID === settings.activeAccountId);
         bookingTypesStore.addBookingType({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId }, true);
-        stocksStore.items = [...stores.stocks];
+        stocksStore.items = stores.stocks.filter((stock) => stock.cAccountNumberID === settings.activeAccountId);
         stocksStore.addStock({
             cID: 0,
             cISIN: 'XX00000000000000000000',

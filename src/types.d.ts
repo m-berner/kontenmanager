@@ -11,7 +11,7 @@ export interface IAccountDB {
     cSwift: string
     cNumber: string
     cLogoUrl: string
-    cStockAccount: boolean
+    cWithDepot: boolean
 }
 
 export interface IBookingTypeDB {
@@ -69,7 +69,7 @@ export interface IAccount {
     cSwift: string
     cNumber: string
     cLogoUrl: string
-    cStockAccount: boolean
+    cWithDepot: boolean
 }
 
 export interface IBookingType {
@@ -130,24 +130,6 @@ export interface IExchangeData {
     key: string,
     value: number
 }
-
-// interface _IChanges {
-//     oldValue: string[]
-//     newValue: string[]
-// }
-//
-// export interface IStorageLocal {
-//     'sActiveAccountId': number
-//     'sBookingsPerPage': number
-//     'sStocksPerPage': number
-//     'sPartner': boolean
-//     'sSkin': string
-//     'sService': string
-//     'sExchanges': _IChanges
-//     'sMaterials': _IChanges
-//     'sIndexes': _IChanges
-//     'sMarkets': _IChanges
-// }
 
 export interface ICompanyData {
     company: string

@@ -12,7 +12,7 @@ import {useBookings} from '@/stores/childs/bookings'
 import {useBookingTypes} from '@/stores/childs/bookingTypes'
 import {useStocks} from '@/stores/childs/stocks'
 import {useSettingsStore} from '@/stores/settings'
-import type {IBooking, IStores} from '@/types'
+import type {IBooking, IBookingType, IStock, IStores} from '@/types'
 
 const {log} = useNotification()
 
@@ -23,6 +23,7 @@ export const useRecordsStore = defineStore('records', () => {
     const stocksStore = useStocks()
 
     function cleanStore() {
+        log('RECORDS: cleanStore')
         accountsStore.clean()
         bookingsStore.clean()
         bookingTypesStore.clean()
@@ -33,15 +34,16 @@ export const useRecordsStore = defineStore('records', () => {
         log('RECORDS: initStore', {info: stores})
         const settings = useSettingsStore()
         cleanStore()
+
         accountsStore.items = [...stores.accounts]
-        accountsStore.addAccount({cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false}, true)
+        accountsStore.addAccount({cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false}, true)
 
-        bookingsStore.items = [...stores.bookings]
+        bookingsStore.items = stores.bookings.filter((booking: IBooking) => booking.cAccountNumberID === settings.activeAccountId)
 
-        bookingTypesStore.items = [...stores.bookingTypes]
+        bookingTypesStore.items = stores.bookingTypes.filter((bookingType: IBookingType) => bookingType.cAccountNumberID === settings.activeAccountId)
         bookingTypesStore.addBookingType({cID: 0, cName: '', cAccountNumberID: settings.activeAccountId}, true)
 
-        stocksStore.items = [...stores.stocks]
+        stocksStore.items = stores.stocks.filter((stock: IStock) => stock.cAccountNumberID === settings.activeAccountId)
         stocksStore.addStock({
             cID: 0,
             cISIN: 'XX00000000000000000000',

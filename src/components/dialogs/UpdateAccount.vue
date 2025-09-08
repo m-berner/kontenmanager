@@ -86,7 +86,7 @@ const onClickOk = async (): Promise<void> => {
       cSwift: formularData.swift.trim().toUpperCase(),
       cNumber: formularData.number.replace(/\s/g, ''),
       cLogoUrl: formularData.logoUrl,
-      cStockAccount: formularData.stockAccount
+      cWithDepot: formularData.stockAccount
     }
     records.accounts.updateAccount(account)
     await updateAccount(account)
@@ -109,7 +109,7 @@ onMounted(() => {
     formularData.number = currentAccount.cNumber
     formularData.logoUrl = currentAccount.cLogoUrl
     formularData.logoSearchName = ''
-    formularData.stockAccount = currentAccount.cStockAccount
+    formularData.stockAccount = currentAccount.cWithDepot
   }
 })
 

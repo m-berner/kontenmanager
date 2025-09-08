@@ -102,62 +102,6 @@ const onClickOk = async (): Promise<void> => {
   log('IMPORT_DATABASE: onClickOk')
   const records = useRecordsStore()
 
-  const importStores = async (stores: IStoresDB, all = true) => {
-    log('USE_INDEXED_DB: importStores')
-    const db = await getDB()
-    return new Promise(async (resolve, reject) => {
-      if (db != null) {
-        const onComplete = async (): Promise<void> => {
-          await notice(['All memory records are added to the database!'])
-          resolve('USE_INDEXED_DB: importStores: all memory records are added to the database!')
-        }
-        const onAbort = (): void => {
-          reject(requestTransaction.error)
-        }
-        const onError = (ev: Event): void => {
-          reject(ev)
-        }
-        const requestTransaction = db.transaction([CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, CONS.INDEXED_DB.STORES.BOOKINGS.NAME, CONS.INDEXED_DB.STORES.STOCKS.NAME], 'readwrite')
-        requestTransaction.addEventListener(CONS.EVENTS.COMPLETE, onComplete, CONS.SYSTEM.ONCE)
-        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
-        requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
-        const onSuccessClearBookings = (): void => {
-          log('USE_INDEXED_DB: bookings dropped')
-          for (let i = 0; i < stores.bookingsDB.length; i++) {
-            requestTransaction.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME).add({...stores.bookingsDB[i]})
-          }
-        }
-        const onSuccessClearAccounts = (): void => {
-          log('USE_INDEXED_DB: accounts dropped')
-          for (let i = 0; i < stores.accountsDB.length; i++) {
-            requestTransaction.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME).add({...stores.accountsDB[i]})
-          }
-        }
-        const onSuccessClearBookingTypes = (): void => {
-          log('USE_INDEXED_DB: booking types dropped')
-          for (let i = 0; i < stores.bookingTypesDB.length; i++) {
-            requestTransaction.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypesDB[i]})
-          }
-        }
-        const onSuccessClearStocks = (): void => {
-          log('USE_INDEXED_DB: stocks dropped')
-          for (let i = 0; i < stores.stocksDB.length; i++) {
-            requestTransaction.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME).add({...stores.stocksDB[i]})
-          }
-        }
-        const requestClearBookings = requestTransaction.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME).clear()
-        requestClearBookings.addEventListener(CONS.EVENTS.SUCCESS, onSuccessClearBookings, CONS.SYSTEM.ONCE)
-        if (all) {
-          const requestClearAccount = requestTransaction.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME).clear()
-          requestClearAccount.addEventListener(CONS.EVENTS.SUCCESS, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
-        }
-        const requestClearBookingTypes = requestTransaction.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME).clear()
-        requestClearBookingTypes.addEventListener(CONS.EVENTS.SUCCESS, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
-        const requestClearStocks = requestTransaction.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME).clear()
-        requestClearStocks.addEventListener(CONS.EVENTS.SUCCESS, onSuccessClearStocks, CONS.SYSTEM.ONCE)
-      }
-    })
-  }
   const onReaderError = async (): Promise<void> => {
     await notice(['IMPORT_DATABASE: onError: FileReader'])
   }
@@ -175,6 +119,62 @@ const onClickOk = async (): Promise<void> => {
       let stock: IStockDB
       let smStock: StockManager.IStock
       let activeId = 1
+      const importStores = async (stores: IStoresDB, all = true) => {
+        log('USE_INDEXED_DB: importStores')
+        const db = await getDB()
+        return new Promise(async (resolve, reject) => {
+          if (db != null) {
+            const onComplete = async (): Promise<void> => {
+              await notice(['All memory records are added to the database!'])
+              resolve('USE_INDEXED_DB: importStores: all memory records are added to the database!')
+            }
+            const onAbort = (): void => {
+              reject(requestTransaction.error)
+            }
+            const onError = (ev: Event): void => {
+              reject(ev)
+            }
+            const requestTransaction = db.transaction([CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, CONS.INDEXED_DB.STORES.BOOKINGS.NAME, CONS.INDEXED_DB.STORES.STOCKS.NAME], 'readwrite')
+            requestTransaction.addEventListener(CONS.EVENTS.COMPLETE, onComplete, CONS.SYSTEM.ONCE)
+            requestTransaction.addEventListener(CONS.EVENTS.ABORT, onError, CONS.SYSTEM.ONCE)
+            requestTransaction.addEventListener(CONS.EVENTS.ABORT, onAbort, CONS.SYSTEM.ONCE)
+            const onSuccessClearBookings = (): void => {
+              log('USE_INDEXED_DB: bookings dropped')
+              for (let i = 0; i < stores.bookingsDB.length; i++) {
+                requestTransaction.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME).add({...stores.bookingsDB[i]})
+              }
+            }
+            const onSuccessClearAccounts = (): void => {
+              log('USE_INDEXED_DB: accounts dropped')
+              for (let i = 0; i < stores.accountsDB.length; i++) {
+                requestTransaction.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME).add({...stores.accountsDB[i]})
+              }
+            }
+            const onSuccessClearBookingTypes = (): void => {
+              log('USE_INDEXED_DB: booking types dropped')
+              for (let i = 0; i < stores.bookingTypesDB.length; i++) {
+                requestTransaction.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME).add({...stores.bookingTypesDB[i]})
+              }
+            }
+            const onSuccessClearStocks = (): void => {
+              log('USE_INDEXED_DB: stocks dropped')
+              for (let i = 0; i < stores.stocksDB.length; i++) {
+                requestTransaction.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME).add({...stores.stocksDB[i]})
+              }
+            }
+            const requestClearBookings = requestTransaction.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME).clear()
+            requestClearBookings.addEventListener(CONS.EVENTS.SUCCESS, onSuccessClearBookings, CONS.SYSTEM.ONCE)
+            if (all) {
+              const requestClearAccount = requestTransaction.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME).clear()
+              requestClearAccount.addEventListener(CONS.EVENTS.SUCCESS, onSuccessClearAccounts, CONS.SYSTEM.ONCE)
+            }
+            const requestClearBookingTypes = requestTransaction.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME).clear()
+            requestClearBookingTypes.addEventListener(CONS.EVENTS.SUCCESS, onSuccessClearBookingTypes, CONS.SYSTEM.ONCE)
+            const requestClearStocks = requestTransaction.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME).clear()
+            requestClearStocks.addEventListener(CONS.EVENTS.SUCCESS, onSuccessClearStocks, CONS.SYSTEM.ONCE)
+          }
+        })
+      }
       const getCreditDebit = (rec: StockManager.ITransfer): number => {
         let result: number
         switch (rec.cType) {
@@ -217,8 +217,8 @@ const onClickOk = async (): Promise<void> => {
           cID: activeId,
           cSwift: 'KMKLPJJ9099',
           cNumber: 'XX13120300001064506999',
-          cLogoUrl: '', // TOOD cUrl
-          cStockAccount: true // TODO withDepot
+          cLogoUrl: '', // TODO cUrl
+          cWithDepot: true // TODO withDepot
         }
         records.accounts.addAccount(account)
 

@@ -256,7 +256,7 @@ export const useConstant = () => {
                         LOGO_URL: 'cLogoUrl',
                         LOGO_SEARCH_NAME: 'cLogoSearchName',
                         NUMBER: 'cNumber',
-                        STOCK_ACCOUNT: 'cStockAccount'
+                        STOCK_ACCOUNT: 'cWithDepot'
                     }
                 },
                 BOOKINGS: {

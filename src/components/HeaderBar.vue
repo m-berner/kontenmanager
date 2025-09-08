@@ -184,7 +184,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
 const isStockAccount = computed((): boolean => {
   const ind = records.accounts.getAccountIndexById(settings.activeAccountId)
   if (ind > -1) {
-    return records.accounts.items[ind].cStockAccount
+    return records.accounts.items[ind].cWithDepot
   } else {
     return false
   }

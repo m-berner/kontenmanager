@@ -109,7 +109,7 @@ const createAccountObject = (): Omit<IAccount, 'cID'> => ({
   cSwift: formularData.swift.trim().toUpperCase(),
   cNumber: formularData.iban.replace(/\s/g, ''),
   cLogoUrl: formularData.url,
-  cStockAccount: formularData.withDepot
+  cWithDepot: formularData.withDepot
 })
 
 const formatIban = (iban: string): string => {
