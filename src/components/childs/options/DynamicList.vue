@@ -33,10 +33,10 @@ const list: Ref<string[]> = ref([])
 const label = computed((): string => {
   let resultLabel = 'Error'
   switch (dynamicListProps.type) {
-    case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
+    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
       resultLabel = t('optionsPage.exchanges.label')
       break
-    case CONS.DYNAMIC_LIST.TYPES.MARKETS:
+    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
       resultLabel = t('optionsPage.markets.label')
       break
     default:
@@ -47,10 +47,10 @@ const label = computed((): string => {
 const title = computed((): string => {
   let resultTitle = 'Error'
   switch (dynamicListProps.type) {
-    case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
+    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
       resultTitle = t('optionsPage.exchanges.title')
       break
-    case CONS.DYNAMIC_LIST.TYPES.MARKETS:
+    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
       resultTitle = t('optionsPage.markets.title')
       break
     default:
@@ -62,13 +62,13 @@ const addItem = async (item: string): Promise<void> => {
   log('DYNAMIC_LIST: addItem')
   if (!list.value?.includes(item)) {
     switch (dynamicListProps.type) {
-      case CONS.DYNAMIC_LIST.TYPES.MARKETS:
+      case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
         list.value.push(item)
-        await setStorage(CONS.STORAGE.PROPS.MARKETS, list.value)
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, list.value)
         break
-      case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
+      case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
         list.value.push(item.toUpperCase())
-        await setStorage(CONS.STORAGE.PROPS.EXCHANGES, list.value)
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, list.value)
         break
       default:
     }
@@ -81,11 +81,11 @@ const removeItem = async (n: number): Promise<void> => {
     list.value.splice(n, 1)
     newItem.value = ''
     switch (dynamicListProps.type) {
-      case CONS.DYNAMIC_LIST.TYPES.MARKETS:
-        await setStorage(CONS.STORAGE.PROPS.MARKETS, list.value)
+      case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, list.value)
         break
-      case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        await setStorage(CONS.STORAGE.PROPS.EXCHANGES, list.value)
+      case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, list.value)
         break
       default:
     }
@@ -93,13 +93,13 @@ const removeItem = async (n: number): Promise<void> => {
 }
 
 onBeforeMount(async () => {
-  const storage = await getStorage([CONS.STORAGE.PROPS.MARKETS, CONS.STORAGE.PROPS.EXCHANGES])
+  const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES])
   switch (dynamicListProps.type) {
-    case CONS.DYNAMIC_LIST.TYPES.EXCHANGES:
-      list.value = storage[CONS.STORAGE.PROPS.EXCHANGES] as string[]
+    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+      list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] as string[]
       break
-    case CONS.DYNAMIC_LIST.TYPES.MARKETS:
-      list.value = storage[CONS.STORAGE.PROPS.MARKETS] as string[]
+    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+      list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS] as string[]
       break
   }
 })

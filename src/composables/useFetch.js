@@ -73,8 +73,8 @@ export const useFetch = () => {
     const fetchMinRateMaxData = async (storageOnline) => {
         log('BACKGROUND: fetchMinRateMaxData');
         return new Promise(async (resolve, reject) => {
-            const storageService = await getStorage([CONS.STORAGE.PROPS.SERVICE]);
-            const serviceName = storageService[CONS.STORAGE.PROPS.SERVICE];
+            const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]);
+            const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE];
             const _fnet = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
                     const firstResponse = await fetch(urlObj.url);

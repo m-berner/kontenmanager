@@ -48,35 +48,35 @@ export const useBrowser = () => {
     const installStorageLocal = async () => {
         const { CONS } = useConstant();
         const storageLocal = await browser.storage.local.get();
-        if (storageLocal[CONS.STORAGE.PROPS.SKIN] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.SKIN]: CONS.DEFAULTS.STORAGE.SKIN });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.STORAGE.ACTIVE_ACCOUNT_ID });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.STOCKS_PER_PAGE] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.PARTNER] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.PARTNER]: CONS.DEFAULTS.STORAGE.PARTNER });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.PARTNER] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.PARTNER]: CONS.DEFAULTS.BROWSER_STORAGE.PARTNER });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.SERVICE] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.STORAGE.SERVICE });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.EXCHANGES] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.STORAGE.EXCHANGES });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.INDEXES] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.STORAGE.INDEXES });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.BROWSER_STORAGE.INDEXES });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.MARKETS] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.STORAGE.MARKETS });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.BROWSER_STORAGE.MARKETS });
         }
-        if (storageLocal[CONS.STORAGE.PROPS.MATERIALS] === undefined) {
-            await browser.storage.local.set({ [CONS.STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.STORAGE.MATERIALS });
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS] === undefined) {
+            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS });
         }
     };
     return {

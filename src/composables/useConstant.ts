@@ -87,6 +87,43 @@ export const useConstant = () => {
                 ['zw', 'ZWD']
             ])
         },
+        COMPONENTS: {
+            TITLE_BAR: {
+                LOGO: '../assets/icon64.png'
+            },
+            DYNAMIC_LIST: {
+                TYPES: {
+                    MARKETS: Symbol.for('markets'),
+                    EXCHANGES: Symbol.for('exchanges')
+                }
+            },
+            CHECKBOX_GRID: {
+                TYPES: {
+                    INDEXES: Symbol.for('indexes'),
+                    MATERIALS: Symbol.for('materials')
+                }
+            },
+            DIALOGS: {
+                ADD_ACCOUNT: 'AddAccount',
+                UPDATE_ACCOUNT: 'UpdateAccount',
+                DELETE_ACCOUNT: 'DeleteAccount',
+                ADD_STOCK: 'AddStock',
+                UPDATE_STOCK: 'UpdateStock',
+                DELETE_STOCK: 'DeleteStock',
+                ADD_BOOKING_TYPE: 'AddBookingType',
+                DELETE_BOOKING_TYPE: 'DeleteBookingType',
+                ADD_BOOKING: 'AddBooking',
+                UPDATE_BOOKING: 'UpdateBooking',
+                DELETE_BOOKING: 'DeleteBooking',
+                EXPORT_DATABASE: 'ExportDatabase',
+                IMPORT_DATABASE: 'ImportDatabase',
+                SHOW_ACCOUNTING: 'ShowAccounting',
+                SETTING: 'setting',
+                PLACEHOLDER: {
+                    ADD_ACCOUNT_URL: 'z. B. https://www.ing.de'
+                }
+            }
+        },
         DATE: {
             DEFAULT: 0,
             DEFAULT_ISO: '1970-01-01',
@@ -94,88 +131,43 @@ export const useConstant = () => {
             MILLI_PER_DAY: 86400000,
             MILLI_PER_MIN: 60000
         },
-        DB: {
-            NAME: 'kontenmanager.db',
-            STORES: {
-                ACCOUNTS: {
-                    NAME: 'accounts',
-                    FIELDS: {
-                        ID: 'cID',
-                        SWIFT: 'cSwift',
-                        LOGO_URL: 'cLogoUrl',
-                        LOGO_SEARCH_NAME: 'cLogoSearchName',
-                        NUMBER: 'cNumber',
-                        STOCK_ACCOUNT: 'cStockAccount'
-                    }
-                },
-                BOOKINGS: {
-                    NAME: 'bookings',
-                    FIELDS: {
-                        ID: 'cID',
-                        DATE: 'cDate',
-                        EX_DATE: 'cExDate',
-                        COUNT: 'cCount',
-                        CREDIT: 'cCredit',
-                        DEBIT: 'cDebit',
-                        DESCRIPTION: 'cDescription',
-                        BOOKING_TYPE_ID: 'cBookingTypeID',
-                        ACCOUNT_NUMBER_ID: 'cAccountNumberID',
-                        STOCK_ID: 'cStockID',
-                        SOLI: 'cSoli',
-                        MARKET_PLACE: 'cMarketPlace',
-                        TAX: 'cTax',
-                        FEE: 'cFee',
-                        SOURCE_TAX: 'cSourceTax',
-                        TRANSACTION_TAX: 'cTransactionTax'
-                    }
-                },
-                BOOKING_TYPES: {
-                    NAME: 'bookingTypes',
-                    FIELDS: {
-                        ID: 'cID',
-                        NAME: 'cName',
-                        ACCOUNT_NUMBER_ID: 'cAccountNumberID'
-                    }
-                },
-                STOCKS: {
-                    NAME: 'stocks',
-                    FIELDS: {
-                        ID: 'cID',
-                        ISIN: 'cISIN',
-                        SYMBOL: 'cSymbol',
-                        FADE_OUT: 'cFadeOut',
-                        FIRST_PAGE: 'cFirstPage',
-                        URL: 'cURL',
-                        MEETING_DAY: 'cMeetingDay',
-                        QUARTER_DAY: 'cQuarterDay',
-                        WKN: 'cWKN',
-                        COMPANY: 'cCompany',
-                        ACCOUNT_NUMBER_ID: 'cAccountNumberID'
-                    }
-                }
-            },
-            IMPORT_MIN_VERSION: 25,
-            CURRENT_VERSION: 26
-        },
         DEFAULTS: {
             CURRENCY: 'EUR',
             LANG: 'de',
             LOCALE: 'de-DE',
             DATE: '1970-01-01',
             YEAR: 9999,
-            STORAGE: {
-                ACTIVE_ACCOUNT_ID: -1, //localStorage
-                BOOKINGS_PER_PAGE: 9, // localStorage
-                STOCKS_PER_PAGE: 9, // localStorage
-                DEBUG: false, //localStorage
-                // sExtensionId sesseionStorage
+            BROWSER_STORAGE: {
+                ACTIVE_ACCOUNT_ID: -1,
+                BOOKINGS_PER_PAGE: 9,
+                STOCKS_PER_PAGE: 9,
                 SKIN: 'ocean',
                 MATERIALS: ['au', 'brent'],
                 INDEXES: ['dax', 'dow'],
                 EXCHANGES: ['EURUSD'],
                 MARKETS: ['Frankfurt', 'XETRA'],
                 SERVICE: 'wstreet',
-                PARTNER: false
+                PARTNER: false,
+                PROPS: {
+                    SKIN: 'sSkin',
+                    SERVICE: 'sService',
+                    INDEXES: 'sIndexes',
+                    MARKETS: 'sMarkets',
+                    MATERIALS: 'sMaterials',
+                    EXCHANGES: 'sExchanges',
+                    PARTNER: 'sPartner',
+                    ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
+                    BOOKINGS_PER_PAGE: 'sBookingsPerPage',
+                    STOCKS_PER_PAGE: 'sStocksPerPage'
+                }
+            },
+            LOCAL_STORAGE: {
+                PROPS: {
+                    DEBUG: 'sDebug'
+                }
+            },
+            SESSION_STORAGE: {
+                EXTENSION_TAB_ID: 'sExtensionTabId'
             },
             DRAWER_KEYS: [
                 'winloss',
@@ -245,63 +237,90 @@ export const useConstant = () => {
                 }
             ]
         },
-        COMPONENTS: {
-            TITLE_BAR: {
-                LOGO: '../assets/icon64.png'
-            },
-            DIALOGS: {
-                ADD_ACCOUNT: 'AddAccount',
-                UPDATE_ACCOUNT: 'UpdateAccount',
-                DELETE_ACCOUNT: 'DeleteAccount',
-                ADD_STOCK: 'AddStock',
-                UPDATE_STOCK: 'UpdateStock',
-                DELETE_STOCK: 'DeleteStock',
-                ADD_BOOKING_TYPE: 'AddBookingType',
-                DELETE_BOOKING_TYPE: 'DeleteBookingType',
-                ADD_BOOKING: 'AddBooking',
-                UPDATE_BOOKING: 'UpdateBooking',
-                DELETE_BOOKING: 'DeleteBooking',
-                EXPORT_DATABASE: 'ExportDatabase',
-                IMPORT_DATABASE: 'ImportDatabase',
-                SHOW_ACCOUNTING: 'ShowAccounting',
-                SETTING: 'setting'
-            }
-        },
-        PAGES: {
-            BACKGROUND: 'background.html',
-            APP: 'app.html',
-            OPTIONS: 'options.html'
-        },
-        DYNAMIC_LIST: {
-            TYPES: {
-                MARKETS: Symbol.for('markets'),
-                EXCHANGES: Symbol.for('exchanges')
-            }
-        },
-        CHECKBOX_GRID: {
-            TYPES: {
-                INDEXES: Symbol.for('indexes'),
-                MATERIALS: Symbol.for('materials')
-            }
-        },
         EVENTS: {
             ABORT: 'abort',
             BEFOREUNLOAD: 'beforeunload',
             CHANGE: 'change',
             CLICK: 'click',
-            COMP: 'complete',
+            COMPLETE: 'complete',
             DOM: 'DOMContentLoaded',
-            ERR: 'error',
-            INP: 'input',
+            ERROR: 'error',
+            INPUT: 'input',
             KEYDOWN: 'keydown',
             LOAD: 'load',
             FOCUS: 'focus',
             BLUR: 'blur',
-            SUC: 'success',
-            UPG: 'upgradeneeded'
+            SUCCESS: 'success',
+            UPGRADE: 'upgradeneeded'
         },
-        PLACEHOLDER: {
-            ADD_ACCOUNT_URL: 'z. B. https://www.ing.de'
+        INDEXED_DB: {
+            NAME: 'kontenmanager.db',
+            STORES: {
+                ACCOUNTS: {
+                    NAME: 'accounts',
+                    FIELDS: {
+                        ID: 'cID',
+                        SWIFT: 'cSwift',
+                        LOGO_URL: 'cLogoUrl',
+                        LOGO_SEARCH_NAME: 'cLogoSearchName',
+                        NUMBER: 'cNumber',
+                        STOCK_ACCOUNT: 'cStockAccount'
+                    }
+                },
+                BOOKINGS: {
+                    NAME: 'bookings',
+                    FIELDS: {
+                        ID: 'cID',
+                        DATE: 'cDate',
+                        EX_DATE: 'cExDate',
+                        COUNT: 'cCount',
+                        CREDIT: 'cCredit',
+                        DEBIT: 'cDebit',
+                        DESCRIPTION: 'cDescription',
+                        BOOKING_TYPE_ID: 'cBookingTypeID',
+                        ACCOUNT_NUMBER_ID: 'cAccountNumberID',
+                        STOCK_ID: 'cStockID',
+                        SOLI: 'cSoli',
+                        MARKET_PLACE: 'cMarketPlace',
+                        TAX: 'cTax',
+                        FEE: 'cFee',
+                        SOURCE_TAX: 'cSourceTax',
+                        TRANSACTION_TAX: 'cTransactionTax'
+                    }
+                },
+                BOOKING_TYPES: {
+                    NAME: 'bookingTypes',
+                    FIELDS: {
+                        ID: 'cID',
+                        NAME: 'cName',
+                        ACCOUNT_NUMBER_ID: 'cAccountNumberID'
+                    }
+                },
+                STOCKS: {
+                    NAME: 'stocks',
+                    FIELDS: {
+                        ID: 'cID',
+                        ISIN: 'cISIN',
+                        SYMBOL: 'cSymbol',
+                        FADE_OUT: 'cFadeOut',
+                        FIRST_PAGE: 'cFirstPage',
+                        URL: 'cURL',
+                        MEETING_DAY: 'cMeetingDay',
+                        QUARTER_DAY: 'cQuarterDay',
+                        WKN: 'cWKN',
+                        COMPANY: 'cCompany',
+                        ACCOUNT_NUMBER_ID: 'cAccountNumberID'
+                    }
+                }
+            },
+            IMPORT_MIN_VERSION: 25,
+            CURRENT_VERSION: 26
+        },
+        PAGES: {
+            BACKGROUND: 'background.html',
+            APP: 'app.html',
+            OPTIONS: 'options.html',
+            INDEX: 'pages/app.html'
         },
         RECORDS: {
             CONTROLLER: {
@@ -484,26 +503,9 @@ export const useConstant = () => {
             MUTATE: 'mutation',
             NO_RENDER: 'no_render'
         },
-        STORAGE: {
-            PROPS: {
-                SKIN: 'sSkin',
-                SERVICE: 'sService',
-                INDEXES: 'sIndexes',
-                MARKETS: 'sMarkets',
-                MATERIALS: 'sMaterials',
-                EXCHANGES: 'sExchanges',
-                PARTNER: 'sPartner',
-                DEBUG: 'sDebug',
-                ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
-                BOOKINGS_PER_PAGE: 'sBookingsPerPage',
-                STOCKS_PER_PAGE: 'sStocksPerPage'
-            }
-        },
         SYSTEM: {
             COPYRIGHT: '2013-2025 Martin Berner',
             MAILTO: 'mailto:kontenmanager@gmx.de',
-            GET: 'GET',
-            INDEX: 'pages/app.html',
             HTML_ENTITY:
                 '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
             KEYS: {

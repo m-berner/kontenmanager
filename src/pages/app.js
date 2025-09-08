@@ -42,13 +42,13 @@ const onKeyDown = async (ev) => {
     }
     if (keyStrokeController.includes('Control') &&
         keyStrokeController.includes('Alt') &&
-        ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0) {
-        localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '0');
+        ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0) {
+        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0');
     }
     if (keyStrokeController.includes('Control') &&
         keyStrokeController.includes('Alt') &&
-        ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.STORAGE.PROPS.DEBUG) ?? '0') > 0)) {
-        localStorage.setItem(CONS.STORAGE.PROPS.DEBUG, '1');
+        ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0)) {
+        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1');
     }
 };
 const onKeyUp = (ev) => {

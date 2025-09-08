@@ -29,13 +29,13 @@ const materialsKeys: string[] = Array.from(CONS.SETTINGS.MATERIALS.keys())
 const boxes = computed((): { A: string[], B: string[] } => {
   let resultBoxes: { A: string[], B: string[] } = {A: [], B: []}
   switch (checkboxGridProps.type) {
-    case CONS.CHECKBOX_GRID.TYPES.INDEXES:
+    case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
       resultBoxes = {
         A: indexesKeys.filter((_key: string, index: number) => index < CONS.SETTINGS.INDEXES.size / 2),
         B: indexesKeys.filter((_key: string, index: number) => index >= CONS.SETTINGS.INDEXES.size / 2)
       }
       break
-    case CONS.CHECKBOX_GRID.TYPES.MATERIALS:
+    case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
       resultBoxes = {
         A: materialsKeys.filter((_key: string, index: number) => index < CONS.SETTINGS.MATERIALS.size / 2),
         B: materialsKeys.filter((_key: string, index: number) => index >= CONS.SETTINGS.MATERIALS.size / 2)
@@ -48,10 +48,10 @@ const boxes = computed((): { A: string[], B: string[] } => {
 const setLabel = (item: string): string | undefined => {
   let resultLabel: string | undefined = ''
   switch (checkboxGridProps.type) {
-    case CONS.CHECKBOX_GRID.TYPES.INDEXES:
+    case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
       resultLabel = CONS.SETTINGS.INDEXES.get(item)
       break
-    case CONS.CHECKBOX_GRID.TYPES.MATERIALS:
+    case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
       resultLabel = t(`optionsPage.materials.${item}`)
       break
   }
@@ -61,23 +61,23 @@ const setLabel = (item: string): string | undefined => {
 const setChecked = async (): Promise<void> => {
   const checkedBoxes = checked.value
   switch (checkboxGridProps.type) {
-    case CONS.CHECKBOX_GRID.TYPES.INDEXES:
-      await setStorage(CONS.STORAGE.PROPS.INDEXES, checkedBoxes)
+    case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
+      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, checkedBoxes)
       break
-    case CONS.CHECKBOX_GRID.TYPES.MATERIALS:
-      await setStorage(CONS.STORAGE.PROPS.MATERIALS, checkedBoxes)
+    case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
+      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS, checkedBoxes)
       break
   }
 }
 
 onBeforeMount(async () => {
-  const storage = await getStorage([CONS.STORAGE.PROPS.INDEXES, CONS.STORAGE.PROPS.MATERIALS])
+  const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS])
   switch (checkboxGridProps.type) {
-    case CONS.CHECKBOX_GRID.TYPES.INDEXES:
-      checked.value = storage[CONS.STORAGE.PROPS.INDEXES] as string[]
+    case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
+      checked.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES] as string[]
       break
-    case CONS.CHECKBOX_GRID.TYPES.MATERIALS:
-      checked.value = storage[CONS.STORAGE.PROPS.MATERIALS] as string[]
+    case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
+      checked.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS] as string[]
       break
   }
 })

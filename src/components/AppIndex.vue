@@ -34,23 +34,23 @@ const {fetchExchangesData} = useFetch()
 const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }): void => {
   const changesKey = Object.keys(changes)
   switch (changesKey[0]) {
-    case CONS.STORAGE.PROPS.SKIN:
-      settings.setSkin(theme, changes[CONS.STORAGE.PROPS.SKIN].newValue)
+    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN:
+      settings.setSkin(theme, changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue)
       break
-    case CONS.STORAGE.PROPS.SERVICE:
-      settings.service = (changes[CONS.STORAGE.PROPS.SERVICE].newValue)
+    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
+      settings.service = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue)
       break
-    case CONS.STORAGE.PROPS.INDEXES:
-      settings.indexes = (changes[CONS.STORAGE.PROPS.INDEXES].newValue)
+    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
+      settings.indexes = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue)
       break
-    case CONS.STORAGE.PROPS.MARKETS:
-      settings.markets = (changes[CONS.STORAGE.PROPS.MARKETS].newValue)
+    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
+      settings.markets = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue)
       break
-    case CONS.STORAGE.PROPS.MATERIALS:
-      settings.materials = (changes[CONS.STORAGE.PROPS.MATERIALS].newValue)
+    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
+      settings.materials = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue)
       break
-    case CONS.STORAGE.PROPS.EXCHANGES:
-      settings.exchanges = (changes[CONS.STORAGE.PROPS.EXCHANGES].newValue)
+    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
+      settings.exchanges = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue)
       break
     default:
   }

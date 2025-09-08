@@ -5,16 +5,16 @@ import { useNotification } from '@/composables/useNotification';
 const { CONS } = useConstant();
 const { log } = useNotification();
 export const useSettingsStore = defineStore('settings', () => {
-    const skin = ref(CONS.DEFAULTS.STORAGE.SKIN);
-    const bookingsPerPage = ref(CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE);
-    const stocksPerPage = ref(CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE);
+    const skin = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN);
+    const bookingsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE);
+    const stocksPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE);
     const activeAccountId = ref(0);
     const partner = ref(false);
-    const service = ref(CONS.DEFAULTS.STORAGE.SERVICE);
-    const materials = ref(CONS.DEFAULTS.STORAGE.MATERIALS);
-    const markets = ref(CONS.DEFAULTS.STORAGE.MARKETS);
-    const indexes = ref(CONS.DEFAULTS.STORAGE.INDEXES);
-    const exchanges = ref(CONS.DEFAULTS.STORAGE.EXCHANGES);
+    const service = ref(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE);
+    const materials = ref(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS);
+    const markets = ref(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS);
+    const indexes = ref(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES);
+    const exchanges = ref(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES);
     function setSkin(theme, value) {
         if (theme?.global?.name) {
             theme.global.name.value = value;

@@ -79,8 +79,8 @@ log('--- AddBookingType.vue setup ---')
         ref="name-input"
         v-model="formularName"
         :disabled="settings.activeAccountId === -1"
-        :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-        :item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+        :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+        :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
         :label="t('dialogs.addBookingType.label')"
         :menu=true

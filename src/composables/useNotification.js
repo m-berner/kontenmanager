@@ -12,7 +12,7 @@ export const useNotification = () => {
         await browser.notifications.create(notificationOption);
     };
     const log = (msg, mode) => {
-        const localDebug = localStorage.getItem(CONS.STORAGE.PROPS.DEBUG);
+        const localDebug = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG);
         if (Number.parseInt(localDebug ?? '0') > 0) {
             if (mode?.info !== undefined) {
                 console.info(msg, mode?.info);

@@ -5,45 +5,45 @@ let dbInstance = null;
 let dbPromise = null;
 const { CONS } = useConstant();
 const { log } = useNotification();
-export function useIndexedDB(dbName = CONS.DB.NAME, version = CONS.DB.CURRENT_VERSION) {
+export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
     const isConnected = ref(false);
     const error = ref(null);
     const isLoading = ref(false);
     const _setupDatabase = (db) => {
-        if (!db.objectStoreNames.contains(CONS.DB.STORES.ACCOUNTS.NAME)) {
-            const accountStore = db.createObjectStore(CONS.DB.STORES.ACCOUNTS.NAME, {
-                keyPath: CONS.DB.STORES.ACCOUNTS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)) {
+            const accountStore = db.createObjectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, {
+                keyPath: CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID,
                 autoIncrement: true
             });
-            accountStore.createIndex(`${CONS.DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
+            accountStore.createIndex(`${CONS.INDEXED_DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
         }
-        if (!db.objectStoreNames.contains(CONS.DB.STORES.BOOKINGS.NAME)) {
-            const bookingStore = db.createObjectStore(CONS.DB.STORES.BOOKINGS.NAME, {
-                keyPath: CONS.DB.STORES.BOOKINGS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)) {
+            const bookingStore = db.createObjectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, {
+                keyPath: CONS.INDEXED_DB.STORES.BOOKINGS.FIELDS.ID,
                 autoIncrement: true
             });
-            bookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k1`, CONS.DB.STORES.BOOKINGS.FIELDS.DATE, { unique: false });
-            bookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k2`, CONS.DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID, { unique: false });
-            bookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k3`, CONS.DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
-            bookingStore.createIndex(`${CONS.DB.STORES.BOOKINGS.NAME}_k4`, CONS.DB.STORES.BOOKINGS.FIELDS.STOCK_ID, { unique: false });
+            bookingStore.createIndex(`${CONS.INDEXED_DB.STORES.BOOKINGS.NAME}_k1`, CONS.INDEXED_DB.STORES.BOOKINGS.FIELDS.DATE, { unique: false });
+            bookingStore.createIndex(`${CONS.INDEXED_DB.STORES.BOOKINGS.NAME}_k2`, CONS.INDEXED_DB.STORES.BOOKINGS.FIELDS.BOOKING_TYPE_ID, { unique: false });
+            bookingStore.createIndex(`${CONS.INDEXED_DB.STORES.BOOKINGS.NAME}_k3`, CONS.INDEXED_DB.STORES.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+            bookingStore.createIndex(`${CONS.INDEXED_DB.STORES.BOOKINGS.NAME}_k4`, CONS.INDEXED_DB.STORES.BOOKINGS.FIELDS.STOCK_ID, { unique: false });
         }
-        if (!db.objectStoreNames.contains(CONS.DB.STORES.BOOKING_TYPES.NAME)) {
-            const bookingTypeStore = db.createObjectStore(CONS.DB.STORES.BOOKING_TYPES.NAME, {
-                keyPath: CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID,
+        if (!db.objectStoreNames.contains(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)) {
+            const bookingTypeStore = db.createObjectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, {
+                keyPath: CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID,
                 autoIncrement: true
             });
-            bookingTypeStore.createIndex(`${CONS.DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+            bookingTypeStore.createIndex(`${CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME}_k1`, CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
         }
-        if (!db.objectStoreNames.contains(CONS.DB.STORES.STOCKS.NAME)) {
-            const stockStore = db.createObjectStore(CONS.DB.STORES.STOCKS.NAME, {
-                keyPath: CONS.DB.STORES.STOCKS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(CONS.INDEXED_DB.STORES.STOCKS.NAME)) {
+            const stockStore = db.createObjectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME, {
+                keyPath: CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ID,
                 autoIncrement: true
             });
-            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk1`, CONS.DB.STORES.STOCKS.FIELDS.ISIN, { unique: true });
-            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_uk2`, CONS.DB.STORES.STOCKS.FIELDS.SYMBOL, { unique: true });
-            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k1`, CONS.DB.STORES.STOCKS.FIELDS.FADE_OUT, { unique: false });
-            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k2`, CONS.DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
-            stockStore.createIndex(`${CONS.DB.STORES.STOCKS.NAME}_k3`, CONS.DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+            stockStore.createIndex(`${CONS.INDEXED_DB.STORES.STOCKS.NAME}_uk1`, CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ISIN, { unique: true });
+            stockStore.createIndex(`${CONS.INDEXED_DB.STORES.STOCKS.NAME}_uk2`, CONS.INDEXED_DB.STORES.STOCKS.FIELDS.SYMBOL, { unique: true });
+            stockStore.createIndex(`${CONS.INDEXED_DB.STORES.STOCKS.NAME}_k1`, CONS.INDEXED_DB.STORES.STOCKS.FIELDS.FADE_OUT, { unique: false });
+            stockStore.createIndex(`${CONS.INDEXED_DB.STORES.STOCKS.NAME}_k2`, CONS.INDEXED_DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
+            stockStore.createIndex(`${CONS.INDEXED_DB.STORES.STOCKS.NAME}_k3`, CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
         }
     };
     const getDB = async () => {
@@ -225,7 +225,7 @@ export function useAccountsDB() {
     const db = useIndexedDB();
     const addAccount = async (accountData) => {
         try {
-            return await db.add(CONS.DB.STORES.ACCOUNTS.NAME, accountData);
+            return await db.add(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountData);
         }
         catch (err) {
             log('Failed to add account:', { error: err });
@@ -234,7 +234,7 @@ export function useAccountsDB() {
     };
     const getAllAccounts = async () => {
         try {
-            return await db.getAll(CONS.DB.STORES.ACCOUNTS.NAME);
+            return await db.getAll(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
         }
         catch (err) {
             log('Failed to get all accounts:', { error: err });
@@ -243,7 +243,7 @@ export function useAccountsDB() {
     };
     const updateAccount = async (accountData) => {
         try {
-            return await db.update(CONS.DB.STORES.ACCOUNTS.NAME, accountData);
+            return await db.update(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountData);
         }
         catch (err) {
             log('Failed to update account:', { error: err });
@@ -252,7 +252,7 @@ export function useAccountsDB() {
     };
     const deleteAccount = async (accountId) => {
         try {
-            return await db.remove(CONS.DB.STORES.ACCOUNTS.NAME, accountId);
+            return await db.remove(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountId);
         }
         catch (err) {
             log('Failed to delete account:', { error: err });
@@ -261,7 +261,7 @@ export function useAccountsDB() {
     };
     const clearAllAccounts = async () => {
         try {
-            return await db.clear(CONS.DB.STORES.ACCOUNTS.NAME);
+            return await db.clear(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
         }
         catch (err) {
             log('Failed to delete account:', { error: err });
@@ -283,7 +283,7 @@ export function useBookingsDB() {
     const db = useIndexedDB();
     const addBooking = async (bookingData) => {
         try {
-            return await db.add(CONS.DB.STORES.BOOKINGS.NAME, bookingData);
+            return await db.add(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingData);
         }
         catch (err) {
             log('Failed to add booking:', { error: err });
@@ -292,7 +292,7 @@ export function useBookingsDB() {
     };
     const getAllBookings = async () => {
         try {
-            return await db.getAll(CONS.DB.STORES.BOOKINGS.NAME);
+            return await db.getAll(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
         }
         catch (err) {
             log('Failed to get all bookings:', { error: err });
@@ -301,7 +301,7 @@ export function useBookingsDB() {
     };
     const updateBooking = async (bookingData) => {
         try {
-            return await db.update(CONS.DB.STORES.ACCOUNTS.NAME, bookingData);
+            return await db.update(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, bookingData);
         }
         catch (err) {
             log('Failed to update booking:', { error: err });
@@ -310,7 +310,7 @@ export function useBookingsDB() {
     };
     const deleteBooking = async (bookingId) => {
         try {
-            return await db.remove(CONS.DB.STORES.BOOKINGS.NAME, bookingId);
+            return await db.remove(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingId);
         }
         catch (err) {
             log('Failed to delete booking:', { error: err });
@@ -319,7 +319,7 @@ export function useBookingsDB() {
     };
     const clearAllBookings = async () => {
         try {
-            return await db.clear(CONS.DB.STORES.BOOKINGS.NAME);
+            return await db.clear(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
         }
         catch (err) {
             log('Failed to delete booking:', { error: err });
@@ -341,7 +341,7 @@ export function useBookingTypesDB() {
     const db = useIndexedDB();
     const addBookingType = async (bookingTypeData) => {
         try {
-            return await db.add(CONS.DB.STORES.BOOKING_TYPES.NAME, bookingTypeData);
+            return await db.add(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypeData);
         }
         catch (err) {
             log('Failed to add bookingType:', { error: err });
@@ -350,7 +350,7 @@ export function useBookingTypesDB() {
     };
     const getAllBookingTypes = async () => {
         try {
-            return await db.getAll(CONS.DB.STORES.BOOKING_TYPES.NAME);
+            return await db.getAll(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
         }
         catch (err) {
             log('Failed to get all bookingTypes:', { error: err });
@@ -359,7 +359,7 @@ export function useBookingTypesDB() {
     };
     const updateBookingType = async (bookingTypeData) => {
         try {
-            return await db.update(CONS.DB.STORES.BOOKING_TYPES.NAME, bookingTypeData);
+            return await db.update(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypeData);
         }
         catch (err) {
             log('Failed to update bookingType:', { error: err });
@@ -368,7 +368,7 @@ export function useBookingTypesDB() {
     };
     const deleteBookingType = async (bookingTypeId) => {
         try {
-            return await db.remove(CONS.DB.STORES.BOOKING_TYPES.NAME, bookingTypeId);
+            return await db.remove(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypeId);
         }
         catch (err) {
             log('Failed to delete bookingType:', { error: err });
@@ -377,7 +377,7 @@ export function useBookingTypesDB() {
     };
     const clearAllBookingTypes = async () => {
         try {
-            return await db.clear(CONS.DB.STORES.BOOKING_TYPES.NAME);
+            return await db.clear(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
         }
         catch (err) {
             log('Failed to delete bookingType:', { error: err });
@@ -399,7 +399,7 @@ export function useStocksDB() {
     const db = useIndexedDB();
     const addStock = async (stockData) => {
         try {
-            return await db.add(CONS.DB.STORES.STOCKS.NAME, stockData);
+            return await db.add(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData);
         }
         catch (err) {
             log('Failed to add stock:', { error: err });
@@ -408,7 +408,7 @@ export function useStocksDB() {
     };
     const getAllStocks = async () => {
         try {
-            return await db.getAll(CONS.DB.STORES.STOCKS.NAME);
+            return await db.getAll(CONS.INDEXED_DB.STORES.STOCKS.NAME);
         }
         catch (err) {
             log('Failed to get all stocks:', { error: err });
@@ -417,7 +417,7 @@ export function useStocksDB() {
     };
     const updateStock = async (stockData) => {
         try {
-            return await db.update(CONS.DB.STORES.STOCKS.NAME, stockData);
+            return await db.update(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData);
         }
         catch (err) {
             log('Failed to update stock:', { error: err });
@@ -426,7 +426,7 @@ export function useStocksDB() {
     };
     const deleteStock = async (stockId) => {
         try {
-            return await db.remove(CONS.DB.STORES.STOCKS.NAME, stockId);
+            return await db.remove(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockId);
         }
         catch (err) {
             log('Failed to delete stock:', { error: err });
@@ -435,7 +435,7 @@ export function useStocksDB() {
     };
     const clearAllStocks = async () => {
         try {
-            return await db.clear(CONS.DB.STORES.STOCKS.NAME);
+            return await db.clear(CONS.INDEXED_DB.STORES.STOCKS.NAME);
         }
         catch (err) {
             log('Failed to delete stock:', { error: err });

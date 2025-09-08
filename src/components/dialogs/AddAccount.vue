@@ -161,7 +161,7 @@ const onClickOk = async (): Promise<void> => {
       settings.activeAccountId = (addAccountID)
 
       // Persist active account ID
-      await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
+      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
 
       await notice([t('dialogs.addAccount.success')])
       reset()
@@ -240,7 +240,7 @@ log('--- AddAccount.vue setup ---')
     <v-text-field
         v-model="formularData.url"
         :label="t('dialogs.addAccount.urlLabel')"
-        :placeholder="CONS.PLACEHOLDER.ADD_ACCOUNT_URL"
+        :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ADD_ACCOUNT_URL"
         :rules="brandNameValidationRules"
         class="mb-4"
         required

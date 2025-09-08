@@ -32,13 +32,13 @@ const themeNames: { [p: string]: string } = {
 const setSkin = async (skin: string | null): Promise<void> => {
   if (skin !== null) {
     theme.global.name.value = skin
-    await setStorage(CONS.STORAGE.PROPS.SKIN, skin)
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN, skin)
   }
 }
 
 onBeforeMount(async () => {
-  const storageSkin = await getStorage([CONS.STORAGE.PROPS.SKIN])
-  skin.value = storageSkin[CONS.STORAGE.PROPS.SKIN] as string
+  const storageSkin = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN])
+  skin.value = storageSkin[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
 })
 </script>
 

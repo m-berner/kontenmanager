@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 export interface IAccountDB {
-    // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
+    // NOTE: correlates with CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS
     cID: number
     cSwift: string
     cNumber: string
@@ -15,14 +15,14 @@ export interface IAccountDB {
 }
 
 export interface IBookingTypeDB {
-    // NOTE: correlates with CONS.DB.STORES.BOOKING_TYPES.FIELDS
+    // NOTE: correlates with CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS
     cID: number
     cName: string
     cAccountNumberID: number
 }
 
 export interface IBookingDB {
-    // NOTE: correlates with CONS.DB.STORES.BOOKING.FIELDS
+    // NOTE: correlates with CONS.INDEXED_DB.STORES.BOOKING.FIELDS
     cID: number
     cDate: string
     cExDate: string
@@ -42,7 +42,7 @@ export interface IBookingDB {
 }
 
 export interface IStockDB {
-    // NOTE: correlates with CONS.DB.STORES.STOCK.FIELDS
+    // NOTE: correlates with CONS.INDEXED_DB.STORES.STOCK.FIELDS
     cID: number
     cCompany: string
     cISIN: string
@@ -64,7 +64,7 @@ export interface IStoresDB {
 }
 
 export interface IAccount {
-    // NOTE: correlates with CONS.DB.STORES.ACCOUNTS.FIELDS
+    // NOTE: correlates with CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS
     cID: number
     cSwift: string
     cNumber: string
@@ -73,14 +73,14 @@ export interface IAccount {
 }
 
 export interface IBookingType {
-    // NOTE: correlates with CONS.DB.STORES.BOOKING_TYPES.FIELDS
+    // NOTE: correlates with CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS
     cID: number
     cName: string
     cAccountNumberID: number
 }
 
 export interface IBooking {
-    // NOTE: correlates with CONS.DB.STORES.BOOKING.FIELDS
+    // NOTE: correlates with CONS.INDEXED_DB.STORES.BOOKING.FIELDS
     cID: number
     cDate: string
     cExDate: string

@@ -22,7 +22,7 @@ const {getAllBookingTypes} = useBookingTypesDB()
 const {getAllStocks} = useStocksDB()
 
 const prefix = new Date().toISOString().substring(0, 10)
-const fn = `${prefix}_${CONS.DB.CURRENT_VERSION}_${CONS.DB.NAME}.json`
+const fn = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}.json`
 const localeText = t('dialogs.exportDialog', {filename: fn})
 
 const onClickOk = async (): Promise<void> => {
@@ -76,7 +76,7 @@ const onClickOk = async (): Promise<void> => {
     }
     return buffer
   }
-  let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`
+  let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.INDEXED_DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`
   buffer += stringifyDB()
   buffer += '}'
 
@@ -92,7 +92,7 @@ const onClickOk = async (): Promise<void> => {
   const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
     log('USE_INDEXED_DB: onDownloadChange')
     browser.downloads.onChanged.removeListener(onDownloadChange)
-    if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMP)) {
+    if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMPLETE)) {
       URL.revokeObjectURL(blobUrl) // release blob object
     }
   }

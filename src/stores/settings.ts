@@ -16,16 +16,16 @@ const {CONS} = useConstant()
 const {log} = useNotification()
 
 export const useSettingsStore = defineStore('settings', () => {
-    const skin: Ref<string> = ref(CONS.DEFAULTS.STORAGE.SKIN)
-    const bookingsPerPage: Ref<number> = ref(CONS.DEFAULTS.STORAGE.BOOKINGS_PER_PAGE)
-    const stocksPerPage: Ref<number> = ref(CONS.DEFAULTS.STORAGE.STOCKS_PER_PAGE)
+    const skin: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
+    const bookingsPerPage: Ref<number> = ref(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
+    const stocksPerPage: Ref<number> = ref(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
     const activeAccountId: Ref<number> = ref(0)
     const partner: Ref<boolean> = ref(false)
-    const service: Ref<string> = ref(CONS.DEFAULTS.STORAGE.SERVICE)
-    const materials: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.MATERIALS)
-    const markets: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.MARKETS)
-    const indexes: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.INDEXES)
-    const exchanges: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.EXCHANGES)
+    const service: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
+    const materials: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS)
+    const markets: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS)
+    const indexes: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
+    const exchanges: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
 
     function setSkin(theme: ThemeInstance, value: string) {
         if (theme?.global?.name) {

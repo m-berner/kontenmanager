@@ -15,14 +15,14 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     };
     const onClick = async () => {
         log('BACKGROUND: onClick');
-        const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.SYSTEM.INDEX)}` });
+        const foundTabs = await browser.tabs.query({ url: `${browser.runtime.getURL(CONS.PAGES.INDEX)}` });
         if (foundTabs.length === 0) {
             const extensionTab = await browser.tabs.create({
-                url: browser.runtime.getURL(CONS.SYSTEM.INDEX),
+                url: browser.runtime.getURL(CONS.PAGES.INDEX),
                 active: true
             });
             const extensionTabIdStr = (extensionTab.id ?? -1).toString();
-            sessionStorage.setItem('sExtensionTabId', extensionTabIdStr);
+            sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.EXTENSION_TAB_ID, extensionTabIdStr);
         }
         else {
             await browser.windows.update(foundTabs[0].windowId ?? 0, {

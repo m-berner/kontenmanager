@@ -76,7 +76,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
             <v-row class="pa-10" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
-                    :type="CONS.DYNAMIC_LIST.TYPES.MARKETS"
+                    :type="CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS"
                 />
               </v-col>
             </v-row>
@@ -84,14 +84,14 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
           <v-tabs-window-item :value="2">
             <v-row>
               <CheckboxGrid
-                  :type="CONS.CHECKBOX_GRID.TYPES.INDEXES"
+                  :type="CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES"
               />
             </v-row>
           </v-tabs-window-item>
           <v-tabs-window-item :value="3">
             <v-row>
               <CheckboxGrid
-                  :type="CONS.CHECKBOX_GRID.TYPES.MATERIALS"
+                  :type="CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS"
               />
             </v-row>
           </v-tabs-window-item>
@@ -99,7 +99,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
             <v-row class="pa-12" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList
-                    :type="CONS.DYNAMIC_LIST.TYPES.EXCHANGES"
+                    :type="CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES"
                 />
               </v-col>
             </v-row>

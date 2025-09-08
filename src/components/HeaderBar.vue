@@ -90,10 +90,10 @@ const onIconClick = async (ev: Event): Promise<void> => {
             await deleteAccount(toRaw(settings.activeAccountId))
             if (records.accounts.items.length > 1) {
               settings.activeAccountId = (records.accounts.items[1].cID)
-              await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, toRaw(records.accounts.items[1].cID))
+              await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, toRaw(records.accounts.items[1].cID))
             } else {
               settings.activeAccountId = (0)
-              await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, 0)
+              await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, 0)
             }
             const accounts: IAccountDB[] = await getAllAccounts()
             const bookings: IBookingDB[] = await getAllBookings()

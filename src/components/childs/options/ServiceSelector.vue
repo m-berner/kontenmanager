@@ -18,7 +18,7 @@ const service: Ref<string> = ref('goyax') //  TODO default...
 
 const setService = async (service: string | null): Promise<void> => {
   if (service !== null) {
-    await setStorage(CONS.STORAGE.PROPS.SERVICE, service)
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service)
   }
 }
 const serviceLabels = (item: string): string => {
@@ -31,8 +31,8 @@ const serviceLabels = (item: string): string => {
 }
 
 onBeforeMount(async () => {
-  const storageService = await getStorage([CONS.STORAGE.PROPS.SERVICE])
-  service.value = storageService[CONS.STORAGE.PROPS.SERVICE] as string
+  const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
+  service.value = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
 })
 </script>
 

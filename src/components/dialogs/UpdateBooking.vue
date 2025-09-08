@@ -120,8 +120,8 @@ log('--- UpdateBooking.vue setup ---')
       <v-row>
         <v-select
             v-model="state.bookingTypeId"
-            :itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-            :itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+            :itemTitle="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+            :itemValue="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
             :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
             :label="t('dialogs.addBooking.bookingTypeLabel')"
             :menu=false

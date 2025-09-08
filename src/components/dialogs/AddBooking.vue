@@ -240,8 +240,8 @@ log('--- AddBooking.vue setup ---')
         <v-col>
           <v-select
               v-model="formularData.bookingTypeId"
-              :itemTitle="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-              :itemValue="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+              :itemTitle="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+              :itemValue="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
               :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
               :label="t('dialogs.addBooking.bookingTypeLabel')"
               :menu=false
@@ -341,8 +341,8 @@ log('--- AddBooking.vue setup ---')
           <v-select
               v-if="formularData.bookingTypeId < 4 && formularData.bookingTypeId > 0"
               v-model="formularData.stockId"
-              :item-title="CONS.DB.STORES.STOCKS.FIELDS.COMPANY"
-              :item-value="CONS.DB.STORES.STOCKS.FIELDS.ID"
+              :item-title="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.COMPANY"
+              :item-value="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ID"
               :items="records.stocks.items.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
               :label="t('dialogs.addBooking.stockLabel')"
               :menu=false

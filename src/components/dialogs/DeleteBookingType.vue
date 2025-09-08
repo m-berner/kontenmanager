@@ -66,8 +66,8 @@ log('--- DeleteBookingType.vue setup ---')
       @submit.prevent>
     <v-select
         v-model="selected"
-        :item-title="CONS.DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-        :item-value="CONS.DB.STORES.BOOKING_TYPES.FIELDS.ID"
+        :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+        :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"
         :label="t('dialogs.deleteBookingType.label')"
         density="compact"
