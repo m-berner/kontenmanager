@@ -30,10 +30,6 @@ export const useRuntimeStore = defineStore('runtime', () => {
     const curUsd: Ref<number> = ref(1)
     const curEur: Ref<number> = ref(1)
 
-    function setActiveId(value: number): void {
-        activeId.value = value
-    }
-
     function setTeleport(entry: ITeleport): void {
         dialogName.value = entry.dialogName
         dialogOk.value = entry.dialogOk
@@ -55,14 +51,6 @@ export const useRuntimeStore = defineStore('runtime', () => {
         }
     }
 
-    function setExchangeUsd(value: number) {
-        curUsd.value = value
-    }
-
-    function setExchangeEur(value: number) {
-        curEur.value = value
-    }
-
     return {
         activeId,
         optionMenuColors,
@@ -74,12 +62,9 @@ export const useRuntimeStore = defineStore('runtime', () => {
         infoMaterials,
         curUsd,
         curEur,
-        setActiveId,
         setTeleport,
         resetTeleport,
-        resetOptionsMenuColors,
-        setExchangeUsd,
-        setExchangeEur
+        resetOptionsMenuColors
     }
 })
 

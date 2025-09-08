@@ -70,10 +70,10 @@ export const useBookings = defineStore('bookings', () => {
         }
     }
 
-    function setBookings(booking: IBooking[]): void {
-        log('BOOKINGS: setBookings')
-        items.value = [...booking]
-    }
+    // function setBookings(booking: IBooking[]): void {
+    //     log('BOOKINGS: setBookings')
+    //     items.value = [...booking]
+    // }
 
     function updateBooking(booking: IBooking): void {
         log('BOOKINGS_STORE: updateBooking')
@@ -103,7 +103,7 @@ export const useBookings = defineStore('bookings', () => {
         getBookingTextById,
         sumBookings,
         addBooking,
-        setBookings,
+        //setBookings,
         updateBooking,
         deleteBooking,
         clean

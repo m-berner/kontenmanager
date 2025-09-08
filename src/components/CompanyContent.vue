@@ -122,7 +122,7 @@ const winLossClass = computed(() => {
 })
 
 const onUpdateItemsPerPage = (count: number): void => {
-  settings.setStocksPerPage(count)
+  settings.stocksPerPage = (count)
 }
 const onUpdatePage = (page: number): void => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})

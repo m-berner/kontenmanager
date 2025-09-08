@@ -21,12 +21,12 @@ export const useRecordsStore = defineStore('records', () => {
         log('RECORDS: initStore', { info: stores });
         const settings = useSettingsStore();
         cleanStore();
-        accountsStore.setAccounts(stores.accounts);
+        accountsStore.items = [...stores.accounts];
         accountsStore.addAccount({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false }, true);
-        bookingsStore.setBookings(stores.bookings);
-        bookingTypesStore.setBookingTypes(stores.bookingTypes);
+        bookingsStore.items = [...stores.bookings];
+        bookingTypesStore.items = [...stores.bookingTypes];
         bookingTypesStore.addBookingType({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId }, true);
-        stocksStore.setStocks(stores.stocks);
+        stocksStore.items = [...stores.stocks];
         stocksStore.addStock({
             cID: 0,
             cISIN: 'XX00000000000000000000',

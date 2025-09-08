@@ -17,7 +17,6 @@ import type {IBooking, IStores} from '@/types'
 const {log} = useNotification()
 
 export const useRecordsStore = defineStore('records', () => {
-    // Initialize child stores
     const accountsStore = useAccounts()
     const bookingsStore = useBookings()
     const bookingTypesStore = useBookingTypes()
@@ -30,23 +29,19 @@ export const useRecordsStore = defineStore('records', () => {
         stocksStore.clean()
     }
 
-    // Orchestrate operations across child stores
     function initStore(stores: IStores): void {
         log('RECORDS: initStore', {info: stores})
         const settings = useSettingsStore()
-        // Clear existing data
         cleanStore()
-
-        // Set new data
-        accountsStore.setAccounts(stores.accounts)
+        accountsStore.items = [...stores.accounts]
         accountsStore.addAccount({cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cStockAccount: false}, true)
 
-        bookingsStore.setBookings(stores.bookings)
+        bookingsStore.items = [...stores.bookings]
 
-        bookingTypesStore.setBookingTypes(stores.bookingTypes)
+        bookingTypesStore.items = [...stores.bookingTypes]
         bookingTypesStore.addBookingType({cID: 0, cName: '', cAccountNumberID: settings.activeAccountId}, true)
 
-        stocksStore.setStocks(stores.stocks)
+        stocksStore.items = [...stores.stocks]
         stocksStore.addStock({
             cID: 0,
             cISIN: 'XX00000000000000000000',

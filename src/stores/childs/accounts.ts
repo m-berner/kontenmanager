@@ -36,10 +36,10 @@ export const useAccounts = defineStore('accounts', () => {
         }
     }
 
-    function setAccounts(account: IAccount[]): void {
-        log('ACCOUNTS: setAccounts')
-        items.value = [...account]
-    }
+    // function setAccounts(account: IAccount[]): void {
+    //     log('ACCOUNTS: setAccounts')
+    //     items.value = [...account]
+    // }
 
     function updateAccount(account: IAccount): void {
         log('ACCOUNTS: updateAccount')
@@ -66,7 +66,7 @@ export const useAccounts = defineStore('accounts', () => {
         getAccountById,
         getAccountIndexById,
         addAccount,
-        setAccounts,
+        //setAccounts,
         updateAccount,
         deleteAccount,
         clean

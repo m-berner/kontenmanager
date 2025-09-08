@@ -29,11 +29,6 @@ export const useStocks = defineStore('stocks', () => {
         }
     }
 
-    function setStocks(stock: IStock[]): void {
-        log('STOCKS_STORE: setStocks')
-        items.value = [...stock]
-    }
-
     function updateStock(stock: IStock): void {
         log('STOCKS_STORE: updateStock')
         const index = getStockById.value(stock?.cID ?? -1)
@@ -59,7 +54,6 @@ export const useStocks = defineStore('stocks', () => {
         items,
         getStockById,
         addStock,
-        setStocks,
         updateStock,
         deleteStock,
         clean

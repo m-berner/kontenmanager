@@ -6,14 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {
-  IAccountDB,
-  IBookingDB,
-  IBookingTypeDB,
-  IExchangeData,
-  IStockDB,
-  IStockOnlyMemory
-} from '@/types'
+import type {IAccountDB, IBookingDB, IBookingTypeDB, IExchangeData, IStockDB, IStockOnlyMemory} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useConstant} from '@/composables/useConstant'
@@ -45,19 +38,19 @@ const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }
       settings.setSkin(theme, changes[CONS.STORAGE.PROPS.SKIN].newValue)
       break
     case CONS.STORAGE.PROPS.SERVICE:
-      settings.setService(changes[CONS.STORAGE.PROPS.SERVICE].newValue)
+      settings.service = (changes[CONS.STORAGE.PROPS.SERVICE].newValue)
       break
     case CONS.STORAGE.PROPS.INDEXES:
-      settings.setIndexes(changes[CONS.STORAGE.PROPS.INDEXES].newValue)
+      settings.indexes = (changes[CONS.STORAGE.PROPS.INDEXES].newValue)
       break
     case CONS.STORAGE.PROPS.MARKETS:
-      settings.setMarkets(changes[CONS.STORAGE.PROPS.MARKETS].newValue)
+      settings.markets = (changes[CONS.STORAGE.PROPS.MARKETS].newValue)
       break
     case CONS.STORAGE.PROPS.MATERIALS:
-      settings.setMaterials(changes[CONS.STORAGE.PROPS.MATERIALS].newValue)
+      settings.materials = (changes[CONS.STORAGE.PROPS.MATERIALS].newValue)
       break
     case CONS.STORAGE.PROPS.EXCHANGES:
-      settings.setExchanges(changes[CONS.STORAGE.PROPS.EXCHANGES].newValue)
+      settings.exchanges = (changes[CONS.STORAGE.PROPS.EXCHANGES].newValue)
       break
     default:
   }
@@ -98,9 +91,9 @@ onBeforeMount(async () => {
   const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
   for (let i = 0; i < exchangesBaseData.length; i++) {
     if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
-      runtime.setExchangeUsd(exchangesBaseData[i].value)
+      runtime.curUsd = (exchangesBaseData[i].value)
     } else {
-      runtime.setExchangeEur(exchangesBaseData[i].value)
+      runtime.curEur = (exchangesBaseData[i].value)
     }
   }
 })

@@ -27,42 +27,6 @@ export const useSettingsStore = defineStore('settings', () => {
     const indexes: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.INDEXES)
     const exchanges: Ref<string[]> = ref(CONS.DEFAULTS.STORAGE.EXCHANGES)
 
-    function setActiveAccountId(value: number) {
-        activeAccountId.value = value
-    }
-
-    function setBookingsPerPage(value: number) {
-        bookingsPerPage.value = value
-    }
-
-    function setStocksPerPage(value: number) {
-        stocksPerPage.value = value
-    }
-
-    function setPartner(value: boolean) {
-        partner.value = value
-    }
-
-    function setService(value: string) {
-        service.value = value
-    }
-
-    function setMaterials(value: string[]) {
-        materials.value = value
-    }
-
-    function setMarkets(value: string[]) {
-        markets.value = value
-    }
-
-    function setIndexes(value: string[]) {
-        indexes.value = value
-    }
-
-    function setExchanges(value: string[]) {
-        exchanges.value = value
-    }
-
     function setSkin(theme: ThemeInstance, value: string) {
         if (theme?.global?.name) {
             theme.global.name.value = value
@@ -72,10 +36,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
     function initStore(theme: ThemeInstance, storage: { [p: string]: string | number | boolean | string[] }): void {
         log('SETTINGS: initStore', {info: storage})
-        if (theme?.global?.name) {
-            theme.global.name.value = storage.sSkin as string
-        }
-        skin.value = storage.sSkin as string
+        setSkin(theme, storage.sSkin as string)
         bookingsPerPage.value = storage.sBookingsPerPage as number
         stocksPerPage.value = storage.sStocksPerPage as number
         activeAccountId.value = storage.sActiveAccountId as number
@@ -85,36 +46,6 @@ export const useSettingsStore = defineStore('settings', () => {
         markets.value = [...storage.sMarkets as string[]]
         indexes.value = [...storage.sIndexes as string[]]
         exchanges.value = [...storage.sExchanges as string[]]
-    }
-
-    function updatePagination(bookings: number, stocks: number): void {
-        bookingsPerPage.value = bookings
-        stocksPerPage.value = stocks
-    }
-
-    function updateMarketData(data: Partial<{
-        materials: string[]
-        markets: string[]
-        indexes: string[]
-        exchanges: string[]
-    }>): void {
-        if (data.materials) materials.value = [...data.materials]
-        if (data.markets) markets.value = [...data.markets]
-        if (data.indexes) indexes.value = [...data.indexes]
-        if (data.exchanges) exchanges.value = [...data.exchanges]
-    }
-
-    function validateSettings(): boolean {
-        return (
-            bookingsPerPage.value > 0 &&
-            stocksPerPage.value > 0 &&
-            skin.value.length > 0 &&
-            service.value.length > 0 &&
-            Array.isArray(materials.value) &&
-            Array.isArray(markets.value) &&
-            Array.isArray(indexes.value) &&
-            Array.isArray(exchanges.value)
-        )
     }
 
     return {
@@ -128,20 +59,8 @@ export const useSettingsStore = defineStore('settings', () => {
         markets,
         indexes,
         exchanges,
-        setActiveAccountId,
-        setBookingsPerPage,
-        setStocksPerPage,
-        setPartner,
-        setService,
-        setMaterials,
-        setMarkets,
-        setIndexes,
-        setExchanges,
         setSkin,
-        initStore,
-        updatePagination,
-        updateMarketData,
-        validateSettings
+        initStore
     }
 })
 

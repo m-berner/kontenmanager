@@ -50,10 +50,6 @@ export const useBookings = defineStore('bookings', () => {
             items.value.push(booking);
         }
     }
-    function setBookings(booking) {
-        log('BOOKINGS: setBookings');
-        items.value = [...booking];
-    }
     function updateBooking(booking) {
         log('BOOKINGS_STORE: updateBooking');
         const index = getBookingIndexById.value(booking?.cID ?? -1);
@@ -79,7 +75,6 @@ export const useBookings = defineStore('bookings', () => {
         getBookingTextById,
         sumBookings,
         addBooking,
-        setBookings,
         updateBooking,
         deleteBooking,
         clean

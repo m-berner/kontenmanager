@@ -158,7 +158,7 @@ const onClickOk = async (): Promise<void> => {
 
       // Update stores
       records.accounts.addAccount(completeAccount)
-      settings.setActiveAccountId(addAccountID)
+      settings.activeAccountId = (addAccountID)
 
       // Persist active account ID
       await setStorage(CONS.STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)

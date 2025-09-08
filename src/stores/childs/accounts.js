@@ -19,10 +19,6 @@ export const useAccounts = defineStore('accounts', () => {
             items.value.push(account);
         }
     }
-    function setAccounts(account) {
-        log('ACCOUNTS: setAccounts');
-        items.value = [...account];
-    }
     function updateAccount(account) {
         log('ACCOUNTS: updateAccount');
         const index = getAccountIndexById.value(account.cID);
@@ -45,7 +41,6 @@ export const useAccounts = defineStore('accounts', () => {
         getAccountById,
         getAccountIndexById,
         addAccount,
-        setAccounts,
         updateAccount,
         deleteAccount,
         clean

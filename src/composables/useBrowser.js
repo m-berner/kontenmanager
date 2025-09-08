@@ -1,5 +1,8 @@
 import { useConstant } from '@/composables/useConstant';
 export const useBrowser = () => {
+    const clearStorage = async () => {
+        await browser.storage.local.clear();
+    };
     const setStorage = async (key, value) => {
         try {
             await browser.storage.local.set({ [key]: value });
@@ -76,5 +79,13 @@ export const useBrowser = () => {
             await browser.storage.local.set({ [CONS.STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.STORAGE.MATERIALS });
         }
     };
-    return { getChar5Locale, getStorage, setStorage, installStorageLocal, onStorageChanged, openOptionsPage };
+    return {
+        clearStorage,
+        getChar5Locale,
+        getStorage,
+        setStorage,
+        installStorageLocal,
+        onStorageChanged,
+        openOptionsPage
+    };
 };

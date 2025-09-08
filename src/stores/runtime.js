@@ -13,9 +13,6 @@ export const useRuntimeStore = defineStore('runtime', () => {
     const infoMaterials = ref(new Map());
     const curUsd = ref(1);
     const curEur = ref(1);
-    function setActiveId(value) {
-        activeId.value = value;
-    }
     function setTeleport(entry) {
         dialogName.value = entry.dialogName;
         dialogOk.value = entry.dialogOk;
@@ -34,12 +31,6 @@ export const useRuntimeStore = defineStore('runtime', () => {
             optionMenuColors.value.set(m, '');
         }
     }
-    function setExchangeUsd(value) {
-        curUsd.value = value;
-    }
-    function setExchangeEur(value) {
-        curEur.value = value;
-    }
     return {
         activeId,
         optionMenuColors,
@@ -51,12 +42,9 @@ export const useRuntimeStore = defineStore('runtime', () => {
         infoMaterials,
         curUsd,
         curEur,
-        setActiveId,
         setTeleport,
         resetTeleport,
-        resetOptionsMenuColors,
-        setExchangeUsd,
-        setExchangeEur
+        resetOptionsMenuColors
     };
 });
 log('--- STORE runtime.js ---');

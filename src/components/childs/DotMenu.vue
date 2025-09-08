@@ -38,7 +38,7 @@ const onButtonClick = async (): Promise<void> => {
 }
 const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTION_MENU: onIconClick', {info: optionMenuProps.recordID})
-  runtime.setActiveId(optionMenuProps.recordID)
+  runtime.activeId = (optionMenuProps.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {

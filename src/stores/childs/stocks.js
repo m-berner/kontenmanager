@@ -16,10 +16,6 @@ export const useStocks = defineStore('stocks', () => {
             items.value.push(stock);
         }
     }
-    function setStocks(stock) {
-        log('STOCKS_STORE: setStocks');
-        items.value = [...stock];
-    }
     function updateStock(stock) {
         log('STOCKS_STORE: updateStock');
         const index = getStockById.value(stock?.cID ?? -1);
@@ -42,7 +38,6 @@ export const useStocks = defineStore('stocks', () => {
         items,
         getStockById,
         addStock,
-        setStocks,
         updateStock,
         deleteStock,
         clean

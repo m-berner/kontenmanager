@@ -286,7 +286,7 @@ const onClickOk = async (): Promise<void> => {
           const B = new Date(b.cDate).getTime()
           return B - A
         })
-        settings.setActiveAccountId(activeId)
+        settings.activeAccountId = (activeId)
         records.bookings.sumBookings()
         const stores: IStoresDB = {
           accountsDB: accounts,
@@ -331,7 +331,7 @@ const onClickOk = async (): Promise<void> => {
           }
           bookings.push(booking)
         }
-        settings.setActiveAccountId(activeId)
+        settings.activeAccountId = (activeId)
         records.bookings.sumBookings()
         const stores: IStoresDB = {
           accountsDB: accounts,

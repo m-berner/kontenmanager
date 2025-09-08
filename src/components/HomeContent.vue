@@ -78,7 +78,7 @@ const homeMenuItems: ComputedRef<IMenuItem[]> = computed(() => [
 const search: Ref<string> = ref('')
 
 const onUpdateItemsPerPage = (count: number): void => {
-  settings.setBookingsPerPage(count)
+  settings.bookingsPerPage = (count)
 }
 const onUpdatePage = (page: number): void => {
   log('HOME_CONTENT: onUpdatePage', {info: page})

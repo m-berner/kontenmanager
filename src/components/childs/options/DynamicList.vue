@@ -25,7 +25,7 @@ const {CONS} = useConstant()
 const {log} = useNotification()
 const {getStorage, setStorage} = useBrowser()
 
-const newItem: Ref<string>  = ref('')
+const newItem: Ref<string> = ref('')
 const list: Ref<string[]> = ref([])
 //const markets: Ref<string[]> = ref([])
 //const exchanges: Ref<string[]> = ref([])

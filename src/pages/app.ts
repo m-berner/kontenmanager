@@ -9,6 +9,7 @@ import {createApp} from 'vue'
 import {useConstant} from '@/composables/useConstant'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useNotification} from '@/composables/useNotification'
+import {useBrowser} from '@/composables/useBrowser'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
 import componentsPlugin from '@/plugins/components'
@@ -19,6 +20,7 @@ import AppIndex from '@/components/AppIndex.vue'
 const {CONS} = useConstant()
 const {log} = useNotification()
 const {getDB} = useIndexedDB()
+const {clearStorage} = useBrowser()
 const db = await getDB()
 const app = createApp(AppIndex)
 app.config.errorHandler = (err: unknown) => {
@@ -47,7 +49,7 @@ const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
         keyStrokeController.includes('Alt') &&
         ev.key === 'r'
     ) {
-        await browser.storage.local.clear()
+        await clearStorage()
     }
     if (
         keyStrokeController.includes('Control') &&

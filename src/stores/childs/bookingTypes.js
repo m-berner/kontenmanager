@@ -20,10 +20,6 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
             items.value.push(bookingType);
         }
     }
-    function setBookingTypes(bookingType) {
-        log('BOOKING_TYPES_STORE: setBookingTypes');
-        items.value = [...bookingType];
-    }
     function deleteBookingType(ident) {
         log('BOOKING_TYPE_STORE: deleteBookingType', { info: ident });
         const index = getBookingTypeById.value(ident);
@@ -40,7 +36,6 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         getBookingTypeById,
         getBookingTypeNameById,
         addBookingType,
-        setBookingTypes,
         deleteBookingType,
         clean
     };

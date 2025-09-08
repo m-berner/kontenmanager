@@ -1,4 +1,5 @@
-import { computed, ref } from 'vue';
+import {computed, ref} from 'vue';
+
 export const useFavicon = (domain, size = 48) => {
     const error = ref(false);
     const loading = ref(true);
