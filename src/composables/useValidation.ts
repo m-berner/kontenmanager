@@ -5,6 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {Ref} from 'vue'
 type TStringValidator = (_v: string) => boolean | string
 type TNumberValidator = (_v: number) => boolean | string
 
@@ -62,6 +63,13 @@ export const useValidation = () => {
             (v: number) => v > 0 || msgArray[0]
         ]
     }
+    const validateForm = async (form: Ref<HTMLFormElement | null>): Promise<boolean> => {
+        if (form.value !== null) {
+            const {valid} = await form.value.validate()
+            return valid
+        }
+        return false
+    }
     return {
         valIbanRules,
         valNameRules,
@@ -71,6 +79,7 @@ export const useValidation = () => {
         valRequiredRules,
         valPositiveIntegerRules,
         valBrandNameRules,
-        requiredSelect
+        requiredSelect,
+        validateForm
     }
 }

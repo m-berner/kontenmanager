@@ -166,7 +166,10 @@
       "label": "Buchungstyp",
       "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
       "success": "Buchungstyp wurde hinzugefügt",
-      "error": "Buchungstyp existiert bereits"
+      "error1a": "Der Buchungstyp existiert bereits",
+      "error1b": "(Eine Duplette wurde nicht hinzugefügt)",
+      "catch": "Problem beim Hinzufügen!",
+      "rule1": "ewettert"
     },
     "deleteBookingType": {
       "title": "Buchungstyp löschen",

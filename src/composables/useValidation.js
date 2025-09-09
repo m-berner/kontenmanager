@@ -52,6 +52,13 @@ export const useValidation = () => {
             (v) => v > 0 || msgArray[0]
         ];
     };
+    const validateForm = async (form) => {
+        if (form.value !== null) {
+            const { valid } = await form.value.validate();
+            return valid;
+        }
+        return false;
+    };
     return {
         valIbanRules,
         valNameRules,
@@ -61,6 +68,7 @@ export const useValidation = () => {
         valRequiredRules,
         valPositiveIntegerRules,
         valBrandNameRules,
-        requiredSelect
+        requiredSelect,
+        validateForm
     };
 };

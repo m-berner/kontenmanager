@@ -18,46 +18,41 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
 const {notice} = useBrowser()
 const {addBookingType} = useBookingTypesDB()
-const {valNameRules} = useValidation()
+const {valNameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
 const formularName: Ref<string> = ref('')
-const isFormValid: Ref<boolean> = ref(false)
+const formRef: Ref<HTMLFormElement | null> = ref(null)
 
-const validateForm = (): boolean => {
-  if (!isFormValid.value) {
-    //TODO one message for all dialogs?
-    notice([t('dialogs.addBookingType.invalidForm')])
-    return false
-  }
-
-  return true
-}
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: onClickOk')
-  if (!validateForm()) return
+  if (!await validateForm(formRef)) return
 
   try {
-    const bookingType = {
-      cName: formularName.value.trim(),
-      cAccountNumberID: settings.activeAccountId
-    }
-    const addBookingTypeID = await addBookingType(bookingType)
-    if (typeof addBookingTypeID === 'number') {
+    if (records.bookingTypes.isDuplicate(formularName.value.trim()) < 0) {
+      const bookingType = {
+        cName: formularName.value.trim(),
+        cAccountNumberID: settings.activeAccountId
+      }
+      const addBookingTypeID: number = await addBookingType(bookingType)
       const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
       records.bookingTypes.addBookingType(completeBookingType)
-      await notice([t('dialogs.AddBookingType.success')])
+      await notice([t('dialogs.addBookingType.success')])
+    } else {
+      await notice([t('dialogs.addBookingType.error1a'), t('dialogs.addBookingType.error1b')])
     }
   } catch (e) {
     log('ADD_BOOKING_TYPE: onClickOk', {error: e})
-    await notice([t('dialogs.addBookingType.error')])
+    await notice([t('dialogs.addBookingType.catch')])
   }
 }
+
 const title = t('dialogs.addBookingType.title')
+
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -69,24 +64,18 @@ log('--- AddBookingType.vue setup ---')
 
 <template>
   <v-form
-      ref="form-ref"
+      ref="formRef"
       validate-on="submit"
       @submit.prevent>
-    <v-text-field v-if="settings.activeAccountId === -1">
-      {{ t('dialogs.addBookingType.message') }}
-    </v-text-field>
-    <v-combobox
-        ref="name-input"
+    <v-text-field
         v-model="formularName"
-        :disabled="settings.activeAccountId === -1"
-        :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-        :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
-        :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
         :label="t('dialogs.addBookingType.label')"
-        :menu=true
-        :menu-props="{ maxHeight: 250 }"
-        :rules="valNameRules([t('validators.nameRules', 0), t('validators.nameRules', 1), t('validators.nameRules', 2)])"
-        max-width="300"
-    />
+        :rules="valNameRules(['dgdf'])"
+        :disabled="settings.activeAccountId === -1"
+        class="mb-4"
+        required
+        variant="outlined"
+        @focus="formRef?.resetValidation()"
+        @update:modelValue="() => { console.error('DFSFS') }"/>
   </v-form>
 </template>

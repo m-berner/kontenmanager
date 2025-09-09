@@ -99,13 +99,7 @@ const onClickOk = async (): Promise<void> => {
       mValue: 0,
       mMax: 0
     }
-    const test = records.stocks.items.filter((s) => {
-      return s.cISIN === stock.cISIN
-    })
-    if (test.length > 0) {
-      await notice(['Unternehmen existiert bereits'])
-      return
-    }
+
     const addStockID = await addStock(stock)
     if (typeof addStockID === 'number') {
       const completeStock: IStock = {cID: addStockID, ...stock}

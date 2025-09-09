@@ -11,6 +11,9 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
     const getBookingTypeById = computed(() => (ident) => {
         return items.value.findIndex((entry) => entry.cID === ident);
     });
+    const isDuplicate = computed(() => (nam) => {
+        return items.value.findIndex((entry) => entry.cName === nam);
+    });
     function addBookingType(bookingType, prepend = false) {
         log('BOOKING_TYPES_STORE: addBookingType');
         if (prepend) {
@@ -35,6 +38,7 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         items,
         getBookingTypeById,
         getBookingTypeNameById,
+        isDuplicate,
         addBookingType,
         deleteBookingType,
         clean

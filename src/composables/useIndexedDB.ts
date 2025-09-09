@@ -149,7 +149,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     // CRUD operations
-    const add = async <T>(storeName: string, data: T): Promise<IDBValidKey> => {
+    const add = async <T>(storeName: string, data: T): Promise<number> => {
         return performTransaction(storeName, 'readwrite', (transaction: IDBTransaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName)
@@ -161,7 +161,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    const get = async <T>(storeName: string, key: IDBValidKey): Promise<T> => {
+    const get = async <T>(storeName: string, key: number): Promise<T> => {
         return performTransaction(storeName, 'readonly', (transaction: IDBTransaction): Promise<T> => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName)
@@ -197,7 +197,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    const remove = async <T>(storeName: string, key: IDBValidKey): Promise<T> => {
+    const remove = async <T>(storeName: string, key: number): Promise<T> => {
         return performTransaction(storeName, 'readwrite', (transaction: IDBTransaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName)
@@ -209,11 +209,10 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    // Batch operations
     const batchOperations = async <T>(storeName: string, operations: Array<{
         type: string,
         data: unknown,
-        key: IDBValidKey
+        key: number
     }>): Promise<T> => {
         return performTransaction(storeName, 'readwrite', async (transaction: IDBTransaction): Promise<unknown[]> => {
             const store = transaction.objectStore(storeName)
@@ -252,7 +251,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     // Query by index
-    const getByIndex = async <T>(storeName: string, indexName: string, value: IDBValidKey): Promise<T> => {
+    const getByIndex = async <T>(storeName: string, indexName: string, value: number): Promise<T> => {
         return performTransaction(storeName, 'readonly', (transaction: IDBTransaction): Promise<T> => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName)
@@ -332,7 +331,7 @@ export function useAccountsDB() {
         }
     }
 
-    const deleteAccount = async (accountId: IDBValidKey) => {
+    const deleteAccount = async (accountId: number) => {
         try {
             return await db.remove(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountId)
         } catch (err) {
@@ -394,7 +393,7 @@ export function useBookingsDB() {
         }
     }
 
-    const deleteBooking = async (bookingId: IDBValidKey) => {
+    const deleteBooking = async (bookingId: number) => {
         try {
             return await db.remove(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingId)
         } catch (err) {
@@ -456,7 +455,7 @@ export function useBookingTypesDB() {
         }
     }
 
-    const deleteBookingType = async (bookingTypeId: IDBValidKey) => {
+    const deleteBookingType = async (bookingTypeId: number) => {
         try {
             return await db.remove(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypeId)
         } catch (err) {
@@ -518,7 +517,7 @@ export function useStocksDB() {
         }
     }
 
-    const deleteStock = async (stockId: IDBValidKey) => {
+    const deleteStock = async (stockId: number) => {
         try {
             return await db.remove(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockId)
         } catch (err) {

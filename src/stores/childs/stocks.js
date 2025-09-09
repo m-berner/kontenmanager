@@ -7,6 +7,9 @@ export const useStocks = defineStore('stocks', () => {
     const getStockById = computed(() => (ident) => {
         return items.value.findIndex((entry) => entry.cID === ident);
     });
+    const getStockIndexById = computed(() => (id) => {
+        return items.value.findIndex(stock => stock.cID === id);
+    });
     function addStock(stock, prepend = false) {
         log('STOCKS_STORE: addStock');
         if (prepend) {
@@ -37,6 +40,7 @@ export const useStocks = defineStore('stocks', () => {
     return {
         items,
         getStockById,
+        getStockIndexById,
         addStock,
         updateStock,
         deleteStock,

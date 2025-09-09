@@ -18,7 +18,7 @@ import {useRuntimeStore} from '@/stores/runtime'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
-const {requiredSelect} = useValidation()
+const {requiredSelect, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
@@ -27,15 +27,7 @@ const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE : onClickOk')
-  const validateForm = async (): Promise<boolean> => {
-    if (formRef.value !== null) {
-      const {valid} = await formRef.value.validate()
-      return valid
-    }
-
-    return false
-  }
-  if (!await validateForm()) return
+  if (!await validateForm(formRef)) return
 
   try {
     if (records.bookings.includeBookingTypeId(selected.value) < 0) {

@@ -35,7 +35,7 @@ const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {updateStock} = useStocksDB()
-const {valIbanRules} = useValidation()
+const {valIbanRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -52,20 +52,11 @@ const formularData: IFormularData = reactive({
   firstPage: false,
   url: ''
 })
-const isFormValid: Ref<boolean> = ref(false)
-
-const validateForm = (): boolean => {
-  if (!isFormValid.value) {
-    notice([t('dialogs.addAccount.invalidForm')])
-    return false
-  }
-
-  return true
-}
+const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
-  if (!validateForm()) return
+  if (!await validateForm(formRef)) return
 
   try {
     const stock: IStockDB = {
@@ -107,8 +98,8 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks.items[records.stocks.getStockById(runtime.activeId)]
-  formularData.id = currentStock.cID
+  const currentStock = records.stocks.items[records.stocks.getStockIndexById(runtime.activeId)]
+  formularData.id = runtime.activeId
   formularData.isin = currentStock.cISIN
   formularData.company = currentStock.cCompany
   formularData.wkn = currentStock.cWKN
@@ -125,7 +116,7 @@ log('--- UpdateStock.vue setup ---')
 
 <template>
   <v-form
-      ref="form-ref"
+      ref="formRef"
       validate-on="submit"
       @submit.prevent>
     <v-container>
