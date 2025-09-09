@@ -9,7 +9,7 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 
-const {CONS,log } = useApp()
+const {CONS, log} = useApp()
 
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const {installStorageLocal} = useBrowser()

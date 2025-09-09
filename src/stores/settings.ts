@@ -11,7 +11,7 @@ import {ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
 
-const {CONS,log} = useApp()
+const {CONS, log} = useApp()
 
 export const useSettingsStore = defineStore('settings', () => {
     const skin: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)

@@ -17,7 +17,7 @@ import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/childs/DotMenu.vue'
 
 const {d, n, t} = useI18n()
-const {CONS,log} = useApp()
+const {CONS, log} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {stocksPerPage} = storeToRefs(settings)

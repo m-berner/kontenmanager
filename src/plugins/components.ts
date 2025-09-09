@@ -19,7 +19,7 @@ import ExportDatabase from '@/components/dialogs/ExportDatabase.vue'
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
 
-const {CONS,log} = useApp()
+const {CONS, log} = useApp()
 
 const ComponentsPlugin: Plugin = {
     install: (app: App) => {
