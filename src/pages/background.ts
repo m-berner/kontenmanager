@@ -5,13 +5,11 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {useConstant} from '@/composables/useConstant'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {useNotification} from '@/composables/useNotification'
 
-const {CONS} = useConstant()
-const {log} = useNotification()
+const {CONS,log } = useApp()
 
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const {installStorageLocal} = useBrowser()

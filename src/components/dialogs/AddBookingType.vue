@@ -10,16 +10,16 @@ import type {IBookingType} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
-const {CONS} = useConstant()
-const {log, notice} = useNotification()
+const {CONS, log} = useApp()
+const {notice} = useBrowser()
 const {addBookingType} = useBookingTypesDB()
 const {valNameRules} = useValidation()
 const records = useRecordsStore()

@@ -10,8 +10,8 @@ import type {IBooking, IBookingType, IStock} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
@@ -38,8 +38,8 @@ interface IFormularData {
 }
 
 const {t} = useI18n()
-const {CONS} = useConstant()
-const {log, notice} = useNotification()
+const {CONS, log} = useApp()
+const {notice} = useBrowser()
 const {addBooking} = useBookingsDB()
 const {valRequiredRules, valDateRules} = useValidation()
 const records = useRecordsStore()

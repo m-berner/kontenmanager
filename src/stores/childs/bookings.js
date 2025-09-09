@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { useNotification } from '@/composables/useNotification';
+import { useApp } from '@/composables/useApp';
 import { useSettingsStore } from '@/stores/settings';
-const { log } = useNotification();
+const { log } = useApp();
 export const useBookings = defineStore('bookings', () => {
     const items = ref([]);
     const getBookingsByAccountId = computed(() => (accountId) => {
@@ -41,6 +41,9 @@ export const useBookings = defineStore('bookings', () => {
             return 0;
         }
     });
+    const includeBookingTypeId = computed(() => (ident) => {
+        return items.value.findIndex((entry) => entry.cBookingTypeID === ident);
+    });
     function addBooking(booking, prepend = false) {
         log('BOOKINGS_STORE: addBooking');
         if (prepend) {
@@ -74,6 +77,7 @@ export const useBookings = defineStore('bookings', () => {
         getBookingsByAccountId,
         getBookingTextById,
         sumBookings,
+        includeBookingTypeId,
         addBooking,
         updateBooking,
         deleteBooking,

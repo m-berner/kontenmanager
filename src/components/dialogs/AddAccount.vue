@@ -10,8 +10,7 @@ import type {IAccount} from '@/types.d'
 import type {Reactive, Ref} from 'vue'
 import {computed, defineExpose, onMounted, reactive, ref, toRefs, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -29,9 +28,8 @@ interface IFormularData {
 }
 
 const {t} = useI18n()
-const {CONS} = useConstant()
-const {log, notice} = useNotification()
-const {setStorage} = useBrowser()
+const {CONS, log} = useApp()
+const {notice, setStorage} = useBrowser()
 const {addAccount} = useAccountsDB()
 const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
 const runtime = useRuntimeStore()

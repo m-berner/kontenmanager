@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { useNotification } from '@/composables/useNotification';
-const { log } = useNotification();
+import { useApp } from '@/composables/useApp';
+const { log } = useApp();
 export const useStocks = defineStore('stocks', () => {
     const items = ref([]);
     const getStockById = computed(() => (ident) => {

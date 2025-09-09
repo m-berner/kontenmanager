@@ -105,7 +105,6 @@
       "urlLabel": "Unternehmens URL",
       "withDepotLabel": "Aktien Verrechnungskonto",
       "numberLabel": "Kontonummer",
-      "currencyPlaceholder": "z. B. EUR",
       "numberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
       "invalidForm": "Formular konnte nicht verifiziert werden.",
       "noLogo": "Kein Logo gefunden",
@@ -173,7 +172,10 @@
       "title": "Buchungstyp löschen",
       "label": "Buchungstyp",
       "success": "Buchungstyp wurde entfernt",
-      "error": "Buchungstyp wurde nicht entfernt"
+      "error1a": "Es existiert eine Buchung.",
+      "error1b": "(Buchungstyp konnte nicht entfernt werden)",
+      "catch": "Problem beim Löschen!",
+      "rule1": "Eingabe ist erforderlich"
     },
     "showAccounting": {
       "title": "Buchungsergebnisse",

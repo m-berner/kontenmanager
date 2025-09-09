@@ -1,6 +1,6 @@
 import { createPinia } from 'pinia';
-import { useNotification } from '@/composables/useNotification';
-const { log } = useNotification();
+import { useApp } from '@/composables/useApp';
+const { log } = useApp();
 const piniaConfig = {
     pinia: createPinia()
 };

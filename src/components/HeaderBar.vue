@@ -9,8 +9,7 @@
 import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory} from '@/types'
 import {computed, toRaw} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -19,9 +18,8 @@ import {useSettingsStore} from '@/stores/settings'
 import DialogPort from '@/components/dialogs/childs/DialogPort.vue'
 
 const {t} = useI18n()
-const {CONS} = useConstant()
-const {log, notice} = useNotification()
-const {setStorage, openOptionsPage} = useBrowser()
+const {CONS, log} = useApp()
+const {setStorage, notice, openOptionsPage} = useBrowser()
 const {deleteAccount, getAllAccounts} = useAccountsDB()
 const {deleteBooking, getAllBookings} = useBookingsDB()
 const {deleteBookingType, getAllBookingTypes} = useBookingTypesDB()

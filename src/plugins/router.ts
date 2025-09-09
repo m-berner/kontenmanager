@@ -7,13 +7,13 @@
  */
 import type {Router} from 'vue-router'
 import {createRouter, createWebHashHistory} from 'vue-router'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
 interface IRouter {
     router: Router
 }
 
-const {log} = useNotification()
+const {log} = useApp()
 
 const routerInstance = createRouter({
     history: createWebHashHistory(),

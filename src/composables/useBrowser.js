@@ -1,4 +1,4 @@
-import { useConstant } from '@/composables/useConstant';
+import { useApp } from '@/composables/useApp';
 export const useBrowser = () => {
     const clearStorage = async () => {
         await browser.storage.local.clear();
@@ -46,7 +46,7 @@ export const useBrowser = () => {
         return result;
     };
     const installStorageLocal = async () => {
-        const { CONS } = useConstant();
+        const { CONS } = useApp();
         const storageLocal = await browser.storage.local.get();
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
             await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN });
@@ -79,12 +79,23 @@ export const useBrowser = () => {
             await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS });
         }
     };
+    const notice = async (messages) => {
+        const msg = messages.join('\n');
+        const notificationOption = {
+            type: 'basic',
+            iconUrl: 'assets/icon16.png',
+            title: 'KontenManager',
+            message: msg
+        };
+        await browser.notifications.create(notificationOption);
+    };
     return {
         clearStorage,
         getChar5Locale,
         getStorage,
         setStorage,
         installStorageLocal,
+        notice,
         onStorageChanged,
         openOptionsPage
     };

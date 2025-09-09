@@ -1,10 +1,8 @@
 import { ref } from 'vue';
-import { useConstant } from '@/composables/useConstant';
-import { useNotification } from '@/composables/useNotification';
+import { useApp } from '@/composables/useApp';
 let dbInstance = null;
 let dbPromise = null;
-const { CONS } = useConstant();
-const { log } = useNotification();
+const { CONS, log } = useApp();
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
     const isConnected = ref(false);
     const error = ref(null);

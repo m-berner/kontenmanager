@@ -6,12 +6,12 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createApp} from 'vue'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
 import OptionsIndex from '@/components/OptionsIndex.vue'
 
-const {log} = useNotification()
+const {log} = useApp()
 
 const op = createApp(OptionsIndex)
 op.config.errorHandler = (err: unknown) => {

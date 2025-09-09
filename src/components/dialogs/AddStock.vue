@@ -10,7 +10,8 @@ import type {ICompanyData, IStock} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useValidation} from '@/composables/useValidation'
@@ -27,7 +28,8 @@ interface IFormularData {
 }
 
 const {t} = useI18n()
-const {log, notice} = useNotification()
+const {log} = useApp()
+const {notice} = useBrowser()
 const {addStock} = useStocksDB()
 const {fetchCompanyData} = useFetch()
 const {valIbanRules} = useValidation()

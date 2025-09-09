@@ -7,12 +7,10 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
 const {t} = useI18n()
-const {CONS} = useConstant()
-const {log} = useNotification()
+const {CONS, log} = useApp()
 
 log('--- FooterBar.vue setup ---')
 </script>

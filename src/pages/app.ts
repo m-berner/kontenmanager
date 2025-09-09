@@ -6,9 +6,8 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {createApp} from 'vue'
-import {useConstant} from '@/composables/useConstant'
+import {useApp} from '@/composables/useApp'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
@@ -17,8 +16,7 @@ import routerPlugin from '@/plugins/router'
 import piniaPlugin from '@/plugins/pinia'
 import AppIndex from '@/components/AppIndex.vue'
 
-const {CONS} = useConstant()
-const {log} = useNotification()
+const {CONS, log} = useApp()
 const {getDB} = useIndexedDB()
 const {clearStorage} = useBrowser()
 const db = await getDB()

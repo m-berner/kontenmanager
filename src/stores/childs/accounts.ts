@@ -9,9 +9,9 @@ import type {IAccount} from '@/types'
 import type {Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
-const {log} = useNotification()
+const {log} = useApp()
 
 export const useAccounts = defineStore('accounts', () => {
     // STATE (using ref)

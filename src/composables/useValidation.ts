@@ -57,6 +57,11 @@ export const useValidation = () => {
             (v: string) => v !== null || msgArray[0]
         ]
     }
+    const requiredSelect = (msgArray: string[]): TNumberValidator[] => {
+        return [
+            (v: number) => v > 0 || msgArray[0]
+        ]
+    }
     return {
         valIbanRules,
         valNameRules,
@@ -65,6 +70,7 @@ export const useValidation = () => {
         valCurrencyCodeRules,
         valRequiredRules,
         valPositiveIntegerRules,
-        valBrandNameRules
+        valBrandNameRules,
+        requiredSelect
     }
 }

@@ -20,9 +20,7 @@ import type {
 import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
-import {useNotification} from '@/composables/useNotification'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useIndexedDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
@@ -80,12 +78,10 @@ interface IEventTarget extends HTMLInputElement {
 }
 
 const {t} = useI18n()
-const {CONS} = useConstant()
-const {toISODate} = useApp()
-const {log, notice} = useNotification()
+const {CONS, log, toISODate} = useApp()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
-const {setStorage} = useBrowser()
+const {notice, setStorage} = useBrowser()
 const {getDB} = useIndexedDB()
 const {clearAllAccounts} = useAccountsDB()
 const {clearAllBookings} = useBookingsDB()

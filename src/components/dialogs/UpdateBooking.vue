@@ -10,10 +10,10 @@ import type {IBooking, IBookingType} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
+import {useApp} from '@/composables/useApp'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
-import {useNotification} from '@/composables/useNotification'
+import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
@@ -29,8 +29,8 @@ interface IFormularData {
 }
 
 const {t} = useI18n()
-const {CONS} = useConstant()
-const {log, notice} = useNotification()
+const {CONS, log} = useApp()
+const {notice} = useBrowser()
 const {updateBooking} = useBookingsDB()
 const {valPositiveIntegerRules} = useValidation()
 const records = useRecordsStore()

@@ -1,9 +1,9 @@
 import { createI18n } from 'vue-i18n';
 import deDE from '@/locales/de-DE.json';
 import enUS from '@/locales/en-US.json';
-import { useNotification } from '@/composables/useNotification';
+import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
-const { log } = useNotification();
+const { log } = useApp();
 const { getChar5Locale } = useBrowser();
 const i18nInstance = createI18n({
     locale: getChar5Locale(),

@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { useNotification } from '@/composables/useNotification';
-const { log } = useNotification();
+import { useApp } from '@/composables/useApp';
+const { log } = useApp();
 export const useBookingTypes = defineStore('bookingTypes', () => {
     const items = ref([]);
     const getBookingTypeNameById = computed(() => (ident) => {

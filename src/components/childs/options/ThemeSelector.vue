@@ -10,12 +10,12 @@ import type {Ref} from 'vue'
 import {onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify/framework'
-import {useConstant} from '@/composables/useConstant'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
 const {t} = useI18n()
 const theme = useTheme()
-const {CONS} = useConstant()
+const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
 const skin: Ref<string> = ref('ocean')// TODO default...

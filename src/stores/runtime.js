@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { useNotification } from '@/composables/useNotification';
-const { log } = useNotification();
+import { useApp } from '@/composables/useApp';
+const { log } = useApp();
 export const useRuntimeStore = defineStore('runtime', () => {
     const activeId = ref(-1);
     const optionMenuColors = ref(new Map());

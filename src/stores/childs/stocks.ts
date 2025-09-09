@@ -9,9 +9,9 @@ import type {IStock} from '@/types'
 import type {Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
-const {log} = useNotification()
+const {log} = useApp()
 
 export const useStocks = defineStore('stocks', () => {
     const items: Ref<IStock[]> = ref([])

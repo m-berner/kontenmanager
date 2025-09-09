@@ -10,11 +10,11 @@ import type {IContent} from '@/types.d'
 import type {ComputedRef} from 'vue'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import ContentCard from '@/components/childs/ContentCard.vue'
 
 const {t} = useI18n()
-const {log} = useNotification()
+const {log} = useApp()
 
 const requests: ComputedRef<IContent[]> = computed(() => [
   {

@@ -46,13 +46,13 @@ import {
     mdiStoreMinus,
     mdiStorePlus
 } from '@mdi/js'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
 interface IVuetify {
     vuetify: Plugin
 }
 
-const {log} = useNotification()
+const {log} = useApp()
 
 const vuetifyInstance = createVuetify({
     theme: {

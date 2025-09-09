@@ -9,8 +9,7 @@
 import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory, IStores} from '@/types'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
@@ -19,8 +18,7 @@ import {useSettingsStore} from '@/stores/settings'
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const {CONS} = useConstant()
-const {log} = useNotification()
+const {CONS, log} = useApp()
 const {setStorage} = useBrowser()
 const {getAllAccounts} = useAccountsDB()
 const {getAllBookings} = useBookingsDB()

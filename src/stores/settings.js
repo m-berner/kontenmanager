@@ -1,9 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { useConstant } from '@/composables/useConstant';
-import { useNotification } from '@/composables/useNotification';
-const { CONS } = useConstant();
-const { log } = useNotification();
+import { useApp } from '@/composables/useApp';
+const { CONS, log } = useApp();
 export const useSettingsStore = defineStore('settings', () => {
     const skin = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN);
     const bookingsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE);

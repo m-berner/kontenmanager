@@ -10,12 +10,12 @@ import type {IBooking} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useRecordsStore} from '@/stores/records'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {log} = useNotification()
+const {log} = useApp()
 
 const _result: Ref<Array<{ title: string, subtitle: string }>> = ref([])
 

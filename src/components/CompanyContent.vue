@@ -11,19 +11,17 @@ import type {DataTableHeader} from 'vuetify'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/childs/DotMenu.vue'
 
-const {log} = useNotification()
 const {d, n, t} = useI18n()
-const {CONS} = useConstant()
+const {CONS,log} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-
 const {stocksPerPage} = storeToRefs(settings)
+
 const stocksHeaders = computed<DataTableHeader[]>(() => [
   {
     title: t('stocksTable.headers.action'),
@@ -136,7 +134,7 @@ log('--- StocksTable.vue setup ---')
       :headers="stocksHeaders"
       :hide-no-data="false"
       :hover="true"
-      :items="records.stocks.items.filter((rec: IStock): boolean => rec.cID > 0 )"
+      :items="records.stocks.items.filter((stock: IStock): boolean => stock.cID > 0 )"
       :items-per-page="stocksPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('stocksTable.itemsPerPageText')"

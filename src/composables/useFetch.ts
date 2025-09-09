@@ -6,10 +6,8 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {FetchedResources, ICompanyData, IExchangeData} from '@/types.d'
-import {useConstant} from '@/composables/useConstant'
-import {useBrowser} from '@/composables/useBrowser'
-import {useNotification} from '@/composables/useNotification'
 import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 
 interface IService {
     NAME: string
@@ -22,10 +20,8 @@ interface IUrlWithId {
     id: number
 }
 
-const {mean, toNumber} = useApp()
-const {CONS} = useConstant()
-const {log, notice} = useNotification()
-const {getStorage} = useBrowser()
+const {CONS, log, mean, toNumber} = useApp()
+const {notice, getStorage} = useBrowser()
 
 export const useFetch = () => {
     const fetchCompanyData = async (isin: string): Promise<ICompanyData> => {

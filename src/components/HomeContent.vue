@@ -11,17 +11,13 @@ import type {DataTableHeader} from 'vuetify'
 import type {ComputedRef, Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
 import {useApp} from '@/composables/useApp'
-import {useNotification} from '@/composables/useNotification'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/childs/DotMenu.vue'
 
 const {d, n, t} = useI18n()
-const {CONS} = useConstant()
-const {utcDate} = useApp()
-const {log} = useNotification()
+const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const homeHeaders: ComputedRef<DataTableHeader[]> = computed(() => [

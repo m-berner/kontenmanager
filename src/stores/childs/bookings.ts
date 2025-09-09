@@ -9,10 +9,10 @@ import type {IBooking} from '@/types'
 import type {Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
 
-const {log} = useNotification()
+const {log} = useApp()
 
 export const useBookings = defineStore('bookings', () => {
     // STATE (using ref)
@@ -60,6 +60,10 @@ export const useBookings = defineStore('bookings', () => {
         }
     })
 
+    const includeBookingTypeId = computed(() => (ident: number): number => {
+        return items.value.findIndex((entry: IBooking) => entry.cBookingTypeID === ident)
+    })
+
     // ACTIONS/SETTERS (regular functions)
     function addBooking(booking: IBooking, prepend: boolean = false): void {
         log('BOOKINGS_STORE: addBooking')
@@ -102,8 +106,8 @@ export const useBookings = defineStore('bookings', () => {
         getBookingsByAccountId,
         getBookingTextById,
         sumBookings,
+        includeBookingTypeId,
         addBooking,
-        //setBookings,
         updateBooking,
         deleteBooking,
         clean

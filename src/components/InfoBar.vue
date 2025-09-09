@@ -8,9 +8,7 @@
 <script lang="ts" setup>
 import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
-//import {useRecordsStore} from '@/stores/records'
+import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 
 export interface _IDrawerControl {
@@ -27,8 +25,7 @@ interface IState {
 }
 
 const {n, t} = useI18n()
-const {CONS} = useConstant()
-const {log} = useNotification()
+const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
 //const records = useRecordsStore()
 

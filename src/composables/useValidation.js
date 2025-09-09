@@ -47,6 +47,11 @@ export const useValidation = () => {
             (v) => v !== null || msgArray[0]
         ];
     };
+    const requiredSelect = (msgArray) => {
+        return [
+            (v) => v > 0 || msgArray[0]
+        ];
+    };
     return {
         valIbanRules,
         valNameRules,
@@ -55,6 +60,7 @@ export const useValidation = () => {
         valCurrencyCodeRules,
         valRequiredRules,
         valPositiveIntegerRules,
-        valBrandNameRules
+        valBrandNameRules,
+        requiredSelect
     };
 };

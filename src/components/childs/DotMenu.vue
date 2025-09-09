@@ -9,8 +9,8 @@
 import type {IMenuItem} from '@/types'
 import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -21,8 +21,8 @@ interface OptionMenuProps {
 }
 
 const optionMenuProps = defineProps<OptionMenuProps>()
-const {CONS} = useConstant()
-const {log, notice} = useNotification()
+const {CONS, log} = useApp()
+const {notice} = useBrowser()
 const {deleteBooking} = useBookingsDB()
 const {deleteStock} = useStocksDB()
 const {rt, t} = useI18n()

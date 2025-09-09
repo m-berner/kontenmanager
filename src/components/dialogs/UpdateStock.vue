@@ -12,7 +12,8 @@ import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
@@ -31,7 +32,8 @@ interface IFormularData {
 }
 
 const {t} = useI18n()
-const {log, notice} = useNotification()
+const {log} = useApp()
+const {notice} = useBrowser()
 const {updateStock} = useStocksDB()
 const {valIbanRules} = useValidation()
 const records = useRecordsStore()

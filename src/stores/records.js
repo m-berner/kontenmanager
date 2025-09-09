@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
-import { useNotification } from '@/composables/useNotification';
+import { useApp } from '@/composables/useApp';
 import { useAccounts } from '@/stores/childs/accounts';
 import { useBookings } from '@/stores/childs/bookings';
 import { useBookingTypes } from '@/stores/childs/bookingTypes';
 import { useStocks } from '@/stores/childs/stocks';
 import { useSettingsStore } from '@/stores/settings';
-const { log } = useNotification();
+const { log } = useApp();
 export const useRecordsStore = defineStore('records', () => {
     const accountsStore = useAccounts();
     const bookingsStore = useBookings();

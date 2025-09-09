@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { useNotification } from '@/composables/useNotification';
-const { log } = useNotification();
+import { useApp } from '@/composables/useApp';
+const { log } = useApp();
 const routerInstance = createRouter({
     history: createWebHashHistory(),
     routes: [

@@ -7,13 +7,13 @@
  */
 import type {Pinia} from 'pinia'
 import {createPinia} from 'pinia'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
 interface IPinia {
     pinia: Pinia
 }
 
-const {log} = useNotification()
+const {log} = useApp()
 
 const piniaConfig: IPinia = {
     pinia: createPinia()

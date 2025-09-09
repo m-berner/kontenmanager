@@ -9,7 +9,7 @@
 import type {Ref} from 'vue'
 import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
 interface CheckboxGridProps {
@@ -18,7 +18,7 @@ interface CheckboxGridProps {
 
 const checkboxGridProps = defineProps<CheckboxGridProps>()
 const {t} = useI18n()
-const {CONS} = useConstant()
+const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
 const checked: Ref<string[]> = ref([])

@@ -8,7 +8,7 @@
 import type {Ref} from 'vue'
 import {ref} from 'vue'
 import {defineStore} from 'pinia'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
 interface ITeleport {
     dialogName: string
@@ -16,7 +16,7 @@ interface ITeleport {
     dialogVisibility: boolean
 }
 
-const {log} = useNotification()
+const {log} = useApp()
 
 export const useRuntimeStore = defineStore('runtime', () => {
     const activeId: Ref<number> = ref(-1)

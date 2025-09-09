@@ -172,7 +172,10 @@
       "title": "Buchungstyp löschen",
       "label": "Buchungstyp",
       "success": "Buchungstyp wurde entfernt",
-      "error": "Buchungstyp wurde nicht entfernt"
+      "error1a": "Es existiert eine Buchung.",
+      "error1b": "(Buchungstyp konnte nicht entfernt werden)",
+      "catch": "Problem beim Löschen!",
+      "rule1": "Eingabe ist erforderlich"
     },
     "showAccounting": {
       "title": "Buchungsergebnisse",

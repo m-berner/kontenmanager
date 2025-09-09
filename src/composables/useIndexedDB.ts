@@ -8,14 +8,12 @@
 import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB} from '@/types'
 import type {Ref} from 'vue'
 import {ref} from 'vue'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 
 // Global database instance (shared across components)
 let dbInstance: { db: IDBDatabase } | null = null
 let dbPromise: Promise<IDBDatabase> | null = null
-const {CONS} = useConstant()
-const {log} = useNotification()
+const {CONS, log} = useApp()
 
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
     const isConnected: Ref<boolean> = ref(false)

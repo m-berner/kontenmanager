@@ -8,10 +8,10 @@
 <script lang="ts" setup>
 import type {Ref} from 'vue'
 import {onBeforeMount, ref} from 'vue'
-import {useConstant} from '@/composables/useConstant'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
-const {CONS} = useConstant()
+const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
 const service: Ref<string> = ref('goyax') //  TODO default...

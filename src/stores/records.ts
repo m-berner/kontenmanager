@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {defineStore} from 'pinia'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useAccounts} from '@/stores/childs/accounts'
 import {useBookings} from '@/stores/childs/bookings'
 import {useBookingTypes} from '@/stores/childs/bookingTypes'
@@ -14,7 +14,7 @@ import {useStocks} from '@/stores/childs/stocks'
 import {useSettingsStore} from '@/stores/settings'
 import type {IBooking, IBookingType, IStock, IStores} from '@/types'
 
-const {log} = useNotification()
+const {log} = useApp()
 
 export const useRecordsStore = defineStore('records', () => {
     const accountsStore = useAccounts()

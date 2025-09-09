@@ -7,61 +7,60 @@
   -->
 <script lang="ts" setup>
 import type {Ref} from 'vue'
-import {defineExpose, onMounted, ref} from 'vue'
+import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
+import {useValidation} from '@/composables/useValidation'
 import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const {CONS} = useConstant()
-const {log, notice} = useNotification()
+const {CONS, log} = useApp()
+const {notice} = useBrowser()
+const {requiredSelect} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const selected: Ref<number> = ref(-1)
-const isFormValid: Ref<boolean> = ref(false)
-
-const validateForm = (): boolean => {
-  if (!isFormValid.value) {
-    notice([t('dialogs.addAccount.invalidForm')])
-    return false
-  }
-
-  return true
-}
+const selected: Ref<number> = ref(0)
+const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE : onClickOk')
-  if (!validateForm()) return
+  const validateForm = async (): Promise<boolean> => {
+    if (formRef.value !== null) {
+      const {valid} = await formRef.value.validate()
+      return valid
+    }
+
+    return false
+  }
+  if (!await validateForm()) return
 
   try {
-    if (selected.value > 1) {
+    if (records.bookings.includeBookingTypeId(selected.value) < 0) {
       records.bookingTypes.deleteBookingType(selected.value)
       await notice([t('dialogs.deleteBookingType.success')])
     } else {
-      await notice(['Start kann nicht entfernt werden'])
+      await notice([t('dialogs.deleteBookingType.error1a'), t('dialogs.deleteBookingType.error1b')])
     }
     runtime.resetTeleport()
   } catch (e) {
     log('DELETE_BOOKING: onClickOk', {error: e})
-    await notice([t('dialogs.deleteBookingType.error')])
+    await notice([t('dialogs.deleteBookingType.catch')])
   }
 }
-const title = t('dialogs.deleteBookingType.title')
-defineExpose({onClickOk, title})
 
-onMounted(() => {
-  log('DELETE_BOOKING_TYPE: onMounted')
-})
+const title = t('dialogs.deleteBookingType.title')
+
+defineExpose({title, onClickOk})
 
 log('--- DeleteBookingType.vue setup ---')
 </script>
 
 <template>
   <v-form
-      v-model="isFormValid"
+      ref="formRef"
       validate-on="submit"
       @submit.prevent>
     <v-select
@@ -70,9 +69,11 @@ log('--- DeleteBookingType.vue setup ---')
         :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"
         :label="t('dialogs.deleteBookingType.label')"
+        :rules="requiredSelect([t('dialogs.deleteBookingType.rule1')])"
         density="compact"
         required
         variant="outlined"
+        @focus="formRef?.resetValidation()"
     />
   </v-form>
 </template>

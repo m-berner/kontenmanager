@@ -9,7 +9,7 @@ import type {I18n} from 'vue-i18n'
 import {createI18n} from 'vue-i18n'
 import deDE from '@/locales/de-DE.json'
 import enUS from '@/locales/en-US.json'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
 type MessageSchema = typeof deDE
@@ -18,7 +18,7 @@ interface II18n {
     i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
 }
 
-const {log} = useNotification()
+const {log} = useApp()
 const {getChar5Locale} = useBrowser()
 
 const i18nInstance = createI18n<[MessageSchema], 'de-DE' | 'en-US'>({

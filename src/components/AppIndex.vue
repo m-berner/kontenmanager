@@ -9,8 +9,7 @@
 import type {IAccountDB, IBookingDB, IBookingTypeDB, IExchangeData, IStockDB, IStockOnlyMemory} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
-import {useConstant} from '@/composables/useConstant'
-import {useNotification} from '@/composables/useNotification'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
@@ -26,8 +25,7 @@ const {getAllBookings} = useBookingsDB()
 const {getAllBookingTypes} = useBookingTypesDB()
 const {getAllStocks} = useStocksDB()
 const theme = useTheme()
-const {CONS} = useConstant()
-const {log} = useNotification()
+const {CONS, log} = useApp()
 const {getStorage, onStorageChanged} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
