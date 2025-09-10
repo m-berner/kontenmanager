@@ -88,7 +88,7 @@ log('--- UpdateBookingType.vue setup ---')
     <v-text-field
         v-model="formularName"
         :label="t('dialogs.updateBookingType.label')"
-        :rules="valNameRules(['dgdf'])"
+        :rules="valNameRules([t('dialogs.updateBookingType.rule2')])"
         :disabled="settings.activeAccountId === -1"
         class="mb-4"
         required

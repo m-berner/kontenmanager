@@ -79,14 +79,14 @@ interface IEventTarget extends HTMLInputElement {
 
 const {t} = useI18n()
 const {CONS, log, toISODate} = useApp()
-const settings = useSettingsStore()
-const runtime = useRuntimeStore()
 const {notice, setStorage} = useBrowser()
 const {getDB} = useIndexedDB()
 const {clearAllAccounts} = useAccountsDB()
 const {clearAllBookings} = useBookingsDB()
 const {clearAllBookingTypes} = useBookingTypesDB()
 const {clearAllStocks} = useStocksDB()
+const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 
 const fileBlob = ref<Blob>(new Blob())
 
@@ -209,6 +209,7 @@ const onClickOk = async (): Promise<void> => {
         await clearAllBookings()
         await clearAllBookingTypes()
         await clearAllStocks()
+
         const account: IAccount = {
           cID: activeId,
           cSwift: 'KMKLPJJ9099',
@@ -255,6 +256,7 @@ const onClickOk = async (): Promise<void> => {
           }
           records.stocks.addStock(stockCloneStore)
         }
+
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
           const transferClone: IBooking = {} as IBooking
           const smTransfer: StockManager.ITransfer = backupObject.transfers[i]
@@ -277,6 +279,7 @@ const onClickOk = async (): Promise<void> => {
           records.bookings.addBooking(transferClone)
           bookings.push(transferClone)
         }
+
         records.bookings.items.sort((a: IBooking, b: IBooking) => {
           const A = new Date(a.cDate).getTime()
           const B = new Date(b.cDate).getTime()
@@ -284,6 +287,7 @@ const onClickOk = async (): Promise<void> => {
         })
         settings.activeAccountId = (activeId)
         records.bookings.sumBookings()
+
         const stores: IStoresDB = {
           accountsDB: accounts,
           bookingsDB: bookings,
@@ -294,11 +298,13 @@ const onClickOk = async (): Promise<void> => {
         await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, stores.accountsDB[0].cID)
       } else if (backupObject.sm.cDBVersion > CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
         records.cleanStore()
+
         for (account of backupObject.accounts) {
           records.accounts.addAccount(account)
           accounts.push(account)
         }
         activeId = records.accounts.items[0].cID
+
         for (stock of backupObject.stocks) {
           stocks.push(stock)
           if (stock.cAccountNumberID === activeId) {
@@ -315,20 +321,24 @@ const onClickOk = async (): Promise<void> => {
             records.stocks.addStock(stockClone)
           }
         }
+
         for (bookingType of backupObject.bookingTypes) {
           if (bookingType.cAccountNumberID === activeId) {
             records.bookingTypes.addBookingType(bookingType)
           }
           bookingTypes.push(bookingType)
         }
+
         for (booking of backupObject.bookings) {
           if (booking.cAccountNumberID === activeId) {
             records.bookings.addBooking(booking)
           }
           bookings.push(booking)
         }
+
         settings.activeAccountId = (activeId)
         records.bookings.sumBookings()
+
         const stores: IStoresDB = {
           accountsDB: accounts,
           bookingsDB: bookings,
@@ -336,7 +346,7 @@ const onClickOk = async (): Promise<void> => {
           stocksDB: stocks
         }
         await importStores(stores)
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, stores.accountsDB[0].cID)
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }

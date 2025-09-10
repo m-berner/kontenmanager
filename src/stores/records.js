@@ -5,6 +5,7 @@ import { useBookings } from '@/stores/childs/bookings';
 import { useBookingTypes } from '@/stores/childs/bookingTypes';
 import { useStocks } from '@/stores/childs/stocks';
 import { useSettingsStore } from '@/stores/settings';
+import { useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB } from '@/composables/useIndexedDB';
 const { log } = useApp();
 export const useRecordsStore = defineStore('records', () => {
     const accountsStore = useAccounts();
@@ -54,13 +55,39 @@ export const useRecordsStore = defineStore('records', () => {
             return dateB - dateA;
         });
     }
+    async function deleteCurrentAccount() {
+        log('RECORDS: deleteCurrentAccount');
+        const settings = useSettingsStore();
+        const { deleteAccount } = useAccountsDB();
+        const { deleteBooking } = useBookingsDB();
+        const { deleteBookingType } = useBookingTypesDB();
+        const { deleteStock } = useStocksDB();
+        const bookingIds = bookingsStore.items.map(item => item.cID);
+        for (const id of bookingIds) {
+            bookingsStore.deleteBooking(id);
+            await deleteBooking(id);
+        }
+        const bookingTypesIds = bookingTypesStore.items.map(item => item.cID);
+        for (const id of bookingTypesIds) {
+            bookingTypesStore.deleteBookingType(id);
+            await deleteBookingType(id);
+        }
+        const stockIds = stocksStore.items.map(item => item.cID);
+        for (const id of stockIds) {
+            stocksStore.deleteStock(id);
+            await deleteStock(id);
+        }
+        accountsStore.deleteAccount(settings.activeAccountId);
+        await deleteAccount(settings.activeAccountId);
+    }
     return {
         accounts: accountsStore,
         bookings: bookingsStore,
         bookingTypes: bookingTypesStore,
         stocks: stocksStore,
         initStore,
-        cleanStore
+        cleanStore,
+        deleteCurrentAccount
     };
 });
 log('--- STORE records.ts ---');

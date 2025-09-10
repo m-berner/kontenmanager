@@ -171,6 +171,16 @@
       "catch": "Problem beim Hinzufügen!",
       "rule1": "ewettert"
     },
+    "updateBookingType": {
+      "title": "Buchungstyp aktualisieren",
+      "label": "Buchungstyp",
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
+      "success": "Buchungstyp wurde aktualisiert",
+      "error1a": "Der Buchungstyp konnte nicht aktualisiert werden",
+      "error1b": "",
+      "catch": "Problem beim Aktualisieren!",
+      "rule1": "ttert"
+    },
     "deleteBookingType": {
       "title": "Buchungstyp löschen",
       "label": "Buchungstyp",

@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory} from '@/types'
-import {computed, toRaw} from 'vue'
+import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
@@ -20,10 +20,10 @@ import DialogPort from '@/components/dialogs/childs/DialogPort.vue'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {setStorage, notice, openOptionsPage} = useBrowser()
-const {deleteAccount, getAllAccounts} = useAccountsDB()
-const {deleteBooking, getAllBookings} = useBookingsDB()
-const {deleteBookingType, getAllBookingTypes} = useBookingTypesDB()
-const {deleteStock, getAllStocks} = useStocksDB()
+const {getAllAccounts} = useAccountsDB()
+const {getAllBookings} = useBookingsDB()
+const {getAllBookingTypes} = useBookingTypesDB()
+const {getAllStocks} = useStocksDB()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -72,31 +72,20 @@ const onIconClick = async (ev: Event): Promise<void> => {
         const r = confirm('Möchten Sie das aktuelle Konto und\ndie dazugehörigen Datensätze löschen?')
         if (r) {
           try {
-            for (let i = 0; i < records.bookings.items.length; i++) {
-              records.bookings.deleteBooking(records.bookings.items[i].cID)
-              await deleteBooking(records.bookings.items[i].cID)
-            }
-            for (let i = 0; i < records.bookingTypes.items.length; i++) {
-              records.bookingTypes.deleteBookingType(records.bookingTypes.items[i].cID)
-              await deleteBookingType(records.bookingTypes.items[i].cID)
-            }
-            for (let i = 0; i < records.stocks.items.length; i++) {
-              records.stocks.deleteStock(records.stocks.items[i].cID)
-              await deleteStock(records.stocks.items[i].cID)
-            }
-            records.accounts.deleteAccount(settings.activeAccountId)
-            await deleteAccount(toRaw(settings.activeAccountId))
-            if (records.accounts.items.length > 1) {
-              settings.activeAccountId = (records.accounts.items[1].cID)
-              await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, toRaw(records.accounts.items[1].cID))
+            await records.deleteCurrentAccount()
+
+            if (records.accounts.items.length > 0) {
+              settings.activeAccountId = (records.accounts.items[0].cID)
+              await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, records.accounts.items[0].cID)
             } else {
-              settings.activeAccountId = (0)
+              settings.activeAccountId = -1
               await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, 0)
             }
             const accounts: IAccountDB[] = await getAllAccounts()
             const bookings: IBookingDB[] = await getAllBookings()
             const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
             const stocks: IStockDB[] = await getAllStocks()
+            //
             const stocksOnlyMemory: IStockOnlyMemory = {
               mPortfolio: 0,
               mChange: 0,
