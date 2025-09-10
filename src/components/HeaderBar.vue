@@ -132,6 +132,13 @@ const onIconClick = async (ev: Event): Promise<void> => {
           dialogVisibility: true
         })
         break
+      case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE:
+        runtime.setTeleport({
+          dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE,
+          dialogOk: true,
+          dialogVisibility: true
+        })
+        break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
@@ -286,6 +293,17 @@ log('--- HeaderBar.vue setup ---')
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE"
             icon="$addBookingType"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            @click="onIconClick"/>
+      </template>
+    </v-tooltip>
+    <v-tooltip :text="t('headerBar.addBookingType')" location="top">
+      <template v-slot:activator="{ props }">
+        <v-app-bar-nav-icon
+            :id="CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE"
+            icon="$updateBookingType"
             size="large"
             v-bind="props"
             variant="tonal"

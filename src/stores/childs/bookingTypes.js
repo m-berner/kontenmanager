@@ -11,6 +11,9 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
     const getBookingTypeById = computed(() => (ident) => {
         return items.value.findIndex((entry) => entry.cID === ident);
     });
+    const getBookingTypeIndexById = computed(() => (id) => {
+        return items.value.findIndex(bookingType => bookingType.cID === id);
+    });
     const isDuplicate = computed(() => (nam) => {
         return items.value.findIndex((entry) => entry.cName === nam);
     });
@@ -21,6 +24,13 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         }
         else {
             items.value.push(bookingType);
+        }
+    }
+    function updateBookingType(bookingType) {
+        log('BOOKING_TYPES_STORE: updateBookingType');
+        const index = getBookingTypeIndexById.value(bookingType.cID);
+        if (index !== -1) {
+            items.value[index] = { ...bookingType };
         }
     }
     function deleteBookingType(ident) {
@@ -41,6 +51,7 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         isDuplicate,
         addBookingType,
         deleteBookingType,
+        updateBookingType,
         clean
     };
 });

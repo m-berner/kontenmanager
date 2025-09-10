@@ -1,7 +1,7 @@
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-import { mdiAccountEdit, mdiAccountPlus, mdiAccountRemove, mdiBellPlus, mdiBookEdit, mdiBookPlus, mdiBookRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiStore, mdiStoreEdit, mdiStoreMinus, mdiStorePlus } from '@mdi/js';
+import { mdiAccountEdit, mdiAccountPlus, mdiAccountRemove, mdiBellPlus, mdiBookEdit, mdiBookPlus, mdiBookRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDomain, mdiDelete, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiFilterSettings, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiStoreEdit, mdiStoreMinus, mdiStorePlus } from '@mdi/js';
 import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 const vuetifyInstance = createVuetify({
@@ -105,6 +105,7 @@ const vuetifyInstance = createVuetify({
             addBookingType: mdiFilterPlus,
             editBookingType: mdiFilterCog,
             deleteBookingType: mdiFilterRemove,
+            updateBookingType: mdiFilterSettings,
             exportToFile: mdiDatabaseExport,
             importDatabase: mdiDatabaseImport,
             showAccounting: mdiCalculator,
@@ -119,7 +120,7 @@ const vuetifyInstance = createVuetify({
             addCompany: mdiStorePlus,
             updateCompany: mdiStoreEdit,
             deleteCompany: mdiStoreMinus,
-            showCompany: mdiStore,
+            showCompany: mdiDomain,
             removeDocument: mdiFileDocumentMinus,
             editDocument: mdiFileDocumentEdit,
             help: mdiHelpCircle,

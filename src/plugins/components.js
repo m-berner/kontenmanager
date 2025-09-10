@@ -5,6 +5,7 @@ import AddAccount from '@/components/dialogs/AddAccount.vue';
 import UpdateAccount from '@/components/dialogs/UpdateAccount.vue';
 import AddBookingType from '@/components/dialogs/AddBookingType.vue';
 import DeleteBookingType from '@/components/dialogs/DeleteBookingType.vue';
+import UpdateBookingType from '@/components/dialogs/UpdateBookingType.vue';
 import AddBooking from '@/components/dialogs/AddBooking.vue';
 import UpdateBooking from '@/components/dialogs/UpdateBooking.vue';
 import ExportDatabase from '@/components/dialogs/ExportDatabase.vue';
@@ -19,6 +20,7 @@ const ComponentsPlugin = {
         app.component(CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT, UpdateAccount);
         app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType);
         app.component(CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType);
+        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE, UpdateBookingType);
         app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING, AddBooking);
         app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING, UpdateBooking);
         app.component(CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE, ExportDatabase);

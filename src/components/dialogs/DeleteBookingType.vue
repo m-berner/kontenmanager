@@ -14,10 +14,12 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import {useValidation} from '@/composables/useValidation'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useBookingTypesDB} from '@/composables/useIndexedDB'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
+const {deleteBookingType} = useBookingTypesDB()
 const {requiredSelect, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
@@ -32,6 +34,7 @@ const onClickOk = async (): Promise<void> => {
   try {
     if (records.bookings.includeBookingTypeId(selected.value) < 0) {
       records.bookingTypes.deleteBookingType(selected.value)
+      await deleteBookingType(selected.value)
       await notice([t('dialogs.deleteBookingType.success')])
     } else {
       await notice([t('dialogs.deleteBookingType.error1a'), t('dialogs.deleteBookingType.error1b')])
@@ -65,7 +68,6 @@ log('--- DeleteBookingType.vue setup ---')
         density="compact"
         required
         variant="outlined"
-        @focus="formRef?.resetValidation()"
-    />
+        @focus="formRef?.resetValidation()"/>
   </v-form>
 </template>

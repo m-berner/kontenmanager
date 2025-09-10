@@ -112,6 +112,7 @@ export const useApp = () => {
                 DELETE_STOCK: 'DeleteStock',
                 ADD_BOOKING_TYPE: 'AddBookingType',
                 DELETE_BOOKING_TYPE: 'DeleteBookingType',
+                UPDATE_BOOKING_TYPE: 'UpdateBookingType',
                 ADD_BOOKING: 'AddBooking',
                 UPDATE_BOOKING: 'UpdateBooking',
                 DELETE_BOOKING: 'DeleteBooking',

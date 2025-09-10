@@ -27,6 +27,10 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         return items.value.findIndex((entry: IBookingType) => entry.cID === ident)
     })
 
+    const getBookingTypeIndexById = computed(() => (id: number): number => {
+        return items.value.findIndex(bookingType => bookingType.cID === id)
+    })
+
     const isDuplicate = computed(() => (nam: string): number => {
         return items.value.findIndex((entry: IBookingType) => entry.cName === nam)
     })
@@ -38,6 +42,14 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
             items.value.unshift(bookingType)
         } else {
             items.value.push(bookingType)
+        }
+    }
+
+    function updateBookingType(bookingType: IBookingType): void {
+        log('BOOKING_TYPES_STORE: updateBookingType')
+        const index = getBookingTypeIndexById.value(bookingType.cID)
+        if (index !== -1) {
+            items.value[index] = {...bookingType}
         }
     }
 
@@ -61,6 +73,7 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         isDuplicate,
         addBookingType,
         deleteBookingType,
+        updateBookingType,
         clean
     }
 })

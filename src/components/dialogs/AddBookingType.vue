@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import type {IBookingType} from '@/types.d'
 import type {Ref} from 'vue'
-import {defineExpose, onMounted, ref} from 'vue'
+import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
@@ -54,10 +54,6 @@ const onClickOk = async (): Promise<void> => {
 const title = t('dialogs.addBookingType.title')
 
 defineExpose({onClickOk, title})
-
-onMounted(() => {
-  log('ADD_BOOKING_TYPE: onMounted')
-})
 
 log('--- AddBookingType.vue setup ---')
 </script>
