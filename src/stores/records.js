@@ -19,9 +19,52 @@ export const useRecordsStore = defineStore('records', () => {
         bookingTypesStore.clean();
         stocksStore.clean();
     }
-    function initStore(stores) {
-        log('RECORDS: initStore', { info: stores });
+    function importStore(stores) {
+        log('RECORDS: importStore');
+        for (const entry of stores.accounts) {
+            accountsStore.addAccount(entry);
+        }
+        for (const entry of stores.bookings) {
+            bookingsStore.addBooking(entry);
+        }
+        for (const entry of stores.bookingTypes) {
+            bookingTypesStore.addBookingType(entry);
+        }
+        for (const entry of stores.stocks) {
+            stocksStore.addStock(entry);
+        }
+    }
+    async function initStore() {
+        log('RECORDS: initStore');
+        const { getAllAccounts } = useAccountsDB();
+        const { getAllBookings } = useBookingsDB();
+        const { getAllBookingTypes } = useBookingTypesDB();
+        const { getAllStocks } = useStocksDB();
         const settings = useSettingsStore();
+        const accounts = await getAllAccounts();
+        const bookings = await getAllBookings();
+        const bookingTypes = await getAllBookingTypes();
+        const stocks = await getAllStocks();
+        const stocksOnlyMemory = {
+            mPortfolio: 0,
+            mChange: 0,
+            mBuyValue: 0,
+            mEuroChange: 0,
+            mMin: 0,
+            mValue: 0,
+            mMax: 0
+        };
+        const stores = {
+            accounts,
+            bookings,
+            bookingTypes,
+            stocks: stocks.map((stock) => {
+                return { ...stock, ...stocksOnlyMemory };
+            })
+        };
+        if (settings.activeAccountId < 1 && accounts.length > 0) {
+            settings.activeAccountId = accounts[0].cID;
+        }
         cleanStore();
         accountsStore.items = [...stores.accounts];
         accountsStore.addAccount({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false }, true);
@@ -86,6 +129,7 @@ export const useRecordsStore = defineStore('records', () => {
         bookingTypes: bookingTypesStore,
         stocks: stocksStore,
         initStore,
+        importStore,
         cleanStore,
         deleteCurrentAccount
     };

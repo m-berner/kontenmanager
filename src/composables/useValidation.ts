@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {Ref} from 'vue'
+
 type TStringValidator = (_v: string) => boolean | string
 type TNumberValidator = (_v: number) => boolean | string
 

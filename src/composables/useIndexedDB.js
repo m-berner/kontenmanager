@@ -266,6 +266,15 @@ export function useAccountsDB() {
             throw err;
         }
     };
+    const importAccounts = async (accountsBatch) => {
+        try {
+            return await db.batchOperations(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountsBatch);
+        }
+        catch (err) {
+            log('Failed to import account:', { error: err });
+            throw err;
+        }
+    };
     return {
         isConnected: db.isConnected,
         error: db.error,
@@ -274,7 +283,8 @@ export function useAccountsDB() {
         updateAccount,
         deleteAccount,
         getAllAccounts,
-        clearAllAccounts
+        clearAllAccounts,
+        importAccounts
     };
 }
 export function useBookingsDB() {
@@ -324,6 +334,15 @@ export function useBookingsDB() {
             throw err;
         }
     };
+    const importBookings = async (bookingsBatch) => {
+        try {
+            return await db.batchOperations(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingsBatch);
+        }
+        catch (err) {
+            log('Failed to import account:', { error: err });
+            throw err;
+        }
+    };
     return {
         isConnected: db.isConnected,
         error: db.error,
@@ -332,7 +351,8 @@ export function useBookingsDB() {
         updateBooking,
         deleteBooking,
         getAllBookings,
-        clearAllBookings
+        clearAllBookings,
+        importBookings
     };
 }
 export function useBookingTypesDB() {
@@ -382,6 +402,15 @@ export function useBookingTypesDB() {
             throw err;
         }
     };
+    const importBookingTypes = async (bookingTypesBatch) => {
+        try {
+            return await db.batchOperations(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypesBatch);
+        }
+        catch (err) {
+            log('Failed to import account:', { error: err });
+            throw err;
+        }
+    };
     return {
         isConnected: db.isConnected,
         error: db.error,
@@ -390,7 +419,8 @@ export function useBookingTypesDB() {
         updateBookingType,
         deleteBookingType,
         getAllBookingTypes,
-        clearAllBookingTypes
+        clearAllBookingTypes,
+        importBookingTypes
     };
 }
 export function useStocksDB() {
@@ -440,6 +470,15 @@ export function useStocksDB() {
             throw err;
         }
     };
+    const importStocks = async (stocksBatch) => {
+        try {
+            return await db.batchOperations(CONS.INDEXED_DB.STORES.STOCKS.NAME, stocksBatch);
+        }
+        catch (err) {
+            log('Failed to import account:', { error: err });
+            throw err;
+        }
+    };
     return {
         isConnected: db.isConnected,
         error: db.error,
@@ -448,6 +487,7 @@ export function useStocksDB() {
         updateStock,
         deleteStock,
         getAllStocks,
-        clearAllStocks
+        clearAllStocks,
+        importStocks
     };
 }

@@ -6,12 +6,10 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory} from '@/types'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -20,10 +18,6 @@ import DialogPort from '@/components/dialogs/childs/DialogPort.vue'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {setStorage, notice, openOptionsPage} = useBrowser()
-const {getAllAccounts} = useAccountsDB()
-const {getAllBookings} = useBookingsDB()
-const {getAllBookingTypes} = useBookingTypesDB()
-const {getAllStocks} = useStocksDB()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -75,38 +69,14 @@ const onIconClick = async (ev: Event): Promise<void> => {
             await records.deleteCurrentAccount()
 
             if (records.accounts.items.length > 0) {
-              settings.activeAccountId = (records.accounts.items[0].cID)
+              settings.activeAccountId = records.accounts.items[0].cID
+              await records.initStore()
               await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, records.accounts.items[0].cID)
             } else {
               settings.activeAccountId = -1
               await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, 0)
             }
-            const accounts: IAccountDB[] = await getAllAccounts()
-            const bookings: IBookingDB[] = await getAllBookings()
-            const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
-            const stocks: IStockDB[] = await getAllStocks()
-            //
-            const stocksOnlyMemory: IStockOnlyMemory = {
-              mPortfolio: 0,
-              mChange: 0,
-              mBuyValue: 0,
-              mEuroChange: 0,
-              mMin: 0,
-              mValue: 0,
-              mMax: 0
-            }
-            const stores = {
-              accounts,
-              bookings,
-              bookingTypes,
-              stocks: stocks.map((stock) => {
-                return {...stock, ...stocksOnlyMemory}
-              })
-            }
-            if (stores.accounts.length > 0) {
-              records.initStore(stores)
-              records.bookings.sumBookings()
-            }
+
             await notice([t('dialogs.deleteAccount.success')])
           } catch (e) {
             log('HEADER_BAR: onIconClick', {error: e})

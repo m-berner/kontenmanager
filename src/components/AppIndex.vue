@@ -6,12 +6,11 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccountDB, IBookingDB, IBookingTypeDB, IExchangeData, IStockDB, IStockOnlyMemory} from '@/types'
+import type {IExchangeData} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -20,10 +19,6 @@ import {useSettingsStore} from '@/stores/settings'
 const settings = useSettingsStore()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
-const {getAllAccounts} = useAccountsDB()
-const {getAllBookings} = useBookingsDB()
-const {getAllBookingTypes} = useBookingTypesDB()
-const {getAllStocks} = useStocksDB()
 const theme = useTheme()
 const {CONS, log} = useApp()
 const {getStorage, onStorageChanged} = useBrowser()
@@ -61,31 +56,7 @@ onBeforeMount(async () => {
   const curUsd = `${cur}${CONS.CURRENCIES.USD}`
   const storage = await getStorage()
   settings.initStore(theme, storage)
-  const accounts: IAccountDB[] = await getAllAccounts()
-  const bookings: IBookingDB[] = await getAllBookings()
-  const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
-  const stocks: IStockDB[] = await getAllStocks()
-  const stocksOnlyMemory: IStockOnlyMemory = {
-    mPortfolio: 0,
-    mChange: 0,
-    mBuyValue: 0,
-    mEuroChange: 0,
-    mMin: 0,
-    mValue: 0,
-    mMax: 0
-  }
-  const stores = {
-    accounts,
-    bookings,
-    bookingTypes,
-    stocks: stocks.map((stock) => {
-      return {...stock, ...stocksOnlyMemory}
-    })
-  }
-  if (stores.accounts.length > 0) {
-    records.initStore(stores)
-    records.bookings.sumBookings()
-  }
+  await records.initStore()
   const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
   for (let i = 0; i < exchangesBaseData.length; i++) {
     if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {

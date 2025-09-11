@@ -6,12 +6,10 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory, IStores} from '@/types'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 
@@ -20,39 +18,11 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {CONS, log} = useApp()
 const {setStorage} = useBrowser()
-const {getAllAccounts} = useAccountsDB()
-const {getAllBookings} = useBookingsDB()
-const {getAllBookingTypes} = useBookingTypesDB()
-const {getAllStocks} = useStocksDB()
 
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLEBAR: onUpdateTitleBar')
   await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
-  const accounts: IAccountDB[] = await getAllAccounts()
-  const bookings: IBookingDB[] = await getAllBookings()
-  const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
-  const stocks: IStockDB[] = await getAllStocks()
-  const stocksOnlyMemory: IStockOnlyMemory = {
-    mPortfolio: 0,
-    mChange: 0,
-    mBuyValue: 0,
-    mEuroChange: 0,
-    mMin: 0,
-    mValue: 0,
-    mMax: 0
-  }
-  const stores: IStores = {
-    accounts,
-    bookings,
-    bookingTypes,
-    stocks: stocks.map((stock) => {
-      return {...stock, ...stocksOnlyMemory}
-    })
-  }
-  if (stores.accounts.length > 0) {
-    records.initStore(stores)
-    records.bookings.sumBookings()
-  }
+  await records.initStore()
 }
 const logoUrl = computed((): string => {
   const ind = records.accounts.getAccountIndexById(settings.activeAccountId)

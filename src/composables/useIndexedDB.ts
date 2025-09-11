@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB} from '@/types'
+import type {IAccountDB, IBookingDB, IBookingTypeDB, IRecordsDB, IStockDB} from '@/types'
 import type {Ref} from 'vue'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
@@ -349,6 +349,15 @@ export function useAccountsDB() {
         }
     }
 
+    const importAccounts = async (accountsBatch: IRecordsDB[]) => {
+        try {
+            return await db.batchOperations(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountsBatch)
+        } catch (err) {
+            log('Failed to import account:', {error: err})
+            throw err
+        }
+    }
+
     return {
         // Expose database state
         isConnected: db.isConnected,
@@ -359,7 +368,8 @@ export function useAccountsDB() {
         updateAccount,
         deleteAccount,
         getAllAccounts,
-        clearAllAccounts
+        clearAllAccounts,
+        importAccounts
     }
 }
 
@@ -411,6 +421,15 @@ export function useBookingsDB() {
         }
     }
 
+    const importBookings = async (bookingsBatch: IRecordsDB[]) => {
+        try {
+            return await db.batchOperations(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingsBatch)
+        } catch (err) {
+            log('Failed to import account:', {error: err})
+            throw err
+        }
+    }
+
     return {
         // Expose database state
         isConnected: db.isConnected,
@@ -421,7 +440,8 @@ export function useBookingsDB() {
         updateBooking,
         deleteBooking,
         getAllBookings,
-        clearAllBookings
+        clearAllBookings,
+        importBookings
     }
 }
 
@@ -473,6 +493,15 @@ export function useBookingTypesDB() {
         }
     }
 
+    const importBookingTypes = async (bookingTypesBatch: IRecordsDB[]) => {
+        try {
+            return await db.batchOperations(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypesBatch)
+        } catch (err) {
+            log('Failed to import account:', {error: err})
+            throw err
+        }
+    }
+
     return {
         // Expose database state
         isConnected: db.isConnected,
@@ -483,7 +512,8 @@ export function useBookingTypesDB() {
         updateBookingType,
         deleteBookingType,
         getAllBookingTypes,
-        clearAllBookingTypes
+        clearAllBookingTypes,
+        importBookingTypes
     }
 }
 
@@ -535,6 +565,15 @@ export function useStocksDB() {
         }
     }
 
+    const importStocks = async (stocksBatch: IRecordsDB[]) => {
+        try {
+            return await db.batchOperations(CONS.INDEXED_DB.STORES.STOCKS.NAME, stocksBatch)
+        } catch (err) {
+            log('Failed to import account:', {error: err})
+            throw err
+        }
+    }
+
     return {
         // Expose database state
         isConnected: db.isConnected,
@@ -545,6 +584,7 @@ export function useStocksDB() {
         updateStock,
         deleteStock,
         getAllStocks,
-        clearAllStocks
+        clearAllStocks,
+        importStocks
     }
 }

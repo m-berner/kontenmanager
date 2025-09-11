@@ -12,7 +12,16 @@ import {useBookings} from '@/stores/childs/bookings'
 import {useBookingTypes} from '@/stores/childs/bookingTypes'
 import {useStocks} from '@/stores/childs/stocks'
 import {useSettingsStore} from '@/stores/settings'
-import type {IBooking, IBookingType, IStock, IStores} from '@/types'
+import type {
+    IAccountDB,
+    IBooking,
+    IBookingDB,
+    IBookingType,
+    IBookingTypeDB,
+    IStock,
+    IStockDB,
+    IStockOnlyMemory, IStores
+} from '@/types'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 
 const {log} = useApp()
@@ -31,11 +40,57 @@ export const useRecordsStore = defineStore('records', () => {
         stocksStore.clean()
     }
 
-    function initStore(stores: IStores): void {
-        log('RECORDS: initStore', {info: stores})
-        const settings = useSettingsStore()
-        cleanStore()
+    function importStore(stores: IStores) {
+        log('RECORDS: importStore')
+        for (const entry of stores.accounts) {
+            accountsStore.addAccount(entry)
+        }
+        for (const entry of stores.bookings) {
+            bookingsStore.addBooking(entry)
+        }
+        for (const entry of stores.bookingTypes) {
+            bookingTypesStore.addBookingType(entry)
+        }
+        for (const entry of stores.stocks) {
+            stocksStore.addStock(entry)
+        }
+    }
 
+    async function initStore(): Promise<void> {
+        log('RECORDS: initStore')
+        const {getAllAccounts} = useAccountsDB()
+        const {getAllBookings} = useBookingsDB()
+        const {getAllBookingTypes} = useBookingTypesDB()
+        const {getAllStocks} = useStocksDB()
+        const settings = useSettingsStore()
+
+        const accounts: IAccountDB[] = await getAllAccounts()
+        const bookings: IBookingDB[] = await getAllBookings()
+        const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
+        const stocks: IStockDB[] = await getAllStocks()
+        //
+        const stocksOnlyMemory: IStockOnlyMemory = {
+            mPortfolio: 0,
+            mChange: 0,
+            mBuyValue: 0,
+            mEuroChange: 0,
+            mMin: 0,
+            mValue: 0,
+            mMax: 0
+        }
+        const stores = {
+            accounts,
+            bookings,
+            bookingTypes,
+            stocks: stocks.map((stock) => {
+                return {...stock, ...stocksOnlyMemory}
+            })
+        }
+        if (settings.activeAccountId < 1 && accounts.length > 0) {
+            settings.activeAccountId = accounts[0].cID
+        }
+        cleanStore()
+        //
         accountsStore.items = [...stores.accounts]
         accountsStore.addAccount({cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false}, true)
 
@@ -72,6 +127,9 @@ export const useRecordsStore = defineStore('records', () => {
             const dateB = new Date(b.cDate).getTime()
             return dateB - dateA
         })
+        //if (bookingsStore.items.length > 0) {
+           // bookingsStore.sumBookings()
+        //}
     }
 
     async function deleteCurrentAccount(): Promise<void> {
@@ -106,6 +164,7 @@ export const useRecordsStore = defineStore('records', () => {
         bookingTypes: bookingTypesStore,
         stocks: stocksStore,
         initStore,
+        importStore,
         cleanStore,
         deleteCurrentAccount
     }

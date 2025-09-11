@@ -5,6 +5,8 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import {useApp} from "@/composables/useApp";
+
 export interface IAccountDB {
     cID: number
     cSwift: string
@@ -140,6 +142,12 @@ export interface IMenuItem {
     readonly title: string
     readonly id: string
     readonly icon: string
+}
+
+export interface IRecordsDB {
+    type: string
+    data: unknown
+    key: number
 }
 
 export namespace FetchedResources {
