@@ -6,13 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {
-  IAccount,
-  IBooking,
-  IBookingType,
-  IRecordsDB,
-  IStock
-} from '@/types.d'
+import type {IAccount, IBooking, IBookingType, IRecordsDB, IStock} from '@/types.d'
 import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -84,7 +78,6 @@ const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
 const fileBlob = ref<Blob>(new Blob())
-
 const onChange = (ev: IEventTarget) => {
   fileBlob.value = ev.target.files[0]
 }
@@ -137,7 +130,7 @@ const onClickOk = async (): Promise<void> => {
         }
         return result
       }
-      records.cleanStore()
+      records.clean()
       await clearAllAccounts()
       await clearAllBookings()
       await clearAllBookingTypes()
@@ -257,12 +250,12 @@ const onClickOk = async (): Promise<void> => {
         await notice(['IMPORT_DATABASE: system error'])
       }
       settings.activeAccountId = activeId
-      records.importStore({accounts, bookingTypes, bookings, stocks})
-      records.bookings.items.sort((a: IBooking, b: IBooking) => {
-        const A = new Date(a.cDate).getTime()
-        const B = new Date(b.cDate).getTime()
-        return B - A
-      })
+      records.load({accounts, bookingTypes, bookings, stocks})
+      // records.bookings.items.sort((a: IBooking, b: IBooking) => {
+      //   const A = new Date(a.cDate).getTime()
+      //   const B = new Date(b.cDate).getTime()
+      //   return B - A
+      // })
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
       await importAccounts(accountsDB)
       await importBookingTypes(bookingTypesDB)

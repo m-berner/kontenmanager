@@ -65,4 +65,4 @@ export const useStocks = defineStore('stocks', () => {
     }
 })
 
-log('--- STORE stocks.ts ---')
+log('--- STORES stocks.ts ---')

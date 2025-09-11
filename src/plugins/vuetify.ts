@@ -25,12 +25,8 @@ import {
     mdiCurrencyEur,
     mdiDatabaseExport,
     mdiDatabaseImport,
-    mdiDomain,
-    //mdiDomainPlus,
-    //mdiDomainRemove,
-    //mdiDomainSwitch,
-    // eslint-disable-next-line sort-imports
     mdiDelete,
+    mdiDomain,
     mdiDotsVertical,
     mdiEmail,
     mdiFileDocumentEdit,
@@ -47,7 +43,6 @@ import {
     mdiPlus,
     mdiReload,
     mdiShieldAccount,
-    //mdiStore,
     mdiStoreEdit,
     mdiStoreMinus,
     mdiStorePlus

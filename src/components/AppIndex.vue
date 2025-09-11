@@ -56,7 +56,7 @@ onBeforeMount(async () => {
   const curUsd = `${cur}${CONS.CURRENCIES.USD}`
   const storage = await getStorage()
   settings.initStore(theme, storage)
-  await records.initStore()
+  await records.init()
   const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
   for (let i = 0; i < exchangesBaseData.length; i++) {
     if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {

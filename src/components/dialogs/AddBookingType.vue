@@ -65,9 +65,9 @@ log('--- AddBookingType.vue setup ---')
       @submit.prevent>
     <v-text-field
         v-model="formularName"
+        :disabled="settings.activeAccountId === -1"
         :label="t('dialogs.addBookingType.label')"
         :rules="valNameRules(['dgdf'])"
-        :disabled="settings.activeAccountId === -1"
         class="mb-4"
         required
         variant="outlined"

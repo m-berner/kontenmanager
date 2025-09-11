@@ -47,4 +47,4 @@ export const useStocks = defineStore('stocks', () => {
         clean
     };
 });
-log('--- STORE stocks.ts ---');
+log('--- STORES stocks.ts ---');

@@ -15,7 +15,7 @@ import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/co
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
-const {notice} = useBrowser()
+const {writeBufferToFile} = useBrowser()
 const {getAllAccounts} = useAccountsDB()
 const {getAllBookings} = useBookingsDB()
 const {getAllBookingTypes} = useBookingTypesDB()
@@ -79,24 +79,7 @@ const onClickOk = async (): Promise<void> => {
   let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.INDEXED_DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`
   buffer += stringifyDB()
   buffer += '}'
-
-  const blob = new Blob([buffer], {type: 'application/json'}) // create blob object with all stores data
-  const blobUrl = URL.createObjectURL(blob) // create url reference for blob object
-  const op: browser.downloads._DownloadOptions = {
-    url: blobUrl,
-    filename: fn
-  }
-
-  await browser.downloads.download(op) // writing blob object into download file
-  await notice(['Database exported!'])
-  const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
-    log('USE_INDEXED_DB: onDownloadChange')
-    browser.downloads.onChanged.removeListener(onDownloadChange)
-    if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMPLETE)) {
-      URL.revokeObjectURL(blobUrl) // release blob object
-    }
-  }
-  browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up a blob object after the download.
+  await writeBufferToFile(buffer, fn)
 }
 const title = t('dialogs.exportToFile.title')
 defineExpose({onClickOk, title})

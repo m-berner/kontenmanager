@@ -73,4 +73,4 @@ export const useAccounts = defineStore('accounts', () => {
     }
 })
 
-log('--- STORE accounts.ts ---')
+log('--- STORES accounts.ts ---')

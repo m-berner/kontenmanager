@@ -5,7 +5,6 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {useApp} from "@/composables/useApp";
 
 export interface IAccountDB {
     cID: number

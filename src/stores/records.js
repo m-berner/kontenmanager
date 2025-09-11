@@ -1,29 +1,33 @@
 import { defineStore } from 'pinia';
 import { useApp } from '@/composables/useApp';
+import { useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB } from '@/composables/useIndexedDB';
 import { useAccounts } from '@/stores/childs/accounts';
 import { useBookings } from '@/stores/childs/bookings';
 import { useBookingTypes } from '@/stores/childs/bookingTypes';
 import { useStocks } from '@/stores/childs/stocks';
 import { useSettingsStore } from '@/stores/settings';
-import { useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB } from '@/composables/useIndexedDB';
 const { log } = useApp();
 export const useRecordsStore = defineStore('records', () => {
     const accountsStore = useAccounts();
     const bookingsStore = useBookings();
     const bookingTypesStore = useBookingTypes();
     const stocksStore = useStocks();
-    function cleanStore() {
-        log('RECORDS: cleanStore');
-        accountsStore.clean();
+    function clean(all = true) {
+        log('RECORDS: clean');
+        if (all) {
+            accountsStore.clean();
+        }
         bookingsStore.clean();
         bookingTypesStore.clean();
         stocksStore.clean();
     }
-    function importStore(stores) {
-        log('RECORDS: importStore');
+    function load(stores) {
+        log('RECORDS: load');
+        const settings = useSettingsStore();
         for (const entry of stores.accounts) {
             accountsStore.addAccount(entry);
         }
+        accountsStore.addAccount({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false }, true);
         for (const entry of stores.bookings) {
             bookingsStore.addBooking(entry);
         }
@@ -33,45 +37,6 @@ export const useRecordsStore = defineStore('records', () => {
         for (const entry of stores.stocks) {
             stocksStore.addStock(entry);
         }
-    }
-    async function initStore() {
-        log('RECORDS: initStore');
-        const { getAllAccounts } = useAccountsDB();
-        const { getAllBookings } = useBookingsDB();
-        const { getAllBookingTypes } = useBookingTypesDB();
-        const { getAllStocks } = useStocksDB();
-        const settings = useSettingsStore();
-        const accounts = await getAllAccounts();
-        const bookings = await getAllBookings();
-        const bookingTypes = await getAllBookingTypes();
-        const stocks = await getAllStocks();
-        const stocksOnlyMemory = {
-            mPortfolio: 0,
-            mChange: 0,
-            mBuyValue: 0,
-            mEuroChange: 0,
-            mMin: 0,
-            mValue: 0,
-            mMax: 0
-        };
-        const stores = {
-            accounts,
-            bookings,
-            bookingTypes,
-            stocks: stocks.map((stock) => {
-                return { ...stock, ...stocksOnlyMemory };
-            })
-        };
-        if (settings.activeAccountId < 1 && accounts.length > 0) {
-            settings.activeAccountId = accounts[0].cID;
-        }
-        cleanStore();
-        accountsStore.items = [...stores.accounts];
-        accountsStore.addAccount({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false }, true);
-        bookingsStore.items = stores.bookings.filter((booking) => booking.cAccountNumberID === settings.activeAccountId);
-        bookingTypesStore.items = stores.bookingTypes.filter((bookingType) => bookingType.cAccountNumberID === settings.activeAccountId);
-        bookingTypesStore.addBookingType({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId }, true);
-        stocksStore.items = stores.stocks.filter((stock) => stock.cAccountNumberID === settings.activeAccountId);
         stocksStore.addStock({
             cID: 0,
             cISIN: 'XX00000000000000000000',
@@ -98,40 +63,48 @@ export const useRecordsStore = defineStore('records', () => {
             return dateB - dateA;
         });
     }
-    async function deleteCurrentAccount() {
-        log('RECORDS: deleteCurrentAccount');
+    async function init() {
+        log('RECORDS: init');
+        const { getAllAccounts } = useAccountsDB();
+        const { getAllBookings } = useBookingsDB();
+        const { getAllBookingTypes } = useBookingTypesDB();
+        const { getAllStocks } = useStocksDB();
         const settings = useSettingsStore();
-        const { deleteAccount } = useAccountsDB();
-        const { deleteBooking } = useBookingsDB();
-        const { deleteBookingType } = useBookingTypesDB();
-        const { deleteStock } = useStocksDB();
-        const bookingIds = bookingsStore.items.map(item => item.cID);
-        for (const id of bookingIds) {
-            bookingsStore.deleteBooking(id);
-            await deleteBooking(id);
+        const accounts = await getAllAccounts();
+        const bookings = (await getAllBookings()).filter((booking) => booking.cAccountNumberID === settings.activeAccountId);
+        const bookingTypes = (await getAllBookingTypes()).filter((bookingType) => bookingType.cAccountNumberID === settings.activeAccountId);
+        const stocks = (await getAllStocks()).filter((stock) => stock.cAccountNumberID === settings.activeAccountId);
+        const stocksOnlyMemory = {
+            mPortfolio: 0,
+            mChange: 0,
+            mBuyValue: 0,
+            mEuroChange: 0,
+            mMin: 0,
+            mValue: 0,
+            mMax: 0
+        };
+        const stores = {
+            accounts,
+            bookings,
+            bookingTypes,
+            stocks: stocks.map((stock) => {
+                return { ...stock, ...stocksOnlyMemory };
+            })
+        };
+        if (settings.activeAccountId < 1 && accounts.length > 0) {
+            settings.activeAccountId = accounts[0].cID;
         }
-        const bookingTypesIds = bookingTypesStore.items.map(item => item.cID);
-        for (const id of bookingTypesIds) {
-            bookingTypesStore.deleteBookingType(id);
-            await deleteBookingType(id);
-        }
-        const stockIds = stocksStore.items.map(item => item.cID);
-        for (const id of stockIds) {
-            stocksStore.deleteStock(id);
-            await deleteStock(id);
-        }
-        accountsStore.deleteAccount(settings.activeAccountId);
-        await deleteAccount(settings.activeAccountId);
+        clean();
+        load(stores);
     }
     return {
         accounts: accountsStore,
         bookings: bookingsStore,
         bookingTypes: bookingTypesStore,
         stocks: stocksStore,
-        initStore,
-        importStore,
-        cleanStore,
-        deleteCurrentAccount
+        init,
+        load,
+        clean
     };
 });
-log('--- STORE records.ts ---');
+log('--- STORES records.ts ---');

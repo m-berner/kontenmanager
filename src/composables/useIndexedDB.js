@@ -203,6 +203,26 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             });
         });
     };
+    const dbDeleteAccount = async (accountId) => {
+        log('INDEXED_DB: dbDeleteAccount');
+        const { deleteAccount } = useAccountsDB();
+        const { deleteBooking, getAllBookings } = useBookingsDB();
+        const { deleteBookingType, getAllBookingTypes } = useBookingTypesDB();
+        const { deleteStock, getAllStocks } = useStocksDB();
+        const bookings = (await getAllBookings()).filter(item => item.cAccountNumberID === accountId);
+        for (const rec of bookings) {
+            await deleteBooking(rec.cID);
+        }
+        const bookingTypes = (await getAllBookingTypes()).filter(item => item.cAccountNumberID === accountId);
+        for (const rec of bookingTypes) {
+            await deleteBookingType(rec.cID);
+        }
+        const stocks = (await getAllStocks()).filter(item => item.cAccountNumberID === accountId);
+        for (const rec of stocks) {
+            await deleteStock(rec.cID);
+        }
+        await deleteAccount(accountId);
+    };
     return {
         isConnected,
         error,
@@ -216,7 +236,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         remove,
         clear,
         batchOperations,
-        getByIndex
+        getByIndex,
+        dbDeleteAccount
     };
 }
 export function useAccountsDB() {

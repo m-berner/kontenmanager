@@ -68,4 +68,4 @@ export const useRuntimeStore = defineStore('runtime', () => {
     }
 })
 
-log('--- STORE runtime.js ---')
+log('--- STORES runtime.js ---')

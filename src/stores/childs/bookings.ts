@@ -114,4 +114,4 @@ export const useBookings = defineStore('bookings', () => {
     }
 })
 
-log('--- STORE bookings.ts ---')
+log('--- STORES bookings.ts ---')

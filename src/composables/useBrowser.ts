@@ -99,6 +99,25 @@ export const useBrowser = () => {
         await browser.notifications.create(notificationOption)
     }
 
+    const writeBufferToFile = async (buffer: string, fn: string): Promise<void> => {
+        const {CONS} = useApp()
+        const blob = new Blob([buffer], {type: 'application/json'}) // create blob object with all stores data
+        const blobUrl = URL.createObjectURL(blob) // create url reference for blob object
+        const op: browser.downloads._DownloadOptions = {
+            url: blobUrl,
+            filename: fn
+        }
+        await browser.downloads.download(op) // writing blob object into download file
+        await notice(['Database exported!'])
+        const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
+            browser.downloads.onChanged.removeListener(onDownloadChange)
+            if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMPLETE)) {
+                URL.revokeObjectURL(blobUrl) // release blob object
+            }
+        }
+        browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up a blob object after the download.
+    }
+
     return {
         clearStorage,
         getChar5Locale,
@@ -107,6 +126,7 @@ export const useBrowser = () => {
         installStorageLocal,
         notice,
         onStorageChanged,
-        openOptionsPage
+        openOptionsPage,
+        writeBufferToFile
     }
 }

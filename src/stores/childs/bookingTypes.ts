@@ -62,7 +62,7 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
     }
 
     function clean(): void {
-        log('BOOKING_TYPES_STORE: cleanStore')
+        log('BOOKING_TYPES_STORE: clean')
         items.value.length = 0
     }
 
@@ -78,4 +78,4 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
     }
 })
 
-log('--- STORE bookingTypes.ts ---')
+log('--- STORES bookingTypes.ts ---')

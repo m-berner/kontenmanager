@@ -47,4 +47,4 @@ export const useRuntimeStore = defineStore('runtime', () => {
         resetOptionsMenuColors
     };
 });
-log('--- STORE runtime.js ---');
+log('--- STORES runtime.js ---');

@@ -89,6 +89,24 @@ export const useBrowser = () => {
         };
         await browser.notifications.create(notificationOption);
     };
+    const writeBufferToFile = async (buffer, fn) => {
+        const { CONS } = useApp();
+        const blob = new Blob([buffer], { type: 'application/json' });
+        const blobUrl = URL.createObjectURL(blob);
+        const op = {
+            url: blobUrl,
+            filename: fn
+        };
+        await browser.downloads.download(op);
+        await notice(['Database exported!']);
+        const onDownloadChange = (change) => {
+            browser.downloads.onChanged.removeListener(onDownloadChange);
+            if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMPLETE)) {
+                URL.revokeObjectURL(blobUrl);
+            }
+        };
+        browser.downloads.onChanged.addListener(onDownloadChange);
+    };
     return {
         clearStorage,
         getChar5Locale,
@@ -97,6 +115,7 @@ export const useBrowser = () => {
         installStorageLocal,
         notice,
         onStorageChanged,
-        openOptionsPage
+        openOptionsPage,
+        writeBufferToFile
     };
 };

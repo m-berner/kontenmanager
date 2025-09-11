@@ -62,4 +62,4 @@ export const useSettingsStore = defineStore('settings', () => {
     }
 })
 
-log('--- STORE settings.js ---')
+log('--- STORES settings.js ---')

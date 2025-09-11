@@ -22,7 +22,7 @@ const {setStorage} = useBrowser()
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLEBAR: onUpdateTitleBar')
   await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
-  await records.initStore()
+  await records.init()
 }
 const logoUrl = computed((): string => {
   const ind = records.accounts.getAccountIndexById(settings.activeAccountId)

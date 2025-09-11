@@ -41,7 +41,7 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         }
     }
     function clean() {
-        log('BOOKING_TYPES_STORE: cleanStore');
+        log('BOOKING_TYPES_STORE: clean');
         items.value.length = 0;
     }
     return {
@@ -55,4 +55,4 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         clean
     };
 });
-log('--- STORE bookingTypes.ts ---');
+log('--- STORES bookingTypes.ts ---');

@@ -47,4 +47,4 @@ export const useSettingsStore = defineStore('settings', () => {
         initStore
     };
 });
-log('--- STORE settings.js ---');
+log('--- STORES settings.js ---');
