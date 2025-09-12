@@ -74,11 +74,6 @@ export const useBookings = defineStore('bookings', () => {
         }
     }
 
-    // function setBookings(booking: IBooking[]): void {
-    //     log('BOOKINGS: setBookings')
-    //     items.value = [...booking]
-    // }
-
     function updateBooking(booking: IBooking): void {
         log('BOOKINGS_STORE: updateBooking')
         const index = getBookingIndexById.value(booking?.cID ?? -1)

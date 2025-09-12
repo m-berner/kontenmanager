@@ -8,45 +8,38 @@
 <script lang="ts" setup>
 import type {IBookingType} from '@/types.d'
 import type {Ref} from 'vue'
-import {defineExpose, onMounted, ref} from 'vue'
+import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
 const {notice} = useBrowser()
 const {updateBookingType} = useBookingTypesDB()
-const {requiredSelect, valNameRules, validateForm} = useValidation()
+const {requiredSelect, requiredSelectNumber, validateForm} = useValidation()
 const records = useRecordsStore()
-const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 
-const formularSelected: Ref<number> = ref(0)
-const formularName: Ref<string> = ref('')
+const formSelectedIndex: Ref<number> = ref(0)
 const formRef: Ref<HTMLFormElement | null> = ref(null)
-
-const getSelectedText = (): string => {
-  const selected = records.bookingTypes.items.find(item => item.cID === formularSelected.value)
-  return selected ? selected.cName : ''
-}
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING_TYPE: onClickOk')
   if (!await validateForm(formRef)) return
 
+  console.error(records.bookingTypes.isDuplicate(records.bookingTypes.items[formSelectedIndex.value].cName))
+
   try {
-    if (records.bookingTypes.isDuplicate(formularName.value.trim()) < 0) {
-      const bookingType: IBookingType = {
-        cID: formularSelected.value,
-        cName: formularName.value.trim(),
-        cAccountNumberID: settings.activeAccountId
-      }
+    if (!records.bookingTypes.isDuplicate(records.bookingTypes.items[formSelectedIndex.value].cName)) {
+      const bookingType: IBookingType = { ...records.bookingTypes.items[formSelectedIndex.value] }
       records.bookingTypes.updateBookingType(bookingType)
       await updateBookingType(bookingType)
+      runtime.resetTeleport()
       await notice([t('dialogs.updateBookingType.success')])
     } else {
       await notice([t('dialogs.updateBookingType.error1a'), t('dialogs.addBookingType.error1b')])
@@ -61,10 +54,6 @@ const title = t('dialogs.updateBookingType.title')
 
 defineExpose({onClickOk, title})
 
-onMounted(() => {
-  log('UPDATE_BOOKING_TYPE: onMounted')
-})
-
 log('--- UpdateBookingType.vue setup ---')
 </script>
 
@@ -73,27 +62,31 @@ log('--- UpdateBookingType.vue setup ---')
       ref="formRef"
       validate-on="submit"
       @submit.prevent>
-    <v-select
-        v-model="formularSelected"
-        :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-        :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
-        :items="records.bookingTypes.items"
+    <v-text-field
+        v-if="formSelectedIndex > 0"
+        v-model="records.bookingTypes.items[formSelectedIndex].cName"
         :label="t('dialogs.updateBookingType.label')"
         :rules="requiredSelect([t('dialogs.updateBookingType.rule1')])"
         density="compact"
-        required
+        clearable
         variant="outlined"
         @focus="formRef?.resetValidation()"
-        @update:modelValue="() => { formularName = getSelectedText() }"/>
-    <v-text-field
-        v-model="formularName"
-        :disabled="settings.activeAccountId === -1"
-        :label="t('dialogs.updateBookingType.label')"
-        :rules="valNameRules([t('dialogs.updateBookingType.rule2')])"
-        class="mb-4"
+        @update:modelValue="(mValue) => {if (mValue === null) { formSelectedIndex = 0 }}"
+    />
+    <v-select
+        v-if="formSelectedIndex < 1"
+        v-model="formSelectedIndex"
+        :items="records.bookingTypes.getNamesWithIndex"
+        item-title="name"
+        item-value="index"
+        :label="t('dialogs.deleteBookingType.label')"
+        :rules="requiredSelectNumber([t('dialogs.deleteBookingType.rule1')])"
+        density="compact"
+        :menu="true"
+        :menu-props="{ maxHeight: '200px' }"
         required
+        autocomplete
         variant="outlined"
-        @focus="formRef?.resetValidation()"
-        @update:modelValue="() => { console.error('TXT-DFSFS') }"/>
+        @focus="formRef?.resetValidation()"/>
   </v-form>
 </template>

@@ -36,11 +36,6 @@ export const useAccounts = defineStore('accounts', () => {
         }
     }
 
-    // function setAccounts(account: IAccount[]): void {
-    //     log('ACCOUNTS: setAccounts')
-    //     items.value = [...account]
-    // }
-
     function updateAccount(account: IAccount): void {
         log('ACCOUNTS: updateAccount')
         const index = getAccountIndexById.value(account.cID)

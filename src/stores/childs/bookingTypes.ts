@@ -23,17 +23,30 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         return bookingType ? bookingType.cName : ''
     })
 
-    const getBookingTypeById = computed(() => (ident: number): number => {
-        return items.value.findIndex((entry: IBookingType) => entry.cID === ident)
+    const getBookingTypeById = computed(() => (ident: number): IBookingType | null => {
+        const bookingType = items.value.find((entry: IBookingType) => entry.cID === ident)
+        return bookingType ? bookingType : null
     })
 
     const getBookingTypeIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(bookingType => bookingType.cID === id)
     })
 
-    const isDuplicate = computed(() => (nam: string): number => {
-        return items.value.findIndex((entry: IBookingType) => entry.cName === nam)
+    const isDuplicate = computed(() => (name: string): boolean => {
+        const duplicates = items.value.filter((entry: IBookingType) => {
+            console.error(entry.cName, name)
+            return entry.cName === name
+        })
+        console.error(duplicates, duplicates.length)
+        return duplicates.length > 0
     })
+
+    const getNames = computed(() => items.value.map(item => item.cName))
+
+    const getNamesWithIndex = computed(() => items.value.map((item, index) => ({
+        name: item.cName,
+        index
+    })))
 
     // ACTIONS/SETTERS (regular functions)
     function addBookingType(bookingType: IBookingType, prepend: boolean = false): void {
@@ -55,7 +68,7 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
 
     function deleteBookingType(ident: number): void {
         log('BOOKING_TYPE_STORE: deleteBookingType', {info: ident})
-        const index = getBookingTypeById.value(ident)
+        const index = getBookingTypeIndexById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
         }
@@ -70,6 +83,9 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         items,
         getBookingTypeById,
         getBookingTypeNameById,
+        getBookingTypeIndexById,
+        getNames,
+        getNamesWithIndex,
         isDuplicate,
         addBookingType,
         deleteBookingType,

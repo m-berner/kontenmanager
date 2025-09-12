@@ -29,7 +29,7 @@ defineExpose({title})
 onMounted(() => {
   log('SHOW_ACCOUNTING: onMounted')
   const sums: number[] = []
-  for (let i = 0; i < records.bookingTypes.items.length; i++) {
+  for (let i = 1; i < records.bookingTypes.items.length; i++) {
     sums[i] = records.bookings.items.filter((entry: IBooking) => {
       return entry.cBookingTypeID === records.bookingTypes.items[i].cID
     }).map((entry: IBooking) => {

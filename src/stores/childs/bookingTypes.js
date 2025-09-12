@@ -9,14 +9,25 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         return bookingType ? bookingType.cName : '';
     });
     const getBookingTypeById = computed(() => (ident) => {
-        return items.value.findIndex((entry) => entry.cID === ident);
+        const bookingType = items.value.find((entry) => entry.cID === ident);
+        return bookingType ? bookingType : null;
     });
     const getBookingTypeIndexById = computed(() => (id) => {
         return items.value.findIndex(bookingType => bookingType.cID === id);
     });
-    const isDuplicate = computed(() => (nam) => {
-        return items.value.findIndex((entry) => entry.cName === nam);
+    const isDuplicate = computed(() => (name) => {
+        const duplicates = items.value.filter((entry) => {
+            console.error(entry.cName, name);
+            return entry.cName === name;
+        });
+        console.error(duplicates, duplicates.length);
+        return duplicates.length > 0;
     });
+    const getNames = computed(() => items.value.map(item => item.cName));
+    const getNamesWithIndex = computed(() => items.value.map((item, index) => ({
+        name: item.cName,
+        index
+    })));
     function addBookingType(bookingType, prepend = false) {
         log('BOOKING_TYPES_STORE: addBookingType');
         if (prepend) {
@@ -35,7 +46,7 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
     }
     function deleteBookingType(ident) {
         log('BOOKING_TYPE_STORE: deleteBookingType', { info: ident });
-        const index = getBookingTypeById.value(ident);
+        const index = getBookingTypeIndexById.value(ident);
         if (index !== -1) {
             items.value.splice(index, 1);
         }
@@ -48,6 +59,9 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         items,
         getBookingTypeById,
         getBookingTypeNameById,
+        getBookingTypeIndexById,
+        getNames,
+        getNamesWithIndex,
         isDuplicate,
         addBookingType,
         deleteBookingType,

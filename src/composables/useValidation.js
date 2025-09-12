@@ -49,6 +49,11 @@ export const useValidation = () => {
     };
     const requiredSelect = (msgArray) => {
         return [
+            (v) => (v === null || v.length > 0) || msgArray[0]
+        ];
+    };
+    const requiredSelectNumber = (msgArray) => {
+        return [
             (v) => v > 0 || msgArray[0]
         ];
     };
@@ -69,6 +74,7 @@ export const useValidation = () => {
         valPositiveIntegerRules,
         valBrandNameRules,
         requiredSelect,
+        requiredSelectNumber,
         validateForm
     };
 };

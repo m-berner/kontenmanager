@@ -203,8 +203,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             });
         });
     };
-    const dbDeleteAccount = async (accountId) => {
-        log('INDEXED_DB: dbDeleteAccount');
+    const deleteAccountDatabase = async (accountId) => {
+        log('INDEXED_DB: deleteAccountDatabase');
         const { deleteAccount } = useAccountsDB();
         const { deleteBooking, getAllBookings } = useBookingsDB();
         const { deleteBookingType, getAllBookingTypes } = useBookingTypesDB();
@@ -237,7 +237,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         clear,
         batchOperations,
         getByIndex,
-        dbDeleteAccount
+        deleteAccountDatabase
     };
 }
 export function useAccountsDB() {

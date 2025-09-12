@@ -19,7 +19,7 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {setStorage, notice, openOptionsPage} = useBrowser()
-const {dbDeleteAccount} = useIndexedDB()
+const {deleteAccountDatabase} = useIndexedDB()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -71,7 +71,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
             const activeId = settings.activeAccountId
             records.clean(false)
             records.accounts.deleteAccount(activeId)
-            await dbDeleteAccount(activeId)
+            await deleteAccountDatabase(activeId)
 
             if (records.accounts.items.length > 0) {
               settings.activeAccountId = records.accounts.items[0].cID

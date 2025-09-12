@@ -59,7 +59,12 @@ export const useValidation = () => {
             (v: string) => v !== null || msgArray[0]
         ]
     }
-    const requiredSelect = (msgArray: string[]): TNumberValidator[] => {
+    const requiredSelect = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => (v === null || v.length > 0) || msgArray[0]
+        ]
+    }
+    const requiredSelectNumber = (msgArray: string[]): TNumberValidator[] => {
         return [
             (v: number) => v > 0 || msgArray[0]
         ]
@@ -81,6 +86,7 @@ export const useValidation = () => {
         valPositiveIntegerRules,
         valBrandNameRules,
         requiredSelect,
+        requiredSelectNumber,
         validateForm
     }
 }

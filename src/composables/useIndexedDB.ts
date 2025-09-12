@@ -277,8 +277,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    const dbDeleteAccount = async (accountId: number): Promise<void> => {
-        log('INDEXED_DB: dbDeleteAccount')
+    const deleteAccountDatabase = async (accountId: number): Promise<void> => {
+        log('INDEXED_DB: deleteAccountDatabase')
         const {deleteAccount} = useAccountsDB()
         const {deleteBooking, getAllBookings} = useBookingsDB()
         const {deleteBookingType, getAllBookingTypes} = useBookingTypesDB()
@@ -319,7 +319,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         // Advanced operations
         batchOperations,
         getByIndex,
-        dbDeleteAccount
+        deleteAccountDatabase
     }
 }
 
