@@ -26,17 +26,20 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
 const formSelectedIndex: Ref<number> = ref(0)
+const formSelectedName: Ref<string> = ref('')
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING_TYPE: onClickOk')
   if (!await validateForm(formRef)) return
 
-  console.error(records.bookingTypes.isDuplicate(records.bookingTypes.items[formSelectedIndex.value].cName))
-
   try {
-    if (!records.bookingTypes.isDuplicate(records.bookingTypes.items[formSelectedIndex.value].cName)) {
-      const bookingType: IBookingType = { ...records.bookingTypes.items[formSelectedIndex.value] }
+    if (!records.bookingTypes.isDuplicate(formSelectedName.value.trim())) {
+      const bookingType: IBookingType = {
+        cID: records.bookingTypes.items[formSelectedIndex.value].cID,
+        cName: formSelectedName.value.trim(),
+        cAccountNumberID: records.bookingTypes.items[formSelectedIndex.value].cAccountNumberID
+      }
       records.bookingTypes.updateBookingType(bookingType)
       await updateBookingType(bookingType)
       runtime.resetTeleport()
@@ -64,7 +67,7 @@ log('--- UpdateBookingType.vue setup ---')
       @submit.prevent>
     <v-text-field
         v-if="formSelectedIndex > 0"
-        v-model="records.bookingTypes.items[formSelectedIndex].cName"
+        v-model="formSelectedName"
         :label="t('dialogs.updateBookingType.label')"
         :rules="requiredSelect([t('dialogs.updateBookingType.rule1')])"
         density="compact"
@@ -87,6 +90,7 @@ log('--- UpdateBookingType.vue setup ---')
         required
         autocomplete
         variant="outlined"
-        @focus="formRef?.resetValidation()"/>
+        @focus="formRef?.resetValidation()"
+        @update:modelValue="formSelectedName = records.bookingTypes.items[formSelectedIndex].cName"/>
   </v-form>
 </template>

@@ -33,7 +33,7 @@ const onClickOk = async (): Promise<void> => {
   if (!await validateForm(formRef)) return
 
   try {
-    if (records.bookingTypes.isDuplicate(formularName.value.trim())) {
+    if (!records.bookingTypes.isDuplicate(formularName.value.trim())) {
       const bookingType = {
         cName: formularName.value.trim(),
         cAccountNumberID: settings.activeAccountId
