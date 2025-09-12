@@ -16,16 +16,15 @@ const {log} = useApp()
 export const useStocks = defineStore('stocks', () => {
     const items: Ref<IStock[]> = ref([])
 
-    const getStockById = computed(() => (ident: number): number => {
+    const getById = computed(() => (ident: number): number => {
         return items.value.findIndex((entry: IStock) => entry.cID === ident)
     })
-
-    const getStockIndexById = computed(() => (id: number): number => {
+    const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(stock => stock.cID === id)
     })
 
-    function addStock(stock: IStock, prepend: boolean = false): void {
-        log('STOCKS_STORE: addStock')
+    function add(stock: IStock, prepend: boolean = false): void {
+        log('STOCKS_STORE: add')
         if (prepend) {
             items.value.unshift(stock)
         } else {
@@ -35,15 +34,15 @@ export const useStocks = defineStore('stocks', () => {
 
     function updateStock(stock: IStock): void {
         log('STOCKS_STORE: updateStock')
-        const index = getStockById.value(stock?.cID ?? -1)
+        const index = getById.value(stock?.cID ?? -1)
         if (index !== -1) {
             items.value[index] = {...stock}
         }
     }
 
-    function deleteStock(ident: number): void {
-        log('STOCKS_STORE: deleteStock', {info: ident})
-        const index = getStockById.value(ident)
+    function remove(ident: number): void {
+        log('STOCKS_STORE: remove', {info: ident})
+        const index = getById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
         }
@@ -56,11 +55,11 @@ export const useStocks = defineStore('stocks', () => {
 
     return {
         items,
-        getStockById,
-        getStockIndexById,
-        addStock,
+        getById,
+        getIndexById,
+        add,
         updateStock,
-        deleteStock,
+        remove,
         clean
     }
 })

@@ -98,7 +98,7 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks.items[records.stocks.getStockIndexById(runtime.activeId)]
+  const currentStock = records.stocks.items[records.stocks.getIndexById(runtime.activeId)]
   formularData.id = runtime.activeId
   formularData.isin = currentStock.cISIN
   formularData.company = currentStock.cCompany

@@ -103,7 +103,7 @@ const onClickOk = async (): Promise<void> => {
     const addStockID = await addStock(stock)
     if (typeof addStockID === 'number') {
       const completeStock: IStock = {cID: addStockID, ...stock}
-      records.stocks.addStock({
+      records.stocks.add({
         ...completeStock,
         mPortfolio: 0,
         mChange: 0,

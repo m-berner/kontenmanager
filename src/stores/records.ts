@@ -45,20 +45,20 @@ export const useRecordsStore = defineStore('records', () => {
         log('RECORDS: load')
         const settings = useSettingsStore()
         for (const entry of stores.accounts) {
-            accountsStore.addAccount(entry)
+            accountsStore.add(entry)
         }
-        accountsStore.addAccount({cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false}, true)
+        accountsStore.add({cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false}, true)
         for (const entry of stores.bookings) {
-            bookingsStore.addBooking(entry)
+            bookingsStore.add(entry)
         }
         for (const entry of stores.bookingTypes) {
             bookingTypesStore.add(entry)
         }
         bookingTypesStore.add({cID: 0, cName: '', cAccountNumberID: settings.activeAccountId}, true)
         for (const entry of stores.stocks) {
-            stocksStore.addStock(entry)
+            stocksStore.add(entry)
         }
-        stocksStore.addStock({
+        stocksStore.add({
             cID: 0,
             cISIN: 'XX00000000000000000000',
             cWKN: 'AAAAAAA',

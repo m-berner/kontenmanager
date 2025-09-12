@@ -25,7 +25,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
   await records.init()
 }
 const logoUrl = computed((): string => {
-  const ind = records.accounts.getAccountIndexById(settings.activeAccountId)
+  const ind = records.accounts.getIndexById(settings.activeAccountId)
   if (ind > -1) {
     return records.accounts.items[ind].cLogoUrl
   } else {

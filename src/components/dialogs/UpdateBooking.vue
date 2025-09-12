@@ -37,7 +37,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
-const currentBooking = records.bookings.items[records.bookings.getBookingIndexById(runtime.activeId)]
+const currentBooking = records.bookings.items[records.bookings.getIndexById(runtime.activeId)]
 const state: IFormularData = reactive({
   id: currentBooking.cID,
   bookingTypeId: currentBooking.cBookingTypeID,
@@ -80,7 +80,7 @@ const onClickOk = async (): Promise<void> => {
       cDebit: state.debit,
       cCredit: state.credit
     }
-    records.bookings.updateBooking(booking)
+    records.bookings.update(booking)
     records.bookings.sumBookings()
     const updateBookingResponse = await updateBooking(booking)
     await notice([updateBookingResponse as string])

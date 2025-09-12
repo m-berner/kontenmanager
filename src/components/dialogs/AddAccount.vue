@@ -155,7 +155,7 @@ const onClickOk = async (): Promise<void> => {
       const completeAccount: IAccount = {cID: addAccountID, ...account}
 
       // Update stores
-      records.accounts.addAccount(completeAccount)
+      records.accounts.add(completeAccount)
       settings.activeAccountId = (addAccountID)
 
       // Persist active account ID

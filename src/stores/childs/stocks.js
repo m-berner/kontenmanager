@@ -4,14 +4,14 @@ import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 export const useStocks = defineStore('stocks', () => {
     const items = ref([]);
-    const getStockById = computed(() => (ident) => {
+    const getById = computed(() => (ident) => {
         return items.value.findIndex((entry) => entry.cID === ident);
     });
-    const getStockIndexById = computed(() => (id) => {
+    const getIndexById = computed(() => (id) => {
         return items.value.findIndex(stock => stock.cID === id);
     });
-    function addStock(stock, prepend = false) {
-        log('STOCKS_STORE: addStock');
+    function add(stock, prepend = false) {
+        log('STOCKS_STORE: add');
         if (prepend) {
             items.value.unshift(stock);
         }
@@ -21,14 +21,14 @@ export const useStocks = defineStore('stocks', () => {
     }
     function updateStock(stock) {
         log('STOCKS_STORE: updateStock');
-        const index = getStockById.value(stock?.cID ?? -1);
+        const index = getById.value(stock?.cID ?? -1);
         if (index !== -1) {
             items.value[index] = { ...stock };
         }
     }
-    function deleteStock(ident) {
-        log('STOCKS_STORE: deleteStock', { info: ident });
-        const index = getStockById.value(ident);
+    function remove(ident) {
+        log('STOCKS_STORE: remove', { info: ident });
+        const index = getById.value(ident);
         if (index !== -1) {
             items.value.splice(index, 1);
         }
@@ -39,11 +39,11 @@ export const useStocks = defineStore('stocks', () => {
     }
     return {
         items,
-        getStockById,
-        getStockIndexById,
-        addStock,
+        getById,
+        getIndexById,
+        add,
         updateStock,
-        deleteStock,
+        remove,
         clean
     };
 });

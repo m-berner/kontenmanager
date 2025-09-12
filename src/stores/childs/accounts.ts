@@ -14,21 +14,19 @@ import {useApp} from '@/composables/useApp'
 const {log} = useApp()
 
 export const useAccounts = defineStore('accounts', () => {
-    // STATE (using ref)
+
     const items: Ref<IAccount[]> = ref([])
 
-    // GETTERS (using computed)
-    const getAccountIndexById = computed(() => (id: number): number => {
+    const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(account => account.cID === id)
     })
 
-    const getAccountById = computed(() => (id: number): IAccount | undefined => {
+    const getById = computed(() => (id: number): IAccount | undefined => {
         return items.value.find(account => account.cID === id)
     })
 
-    // ACTIONS/SETTERS (regular functions)
-    function addAccount(account: IAccount, prepend: boolean = false): void {
-        log('ACCOUNTS: addAccount')
+    function add(account: IAccount, prepend: boolean = false): void {
+        log('ACCOUNTS_STORE: add')
         if (prepend) {
             items.value.unshift(account)
         } else {
@@ -36,17 +34,17 @@ export const useAccounts = defineStore('accounts', () => {
         }
     }
 
-    function updateAccount(account: IAccount): void {
-        log('ACCOUNTS: updateAccount')
-        const index = getAccountIndexById.value(account.cID)
+    function update(account: IAccount): void {
+        log('ACCOUNTS_STORE: update')
+        const index = getIndexById.value(account.cID)
         if (index !== -1) {
             items.value[index] = {...account}
         }
     }
 
-    function deleteAccount(ident: number): void {
-        log('ACCOUNTS: deleteAccount', {info: ident})
-        const index = getAccountIndexById.value(ident)
+    function remove(ident: number): void {
+        log('ACCOUNTS_STORE: remove', {info: ident})
+        const index = getIndexById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
         }
@@ -58,12 +56,11 @@ export const useAccounts = defineStore('accounts', () => {
 
     return {
         items,
-        getAccountById,
-        getAccountIndexById,
-        addAccount,
-        //setAccounts,
-        updateAccount,
-        deleteAccount,
+        getById,
+        getIndexById,
+        add,
+        update,
+        remove,
         clean
     }
 })

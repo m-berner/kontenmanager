@@ -50,7 +50,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
-        records.bookings.deleteBooking(optionMenuProps.recordID)
+        records.bookings.remove(optionMenuProps.recordID)
         records.bookings.sumBookings()
         await deleteBooking(optionMenuProps.recordID)
         await notice([t('dialogs.deleteBooking.success')])
@@ -70,7 +70,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
           return optionMenuProps.recordID === booking.cStockID
         })
         if (deleteAble.length === 0) {
-          records.stocks.deleteStock(optionMenuProps.recordID)
+          records.stocks.remove(optionMenuProps.recordID)
           await deleteStock(optionMenuProps.recordID)
           await notice([t('dialogs.deleteStock.success')])
         } else {

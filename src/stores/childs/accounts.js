@@ -4,14 +4,14 @@ import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 export const useAccounts = defineStore('accounts', () => {
     const items = ref([]);
-    const getAccountIndexById = computed(() => (id) => {
+    const getIndexById = computed(() => (id) => {
         return items.value.findIndex(account => account.cID === id);
     });
-    const getAccountById = computed(() => (id) => {
+    const getById = computed(() => (id) => {
         return items.value.find(account => account.cID === id);
     });
-    function addAccount(account, prepend = false) {
-        log('ACCOUNTS: addAccount');
+    function add(account, prepend = false) {
+        log('ACCOUNTS: add');
         if (prepend) {
             items.value.unshift(account);
         }
@@ -19,16 +19,16 @@ export const useAccounts = defineStore('accounts', () => {
             items.value.push(account);
         }
     }
-    function updateAccount(account) {
-        log('ACCOUNTS: updateAccount');
-        const index = getAccountIndexById.value(account.cID);
+    function update(account) {
+        log('ACCOUNTS: update');
+        const index = getIndexById.value(account.cID);
         if (index !== -1) {
             items.value[index] = { ...account };
         }
     }
-    function deleteAccount(ident) {
-        log('ACCOUNTS: deleteAccount', { info: ident });
-        const index = getAccountIndexById.value(ident);
+    function remove(ident) {
+        log('ACCOUNTS: remove', { info: ident });
+        const index = getIndexById.value(ident);
         if (index !== -1) {
             items.value.splice(index, 1);
         }
@@ -38,11 +38,11 @@ export const useAccounts = defineStore('accounts', () => {
     }
     return {
         items,
-        getAccountById,
-        getAccountIndexById,
-        addAccount,
-        updateAccount,
-        deleteAccount,
+        getById,
+        getIndexById,
+        add,
+        update,
+        remove,
         clean
     };
 });

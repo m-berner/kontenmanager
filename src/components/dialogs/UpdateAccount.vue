@@ -90,7 +90,7 @@ const onClickOk = async (): Promise<void> => {
       cLogoUrl: formularData.logoUrl,
       cWithDepot: formularData.stockAccount
     }
-    records.accounts.updateAccount(account)
+    records.accounts.update(account)
     await updateAccount(account)
     await notice([t('dialogs.UpdateAccount.success')])
     reset()
@@ -104,7 +104,7 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_ACCOUNT: onMounted')
-  const accountIndex = records.accounts.getAccountIndexById(settings.activeAccountId)
+  const accountIndex = records.accounts.getIndexById(settings.activeAccountId)
   if (accountIndex !== -1) {
     const currentAccount = records.accounts.items[accountIndex]
     formularData.swift = currentAccount.cSwift

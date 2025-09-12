@@ -24,6 +24,15 @@ const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
+const accountWithDepot = computed((): boolean => {
+  const ind = records.accounts.getIndexById(settings.activeAccountId)
+  if (ind > -1) {
+    return records.accounts.items[ind].cWithDepot
+  } else {
+    return false
+  }
+})
+
 const onIconClick = async (ev: Event): Promise<void> => {
   log('HEADER_BAR: onIconClick')
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
@@ -70,7 +79,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
           try {
             const activeId = settings.activeAccountId
             records.clean(false)
-            records.accounts.deleteAccount(activeId)
+            records.accounts.remove(activeId)
             await deleteAccountDatabase(activeId)
 
             if (records.accounts.items.length > 0) {
@@ -149,14 +158,6 @@ const onIconClick = async (ev: Event): Promise<void> => {
     await parse(ev.target)
   }
 }
-const isStockAccount = computed((): boolean => {
-  const ind = records.accounts.getAccountIndexById(settings.activeAccountId)
-  if (ind > -1) {
-    return records.accounts.items[ind].cWithDepot
-  } else {
-    return false
-  }
-})
 
 log('--- HeaderBar.vue setup ---')
 </script>
@@ -176,7 +177,7 @@ log('--- HeaderBar.vue setup ---')
       </v-tooltip>
     </router-link>
     <router-link
-        v-if="isStockAccount"
+        v-if="accountWithDepot"
         class="router-link-active"
         to="/company">
       <v-tooltip :text="t('headerBar.home')" location="top">
@@ -191,7 +192,7 @@ log('--- HeaderBar.vue setup ---')
     </router-link>
     <v-spacer/>
     <v-tooltip
-        v-if="isStockAccount"
+        v-if="accountWithDepot"
         :text="t('headerBar.addStock')"
         location="top">
       <template v-slot:activator="{ props }">

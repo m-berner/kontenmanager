@@ -15,31 +15,23 @@ import {useSettingsStore} from '@/stores/settings'
 const {log} = useApp()
 
 export const useBookings = defineStore('bookings', () => {
-    // STATE (using ref)
+
     const items: Ref<IBooking[]> = ref([])
 
-    // GETTERS (using computed)
-    const getBookingsByAccountId = computed(() => (accountId: number): IBooking[] => {
-        return items.value.filter(booking => booking.cAccountNumberID === accountId)
-    })
-
-    const getBookingById = computed(() => (id: number): IBooking | undefined => {
+    const getById = computed(() => (id: number): IBooking | undefined => {
         return items.value.find(account => account.cID === id)
     })
-
-    const getBookingIndexById = computed(() => (ident: number): number => {
+    const getIndexById = computed(() => (ident: number): number => {
         return items.value.findIndex((entry: IBooking) => entry.cID === ident)
     })
-
-    const getBookingTextById = computed(() => (ident: number): string => {
+    const getTextById = computed(() => (ident: number): string => {
         const booking = items.value.find((entry: IBooking) => entry.cID === ident)
         if (booking) {
             return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`
         } else {
-            throw new Error('getBookingTextById: No booking found for given ID')
+            throw new Error('getTextById: No booking found for given ID')
         }
     })
-
     const sumBookings = computed(() => (): number => {
         const settings = useSettingsStore()
 
@@ -59,14 +51,13 @@ export const useBookings = defineStore('bookings', () => {
             return 0
         }
     })
-
-    const includeBookingTypeId = computed(() => (ident: number): number => {
-        return items.value.findIndex((entry: IBooking) => entry.cBookingTypeID === ident)
+    const hasBookingType = computed(() => (ident: number): boolean => {
+        const findings = items.value.filter((entry: IBooking) => entry.cBookingTypeID === ident)
+        return findings.length > 0
     })
 
-    // ACTIONS/SETTERS (regular functions)
-    function addBooking(booking: IBooking, prepend: boolean = false): void {
-        log('BOOKINGS_STORE: addBooking')
+    function add(booking: IBooking, prepend: boolean = false): void {
+        log('BOOKINGS_STORE: add')
         if (prepend) {
             items.value.unshift(booking)
         } else {
@@ -74,17 +65,17 @@ export const useBookings = defineStore('bookings', () => {
         }
     }
 
-    function updateBooking(booking: IBooking): void {
-        log('BOOKINGS_STORE: updateBooking')
-        const index = getBookingIndexById.value(booking?.cID ?? -1)
+    function update(booking: IBooking): void {
+        log('BOOKINGS_STORE: update')
+        const index = getIndexById.value(booking?.cID ?? -1)
         if (index !== -1) {
             items.value[index] = {...booking}
         }
     }
 
-    function deleteBooking(ident: number): void {
-        log('BOOKINGS_STORE: deleteBooking', {info: ident})
-        const index = getBookingIndexById.value(ident)
+    function remove(ident: number): void {
+        log('BOOKINGS_STORE: remove', {info: ident})
+        const index = getIndexById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
         }
@@ -96,15 +87,14 @@ export const useBookings = defineStore('bookings', () => {
 
     return {
         items,
-        getBookingById,
-        getBookingIndexById,
-        getBookingsByAccountId,
-        getBookingTextById,
+        getById,
+        getIndexById,
+        getTextById,
         sumBookings,
-        includeBookingTypeId,
-        addBooking,
-        updateBooking,
-        deleteBooking,
+        hasBookingType,
+        add,
+        update,
+        remove,
         clean
     }
 })

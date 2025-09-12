@@ -188,7 +188,7 @@ const onClickOk = async (): Promise<void> => {
     const addBookingID = await addBooking(booking)
     if (typeof addBookingID === 'number') {
       const completeBooking: IBooking = {cID: addBookingID, ...booking}
-      records.bookings.addBooking(completeBooking)
+      records.bookings.add(completeBooking)
       await notice([t('dialogs.AddBooking.success')])
       reset()
     }
