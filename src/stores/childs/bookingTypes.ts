@@ -33,11 +33,7 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
     })
 
     const isDuplicate = computed(() => (name: string): boolean => {
-        const duplicates = items.value.filter((entry: IBookingType) => {
-            console.error(entry.cName, name)
-            return entry.cName === name
-        })
-        console.error(duplicates, duplicates.length)
+        const duplicates = items.value.filter((entry: IBookingType) => entry.cName === name)
         return duplicates.length > 0
     })
 

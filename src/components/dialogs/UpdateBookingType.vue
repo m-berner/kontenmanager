@@ -26,7 +26,7 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
 const formSelectedIndex: Ref<number> = ref(0)
-const formSelectedName: Ref<string> = ref('')
+const formName: Ref<string> = ref('')
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
@@ -34,10 +34,10 @@ const onClickOk = async (): Promise<void> => {
   if (!await validateForm(formRef)) return
 
   try {
-    if (!records.bookingTypes.isDuplicate(formSelectedName.value.trim())) {
+    if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const bookingType: IBookingType = {
         cID: records.bookingTypes.items[formSelectedIndex.value].cID,
-        cName: formSelectedName.value.trim(),
+        cName: formName.value.trim(),
         cAccountNumberID: records.bookingTypes.items[formSelectedIndex.value].cAccountNumberID
       }
       records.bookingTypes.updateBookingType(bookingType)
@@ -67,7 +67,7 @@ log('--- UpdateBookingType.vue setup ---')
       @submit.prevent>
     <v-text-field
         v-if="formSelectedIndex > 0"
-        v-model="formSelectedName"
+        v-model="formName"
         :label="t('dialogs.updateBookingType.label')"
         :rules="requiredSelect([t('dialogs.updateBookingType.rule1')])"
         density="compact"
@@ -87,10 +87,8 @@ log('--- UpdateBookingType.vue setup ---')
         density="compact"
         :menu="true"
         :menu-props="{ maxHeight: '200px' }"
-        required
-        autocomplete
         variant="outlined"
         @focus="formRef?.resetValidation()"
-        @update:modelValue="formSelectedName = records.bookingTypes.items[formSelectedIndex].cName"/>
+        @update:modelValue="formName = records.bookingTypes.items[formSelectedIndex].cName"/>
   </v-form>
 </template>

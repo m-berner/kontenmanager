@@ -25,7 +25,7 @@ const {valNameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 
-const formularName: Ref<string> = ref('')
+const formName: Ref<string> = ref('')
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
@@ -33,14 +33,15 @@ const onClickOk = async (): Promise<void> => {
   if (!await validateForm(formRef)) return
 
   try {
-    if (!records.bookingTypes.isDuplicate(formularName.value.trim())) {
+    if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const bookingType = {
-        cName: formularName.value.trim(),
+        cName: formName.value.trim(),
         cAccountNumberID: settings.activeAccountId
       }
       const addBookingTypeID: number = await addBookingType(bookingType)
       const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
       records.bookingTypes.addBookingType(completeBookingType)
+      formName.value = ''
       await notice([t('dialogs.addBookingType.success')])
     } else {
       await notice([t('dialogs.addBookingType.error1a'), t('dialogs.addBookingType.error1b')])
@@ -64,7 +65,7 @@ log('--- AddBookingType.vue setup ---')
       validate-on="submit"
       @submit.prevent>
     <v-text-field
-        v-model="formularName"
+        v-model="formName"
         :disabled="settings.activeAccountId === -1"
         :label="t('dialogs.addBookingType.label')"
         :rules="valNameRules(['dgdf'])"
