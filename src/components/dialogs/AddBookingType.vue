@@ -40,7 +40,7 @@ const onClickOk = async (): Promise<void> => {
       }
       const addBookingTypeID: number = await addBookingType(bookingType)
       const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
-      records.bookingTypes.addBookingType(completeBookingType)
+      records.bookingTypes.add(completeBookingType)
       formName.value = ''
       await notice([t('dialogs.addBookingType.success')])
     } else {

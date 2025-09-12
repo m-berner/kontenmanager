@@ -33,7 +33,7 @@ const onClickOk = async (): Promise<void> => {
 
   try {
     if (records.bookings.includeBookingTypeId(selected.value) < 0) {
-      records.bookingTypes.deleteBookingType(selected.value)
+      records.bookingTypes.remove(selected.value)
       await deleteBookingType(selected.value)
       await notice([t('dialogs.deleteBookingType.success')])
     } else {

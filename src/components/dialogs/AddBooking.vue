@@ -219,7 +219,7 @@ log('--- AddBooking.vue setup ---')
       <v-row justify="center">
         <v-col cols="6">
           <v-text-field v-if="settings.activeAccountId === -1">
-            {{ t('dialogs.addBookingType.message') }}
+            {{ t('dialogs.addBooking.message') }}
           </v-text-field>
         </v-col>
       </v-row>

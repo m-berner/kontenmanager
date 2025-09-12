@@ -32,9 +32,9 @@ export const useRecordsStore = defineStore('records', () => {
             bookingsStore.addBooking(entry);
         }
         for (const entry of stores.bookingTypes) {
-            bookingTypesStore.addBookingType(entry);
+            bookingTypesStore.add(entry);
         }
-        bookingTypesStore.addBookingType({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId }, true);
+        bookingTypesStore.add({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId }, true);
         for (const entry of stores.stocks) {
             stocksStore.addStock(entry);
         }

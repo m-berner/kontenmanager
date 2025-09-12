@@ -14,39 +14,31 @@ import {useApp} from '@/composables/useApp'
 const {log} = useApp()
 
 export const useBookingTypes = defineStore('bookingTypes', () => {
-    // STATE (using ref)
     const items: Ref<IBookingType[]> = ref([])
 
-    // GETTERS (using computed)
-    const getBookingTypeNameById = computed(() => (ident: number): string => {
+    const getNameById = computed(() => (ident: number): string => {
         const bookingType = items.value.find((entry: IBookingType) => entry.cID === ident)
         return bookingType ? bookingType.cName : ''
     })
-
-    const getBookingTypeById = computed(() => (ident: number): IBookingType | null => {
+    const getById = computed(() => (ident: number): IBookingType | null => {
         const bookingType = items.value.find((entry: IBookingType) => entry.cID === ident)
         return bookingType ? bookingType : null
     })
-
-    const getBookingTypeIndexById = computed(() => (id: number): number => {
+    const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(bookingType => bookingType.cID === id)
     })
-
     const isDuplicate = computed(() => (name: string): boolean => {
         const duplicates = items.value.filter((entry: IBookingType) => entry.cName === name)
         return duplicates.length > 0
     })
-
     const getNames = computed(() => items.value.map(item => item.cName))
-
     const getNamesWithIndex = computed(() => items.value.map((item, index) => ({
         name: item.cName,
         index
     })))
 
-    // ACTIONS/SETTERS (regular functions)
-    function addBookingType(bookingType: IBookingType, prepend: boolean = false): void {
-        log('BOOKING_TYPES_STORE: addBookingType')
+    function add(bookingType: IBookingType, prepend: boolean = false): void {
+        log('BOOKING_TYPES_STORE: add')
         if (prepend) {
             items.value.unshift(bookingType)
         } else {
@@ -54,17 +46,17 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
         }
     }
 
-    function updateBookingType(bookingType: IBookingType): void {
-        log('BOOKING_TYPES_STORE: updateBookingType')
-        const index = getBookingTypeIndexById.value(bookingType.cID)
+    function update(bookingType: IBookingType): void {
+        log('BOOKING_TYPES_STORE: update')
+        const index = getIndexById.value(bookingType.cID)
         if (index !== -1) {
             items.value[index] = {...bookingType}
         }
     }
 
-    function deleteBookingType(ident: number): void {
-        log('BOOKING_TYPE_STORE: deleteBookingType', {info: ident})
-        const index = getBookingTypeIndexById.value(ident)
+    function remove(ident: number): void {
+        log('BOOKING_TYPE_STORE: remove', {info: ident})
+        const index = getIndexById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
         }
@@ -77,15 +69,15 @@ export const useBookingTypes = defineStore('bookingTypes', () => {
 
     return {
         items,
-        getBookingTypeById,
-        getBookingTypeNameById,
-        getBookingTypeIndexById,
+        getById,
+        getNameById,
+        getIndexById,
         getNames,
         getNamesWithIndex,
         isDuplicate,
-        addBookingType,
-        deleteBookingType,
-        updateBookingType,
+        add,
+        remove,
+        update,
         clean
     }
 })

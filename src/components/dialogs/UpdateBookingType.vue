@@ -40,12 +40,12 @@ const onClickOk = async (): Promise<void> => {
         cName: formName.value.trim(),
         cAccountNumberID: records.bookingTypes.items[formSelectedIndex.value].cAccountNumberID
       }
-      records.bookingTypes.updateBookingType(bookingType)
+      records.bookingTypes.update(bookingType)
       await updateBookingType(bookingType)
       runtime.resetTeleport()
       await notice([t('dialogs.updateBookingType.success')])
     } else {
-      await notice([t('dialogs.updateBookingType.error1a'), t('dialogs.addBookingType.error1b')])
+      await notice([t('dialogs.updateBookingType.error1a'), t('dialogs.updateBookingType.error1b')])
     }
   } catch (e) {
     log('UPDATE_BOOKING_TYPE: onClickOk', {error: e})
