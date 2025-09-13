@@ -19,6 +19,7 @@ import UpdateBooking from '@/components/dialogs/UpdateBooking.vue'
 import ExportDatabase from '@/components/dialogs/ExportDatabase.vue'
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
+import DeleteAccountConfirmation from '@/components/dialogs/DeleteAccountConfirmation.vue'
 
 const {CONS, log} = useApp()
 
@@ -36,6 +37,7 @@ const ComponentsPlugin: Plugin = {
         app.component(CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
         app.component(CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
         app.component(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)
+        app.component(CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION, DeleteAccountConfirmation)
     }
 }
 

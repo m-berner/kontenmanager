@@ -119,6 +119,7 @@ export const useApp = () => {
                 EXPORT_DATABASE: 'ExportDatabase',
                 IMPORT_DATABASE: 'ImportDatabase',
                 SHOW_ACCOUNTING: 'ShowAccounting',
+                DELETE_ACCOUNT_CONFIRMATION: 'DeleteAccountConfirmation',
                 SETTING: 'setting',
                 PLACEHOLDER: {
                     ADD_ACCOUNT_URL: 'z. B. https://www.ing.de'

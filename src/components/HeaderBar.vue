@@ -14,12 +14,10 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import DialogPort from '@/components/dialogs/childs/DialogPort.vue'
-import {useIndexedDB} from '@/composables/useIndexedDB'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
-const {setStorage, notice, openOptionsPage} = useBrowser()
-const {deleteAccountDatabase} = useIndexedDB()
+const {openOptionsPage} = useBrowser()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -73,29 +71,34 @@ const onIconClick = async (ev: Event): Promise<void> => {
           dialogVisibility: true
         })
         break
-      case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT:
-        const r = confirm('Möchten Sie das aktuelle Konto und\ndie dazugehörigen Datensätze löschen?')
-        if (r) {
-          try {
-            const activeId = settings.activeAccountId
-            records.clean(false)
-            records.accounts.remove(activeId)
-            await deleteAccountDatabase(activeId)
-
-            if (records.accounts.items.length > 0) {
-              settings.activeAccountId = records.accounts.items[0].cID
-              await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, records.accounts.items[0].cID)
-              await records.init()
-            } else {
-              settings.activeAccountId = -1
-              await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
-            }
-            await notice([t('dialogs.deleteAccount.success')])
-          } catch (e) {
-            log('HEADER_BAR: onIconClick', {error: e})
-            await notice([t('dialogs.deleteAccount.error')])
-          }
-        }
+      case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION:
+        // const r = confirm('Möchten Sie das aktuelle Konto und\ndie dazugehörigen Datensätze löschen?')
+        // if (r) {
+        //   try {
+        //     const activeId = settings.activeAccountId
+        //     records.clean(false)
+        //     records.accounts.remove(activeId)
+        //     await deleteAccountDatabase(activeId)
+        //
+        //     if (records.accounts.items.length > 0) {
+        //       settings.activeAccountId = records.accounts.items[0].cID
+        //       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, records.accounts.items[0].cID)
+        //       await records.init()
+        //     } else {
+        //       settings.activeAccountId = -1
+        //       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
+        //     }
+        //     await notice([t('dialogs.deleteAccount.success')])
+        //   } catch (e) {
+        //     log('HEADER_BAR: onIconClick', {error: e})
+        //     await notice([t('dialogs.deleteAccount.error')])
+        //   }
+        // }
+        runtime.setTeleport({
+          dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
+          dialogOk: true,
+          dialogVisibility: true
+        })
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE:
         runtime.setTeleport({
@@ -231,7 +234,7 @@ log('--- HeaderBar.vue setup ---')
     <v-tooltip :text="t('headerBar.deleteAccount')" location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
-            :id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT"
+            :id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION"
             icon="$deleteAccount"
             size="large"
             v-bind="props"

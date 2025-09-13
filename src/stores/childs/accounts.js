@@ -11,7 +11,7 @@ export const useAccounts = defineStore('accounts', () => {
         return items.value.find(account => account.cID === id);
     });
     function add(account, prepend = false) {
-        log('ACCOUNTS: add');
+        log('ACCOUNTS_STORE: add');
         if (prepend) {
             items.value.unshift(account);
         }
@@ -20,14 +20,14 @@ export const useAccounts = defineStore('accounts', () => {
         }
     }
     function update(account) {
-        log('ACCOUNTS: update');
+        log('ACCOUNTS_STORE: update');
         const index = getIndexById.value(account.cID);
         if (index !== -1) {
             items.value[index] = { ...account };
         }
     }
     function remove(ident) {
-        log('ACCOUNTS: remove', { info: ident });
+        log('ACCOUNTS_STORE: remove', { info: ident });
         const index = getIndexById.value(ident);
         if (index !== -1) {
             items.value.splice(index, 1);

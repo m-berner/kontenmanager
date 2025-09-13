@@ -158,6 +158,7 @@
     "deleteAccount": {
       "title": "Bankkonto entfernen",
       "accountNumberLabel": "Kontonummer",
+      "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
       "success": "Konto wurde entfernt",
       "error": "Konto wurde nicht entfernt?"
     },
