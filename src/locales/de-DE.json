@@ -147,16 +147,20 @@
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
       "swiftLabel": "BIC/SWIFT Code",
-      "logoLabel": "Logo brandfetch.com",
-      "stockAccountLabel": "Aktien Verrechnungskonto",
-      "accountNumberLabel": "Kontonummer",
+      "searchLabel": "Web-Adresse",
+      "withDepotLabel": "Depot Verrechnungskonto",
+      "withNoDepotLabel": "Konto",
+      "ibanLabel": "Kontonummer",
       "currencyPlaceholder": "z. B. EUR",
-      "accountNumberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "typeLabel": "Kontotyp",
+      "preview": "Vorschau",
+      "missingLogo": "Kein Logo gefunden",
       "success": "Konto wurde aktualisiert",
       "error": "Konto existiert bereits"
     },
     "deleteAccount": {
-      "title": "Bankkonto entfernen",
+      "title": "Bankkonto - alle Daten löschen",
       "accountNumberLabel": "Kontonummer",
       "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
       "success": "Konto wurde entfernt",
@@ -405,9 +409,25 @@
     }
   },
   "validators": {
-    "ibanRules": "IBAN ist erforderlich | Nur 36 Zeichen | Nach Ländercode nur Zahlen",
+    "ibanRules": {
+      "required": "IBAN ist erforderlich",
+      "country": "Falscher Ländercode",
+      "length": "Ungültige IBAN Länge",
+      "format": "Ungültige IBAN",
+      "checksum": "Ungültige Prüfsumme"
+    },
     "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben",
-    "swiftRules": "SWIFT ist erforderlich | Nur 12 Zeichen | Nur alphanumerisch",
+    "swiftRules": {
+      "required": "SWIFT ist erforderlich",
+      "length": "Nur 8 bzw. 11 Zeichen",
+      "format": "Ungültiges SWIFT Format",
+      "bankCode": "Ungültige Bank",
+      "countryCode": "Ungültiges Land",
+      "locationCode": "Ungültige Region",
+      "branchCode": "Ungültige Branche",
+      "test": "Test BIC",
+      "passive": "BIC von passivem Teilnehmer"
+    },
     "dateRules": "Datum ist erforderlich",
     "currencyCodeRules": "Ist erforderlich | 3 Zeichen | Nur Buchstaben",
     "requiredRule": "Ist erforderlich",

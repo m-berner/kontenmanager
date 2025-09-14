@@ -31,7 +31,7 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {addAccount} = useAccountsDB()
-const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
+const {ibanRules, swiftRules} = useValidation()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -61,23 +61,22 @@ const validationMessages = computed(() => ({
 }))
 
 // Computed validation rules
-const swiftValidationRules = computed(() => valSwiftRules(validationMessages.value.swift))
-const ibanValidationRules = computed(() => valIbanRules(validationMessages.value.iban))
-const brandNameValidationRules = computed(() => valBrandNameRules(validationMessages.value.brandName))
+const swiftValidationRules = computed(() => swiftRules(validationMessages.value.swift))
+//const ibanValidationRules = computed(() => ibanRules(validationMessages.value.iban))
 
 // Check if account iban already exists
 const isAccountNumberUnique = computed(() => {
   if (!formularData.iban) return true
   const cleanAccountNumber = formularData.iban.replace(/\s/g, '')
-  return !records.accounts.items.some(account => account.cNumber === cleanAccountNumber && account.cID !== 0
+  return !records.accounts.items.some(account => account.cIban === cleanAccountNumber && account.cID !== 0
   )
 })
 
 // Enhanced validation rules with uniqueness check
-const enhancedIbanRules = computed(() => [
-  ...ibanValidationRules.value,
-  () => isAccountNumberUnique.value || t('validators.numberExists')
-])
+// const enhancedIbanRules = computed(() => [
+//   ...ibanValidationRules.value,
+//   () => isAccountNumberUnique.value || t('validators.numberExists')
+// ])
 
 const reset = (): void => {
   Object.assign(formularData, {
@@ -105,7 +104,7 @@ const validateForm = (): boolean => {
 
 const createAccountObject = (): Omit<IAccount, 'cID'> => ({
   cSwift: formularData.swift.trim().toUpperCase(),
-  cNumber: formularData.iban.replace(/\s/g, ''),
+  cIban: formularData.iban.replace(/\s/g, ''),
   cLogoUrl: formularData.url,
   cWithDepot: formularData.withDepot
 })
@@ -151,7 +150,7 @@ const onClickOk = async (): Promise<void> => {
     const account = createAccountObject()
     const addAccountID = await addAccount(account)
 
-    if (typeof addAccountID === 'number') {
+    if (addAccountID > 0) {
       const completeAccount: IAccount = {cID: addAccountID, ...account}
 
       // Update stores
@@ -217,7 +216,6 @@ log('--- AddAccount.vue setup ---')
         :rules="swiftValidationRules"
         autofocus
         class="mb-4"
-        required
         variant="outlined"
         @input="formularData.swift = formularData.swift.toUpperCase()"/>
 
@@ -228,9 +226,8 @@ log('--- AddAccount.vue setup ---')
         :error-messages="!isAccountNumberUnique ? [t('validators.numberExists')] : []"
         :label="t('dialogs.addAccount.numberLabel')"
         :placeholder="t('dialogs.addAccount.numberPlaceholder')"
-        :rules="enhancedIbanRules"
+        :rules="ibanRules([])"
         class="mb-4"
-        required
         variant="outlined"
         @update:modelValue="onUpdateIbanMask"/>
 
@@ -239,9 +236,7 @@ log('--- AddAccount.vue setup ---')
         v-model="formularData.url"
         :label="t('dialogs.addAccount.urlLabel')"
         :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ADD_ACCOUNT_URL"
-        :rules="brandNameValidationRules"
         class="mb-4"
-        required
         variant="outlined"/>
 
     <!-- Logo Preview -->

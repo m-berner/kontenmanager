@@ -264,9 +264,8 @@ export const useApp = () => {
                         ID: 'cID',
                         SWIFT: 'cSwift',
                         LOGO_URL: 'cLogoUrl',
-                        LOGO_SEARCH_NAME: 'cLogoSearchName',
-                        NUMBER: 'cNumber',
-                        STOCK_ACCOUNT: 'cWithDepot'
+                        IBAN: 'cIban',
+                        WITH_DEPOT: 'cWithDepot'
                     }
                 },
                 BOOKINGS: {

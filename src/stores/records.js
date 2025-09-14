@@ -27,7 +27,7 @@ export const useRecordsStore = defineStore('records', () => {
         for (const entry of stores.accounts) {
             accountsStore.add(entry);
         }
-        accountsStore.add({ cID: 0, cSwift: '', cNumber: '', cLogoUrl: '', cWithDepot: false }, true);
+        accountsStore.add({ cID: 0, cSwift: '', cIban: '', cLogoUrl: '', cWithDepot: false }, true);
         for (const entry of stores.bookings) {
             bookingsStore.add(entry);
         }

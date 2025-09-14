@@ -13,7 +13,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 keyPath: CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID,
                 autoIncrement: true
             });
-            accountStore.createIndex(`${CONS.INDEXED_DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.NUMBER, { unique: true });
+            accountStore.createIndex(`${CONS.INDEXED_DB.STORES.ACCOUNTS.NAME}_uk1`, CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN, { unique: true });
         }
         if (!db.objectStoreNames.contains(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)) {
             const bookingStore = db.createObjectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, {

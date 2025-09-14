@@ -9,7 +9,7 @@
 export interface IAccountDB {
     cID: number
     cSwift: string
-    cNumber: string
+    cIban: string
     cLogoUrl: string
     cWithDepot: boolean
 }
@@ -63,7 +63,7 @@ export interface IStoresDB {
 export interface IAccount {
     cID: number
     cSwift: string
-    cNumber: string
+    cIban: string
     cLogoUrl: string
     cWithDepot: boolean
 }

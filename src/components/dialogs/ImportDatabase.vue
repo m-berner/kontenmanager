@@ -143,7 +143,7 @@ const onClickOk = async (): Promise<void> => {
         const accountRecords = [{
           cID: activeId,
           cSwift: 'KMKLPJJ9099',
-          cNumber: 'XX13120300001064506999',
+          cIban: 'XX13120300001064506999',
           cLogoUrl: '', // TODO cUrl
           cWithDepot: true // TODO withDepot
         }]

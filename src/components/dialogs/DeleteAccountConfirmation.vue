@@ -44,7 +44,7 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 
-const title = computed(() => t('dialogs.addAccount.title'))
+const title = computed(() => t('dialogs.deleteAccount.title'))
 
 defineExpose({onClickOk, title})
 

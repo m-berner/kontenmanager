@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {Ref} from 'vue'
-import {defineExpose, onMounted, reactive, ref} from 'vue'
+import {defineExpose, onMounted, reactive, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
@@ -15,91 +15,77 @@ import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useDomain} from '@/composables/useDomain'
+import {useFavicon} from '@/composables/useFavicon'
 
-interface IFormularData {
+interface IFormData {
   swift: string
-  number: string
+  iban: string
   logoUrl: string
-  logoSearchName: string
-  stockAccount: boolean
+  withDepot: boolean
 }
 
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {updateAccount} = useAccountsDB()
-const {valIbanRules, valSwiftRules, valBrandNameRules} = useValidation()
+const {ibanRules, validateForm, swiftRules} = useValidation()
 const settings = useSettingsStore()
 const records = useRecordsStore()
+const runtime = useRuntimeStore()
 
-const formularData: IFormularData = reactive({
+const formData: IFormData = reactive({
   swift: '',
-  number: '',
+  iban: '',
   logoUrl: '',
-  logoSearchName: '',
-  stockAccount: false
+  withDepot: false
 })
-const isFormValid: Ref<boolean> = ref(false)
+const formRef: Ref<HTMLFormElement | null> = ref(null)
+const formPreviewUrl: Ref<string> = ref('')
+const formSearch: Ref<string> = ref('')
 
-const reset = () => {
-  formularData.swift = ''
-  formularData.number = ''
-  formularData.logoUrl = ''
-  formularData.logoSearchName = ''
-  formularData.stockAccount = false
+const onUpdateSwift = (swift: string): void => {
+  if (!swift) return
+  const clean = swift.replace(/\s/g, '').toUpperCase()
+  let result: string
+  if (clean.length <= 4) result = clean
+  if (clean.length <= 6) result = `${clean.substring(0, 4)} ${clean.substring(4)}`
+  if (clean.length <= 8) result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6)}`
+  result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6, 8)} ${clean.substring(8)}`
+  formData.swift = result
 }
 
-const validateForm = (): boolean => {
-  if (!isFormValid.value) {
-    notice([t('dialogs.addAccount.invalidForm')])
-    return false
-  }
-
-  return true
-}
-
-//TODO see AddAccount...
-const onInputLogoUrl = () => {
-  formularData.logoUrl = '' //`${CONS.URLS.LOGO[0]}/${formularData.logoSearchName}/${CONS.URLS.LOGO[1]}`
-}
-const onUpdateLogoSearchName = (iban: string) => {
-  if (iban) {
-    const withoutSpace = iban.replace(/\s/g, '')
-    const loops = Math.ceil(withoutSpace.length / 4)
-    let masked = ''
-    for (let i = 0; i < loops; i++) {
-      if (i === 0) {
-        masked = withoutSpace.slice(i * 4, (i + 1) * 4).toUpperCase()
-      } else {
-        masked += ` ${withoutSpace.slice(i * 4, (i + 1) * 4)}`
-      }
-    }
-    formularData.number = masked
-  }
+const onUpdateIban = (iban: string): void => {
+  if (!iban) return
+  const clean = iban.replace(/\s/g, '').toUpperCase()
+  formData.iban = clean.replace(/(.{4})/g, '$1 ').trim()
 }
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_ACCOUNT : onClickOk')
-  if (!validateForm()) return
+  if (!await validateForm(formRef)) return
 
   try {
     const account = {
       cID: settings.activeAccountId,
-      cSwift: formularData.swift.trim().toUpperCase(),
-      cNumber: formularData.number.replace(/\s/g, ''),
-      cLogoUrl: formularData.logoUrl,
-      cWithDepot: formularData.stockAccount
+      cSwift: formData.swift.trim().toUpperCase(),
+      cIban: formData.iban.replace(/\s/g, ''),
+      cLogoUrl: formPreviewUrl.value,
+      cWithDepot: formData.withDepot
     }
     records.accounts.update(account)
     await updateAccount(account)
-    await notice([t('dialogs.UpdateAccount.success')])
-    reset()
+    runtime.resetTeleport()
+    await notice([t('dialogs.updateAccount.success')])
   } catch (e) {
     log('UPDATE_ACCOUNT: onClickOk', {error: e})
     await notice([t('dialogs.updateAccount.error')])
   }
 }
+
 const title = t('dialogs.updateAccount.title')
+
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -107,12 +93,29 @@ onMounted(() => {
   const accountIndex = records.accounts.getIndexById(settings.activeAccountId)
   if (accountIndex !== -1) {
     const currentAccount = records.accounts.items[accountIndex]
-    formularData.swift = currentAccount.cSwift
-    formularData.number = currentAccount.cNumber
-    formularData.logoUrl = currentAccount.cLogoUrl
-    formularData.logoSearchName = ''
-    formularData.stockAccount = currentAccount.cWithDepot
+    Object.assign(formData, {
+      swift: currentAccount.cSwift,
+      iban: currentAccount.cIban,
+      logoUrl: currentAccount.cLogoUrl,
+      withDepot: currentAccount.cWithDepot
+    })
+    formPreviewUrl.value = currentAccount.cLogoUrl
   }
+})
+
+// Watch for logo search name changes with debouncing
+let logoTimeout: NodeJS.Timeout
+watch(formSearch, async () => {
+  log('UPDATE_ACCOUNT: watch')
+  if (logoTimeout !== undefined) {
+    clearTimeout(logoTimeout)
+  }
+  logoTimeout = setTimeout(() => {
+    const {domain} = useDomain(formSearch)
+    const domainName = domain.value ?? ''
+    const {faviconUrl} = useFavicon(domainName ?? '')
+    formPreviewUrl.value = faviconUrl.value
+  }, 600)
 })
 
 log('--- UpdateAccount.vue setup ---')
@@ -120,41 +123,85 @@ log('--- UpdateAccount.vue setup ---')
 
 <template>
   <v-form
-      ref="form-ref"
+      ref="formRef"
       validate-on="submit"
       @submit.prevent>
     <v-switch
-        v-model="formularData.stockAccount"
-        :label="t('dialogs.updateAccount.stockAccountLabel')"
+        v-model="formData.withDepot"
+        :label="t('dialogs.updateAccount.withDepotLabel')"
         color="red"
         variant="outlined"/>
     <v-text-field
-        ref="swift-input"
-        v-model="formularData.swift"
+        v-model="formData.swift"
         :label="t('dialogs.updateAccount.swiftLabel')"
-        :rules="valSwiftRules([t('validators.swiftRules', 0), t('validators.swiftRules', 1)])"
+        :rules="swiftRules([
+            t('validators.swiftRules.required'),
+            t('validators.swiftRules.length'),
+            t('validators.swiftRules.format'),
+            t('validators.swiftRules.bankCode'),
+            t('validators.swiftRules.countryCode'),
+            t('validators.swiftRules.locationCode'),
+            t('validators.swiftRules.branchCode'),
+            t('validators.swiftRules.test'),
+            t('validators.swiftRules.passive'),
+        ])"
         autofocus
-        required
         variant="outlined"
+        @focus="formRef?.resetValidation()"
+        @update:modelValue="onUpdateSwift"
     />
     <v-text-field
-        v-model="formularData.number"
-        :label="t('dialogs.updateAccount.accountNumberLabel')"
-        :placeholder="t('dialogs.updateAccount.accountNumberPlaceholder')"
-        :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
-        required
+        v-model="formData.iban"
+        :label="t('dialogs.updateAccount.ibanLabel')"
+        :placeholder="t('dialogs.updateAccount.ibanPlaceholder')"
+        :rules="ibanRules([
+            t('validators.ibanRules.required'),
+            t('validators.ibanRules.country'),
+            t('validators.ibanRules.length'),
+            t('validators.ibanRules.format'),
+            t('validators.ibanRules.checksum')
+        ])"
         variant="outlined"
-        @update:modelValue="onUpdateLogoSearchName"
+        @focus="formRef?.resetValidation()"
+        @update:modelValue="onUpdateIban"
     />
     <v-text-field
-        v-model="formularData.logoSearchName"
-        :label="t('dialogs.updateAccount.logoLabel')"
-        :rules="valBrandNameRules([t('validators.brandNameRules', 0)])"
+        v-model="formSearch"
+        :label="t('dialogs.updateAccount.searchLabel')"
         placeholder="z. B. ing.com"
-        required
         variant="outlined"
-        @input="onInputLogoUrl"
     />
-    <img :src="formularData.logoUrl" alt=""/>
   </v-form>
+
+  <!-- Logo Preview -->
+  <div class="mb-4">
+    <v-avatar class="me-3" color="white" size="48">
+      <v-img
+          :alt="t('dialogs.updateAccount.missingLogo')"
+          :src="formPreviewUrl"/>
+    </v-avatar>
+  </div>
+  <!-- Form Summary -->
+  <v-card
+      v-if="formData.swift || formData.iban"
+      class="pa-3 mb-4"
+      variant="outlined">
+    <v-card-subtitle>{{ t('dialogs.updateAccount.preview') }}</v-card-subtitle>
+    <v-card-text>
+      <div class="d-flex flex-column gap-2">
+        <div v-if="formData.swift">
+          <strong>{{ t('dialogs.updateAccount.swiftLabel') }}:</strong> {{ formData.swift }}
+        </div>
+        <div v-if="formData.iban">
+          <strong>{{ t('dialogs.updateAccount.ibanLabel') }}:</strong> {{ formData.iban }}
+        </div>
+        <div>
+          <strong>{{ t('dialogs.updateAccount.typeLabel') }}:</strong>
+          {{
+            formData.withDepot ? t('dialogs.updateAccount.withDepotLabel') : t('dialogs.updateAccount.withNoDepotLabel')
+          }}
+        </div>
+      </div>
+    </v-card-text>
+  </v-card>
 </template>

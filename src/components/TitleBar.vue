@@ -55,7 +55,7 @@ log('--- TitleBar.vue setup ---')
     <v-select
         v-if="settings.activeAccountId > 0"
         v-model="settings.activeAccountId"
-        :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.NUMBER"
+        :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
         :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.accounts.items"
         :label="t('titleBar.selectAccountLabel')"

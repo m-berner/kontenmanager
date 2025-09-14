@@ -32,7 +32,7 @@ const {log} = useApp()
 const {notice} = useBrowser()
 const {addStock} = useStocksDB()
 const {fetchCompanyData} = useFetch()
-const {valIbanRules} = useValidation()
+const {ibanRules} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -145,7 +145,7 @@ log('--- AddStock.vue setup ---')
           v-model="formularData.isin"
           :counter="12"
           :label="t('dialogs.addStock.isin')"
-          :rules="valIbanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+          :rules="ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
           autofocus
           required
           variant="outlined"

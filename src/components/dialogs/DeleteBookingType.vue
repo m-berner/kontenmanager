@@ -65,9 +65,9 @@ log('--- DeleteBookingType.vue setup ---')
         :items="records.bookingTypes.items"
         :label="t('dialogs.deleteBookingType.label')"
         :rules="requiredSelect([t('dialogs.deleteBookingType.rule1')])"
+        autocomplete
         density="compact"
         required
-        autocomplete
         variant="outlined"
         @focus="formRef?.resetValidation()"/>
   </v-form>
