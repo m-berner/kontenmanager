@@ -47,7 +47,7 @@ export const useValidation = () => {
             }
         ]
     }
-    const ibanDuplicateRule = (msgArray: string[]): TStringValidator[] => {
+    const ibanDuplicateRules = (msgArray: string[]): TStringValidator[] => {
         return [
             (v: string) => {
                 const records = useRecordsStore()
@@ -119,7 +119,7 @@ export const useValidation = () => {
     }
     return {
         ibanRules,
-        ibanDuplicateRule,
+        ibanDuplicateRules,
         valNameRules,
         swiftRules,
         valDateRules,

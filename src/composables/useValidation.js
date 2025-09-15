@@ -34,7 +34,7 @@ export const useValidation = () => {
             }
         ];
     };
-    const ibanDuplicateRule = (msgArray) => {
+    const ibanDuplicateRules = (msgArray) => {
         return [
             (v) => {
                 const records = useRecordsStore();
@@ -106,7 +106,7 @@ export const useValidation = () => {
     };
     return {
         ibanRules,
-        ibanDuplicateRule,
+        ibanDuplicateRules,
         valNameRules,
         swiftRules,
         valDateRules,

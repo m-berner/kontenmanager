@@ -31,7 +31,7 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {addAccount} = useAccountsDB()
-const {ibanRules, swiftRules, validateForm} = useValidation()
+const {ibanRules, ibanDuplicateRules, swiftRules, validateForm} = useValidation()
 const runtime = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -45,6 +45,19 @@ const formData: IFormData = reactive({
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 const formPreviewUrl: Ref<string> = ref('')
 const formSearch: Ref<string> = ref('')
+
+const joinedIbanRules = computed(() => [
+  ...ibanRules([
+    t('validators.ibanRules.required'),
+    t('validators.ibanRules.country'),
+    t('validators.ibanRules.length'),
+    t('validators.ibanRules.format'),
+    t('validators.ibanRules.checksum')
+  ]),
+  ...ibanDuplicateRules([
+    t('validators.ibanRules.duplicate')
+  ])
+])
 
 const onUpdateSwift = (swift: string): void => {
   if (!swift) return
@@ -153,14 +166,7 @@ log('--- AddAccount.vue setup ---')
         v-model="formData.iban"
         :label="t('dialogs.addAccount.ibanLabel')"
         :placeholder="t('dialogs.addAccount.ibanPlaceholder')"
-        :rules="ibanRules([
-            t('validators.ibanRules.required'),
-            t('validators.ibanRules.country'),
-            t('validators.ibanRules.length'),
-            t('validators.ibanRules.format'),
-            t('validators.ibanRules.checksum'),
-            t('validators.ibanRules.duplicate')
-        ])"
+        :rules="joinedIbanRules"
         variant="outlined"
         @focus="formRef?.resetValidation()"
         @update:modelValue="onUpdateIban"/>
