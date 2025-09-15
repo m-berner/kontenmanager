@@ -102,17 +102,14 @@
     "addAccount": {
       "title": "Bankkonto hinzufügen",
       "swiftLabel": "BIC/SWIFT Code",
-      "urlLabel": "Unternehmens URL",
-      "withDepotLabel": "Aktien Verrechnungskonto",
-      "numberLabel": "Kontonummer",
-      "numberPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "invalidForm": "Formular konnte nicht verifiziert werden.",
-      "noLogo": "Kein Logo gefunden",
-      "logoPreview": "Logo Vorschau",
+      "searchLabel": "Web-Adresse",
+      "withDepotLabel": "Depot Verrechnungskonto",
+      "withNoDepotLabel": "Konto",
+      "ibanLabel": "Kontonummer",
+      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "typeLabel": "Kontotype",
       "preview": "Vorschau",
-      "accountType": "Kontotyp",
-      "withDepot": "Aktien Verrechnungskonto",
-      "noDepot": "Bankkonto",
+      "missingLogo": "Kein Logo gefunden",
       "success": "Konto wurde hinzugefügt",
       "error": "Konto existiert bereits"
     },
@@ -151,7 +148,6 @@
       "withDepotLabel": "Depot Verrechnungskonto",
       "withNoDepotLabel": "Konto",
       "ibanLabel": "Kontonummer",
-      "currencyPlaceholder": "z. B. EUR",
       "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
       "typeLabel": "Kontotyp",
       "preview": "Vorschau",
@@ -183,8 +179,7 @@
       "success": "Buchungstyp wurde aktualisiert",
       "error1a": "Der Buchungstyp konnte nicht aktualisiert werden",
       "error1b": "",
-      "catch": "Problem beim Aktualisieren!",
-      "rule1": "ttert"
+      "catch": "Problem beim Aktualisieren!"
     },
     "deleteBookingType": {
       "title": "Buchungstyp löschen",
@@ -414,7 +409,8 @@
       "country": "Falscher Ländercode",
       "length": "Ungültige IBAN Länge",
       "format": "Ungültige IBAN",
-      "checksum": "Ungültige Prüfsumme"
+      "checksum": "Ungültige Prüfsumme",
+      "duplicate": "Konto existiert bereits"
     },
     "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben",
     "swiftRules": {

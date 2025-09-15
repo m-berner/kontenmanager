@@ -27,7 +27,7 @@ interface IFormData {
 }
 
 const {t} = useI18n()
-const {log} = useApp()
+const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {updateAccount} = useAccountsDB()
 const {ibanRules, validateForm, swiftRules} = useValidation()
@@ -112,8 +112,7 @@ watch(formSearch, async () => {
   }
   logoTimeout = setTimeout(() => {
     const {domain} = useDomain(formSearch)
-    const domainName = domain.value ?? ''
-    const {faviconUrl} = useFavicon(domainName ?? '')
+    const {faviconUrl} = useFavicon(domain.value ?? '')
     formPreviewUrl.value = faviconUrl.value
   }, 600)
 })
@@ -168,7 +167,7 @@ log('--- UpdateAccount.vue setup ---')
     <v-text-field
         v-model="formSearch"
         :label="t('dialogs.updateAccount.searchLabel')"
-        placeholder="z. B. ing.com"
+        :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.UPDATE_ACCOUNT_URL"
         variant="outlined"
     />
   </v-form>

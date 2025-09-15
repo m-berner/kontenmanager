@@ -25,6 +25,11 @@ export const useAccounts = defineStore('accounts', () => {
         return items.value.find(account => account.cID === id)
     })
 
+    const isDuplicate = computed(() => (name: string): boolean => {
+        const duplicates = items.value.filter((entry: IAccount) => entry.cIban === name)
+        return duplicates.length > 0
+    })
+
     function add(account: IAccount, prepend: boolean = false): void {
         log('ACCOUNTS_STORE: add')
         if (prepend) {
@@ -58,6 +63,7 @@ export const useAccounts = defineStore('accounts', () => {
         items,
         getById,
         getIndexById,
+        isDuplicate,
         add,
         update,
         remove,

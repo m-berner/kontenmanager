@@ -6,6 +6,7 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {Ref} from 'vue'
+import {useRecordsStore} from '@/stores/records'
 
 type TStringValidator = (_v: string) => boolean | string
 type TNumberValidator = (_v: number) => boolean | string
@@ -43,6 +44,14 @@ export const useValidation = () => {
                 })
                 const remainder = BigInt(numericString) % 97n
                 return remainder === 1n || msgArray[4]
+            }
+        ]
+    }
+    const ibanDuplicateRule = (msgArray: string[]): TStringValidator[] => {
+        return [
+            (v: string) => {
+                const records = useRecordsStore()
+                return !records.accounts.isDuplicate(v.replace(/\s/g, '')) || msgArray[5]
             }
         ]
     }
@@ -110,6 +119,7 @@ export const useValidation = () => {
     }
     return {
         ibanRules,
+        ibanDuplicateRule,
         valNameRules,
         swiftRules,
         valDateRules,

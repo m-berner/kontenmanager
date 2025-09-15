@@ -1,3 +1,4 @@
+import { useRecordsStore } from '@/stores/records';
 export const useValidation = () => {
     const ibanRules = (msgArray) => {
         const ibanLengths = {
@@ -30,6 +31,14 @@ export const useValidation = () => {
                 });
                 const remainder = BigInt(numericString) % 97n;
                 return remainder === 1n || msgArray[4];
+            }
+        ];
+    };
+    const ibanDuplicateRule = (msgArray) => {
+        return [
+            (v) => {
+                const records = useRecordsStore();
+                return !records.accounts.isDuplicate(v.replace(/\s/g, '')) || msgArray[5];
             }
         ];
     };
@@ -97,6 +106,7 @@ export const useValidation = () => {
     };
     return {
         ibanRules,
+        ibanDuplicateRule,
         valNameRules,
         swiftRules,
         valDateRules,

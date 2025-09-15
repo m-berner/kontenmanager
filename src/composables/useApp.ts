@@ -122,7 +122,8 @@ export const useApp = () => {
                 DELETE_ACCOUNT_CONFIRMATION: 'DeleteAccountConfirmation',
                 SETTING: 'setting',
                 PLACEHOLDER: {
-                    ADD_ACCOUNT_URL: 'z. B. https://www.ing.de'
+                    ADD_ACCOUNT_URL: 'z. B. https://www.ing.de',
+                    UPDATE_ACCOUNT_URL: 'z. B. https://www.ing.de'
                 }
             }
         },
