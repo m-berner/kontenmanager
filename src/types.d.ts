@@ -93,6 +93,26 @@ export interface IBooking {
     cMarketPlace: string
 }
 
+export interface IBookingContainerData {
+    id: number
+    bookDate: string
+    exDate: string
+    credit: number
+    debit: number
+    description: string
+    count: number
+    unitQuotation: number
+    bookingTypeId: number
+    accountTypeId: number
+    stockId: number
+    sourceTax: number
+    transactionTax: number
+    tax: number
+    fee: number
+    soli: number
+    marketPlace: string
+}
+
 export interface IStockOnlyMemory {
     mPortfolio: number
     mChange: number

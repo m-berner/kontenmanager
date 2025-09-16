@@ -6,9 +6,9 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking, IBookingType} from '@/types.d'
+import type {IBooking} from '@/types.d'
 import type {Ref} from 'vue'
-import {defineExpose, onMounted, reactive, ref} from 'vue'
+import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBookingsDB} from '@/composables/useIndexedDB'
@@ -17,71 +17,63 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
-import CurrencyInput from '@/components/dialogs/childs/CurrencyInput.vue'
-
-interface IFormularData {
-  id: number
-  bookingTypeId: number
-  credit: number
-  debit: number
-  date: string
-  description: string
-}
+import BookingContainer from '@/components/dialogs/childs/BookingContainer.vue'
+import {useBookingContainer} from '@/composables/useBookingContainer'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
 const {notice} = useBrowser()
 const {updateBooking} = useBookingsDB()
-const {valPositiveIntegerRules} = useValidation()
+const {validateForm} = useValidation()
+const {containerData} = useBookingContainer()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 
 const currentBooking = records.bookings.items[records.bookings.getIndexById(runtime.activeId)]
-const state: IFormularData = reactive({
-  id: currentBooking.cID,
-  bookingTypeId: currentBooking.cBookingTypeID,
-  date: currentBooking.cDate,
-  debit: currentBooking.cDebit,
-  credit: currentBooking.cCredit,
-  description: currentBooking.cDescription
-})
-const isFormValid: Ref<boolean> = ref(false)
-
-const validateForm = (): boolean => {
-  if (!isFormValid.value) {
-    notice([t('dialogs.addAccount.invalidForm')])
-    return false
-  }
-
-  return true
-}
+containerData.id = currentBooking.cID
+containerData.bookingTypeId = currentBooking.cBookingTypeID
+containerData.bookDate = currentBooking.cDate
+containerData.debit = currentBooking.cDebit
+containerData.credit = currentBooking.cCredit
+containerData.description = currentBooking.cDescription
+containerData.exDate = ''
+containerData.count = 0
+containerData.unitQuotation = 0
+containerData.accountTypeId = 0
+containerData.stockId = 0
+containerData.sourceTax = 0
+containerData.transactionTax = 0
+containerData.tax = 0
+containerData.fee = 0
+containerData.soli = 0
+containerData.marketPlace = ''
+const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING : onClickOk')
-  if (!validateForm()) return
+  if (!await validateForm(formRef)) return
 
   try {
     const booking: IBooking = {
-      cID: state.id,
+      cID: containerData.id,
       cAccountNumberID: settings.activeAccountId,
       cStockID: currentBooking.cStockID,
-      cBookingTypeID: state.bookingTypeId,
-      cDate: state.date,
+      cBookingTypeID: containerData.bookingTypeId,
+      cDate: containerData.bookDate,
       cExDate: currentBooking.cExDate,
       cCount: currentBooking.cCount,
-      cDescription: state.description,
+      cDescription: containerData.description,
       cTransactionTax: currentBooking.cTransactionTax,
       cSourceTax: currentBooking.cSourceTax,
       cFee: currentBooking.cFee,
       cTax: currentBooking.cTax,
       cMarketPlace: currentBooking.cMarketPlace,
       cSoli: currentBooking.cSoli,
-      cDebit: state.debit,
-      cCredit: state.credit
+      cDebit: containerData.debit,
+      cCredit: containerData.credit
     }
     records.bookings.update(booking)
-    records.bookings.sumBookings()
     const updateBookingResponse = await updateBooking(booking)
     await notice([updateBookingResponse as string])
     runtime.resetOptionsMenuColors()
@@ -103,63 +95,9 @@ log('--- UpdateBooking.vue setup ---')
 
 <template>
   <v-form
-      v-model="isFormValid"
+      ref="formRef"
       validate-on="submit"
       @submit.prevent>
-    <v-container>
-      <v-row>
-        <v-text-field
-            v-model="state.date"
-            :label="t('dialogs.updateBooking.dateLabel')"
-            autofocus
-            required
-            type="date"
-            variant="outlined"
-        />
-      </v-row>
-      <v-row>
-        <v-select
-            v-model="state.bookingTypeId"
-            :itemTitle="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-            :itemValue="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
-            :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
-            :label="t('dialogs.addBooking.bookingTypeLabel')"
-            :menu=false
-            :menuProps="{ maxHeight: 250 }"
-            :rules="valPositiveIntegerRules([t('dialogs.updateBooking.validators[0]')])"
-            density="compact"
-            maxWidth="300"
-            required
-            validate-on="input"
-            variant="outlined"
-            @update:modelValue="(ev) => {console.error('CHANGE', ev, state.bookingTypeId)}"
-        />
-      </v-row>
-      <v-row cols="2" sm="2">
-        <v-col>
-          <CurrencyInput
-              v-model="state.credit"
-              :label="t('dialogs.addBooking.creditLabel')"
-              @amount="(a) => { state.credit = a }"
-          />
-        </v-col>
-        <v-col>
-          <CurrencyInput
-              v-model="state.debit"
-              :label="t('dialogs.addBooking.debitLabel')"
-              @amount="(a) => { state.debit = a }"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-text-field
-            v-model="state.description"
-            :label="t('dialogs.addBooking.descriptionLabel')"
-            density="compact"
-            required
-            variant="outlined"
-        />
-      </v-row>
-    </v-container>
+    <BookingContainer/>
   </v-form>
 </template>

@@ -92,7 +92,6 @@ const onClickOk = async (): Promise<void> => {
     // Update stores
     records.accounts.add(completeAccount)
     settings.activeAccountId = addAccountID
-    // Persist active account ID
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
     runtime.resetTeleport()
     await notice([t('dialogs.addAccount.success')])

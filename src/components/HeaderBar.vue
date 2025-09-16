@@ -72,28 +72,6 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION:
-        // const r = confirm('Möchten Sie das aktuelle Konto und\ndie dazugehörigen Datensätze löschen?')
-        // if (r) {
-        //   try {
-        //     const activeId = settings.activeAccountId
-        //     records.clean(false)
-        //     records.accounts.remove(activeId)
-        //     await deleteAccountDatabase(activeId)
-        //
-        //     if (records.accounts.items.length > 0) {
-        //       settings.activeAccountId = records.accounts.items[0].cID
-        //       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, records.accounts.items[0].cID)
-        //       await records.init()
-        //     } else {
-        //       settings.activeAccountId = -1
-        //       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
-        //     }
-        //     await notice([t('dialogs.deleteAccount.success')])
-        //   } catch (e) {
-        //     log('HEADER_BAR: onIconClick', {error: e})
-        //     await notice([t('dialogs.deleteAccount.error')])
-        //   }
-        // }
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
           dialogOk: true,

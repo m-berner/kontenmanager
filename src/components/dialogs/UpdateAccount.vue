@@ -80,7 +80,7 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.updateAccount.success')])
   } catch (e) {
     log('UPDATE_ACCOUNT: onClickOk', {error: e})
-    await notice([t('dialogs.updateAccount.error')])
+    await notice([t('dialogs.updateAccount.catch')])
   }
 }
 

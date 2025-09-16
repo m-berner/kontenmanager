@@ -424,10 +424,11 @@
       "test": "Test BIC",
       "passive": "BIC von passivem Teilnehmer"
     },
-    "dateRules": "Datum ist erforderlich",
+    "dateRules": {
+      "required": "Datum ist erforderlich",
+      "iso": ""
+    },
     "currencyCodeRules": "Ist erforderlich | 3 Zeichen | Nur Buchstaben",
-    "requiredRule": "Ist erforderlich",
-    "brandNameRules": "Ist erforderlich",
-    "accountNumberExists": "Kontonummer existiert bereits."
+    "requiredRules": "Ist erforderlich"
   }
 }

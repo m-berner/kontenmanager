@@ -51,7 +51,6 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
         records.bookings.remove(optionMenuProps.recordID)
-        records.bookings.sumBookings()
         await deleteBooking(optionMenuProps.recordID)
         await notice([t('dialogs.deleteBooking.success')])
         for (const m of runtime.optionMenuColors.keys()) {

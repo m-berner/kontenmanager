@@ -69,10 +69,8 @@ log('--- AddBookingType.vue setup ---')
         :disabled="settings.activeAccountId === -1"
         :label="t('dialogs.addBookingType.label')"
         :rules="valNameRules(['dgdf'])"
-        class="mb-4"
-        required
+        density="compact"
         variant="outlined"
-        @focus="formRef?.resetValidation()"
-        @update:modelValue="() => { console.error('DFSFS') }"/>
+        @focus="formRef?.resetValidation()"/>
   </v-form>
 </template>

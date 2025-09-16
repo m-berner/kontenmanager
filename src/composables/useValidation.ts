@@ -78,7 +78,7 @@ export const useValidation = () => {
             (v: string) => !v.replace(/\s/g, '').substring(6, 8).endsWith('1') || msgArray[8]
         ]
     }
-    const valDateRules = (msgArray: string[]): TStringValidator[] => {
+    const dateRules = (msgArray: string[]): TStringValidator[] => {
         return [
             (v: string) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
         ]
@@ -90,7 +90,7 @@ export const useValidation = () => {
             (v: string) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
         ]
     }
-    const valRequiredRules = (msgArray: string[]): TStringValidator[] => {
+    const requiredRules = (msgArray: string[]): TStringValidator[] => {
         return [
             (v: string) => v !== null || msgArray[0]
         ]
@@ -122,9 +122,9 @@ export const useValidation = () => {
         ibanDuplicateRules,
         valNameRules,
         swiftRules,
-        valDateRules,
+        dateRules,
         valCurrencyCodeRules,
-        valRequiredRules,
+        requiredRules,
         valPositiveIntegerRules,
         requiredSelect,
         requiredSelectNumber,
