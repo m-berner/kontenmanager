@@ -18,7 +18,6 @@ import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import BookingContainer from '@/components/dialogs/childs/BookingContainer.vue'
 import {useBookingContainer} from '@/composables/useBookingContainer'
-import {useRuntime} from '@/composables/useRuntime'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -28,7 +27,6 @@ const {validateForm} = useValidation()
 const {containerData} = useBookingContainer()
 const records = useRecordsStore()
 const settings = useSettings()
-const runtime = useRuntime()
 
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 

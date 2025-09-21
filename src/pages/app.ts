@@ -36,12 +36,12 @@ app.mount('#app')
 
 const keyStrokeController: string[] = []
 const onBeforeUnload = (): void => {
-    log('BACKGROUND: onBeforeUnload')
+    log('APP: onBeforeUnload')
     db.close()
 }
 const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
     keyStrokeController.push(ev.key)
-    log('BACKGROUND: onKeyDown')
+    log('APP: onKeyDown')
     if (
         keyStrokeController.includes('Control') &&
         keyStrokeController.includes('Alt') &&

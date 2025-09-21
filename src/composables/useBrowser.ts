@@ -6,41 +6,18 @@
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {useApp} from '@/composables/useApp'
+import {computed} from 'vue'
+
+const {CONS} = useApp()
 
 export const useBrowser = () => {
+    const indexUrl = computed(() => browser.runtime.getURL(CONS.PAGES.INDEX))
 
-    const clearStorage = async () => {
-        await browser.storage.local.clear()
-    }
-    const setStorage = async (key: string, value: string | number | boolean | string[]): Promise<void> => {
-        try {
-            await browser.storage.local.set({[key]: value})
-        } catch (error) {
-            throw error
-        }
-    }
-    const getStorage = async (keys: string[] | null = null): Promise<{
-        [p: string]: string | boolean | number | string[]
-    }> => {
-        try {
-            return await browser.storage.local.get(keys)
-        } catch (error) {
-            throw error
-        }
-    }
-    const openOptionsPage = async (): Promise<void> => {
-        try {
-            return await browser.runtime.openOptionsPage()
-        } catch (error) {
-            throw error
-        }
-    }
-    const onStorageChanged = (callback: (_changes: { [key: string]: browser.storage.StorageChange }) => void) => {
-        browser.storage.local.onChanged.addListener(callback)
-        // Return cleanup function
-        return () => browser.storage.local.onChanged.removeListener(callback)
-    }
-    const getChar5Locale = (): string => {
+    const manifest = computed(() => browser.runtime.getManifest())
+
+    const uiLanguage = computed(() => browser.i18n.getUILanguage())
+
+    function getChar5Locale(): string {
         const defaultLanguage = navigator.languages[0]
         let result = ''
         if (defaultLanguage.length === 5) {
@@ -52,7 +29,67 @@ export const useBrowser = () => {
         }
         return result
     }
-    const installStorageLocal = async () => {
+
+    function actionOnClicked(listener: (() => Promise<void>)): void {
+        browser.action.onClicked.addListener(listener)
+    }
+
+    function runtimeOnInstalled(listener: (() => Promise<void>)): void {
+        browser.runtime.onInstalled.addListener(listener)
+    }
+
+    async function clearStorage() {
+        await browser.storage.local.clear()
+    }
+
+    async function tabsCreate() {
+        return await browser.tabs.create({
+            url: indexUrl.value,
+            active: true
+        })
+    }
+
+    async function tabsQuery() {
+        return await browser.tabs.query({url: indexUrl.value})
+    }
+
+    async function windowsUpdate(wId: number | undefined) {
+        return await browser.windows.update(wId ?? 0, {
+            focused: true
+        })
+    }
+
+    async function tabsUpdate(id: number | undefined) {
+        return await browser.tabs.update(id ?? 0, {
+            active: true
+        })
+    }
+
+    async function setStorage(key: string, value: string | number | boolean | string[]): Promise<void> {
+        try {
+            await browser.storage.local.set({[key]: value})
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async function getStorage(keys: string[] | null = null): Promise<{
+        [p: string]: string | boolean | number | string[]
+    }> {
+        try {
+            return await browser.storage.local.get(keys)
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async function onStorageChanged(callback: (_changes: { [key: string]: browser.storage.StorageChange }) => void) {
+        browser.storage.local.onChanged.addListener(callback)
+        // Return cleanup function
+        return () => browser.storage.local.onChanged.removeListener(callback)
+    }
+
+    async function installStorageLocal() {
         const {CONS} = useApp()
         const storageLocal = await browser.storage.local.get()
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
@@ -86,7 +123,16 @@ export const useBrowser = () => {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS})
         }
     }
-    const notice = async (messages: string[]): Promise<void> => {
+
+    async function openOptionsPage(): Promise<void> {
+        try {
+            return await browser.runtime.openOptionsPage()
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async function notice(messages: string[]): Promise<void> {
         const msg = messages.join('\n')
         const notificationOption: browser.notifications.CreateNotificationOptions =
             {
@@ -97,8 +143,8 @@ export const useBrowser = () => {
             }
         await browser.notifications.create(notificationOption)
     }
-    const writeBufferToFile = async (buffer: string, fn: string): Promise<void> => {
-        const {CONS} = useApp()
+
+    async function writeBufferToFile(buffer: string, fn: string): Promise<void> {
         const blob = new Blob([buffer], {type: 'application/json'}) // create blob object with all stores data
         const blobUrl = URL.createObjectURL(blob) // create url reference for blob object
         const op: browser.downloads._DownloadOptions = {
@@ -108,15 +154,19 @@ export const useBrowser = () => {
         await browser.downloads.download(op) // writing blob object into download file
         await notice(['Database exported!'])
         const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
-            browser.downloads.onChanged.removeListener(onDownloadChange)
             if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMPLETE)) {
                 URL.revokeObjectURL(blobUrl) // release blob object
+                browser.downloads.onChanged.removeListener(onDownloadChange)
             }
         }
         browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up a blob object after the download.
     }
 
     return {
+        manifest,
+        uiLanguage,
+        actionOnClicked,
+        runtimeOnInstalled,
         clearStorage,
         getChar5Locale,
         getStorage,
@@ -125,6 +175,10 @@ export const useBrowser = () => {
         notice,
         onStorageChanged,
         openOptionsPage,
+        tabsCreate,
+        tabsQuery,
+        tabsUpdate,
+        windowsUpdate,
         writeBufferToFile
     }
 }

@@ -27,12 +27,12 @@ app.use(routerPlugin.router);
 app.mount('#app');
 const keyStrokeController = [];
 const onBeforeUnload = () => {
-    log('BACKGROUND: onBeforeUnload');
+    log('APP: onBeforeUnload');
     db.close();
 };
 const onKeyDown = async (ev) => {
     keyStrokeController.push(ev.key);
-    log('BACKGROUND: onKeyDown');
+    log('APP: onKeyDown');
     if (keyStrokeController.includes('Control') &&
         keyStrokeController.includes('Alt') &&
         ev.key === 'r') {

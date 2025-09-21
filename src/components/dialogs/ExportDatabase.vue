@@ -15,7 +15,7 @@ import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/co
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
-const {writeBufferToFile} = useBrowser()
+const {manifest, writeBufferToFile} = useBrowser()
 const {getAllAccounts} = useAccountsDB()
 const {getAllBookings} = useBookingsDB()
 const {getAllBookingTypes} = useBookingTypesDB()
@@ -76,7 +76,7 @@ const onClickOk = async (): Promise<void> => {
     }
     return buffer
   }
-  let buffer = `{\n"sm": {"cVersion":${browser.runtime.getManifest().version.replace(/\./g, '')}, "cDBVersion":${CONS.INDEXED_DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`
+  let buffer = `{\n"sm": {"cVersion":${manifest.value.version.replace(/\./g, '')}, "cDBVersion":${CONS.INDEXED_DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`
   buffer += stringifyDB()
   buffer += '}'
   await writeBufferToFile(buffer, fn)

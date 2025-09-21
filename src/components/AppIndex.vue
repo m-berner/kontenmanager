@@ -22,7 +22,7 @@ const records = useRecordsStore()
 const runtime = useRuntime()
 const theme = useTheme()
 const {CONS, haveSameStrings, log} = useApp()
-const {getStorage, notice, onStorageChanged} = useBrowser()
+const {getStorage, notice, onStorageChanged, uiLanguage} = useBrowser()
 const {fetchExchangesData} = useFetch()
 const {getDatabaseStores} = useIndexedDB()
 
@@ -54,7 +54,7 @@ onStorageChanged(changeHandler)
 
 onBeforeMount(async () => {
   try {
-    const cur = CONS.CURRENCIES.CODE.get(browser.i18n.getUILanguage())
+    const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
     const curEur = `${cur}${CONS.CURRENCIES.EUR}`
     const curUsd = `${cur}${CONS.CURRENCIES.USD}`
 

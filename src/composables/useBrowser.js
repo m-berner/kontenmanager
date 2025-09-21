@@ -1,37 +1,11 @@
 import { useApp } from '@/composables/useApp';
+import { computed } from 'vue';
+const { CONS } = useApp();
 export const useBrowser = () => {
-    const clearStorage = async () => {
-        await browser.storage.local.clear();
-    };
-    const setStorage = async (key, value) => {
-        try {
-            await browser.storage.local.set({ [key]: value });
-        }
-        catch (error) {
-            throw error;
-        }
-    };
-    const getStorage = async (keys = null) => {
-        try {
-            return await browser.storage.local.get(keys);
-        }
-        catch (error) {
-            throw error;
-        }
-    };
-    const openOptionsPage = async () => {
-        try {
-            return await browser.runtime.openOptionsPage();
-        }
-        catch (error) {
-            throw error;
-        }
-    };
-    const onStorageChanged = (callback) => {
-        browser.storage.local.onChanged.addListener(callback);
-        return () => browser.storage.local.onChanged.removeListener(callback);
-    };
-    const getChar5Locale = () => {
+    const indexUrl = computed(() => browser.runtime.getURL(CONS.PAGES.INDEX));
+    const manifest = computed(() => browser.runtime.getManifest());
+    const uiLanguage = computed(() => browser.i18n.getUILanguage());
+    function getChar5Locale() {
         const defaultLanguage = navigator.languages[0];
         let result = '';
         if (defaultLanguage.length === 5) {
@@ -44,8 +18,56 @@ export const useBrowser = () => {
             throw new Error('Could not read the browser language!');
         }
         return result;
-    };
-    const installStorageLocal = async () => {
+    }
+    function actionOnClicked(listener) {
+        browser.action.onClicked.addListener(listener);
+    }
+    function runtimeOnInstalled(listener) {
+        browser.runtime.onInstalled.addListener(listener);
+    }
+    async function clearStorage() {
+        await browser.storage.local.clear();
+    }
+    async function tabsCreate() {
+        return await browser.tabs.create({
+            url: indexUrl.value,
+            active: true
+        });
+    }
+    async function tabsQuery() {
+        return await browser.tabs.query({ url: indexUrl.value });
+    }
+    async function windowsUpdate(wId) {
+        return await browser.windows.update(wId ?? 0, {
+            focused: true
+        });
+    }
+    async function tabsUpdate(id) {
+        return await browser.tabs.update(id ?? 0, {
+            active: true
+        });
+    }
+    async function setStorage(key, value) {
+        try {
+            await browser.storage.local.set({ [key]: value });
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async function getStorage(keys = null) {
+        try {
+            return await browser.storage.local.get(keys);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async function onStorageChanged(callback) {
+        browser.storage.local.onChanged.addListener(callback);
+        return () => browser.storage.local.onChanged.removeListener(callback);
+    }
+    async function installStorageLocal() {
         const { CONS } = useApp();
         const storageLocal = await browser.storage.local.get();
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
@@ -78,8 +100,16 @@ export const useBrowser = () => {
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS] === undefined) {
             await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS });
         }
-    };
-    const notice = async (messages) => {
+    }
+    async function openOptionsPage() {
+        try {
+            return await browser.runtime.openOptionsPage();
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async function notice(messages) {
         const msg = messages.join('\n');
         const notificationOption = {
             type: 'basic',
@@ -88,9 +118,8 @@ export const useBrowser = () => {
             message: msg
         };
         await browser.notifications.create(notificationOption);
-    };
-    const writeBufferToFile = async (buffer, fn) => {
-        const { CONS } = useApp();
+    }
+    async function writeBufferToFile(buffer, fn) {
         const blob = new Blob([buffer], { type: 'application/json' });
         const blobUrl = URL.createObjectURL(blob);
         const op = {
@@ -100,14 +129,18 @@ export const useBrowser = () => {
         await browser.downloads.download(op);
         await notice(['Database exported!']);
         const onDownloadChange = (change) => {
-            browser.downloads.onChanged.removeListener(onDownloadChange);
             if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMPLETE)) {
                 URL.revokeObjectURL(blobUrl);
+                browser.downloads.onChanged.removeListener(onDownloadChange);
             }
         };
         browser.downloads.onChanged.addListener(onDownloadChange);
-    };
+    }
     return {
+        manifest,
+        uiLanguage,
+        actionOnClicked,
+        runtimeOnInstalled,
         clearStorage,
         getChar5Locale,
         getStorage,
@@ -116,6 +149,10 @@ export const useBrowser = () => {
         notice,
         onStorageChanged,
         openOptionsPage,
+        tabsCreate,
+        tabsQuery,
+        tabsUpdate,
+        windowsUpdate,
         writeBufferToFile
     };
 };
