@@ -533,13 +533,15 @@ const CONS = Object.freeze({
 })
 
 export const useApp = () => {
-    const utcDate = (iso: string): Date => {
+    function utcDate(iso: string): Date {
         return new Date(`${iso}T00:00:00.000`)
     }
-    const toISODate = (ms: number): string => {
+
+    function toISODate(ms: number): string {
         return new Date(ms).toISOString().substring(0, 10)
     }
-    const toNumber = (str: string | boolean | number | undefined | null): number => {
+
+    function toNumber(str: string | boolean | number | undefined | null): number {
         let result = 0
         if (str !== null && str !== undefined) {
             const a = str.toString().replace(/,$/g, '')
@@ -567,7 +569,8 @@ export const useApp = () => {
         }
         return result
     }
-    const log = (msg: string, mode?: { info?: unknown, warn?: unknown, error?: unknown }) => {
+
+    function log(msg: string, mode?: { info?: unknown, warn?: unknown, error?: unknown }) {
         const localDebug = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
         if (Number.parseInt(localDebug ?? '0') > 0) {
             if (mode?.info !== undefined) {
@@ -585,7 +588,8 @@ export const useApp = () => {
             }
         }
     }
-    const mean = (nar: number[]): number => {
+
+    function mean(nar: number[]): number {
         let sum = 0
         let len: number = nar.length
         for (const n of nar) {
@@ -597,7 +601,8 @@ export const useApp = () => {
         }
         return len > 0 ? sum / len : 0
     }
-    const haveSameStrings = (arr1: string[], arr2: string[]): boolean => {
+
+    function haveSameStrings(arr1: string[], arr2: string[]): boolean {
         if (arr1.length !== arr2.length) {
             return false
         }

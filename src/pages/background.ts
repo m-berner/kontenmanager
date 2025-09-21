@@ -12,7 +12,15 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 const {CONS, log} = useApp()
 
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
-    const {actionOnClicked, installStorageLocal, runtimeOnInstalled, tabsCreate, tabsQuery, tabsUpdate, windowsUpdate} = useBrowser()
+    const {
+        actionOnClicked,
+        installStorageLocal,
+        runtimeOnInstalled,
+        tabsCreate,
+        tabsQuery,
+        tabsUpdate,
+        windowsUpdate
+    } = useBrowser()
     const {getDB} = useIndexedDB()
     // NOTE: onInstall runs at the installation or update of the add-on. And it runs on firefox update.
     const onInstall = async (): Promise<void> => {

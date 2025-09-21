@@ -1,4 +1,5 @@
-import { ref } from 'vue';
+import {ref} from 'vue';
+
 const activeId = ref(-1);
 const optionMenuColors = ref(new Map());
 const dialogName = ref('');
@@ -15,6 +16,7 @@ export const useRuntime = () => {
         dialogOk.value = entry.dialogOk;
         dialogVisibility.value = entry.dialogVisibility;
     }
+
     function resetTeleport() {
         dialogName.value = '';
         dialogOk.value = true;
@@ -23,11 +25,13 @@ export const useRuntime = () => {
             optionMenuColors.value.set(m, '');
         }
     }
+
     function resetOptionsMenuColors() {
         for (const m of optionMenuColors.value.keys()) {
             optionMenuColors.value.set(m, '');
         }
     }
+
     return {
         activeId,
         optionMenuColors,
