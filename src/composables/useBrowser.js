@@ -5,7 +5,7 @@ export const useBrowser = () => {
     const indexUrl = computed(() => browser.runtime.getURL(CONS.PAGES.INDEX));
     const manifest = computed(() => browser.runtime.getManifest());
     const uiLanguage = computed(() => browser.i18n.getUILanguage());
-    function getChar5Locale() {
+    const locale5 = computed(() => {
         const defaultLanguage = navigator.languages[0];
         let result = '';
         if (defaultLanguage.length === 5) {
@@ -18,7 +18,7 @@ export const useBrowser = () => {
             throw new Error('Could not read the browser language!');
         }
         return result;
-    }
+    });
     function actionOnClicked(listener) {
         browser.action.onClicked.addListener(listener);
     }
@@ -68,7 +68,6 @@ export const useBrowser = () => {
         return () => browser.storage.local.onChanged.removeListener(callback);
     }
     async function installStorageLocal() {
-        const { CONS } = useApp();
         const storageLocal = await browser.storage.local.get();
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
             await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN });
@@ -137,12 +136,12 @@ export const useBrowser = () => {
         browser.downloads.onChanged.addListener(onDownloadChange);
     }
     return {
+        locale5,
         manifest,
         uiLanguage,
         actionOnClicked,
         runtimeOnInstalled,
         clearStorage,
-        getChar5Locale,
         getStorage,
         setStorage,
         installStorageLocal,

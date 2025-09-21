@@ -19,10 +19,10 @@ interface II18n {
 }
 
 const {log} = useApp()
-const {getChar5Locale} = useBrowser()
+const {locale5} = useBrowser()
 
 const i18nInstance = createI18n<[MessageSchema], 'de-DE' | 'en-US'>({
-    locale: getChar5Locale(),
+    locale: locale5.value,
     fallbackLocale: 'en-US',
     messages: {
         'de-DE': deDE,

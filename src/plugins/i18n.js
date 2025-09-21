@@ -4,9 +4,9 @@ import enUS from '@/locales/en-US.json';
 import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
 const { log } = useApp();
-const { getChar5Locale } = useBrowser();
+const { locale5 } = useBrowser();
 const i18nInstance = createI18n({
-    locale: getChar5Locale(),
+    locale: locale5.value,
     fallbackLocale: 'en-US',
     messages: {
         'de-DE': deDE,

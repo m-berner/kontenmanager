@@ -17,7 +17,7 @@ export const useBrowser = () => {
 
     const uiLanguage = computed(() => browser.i18n.getUILanguage())
 
-    function getChar5Locale(): string {
+    const locale5 = computed(() => {
         const defaultLanguage = navigator.languages[0]
         let result = ''
         if (defaultLanguage.length === 5) {
@@ -28,7 +28,7 @@ export const useBrowser = () => {
             throw new Error('Could not read the browser language!')
         }
         return result
-    }
+    })
 
     function actionOnClicked(listener: (() => Promise<void>)): void {
         browser.action.onClicked.addListener(listener)
@@ -90,7 +90,6 @@ export const useBrowser = () => {
     }
 
     async function installStorageLocal() {
-        const {CONS} = useApp()
         const storageLocal = await browser.storage.local.get()
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN})
@@ -163,12 +162,12 @@ export const useBrowser = () => {
     }
 
     return {
+        locale5,
         manifest,
         uiLanguage,
         actionOnClicked,
         runtimeOnInstalled,
         clearStorage,
-        getChar5Locale,
         getStorage,
         setStorage,
         installStorageLocal,
