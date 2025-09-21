@@ -10,17 +10,15 @@ import type {IMenuItem, IStock} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {storeToRefs} from 'pinia'
 import {useApp} from '@/composables/useApp'
+import {useSettings} from '@/composables/useSettings'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import DotMenu from '@/components/childs/DotMenu.vue'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const records = useRecordsStore()
-const settings = useSettingsStore()
-const {stocksPerPage} = storeToRefs(settings)
+const settings = useSettings()
 
 const stocksHeaders = computed<DataTableHeader[]>(() => [
   {
@@ -120,7 +118,7 @@ const winLossClass = computed(() => {
 })
 
 const onUpdateItemsPerPage = (count: number): void => {
-  settings.stocksPerPage = (count)
+  settings.stocksPerPage.value = (count)
 }
 const onUpdatePage = (page: number): void => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
@@ -135,7 +133,7 @@ log('--- StocksTable.vue setup ---')
       :hide-no-data="false"
       :hover="true"
       :items="records.stocks.items.filter((stock: IStock): boolean => stock.cID > 0 )"
-      :items-per-page="stocksPerPage"
+      :items-per-page="settings.stocksPerPage.value"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('stocksTable.itemsPerPageText')"
       :no-data-text="t('stocksTable.noDataText')"

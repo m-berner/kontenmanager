@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { useApp } from '@/composables/useApp';
-import { useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB } from '@/composables/useIndexedDB';
+import { useSettings } from '@/composables/useSettings';
 import { useAccounts } from '@/stores/childs/accounts';
 import { useBookings } from '@/stores/childs/bookings';
 import { useBookingTypes } from '@/stores/childs/bookingTypes';
 import { useStocks } from '@/stores/childs/stocks';
-import { useSettingsStore } from '@/stores/settings';
-const { log } = useApp();
+import { useBrowser } from '@/composables/useBrowser';
+const { CONS, log } = useApp();
 export const useRecordsStore = defineStore('records', () => {
     const accountsStore = useAccounts();
     const bookingsStore = useBookings();
@@ -23,7 +23,7 @@ export const useRecordsStore = defineStore('records', () => {
     }
     function load(stores) {
         log('RECORDS: load');
-        const settings = useSettingsStore();
+        const settings = useSettings();
         for (const entry of stores.accounts) {
             accountsStore.add(entry);
         }
@@ -34,7 +34,7 @@ export const useRecordsStore = defineStore('records', () => {
         for (const entry of stores.bookingTypes) {
             bookingTypesStore.add(entry);
         }
-        bookingTypesStore.add({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId }, true);
+        bookingTypesStore.add({ cID: 0, cName: '', cAccountNumberID: settings.activeAccountId.value }, true);
         for (const entry of stores.stocks) {
             stocksStore.add(entry);
         }
@@ -49,7 +49,7 @@ export const useRecordsStore = defineStore('records', () => {
             cCompany: '',
             cMeetingDay: '',
             cQuarterDay: '',
-            cAccountNumberID: settings.activeAccountId,
+            cAccountNumberID: settings.activeAccountId.value,
             mBuyValue: 0,
             mMax: 0,
             mMin: 0,
@@ -64,17 +64,14 @@ export const useRecordsStore = defineStore('records', () => {
             return dateB - dateA;
         });
     }
-    async function init() {
+    async function init(storesDB) {
         log('RECORDS: init');
-        const { getAllAccounts } = useAccountsDB();
-        const { getAllBookings } = useBookingsDB();
-        const { getAllBookingTypes } = useBookingTypesDB();
-        const { getAllStocks } = useStocksDB();
-        const settings = useSettingsStore();
-        const accounts = await getAllAccounts();
-        const bookings = (await getAllBookings()).filter((booking) => booking.cAccountNumberID === settings.activeAccountId);
-        const bookingTypes = (await getAllBookingTypes()).filter((bookingType) => bookingType.cAccountNumberID === settings.activeAccountId);
-        const stocks = (await getAllStocks()).filter((stock) => stock.cAccountNumberID === settings.activeAccountId);
+        const { activeAccountId } = useSettings();
+        const { setStorage } = useBrowser();
+        if (activeAccountId.value < 1 && storesDB.accountsDB.length > 0) {
+            activeAccountId.value = storesDB.accountsDB[0].cID;
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value);
+        }
         const stocksOnlyMemory = {
             mPortfolio: 0,
             mChange: 0,
@@ -85,16 +82,13 @@ export const useRecordsStore = defineStore('records', () => {
             mMax: 0
         };
         const stores = {
-            accounts,
-            bookings,
-            bookingTypes,
-            stocks: stocks.map((stock) => {
+            accounts: storesDB.accountsDB,
+            bookings: storesDB.bookingsDB,
+            bookingTypes: storesDB.bookingTypesDB,
+            stocks: storesDB.stocksDB.map((stock) => {
                 return { ...stock, ...stocksOnlyMemory };
             })
         };
-        if (settings.activeAccountId < 1 && accounts.length > 0) {
-            settings.activeAccountId = accounts[0].cID;
-        }
         clean();
         load(stores);
     }

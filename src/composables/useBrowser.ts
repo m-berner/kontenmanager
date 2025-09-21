@@ -86,7 +86,6 @@ export const useBrowser = () => {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS})
         }
     }
-
     const notice = async (messages: string[]): Promise<void> => {
         const msg = messages.join('\n')
         const notificationOption: browser.notifications.CreateNotificationOptions =
@@ -98,7 +97,6 @@ export const useBrowser = () => {
             }
         await browser.notifications.create(notificationOption)
     }
-
     const writeBufferToFile = async (buffer: string, fn: string): Promise<void> => {
         const {CONS} = useApp()
         const blob = new Blob([buffer], {type: 'application/json'}) // create blob object with all stores data

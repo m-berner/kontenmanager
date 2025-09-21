@@ -11,13 +11,13 @@ import type {Ref} from 'vue'
 import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
 
 interface IFormularData {
   isin: string
@@ -34,8 +34,8 @@ const {addStock} = useStocksDB()
 const {fetchCompanyData} = useFetch()
 const {ibanRules} = useValidation()
 const records = useRecordsStore()
-const settings = useSettingsStore()
-const runtime = useRuntimeStore()
+const settings = useSettings()
+const runtime = useRuntime()
 
 const formularData: IFormularData = reactive({
   isin: '',
@@ -90,7 +90,7 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: 0,
       cFirstPage: 0,
       cURL: '',
-      cAccountNumberID: settings.activeAccountId,
+      cAccountNumberID: settings.activeAccountId.value,
       mPortfolio: 0,
       mChange: 0,
       mBuyValue: 0,

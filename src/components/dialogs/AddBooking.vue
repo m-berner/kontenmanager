@@ -11,13 +11,14 @@ import type {Ref} from 'vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import BookingContainer from '@/components/dialogs/childs/BookingContainer.vue'
 import {useBookingContainer} from '@/composables/useBookingContainer'
+import {useRuntime} from '@/composables/useRuntime'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -26,7 +27,8 @@ const {addBooking} = useBookingsDB()
 const {validateForm} = useValidation()
 const {containerData} = useBookingContainer()
 const records = useRecordsStore()
-const settings = useSettingsStore()
+const settings = useSettings()
+const runtime = useRuntime()
 
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
@@ -69,7 +71,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: containerData.description,
           cBookingTypeID: containerData.bookingTypeId,
           cStockID: containerData.stockId,
-          cAccountNumberID: settings.activeAccountId,
+          cAccountNumberID: settings.activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
           cCount: containerData.count,
           cSoli: containerData.soli,
@@ -89,7 +91,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: containerData.description,
           cBookingTypeID: containerData.bookingTypeId,
           cStockID: containerData.stockId,
-          cAccountNumberID: settings.activeAccountId,
+          cAccountNumberID: settings.activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
           cCount: containerData.count,
           cSoli: containerData.soli,
@@ -109,7 +111,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: containerData.description,
           cBookingTypeID: containerData.bookingTypeId,
           cStockID: containerData.stockId,
-          cAccountNumberID: settings.activeAccountId,
+          cAccountNumberID: settings.activeAccountId.value,
           cExDate: containerData.exDate,
           cCount: containerData.count,
           cSoli: containerData.soli,
@@ -128,7 +130,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: containerData.description,
           cBookingTypeID: containerData.bookingTypeId,
           cStockID: 0,
-          cAccountNumberID: settings.activeAccountId,
+          cAccountNumberID: settings.activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
           cCount: 0,
           cSoli: 0,
@@ -167,7 +169,7 @@ log('--- AddBooking.vue setup ---')
       ref="formRef"
       validate-on="submit"
       @submit.prevent>
-    <v-alert v-if="settings.activeAccountId === -1">{{ t('dialogs.addBooking.message') }}</v-alert>
+    <v-alert v-if="settings.activeAccountId.value === -1">{{ t('dialogs.addBooking.message') }}</v-alert>
     <BookingContainer v-else/>
   </v-form>
 </template>

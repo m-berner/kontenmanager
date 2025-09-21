@@ -67,7 +67,7 @@ export const useFetch = () => {
         });
     };
     const fetchMinRateMaxData = async (storageOnline) => {
-        log('BACKGROUND: fetchMinRateMaxData');
+        log('USE_FETCH: fetchMinRateMaxData');
         return new Promise(async (resolve, reject) => {
             const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]);
             const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE];
@@ -331,7 +331,7 @@ export const useFetch = () => {
         });
     };
     const fetchDailyChangeData = async (table, mode = CONS.SERVICES.TGATE.CHANGES.SMALL) => {
-        log('BACKGROUND: fetchDailyChangesData');
+        log('USE_FETCH: fetchDailyChangesData');
         let valuestr;
         let company;
         let sDocument;
@@ -406,7 +406,7 @@ export const useFetch = () => {
         return _changes;
     };
     const fetchExchangesData = async (exchangeCodes) => {
-        log('BACKGROUND: fetchExchangesData');
+        log('USE_FETCH: fetchExchangesData');
         const service = CONS.SERVICES.FX;
         const fExUrl = (code) => {
             if (service !== undefined) {
@@ -442,7 +442,7 @@ export const useFetch = () => {
         });
     };
     const fetchMaterialData = async () => {
-        log('BACKGROUND: fetchMaterialData');
+        log('USE_FETCH: fetchMaterialData');
         return new Promise(async (resolve, reject) => {
             const materials = [];
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '');
@@ -469,7 +469,7 @@ export const useFetch = () => {
         });
     };
     const fetchIndexData = async () => {
-        log('BACKGROUND: fetchIndexData');
+        log('USE_FETCH: fetchIndexData');
         return new Promise(async (resolve, reject) => {
             const indexes = [];
             const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES);
@@ -499,7 +499,7 @@ export const useFetch = () => {
         });
     };
     const fetchDateData = async (obj) => {
-        log('BACKGROUND: fetchDatesData');
+        log('USE_FETCH: fetchDatesData');
         const gmqf = { gm: 0, qf: 0 };
         const parseGermanDate = (germanDateString) => {
             const parts = germanDateString.match(/(\d+)/g) ?? ['01', '01', '1970'];
@@ -513,7 +513,7 @@ export const useFetch = () => {
             !firstResponse.ok ||
             firstResponse.status >= CONS.STATES.SRV ||
             (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-            log('BACKGROUND: fetchDatesData: First request failed', { error: 'SYstem' });
+            log('USE_FETCH: fetchDatesData: First request failed', { error: 'SYstem' });
         }
         else {
             const atoms = firstResponse.url.split('/');
@@ -523,7 +523,7 @@ export const useFetch = () => {
                 secondResponse.status >= CONS.STATES.SRV ||
                 (secondResponse.status > 0 &&
                     secondResponse.status < CONS.STATES.SUCCESS)) {
-                log('BACKGROUND: fetchDatesData: Second request failed');
+                log('USE_FETCH: fetchDatesData: Second request failed');
             }
             else {
                 const secondResponseText = await secondResponse.text();

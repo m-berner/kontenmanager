@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useApp } from '@/composables/useApp';
-import { useSettingsStore } from '@/stores/settings';
+import { useSettings } from '@/composables/useSettings';
 const { log } = useApp();
 export const useBookings = defineStore('bookings', () => {
     const items = ref([]);
@@ -21,8 +21,8 @@ export const useBookings = defineStore('bookings', () => {
         }
     });
     const sumBookings = computed(() => () => {
-        const settings = useSettingsStore();
-        if (settings.activeAccountId === -1) {
+        const settings = useSettings();
+        if (settings.activeAccountId.value === -1) {
             return 0;
         }
         if (items.value.length > 0) {

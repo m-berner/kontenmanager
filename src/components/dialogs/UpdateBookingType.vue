@@ -11,11 +11,11 @@ import type {Ref} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
-import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -23,7 +23,7 @@ const {notice} = useBrowser()
 const {updateBookingType} = useBookingTypesDB()
 const {requiredSelect, requiredSelectNumber, validateForm} = useValidation()
 const records = useRecordsStore()
-const runtime = useRuntimeStore()
+const runtime = useRuntime()
 
 const formSelectedIndex: Ref<number> = ref(0)
 const formName: Ref<string> = ref('')

@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 export const useBookingContainer = () => {
-    const formData = reactive({
+    const containerData = reactive({
         id: 0,
         bookDate: '',
         exDate: '',
@@ -20,6 +20,6 @@ export const useBookingContainer = () => {
         marketPlace: ''
     });
     return {
-        formData
+        containerData
     };
 };

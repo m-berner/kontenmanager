@@ -1,9 +1,11 @@
 import { ref } from 'vue';
 import { useApp } from '@/composables/useApp';
+import { useSettings } from '@/composables/useSettings';
 let dbInstance = null;
 let dbPromise = null;
 const { CONS, log } = useApp();
-export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
+const { activeAccountId } = useSettings();
+export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) => {
     const isConnected = ref(false);
     const error = ref(null);
     const isLoading = ref(false);
@@ -223,6 +225,23 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         }
         await deleteAccount(accountId);
     };
+    const getDatabaseStores = async () => {
+        log('INDEXED_DB: getDatabaseStores');
+        const { getAllAccounts } = useAccountsDB();
+        const { getAllBookings } = useBookingsDB();
+        const { getAllBookingTypes } = useBookingTypesDB();
+        const { getAllStocks } = useStocksDB();
+        const accountsDB = await getAllAccounts();
+        const bookingsDB = (await getAllBookings()).filter((booking) => booking.cAccountNumberID === activeAccountId.value);
+        const bookingTypesDB = (await getAllBookingTypes()).filter((bookingType) => bookingType.cAccountNumberID === activeAccountId.value);
+        const stocksDB = (await getAllStocks()).filter((stock) => stock.cAccountNumberID === activeAccountId.value);
+        return {
+            accountsDB,
+            bookingsDB,
+            bookingTypesDB,
+            stocksDB
+        };
+    };
     return {
         isConnected,
         error,
@@ -237,10 +256,11 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         clear,
         batchOperations,
         getByIndex,
-        deleteAccountDatabase
+        deleteAccountDatabase,
+        getDatabaseStores
     };
-}
-export function useAccountsDB() {
+};
+export const useAccountsDB = () => {
     const db = useIndexedDB();
     const addAccount = async (accountData) => {
         try {
@@ -307,8 +327,8 @@ export function useAccountsDB() {
         clearAllAccounts,
         importAccounts
     };
-}
-export function useBookingsDB() {
+};
+export const useBookingsDB = () => {
     const db = useIndexedDB();
     const addBooking = async (bookingData) => {
         try {
@@ -375,8 +395,8 @@ export function useBookingsDB() {
         clearAllBookings,
         importBookings
     };
-}
-export function useBookingTypesDB() {
+};
+export const useBookingTypesDB = () => {
     const db = useIndexedDB();
     const addBookingType = async (bookingTypeData) => {
         try {
@@ -443,8 +463,8 @@ export function useBookingTypesDB() {
         clearAllBookingTypes,
         importBookingTypes
     };
-}
-export function useStocksDB() {
+};
+export const useStocksDB = () => {
     const db = useIndexedDB();
     const addStock = async (stockData) => {
         try {
@@ -511,4 +531,4 @@ export function useStocksDB() {
         clearAllStocks,
         importStocks
     };
-}
+};

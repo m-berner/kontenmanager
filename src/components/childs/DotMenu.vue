@@ -10,10 +10,10 @@ import type {IMenuItem} from '@/types'
 import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
-import {useRuntimeStore} from '@/stores/runtime'
 
 interface OptionMenuProps {
   recordID: number
@@ -26,19 +26,19 @@ const {notice} = useBrowser()
 const {deleteBooking} = useBookingsDB()
 const {deleteStock} = useStocksDB()
 const {rt, t} = useI18n()
-const runtime = useRuntimeStore()
+const runtime = useRuntime()
 const records = useRecordsStore()
 
 const onButtonClick = async (): Promise<void> => {
   log('OPTION_MENU: onButtonClick', {info: optionMenuProps.recordID})
-  for (const m of runtime.optionMenuColors.keys()) {
-    runtime.optionMenuColors.set(m, '')
+  for (const m of runtime.optionMenuColors.value.keys()) {
+    runtime.optionMenuColors.value.set(m, '')
   }
-  runtime.optionMenuColors.set(optionMenuProps.recordID, 'green')
+  runtime.optionMenuColors.value.set(optionMenuProps.recordID, 'green')
 }
 const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTION_MENU: onIconClick', {info: optionMenuProps.recordID})
-  runtime.activeId = (optionMenuProps.recordID)
+  runtime.activeId.value = (optionMenuProps.recordID)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
@@ -53,8 +53,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         records.bookings.remove(optionMenuProps.recordID)
         await deleteBooking(optionMenuProps.recordID)
         await notice([t('dialogs.deleteBooking.success')])
-        for (const m of runtime.optionMenuColors.keys()) {
-          runtime.optionMenuColors.set(m, '')
+        for (const m of runtime.optionMenuColors.value.keys()) {
+          runtime.optionMenuColors.value.set(m, '')
         }
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
@@ -75,8 +75,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         } else {
           await notice(['Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.'])
         }
-        for (const m of runtime.optionMenuColors.keys()) {
-          runtime.optionMenuColors.set(m, '')
+        for (const m of runtime.optionMenuColors.value.keys()) {
+          runtime.optionMenuColors.value.set(m, '')
         }
         break
       default:
@@ -90,7 +90,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
 }
 
 onMounted(() => {
-  runtime.optionMenuColors.set(optionMenuProps.recordID, '')
+  runtime.optionMenuColors.value.set(optionMenuProps.recordID, '')
 })
 </script>
 
@@ -98,7 +98,7 @@ onMounted(() => {
   <v-menu>
     <template v-slot:activator="{ props }">
       <v-btn
-          :color="runtime.optionMenuColors.get(optionMenuProps.recordID ?? -1)"
+          :color="runtime.optionMenuColors.value.get(optionMenuProps.recordID ?? -1)"
           icon="$dots"
           v-bind="props"
           @click="onButtonClick"

@@ -10,7 +10,7 @@ import piniaPlugin from '@/plugins/pinia';
 import AppIndex from '@/components/AppIndex.vue';
 const { CONS, log } = useApp();
 const { getDB } = useIndexedDB();
-const { clearStorage } = useBrowser();
+const { clearStorage, installStorageLocal } = useBrowser();
 const db = await getDB();
 const app = createApp(AppIndex);
 app.config.errorHandler = (err) => {
@@ -37,6 +37,7 @@ const onKeyDown = async (ev) => {
         keyStrokeController.includes('Alt') &&
         ev.key === 'r') {
         await clearStorage();
+        await installStorageLocal();
     }
     if (keyStrokeController.includes('Control') &&
         keyStrokeController.includes('Alt') &&

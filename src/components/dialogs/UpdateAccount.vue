@@ -10,12 +10,12 @@ import type {Ref} from 'vue'
 import {defineExpose, onMounted, reactive, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
-import {useRuntimeStore} from '@/stores/runtime'
 import {useDomain} from '@/composables/useDomain'
 import {useFavicon} from '@/composables/useFavicon'
 
@@ -31,9 +31,9 @@ const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {updateAccount} = useAccountsDB()
 const {ibanRules, validateForm, swiftRules} = useValidation()
-const settings = useSettingsStore()
+const settings = useSettings()
 const records = useRecordsStore()
-const runtime = useRuntimeStore()
+const runtime = useRuntime()
 
 const formData: IFormData = reactive({
   swift: '',
@@ -68,7 +68,7 @@ const onClickOk = async (): Promise<void> => {
 
   try {
     const account = {
-      cID: settings.activeAccountId,
+      cID: settings.activeAccountId.value,
       cSwift: formData.swift.trim().toUpperCase(),
       cIban: formData.iban.replace(/\s/g, ''),
       cLogoUrl: formPreviewUrl.value,
@@ -90,7 +90,7 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_ACCOUNT: onMounted')
-  const accountIndex = records.accounts.getIndexById(settings.activeAccountId)
+  const accountIndex = records.accounts.getIndexById(settings.activeAccountId.value)
   if (accountIndex !== -1) {
     const currentAccount = records.accounts.items[accountIndex]
     Object.assign(formData, {

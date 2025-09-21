@@ -9,7 +9,7 @@
 import {onMounted, reactive} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntimeStore} from '@/stores/runtime'
+import {useRuntime} from '@/composables/useRuntime'
 
 export interface _IDrawerControl {
   id: number
@@ -26,8 +26,7 @@ interface IState {
 
 const {n, t} = useI18n()
 const {CONS, log} = useApp()
-const runtime = useRuntimeStore()
-//const records = useRecordsStore()
+const runtime = useRuntime()
 
 const state: IState = reactive({
   show: true,
@@ -41,9 +40,9 @@ const state: IState = reactive({
 })
 const usd = (mat: string, usd = true): number => {
   if (usd) {
-    return runtime.infoMaterials.get(mat) ?? 0
+    return runtime.infoMaterials.value.get(mat) ?? 0
   }
-  return (runtime.infoMaterials.get(mat) ?? 0) / runtime.curUsd
+  return (runtime.infoMaterials.value.get(mat) ?? 0) / runtime.curUsd.value
 }
 const updateDrawerControls = (): void => {
   log('INFO_BAR: updateDrawerControls')
@@ -92,17 +91,17 @@ log('--- InfoBar.vue setup ---')
         @click="state.show = !state.show"/>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">
       <v-row>
-        <v-list-item v-for="item in runtime.infoExchanges.keys()" :key="item">
+        <v-list-item v-for="item in runtime.infoExchanges.value.keys()" :key="item">
           <v-list-item-title>{{ item }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n(runtime.infoExchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ n(runtime.infoExchanges.value.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in runtime.infoIndexes.keys()" :key="item">
+        <v-list-item v-for="item in runtime.infoIndexes.value.keys()" :key="item">
           <v-list-item-title>{{ CONS.SETTINGS.INDEXES.get(item) }}</v-list-item-title>
-          <v-list-item-subtitle>{{ n(runtime.infoIndexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ n(runtime.infoIndexes.value.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
         </v-list-item>
 
-        <v-list-item v-for="item in runtime.infoMaterials.keys()" :key="item">
+        <v-list-item v-for="item in runtime.infoMaterials.value.keys()" :key="item">
           <v-list-item-title>{{ t('optionsPage.materials.' + item) }}</v-list-item-title>
           <v-list-item-subtitle
           >{{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}

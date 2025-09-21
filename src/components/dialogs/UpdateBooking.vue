@@ -11,12 +11,12 @@ import type {Ref} from 'vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
+import {useSettings} from '@/composables/useSettings'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
 import BookingContainer from '@/components/dialogs/childs/BookingContainer.vue'
 import {useBookingContainer} from '@/composables/useBookingContainer'
 
@@ -27,10 +27,10 @@ const {updateBooking} = useBookingsDB()
 const {validateForm} = useValidation()
 const {containerData} = useBookingContainer()
 const records = useRecordsStore()
-const settings = useSettingsStore()
-const runtime = useRuntimeStore()
+const settings = useSettings()
+const runtime = useRuntime()
 
-const currentBooking = records.bookings.items[records.bookings.getIndexById(runtime.activeId)]
+const currentBooking = records.bookings.items[records.bookings.getIndexById(runtime.activeId.value)]
 containerData.id = currentBooking.cID
 containerData.bookingTypeId = currentBooking.cBookingTypeID
 containerData.bookDate = currentBooking.cDate
@@ -57,7 +57,7 @@ const onClickOk = async (): Promise<void> => {
   try {
     const booking: IBooking = {
       cID: containerData.id,
-      cAccountNumberID: settings.activeAccountId,
+      cAccountNumberID: settings.activeAccountId.value,
       cStockID: currentBooking.cStockID,
       cBookingTypeID: containerData.bookingTypeId,
       cDate: containerData.bookDate,

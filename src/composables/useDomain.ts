@@ -12,7 +12,7 @@ export const useDomain = (url: Ref<string | null>) => {
             const urlObj = new URL(processedUrl)
             return urlObj.hostname.replace(/^www\./, '')
             // eslint-disable-next-line no-unused-vars
-        } catch (error) {
+        } catch (e) {
             return null
         }
     })
@@ -26,9 +26,8 @@ export const useDomain = (url: Ref<string | null>) => {
                 return parts[0] !== 'www' ? parts[0] : null
             }
             return null
-        } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error(error)
+            // eslint-disable-next-line no-unused-vars
+        } catch (e) {
             return null
         }
     })

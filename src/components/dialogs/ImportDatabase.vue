@@ -6,16 +6,26 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount, IBooking, IBookingType, IRecordsDB, IStock} from '@/types.d'
+import type {
+  IAccount,
+  IAccountDB,
+  IBooking,
+  IBookingDB,
+  IBookingType,
+  IBookingTypeDB,
+  IRecordsDB,
+  IStock,
+  IStockDB
+} from '@/types.d'
 import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
+// import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
 
 namespace StockManager {
   export interface IStock {
@@ -69,13 +79,13 @@ interface IEventTarget extends HTMLInputElement {
 
 const {t} = useI18n()
 const {CONS, log, toISODate} = useApp()
-const {notice, setStorage} = useBrowser()
+const {notice} = useBrowser()
 const {clearAllAccounts, importAccounts} = useAccountsDB()
 const {clearAllBookings, importBookings} = useBookingsDB()
 const {clearAllBookingTypes, importBookingTypes} = useBookingTypesDB()
 const {clearAllStocks, importStocks} = useStocksDB()
-const settings = useSettingsStore()
-const runtime = useRuntimeStore()
+// const settings = useSettings()
+const runtime = useRuntime()
 
 const fileBlob = ref<Blob>(new Blob())
 const onChange = (ev: IEventTarget) => {
@@ -91,17 +101,17 @@ const onClickOk = async (): Promise<void> => {
   }
   const onReaderLoaded = async (): Promise<void> => {
     log('IMPORT_DATABASE: onFileLoaded')
+    const accountsImportData: IRecordsDB[] = []
+    const bookingsImportData: IRecordsDB[] = []
+    const bookingTypesImportData: IRecordsDB[] = []
+    const stocksImportData: IRecordsDB[] = []
+    const accountsStoreData: IAccountDB[] = []
+    const bookingsStoreData: IBookingDB[] = []
+    const bookingTypesStoreData: IBookingTypeDB[] = []
+    const stocksStoreData: IStockDB[] = []
     if (typeof fr.result === 'string') {
       const backupObject: IBackup = JSON.parse(fr.result)
-      const accounts: IAccount[] = []
-      const accountsDB: IRecordsDB[] = []
-      const bookings: IBooking[] = []
-      const bookingsDB: IRecordsDB[] = []
-      const bookingTypes: IBookingType[] = []
-      const bookingTypesDB: IRecordsDB[] = []
-      const stocks: IStock[] = []
-      const stocksDB: IRecordsDB[] = []
-      let activeId = 1
+      const activeId = 1
       const getCreditDebit = (rec: StockManager.ITransfer): number => {
         let result: number
         switch (rec.cType) {
@@ -155,16 +165,16 @@ const onClickOk = async (): Promise<void> => {
           {cID: 5, cName: 'Auszahlung', cAccountNumberID: activeId}
         ]
         for (const rec of accountRecords) {
-          accounts.push(rec)
-          accountsDB.push({type: 'add', data: rec, key: -1})
+          accountsStoreData.push(rec)
+          accountsImportData.push({type: 'add', data: rec, key: -1})
         }
         for (const rec of bookingTypeRecords) {
-          bookingTypes.push(rec)
-          bookingTypesDB.push({type: 'add', data: rec, key: -1})
+          bookingTypesStoreData.push(rec)
+          bookingTypesImportData.push({type: 'add', data: rec, key: -1})
         }
         for (const rec of backupObject.stocks) {
           const stockClone: IStock = {} as IStock
-          let stockCloneStore: IStock = {} as IStock
+          // let stockCloneStore: IStock = {} as IStock
           stockClone.cID = rec.cID
           stockClone.cAccountNumberID = activeId
           stockClone.cSymbol = rec.cSym
@@ -177,18 +187,18 @@ const onClickOk = async (): Promise<void> => {
           stockClone.cFirstPage = rec.cFirstPage
           stockClone.cFirstPage = rec.cFirstPage
           stockClone.cURL = rec.cURL
-          stocksDB.push({type: 'add', data: stockClone, key: -1})
-          stockCloneStore = {
-            ...stockClone,
-            mPortfolio: 0,
-            mChange: 0,
-            mBuyValue: 0,
-            mEuroChange: 0,
-            mMin: 0,
-            mValue: 0,
-            mMax: 0
-          }
-          stocks.push(stockCloneStore)
+          stocksImportData.push({type: 'add', data: stockClone, key: -1})
+          // stockCloneStore = {
+          //   ...stockClone,
+          //   mPortfolio: 0,
+          //   mChange: 0,
+          //   mBuyValue: 0,
+          //   mEuroChange: 0,
+          //   mMin: 0,
+          //   mValue: 0,
+          //   mMax: 0
+          // }
+          stocksStoreData.push(stockClone)
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
           const booking: IBooking = {} as IBooking
@@ -209,58 +219,66 @@ const onClickOk = async (): Promise<void> => {
           booking.cSoli = smTransfer.cSoli
           booking.cDebit = smTransfer.cType === 1 || smTransfer.cType === 5 ? getCreditDebit(smTransfer) : 0
           booking.cCredit = smTransfer.cType === 2 || smTransfer.cType === 3 || smTransfer.cType === 4 ? getCreditDebit(smTransfer) : 0
-          bookings.push(booking)
-          //await addBooking(transferClone)
+          bookingsStoreData.push(booking)
+          bookingsImportData.push({type: 'add', data: booking, key: -1})
         }
       } else if (backupObject.sm.cDBVersion > CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
         for (const rec of backupObject.accounts) {
-          accounts.push(rec)
-          accountsDB.push({type: 'add', data: rec, key: -1})
+          accountsStoreData.push(rec)
+          accountsImportData.push({type: 'add', data: rec, key: -1})
         }
-        activeId = accounts[0].cID
+        //activeId = accounts[0].cID
         for (const rec of backupObject.stocks) {
-          stocksDB.push({type: 'add', data: rec, key: -1})
-          if (rec.cAccountNumberID === activeId) {
-            const stockClone = {
-              ...rec,
-              mPortfolio: 0,
-              mChange: 0,
-              mEuroChange: 0,
-              mBuyValue: 0,
-              mMin: 0,
-              mValue: 0,
-              mMax: 0
-            }
-            stocks.push(stockClone)
-          }
+          stocksStoreData.push(rec)
+          stocksImportData.push({type: 'add', data: rec, key: -1})
+          // if (rec.cAccountNumberID === activeId) {
+          //   const stockClone = {
+          //     ...rec,
+          //     mPortfolio: 0,
+          //     mChange: 0,
+          //     mEuroChange: 0,
+          //     mBuyValue: 0,
+          //     mMin: 0,
+          //     mValue: 0,
+          //     mMax: 0
+          //   }
+          //   stocks.push(stockClone)
         }
         for (const rec of backupObject.bookingTypes) {
-          bookingTypesDB.push({type: 'add', data: rec, key: -1})
-          if (rec.cAccountNumberID === activeId) {
-            bookingTypes.push(rec)
-          }
+          bookingTypesImportData.push({type: 'add', data: rec, key: -1})
+          bookingTypesStoreData.push(rec)
+          //if (rec.cAccountNumberID === activeId) {
+          //  bookingTypes.push(rec)
+          //}
         }
         for (const rec of backupObject.bookings) {
-          bookingsDB.push({type: 'add', data: rec, key: -1})
-          if (rec.cAccountNumberID === activeId) {
-            bookings.push(rec)
-          }
+          bookingsStoreData.push(rec)
+          bookingsImportData.push({type: 'add', data: rec, key: -1})
+          // if (rec.cAccountNumberID === activeId) {
+          //   bookings.push(rec)
+          // }
         }
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }
-      settings.activeAccountId = activeId
-      records.load({accounts, bookingTypes, bookings, stocks})
+      // settings.activeAccountId.value = activeId
+      records.init({
+        accountsDB: accountsStoreData,
+        bookingsDB: bookingsStoreData,
+        bookingTypesDB: bookingTypesStoreData,
+        stocksDB: stocksStoreData
+      })
+      // records.load({accounts, bookingTypes, bookings, stocks})
       // records.bookings.items.sort((a: IBooking, b: IBooking) => {
       //   const A = new Date(a.cDate).getTime()
       //   const B = new Date(b.cDate).getTime()
       //   return B - A
       // })
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
-      await importAccounts(accountsDB)
-      await importBookingTypes(bookingTypesDB)
-      await importBookings(bookingsDB)
-      await importStocks(stocksDB)
+      //await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
+      await importAccounts(accountsImportData)
+      await importBookingTypes(bookingTypesImportData)
+      await importBookings(bookingsImportData)
+      await importStocks(stocksImportData)
       runtime.resetTeleport()
     }
   }

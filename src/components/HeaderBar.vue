@@ -9,21 +9,21 @@
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
-import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import DialogPort from '@/components/dialogs/childs/DialogPort.vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {openOptionsPage} = useBrowser()
-const runtime = useRuntimeStore()
-const settings = useSettingsStore()
+const runtime = useRuntime()
+const settings = useSettings()
 const records = useRecordsStore()
 
 const accountWithDepot = computed((): boolean => {
-  const ind = records.accounts.getIndexById(settings.activeAccountId)
+  const ind = records.accounts.getIndexById(settings.activeAccountId.value)
   if (ind > -1) {
     return records.accounts.items[ind].cWithDepot
   } else {

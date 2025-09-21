@@ -9,23 +9,24 @@
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
+import {useSettings} from '@/composables/useSettings'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const settings = useSettingsStore()
+const {activeAccountId} = useSettings()
 const {CONS, log} = useApp()
-const {setStorage} = useBrowser()
+const {getDatabaseStores} = useIndexedDB()
 
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLEBAR: onUpdateTitleBar')
-  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
-  await records.init()
+  const storesDB = await getDatabaseStores()
+  //await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId.value)
+  await records.init(storesDB)
 }
 const logoUrl = computed((): string => {
-  const ind = records.accounts.getIndexById(settings.activeAccountId)
+  const ind = records.accounts.getIndexById(activeAccountId.value)
   if (ind > -1) {
     return records.accounts.items[ind].cLogoUrl
   } else {
@@ -53,8 +54,8 @@ log('--- TitleBar.vue setup ---')
         max-width="150"/>
     <v-spacer/>
     <v-select
-        v-if="settings.activeAccountId > 0"
-        v-model="settings.activeAccountId"
+        v-if="activeAccountId > 0"
+        v-model="activeAccountId"
         :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
         :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.accounts.items"

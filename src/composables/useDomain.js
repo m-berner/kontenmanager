@@ -11,7 +11,7 @@ export const useDomain = (url) => {
             const urlObj = new URL(processedUrl);
             return urlObj.hostname.replace(/^www\./, '');
         }
-        catch (error) {
+        catch (e) {
             return null;
         }
     });
@@ -26,8 +26,7 @@ export const useDomain = (url) => {
             }
             return null;
         }
-        catch (error) {
-            console.error(error);
+        catch (e) {
             return null;
         }
     });

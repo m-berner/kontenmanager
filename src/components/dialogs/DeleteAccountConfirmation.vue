@@ -9,32 +9,33 @@
 import {computed, defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
-const {deleteAccountDatabase} = useIndexedDB()
-const settings = useSettingsStore()
+const {deleteAccountDatabase, getDatabaseStores} = useIndexedDB()
+const settings = useSettings()
 const records = useRecordsStore()
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
   try {
-    const activeId = settings.activeAccountId
+    const activeId = settings.activeAccountId.value
     records.clean(false)
     records.accounts.remove(activeId)
     await deleteAccountDatabase(activeId)
 
     if (records.accounts.items.length > 0) {
-      settings.activeAccountId = records.accounts.items[0].cID
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, records.accounts.items[0].cID)
-      await records.init()
+      //settings.activeAccountId.value = records.accounts.items[0].cID
+      //await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, records.accounts.items[0].cID)
+      const storesDB = await getDatabaseStores()
+      await records.init(storesDB)
     } else {
-      settings.activeAccountId = -1
+      settings.activeAccountId.value = -1
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     }
     await notice([t('dialogs.deleteAccount.success')])

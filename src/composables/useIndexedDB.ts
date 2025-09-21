@@ -5,17 +5,19 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IAccountDB, IBookingDB, IBookingTypeDB, IRecordsDB, IStockDB} from '@/types'
+import type {IAccountDB, IBookingDB, IBookingTypeDB, IRecordsDB, IStockDB, IStoresDB} from '@/types'
 import type {Ref} from 'vue'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
+import {useSettings} from '@/composables/useSettings'
 
 // Global database instance (shared across components)
 let dbInstance: { db: IDBDatabase } | null = null
 let dbPromise: Promise<IDBDatabase> | null = null
 const {CONS, log} = useApp()
+const {activeAccountId} = useSettings()
 
-export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
+export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) => {
     const isConnected: Ref<boolean> = ref(false)
     const error: Ref<unknown | null> = ref(null)
     const isLoading: Ref<boolean> = ref(false)
@@ -298,6 +300,26 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         await deleteAccount(accountId)
     }
 
+    const getDatabaseStores = async (): Promise<IStoresDB> => {
+        log('INDEXED_DB: getDatabaseStores')
+        const {getAllAccounts} = useAccountsDB()
+        const {getAllBookings} = useBookingsDB()
+        const {getAllBookingTypes} = useBookingTypesDB()
+        const {getAllStocks} = useStocksDB()
+
+        const accountsDB: IAccountDB[] = await getAllAccounts()
+        const bookingsDB: IBookingDB[] = (await getAllBookings()).filter((booking: IBookingDB) => booking.cAccountNumberID === activeAccountId.value)
+        const bookingTypesDB: IBookingTypeDB[] = (await getAllBookingTypes()).filter((bookingType: IBookingTypeDB) => bookingType.cAccountNumberID === activeAccountId.value)
+        const stocksDB: IStockDB[] = (await getAllStocks()).filter((stock: IStockDB) => stock.cAccountNumberID === activeAccountId.value)
+
+        return {
+            accountsDB,
+            bookingsDB,
+            bookingTypesDB,
+            stocksDB
+        }
+    }
+
     return {
         // State
         isConnected,
@@ -319,11 +341,12 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         // Advanced operations
         batchOperations,
         getByIndex,
-        deleteAccountDatabase
+        deleteAccountDatabase,
+        getDatabaseStores
     }
 }
 
-export function useAccountsDB() {
+export const useAccountsDB = () => {
     const db = useIndexedDB()
 
     const addAccount = async (accountData: unknown) => {
@@ -395,7 +418,7 @@ export function useAccountsDB() {
     }
 }
 
-export function useBookingsDB() {
+export const useBookingsDB = () => {
     const db = useIndexedDB()
 
     const addBooking = async (bookingData: unknown) => {
@@ -467,7 +490,7 @@ export function useBookingsDB() {
     }
 }
 
-export function useBookingTypesDB() {
+export const useBookingTypesDB = () => {
     const db = useIndexedDB()
 
     const addBookingType = async (bookingTypeData: unknown) => {
@@ -539,7 +562,7 @@ export function useBookingTypesDB() {
     }
 }
 
-export function useStocksDB() {
+export const useStocksDB = () => {
     const db = useIndexedDB()
 
     const addStock = async (stockData: unknown) => {

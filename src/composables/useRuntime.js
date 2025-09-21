@@ -1,18 +1,15 @@
 import { ref } from 'vue';
-import { defineStore } from 'pinia';
-import { useApp } from '@/composables/useApp';
-const { log } = useApp();
-export const useRuntimeStore = defineStore('runtime', () => {
-    const activeId = ref(-1);
-    const optionMenuColors = ref(new Map());
-    const dialogName = ref('');
-    const dialogOk = ref(true);
-    const dialogVisibility = ref(false);
-    const infoExchanges = ref(new Map());
-    const infoIndexes = ref(new Map());
-    const infoMaterials = ref(new Map());
-    const curUsd = ref(1);
-    const curEur = ref(1);
+const activeId = ref(-1);
+const optionMenuColors = ref(new Map());
+const dialogName = ref('');
+const dialogOk = ref(true);
+const dialogVisibility = ref(false);
+const infoExchanges = ref(new Map());
+const infoIndexes = ref(new Map());
+const infoMaterials = ref(new Map());
+const curUsd = ref(1);
+const curEur = ref(1);
+export const useRuntime = () => {
     function setTeleport(entry) {
         dialogName.value = entry.dialogName;
         dialogOk.value = entry.dialogOk;
@@ -46,5 +43,4 @@ export const useRuntimeStore = defineStore('runtime', () => {
         resetTeleport,
         resetOptionsMenuColors
     };
-});
-log('--- STORES runtime.js ---');
+};

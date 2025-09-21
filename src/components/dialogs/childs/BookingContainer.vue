@@ -9,9 +9,9 @@
 import type {IBookingType, IStock} from '@/types.d'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useSettings} from '@/composables/useSettings'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 import CurrencyInput from '@/components/dialogs/childs/CurrencyInput.vue'
 import {useBookingContainer} from '@/composables/useBookingContainer'
 
@@ -20,7 +20,7 @@ const {CONS} = useApp()
 const {dateRules, requiredRules} = useValidation()
 const {containerData} = useBookingContainer()
 const records = useRecordsStore()
-const settings = useSettingsStore()
+const settings = useSettings()
 </script>
 
 <template>
@@ -155,7 +155,7 @@ const settings = useSettingsStore()
         <v-select
             v-if="containerData.bookingTypeId < 3 && containerData.bookingTypeId > 0"
             v-model="containerData.marketPlace"
-            :items="settings.markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
+            :items="settings.markets.value.sort((a: string, b: string): number => { return a.localeCompare(b) })"
             :label="t('dialogs.addBooking.marketPlaceLabel')"
             :menu=false
             :menuProps="{ maxHeight: 250 }"

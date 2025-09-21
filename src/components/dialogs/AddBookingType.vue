@@ -11,11 +11,11 @@ import type {Ref} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -23,7 +23,7 @@ const {notice} = useBrowser()
 const {addBookingType} = useBookingTypesDB()
 const {valNameRules, validateForm} = useValidation()
 const records = useRecordsStore()
-const settings = useSettingsStore()
+const settings = useSettings()
 
 const formName: Ref<string> = ref('')
 const formRef: Ref<HTMLFormElement | null> = ref(null)
@@ -36,7 +36,7 @@ const onClickOk = async (): Promise<void> => {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const bookingType = {
         cName: formName.value.trim(),
-        cAccountNumberID: settings.activeAccountId
+        cAccountNumberID: settings.activeAccountId.value
       }
       const addBookingTypeID: number = await addBookingType(bookingType)
       const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
@@ -66,7 +66,7 @@ log('--- AddBookingType.vue setup ---')
       @submit.prevent>
     <v-text-field
         v-model="formName"
-        :disabled="settings.activeAccountId === -1"
+        :disabled="settings.activeAccountId.value === -1"
         :label="t('dialogs.addBookingType.label')"
         :rules="valNameRules(['dgdf'])"
         density="compact"

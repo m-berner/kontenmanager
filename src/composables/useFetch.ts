@@ -94,7 +94,7 @@ export const useFetch = () => {
         })
     }
     const fetchMinRateMaxData = async (storageOnline: FetchedResources.IIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> => {
-        log('BACKGROUND: fetchMinRateMaxData')
+        log('USE_FETCH: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
             const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
             const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
@@ -417,7 +417,7 @@ export const useFetch = () => {
         })
     }
     const fetchDailyChangeData = async (table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<FetchedResources.IDailyChangesData[]> => {
-        log('BACKGROUND: fetchDailyChangesData')
+        log('USE_FETCH: fetchDailyChangesData')
         let valuestr: string
         let company: string
         let sDocument: Document
@@ -498,7 +498,7 @@ export const useFetch = () => {
         return _changes
     }
     const fetchExchangesData = async (exchangeCodes: string[]): Promise<IExchangeData[]> => {
-        log('BACKGROUND: fetchExchangesData')
+        log('USE_FETCH: fetchExchangesData')
         const service = CONS.SERVICES.FX
         const fExUrl = (code: string): string => {
             if (service !== undefined) {
@@ -541,7 +541,7 @@ export const useFetch = () => {
         })
     }
     const fetchMaterialData = async (): Promise<FetchedResources.IMaterialData[]> => {
-        log('BACKGROUND: fetchMaterialData')
+        log('USE_FETCH: fetchMaterialData')
         return new Promise(async (resolve, reject) => {
             const materials: FetchedResources.IMaterialData[] = []
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '')
@@ -577,7 +577,7 @@ export const useFetch = () => {
         })
     }
     const fetchIndexData = async (): Promise<FetchedResources.IIndexData[]> => {
-        log('BACKGROUND: fetchIndexData')
+        log('USE_FETCH: fetchIndexData')
         return new Promise(async (resolve, reject) => {
             const indexes: FetchedResources.IIndexData[] = []
             const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES)
@@ -616,7 +616,7 @@ export const useFetch = () => {
         })
     }
     const fetchDateData = async (obj: FetchedResources.IIdIsin): Promise<FetchedResources.IDateData> => {
-        log('BACKGROUND: fetchDatesData')
+        log('USE_FETCH: fetchDatesData')
         const gmqf = {gm: 0, qf: 0}
         const parseGermanDate = (germanDateString: string): number => {
             const parts = germanDateString.match(/(\d+)/g) ?? ['01', '01', '1970']
@@ -634,7 +634,7 @@ export const useFetch = () => {
             firstResponse.status >= CONS.STATES.SRV ||
             (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
         ) {
-            log('BACKGROUND: fetchDatesData: First request failed', {error: 'SYstem'})
+            log('USE_FETCH: fetchDatesData: First request failed', {error: 'SYstem'})
         } else {
             const atoms = firstResponse.url.split('/')
             const stockName = atoms[atoms.length - 1].replace('-aktie', '')
@@ -645,7 +645,7 @@ export const useFetch = () => {
                 (secondResponse.status > 0 &&
                     secondResponse.status < CONS.STATES.SUCCESS)
             ) {
-                log('BACKGROUND: fetchDatesData: Second request failed')
+                log('USE_FETCH: fetchDatesData: Second request failed')
             } else {
                 const secondResponseText = await secondResponse.text()
                 const qfgmDocument = new DOMParser().parseFromString(secondResponseText, 'text/html')

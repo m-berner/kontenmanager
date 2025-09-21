@@ -5,17 +5,17 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IAccountDB, IBooking, IBookingDB, IBookingTypeDB, IStockDB, IStockOnlyMemory, IStores} from '@/types'
+import type {IBooking, IStockOnlyMemory, IStores, IStoresDB} from '@/types'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
-import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
+import {useSettings} from '@/composables/useSettings'
 import {useAccounts} from '@/stores/childs/accounts'
 import {useBookings} from '@/stores/childs/bookings'
 import {useBookingTypes} from '@/stores/childs/bookingTypes'
 import {useStocks} from '@/stores/childs/stocks'
-import {useSettingsStore} from '@/stores/settings'
+import {useBrowser} from '@/composables/useBrowser'
 
-const {log} = useApp()
+const {CONS, log} = useApp()
 
 export const useRecordsStore = defineStore('records', () => {
     const accountsStore = useAccounts()
@@ -35,18 +35,22 @@ export const useRecordsStore = defineStore('records', () => {
 
     function load(stores: IStores) {
         log('RECORDS: load')
-        const settings = useSettingsStore()
+        const settings = useSettings()
+
         for (const entry of stores.accounts) {
             accountsStore.add(entry)
         }
         accountsStore.add({cID: 0, cSwift: '', cIban: '', cLogoUrl: '', cWithDepot: false}, true)
+
         for (const entry of stores.bookings) {
             bookingsStore.add(entry)
         }
+
         for (const entry of stores.bookingTypes) {
             bookingTypesStore.add(entry)
         }
-        bookingTypesStore.add({cID: 0, cName: '', cAccountNumberID: settings.activeAccountId}, true)
+        bookingTypesStore.add({cID: 0, cName: '', cAccountNumberID: settings.activeAccountId.value}, true)
+
         for (const entry of stores.stocks) {
             stocksStore.add(entry)
         }
@@ -61,7 +65,7 @@ export const useRecordsStore = defineStore('records', () => {
             cCompany: '',
             cMeetingDay: '',
             cQuarterDay: '',
-            cAccountNumberID: settings.activeAccountId,
+            cAccountNumberID: settings.activeAccountId.value,
             mBuyValue: 0,
             mMax: 0,
             mMin: 0,
@@ -70,6 +74,7 @@ export const useRecordsStore = defineStore('records', () => {
             mPortfolio: 0,
             mValue: 0
         }, true)
+
         bookingsStore.items.sort((a: IBooking, b: IBooking) => {
             const dateA = new Date(a.cDate).getTime()
             const dateB = new Date(b.cDate).getTime()
@@ -77,18 +82,14 @@ export const useRecordsStore = defineStore('records', () => {
         })
     }
 
-    async function init(): Promise<void> {
+    async function init(storesDB: IStoresDB): Promise<void> {
         log('RECORDS: init')
-        const {getAllAccounts} = useAccountsDB()
-        const {getAllBookings} = useBookingsDB()
-        const {getAllBookingTypes} = useBookingTypesDB()
-        const {getAllStocks} = useStocksDB()
-        const settings = useSettingsStore()
-
-        const accounts: IAccountDB[] = await getAllAccounts()
-        const bookings: IBookingDB[] = (await getAllBookings()).filter((booking: IBookingDB) => booking.cAccountNumberID === settings.activeAccountId)
-        const bookingTypes: IBookingTypeDB[] = (await getAllBookingTypes()).filter((bookingType: IBookingTypeDB) => bookingType.cAccountNumberID === settings.activeAccountId)
-        const stocks: IStockDB[] = (await getAllStocks()).filter((stock: IStockDB) => stock.cAccountNumberID === settings.activeAccountId)
+        const {activeAccountId} = useSettings()
+        const {setStorage} = useBrowser()
+        if (activeAccountId.value < 1 && storesDB.accountsDB.length > 0) {
+            activeAccountId.value = storesDB.accountsDB[0].cID
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+        }
         //
         const stocksOnlyMemory: IStockOnlyMemory = {
             mPortfolio: 0,
@@ -100,15 +101,12 @@ export const useRecordsStore = defineStore('records', () => {
             mMax: 0
         }
         const stores: IStores = {
-            accounts,
-            bookings,
-            bookingTypes,
-            stocks: stocks.map((stock) => {
+            accounts: storesDB.accountsDB,
+            bookings: storesDB.bookingsDB,
+            bookingTypes: storesDB.bookingTypesDB,
+            stocks: storesDB.stocksDB.map((stock) => {
                 return {...stock, ...stocksOnlyMemory}
             })
-        }
-        if (settings.activeAccountId < 1 && accounts.length > 0) {
-            settings.activeAccountId = accounts[0].cID
         }
         clean()
         load(stores)

@@ -13,10 +13,10 @@ import {useI18n} from 'vue-i18n'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
 
 interface IFormularData {
   id: number
@@ -37,8 +37,8 @@ const {notice} = useBrowser()
 const {updateStock} = useStocksDB()
 const {ibanRules, validateForm} = useValidation()
 const records = useRecordsStore()
-const settings = useSettingsStore()
-const runtime = useRuntimeStore()
+const settings = useSettings()
+const runtime = useRuntime()
 
 const formularData: IFormularData = reactive({
   id: -1,
@@ -70,7 +70,7 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: formularData.fadeOut ? 1 : 0,
       cFirstPage: formularData.firstPage ? 1 : 0,
       cURL: formularData.url,
-      cAccountNumberID: settings.activeAccountId
+      cAccountNumberID: settings.activeAccountId.value
     }
     const stockStore: IStock = {
       ...stock,
@@ -98,8 +98,8 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks.items[records.stocks.getIndexById(runtime.activeId)]
-  formularData.id = runtime.activeId
+  const currentStock = records.stocks.items[records.stocks.getIndexById(runtime.activeId.value)]
+  formularData.id = runtime.activeId.value
   formularData.isin = currentStock.cISIN
   formularData.company = currentStock.cCompany
   formularData.wkn = currentStock.cWKN

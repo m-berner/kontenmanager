@@ -18,7 +18,7 @@ import AppIndex from '@/components/AppIndex.vue'
 
 const {CONS, log} = useApp()
 const {getDB} = useIndexedDB()
-const {clearStorage} = useBrowser()
+const {clearStorage, installStorageLocal} = useBrowser()
 const db = await getDB()
 const app = createApp(AppIndex)
 app.config.errorHandler = (err: unknown) => {
@@ -48,6 +48,7 @@ const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
         ev.key === 'r'
     ) {
         await clearStorage()
+        await installStorageLocal()
     }
     if (
         keyStrokeController.includes('Control') &&

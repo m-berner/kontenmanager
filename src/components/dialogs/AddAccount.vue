@@ -11,14 +11,14 @@ import type {Ref} from 'vue'
 import {computed, defineExpose, onMounted, reactive, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useFavicon} from '@/composables/useFavicon'
 import {useDomain} from '@/composables/useDomain'
-import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
-import {useSettingsStore} from '@/stores/settings'
 
 interface IFormData {
   swift: string
@@ -32,8 +32,8 @@ const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {addAccount} = useAccountsDB()
 const {ibanRules, ibanDuplicateRules, swiftRules, validateForm} = useValidation()
-const runtime = useRuntimeStore()
-const settings = useSettingsStore()
+const runtime = useRuntime()
+const settings = useSettings()
 const records = useRecordsStore()
 
 const formData: IFormData = reactive({
@@ -91,7 +91,7 @@ const onClickOk = async (): Promise<void> => {
     const completeAccount: IAccount = {cID: addAccountID, ...account}
     // Update stores
     records.accounts.add(completeAccount)
-    settings.activeAccountId = addAccountID
+    settings.activeAccountId.value = addAccountID
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
     runtime.resetTeleport()
     await notice([t('dialogs.addAccount.success')])
