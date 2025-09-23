@@ -63,7 +63,7 @@ export const useBrowser = () => {
             throw error;
         }
     }
-    async function onStorageChanged(callback) {
+    async function addStorageChangedListener(callback) {
         browser.storage.local.onChanged.addListener(callback);
         return () => browser.storage.local.onChanged.removeListener(callback);
     }
@@ -146,7 +146,7 @@ export const useBrowser = () => {
         setStorage,
         installStorageLocal,
         notice,
-        onStorageChanged,
+        addStorageChangedListener,
         openOptionsPage,
         tabsCreate,
         tabsQuery,

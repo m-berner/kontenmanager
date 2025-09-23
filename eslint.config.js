@@ -113,9 +113,9 @@ export default [
             vue: pluginVue
         },
         rules: {
-            //'indent': ['error', 2],
-            'vue/script-indent': ['error', 2, {'switchCase': 1}],
-            //'vue/html-indent': ['error', 2],
+            'vue/script-indent': ['error', 2, {
+                'SwitchCase': 1
+            }],
             'vue/multi-word-component-names': 'error',
             'vue/component-definition-name-casing': ['error', 'PascalCase'],
             'vue/component-name-in-template-casing': ['error', 'PascalCase'],

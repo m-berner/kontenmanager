@@ -8,7 +8,6 @@
 <script lang="ts" setup>
 import type {IExchangeData} from '@/types'
 import {onBeforeMount} from 'vue'
-import {useTheme} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
 import {useSettings} from '@/composables/useSettings'
@@ -16,50 +15,25 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useFetch} from '@/composables/useFetch'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useTheme} from 'vuetify'
 
-const settings = useSettings()
-const records = useRecordsStore()
-const runtime = useRuntime()
-const theme = useTheme()
 const {CONS, haveSameStrings, log} = useApp()
-const {getStorage, notice, onStorageChanged, uiLanguage} = useBrowser()
-const {fetchExchangesData} = useFetch()
-const {getDatabaseStores} = useIndexedDB()
-
-const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }): void => {
-  const changesKey = Object.keys(changes)
-  switch (changesKey[0]) {
-    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN:
-      settings.setSkin(theme, changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue)
-      break
-    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
-      settings.service.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue)
-      break
-    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
-      settings.indexes.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue)
-      break
-    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
-      settings.markets.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue)
-      break
-    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
-      settings.materials.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue)
-      break
-    case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
-      settings.exchanges.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue)
-      break
-    default:
-  }
-}
-onStorageChanged(changeHandler)
 
 onBeforeMount(async () => {
   try {
+    const theme = useTheme()
+    const {fetchExchangesData} = useFetch()
+    const {getDB, getDatabaseStores} = useIndexedDB()
+    const {clearStorage, getStorage, installStorageLocal, notice, addStorageChangedListener, uiLanguage} = useBrowser()
+    const db = await getDB()
+    const records = useRecordsStore()
+    const runtime = useRuntime()
+    const settings = useSettings()
+    const storage = await getStorage()
     const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
     const curEur = `${cur}${CONS.CURRENCIES.EUR}`
     const curUsd = `${cur}${CONS.CURRENCIES.USD}`
 
-    const settings = useSettings()
-    const storage = await getStorage()
     if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
       settings.init(storage)
     } else {
@@ -75,6 +49,70 @@ onBeforeMount(async () => {
         runtime.curEur.value = (exchangesBaseData[i].value)
       }
     }
+
+    const keyStrokeController: string[] = []
+    const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
+      keyStrokeController.push(ev.key)
+      log('APP: onKeyDown')
+      if (
+          keyStrokeController.includes('Control') &&
+          keyStrokeController.includes('Alt') &&
+          ev.key === 'r') {
+        await clearStorage()
+        await installStorageLocal()
+      }
+      if (
+          keyStrokeController.includes('Control') &&
+          keyStrokeController.includes('Alt') &&
+          ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0
+      ) {
+        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
+      }
+      if (
+          keyStrokeController.includes('Control') &&
+          keyStrokeController.includes('Alt') &&
+          ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0)
+      ) {
+        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
+      }
+    }
+    const onKeyUp = (ev: KeyboardEvent): void => {
+      keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
+    }
+    const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }): void => {
+      const changesKey = Object.keys(changes)
+      switch (changesKey[0]) {
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN:
+          settings.setSkin(theme, changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue)
+          break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
+          settings.service.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue)
+          break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
+          settings.indexes.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue)
+          break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
+          settings.markets.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue)
+          break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
+          settings.materials.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue)
+          break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
+          settings.exchanges.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue)
+          break
+        default:
+      }
+    }
+    const removeStorageChangedListener = await addStorageChangedListener(changeHandler)
+    const onBeforeUnload = (): void => {
+      log('APP_INDEX: onBeforeUnload')
+      removeStorageChangedListener()
+      db.close()
+    }
+
+    window.addEventListener('keydown', onKeyDown, false)
+    window.addEventListener('keyup', onKeyUp, false)
+    window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
   } catch (e) {
     log('APP_INDEX: onBeforeMount', {error: e})
   }
