@@ -14,7 +14,7 @@ import {useBrowser} from '@/composables/useBrowser'
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const service: Ref<string> = ref('goyax') //  TODO default...
+const service: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const setService = async (service: string | null): Promise<void> => {
   if (service !== null) {

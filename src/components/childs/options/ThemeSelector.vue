@@ -18,7 +18,7 @@ const theme = useTheme()
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const skin: Ref<string> = ref('ocean')// TODO default...
+const skin: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const themeNames: { [p: string]: string } = {
   earth: t('optionsPage.themeNames.earth'),

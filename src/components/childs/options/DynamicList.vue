@@ -25,7 +25,6 @@ const {getStorage, setStorage} = useBrowser()
 
 const newItem: Ref<string> = ref('')
 const list: Ref<string[]> = ref([])
-
 const label = computed((): string => {
   let resultLabel = 'Error'
   switch (dynamicListProps.type) {
@@ -39,7 +38,6 @@ const label = computed((): string => {
   }
   return resultLabel
 })
-
 const title = computed((): string => {
   let resultTitle = 'Error'
   switch (dynamicListProps.type) {
@@ -60,11 +58,11 @@ const addItem = async (item: string): Promise<void> => {
     switch (dynamicListProps.type) {
       case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
         list.value.push(item)
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, list.value)
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
         break
       case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
         list.value.push(item.toUpperCase())
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, list.value)
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
         break
       default:
     }
@@ -126,10 +124,11 @@ onBeforeMount(async () => {
           :placeholder="dynamicListProps.placeholder"
           type="text">
         <template v-slot:append>
-          <v-btn class="ml-3"
-                 color="primary"
-                 icon="$add"
-                 @click="addItem(newItem)"/>
+          <v-btn
+              class="ml-3"
+              color="primary"
+              icon="$add"
+              @click="addItem(newItem)"/>
         </template>
       </v-text-field>
     </v-card-actions>

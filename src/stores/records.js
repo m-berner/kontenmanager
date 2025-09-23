@@ -89,7 +89,6 @@ export const useRecordsStore = defineStore('records', () => {
                 return { ...stock, ...stocksOnlyMemory };
             })
         };
-        console.error('KKPP', storesDB.bookingsDB, stores.bookings);
         clean();
         load(stores);
     }

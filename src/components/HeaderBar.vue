@@ -13,7 +13,7 @@ import {useRuntime} from '@/composables/useRuntime'
 import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
-import DialogPort from '@/components/dialogs/childs/DialogPort.vue'
+import DialogPort from '@/components/childs/DialogPort.vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()

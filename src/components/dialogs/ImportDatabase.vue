@@ -22,7 +22,6 @@ import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
@@ -84,7 +83,6 @@ const {clearAllAccounts, importAccounts} = useAccountsDB()
 const {clearAllBookings, importBookings} = useBookingsDB()
 const {clearAllBookingTypes, importBookingTypes} = useBookingTypesDB()
 const {clearAllStocks, importStocks} = useStocksDB()
-const {activeAccountId} = useSettings()
 const runtime = useRuntime()
 
 const fileBlob = ref<Blob>(new Blob())
@@ -111,7 +109,7 @@ const onClickOk = async (): Promise<void> => {
     const stocksStoreData: IStockDB[] = []
     if (typeof fr.result === 'string') {
       const backupObject: IBackup = JSON.parse(fr.result)
-      const activeId = 1
+      const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : 1
       const getCreditDebit = (rec: StockManager.ITransfer): number => {
         let result: number
         switch (rec.cType) {
@@ -154,8 +152,8 @@ const onClickOk = async (): Promise<void> => {
           cID: activeId,
           cSwift: 'KMKLPJJ9099',
           cIban: 'XX13120300001064506999',
-          cLogoUrl: '', // TODO cUrl
-          cWithDepot: true // TODO withDepot
+          cLogoUrl: '',
+          cWithDepot: true
         }]
         const bookingTypeRecords = [
           {cID: 1, cName: 'Aktienkauf', cAccountNumberID: activeId},
@@ -174,7 +172,6 @@ const onClickOk = async (): Promise<void> => {
         }
         for (const rec of backupObject.stocks) {
           const stockClone: IStock = {} as IStock
-          // let stockCloneStore: IStock = {} as IStock
           stockClone.cID = rec.cID
           stockClone.cAccountNumberID = activeId
           stockClone.cSymbol = rec.cSym
@@ -188,16 +185,6 @@ const onClickOk = async (): Promise<void> => {
           stockClone.cFirstPage = rec.cFirstPage
           stockClone.cURL = rec.cURL
           stocksImportData.push({type: 'add', data: stockClone, key: -1})
-          // stockCloneStore = {
-          //   ...stockClone,
-          //   mPortfolio: 0,
-          //   mChange: 0,
-          //   mBuyValue: 0,
-          //   mEuroChange: 0,
-          //   mMin: 0,
-          //   mValue: 0,
-          //   mMax: 0
-          // }
           stocksStoreData.push(stockClone)
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
@@ -242,21 +229,12 @@ const onClickOk = async (): Promise<void> => {
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }
-      if (activeAccountId.value > 0) {
-        records.init({
-          accountsDB: accountsStoreData,
-          bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeAccountId.value),
-          bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeAccountId.value),
-          stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeAccountId.value)
-        })
-      } else {
-        records.init({
-          accountsDB: accountsStoreData,
-          bookingsDB: bookingsStoreData,
-          bookingTypesDB: bookingTypesStoreData,
-          stocksDB: stocksStoreData
-        })
-      }
+      records.init({
+        accountsDB: accountsStoreData,
+        bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeId),
+        bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeId),
+        stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeId)
+      })
       await importAccounts(accountsImportData)
       await importBookingTypes(bookingTypesImportData)
       await importBookings(bookingsImportData)
