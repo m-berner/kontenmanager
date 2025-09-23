@@ -12,7 +12,7 @@ type TStringValidator = (_v: string) => boolean | string
 type TNumberValidator = (_v: number) => boolean | string
 
 export const useValidation = () => {
-    const ibanRules = (msgArray: string[]): TStringValidator[] => {
+    function ibanRules(msgArray: string[]): TStringValidator[] {
         const ibanLengths: Record<string, number> = {
             AD: 24, AE: 23, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22,
             BH: 22, BR: 29, BY: 28, CH: 21, CR: 22, CY: 28, CZ: 24, DE: 22,
@@ -47,7 +47,8 @@ export const useValidation = () => {
             }
         ]
     }
-    const ibanDuplicateRules = (msgArray: string[]): TStringValidator[] => {
+
+    function ibanDuplicateRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => {
                 const records = useRecordsStore()
@@ -55,14 +56,16 @@ export const useValidation = () => {
             }
         ]
     }
-    const valNameRules = (msgArray: string[]): TStringValidator[] => {
+
+    function valNameRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => v !== null || msgArray[0],
             (v: string) => (v !== null && v.length < 32) || msgArray[1],
             (v: string) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
         ]
     }
-    const swiftRules = (msgArray: string[]): TStringValidator[] => {
+
+    function swiftRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => v !== null || msgArray[0],
             (v: string) => (v.replace(/\s/g, '').length === 8 || v.replace(/\s/g, '').length === 11) || msgArray[1],
@@ -78,45 +81,53 @@ export const useValidation = () => {
             (v: string) => !v.replace(/\s/g, '').substring(6, 8).endsWith('1') || msgArray[8]
         ]
     }
-    const dateRules = (msgArray: string[]): TStringValidator[] => {
+
+    function dateRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
         ]
     }
-    const valCurrencyCodeRules = (msgArray: string[]): TStringValidator[] => {
+
+    function valCurrencyCodeRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => v !== null || msgArray[0],
             (v: string) => (v !== null && v.length === 3) || msgArray[1],
             (v: string) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
         ]
     }
-    const requiredRules = (msgArray: string[]): TStringValidator[] => {
+
+    function requiredRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => v !== null || msgArray[0]
         ]
     }
-    const valPositiveIntegerRules = (msgArray: string[]): TNumberValidator[] => {
+
+    function valPositiveIntegerRules(msgArray: string[]): TNumberValidator[] {
         return [
             (v: number) => v > 0 || msgArray[0]
         ]
     }
-    const requiredSelect = (msgArray: string[]): TStringValidator[] => {
+
+    function requiredSelect(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => (v === null || v.length > 0) || msgArray[0]
         ]
     }
-    const requiredSelectNumber = (msgArray: string[]): TNumberValidator[] => {
+
+    function requiredSelectNumber(msgArray: string[]): TNumberValidator[] {
         return [
             (v: number) => v > 0 || msgArray[0]
         ]
     }
-    const validateForm = async (form: Ref<HTMLFormElement | null>): Promise<boolean> => {
+
+    async function validateForm(form: Ref<HTMLFormElement | null>): Promise<boolean> {
         if (form.value !== null) {
             const {valid} = await form.value.validate()
             return valid
         }
         return false
     }
+
     return {
         ibanRules,
         ibanDuplicateRules,

@@ -21,18 +21,18 @@ export const useFavicon = (domain: string, size = 48) => {
         return ''
     })
 
-    const onLoad = () => {
+    function onLoad() {
         loading.value = false
     }
 
-    const onError = () => {
+    function onError() {
         if (!error.value) {
             error.value = true
             loading.value = false
         }
     }
 
-    const reset = () => {
+    function reset() {
         error.value = false
         loading.value = true
     }

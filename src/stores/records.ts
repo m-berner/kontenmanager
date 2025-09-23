@@ -35,8 +35,7 @@ export const useRecordsStore = defineStore('records', () => {
 
     function load(stores: IStores) {
         log('RECORDS: load')
-        const settings = useSettings()
-
+        const {activeAccountId} = useSettings()
         for (const entry of stores.accounts) {
             accountsStore.add(entry)
         }
@@ -49,7 +48,7 @@ export const useRecordsStore = defineStore('records', () => {
         for (const entry of stores.bookingTypes) {
             bookingTypesStore.add(entry)
         }
-        bookingTypesStore.add({cID: 0, cName: '', cAccountNumberID: settings.activeAccountId.value}, true)
+        bookingTypesStore.add({cID: 0, cName: '', cAccountNumberID: activeAccountId.value}, true)
 
         for (const entry of stores.stocks) {
             stocksStore.add(entry)
@@ -65,7 +64,7 @@ export const useRecordsStore = defineStore('records', () => {
             cCompany: '',
             cMeetingDay: '',
             cQuarterDay: '',
-            cAccountNumberID: settings.activeAccountId.value,
+            cAccountNumberID: activeAccountId.value,
             mBuyValue: 0,
             mMax: 0,
             mMin: 0,

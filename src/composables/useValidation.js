@@ -1,6 +1,6 @@
 import { useRecordsStore } from '@/stores/records';
 export const useValidation = () => {
-    const ibanRules = (msgArray) => {
+    function ibanRules(msgArray) {
         const ibanLengths = {
             AD: 24, AE: 23, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22,
             BH: 22, BR: 29, BY: 28, CH: 21, CR: 22, CY: 28, CZ: 24, DE: 22,
@@ -33,23 +33,23 @@ export const useValidation = () => {
                 return remainder === 1n || msgArray[4];
             }
         ];
-    };
-    const ibanDuplicateRules = (msgArray) => {
+    }
+    function ibanDuplicateRules(msgArray) {
         return [
             (v) => {
                 const records = useRecordsStore();
                 return !records.accounts.isDuplicate(v.replace(/\s/g, '')) || msgArray[5];
             }
         ];
-    };
-    const valNameRules = (msgArray) => {
+    }
+    function valNameRules(msgArray) {
         return [
             (v) => v !== null || msgArray[0],
             (v) => (v !== null && v.length < 32) || msgArray[1],
             (v) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
         ];
-    };
-    const swiftRules = (msgArray) => {
+    }
+    function swiftRules(msgArray) {
         return [
             (v) => v !== null || msgArray[0],
             (v) => (v.replace(/\s/g, '').length === 8 || v.replace(/\s/g, '').length === 11) || msgArray[1],
@@ -64,46 +64,46 @@ export const useValidation = () => {
             (v) => !v.replace(/\s/g, '').substring(6, 8).startsWith('0') || msgArray[7],
             (v) => !v.replace(/\s/g, '').substring(6, 8).endsWith('1') || msgArray[8]
         ];
-    };
-    const dateRules = (msgArray) => {
+    }
+    function dateRules(msgArray) {
         return [
             (v) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
         ];
-    };
-    const valCurrencyCodeRules = (msgArray) => {
+    }
+    function valCurrencyCodeRules(msgArray) {
         return [
             (v) => v !== null || msgArray[0],
             (v) => (v !== null && v.length === 3) || msgArray[1],
             (v) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
         ];
-    };
-    const requiredRules = (msgArray) => {
+    }
+    function requiredRules(msgArray) {
         return [
             (v) => v !== null || msgArray[0]
         ];
-    };
-    const valPositiveIntegerRules = (msgArray) => {
+    }
+    function valPositiveIntegerRules(msgArray) {
         return [
             (v) => v > 0 || msgArray[0]
         ];
-    };
-    const requiredSelect = (msgArray) => {
+    }
+    function requiredSelect(msgArray) {
         return [
             (v) => (v === null || v.length > 0) || msgArray[0]
         ];
-    };
-    const requiredSelectNumber = (msgArray) => {
+    }
+    function requiredSelectNumber(msgArray) {
         return [
             (v) => v > 0 || msgArray[0]
         ];
-    };
-    const validateForm = async (form) => {
+    }
+    async function validateForm(form) {
         if (form.value !== null) {
             const { valid } = await form.value.validate();
             return valid;
         }
         return false;
-    };
+    }
     return {
         ibanRules,
         ibanDuplicateRules,

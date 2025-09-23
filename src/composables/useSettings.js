@@ -1,7 +1,6 @@
-import {ref} from 'vue';
-import {useApp} from '@/composables/useApp';
-
-const {CONS} = useApp();
+import { ref } from 'vue';
+import { useApp } from '@/composables/useApp';
+const { CONS } = useApp();
 const skin = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN);
 const bookingsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE);
 const stocksPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE);
@@ -19,7 +18,6 @@ export const useSettings = () => {
         }
         skin.value = value;
     }
-
     function init(storage) {
         bookingsPerPage.value = storage.sBookingsPerPage;
         stocksPerPage.value = storage.sStocksPerPage;
@@ -31,7 +29,6 @@ export const useSettings = () => {
         indexes.value = [...storage.sIndexes];
         exchanges.value = [...storage.sExchanges];
     }
-
     return {
         skin,
         bookingsPerPage,

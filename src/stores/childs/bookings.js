@@ -21,8 +21,8 @@ export const useBookings = defineStore('bookings', () => {
         }
     });
     const sumBookings = computed(() => () => {
-        const settings = useSettings();
-        if (settings.activeAccountId.value === -1) {
+        const { activeAccountId } = useSettings();
+        if (activeAccountId.value === -1) {
             return 0;
         }
         if (items.value.length > 0) {

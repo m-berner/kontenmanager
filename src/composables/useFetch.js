@@ -3,7 +3,7 @@ import { useBrowser } from '@/composables/useBrowser';
 const { CONS, log, mean, toNumber } = useApp();
 const { notice, getStorage } = useBrowser();
 export const useFetch = () => {
-    const fetchCompanyData = async (isin) => {
+    async function fetchCompanyData(isin) {
         return new Promise(async (resolve, reject) => {
             let sDocument;
             let company = '';
@@ -65,8 +65,8 @@ export const useFetch = () => {
                 }
             }
         });
-    };
-    const fetchMinRateMaxData = async (storageOnline) => {
+    }
+    async function fetchMinRateMaxData(storageOnline) {
         log('USE_FETCH: fetchMinRateMaxData');
         return new Promise(async (resolve, reject) => {
             const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]);
@@ -329,8 +329,8 @@ export const useFetch = () => {
             }
             resolve(await _select(urls));
         });
-    };
-    const fetchDailyChangeData = async (table, mode = CONS.SERVICES.TGATE.CHANGES.SMALL) => {
+    }
+    async function fetchDailyChangeData(table, mode = CONS.SERVICES.TGATE.CHANGES.SMALL) {
         log('USE_FETCH: fetchDailyChangesData');
         let valuestr;
         let company;
@@ -404,8 +404,8 @@ export const useFetch = () => {
             }
         }
         return _changes;
-    };
-    const fetchExchangesData = async (exchangeCodes) => {
+    }
+    async function fetchExchangesData(exchangeCodes) {
         log('USE_FETCH: fetchExchangesData');
         const service = CONS.SERVICES.FX;
         const fExUrl = (code) => {
@@ -440,8 +440,8 @@ export const useFetch = () => {
             resolve(result);
             return result;
         });
-    };
-    const fetchMaterialData = async () => {
+    }
+    async function fetchMaterialData() {
         log('USE_FETCH: fetchMaterialData');
         return new Promise(async (resolve, reject) => {
             const materials = [];
@@ -467,8 +467,8 @@ export const useFetch = () => {
             }
             resolve(materials);
         });
-    };
-    const fetchIndexData = async () => {
+    }
+    async function fetchIndexData() {
         log('USE_FETCH: fetchIndexData');
         return new Promise(async (resolve, reject) => {
             const indexes = [];
@@ -497,8 +497,8 @@ export const useFetch = () => {
             }
             resolve(indexes);
         });
-    };
-    const fetchDateData = async (obj) => {
+    }
+    async function fetchDateData(obj) {
         log('USE_FETCH: fetchDatesData');
         const gmqf = { gm: 0, qf: 0 };
         const parseGermanDate = (germanDateString) => {
@@ -563,7 +563,7 @@ export const useFetch = () => {
             }
         }
         return { key: obj.id, value: gmqf };
-    };
+    }
     return {
         fetchCompanyData,
         fetchMinRateMaxData,

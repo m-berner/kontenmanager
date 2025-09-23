@@ -33,9 +33,9 @@ export const useBookings = defineStore('bookings', () => {
         }
     })
     const sumBookings = computed(() => (): number => {
-        const settings = useSettings()
+        const {activeAccountId} = useSettings()
 
-        if (settings.activeAccountId.value === -1) {
+        if (activeAccountId.value === -1) {
             return 0
         }
 

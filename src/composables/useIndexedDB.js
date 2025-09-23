@@ -9,7 +9,7 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     const isConnected = ref(false);
     const error = ref(null);
     const isLoading = ref(false);
-    const _setupDatabase = (db) => {
+    function _setupDatabase(db) {
         if (!db.objectStoreNames.contains(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)) {
             const accountStore = db.createObjectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, {
                 keyPath: CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID,
@@ -45,8 +45,53 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             stockStore.createIndex(`${CONS.INDEXED_DB.STORES.STOCKS.NAME}_k2`, CONS.INDEXED_DB.STORES.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
             stockStore.createIndex(`${CONS.INDEXED_DB.STORES.STOCKS.NAME}_k3`, CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
         }
-    };
-    const getDB = async () => {
+    }
+    async function _performTransaction(storeName, mode, operations) {
+        try {
+            const db = await getDB();
+            const transaction = db.transaction(storeName, mode);
+            transaction.onerror = () => {
+                error.value = transaction.error;
+                throw transaction.error;
+            };
+            return await operations(transaction);
+        }
+        catch (err) {
+            error.value = err;
+            throw err;
+        }
+    }
+    async function batchOperations(storeName, operations) {
+        return _performTransaction(storeName, 'readwrite', async (transaction) => {
+            const store = transaction.objectStore(storeName);
+            const results = [];
+            for (const operation of operations) {
+                const { type, data, key } = operation;
+                const promise = new Promise((resolve, reject) => {
+                    let request;
+                    switch (type) {
+                        case 'add':
+                            request = store.add(data);
+                            break;
+                        case 'put':
+                            request = store.put(data);
+                            break;
+                        case 'delete':
+                            request = store.delete(key);
+                            break;
+                        default:
+                            reject(new Error(`Unknown operation type: ${type}`));
+                            return;
+                    }
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                results.push(await promise);
+            }
+            return results;
+        });
+    }
+    async function getDB() {
         if (dbInstance && !dbInstance.db) {
             dbInstance = null;
             dbPromise = null;
@@ -88,24 +133,9 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             });
         }
         return dbPromise;
-    };
-    const performTransaction = async (storeName, mode, operations) => {
-        try {
-            const db = await getDB();
-            const transaction = db.transaction(storeName, mode);
-            transaction.onerror = () => {
-                error.value = transaction.error;
-                throw transaction.error;
-            };
-            return await operations(transaction);
-        }
-        catch (err) {
-            error.value = err;
-            throw err;
-        }
-    };
-    const add = async (storeName, data) => {
-        return performTransaction(storeName, 'readwrite', (transaction) => {
+    }
+    async function add(storeName, data) {
+        return _performTransaction(storeName, 'readwrite', (transaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName);
                 const request = store.add(data);
@@ -113,9 +143,9 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 request.onerror = () => reject(request.error);
             });
         });
-    };
-    const get = async (storeName, key) => {
-        return performTransaction(storeName, 'readonly', (transaction) => {
+    }
+    async function get(storeName, key) {
+        return _performTransaction(storeName, 'readonly', (transaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName);
                 const request = store.get(key);
@@ -123,9 +153,9 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 request.onerror = () => reject(request.error);
             });
         });
-    };
-    const getAll = async (storeName) => {
-        return performTransaction(storeName, 'readonly', (transaction) => {
+    }
+    async function getAll(storeName) {
+        return _performTransaction(storeName, 'readonly', (transaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName);
                 const request = store.getAll();
@@ -133,9 +163,9 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 request.onerror = () => reject(request.error);
             });
         });
-    };
-    const update = async (storeName, data) => {
-        return performTransaction(storeName, 'readwrite', (transaction) => {
+    }
+    async function update(storeName, data) {
+        return _performTransaction(storeName, 'readwrite', (transaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName);
                 const request = store.put(data);
@@ -143,9 +173,9 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 request.onerror = () => reject(request.error);
             });
         });
-    };
-    const remove = async (storeName, key) => {
-        return performTransaction(storeName, 'readwrite', (transaction) => {
+    }
+    async function remove(storeName, key) {
+        return _performTransaction(storeName, 'readwrite', (transaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName);
                 const request = store.delete(key);
@@ -153,39 +183,9 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 request.onerror = () => reject(request.error);
             });
         });
-    };
-    const batchOperations = async (storeName, operations) => {
-        return performTransaction(storeName, 'readwrite', async (transaction) => {
-            const store = transaction.objectStore(storeName);
-            const results = [];
-            for (const operation of operations) {
-                const { type, data, key } = operation;
-                const promise = new Promise((resolve, reject) => {
-                    let request;
-                    switch (type) {
-                        case 'add':
-                            request = store.add(data);
-                            break;
-                        case 'put':
-                            request = store.put(data);
-                            break;
-                        case 'delete':
-                            request = store.delete(key);
-                            break;
-                        default:
-                            reject(new Error(`Unknown operation type: ${type}`));
-                            return;
-                    }
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-                results.push(await promise);
-            }
-            return results;
-        });
-    };
-    const getByIndex = async (storeName, indexName, value) => {
-        return performTransaction(storeName, 'readonly', (transaction) => {
+    }
+    async function getByIndex(storeName, indexName, value) {
+        return _performTransaction(storeName, 'readonly', (transaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName);
                 const index = store.index(indexName);
@@ -194,9 +194,9 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 request.onerror = () => reject(request.error);
             });
         });
-    };
-    const clear = async (storeName) => {
-        return performTransaction(storeName, 'readwrite', (transaction) => {
+    }
+    async function clear(storeName) {
+        return _performTransaction(storeName, 'readwrite', (transaction) => {
             return new Promise((resolve, reject) => {
                 const store = transaction.objectStore(storeName);
                 const request = store.clear();
@@ -204,9 +204,9 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 request.onerror = () => reject(request.error);
             });
         });
-    };
-    const deleteAccountDatabase = async (accountId) => {
-        log('INDEXED_DB: deleteAccountDatabase');
+    }
+    async function deleteDatabaseWithAccount(accountId) {
+        log('INDEXED_DB: deleteDatabaseWithAccount');
         const { deleteAccount } = useAccountsDB();
         const { deleteBooking, getAllBookings } = useBookingsDB();
         const { deleteBookingType, getAllBookingTypes } = useBookingTypesDB();
@@ -224,8 +224,8 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             await deleteStock(rec.cID);
         }
         await deleteAccount(accountId);
-    };
-    const getDatabaseStores = async () => {
+    }
+    async function getDatabaseStores() {
         log('INDEXED_DB: getDatabaseStores');
         const { getAllAccounts } = useAccountsDB();
         const { getAllBookings } = useBookingsDB();
@@ -241,28 +241,27 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             bookingTypesDB,
             stocksDB
         };
-    };
+    }
     return {
         isConnected,
         error,
         isLoading,
         getDB,
-        performTransaction,
         add,
         get,
         getAll,
         update,
         remove,
         clear,
-        batchOperations,
         getByIndex,
-        deleteAccountDatabase,
+        batchOperations,
+        deleteDatabaseWithAccount,
         getDatabaseStores
     };
 };
 export const useAccountsDB = () => {
     const db = useIndexedDB();
-    const addAccount = async (accountData) => {
+    async function addAccount(accountData) {
         try {
             return await db.add(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountData);
         }
@@ -270,8 +269,8 @@ export const useAccountsDB = () => {
             log('Failed to add account:', { error: err });
             throw err;
         }
-    };
-    const getAllAccounts = async () => {
+    }
+    async function getAllAccounts() {
         try {
             return await db.getAll(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
         }
@@ -279,8 +278,8 @@ export const useAccountsDB = () => {
             log('Failed to get all accounts:', { error: err });
             throw err;
         }
-    };
-    const updateAccount = async (accountData) => {
+    }
+    async function updateAccount(accountData) {
         try {
             return await db.update(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountData);
         }
@@ -288,8 +287,8 @@ export const useAccountsDB = () => {
             log('Failed to update account:', { error: err });
             throw err;
         }
-    };
-    const deleteAccount = async (accountId) => {
+    }
+    async function deleteAccount(accountId) {
         try {
             return await db.remove(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountId);
         }
@@ -297,8 +296,8 @@ export const useAccountsDB = () => {
             log('Failed to delete account:', { error: err });
             throw err;
         }
-    };
-    const clearAllAccounts = async () => {
+    }
+    async function clearAllAccounts() {
         try {
             return await db.clear(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
         }
@@ -306,8 +305,8 @@ export const useAccountsDB = () => {
             log('Failed to delete account:', { error: err });
             throw err;
         }
-    };
-    const importAccounts = async (accountsBatch) => {
+    }
+    async function importAccounts(accountsBatch) {
         try {
             return await db.batchOperations(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountsBatch);
         }
@@ -315,7 +314,7 @@ export const useAccountsDB = () => {
             log('Failed to import account:', { error: err });
             throw err;
         }
-    };
+    }
     return {
         isConnected: db.isConnected,
         error: db.error,
@@ -330,7 +329,7 @@ export const useAccountsDB = () => {
 };
 export const useBookingsDB = () => {
     const db = useIndexedDB();
-    const addBooking = async (bookingData) => {
+    async function addBooking(bookingData) {
         try {
             return await db.add(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingData);
         }
@@ -338,8 +337,8 @@ export const useBookingsDB = () => {
             log('Failed to add booking:', { error: err });
             throw err;
         }
-    };
-    const getAllBookings = async () => {
+    }
+    async function getAllBookings() {
         try {
             return await db.getAll(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
         }
@@ -347,8 +346,8 @@ export const useBookingsDB = () => {
             log('Failed to get all bookings:', { error: err });
             throw err;
         }
-    };
-    const updateBooking = async (bookingData) => {
+    }
+    async function updateBooking(bookingData) {
         try {
             return await db.update(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, bookingData);
         }
@@ -356,8 +355,8 @@ export const useBookingsDB = () => {
             log('Failed to update booking:', { error: err });
             throw err;
         }
-    };
-    const deleteBooking = async (bookingId) => {
+    }
+    async function deleteBooking(bookingId) {
         try {
             return await db.remove(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingId);
         }
@@ -365,8 +364,8 @@ export const useBookingsDB = () => {
             log('Failed to delete booking:', { error: err });
             throw err;
         }
-    };
-    const clearAllBookings = async () => {
+    }
+    async function clearAllBookings() {
         try {
             return await db.clear(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
         }
@@ -374,8 +373,8 @@ export const useBookingsDB = () => {
             log('Failed to delete booking:', { error: err });
             throw err;
         }
-    };
-    const importBookings = async (bookingsBatch) => {
+    }
+    async function importBookings(bookingsBatch) {
         try {
             return await db.batchOperations(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingsBatch);
         }
@@ -383,7 +382,7 @@ export const useBookingsDB = () => {
             log('Failed to import account:', { error: err });
             throw err;
         }
-    };
+    }
     return {
         isConnected: db.isConnected,
         error: db.error,
@@ -398,7 +397,7 @@ export const useBookingsDB = () => {
 };
 export const useBookingTypesDB = () => {
     const db = useIndexedDB();
-    const addBookingType = async (bookingTypeData) => {
+    async function addBookingType(bookingTypeData) {
         try {
             return await db.add(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypeData);
         }
@@ -406,8 +405,8 @@ export const useBookingTypesDB = () => {
             log('Failed to add bookingType:', { error: err });
             throw err;
         }
-    };
-    const getAllBookingTypes = async () => {
+    }
+    async function getAllBookingTypes() {
         try {
             return await db.getAll(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
         }
@@ -415,8 +414,8 @@ export const useBookingTypesDB = () => {
             log('Failed to get all bookingTypes:', { error: err });
             throw err;
         }
-    };
-    const updateBookingType = async (bookingTypeData) => {
+    }
+    async function updateBookingType(bookingTypeData) {
         try {
             return await db.update(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypeData);
         }
@@ -424,8 +423,8 @@ export const useBookingTypesDB = () => {
             log('Failed to update bookingType:', { error: err });
             throw err;
         }
-    };
-    const deleteBookingType = async (bookingTypeId) => {
+    }
+    async function deleteBookingType(bookingTypeId) {
         try {
             return await db.remove(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypeId);
         }
@@ -433,8 +432,8 @@ export const useBookingTypesDB = () => {
             log('Failed to delete bookingType:', { error: err });
             throw err;
         }
-    };
-    const clearAllBookingTypes = async () => {
+    }
+    async function clearAllBookingTypes() {
         try {
             return await db.clear(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
         }
@@ -442,8 +441,8 @@ export const useBookingTypesDB = () => {
             log('Failed to delete bookingType:', { error: err });
             throw err;
         }
-    };
-    const importBookingTypes = async (bookingTypesBatch) => {
+    }
+    async function importBookingTypes(bookingTypesBatch) {
         try {
             return await db.batchOperations(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypesBatch);
         }
@@ -451,7 +450,7 @@ export const useBookingTypesDB = () => {
             log('Failed to import account:', { error: err });
             throw err;
         }
-    };
+    }
     return {
         isConnected: db.isConnected,
         error: db.error,
@@ -466,7 +465,7 @@ export const useBookingTypesDB = () => {
 };
 export const useStocksDB = () => {
     const db = useIndexedDB();
-    const addStock = async (stockData) => {
+    async function addStock(stockData) {
         try {
             return await db.add(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData);
         }
@@ -474,8 +473,8 @@ export const useStocksDB = () => {
             log('Failed to add stock:', { error: err });
             throw err;
         }
-    };
-    const getAllStocks = async () => {
+    }
+    async function getAllStocks() {
         try {
             return await db.getAll(CONS.INDEXED_DB.STORES.STOCKS.NAME);
         }
@@ -483,8 +482,8 @@ export const useStocksDB = () => {
             log('Failed to get all stocks:', { error: err });
             throw err;
         }
-    };
-    const updateStock = async (stockData) => {
+    }
+    async function updateStock(stockData) {
         try {
             return await db.update(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData);
         }
@@ -492,8 +491,8 @@ export const useStocksDB = () => {
             log('Failed to update stock:', { error: err });
             throw err;
         }
-    };
-    const deleteStock = async (stockId) => {
+    }
+    async function deleteStock(stockId) {
         try {
             return await db.remove(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockId);
         }
@@ -501,8 +500,8 @@ export const useStocksDB = () => {
             log('Failed to delete stock:', { error: err });
             throw err;
         }
-    };
-    const clearAllStocks = async () => {
+    }
+    async function clearAllStocks() {
         try {
             return await db.clear(CONS.INDEXED_DB.STORES.STOCKS.NAME);
         }
@@ -510,8 +509,8 @@ export const useStocksDB = () => {
             log('Failed to delete stock:', { error: err });
             throw err;
         }
-    };
-    const importStocks = async (stocksBatch) => {
+    }
+    async function importStocks(stocksBatch) {
         try {
             return await db.batchOperations(CONS.INDEXED_DB.STORES.STOCKS.NAME, stocksBatch);
         }
@@ -519,7 +518,7 @@ export const useStocksDB = () => {
             log('Failed to import account:', { error: err });
             throw err;
         }
-    };
+    }
     return {
         isConnected: db.isConnected,
         error: db.error,

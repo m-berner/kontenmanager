@@ -1,5 +1,4 @@
-import {reactive} from 'vue';
-
+import { reactive } from 'vue';
 export const useBookingContainer = () => {
     const containerData = reactive({
         id: 0,

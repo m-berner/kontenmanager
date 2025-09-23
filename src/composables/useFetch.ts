@@ -24,7 +24,7 @@ const {CONS, log, mean, toNumber} = useApp()
 const {notice, getStorage} = useBrowser()
 
 export const useFetch = () => {
-    const fetchCompanyData = async (isin: string): Promise<ICompanyData> => {
+    async function fetchCompanyData(isin: string): Promise<ICompanyData> {
         return new Promise(async (resolve, reject) => {
             let sDocument: Document
             let company = ''
@@ -93,7 +93,8 @@ export const useFetch = () => {
             }
         })
     }
-    const fetchMinRateMaxData = async (storageOnline: FetchedResources.IIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> => {
+
+    async function fetchMinRateMaxData(storageOnline: FetchedResources.IIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> {
         log('USE_FETCH: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
             const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
@@ -416,7 +417,8 @@ export const useFetch = () => {
             resolve(await _select(urls))
         })
     }
-    const fetchDailyChangeData = async (table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<FetchedResources.IDailyChangesData[]> => {
+
+    async function fetchDailyChangeData(table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<FetchedResources.IDailyChangesData[]> {
         log('USE_FETCH: fetchDailyChangesData')
         let valuestr: string
         let company: string
@@ -497,7 +499,8 @@ export const useFetch = () => {
         }
         return _changes
     }
-    const fetchExchangesData = async (exchangeCodes: string[]): Promise<IExchangeData[]> => {
+
+    async function fetchExchangesData(exchangeCodes: string[]): Promise<IExchangeData[]> {
         log('USE_FETCH: fetchExchangesData')
         const service = CONS.SERVICES.FX
         const fExUrl = (code: string): string => {
@@ -540,7 +543,8 @@ export const useFetch = () => {
             return result
         })
     }
-    const fetchMaterialData = async (): Promise<FetchedResources.IMaterialData[]> => {
+
+    async function fetchMaterialData(): Promise<FetchedResources.IMaterialData[]> {
         log('USE_FETCH: fetchMaterialData')
         return new Promise(async (resolve, reject) => {
             const materials: FetchedResources.IMaterialData[] = []
@@ -576,7 +580,8 @@ export const useFetch = () => {
             resolve(materials)
         })
     }
-    const fetchIndexData = async (): Promise<FetchedResources.IIndexData[]> => {
+
+    async function fetchIndexData(): Promise<FetchedResources.IIndexData[]> {
         log('USE_FETCH: fetchIndexData')
         return new Promise(async (resolve, reject) => {
             const indexes: FetchedResources.IIndexData[] = []
@@ -615,7 +620,8 @@ export const useFetch = () => {
             resolve(indexes)
         })
     }
-    const fetchDateData = async (obj: FetchedResources.IIdIsin): Promise<FetchedResources.IDateData> => {
+
+    async function fetchDateData(obj: FetchedResources.IIdIsin): Promise<FetchedResources.IDateData> {
         log('USE_FETCH: fetchDatesData')
         const gmqf = {gm: 0, qf: 0}
         const parseGermanDate = (germanDateString: string): number => {
@@ -687,6 +693,7 @@ export const useFetch = () => {
         }
         return {key: obj.id, value: gmqf}
     }
+
     return {
         fetchCompanyData,
         fetchMinRateMaxData,

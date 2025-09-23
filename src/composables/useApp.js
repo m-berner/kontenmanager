@@ -517,13 +517,13 @@ const CONS = Object.freeze({
     }
 });
 export const useApp = () => {
-    const utcDate = (iso) => {
+    function utcDate(iso) {
         return new Date(`${iso}T00:00:00.000`);
-    };
-    const toISODate = (ms) => {
+    }
+    function toISODate(ms) {
         return new Date(ms).toISOString().substring(0, 10);
-    };
-    const toNumber = (str) => {
+    }
+    function toNumber(str) {
         let result = 0;
         if (str !== null && str !== undefined) {
             const a = str.toString().replace(/,$/g, '');
@@ -552,8 +552,8 @@ export const useApp = () => {
             }
         }
         return result;
-    };
-    const log = (msg, mode) => {
+    }
+    function log(msg, mode) {
         const localDebug = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG);
         if (Number.parseInt(localDebug ?? '0') > 0) {
             if (mode?.info !== undefined) {
@@ -569,8 +569,8 @@ export const useApp = () => {
                 console.log(msg);
             }
         }
-    };
-    const mean = (nar) => {
+    }
+    function mean(nar) {
         let sum = 0;
         let len = nar.length;
         for (const n of nar) {
@@ -582,8 +582,8 @@ export const useApp = () => {
             }
         }
         return len > 0 ? sum / len : 0;
-    };
-    const haveSameStrings = (arr1, arr2) => {
+    }
+    function haveSameStrings(arr1, arr2) {
         if (arr1.length !== arr2.length) {
             return false;
         }
@@ -598,7 +598,7 @@ export const useApp = () => {
             }
         }
         return true;
-    };
+    }
     return {
         CONS,
         utcDate,

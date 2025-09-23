@@ -22,7 +22,7 @@ import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
-// import {useSettings} from '@/composables/useSettings'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
@@ -84,7 +84,7 @@ const {clearAllAccounts, importAccounts} = useAccountsDB()
 const {clearAllBookings, importBookings} = useBookingsDB()
 const {clearAllBookingTypes, importBookingTypes} = useBookingTypesDB()
 const {clearAllStocks, importStocks} = useStocksDB()
-// const settings = useSettings()
+const {activeAccountId} = useSettings()
 const runtime = useRuntime()
 
 const fileBlob = ref<Blob>(new Blob())
@@ -227,54 +227,36 @@ const onClickOk = async (): Promise<void> => {
           accountsStoreData.push(rec)
           accountsImportData.push({type: 'add', data: rec, key: -1})
         }
-        //activeId = accounts[0].cID
         for (const rec of backupObject.stocks) {
           stocksStoreData.push(rec)
           stocksImportData.push({type: 'add', data: rec, key: -1})
-          // if (rec.cAccountNumberID === activeId) {
-          //   const stockClone = {
-          //     ...rec,
-          //     mPortfolio: 0,
-          //     mChange: 0,
-          //     mEuroChange: 0,
-          //     mBuyValue: 0,
-          //     mMin: 0,
-          //     mValue: 0,
-          //     mMax: 0
-          //   }
-          //   stocks.push(stockClone)
         }
         for (const rec of backupObject.bookingTypes) {
-          bookingTypesImportData.push({type: 'add', data: rec, key: -1})
           bookingTypesStoreData.push(rec)
-          //if (rec.cAccountNumberID === activeId) {
-          //  bookingTypes.push(rec)
-          //}
+          bookingTypesImportData.push({type: 'add', data: rec, key: -1})
         }
         for (const rec of backupObject.bookings) {
           bookingsStoreData.push(rec)
           bookingsImportData.push({type: 'add', data: rec, key: -1})
-          // if (rec.cAccountNumberID === activeId) {
-          //   bookings.push(rec)
-          // }
         }
       } else {
         await notice(['IMPORT_DATABASE: system error'])
       }
-      // settings.activeAccountId.value = activeId
-      records.init({
-        accountsDB: accountsStoreData,
-        bookingsDB: bookingsStoreData,
-        bookingTypesDB: bookingTypesStoreData,
-        stocksDB: stocksStoreData
-      })
-      // records.load({accounts, bookingTypes, bookings, stocks})
-      // records.bookings.items.sort((a: IBooking, b: IBooking) => {
-      //   const A = new Date(a.cDate).getTime()
-      //   const B = new Date(b.cDate).getTime()
-      //   return B - A
-      // })
-      //await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
+      if (activeAccountId.value > 0) {
+        records.init({
+          accountsDB: accountsStoreData,
+          bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeAccountId.value),
+          bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeAccountId.value),
+          stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeAccountId.value)
+        })
+      } else {
+        records.init({
+          accountsDB: accountsStoreData,
+          bookingsDB: bookingsStoreData,
+          bookingTypesDB: bookingTypesStoreData,
+          stocksDB: stocksStoreData
+        })
+      }
       await importAccounts(accountsImportData)
       await importBookingTypes(bookingTypesImportData)
       await importBookings(bookingsImportData)
