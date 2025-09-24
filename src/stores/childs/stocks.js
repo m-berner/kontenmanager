@@ -4,12 +4,10 @@ import { useApp } from '@/composables/useApp';
 const { log } = useApp();
 export const useStocks = defineStore('stocks', () => {
     const items = ref([]);
-    const getById = computed(() => (ident) => {
-        return items.value.findIndex((entry) => entry.cID === ident);
-    });
     const getIndexById = computed(() => (id) => {
         return items.value.findIndex(stock => stock.cID === id);
     });
+    const getItemById = computed(() => (id) => items.value[getIndexById.value(id)]);
     function add(stock, prepend = false) {
         log('STOCKS_STORE: add');
         if (prepend) {
@@ -21,14 +19,14 @@ export const useStocks = defineStore('stocks', () => {
     }
     function updateStock(stock) {
         log('STOCKS_STORE: updateStock');
-        const index = getById.value(stock?.cID ?? -1);
+        const index = getIndexById.value(stock?.cID ?? -1);
         if (index !== -1) {
             items.value[index] = { ...stock };
         }
     }
     function remove(ident) {
         log('STOCKS_STORE: remove', { info: ident });
-        const index = getById.value(ident);
+        const index = getIndexById.value(ident);
         if (index !== -1) {
             items.value.splice(index, 1);
         }
@@ -39,7 +37,7 @@ export const useStocks = defineStore('stocks', () => {
     }
     return {
         items,
-        getById,
+        getItemById,
         getIndexById,
         add,
         updateStock,

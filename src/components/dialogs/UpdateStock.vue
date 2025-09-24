@@ -37,7 +37,7 @@ const {notice} = useBrowser()
 const {updateStock} = useStocksDB()
 const {isinRules, validateForm} = useValidation()
 const records = useRecordsStore()
-const settings = useSettings()
+const {activeAccountId} = useSettings()
 const runtime = useRuntime()
 
 const formData: IFormData = reactive({
@@ -70,9 +70,9 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: formData.fadeOut ? 1 : 0,
       cFirstPage: formData.firstPage ? 1 : 0,
       cURL: formData.url,
-      cAccountNumberID: settings.activeAccountId.value
+      cAccountNumberID: activeAccountId.value
     }
-    const stockStore: IStock = {
+    const stocksStore: IStock = {
       ...stock,
       mPortfolio: 0,
       mChange: 0,
@@ -82,7 +82,7 @@ const onClickOk = async (): Promise<void> => {
       mValue: 0,
       mMax: 0
     }
-    records.stocks.updateStock(stockStore)
+    records.stocks.updateStock(stocksStore)
     const updateStockResponse = await updateStock(stock)
     await notice([updateStockResponse as string])
     runtime.resetTeleport()
@@ -98,7 +98,8 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks.items[records.stocks.getIndexById(runtime.activeId.value)]
+  // const currentStock = records.stocks.items[records.stocks.getIndexById(runtime.activeId.value)]
+  const currentStock = records.stocks.getItemById(runtime.activeId.value)
   formData.id = runtime.activeId.value
   formData.isin = currentStock.cISIN
   formData.company = currentStock.cCompany
