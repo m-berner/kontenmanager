@@ -143,7 +143,7 @@ const onClickOk = async (): Promise<void> => {
     const completeBooking: IBooking = {cID: addBookingID, ...booking}
     records.bookings.add(completeBooking)
     reset()
-    await notice([t('dialogs.AddBooking.success')])
+    await notice([t('dialogs.addBooking.success')])
   } catch (e) {
     log('ADD_BOOKING: onClickOk', {error: e})
     await notice([t('dialogs.addBooking.catch')])

@@ -109,7 +109,6 @@ onBeforeMount(async () => {
       removeStorageChangedListener()
       db.close()
     }
-
     window.addEventListener('keydown', onKeyDown, false)
     window.addEventListener('keyup', onKeyUp, false)
     window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)

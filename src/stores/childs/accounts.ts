@@ -20,11 +20,9 @@ export const useAccounts = defineStore('accounts', () => {
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(account => account.cID === id)
     })
-
     const getById = computed(() => (id: number): IAccount | undefined => {
         return items.value.find(account => account.cID === id)
     })
-
     const isDuplicate = computed(() => (name: string): boolean => {
         const duplicates = items.value.filter((entry: IAccount) => entry.cIban === name)
         return duplicates.length > 0

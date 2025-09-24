@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import type {ICompanyData, IStock} from '@/types.d'
 import type {Ref} from 'vue'
-import {defineExpose, onMounted, reactive, ref} from 'vue'
+import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
@@ -19,78 +19,57 @@ import {useFetch} from '@/composables/useFetch'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 
-interface IFormularData {
-  isin: string
-  company: string
-  wkn: string
-  symbol: string
-  auto: boolean
-}
-
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {addStock} = useStocksDB()
 const {fetchCompanyData} = useFetch()
-const {ibanRules} = useValidation()
+const {ibanRules, validateForm} = useValidation()
 const records = useRecordsStore()
-const settings = useSettings()
+const {activeAccountId} = useSettings()
 const runtime = useRuntime()
 
-const formularData: IFormularData = reactive({
-  isin: '',
-  company: '',
-  wkn: '',
-  symbol: '',
-  auto: true
-})
-const isFormValid: Ref<boolean> = ref(false)
+const isin = ref('')
+const company = ref('')
+const wkn = ref('')
+const symbol = ref('')
+const auto = ref(false)
+const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const reset = (): void => {
-  Object.assign(formularData, {
-    isin: '',
-    company: '',
-    wkn: '',
-    symbol: '',
-    auto: false
-  })
-  isFormValid.value = false
-}
-
-const validateForm = (): boolean => {
-  if (!isFormValid.value) {
-    notice([t('dialogs.addAccount.invalidForm')])
-    return false
-  }
-
-  return true
+  isin.value = ''
+  company.value = ''
+  wkn.value = ''
+  symbol.value = ''
+  auto.value = false
+  formRef.value = null
 }
 
 const onIsin = async (): Promise<void> => {
-  if (formularData.isin !== '' && formularData.isin?.length === 12) {
-    const fetchedCompanyData: ICompanyData = await fetchCompanyData(formularData.isin)
-    formularData.company = fetchedCompanyData.company
-    formularData.wkn = fetchedCompanyData.wkn.toUpperCase()
-    formularData.symbol = fetchedCompanyData.symbol.toUpperCase()
+  if (isin.value !== '' && isin.value?.length === 12) {
+    const fetchedCompanyData: ICompanyData = await fetchCompanyData(isin.value)
+    company.value = fetchedCompanyData.company
+    wkn.value = fetchedCompanyData.wkn.toUpperCase()
+    symbol.value = fetchedCompanyData.symbol.toUpperCase()
   }
 }
 
 const onClickOk = async (): Promise<void> => {
   log('ADD_STOCK : onClickOk')
-  if (!validateForm()) return
+  if (!await validateForm(formRef)) return
 
   try {
     const stock: Omit<IStock, 'cID'> = {
-      cCompany: formularData.company.trim(),
-      cISIN: formularData.isin,
-      cWKN: formularData.wkn,
-      cSymbol: formularData.symbol,
+      cCompany: company.value.trim(),
+      cISIN: isin.value,
+      cWKN: wkn.value,
+      cSymbol: symbol.value,
       cMeetingDay: '',
       cQuarterDay: '',
       cFadeOut: 0,
       cFirstPage: 0,
       cURL: '',
-      cAccountNumberID: settings.activeAccountId.value,
+      cAccountNumberID: activeAccountId.value,
       mPortfolio: 0,
       mChange: 0,
       mBuyValue: 0,
@@ -101,7 +80,7 @@ const onClickOk = async (): Promise<void> => {
     }
 
     const addStockID = await addStock(stock)
-    if (typeof addStockID === 'number') {
+    if (addStockID > 0) {
       const completeStock: IStock = {cID: addStockID, ...stock}
       records.stocks.add({
         ...completeStock,
@@ -137,12 +116,12 @@ log('--- AddStock.vue setup ---')
 
 <template>
   <v-form
-      v-model="isFormValid"
+      ref="formRef"
       validate-on="submit"
       @submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
-          v-model="formularData.isin"
+          v-model="isin"
           :counter="12"
           :label="t('dialogs.addStock.isin')"
           :rules="ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
@@ -152,22 +131,22 @@ log('--- AddStock.vue setup ---')
           @update:modelValue="onIsin"
       />
       <v-text-field
-          v-model="formularData.company"
-          :disabled="formularData.auto"
+          v-model="company"
+          :disabled="auto"
           :label="t('dialogs.addStock.company')"
           required
           variant="outlined"
       />
       <v-text-field
-          v-model="formularData.wkn"
-          :disabled="formularData.auto"
+          v-model="wkn"
+          :disabled="auto"
           :label="t('dialogs.addStock.wkn')"
           required
           variant="outlined"
       />
       <v-text-field
-          v-model="formularData.symbol"
-          :disabled="formularData.auto"
+          v-model="symbol"
+          :disabled="auto"
           :label="t('dialogs.addStock.symbol')"
           required
           variant="outlined"

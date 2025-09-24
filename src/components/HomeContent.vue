@@ -91,8 +91,7 @@ log('--- HomeContent.vue setup ---')
       hide-details
       prepend-inner-icon="$magnify"
       single-line
-      variant="outlined"
-  />
+      variant="outlined"/>
   <v-data-table
       :headers="homeHeaders"
       :hide-no-data="false"
@@ -113,8 +112,7 @@ log('--- HomeContent.vue setup ---')
         <td>
           <DotMenu
               :menuItems="homeMenuItems"
-              :recordID="item.cID"
-          />
+              :recordID="item.cID"/>
         </td>
         <td>{{ d(utcDate(item.cDate), 'short') }}</td>
         <td>{{ n(item.cDebit, 'currency') }}</td>
