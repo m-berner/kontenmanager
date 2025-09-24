@@ -618,8 +618,15 @@ export const useApp = () => {
         return true
     }
 
+    function formatISIN(isin: string) {
+        if (!isin) return ''
+        const clean = isin.replace(/\s/g, '').toUpperCase()
+        return clean.replace(/(.{2})(.{4})(.{4})(.{2})/, '$1 $2 $3 $4')
+    }
+
     return {
         CONS,
+        formatISIN,
         utcDate,
         toISODate,
         toNumber,

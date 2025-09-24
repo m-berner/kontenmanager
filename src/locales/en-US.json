@@ -412,6 +412,13 @@
       "checksum": "Ungültige Prüfsumme",
       "duplicate": "Konto existiert bereits"
     },
+    "isinRules": {
+      "required": "ISIN ist erforderlich",
+      "length": "Ungültige ISIN Länge",
+      "format": "Ungültige IBAN",
+      "country": "Falscher Ländercode",
+      "luhn": "Ungültige Prüfsumme (Luhn)"
+    },
     "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben",
     "swiftRules": {
       "required": "SWIFT ist erforderlich",

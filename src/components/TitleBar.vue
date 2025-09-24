@@ -12,17 +12,19 @@ import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useBrowser} from '@/composables/useBrowser'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const {activeAccountId} = useSettings()
+const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
 
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLEBAR: onUpdateTitleBar')
   const storesDB = await getDatabaseStores()
-  //await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId.value)
+  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
   await records.init(storesDB)
 }
 const logoUrl = computed((): string => {
