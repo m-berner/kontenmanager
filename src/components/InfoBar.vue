@@ -29,7 +29,7 @@ const {CONS, log} = useApp()
 const runtime = useRuntime()
 
 const state: IState = reactive({
-  show: true,
+  show: false,
   drawerControls: CONS.DEFAULTS.DRAWER_CONTROLS.map(() => ({
     id: 0,
     title: '',
@@ -59,6 +59,7 @@ const updateDrawerControls = (): void => {
 
 onMounted(() => {
   updateDrawerControls()
+  console.error(runtime.infoExchanges.value)
 })
 
 log('--- InfoBar.vue setup ---')
@@ -79,14 +80,12 @@ log('--- InfoBar.vue setup ---')
             :key="item.id"
             :class="item.class"
             :subtitle="item.value"
-            :title="item.title"
-        />
+            :title="item.title"/>
       </v-list>
     </v-card>
   </v-navigation-drawer>
   <v-app-bar app color="secondary" flat>
     <v-app-bar-nav-icon
-        icon="$home"
         variant="text"
         @click="state.show = !state.show"/>
     <v-list bg-color="secondary" class="hide-scroll-bar" lines="two">

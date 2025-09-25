@@ -44,35 +44,27 @@ onBeforeMount(async () => {
     const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
     for (let i = 0; i < exchangesBaseData.length; i++) {
       if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
-        runtime.curUsd.value = (exchangesBaseData[i].value)
+        runtime.curUsd.value = exchangesBaseData[i].value
       } else {
-        runtime.curEur.value = (exchangesBaseData[i].value)
+        runtime.curEur.value = exchangesBaseData[i].value
       }
     }
-
+    const exchangesInfoData: IExchangeData[] = await fetchExchangesData(settings.exchanges.value)
+    for (let i = 0; i < exchangesInfoData.length; i++) {
+      runtime.infoExchanges.value.set(exchangesInfoData[i].key, exchangesInfoData[i].value)
+    }
     const keyStrokeController: string[] = []
     const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
       keyStrokeController.push(ev.key)
       log('APP: onKeyDown')
-      if (
-          keyStrokeController.includes('Control') &&
-          keyStrokeController.includes('Alt') &&
-          ev.key === 'r') {
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'r') {
         await clearStorage()
         await installStorageLocal()
       }
-      if (
-          keyStrokeController.includes('Control') &&
-          keyStrokeController.includes('Alt') &&
-          ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0
-      ) {
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0) {
         localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
       }
-      if (
-          keyStrokeController.includes('Control') &&
-          keyStrokeController.includes('Alt') &&
-          ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0)
-      ) {
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0)) {
         localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
       }
     }

@@ -24,38 +24,38 @@ const exchanges: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
 
 export const useSettings = () => {
 
-    function setSkin(theme: ThemeInstance, value: string) {
-        if (theme?.global?.name) {
-            theme.global.name.value = value
-        }
-        skin.value = value
+  function setSkin(theme: ThemeInstance, value: string) {
+    if (theme?.global?.name) {
+      theme.global.name.value = value
     }
+    skin.value = value
+  }
 
-    function init(storage: { [p: string]: string | number | boolean | string[] }): void {
-        //setSkin(theme, storage.sSkin as string)
-        bookingsPerPage.value = storage.sBookingsPerPage as number
-        stocksPerPage.value = storage.sStocksPerPage as number
-        activeAccountId.value = storage.sActiveAccountId as number
-        partner.value = storage.sPartner as boolean
-        service.value = storage.sService as string
-        materials.value = [...storage.sMaterials as string[]]
-        markets.value = [...storage.sMarkets as string[]]
-        indexes.value = [...storage.sIndexes as string[]]
-        exchanges.value = [...storage.sExchanges as string[]]
-    }
+  function init(storage: { [p: string]: string | number | boolean | string[] }): void {
+    //setSkin(theme, storage.sSkin as string)
+    bookingsPerPage.value = storage.sBookingsPerPage as number
+    stocksPerPage.value = storage.sStocksPerPage as number
+    activeAccountId.value = storage.sActiveAccountId as number
+    partner.value = storage.sPartner as boolean
+    service.value = storage.sService as string
+    materials.value = [...storage.sMaterials as string[]]
+    markets.value = [...storage.sMarkets as string[]]
+    indexes.value = [...storage.sIndexes as string[]]
+    exchanges.value = [...storage.sExchanges as string[]]
+  }
 
-    return {
-        skin,
-        bookingsPerPage,
-        stocksPerPage,
-        activeAccountId,
-        partner,
-        service,
-        materials,
-        markets,
-        indexes,
-        exchanges,
-        setSkin,
-        init
-    }
+  return {
+    skin,
+    bookingsPerPage,
+    stocksPerPage,
+    activeAccountId,
+    partner,
+    service,
+    materials,
+    markets,
+    indexes,
+    exchanges,
+    setSkin,
+    init
+  }
 }

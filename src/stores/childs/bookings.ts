@@ -16,87 +16,87 @@ const {log} = useApp()
 
 export const useBookings = defineStore('bookings', () => {
 
-    const items: Ref<IBooking[]> = ref([])
+  const items: Ref<IBooking[]> = ref([])
 
-    const getById = computed(() => (id: number): IBooking | undefined => {
-        return items.value.find(account => account.cID === id)
-    })
-    const getIndexById = computed(() => (ident: number): number => {
-        return items.value.findIndex((entry: IBooking) => entry.cID === ident)
-    })
-    const getTextById = computed(() => (ident: number): string => {
-        const booking = items.value.find((entry: IBooking) => entry.cID === ident)
-        if (booking) {
-            return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`
-        } else {
-            throw new Error('getTextById: No booking found for given ID')
-        }
-    })
-    const sumBookings = computed(() => (): number => {
-        const {activeAccountId} = useSettings()
+  const getById = computed(() => (id: number): IBooking | undefined => {
+    return items.value.find(account => account.cID === id)
+  })
+  const getIndexById = computed(() => (ident: number): number => {
+    return items.value.findIndex((entry: IBooking) => entry.cID === ident)
+  })
+  const getTextById = computed(() => (ident: number): string => {
+    const booking = items.value.find((entry: IBooking) => entry.cID === ident)
+    if (booking) {
+      return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`
+    } else {
+      throw new Error('getTextById: No booking found for given ID')
+    }
+  })
+  const sumBookings = computed(() => (): number => {
+    const {activeAccountId} = useSettings()
 
-        if (activeAccountId.value === -1) {
-            return 0
-        }
-
-        if (items.value.length > 0) {
-            return items.value
-                .map((entry: IBooking) => {
-                    const fees = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee
-                    const balance = entry.cCredit - entry.cDebit
-                    return fees + balance
-                })
-                .reduce((acc: number, cur: number) => acc + cur, 0)
-        } else {
-            return 0
-        }
-    })
-    const hasBookingType = computed(() => (ident: number): boolean => {
-        const findings = items.value.filter((entry: IBooking) => entry.cBookingTypeID === ident)
-        return findings.length > 0
-    })
-
-    function add(booking: IBooking, prepend: boolean = false): void {
-        log('BOOKINGS_STORE: add')
-        if (prepend) {
-            items.value.unshift(booking)
-        } else {
-            items.value.push(booking)
-        }
+    if (activeAccountId.value === -1) {
+      return 0
     }
 
-    function update(booking: IBooking): void {
-        log('BOOKINGS_STORE: update')
-        const index = getIndexById.value(booking?.cID ?? -1)
-        if (index !== -1) {
-            items.value[index] = {...booking}
-        }
+    if (items.value.length > 0) {
+      return items.value
+        .map((entry: IBooking) => {
+          const fees = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee
+          const balance = entry.cCredit - entry.cDebit
+          return fees + balance
+        })
+        .reduce((acc: number, cur: number) => acc + cur, 0)
+    } else {
+      return 0
     }
+  })
+  const hasBookingType = computed(() => (ident: number): boolean => {
+    const findings = items.value.filter((entry: IBooking) => entry.cBookingTypeID === ident)
+    return findings.length > 0
+  })
 
-    function remove(ident: number): void {
-        log('BOOKINGS_STORE: remove', {info: ident})
-        const index = getIndexById.value(ident)
-        if (index !== -1) {
-            items.value.splice(index, 1)
-        }
+  function add(booking: IBooking, prepend: boolean = false): void {
+    log('BOOKINGS_STORE: add')
+    if (prepend) {
+      items.value.unshift(booking)
+    } else {
+      items.value.push(booking)
     }
+  }
 
-    function clean(): void {
-        items.value.length = 0
+  function update(booking: IBooking): void {
+    log('BOOKINGS_STORE: update')
+    const index = getIndexById.value(booking?.cID ?? -1)
+    if (index !== -1) {
+      items.value[index] = {...booking}
     }
+  }
 
-    return {
-        items,
-        getById,
-        getIndexById,
-        getTextById,
-        sumBookings,
-        hasBookingType,
-        add,
-        update,
-        remove,
-        clean
+  function remove(ident: number): void {
+    log('BOOKINGS_STORE: remove', {info: ident})
+    const index = getIndexById.value(ident)
+    if (index !== -1) {
+      items.value.splice(index, 1)
     }
+  }
+
+  function clean(): void {
+    items.value.length = 0
+  }
+
+  return {
+    items,
+    getById,
+    getIndexById,
+    getTextById,
+    sumBookings,
+    hasBookingType,
+    add,
+    update,
+    remove,
+    clean
+  }
 })
 
 log('--- STORES bookings.ts ---')

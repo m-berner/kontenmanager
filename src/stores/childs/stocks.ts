@@ -14,52 +14,52 @@ import {useApp} from '@/composables/useApp'
 const {log} = useApp()
 
 export const useStocks = defineStore('stocks', () => {
-    const items: Ref<IStock[]> = ref([])
+  const items: Ref<IStock[]> = ref([])
 
-    const getIndexById = computed(() => (id: number): number => {
-        return items.value.findIndex(stock => stock.cID === id)
-    })
-    const getItemById = computed(() => (id: number): IStock => items.value[getIndexById.value(id)])
+  const getIndexById = computed(() => (id: number): number => {
+    return items.value.findIndex(stock => stock.cID === id)
+  })
+  const getItemById = computed(() => (id: number): IStock => items.value[getIndexById.value(id)])
 
-    function add(stock: IStock, prepend: boolean = false): void {
-        log('STOCKS_STORE: add')
-        if (prepend) {
-            items.value.unshift(stock)
-        } else {
-            items.value.push(stock)
-        }
+  function add(stock: IStock, prepend: boolean = false): void {
+    log('STOCKS_STORE: add')
+    if (prepend) {
+      items.value.unshift(stock)
+    } else {
+      items.value.push(stock)
     }
+  }
 
-    function updateStock(stock: IStock): void {
-        log('STOCKS_STORE: updateStock')
-        const index = getIndexById.value(stock?.cID ?? -1)
-        if (index !== -1) {
-            items.value[index] = {...stock}
-        }
+  function updateStock(stock: IStock): void {
+    log('STOCKS_STORE: updateStock')
+    const index = getIndexById.value(stock?.cID ?? -1)
+    if (index !== -1) {
+      items.value[index] = {...stock}
     }
+  }
 
-    function remove(ident: number): void {
-        log('STOCKS_STORE: remove', {info: ident})
-        const index = getIndexById.value(ident)
-        if (index !== -1) {
-            items.value.splice(index, 1)
-        }
+  function remove(ident: number): void {
+    log('STOCKS_STORE: remove', {info: ident})
+    const index = getIndexById.value(ident)
+    if (index !== -1) {
+      items.value.splice(index, 1)
     }
+  }
 
-    function clean(): void {
-        log('STOCKS_STORE: clean')
-        items.value.length = 0
-    }
+  function clean(): void {
+    log('STOCKS_STORE: clean')
+    items.value.length = 0
+  }
 
-    return {
-        items,
-        getItemById,
-        getIndexById,
-        add,
-        updateStock,
-        remove,
-        clean
-    }
+  return {
+    items,
+    getItemById,
+    getIndexById,
+    add,
+    updateStock,
+    remove,
+    clean
+  }
 })
 
 log('--- STORES stocks.ts ---')

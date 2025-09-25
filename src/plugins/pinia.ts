@@ -10,13 +10,13 @@ import {createPinia} from 'pinia'
 import {useApp} from '@/composables/useApp'
 
 interface IPinia {
-    pinia: Pinia
+  pinia: Pinia
 }
 
 const {log} = useApp()
 
 const piniaConfig: IPinia = {
-    pinia: createPinia()
+  pinia: createPinia()
 }
 
 export default piniaConfig

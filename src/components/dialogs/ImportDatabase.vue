@@ -22,6 +22,7 @@ import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
+import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
@@ -78,12 +79,13 @@ interface IEventTarget extends HTMLInputElement {
 
 const {t} = useI18n()
 const {CONS, log, toISODate} = useApp()
-const {notice} = useBrowser()
+const {notice, setStorage} = useBrowser()
 const {clearAllAccounts, importAccounts} = useAccountsDB()
 const {clearAllBookings, importBookings} = useBookingsDB()
 const {clearAllBookingTypes, importBookingTypes} = useBookingTypesDB()
 const {clearAllStocks, importStocks} = useStocksDB()
 const runtime = useRuntime()
+const {activeAccountId} = useSettings()
 
 const fileBlob = ref<Blob>(new Blob())
 const onChange = (ev: IEventTarget) => {
@@ -110,6 +112,8 @@ const onClickOk = async (): Promise<void> => {
     if (typeof fr.result === 'string') {
       const backupObject: IBackup = JSON.parse(fr.result)
       const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : 1
+      activeAccountId.value = activeId
+      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
       const getCreditDebit = (rec: StockManager.ITransfer): number => {
         let result: number
         switch (rec.cType) {
