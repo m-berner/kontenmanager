@@ -114,7 +114,7 @@ export default [
         },
         rules: {
             'vue/script-indent': ['error', 2, {
-                'SwitchCase': 1
+                'switchCase': 1
             }],
             'vue/multi-word-component-names': 'error',
             'vue/component-definition-name-casing': ['error', 'PascalCase'],

@@ -29,14 +29,14 @@ export const useFetch = () => {
             let sDocument: Document
             let company = ''
             let child: ChildNode | undefined
-            let wkn: string
+            // let wkn: string
             let symbol: string
             const service: IService | undefined = CONS.SERVICES.TGATE
             let tables: NodeListOf<HTMLTableRowElement>
             let firstResponse: Response
             let result: ICompanyData = {
                 company: '',
-                wkn: '',
+                // wkn: '',
                 symbol: ''
             }
             if (service !== undefined) {
@@ -77,11 +77,11 @@ export const useFetch = () => {
                             tables[1].cells !== null &&
                             tables.length > 0
                         ) {
-                            wkn = tables[1].cells[0].textContent ?? ''
+                            // wkn = tables[1].cells[0].textContent ?? ''
                             symbol = tables[1].cells[1].textContent ?? ''
                             result = {
                                 company,
-                                wkn,
+                                // wkn,
                                 symbol
                             }
                             resolve(result)

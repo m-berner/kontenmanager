@@ -83,7 +83,9 @@ export const useBrowser = () => {
         }
     }
 
-    async function addStorageChangedListener(callback: (_changes: { [key: string]: browser.storage.StorageChange }) => void) {
+    async function addStorageChangedListener(callback: (_changes: {
+        [key: string]: browser.storage.StorageChange
+    }) => void) {
         browser.storage.local.onChanged.addListener(callback)
         // Return cleanup function
         return () => browser.storage.local.onChanged.removeListener(callback)

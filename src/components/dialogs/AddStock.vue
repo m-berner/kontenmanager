@@ -49,7 +49,7 @@ const onIsin = async (): Promise<void> => {
   if (isin.value !== '' && isin.value?.length === 12) {
     const fetchedCompanyData: ICompanyData = await fetchCompanyData(isin.value)
     company.value = fetchedCompanyData.company
-    wkn.value = fetchedCompanyData.wkn.toUpperCase()
+    // wkn.value = fetchedCompanyData.wkn.toUpperCase()
     symbol.value = fetchedCompanyData.symbol.toUpperCase()
   }
 }
@@ -62,7 +62,7 @@ const onClickOk = async (): Promise<void> => {
     const stock: Omit<IStock, 'cID'> = {
       cCompany: company.value.trim(),
       cISIN: isin.value,
-      cWKN: wkn.value,
+      // cWKN: wkn.value,
       cSymbol: symbol.value,
       cMeetingDay: '',
       cQuarterDay: '',
@@ -134,13 +134,6 @@ log('--- AddStock.vue setup ---')
           v-model="company"
           :disabled="auto"
           :label="t('dialogs.addStock.company')"
-          required
-          variant="outlined"
-      />
-      <v-text-field
-          v-model="wkn"
-          :disabled="auto"
-          :label="t('dialogs.addStock.wkn')"
           required
           variant="outlined"
       />

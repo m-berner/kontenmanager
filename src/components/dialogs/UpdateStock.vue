@@ -22,7 +22,7 @@ interface IFormData {
   id: number
   isin: string
   company: string
-  wkn: string
+  // wkn: string
   symbol: string
   meetingDay: string
   quarterDay: string
@@ -32,7 +32,7 @@ interface IFormData {
 }
 
 const {t} = useI18n()
-const {log} = useApp()
+const {formatISIN, log} = useApp()
 const {notice} = useBrowser()
 const {updateStock} = useStocksDB()
 const {isinRules, validateForm} = useValidation()
@@ -54,6 +54,9 @@ const formData: IFormData = reactive({
 })
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
+const onUpdateISIN = () => {
+  formData.isin = formatISIN(formData.isin)
+}
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
   if (!await validateForm(formRef)) return
@@ -61,9 +64,9 @@ const onClickOk = async (): Promise<void> => {
   try {
     const stock: IStockDB = {
       cID: formData.id,
-      cISIN: formData.isin,
+      cISIN: formData.isin.replace(/\s/g, '').toUpperCase(),
       cCompany: formData.company,
-      cWKN: formData.wkn,
+      // cWKN: formData.wkn,
       cSymbol: formData.symbol,
       cMeetingDay: formData.meetingDay,
       cQuarterDay: formData.quarterDay,
@@ -83,8 +86,8 @@ const onClickOk = async (): Promise<void> => {
       mMax: 0
     }
     records.stocks.updateStock(stocksStore)
-    const updateStockResponse = await updateStock(stock)
-    await notice([updateStockResponse as string])
+    await updateStock(stock)
+    await notice([t('dialogs.updateStock.success')])
     runtime.resetTeleport()
   } catch (e) {
     log('UPDATE_STOCK: onClickOk', {error: e})
@@ -98,12 +101,11 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  // const currentStock = records.stocks.items[records.stocks.getIndexById(runtime.activeId.value)]
   const currentStock = records.stocks.getItemById(runtime.activeId.value)
   formData.id = runtime.activeId.value
-  formData.isin = currentStock.cISIN
+  formData.isin = formatISIN(currentStock.cISIN)
   formData.company = currentStock.cCompany
-  formData.wkn = currentStock.cWKN
+  //formData.wkn = currentStock.cWKN
   formData.symbol = currentStock.cSymbol
   formData.meetingDay = currentStock.cMeetingDay
   formData.quarterDay = currentStock.cQuarterDay
@@ -111,7 +113,8 @@ onMounted(() => {
   formData.firstPage = currentStock.cFirstPage === 1
   formData.url = currentStock.cURL
 })
-
+// TODO remove WKN everywhere!
+// TODO Buchungstyp Übertrag?
 log('--- UpdateStock.vue setup ---')
 </script>
 
@@ -124,7 +127,6 @@ log('--- UpdateStock.vue setup ---')
       <v-row>
         <v-text-field
             v-model="formData.isin"
-            :counter="12"
             :label="t('dialogs.updateStock.isin')"
             :rules="isinRules([
                 t('validators.isinRules.required'),
@@ -135,7 +137,9 @@ log('--- UpdateStock.vue setup ---')
                 ])"
             autofocus
             required
-            variant="outlined"/>
+            variant="outlined"
+            @focus="formRef?.resetValidation()"
+            @update:model-value="onUpdateISIN"/>
       </v-row>
       <v-row>
         <v-text-field
@@ -146,14 +150,7 @@ log('--- UpdateStock.vue setup ---')
         />
       </v-row>
       <v-row cols="2" sm="2">
-        <v-col>
-          <v-text-field
-              v-model="formData.wkn"
-              :label="t('dialogs.updateStock.wkn')"
-              required
-              variant="outlined"
-          />
-        </v-col>
+        <v-col/>
         <v-col>
           <v-text-field
               v-model="formData.symbol"
@@ -168,6 +165,7 @@ log('--- UpdateStock.vue setup ---')
           <v-text-field
               v-model="formData.meetingDay"
               :label="t('dialogs.updateStock.meetingDay')"
+              type="date"
               variant="outlined"
           />
         </v-col>
@@ -175,6 +173,7 @@ log('--- UpdateStock.vue setup ---')
           <v-text-field
               v-model="formData.quarterDay"
               :label="t('dialogs.updateStock.quarterDay')"
+              type="date"
               variant="outlined"
           />
         </v-col>

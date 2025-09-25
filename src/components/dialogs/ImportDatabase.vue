@@ -179,7 +179,7 @@ const onClickOk = async (): Promise<void> => {
           stockClone.cQuarterDay = toISODate(rec.cQuarterDay)
           stockClone.cCompany = rec.cCompany
           stockClone.cISIN = rec.cISIN
-          stockClone.cWKN = rec.cWKN
+          // stockClone.cWKN = rec.cWKN
           stockClone.cFadeOut = rec.cFadeOut
           stockClone.cFirstPage = rec.cFirstPage
           stockClone.cFirstPage = rec.cFirstPage

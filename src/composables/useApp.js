@@ -300,7 +300,6 @@ const CONS = Object.freeze({
                     URL: 'cURL',
                     MEETING_DAY: 'cMeetingDay',
                     QUARTER_DAY: 'cQuarterDay',
-                    WKN: 'cWKN',
                     COMPANY: 'cCompany',
                     ACCOUNT_NUMBER_ID: 'cAccountNumberID'
                 }
@@ -602,8 +601,40 @@ export const useApp = () => {
     function formatISIN(isin) {
         if (!isin)
             return '';
+        let result = '';
         const clean = isin.replace(/\s/g, '').toUpperCase();
-        return clean.replace(/(.{2})(.{4})(.{4})(.{2})/, '$1 $2 $3 $4');
+        switch (clean.length) {
+            case 3:
+                result = clean.replace(/(.{2})(.)/, '$1 $2');
+                break;
+            case 4:
+                result = clean.replace(/(.{2})(.)/, '$1 $2');
+                break;
+            case 5:
+                result = clean.replace(/(.{2})(.)/, '$1 $2');
+                break;
+            case 6:
+                result = clean.replace(/(.{2})(.)/, '$1 $2');
+                break;
+            case 7:
+                result = clean.replace(/(.{2})(.{4})(.)/, '$1 $2 $3');
+                break;
+            case 8:
+                result = clean.replace(/(.{2})(.{4})(.)/, '$1 $2 $3');
+                break;
+            case 9:
+                result = clean.replace(/(.{2})(.{4})(.)/, '$1 $2 $3');
+                break;
+            case 10:
+                result = clean.replace(/(.{2})(.{4})(.)/, '$1 $2 $3');
+                break;
+            case 11:
+                result = clean.replace(/(.{2})(.{4})(.{4})(.)/, '$1 $2 $3 $4');
+                break;
+            default:
+                result = clean.substring(0, 12).replace(/(.{2})(.{4})(.{4})(.{2})/, '$1 $2 $3 $4');
+        }
+        return result;
     }
     return {
         CONS,

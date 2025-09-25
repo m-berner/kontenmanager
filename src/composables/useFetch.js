@@ -8,14 +8,12 @@ export const useFetch = () => {
             let sDocument;
             let company = '';
             let child;
-            let wkn;
             let symbol;
             const service = CONS.SERVICES.TGATE;
             let tables;
             let firstResponse;
             let result = {
                 company: '',
-                wkn: '',
                 symbol: ''
             };
             if (service !== undefined) {
@@ -49,11 +47,9 @@ export const useFetch = () => {
                         if (!company.includes('Die Gattung wird') &&
                             tables[1].cells !== null &&
                             tables.length > 0) {
-                            wkn = tables[1].cells[0].textContent ?? '';
                             symbol = tables[1].cells[1].textContent ?? '';
                             result = {
                                 company,
-                                wkn,
                                 symbol
                             };
                             resolve(result);

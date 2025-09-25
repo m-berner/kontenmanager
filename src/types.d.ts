@@ -43,7 +43,7 @@ export interface IStockDB {
     cID: number
     cCompany: string
     cISIN: string
-    cWKN: string
+    //cWKN: string
     cSymbol: string
     cFirstPage: number
     cFadeOut: number
@@ -147,7 +147,7 @@ export interface IExchangeData {
 
 export interface ICompanyData {
     company: string
-    wkn: string
+    //wkn: string
     symbol: string
 }
 
