@@ -24,21 +24,21 @@ import DeleteAccountConfirmation from '@/components/dialogs/DeleteAccountConfirm
 const {CONS, log} = useApp()
 
 const ComponentsPlugin: Plugin = {
-  install: (app: App) => {
-    app.component(CONS.COMPONENTS.DIALOGS.ADD_STOCK, AddStock)
-    app.component(CONS.COMPONENTS.DIALOGS.UPDATE_STOCK, UpdateStock)
-    app.component(CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT, AddAccount)
-    app.component(CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT, UpdateAccount)
-    app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType)
-    app.component(CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType)
-    app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE, UpdateBookingType)
-    app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING, AddBooking)
-    app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING, UpdateBooking)
-    app.component(CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
-    app.component(CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
-    app.component(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)
-    app.component(CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION, DeleteAccountConfirmation)
-  }
+    install: (app: App) => {
+        app.component(CONS.COMPONENTS.DIALOGS.ADD_STOCK, AddStock)
+        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_STOCK, UpdateStock)
+        app.component(CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT, AddAccount)
+        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT, UpdateAccount)
+        app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType)
+        app.component(CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType)
+        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE, UpdateBookingType)
+        app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING, AddBooking)
+        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING, UpdateBooking)
+        app.component(CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
+        app.component(CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
+        app.component(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)
+        app.component(CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION, DeleteAccountConfirmation)
+    }
 }
 
 export default ComponentsPlugin

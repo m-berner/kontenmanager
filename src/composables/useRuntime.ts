@@ -9,9 +9,9 @@ import type {Ref} from 'vue'
 import {ref} from 'vue'
 
 interface ITeleport {
-  dialogName: string
-  dialogOk: boolean
-  dialogVisibility: boolean
+    dialogName: string
+    dialogOk: boolean
+    dialogVisibility: boolean
 }
 
 const activeId: Ref<number> = ref(-1)
@@ -27,40 +27,40 @@ const curEur: Ref<number> = ref(1)
 
 export const useRuntime = () => {
 
-  function setTeleport(entry: ITeleport): void {
-    dialogName.value = entry.dialogName
-    dialogOk.value = entry.dialogOk
-    dialogVisibility.value = entry.dialogVisibility
-  }
-
-  function resetTeleport(): void {
-    dialogName.value = ''
-    dialogOk.value = true
-    dialogVisibility.value = false
-    for (const m of optionMenuColors.value.keys()) {
-      optionMenuColors.value.set(m, '')
+    function setTeleport(entry: ITeleport): void {
+        dialogName.value = entry.dialogName
+        dialogOk.value = entry.dialogOk
+        dialogVisibility.value = entry.dialogVisibility
     }
-  }
 
-  function resetOptionsMenuColors(): void {
-    for (const m of optionMenuColors.value.keys()) {
-      optionMenuColors.value.set(m, '')
+    function resetTeleport(): void {
+        dialogName.value = ''
+        dialogOk.value = true
+        dialogVisibility.value = false
+        for (const m of optionMenuColors.value.keys()) {
+            optionMenuColors.value.set(m, '')
+        }
     }
-  }
 
-  return {
-    activeId,
-    optionMenuColors,
-    dialogName,
-    dialogOk,
-    dialogVisibility,
-    infoExchanges,
-    infoIndexes,
-    infoMaterials,
-    curUsd,
-    curEur,
-    setTeleport,
-    resetTeleport,
-    resetOptionsMenuColors
-  }
+    function resetOptionsMenuColors(): void {
+        for (const m of optionMenuColors.value.keys()) {
+            optionMenuColors.value.set(m, '')
+        }
+    }
+
+    return {
+        activeId,
+        optionMenuColors,
+        dialogName,
+        dialogOk,
+        dialogVisibility,
+        infoExchanges,
+        infoIndexes,
+        infoMaterials,
+        curUsd,
+        curEur,
+        setTeleport,
+        resetTeleport,
+        resetOptionsMenuColors
+    }
 }

@@ -37,6 +37,17 @@ onMounted(() => {
     }).reduce((acc: number, cur: number) => acc + cur, 0)
     addEntryToResult({title: records.bookingTypes.items[i].cName, subtitle: n(sums[i], 'currency')})
   }
+
+  const sumFees = records.bookings.items.map((entry: IBooking) => {
+    return entry.cFee
+  }).reduce((acc: number, cur: number) => acc + cur, 0)
+  console.error(sumFees)
+
+  const sumTaxes = records.bookings.items.map((entry: IBooking) => {
+    return entry.cTax || entry.cSoli || entry.cSourceTax || entry.cTransactionTax
+  }).reduce((acc: number, cur: number) => acc + cur, 0)
+  console.error(sumTaxes)
+
 })
 
 log('--- ShowAccounting.vue setup ---')

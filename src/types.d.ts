@@ -7,207 +7,207 @@
  */
 
 export interface IAccountDB {
-  cID: number
-  cSwift: string
-  cIban: string
-  cLogoUrl: string
-  cWithDepot: boolean
+    cID: number
+    cSwift: string
+    cIban: string
+    cLogoUrl: string
+    cWithDepot: boolean
 }
 
 export interface IBookingTypeDB {
-  cID: number
-  cName: string
-  cAccountNumberID: number
+    cID: number
+    cName: string
+    cAccountNumberID: number
 }
 
 export interface IBookingDB {
-  cID: number
-  cDate: string
-  cExDate: string
-  cDebit: number
-  cCredit: number
-  cDescription: string
-  cCount: number
-  cBookingTypeID: number
-  cAccountNumberID: number
-  cStockID: number
-  cSoli: number
-  cTax: number
-  cFee: number
-  cSourceTax: number
-  cTransactionTax: number
-  cMarketPlace: string
+    cID: number
+    cDate: string
+    cExDate: string
+    cDebit: number
+    cCredit: number
+    cDescription: string
+    cCount: number
+    cBookingTypeID: number
+    cAccountNumberID: number
+    cStockID: number
+    cSoli: number
+    cTax: number
+    cFee: number
+    cSourceTax: number
+    cTransactionTax: number
+    cMarketPlace: string
 }
 
 export interface IStockDB {
-  cID: number
-  cCompany: string
-  cISIN: string
-  //cWKN: string
-  cSymbol: string
-  cFirstPage: number
-  cFadeOut: number
-  cMeetingDay: string
-  cQuarterDay: string
-  cURL: string
-  cAccountNumberID: number
+    cID: number
+    cCompany: string
+    cISIN: string
+    //cWKN: string
+    cSymbol: string
+    cFirstPage: number
+    cFadeOut: number
+    cMeetingDay: string
+    cQuarterDay: string
+    cURL: string
+    cAccountNumberID: number
 }
 
 export interface IStoresDB {
-  accountsDB: IAccountDB[],
-  bookingsDB: IBookingDB[],
-  bookingTypesDB: IBookingTypeDB[],
-  stocksDB: IStockDB[]
+    accountsDB: IAccountDB[],
+    bookingsDB: IBookingDB[],
+    bookingTypesDB: IBookingTypeDB[],
+    stocksDB: IStockDB[]
 }
 
 export interface IAccount {
-  cID: number
-  cSwift: string
-  cIban: string
-  cLogoUrl: string
-  cWithDepot: boolean
+    cID: number
+    cSwift: string
+    cIban: string
+    cLogoUrl: string
+    cWithDepot: boolean
 }
 
 export interface IBookingType {
-  cID: number
-  cName: string
-  cAccountNumberID: number
+    cID: number
+    cName: string
+    cAccountNumberID: number
 }
 
 export interface IBooking {
-  cID: number
-  cDate: string
-  cExDate: string
-  cDebit: number
-  cCredit: number
-  cDescription: string
-  cCount: number
-  cBookingTypeID: number
-  cAccountNumberID: number
-  cStockID: number
-  cSoli: number
-  cTax: number
-  cFee: number
-  cSourceTax: number
-  cTransactionTax: number
-  cMarketPlace: string
+    cID: number
+    cDate: string
+    cExDate: string
+    cDebit: number
+    cCredit: number
+    cDescription: string
+    cCount: number
+    cBookingTypeID: number
+    cAccountNumberID: number
+    cStockID: number
+    cSoli: number
+    cTax: number
+    cFee: number
+    cSourceTax: number
+    cTransactionTax: number
+    cMarketPlace: string
 }
 
 export interface IBookingContainerData {
-  id: number
-  bookDate: string
-  exDate: string
-  credit: number
-  debit: number
-  description: string
-  count: number
-  unitQuotation: number
-  bookingTypeId: number
-  accountTypeId: number
-  stockId: number
-  sourceTax: number
-  transactionTax: number
-  tax: number
-  fee: number
-  soli: number
-  marketPlace: string
+    id: number
+    bookDate: string
+    exDate: string
+    credit: number
+    debit: number
+    description: string
+    count: number
+    unitQuotation: number
+    bookingTypeId: number
+    accountTypeId: number
+    stockId: number
+    sourceTax: number
+    transactionTax: number
+    tax: number
+    fee: number
+    soli: number
+    marketPlace: string
 }
 
 export interface IStockOnlyMemory {
-  mPortfolio: number
-  mChange: number
-  mBuyValue: number
-  mEuroChange: number
-  mMin: number
-  mValue: number
-  mMax: number
+    mPortfolio: number
+    mChange: number
+    mBuyValue: number
+    mEuroChange: number
+    mMin: number
+    mValue: number
+    mMax: number
 }
 
 export interface IStock extends IStockDB {
-  mPortfolio: number
-  mChange: number
-  mBuyValue: number
-  mEuroChange: number
-  mMin: number
-  mValue: number
-  mMax: number
+    mPortfolio: number
+    mChange: number
+    mBuyValue: number
+    mEuroChange: number
+    mMin: number
+    mValue: number
+    mMax: number
 }
 
 export interface IStores {
-  accounts: IAccount[],
-  bookings: IBooking[],
-  bookingTypes: IBookingType[],
-  stocks: IStock[]
+    accounts: IAccount[],
+    bookings: IBooking[],
+    bookingTypes: IBookingType[],
+    stocks: IStock[]
 }
 
 export interface IExchangeData {
-  key: string,
-  value: number
+    key: string,
+    value: number
 }
 
 export interface ICompanyData {
-  company: string
-  //wkn: string
-  symbol: string
+    company: string
+    //wkn: string
+    symbol: string
 }
 
 export interface IContent {
-  readonly title: string
-  readonly content: string
-  readonly icon: string
+    readonly title: string
+    readonly content: string
+    readonly icon: string
 }
 
 export interface IMenuItem {
-  readonly title: string
-  readonly id: string
-  readonly icon: string
+    readonly title: string
+    readonly id: string
+    readonly icon: string
 }
 
 export interface IRecordsDB {
-  type: string
-  data: unknown
-  key: number
+    type: string
+    data: unknown
+    key: number
 }
 
 export namespace FetchedResources {
-  export interface IIdIsin {
-    id: number
-    isin: string
-  }
-
-  export interface IMinRateMaxData {
-    id: number,
-    isin: string,
-    rate: string,
-    min: string,
-    max: string,
-    cur: string
-  }
-
-  export interface IDailyChangesData {
-    key: string
-    value: {
-      percentChange: string,
-      change: number,
-      stringChange: string
+    export interface IIdIsin {
+        id: number
+        isin: string
     }
-  }
 
-  export interface IMaterialData {
-    key: string,
-    value: number
-  }
-
-  export interface IIndexData {
-    key: string,
-    value: number
-  }
-
-  export interface IDateData {
-    key: number | undefined
-    value: {
-      qf: number
-      gm: number
+    export interface IMinRateMaxData {
+        id: number,
+        isin: string,
+        rate: string,
+        min: string,
+        max: string,
+        cur: string
     }
-  }
+
+    export interface IDailyChangesData {
+        key: string
+        value: {
+            percentChange: string,
+            change: number,
+            stringChange: string
+        }
+    }
+
+    export interface IMaterialData {
+        key: string,
+        value: number
+    }
+
+    export interface IIndexData {
+        key: string,
+        value: number
+    }
+
+    export interface IDateData {
+        key: number | undefined
+        value: {
+            qf: number
+            gm: number
+        }
+    }
 }

@@ -12,6 +12,7 @@ import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
 import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
+import {useDebounce} from '@/composables/useDebounce'
 import {useFetch} from '@/composables/useFetch'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
@@ -49,27 +50,26 @@ onBeforeMount(async () => {
         runtime.curEur.value = exchangesBaseData[i].value
       }
     }
-    const exchangesInfoData: IExchangeData[] = await fetchExchangesData(settings.exchanges.value)
-    for (let i = 0; i < exchangesInfoData.length; i++) {
-      runtime.infoExchanges.value.set(exchangesInfoData[i].key, exchangesInfoData[i].value)
-    }
     const keyStrokeController: string[] = []
-    const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
-      keyStrokeController.push(ev.key)
-      log('APP: onKeyDown')
-      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'r') {
+    const handleSearch = async (query: string) => {
+      keyStrokeController.push(query)
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && query === 'r') {
         await clearStorage()
         await installStorageLocal()
       }
-      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd' && Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0) {
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && query === 'd' && Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0) {
         localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
       }
-      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd' && !(Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0)) {
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && query === 'd' && !(Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0)) {
         localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
       }
     }
-    const onKeyUp = (ev: KeyboardEvent): void => {
-      keyStrokeController.splice(keyStrokeController.indexOf(ev.key), 1)
+    const {debouncedFunction: debouncedSearch} = useDebounce(handleSearch, 100)
+    const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
+      debouncedSearch(ev.key)
+    }
+    const onKeyUp = (): void => {
+      keyStrokeController.length = 0
     }
     const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }): void => {
       const changesKey = Object.keys(changes)

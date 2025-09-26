@@ -15,134 +15,134 @@ import {useBrowser} from '@/composables/useBrowser'
 type MessageSchema = typeof deDE
 
 interface II18n {
-  i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
+    i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
 }
 
 const {log} = useApp()
 const {locale5} = useBrowser()
 
 const i18nInstance = createI18n<[MessageSchema], 'de-DE' | 'en-US'>({
-  locale: locale5.value,
-  fallbackLocale: 'en-US',
-  messages: {
-    'de-DE': deDE,
-    'en-US': enUS
-  },
-  datetimeFormats: {
-    'de-DE': {
-      numeric: {
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric'
-      },
-      short: {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      },
-      long: {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-        weekday: 'short',
-        hour: 'numeric',
-        minute: 'numeric'
-      }
+    locale: locale5.value,
+    fallbackLocale: 'en-US',
+    messages: {
+        'de-DE': deDE,
+        'en-US': enUS
     },
-    'en-US': {
-      numeric: {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric'
-      },
-      short: {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      },
-      long: {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        weekday: 'short',
-        hour: 'numeric',
-        minute: 'numeric'
-      }
-    }
-  },
-  numberFormats: {
-    'de-DE': {
-      currency5: {
-        style: 'currency',
-        currency: 'EUR',
-        minimumFractionDigits: 5,
-        maximumFractionDigits: 5,
-        notation: 'standard'
-      },
-      currency3: {
-        style: 'currency',
-        currency: 'EUR',
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3,
-        notation: 'standard'
-      },
-      currency: {
-        style: 'currency',
-        currency: 'EUR',
-        notation: 'standard'
-      },
-      currencyUSD: {
-        style: 'currency',
-        currency: 'USD',
-        notation: 'standard'
-      },
-      decimal: {
-        style: 'decimal',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      },
-      decimal3: {
-        style: 'decimal',
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3
-      },
-      integer: {
-        style: 'decimal',
-        maximumFractionDigits: 0
-      },
-      year: {
-        style: 'decimal',
-        maximumFractionDigits: 0,
-        useGrouping: false
-      },
-      percent: {
-        style: 'percent',
-        minimumFractionDigits: 1,
-        maximumFractionDigits: 2,
-        useGrouping: false
-      }
+    datetimeFormats: {
+        'de-DE': {
+            numeric: {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            },
+            short: {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            },
+            long: {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                weekday: 'short',
+                hour: 'numeric',
+                minute: 'numeric'
+            }
+        },
+        'en-US': {
+            numeric: {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric'
+            },
+            short: {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            },
+            long: {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                weekday: 'short',
+                hour: 'numeric',
+                minute: 'numeric'
+            }
+        }
     },
-    'en-US': {
-      currency: {
-        style: 'currency',
-        currency: 'USD',
-        notation: 'standard'
-      },
-      decimal: {
-        style: 'decimal',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      },
-      percent: {
-        style: 'percent',
-        useGrouping: false
-      }
+    numberFormats: {
+        'de-DE': {
+            currency5: {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 5,
+                maximumFractionDigits: 5,
+                notation: 'standard'
+            },
+            currency3: {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 3,
+                notation: 'standard'
+            },
+            currency: {
+                style: 'currency',
+                currency: 'EUR',
+                notation: 'standard'
+            },
+            currencyUSD: {
+                style: 'currency',
+                currency: 'USD',
+                notation: 'standard'
+            },
+            decimal: {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            },
+            decimal3: {
+                style: 'decimal',
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 3
+            },
+            integer: {
+                style: 'decimal',
+                maximumFractionDigits: 0
+            },
+            year: {
+                style: 'decimal',
+                maximumFractionDigits: 0,
+                useGrouping: false
+            },
+            percent: {
+                style: 'percent',
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 2,
+                useGrouping: false
+            }
+        },
+        'en-US': {
+            currency: {
+                style: 'currency',
+                currency: 'USD',
+                notation: 'standard'
+            },
+            decimal: {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            },
+            percent: {
+                style: 'percent',
+                useGrouping: false
+            }
+        }
     }
-  }
 })
 
 const i18nConfig: II18n = {
-  i18n: i18nInstance
+    i18n: i18nInstance
 }
 
 export default i18nConfig

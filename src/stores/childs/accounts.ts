@@ -15,58 +15,58 @@ const {log} = useApp()
 
 export const useAccounts = defineStore('accounts', () => {
 
-  const items: Ref<IAccount[]> = ref([])
+    const items: Ref<IAccount[]> = ref([])
 
-  const getIndexById = computed(() => (id: number): number => {
-    return items.value.findIndex(account => account.cID === id)
-  })
-  const getById = computed(() => (id: number): IAccount | undefined => {
-    return items.value.find(account => account.cID === id)
-  })
-  const isDuplicate = computed(() => (name: string): boolean => {
-    const duplicates = items.value.filter((entry: IAccount) => entry.cIban === name)
-    return duplicates.length > 0
-  })
+    const getIndexById = computed(() => (id: number): number => {
+        return items.value.findIndex(account => account.cID === id)
+    })
+    const getById = computed(() => (id: number): IAccount | undefined => {
+        return items.value.find(account => account.cID === id)
+    })
+    const isDuplicate = computed(() => (name: string): boolean => {
+        const duplicates = items.value.filter((entry: IAccount) => entry.cIban === name)
+        return duplicates.length > 0
+    })
 
-  function add(account: IAccount, prepend: boolean = false): void {
-    log('ACCOUNTS_STORE: add')
-    if (prepend) {
-      items.value.unshift(account)
-    } else {
-      items.value.push(account)
+    function add(account: IAccount, prepend: boolean = false): void {
+        log('ACCOUNTS_STORE: add')
+        if (prepend) {
+            items.value.unshift(account)
+        } else {
+            items.value.push(account)
+        }
     }
-  }
 
-  function update(account: IAccount): void {
-    log('ACCOUNTS_STORE: update')
-    const index = getIndexById.value(account.cID)
-    if (index !== -1) {
-      items.value[index] = {...account}
+    function update(account: IAccount): void {
+        log('ACCOUNTS_STORE: update')
+        const index = getIndexById.value(account.cID)
+        if (index !== -1) {
+            items.value[index] = {...account}
+        }
     }
-  }
 
-  function remove(ident: number): void {
-    log('ACCOUNTS_STORE: remove', {info: ident})
-    const index = getIndexById.value(ident)
-    if (index !== -1) {
-      items.value.splice(index, 1)
+    function remove(ident: number): void {
+        log('ACCOUNTS_STORE: remove', {info: ident})
+        const index = getIndexById.value(ident)
+        if (index !== -1) {
+            items.value.splice(index, 1)
+        }
     }
-  }
 
-  function clean() {
-    items.value.length = 0
-  }
+    function clean() {
+        items.value.length = 0
+    }
 
-  return {
-    items,
-    getById,
-    getIndexById,
-    isDuplicate,
-    add,
-    update,
-    remove,
-    clean
-  }
+    return {
+        items,
+        getById,
+        getIndexById,
+        isDuplicate,
+        add,
+        update,
+        remove,
+        clean
+    }
 })
 
 log('--- STORES accounts.ts ---')

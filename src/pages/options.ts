@@ -15,10 +15,10 @@ const {log} = useApp()
 
 const op = createApp(OptionsIndex)
 op.config.errorHandler = (err: unknown) => {
-  log('PAGE_SCRIPTS options.js', {error: err})
+    log('PAGE_SCRIPTS options.js', {error: err})
 }
 op.config.warnHandler = (msg: string) => {
-  log('PAGE_SCRIPTS options.js', {warn: msg})
+    log('PAGE_SCRIPTS options.js', {warn: msg})
 }
 op.use(vuetifyPlugin.vuetify)
 op.use(i18nPlugin.i18n)

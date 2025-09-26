@@ -10,22 +10,33 @@ import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
+import {useRuntime} from '@/composables/useRuntime'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
+import type {IExchangeData} from '@/types'
+import {useFetch} from '@/composables/useFetch'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {activeAccountId} = useSettings()
+const {activeAccountId, exchanges} = useSettings()
 const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
+const {fetchExchangesData} = useFetch()
+const {infoExchanges} = useRuntime()
 
 const onUpdateTitleBar = async (): Promise<void> => {
-  log('TITLEBAR: onUpdateTitleBar')
+  log('TITLE_BAR onUpdateTitleBar')
   const storesDB = await getDatabaseStores()
   await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
   await records.init(storesDB)
+
+  const exchangesInfoData: IExchangeData[] = await fetchExchangesData(exchanges.value)
+  for (let i = 0; i < exchangesInfoData.length; i++) {
+    infoExchanges.value.set(exchangesInfoData[i].key, exchangesInfoData[i].value)
+  }
+  // TODO Materials, Indexes
 }
 const logoUrl = computed((): string => {
   const ind = records.accounts.getIndexById(activeAccountId.value)
