@@ -23,7 +23,7 @@ const {CONS, haveSameStrings, log} = useApp()
 onBeforeMount(async () => {
   try {
     const theme = useTheme()
-    const {fetchExchangesData} = useFetch()
+    const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch()
     const {getDB, getDatabaseStores} = useIndexedDB()
     const {clearStorage, getStorage, installStorageLocal, notice, addStorageChangedListener, uiLanguage} = useBrowser()
     const db = await getDB()
@@ -50,6 +50,22 @@ onBeforeMount(async () => {
         runtime.curEur.value = exchangesBaseData[i].value
       }
     }
+    const exchangesInfoData: IExchangeData[] = await fetchExchangesData(settings.exchanges.value)
+    // TODO check except baseData
+    for (let i = 0; i < settings.exchanges.value.length; i++) {
+      runtime.infoExchanges.value.set(settings.exchanges.value[i], exchangesInfoData[i].value)
+    }
+    const indexesInfoData: IExchangeData[] = await fetchIndexData()
+    for (let i = 0; i < indexesInfoData.length; i++) {
+      runtime.infoIndexes.value.set(indexesInfoData[i].key, indexesInfoData[i].value)
+    }
+    const materialsInfoData: IExchangeData[] = await fetchMaterialData()
+    for (let i = 0; i < materialsInfoData.length; i++) {
+      runtime.infoMaterials.value.set(materialsInfoData[i].key, materialsInfoData[i].value)
+    }
+    // au, brent,  Ölpreis, Goldpreis
+    console.error(settings.materials.value, materialsInfoData)
+
     const keyStrokeController: string[] = []
     const handleSearch = async (query: string) => {
       keyStrokeController.push(query)

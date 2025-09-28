@@ -452,7 +452,7 @@ export const useFetch = () => {
             const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
             const resultTr = resultDocument.querySelectorAll('#commodity_prices > table > tbody tr');
             for (let i = 0; i < resultTr.length; i++) {
-                const material = CONS.SETTINGS.MATERIALS.get(resultTr[i].children[0].textContent ?? '');
+                const material = resultTr[i].children[0].textContent ?? '';
                 if (resultTr[i].children[0].tagName === 'TD' &&
                     material !== undefined) {
                     materials.push({
@@ -462,14 +462,14 @@ export const useFetch = () => {
                 }
             }
             resolve(materials);
+            return materials;
         });
     }
     async function fetchIndexData() {
         log('USE_FETCH: fetchIndexData');
         return new Promise(async (resolve, reject) => {
             const indexes = [];
-            const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES);
-            const indexesValues = Object.values(CONS.SETTINGS.INDEXES);
+            const indexesKeys = CONS.SETTINGS.INDEXES.keys();
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.INDEXES ?? '');
             if (!firstResponse.ok ||
                 firstResponse.status >= CONS.STATES.SRV ||
@@ -480,18 +480,19 @@ export const useFetch = () => {
             const firstResponseText = await firstResponse.text();
             const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
             const resultTr = resultDocument.querySelectorAll('.index-world-map a');
-            for (let i = 0; i < indexesKeys.length; i++) {
+            indexesKeys.forEach((property) => {
+                const indexValue = CONS.SETTINGS.INDEXES.get(property);
                 for (let j = 0; j < resultTr.length; j++) {
-                    if (indexesValues[i].includes(resultTr[j].getAttribute('title') ?? '') &&
-                        resultTr[j].children[0].textContent !== undefined) {
+                    if (indexValue?.includes(resultTr[j].getAttribute('title') ?? '') && resultTr[j].children[0].textContent !== undefined) {
                         indexes.push({
-                            key: indexesKeys[i],
+                            key: property,
                             value: toNumber(resultTr[j].children[0].textContent)
                         });
                     }
                 }
-            }
+            });
             resolve(indexes);
+            return indexes;
         });
     }
     async function fetchDateData(obj) {

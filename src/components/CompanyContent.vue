@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import type {IMenuItem, IStock} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
-import {computed} from 'vue'
+import {computed, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
@@ -123,6 +123,10 @@ const onUpdateItemsPerPage = (count: number): void => {
 const onUpdatePage = (page: number): void => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
 }
+
+onMounted(async () => {
+  //
+})
 
 log('--- StocksTable.vue setup ---')
 </script>

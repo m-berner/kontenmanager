@@ -566,7 +566,7 @@ export const useFetch = () => {
                 '#commodity_prices > table > tbody tr'
             )
             for (let i = 0; i < resultTr.length; i++) {
-                const material = CONS.SETTINGS.MATERIALS.get(resultTr[i].children[0].textContent ?? '')
+                const material = resultTr[i].children[0].textContent ?? ''
                 if (
                     resultTr[i].children[0].tagName === 'TD' &&
                     material !== undefined
@@ -578,6 +578,7 @@ export const useFetch = () => {
                 }
             }
             resolve(materials)
+            return materials
         })
     }
 
@@ -585,8 +586,8 @@ export const useFetch = () => {
         log('USE_FETCH: fetchIndexData')
         return new Promise(async (resolve, reject) => {
             const indexes: FetchedResources.IIndexData[] = []
-            const indexesKeys = Object.keys(CONS.SETTINGS.INDEXES)
-            const indexesValues: string[] = Object.values(CONS.SETTINGS.INDEXES)
+            const indexesKeys = CONS.SETTINGS.INDEXES.keys()
+            //const indexesValues = CONS.SETTINGS.INDEXES.values()
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.INDEXES ?? '')
             if (
                 !firstResponse.ok ||
@@ -602,22 +603,20 @@ export const useFetch = () => {
                 'text/html'
             )
             const resultTr = resultDocument.querySelectorAll('.index-world-map a')
-            for (let i = 0; i < indexesKeys.length; i++) {
+            indexesKeys.forEach((property) => {
+                const indexValue = CONS.SETTINGS.INDEXES.get(property)
                 for (let j = 0; j < resultTr.length; j++) {
-                    if (
-                        indexesValues[i].includes(
-                            resultTr[j].getAttribute('title') ?? ''
-                        ) &&
-                        resultTr[j].children[0].textContent !== undefined
-                    ) {
+                    if (indexValue?.includes(resultTr[j].getAttribute('title') ?? '') && resultTr[j].children[0].textContent !== undefined) {
                         indexes.push({
-                            key: indexesKeys[i],
+                            key: property,
                             value: toNumber(resultTr[j].children[0].textContent)
                         })
                     }
                 }
-            }
+
+            })
             resolve(indexes)
+            return indexes
         })
     }
 
