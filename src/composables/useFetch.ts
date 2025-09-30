@@ -224,8 +224,8 @@ export const useFetch = () => {
                             onlineRates[0]
                                 ?.querySelectorAll('tr')[1]
                                 ?.querySelectorAll('td')[1].textContent ?? '0'
-                        const onlineMax = onlineMinMax[1].textContent?.split('Hoch')[1]
-                        const onlineMin = onlineMinMax[1].textContent?.split('Hoch')[0].split('WochenTief')[1]
+                        const onlineMax = onlineMinMax[1]?.textContent?.split('Hoch')[1] ?? '0'
+                        const onlineMin = onlineMinMax[1]?.textContent?.split('Hoch')[0].split('WochenTief')[1] ?? '0'
                         if (onlineRate.includes('USD')) {
                             onlineCurrency = 'USD'
                         } else if (onlineRate.includes('EUR')) {

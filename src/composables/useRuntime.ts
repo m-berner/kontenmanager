@@ -29,6 +29,10 @@ const loadedStocksPages = new Set()
 
 export const useRuntime = () => {
 
+    function clearStocksPages() {
+        loadedStocksPages.clear()
+    }
+
     function setTeleport(entry: ITeleport): void {
         dialogName.value = entry.dialogName
         dialogOk.value = entry.dialogOk
@@ -65,6 +69,7 @@ export const useRuntime = () => {
         loadedStocksPages,
         setTeleport,
         resetTeleport,
-        resetOptionsMenuColors
+        resetOptionsMenuColors,
+        clearStocksPages
     }
 }

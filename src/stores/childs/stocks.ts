@@ -67,7 +67,7 @@ export const useStocks = defineStore('stocks', () => {
         const lastPage = Math.ceil(itemsLength / stocksPerPage.value)
         let pageStocks: IStock[] = []
         if (itemsLength > 0) {
-            if (page < lastPage) {
+            if (page < lastPage || rest === 0) {
                 pageStocks = items.value.slice(
                     (page - 1) * stocksPerPage.value + DUMMY_ENTRY_0,
                     (page - 1) * stocksPerPage.value + stocksPerPage.value + DUMMY_ENTRY_0
@@ -101,6 +101,7 @@ export const useStocks = defineStore('stocks', () => {
             }
         }
         const minRateMaxResponse = await fetchMinRateMaxData(isin)
+        console.error(minRateMaxResponse, pageStocks)
         for (let i = 0; i < pageStocks.length; i++) {
             pageStocks[i].mMin = toNumber(minRateMaxResponse[i].min)
             pageStocks[i].mValue = toNumber(minRateMaxResponse[i].rate)

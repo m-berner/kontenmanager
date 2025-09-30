@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import type {IMenuItem, IStock} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
-import {computed, onMounted} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
@@ -118,6 +118,7 @@ const winLossClass = computed(() => {
     'color-black font-weight-bold': value >= 0
   })
 })
+const loading = ref(false)
 
 const onUpdateItemsPerPage = (count: number): void => {
   settings.stocksPerPage.value = (count)
@@ -126,13 +127,17 @@ const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
   stocksPage.value = page
   if (!loadedStocksPages.has(page)) {
+    loading.value = true
     await records.stocks.loadOnlineData(page)
+    loading.value = false
   }
 }
 
 onMounted(async () => {
   if (!loadedStocksPages.has(stocksPage.value)) {
+    loading.value = true
     await records.stocks.loadOnlineData(stocksPage.value)
+    loading.value = false
   }
 })
 
@@ -149,6 +154,7 @@ log('--- StocksTable.vue setup ---')
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('stocksTable.itemsPerPageText')"
       :no-data-text="t('stocksTable.noDataText')"
+      :loading="loading"
       density="compact"
       item-key="cID"
       @update:items-per-page="onUpdateItemsPerPage"

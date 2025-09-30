@@ -12,6 +12,9 @@ const curEur = ref(1);
 const stocksPage = ref(1);
 const loadedStocksPages = new Set();
 export const useRuntime = () => {
+    function clearStocksPages() {
+        loadedStocksPages.clear();
+    }
     function setTeleport(entry) {
         dialogName.value = entry.dialogName;
         dialogOk.value = entry.dialogOk;
@@ -45,6 +48,7 @@ export const useRuntime = () => {
         loadedStocksPages,
         setTeleport,
         resetTeleport,
-        resetOptionsMenuColors
+        resetOptionsMenuColors,
+        clearStocksPages
     };
 };
