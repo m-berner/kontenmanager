@@ -9,6 +9,8 @@ const infoIndexes = ref(new Map());
 const infoMaterials = ref(new Map());
 const curUsd = ref(1);
 const curEur = ref(1);
+const stocksPage = ref(1);
+const loadedStocksPages = new Set();
 export const useRuntime = () => {
     function setTeleport(entry) {
         dialogName.value = entry.dialogName;
@@ -39,6 +41,8 @@ export const useRuntime = () => {
         infoMaterials,
         curUsd,
         curEur,
+        stocksPage,
+        loadedStocksPages,
         setTeleport,
         resetTeleport,
         resetOptionsMenuColors

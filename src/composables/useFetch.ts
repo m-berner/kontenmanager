@@ -97,6 +97,7 @@ export const useFetch = () => {
     async function fetchMinRateMaxData(storageOnline: FetchedResources.IIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> {
         log('USE_FETCH: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
+            // TODO is it already available in settings?
             const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
             const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
             const _fnet = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {

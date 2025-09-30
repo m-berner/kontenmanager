@@ -14,11 +14,13 @@ import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useRecordsStore} from '@/stores/records'
 import DotMenu from '@/components/childs/DotMenu.vue'
+import {useRuntime} from '@/composables/useRuntime'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const records = useRecordsStore()
 const settings = useSettings()
+const {loadedStocksPages, stocksPage} = useRuntime()
 
 const stocksHeaders = computed<DataTableHeader[]>(() => [
   {
@@ -120,12 +122,18 @@ const winLossClass = computed(() => {
 const onUpdateItemsPerPage = (count: number): void => {
   settings.stocksPerPage.value = (count)
 }
-const onUpdatePage = (page: number): void => {
+const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
+  stocksPage.value = page
+  if (!loadedStocksPages.has(page)) {
+    await records.stocks.loadOnlineData(page)
+  }
 }
 
 onMounted(async () => {
-  //
+  if (!loadedStocksPages.has(stocksPage.value)) {
+    await records.stocks.loadOnlineData(stocksPage.value)
+  }
 })
 
 log('--- StocksTable.vue setup ---')

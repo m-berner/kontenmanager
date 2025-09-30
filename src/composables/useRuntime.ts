@@ -24,6 +24,8 @@ const infoIndexes: Ref<Map<string, number>> = ref(new Map())
 const infoMaterials: Ref<Map<string, number>> = ref(new Map())
 const curUsd: Ref<number> = ref(1)
 const curEur: Ref<number> = ref(1)
+const stocksPage: Ref<number> = ref(1)
+const loadedStocksPages = new Set()
 
 export const useRuntime = () => {
 
@@ -59,6 +61,8 @@ export const useRuntime = () => {
         infoMaterials,
         curUsd,
         curEur,
+        stocksPage,
+        loadedStocksPages,
         setTeleport,
         resetTeleport,
         resetOptionsMenuColors

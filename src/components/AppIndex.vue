@@ -63,8 +63,7 @@ onBeforeMount(async () => {
     for (let i = 0; i < materialsInfoData.length; i++) {
       runtime.infoMaterials.value.set(materialsInfoData[i].key, materialsInfoData[i].value)
     }
-    // au, brent,  Ölpreis, Goldpreis
-    console.error(settings.materials.value, materialsInfoData)
+    // TODO fetchDateData, fetchMinRateMaxData
 
     const keyStrokeController: string[] = []
     const handleSearch = async (query: string) => {

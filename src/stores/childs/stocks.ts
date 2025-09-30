@@ -10,8 +10,11 @@ import type {Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
+import {useSettings} from '@/composables/useSettings'
+import {useFetch} from '@/composables/useFetch'
+import {useRuntime} from '@/composables/useRuntime'
 
-const {log} = useApp()
+const {log, toNumber} = useApp()
 
 export const useStocks = defineStore('stocks', () => {
     const items: Ref<IStock[]> = ref([])
@@ -51,6 +54,61 @@ export const useStocks = defineStore('stocks', () => {
         items.value.length = 0
     }
 
+    async function loadOnlineData(page: number) {
+        log('INDEXED_DB/STOCKS: loadOnlineData')
+        const {fetchMinRateMaxData} = useFetch()
+        const {loadedStocksPages} = useRuntime()
+        const {stocksPerPage} = useSettings()
+        const isin = []
+        const isinDates = []
+        const DUMMY_ENTRY_0 = 1
+        const itemsLength = items.value.length - DUMMY_ENTRY_0
+        const rest = itemsLength % stocksPerPage.value
+        const lastPage = Math.ceil(itemsLength / stocksPerPage.value)
+        let pageStocks: IStock[] = []
+        if (itemsLength > 0) {
+            if (page < lastPage) {
+                pageStocks = items.value.slice(
+                    (page - 1) * stocksPerPage.value + DUMMY_ENTRY_0,
+                    (page - 1) * stocksPerPage.value + stocksPerPage.value + DUMMY_ENTRY_0
+                )
+            } else {
+                pageStocks = items.value.slice(
+                    (page - 1) * stocksPerPage.value + DUMMY_ENTRY_0,
+                    (page - 1) * stocksPerPage.value + rest + DUMMY_ENTRY_0
+                )
+            }
+            for (let i = 0; i < pageStocks.length; i++) {
+                if (pageStocks[i].mValue === 0) {
+                    isin.push({
+                        id: pageStocks[i].cID,
+                        isin: pageStocks[i].cISIN,
+                        min: '0',
+                        rate: '0',
+                        max: '0',
+                        cur: ''
+                    })
+                }
+                if ((pageStocks[i].cMeetingDay === '1970-01-01' || pageStocks[i].cQuarterDay === '1970-01-01') && pageStocks[i].mAskDates) {
+                    isinDates.push({
+                        id: pageStocks[i].cID,
+                        isin: pageStocks[i].cISIN,
+                        gm: pageStocks[i].cMeetingDay,
+                        qf: pageStocks[i].cQuarterDay
+                    })
+                    pageStocks[i].mAskDates = false
+                }
+            }
+        }
+        const minRateMaxResponse = await fetchMinRateMaxData(isin)
+        for (let i = 0; i < pageStocks.length; i++) {
+            pageStocks[i].mMin = toNumber(minRateMaxResponse[i].min)
+            pageStocks[i].mValue = toNumber(minRateMaxResponse[i].rate)
+            pageStocks[i].mMax = toNumber(minRateMaxResponse[i].max)
+        }
+        loadedStocksPages.add(page)
+    }
+
     return {
         items,
         getItemById,
@@ -58,7 +116,8 @@ export const useStocks = defineStore('stocks', () => {
         add,
         updateStock,
         remove,
-        clean
+        clean,
+        loadOnlineData
     }
 })
 

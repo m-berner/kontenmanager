@@ -39,20 +39,6 @@ export interface IBookingDB {
     cMarketPlace: string
 }
 
-export interface IStockDB {
-    cID: number
-    cCompany: string
-    cISIN: string
-    //cWKN: string
-    cSymbol: string
-    cFirstPage: number
-    cFadeOut: number
-    cMeetingDay: string
-    cQuarterDay: string
-    cURL: string
-    cAccountNumberID: number
-}
-
 export interface IStoresDB {
     accountsDB: IAccountDB[],
     bookingsDB: IBookingDB[],
@@ -113,6 +99,20 @@ export interface IBookingContainerData {
     marketPlace: string
 }
 
+export interface IStockDB {
+    cID: number
+    cCompany: string
+    cISIN: string
+    //cWKN: string
+    cSymbol: string
+    cFirstPage: number
+    cFadeOut: number
+    cMeetingDay: string
+    cQuarterDay: string
+    cURL: string
+    cAccountNumberID: number
+}
+
 export interface IStockOnlyMemory {
     mPortfolio: number
     mChange: number
@@ -121,6 +121,14 @@ export interface IStockOnlyMemory {
     mMin: number
     mValue: number
     mMax: number
+    mDividendYielda?: number
+    mDividendYeara?: number
+    mDividendYieldb?: number
+    mDividendYearb?: number
+    mRealDividend?: number
+    mRealBuyValue?: number
+    mDeleteable?: boolean
+    mAskDates?: boolean
 }
 
 export interface IStock extends IStockDB {
@@ -131,6 +139,14 @@ export interface IStock extends IStockDB {
     mMin: number
     mValue: number
     mMax: number
+    mDividendYielda?: number
+    mDividendYeara?: number
+    mDividendYieldb?: number
+    mDividendYearb?: number
+    mRealDividend?: number
+    mRealBuyValue?: number
+    mDeleteable?: boolean
+    mAskDates?: boolean
 }
 
 export interface IStores {
