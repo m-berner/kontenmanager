@@ -6,30 +6,23 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed} from 'vue'
+import {onMounted, onUpdated, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import DialogPort from '@/components/childs/DialogPort.vue'
+import {useRouter} from 'vue-router'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {openOptionsPage} = useBrowser()
 const runtime = useRuntime()
-const settings = useSettings()
 const records = useRecordsStore()
+const router = useRouter()
 
-const accountWithDepot = computed((): boolean => {
-  const ind = records.accounts.getIndexById(settings.activeAccountId.value)
-  if (ind > -1) {
-    return records.accounts.items[ind].cWithDepot
-  } else {
-    return false
-  }
-})
+const isCompanyPage = ref(false)
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('HEADER_BAR: onIconClick')
@@ -140,6 +133,15 @@ const onIconClick = async (ev: Event): Promise<void> => {
   }
 }
 
+onUpdated(() => {
+  isCompanyPage.value = router.currentRoute.value.path.includes('company')
+})
+
+onMounted(() => {
+  //isVisible.value = !window.location.href.includes('company')
+  //console.error(router.currentRoute.value.path, 'lplplp', isVisible.value, !window.location.href.includes('company'))
+})
+
 log('--- HeaderBar.vue setup ---')
 </script>
 
@@ -153,12 +155,13 @@ log('--- HeaderBar.vue setup ---')
               icon="$home"
               size="large"
               v-bind="props"
-              variant="tonal"/>
+              variant="tonal"
+              @click="onIconClick"/>
         </template>
       </v-tooltip>
     </router-link>
     <router-link
-        v-if="accountWithDepot"
+        v-if="records.accounts.isDepot"
         class="router-link-active"
         to="/company">
       <v-tooltip :text="t('headerBar.home')" location="top">
@@ -167,13 +170,14 @@ log('--- HeaderBar.vue setup ---')
               icon="$showCompany"
               size="large"
               v-bind="props"
-              variant="tonal"/>
+              variant="tonal"
+              @click="onIconClick"/>
         </template>
       </v-tooltip>
     </router-link>
     <v-spacer/>
     <v-tooltip
-        v-if="accountWithDepot"
+        v-if="isCompanyPage"
         :text="t('headerBar.addStock')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -187,7 +191,10 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer/>
-    <v-tooltip :text="t('headerBar.addAccount')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.addAccount')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT"
@@ -198,7 +205,10 @@ log('--- HeaderBar.vue setup ---')
             @click="onIconClick"/>
       </template>
     </v-tooltip>
-    <v-tooltip :text="t('headerBar.updateAccount')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.updateAccount')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT"
@@ -209,7 +219,10 @@ log('--- HeaderBar.vue setup ---')
             @click="onIconClick"/>
       </template>
     </v-tooltip>
-    <v-tooltip :text="t('headerBar.deleteAccount')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.deleteAccount')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION"
@@ -221,7 +234,10 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer/>
-    <v-tooltip :text="t('headerBar.addBooking')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.addBooking')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING"
@@ -233,7 +249,10 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer/>
-    <v-tooltip :text="t('headerBar.addBookingType')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.addBookingType')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE"
@@ -244,7 +263,10 @@ log('--- HeaderBar.vue setup ---')
             @click="onIconClick"/>
       </template>
     </v-tooltip>
-    <v-tooltip :text="t('headerBar.addBookingType')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.addBookingType')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE"
@@ -255,7 +277,10 @@ log('--- HeaderBar.vue setup ---')
             @click="onIconClick"/>
       </template>
     </v-tooltip>
-    <v-tooltip :text="t('headerBar.deleteBookingType')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.deleteBookingType')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE"
@@ -267,7 +292,10 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer/>
-    <v-tooltip :text="t('headerBar.exportToFile')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.exportToFile')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE"
@@ -278,7 +306,10 @@ log('--- HeaderBar.vue setup ---')
             @click="onIconClick"/>
       </template>
     </v-tooltip>
-    <v-tooltip :text="t('headerBar.importDatabase')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.importDatabase')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE"
@@ -290,7 +321,10 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer/>
-    <v-tooltip :text="t('headerBar.showAccounting')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.showAccounting')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING"
@@ -302,7 +336,10 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-spacer/>
-    <v-tooltip :text="t('headerBar.settings')" location="top">
+    <v-tooltip
+        v-if="!isCompanyPage"
+        :text="t('headerBar.settings')"
+        location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.SETTING"

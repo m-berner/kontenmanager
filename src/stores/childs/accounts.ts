@@ -10,8 +10,10 @@ import type {Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
+import {useSettings} from '@/composables/useSettings'
 
 const {log} = useApp()
+const {activeAccountId} = useSettings()
 
 export const useAccounts = defineStore('accounts', () => {
 
@@ -26,6 +28,15 @@ export const useAccounts = defineStore('accounts', () => {
     const isDuplicate = computed(() => (name: string): boolean => {
         const duplicates = items.value.filter((entry: IAccount) => entry.cIban === name)
         return duplicates.length > 0
+    })
+
+    const isDepot = computed((): boolean => {
+        const ind = getIndexById.value(activeAccountId.value)
+        if (ind > -1) {
+            return items.value[ind].cWithDepot
+        } else {
+            return false
+        }
     })
 
     function add(account: IAccount, prepend: boolean = false): void {
@@ -62,6 +73,7 @@ export const useAccounts = defineStore('accounts', () => {
         getById,
         getIndexById,
         isDuplicate,
+        isDepot,
         add,
         update,
         remove,

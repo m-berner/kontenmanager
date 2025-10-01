@@ -80,7 +80,6 @@ export const useStocks = defineStore('stocks', () => {
             }
         }
         const minRateMaxResponse = await fetchMinRateMaxData(isin);
-        console.error(minRateMaxResponse, pageStocks);
         for (let i = 0; i < pageStocks.length; i++) {
             pageStocks[i].mMin = toNumber(minRateMaxResponse[i].min);
             pageStocks[i].mValue = toNumber(minRateMaxResponse[i].rate);

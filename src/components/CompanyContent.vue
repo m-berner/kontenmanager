@@ -22,6 +22,7 @@ const records = useRecordsStore()
 const settings = useSettings()
 const {loadedStocksPages, stocksPage} = useRuntime()
 
+const loading = ref(false)
 const stocksHeaders = computed<DataTableHeader[]>(() => [
   {
     title: t('stocksTable.headers.action'),
@@ -118,7 +119,6 @@ const winLossClass = computed(() => {
     'color-black font-weight-bold': value >= 0
   })
 })
-const loading = ref(false)
 
 const onUpdateItemsPerPage = (count: number): void => {
   settings.stocksPerPage.value = (count)
