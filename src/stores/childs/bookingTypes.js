@@ -2,7 +2,7 @@ import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useApp } from '@/composables/useApp';
 const { log } = useApp();
-export const useBookingTypes = defineStore('bookingTypes', () => {
+export const useBookingTypesStore = defineStore('bookingTypes', () => {
     const items = ref([]);
     const getNameById = computed(() => (ident) => {
         const bookingType = items.value.find((entry) => entry.cID === ident);

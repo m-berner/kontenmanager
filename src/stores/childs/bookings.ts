@@ -14,7 +14,7 @@ import {useSettings} from '@/composables/useSettings'
 
 const {log} = useApp()
 
-export const useBookings = defineStore('bookings', () => {
+export const useBookingsStore = defineStore('bookings', () => {
 
     const items: Ref<IBooking[]> = ref([])
 

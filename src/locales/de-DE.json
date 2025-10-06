@@ -11,6 +11,7 @@
   },
   "headerBar": {
     "home": "Startseite",
+    "company": "Aktien-Unternehmen",
     "reload": "Kurse aktualisieren",
     "addBookingType": "Buchungstyp hinzufügen",
     "deleteBookingType": "Buchungstyp entfernen",
@@ -18,6 +19,7 @@
     "updateAccount": "Bankkonto bearbeiten",
     "deleteAccount": "Bankkonto entfernen",
     "addStock": "Aktien-Unternehmen hinzufügen",
+    "fadeInStock": "Unternehmen einblenden",
     "deleteStock": "Aktien-Unternehmen entfernen",
     "updateStock": "Aktien-Unternehmen bearbeiten",
     "addBooking": "Buchung hinzufügen",
@@ -140,6 +142,9 @@
       "url": "URL",
       "success": "Unternehmen wurde aktualisiert",
       "error": "Fehler"
+    },
+    "fadeInStock": {
+      "title": "Unternehmen einblenden"
     },
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
@@ -304,7 +309,7 @@
         "2": "$reload",
         "3": "$addAccount",
         "4": "$deleteCompany",
-        "5": "$fadeinStock",
+        "5": "$fadeInStock",
         "6": "$cashPlus",
         "7": "$cashMinus",
         "8": "$dailyChanges",

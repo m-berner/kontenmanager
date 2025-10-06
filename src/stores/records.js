@@ -1,17 +1,17 @@
 import { defineStore } from 'pinia';
 import { useApp } from '@/composables/useApp';
 import { useSettings } from '@/composables/useSettings';
-import { useAccounts } from '@/stores/childs/accounts';
-import { useBookings } from '@/stores/childs/bookings';
-import { useBookingTypes } from '@/stores/childs/bookingTypes';
-import { useStocks } from '@/stores/childs/stocks';
+import { useAccountsStore } from '@/stores/childs/accounts';
+import { useBookingsStore } from '@/stores/childs/bookings';
+import { useBookingTypesStore } from '@/stores/childs/bookingTypes';
+import { useStocksStore } from '@/stores/childs/stocks';
 import { useBrowser } from '@/composables/useBrowser';
 const { CONS, log } = useApp();
 export const useRecordsStore = defineStore('records', () => {
-    const accountsStore = useAccounts();
-    const bookingsStore = useBookings();
-    const bookingTypesStore = useBookingTypes();
-    const stocksStore = useStocks();
+    const accountsStore = useAccountsStore();
+    const bookingsStore = useBookingsStore();
+    const bookingTypesStore = useBookingTypesStore();
+    const stocksStore = useStocksStore();
     function clean(all = true) {
         log('RECORDS: clean');
         if (all) {
@@ -40,8 +40,8 @@ export const useRecordsStore = defineStore('records', () => {
         }
         stocksStore.add({
             cID: 0,
-            cISIN: 'XX00000000000000000000',
-            cSymbol: 'WWW',
+            cISIN: 'XX0000000000000000',
+            cSymbol: 'XYZOO',
             cFadeOut: 0,
             cFirstPage: 0,
             cURL: '',
@@ -78,7 +78,15 @@ export const useRecordsStore = defineStore('records', () => {
             mEuroChange: 0,
             mMin: 0,
             mValue: 0,
-            mMax: 0
+            mMax: 0,
+            mDividendYielda: 0,
+            mDividendYeara: 0,
+            mDividendYieldb: 0,
+            mDividendYearb: 0,
+            mRealDividend: 0,
+            mRealBuyValue: 0,
+            mDeleteable: false,
+            mAskDates: false
         };
         const stores = {
             accounts: storesDB.accountsDB,

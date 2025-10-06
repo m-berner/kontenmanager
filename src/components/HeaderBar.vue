@@ -29,6 +29,13 @@ const onIconClick = async (ev: Event): Promise<void> => {
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
+      case CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK:
+        runtime.setTeleport({
+          dialogName: CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK,
+          dialogOk: true,
+          dialogVisibility: true
+        })
+        break
       case CONS.COMPONENTS.DIALOGS.ADD_STOCK:
         runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_STOCK,
@@ -164,7 +171,7 @@ log('--- HeaderBar.vue setup ---')
         v-if="records.accounts.isDepot"
         class="router-link-active"
         to="/company">
-      <v-tooltip :text="t('headerBar.home')" location="top">
+      <v-tooltip :text="t('headerBar.company')" location="top">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
               icon="$showCompany"
@@ -184,6 +191,20 @@ log('--- HeaderBar.vue setup ---')
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.ADD_STOCK"
             icon="$addCompany"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            @click="onIconClick"/>
+      </template>
+    </v-tooltip>
+    <v-tooltip
+        v-if="isCompanyPage"
+        :text="t('headerBar.fadeInStock')"
+        location="top">
+      <template v-slot:activator="{ props }">
+        <v-app-bar-nav-icon
+            :id="CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK"
+            icon="$fadeInCompany"
             size="large"
             v-bind="props"
             variant="tonal"

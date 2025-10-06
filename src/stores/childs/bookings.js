@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { useApp } from '@/composables/useApp';
 import { useSettings } from '@/composables/useSettings';
 const { log } = useApp();
-export const useBookings = defineStore('bookings', () => {
+export const useBookingsStore = defineStore('bookings', () => {
     const items = ref([]);
     const getById = computed(() => (id) => {
         return items.value.find(account => account.cID === id);

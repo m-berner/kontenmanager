@@ -27,6 +27,9 @@ import {
     mdiDatabaseImport,
     mdiDelete,
     mdiDomain,
+    mdiDomainPlus,
+    mdiDomainRemove,
+    mdiDomainSwitch,
     mdiDotsVertical,
     mdiEmail,
     mdiFileDocumentEdit,
@@ -43,9 +46,7 @@ import {
     mdiPlus,
     mdiReload,
     mdiShieldAccount,
-    mdiStoreEdit,
-    mdiStoreMinus,
-    mdiStorePlus
+    mdiStoreEdit
 } from '@mdi/js'
 import {useApp} from '@/composables/useApp'
 
@@ -169,9 +170,10 @@ const vuetifyInstance = createVuetify({
             remove: mdiDelete,
             check: mdiCheck,
             dots: mdiDotsVertical,
-            addCompany: mdiStorePlus,
+            addCompany: mdiDomainPlus,
+            fadeInCompany: mdiDomainSwitch,
             updateCompany: mdiStoreEdit,
-            deleteCompany: mdiStoreMinus,
+            deleteCompany: mdiDomainRemove,
             showCompany: mdiDomain,
             removeDocument: mdiFileDocumentMinus,
             editDocument: mdiFileDocumentEdit,

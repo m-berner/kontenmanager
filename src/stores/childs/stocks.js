@@ -5,12 +5,20 @@ import { useSettings } from '@/composables/useSettings';
 import { useFetch } from '@/composables/useFetch';
 import { useRuntime } from '@/composables/useRuntime';
 const { log, toNumber } = useApp();
-export const useStocks = defineStore('stocks', () => {
+export const useStocksStore = defineStore('stocks', () => {
     const items = ref([]);
     const getIndexById = computed(() => (id) => {
         return items.value.findIndex(stock => stock.cID === id);
     });
     const getItemById = computed(() => (id) => items.value[getIndexById.value(id)]);
+    const passive = computed(() => {
+        return items.value.filter(rec => rec.cFadeOut === 1);
+    });
+    const active = computed(() => {
+        return items.value.filter((rec, ind) => {
+            return rec.cFadeOut === 0 && ind > 0;
+        });
+    });
     function add(stock, prepend = false) {
         log('STOCKS_STORE: add');
         if (prepend) {
@@ -45,17 +53,16 @@ export const useStocks = defineStore('stocks', () => {
         const { stocksPerPage } = useSettings();
         const isin = [];
         const isinDates = [];
-        const DUMMY_ENTRY_0 = 1;
-        const itemsLength = items.value.length - DUMMY_ENTRY_0;
+        const itemsLength = active.value.length;
         const rest = itemsLength % stocksPerPage.value;
         const lastPage = Math.ceil(itemsLength / stocksPerPage.value);
         let pageStocks = [];
         if (itemsLength > 0) {
             if (page < lastPage || rest === 0) {
-                pageStocks = items.value.slice((page - 1) * stocksPerPage.value + DUMMY_ENTRY_0, (page - 1) * stocksPerPage.value + stocksPerPage.value + DUMMY_ENTRY_0);
+                pageStocks = active.value.slice((page - 1) * stocksPerPage.value, (page - 1) * stocksPerPage.value + stocksPerPage.value);
             }
             else {
-                pageStocks = items.value.slice((page - 1) * stocksPerPage.value + DUMMY_ENTRY_0, (page - 1) * stocksPerPage.value + rest + DUMMY_ENTRY_0);
+                pageStocks = active.value.slice((page - 1) * stocksPerPage.value, (page - 1) * stocksPerPage.value + rest);
             }
             for (let i = 0; i < pageStocks.length; i++) {
                 if (pageStocks[i].mValue === 0) {
@@ -86,11 +93,16 @@ export const useStocks = defineStore('stocks', () => {
             pageStocks[i].mMax = toNumber(minRateMaxResponse[i].max);
         }
         loadedStocksPages.add(page);
+        items.value.sort((a, b) => {
+            return a.cFirstPage - b.cFirstPage;
+        });
     }
     return {
         items,
         getItemById,
         getIndexById,
+        active,
+        passive,
         add,
         updateStock,
         remove,

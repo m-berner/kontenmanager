@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IMenuItem, IStock} from '@/types.d'
+import type {IMenuItem} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
 import {computed, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -105,7 +105,7 @@ const stocksMenuItems = computed<IMenuItem[]>(() => [
   {
     id: 'UpdateStock',
     title: t('stocksTable.menuItems.update'),
-    icon: '$updateCompany'
+    icon: '$showCompany'
   },
   {
     id: 'ExternalLink',
@@ -149,7 +149,7 @@ log('--- StocksTable.vue setup ---')
       :headers="stocksHeaders"
       :hide-no-data="false"
       :hover="true"
-      :items="records.stocks.items.filter((stock: IStock): boolean => stock.cID > 0 )"
+      :items="records.stocks.active"
       :items-per-page="settings.stocksPerPage.value"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('stocksTable.itemsPerPageText')"

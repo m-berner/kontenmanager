@@ -13,7 +13,7 @@ import {useApp} from '@/composables/useApp'
 
 const {log} = useApp()
 
-export const useBookingTypes = defineStore('bookingTypes', () => {
+export const useBookingTypesStore = defineStore('bookingTypes', () => {
     const items: Ref<IBookingType[]> = ref([])
 
     const getNameById = computed(() => (ident: number): string => {

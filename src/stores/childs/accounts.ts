@@ -15,7 +15,7 @@ import {useSettings} from '@/composables/useSettings'
 const {log} = useApp()
 const {activeAccountId} = useSettings()
 
-export const useAccounts = defineStore('accounts', () => {
+export const useAccountsStore = defineStore('accounts', () => {
 
     const items: Ref<IAccount[]> = ref([])
 

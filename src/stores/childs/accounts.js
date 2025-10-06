@@ -4,7 +4,7 @@ import { useApp } from '@/composables/useApp';
 import { useSettings } from '@/composables/useSettings';
 const { log } = useApp();
 const { activeAccountId } = useSettings();
-export const useAccounts = defineStore('accounts', () => {
+export const useAccountsStore = defineStore('accounts', () => {
     const items = ref([]);
     const getIndexById = computed(() => (id) => {
         return items.value.findIndex(account => account.cID === id);

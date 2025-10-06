@@ -102,6 +102,7 @@ const CONS = Object.freeze({
             }
         },
         DIALOGS: {
+            FADE_IN_STOCK: 'FadeInStock',
             ADD_ACCOUNT: 'AddAccount',
             UPDATE_ACCOUNT: 'UpdateAccount',
             DELETE_ACCOUNT: 'DeleteAccount',

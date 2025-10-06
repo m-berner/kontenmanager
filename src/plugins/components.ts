@@ -7,6 +7,7 @@
  */
 import type {App, Plugin} from 'vue'
 import {useApp} from '@/composables/useApp'
+import FadeInStock from '@/components/dialogs/FadeInStock.vue'
 import AddStock from '@/components/dialogs/AddStock.vue'
 import UpdateStock from '@/components/dialogs/UpdateStock.vue'
 import AddAccount from '@/components/dialogs/AddAccount.vue'
@@ -25,6 +26,7 @@ const {CONS, log} = useApp()
 
 const ComponentsPlugin: Plugin = {
     install: (app: App) => {
+        app.component(CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK, FadeInStock)
         app.component(CONS.COMPONENTS.DIALOGS.ADD_STOCK, AddStock)
         app.component(CONS.COMPONENTS.DIALOGS.UPDATE_STOCK, UpdateStock)
         app.component(CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT, AddAccount)
