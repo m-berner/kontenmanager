@@ -66,14 +66,7 @@ export const useRecordsStore = defineStore('records', () => {
             cCompany: '',
             cMeetingDay: '',
             cQuarterDay: '',
-            cAccountNumberID: activeAccountId.value,
-            mBuyValue: 0,
-            mMax: 0,
-            mMin: 0,
-            mChange: 0,
-            mEuroChange: 0,
-            mPortfolio: 0,
-            mValue: 0
+            cAccountNumberID: activeAccountId.value
         }, true)
 
         bookingsStore.items.sort((a: IBooking, b: IBooking) => {

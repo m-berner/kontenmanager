@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IStock} from '@/types'
+import type {IStock, IStockDB, IStockOnlyMemory} from '@/types'
 import type {Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
@@ -35,12 +35,33 @@ export const useStocksStore = defineStore('stocks', () => {
         })
     })
 
-    function add(stock: IStock, prepend: boolean = false): void {
+    function add(stock: IStockDB, prepend: boolean = false): void {
         log('STOCKS_STORE: add')
+        const stocksOnlyMemory: IStockOnlyMemory = {
+            mPortfolio: 0,
+            mChange: 0,
+            mBuyValue: 0,
+            mEuroChange: 0,
+            mMin: 0,
+            mValue: 0,
+            mMax: 0,
+            mDividendYielda: 0,
+            mDividendYeara: 0,
+            mDividendYieldb: 0,
+            mDividendYearb: 0,
+            mRealDividend: 0,
+            mRealBuyValue: 0,
+            mDeleteable: false,
+            mAskDates: false
+        }
+        const completeStock = {
+            ...stock,
+            ...stocksOnlyMemory
+        }
         if (prepend) {
-            items.value.unshift(stock)
+            items.value.unshift(completeStock)
         } else {
-            items.value.push(stock)
+            items.value.push(completeStock)
         }
     }
 
@@ -49,11 +70,28 @@ export const useStocksStore = defineStore('stocks', () => {
     //     itemsActive.value.push(stock)
     // }
 
-    function updateStock(stock: IStock): void {
+    function updateStock(stock: IStockDB): void {
         log('STOCKS_STORE: updateStock')
         const index = getIndexById.value(stock?.cID ?? -1)
         if (index !== -1) {
-            items.value[index] = {...stock}
+            const stocksOnlyMemory = {
+                mPortfolio: items.value[index].mPortfolio,
+                mChange: items.value[index].mChange,
+                mBuyValue: items.value[index].mBuyValue,
+                mEuroChange: items.value[index].mEuroChange,
+                mMin: items.value[index].mMin,
+                mValue: items.value[index].mValue,
+                mMax: items.value[index].mMax,
+                mDividendYielda: items.value[index].mDividendYielda,
+                mDividendYeara: items.value[index].mDividendYeara,
+                mDividendYieldb: items.value[index].mDividendYieldb,
+                mDividendYearb: items.value[index].mDividendYearb,
+                mRealDividend: items.value[index].mRealDividend,
+                mRealBuyValue:items.value[index].mRealBuyValue,
+                mDeleteable: items.value[index].mDeleteable,
+                mAskDates: items.value[index].mAskDates
+            }
+            items.value[index] = {...stock, ...stocksOnlyMemory}
         }
     }
 

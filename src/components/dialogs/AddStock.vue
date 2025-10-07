@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {ICompanyData, IStock} from '@/types.d'
+import type {ICompanyData, IStockDB} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -59,39 +59,22 @@ const onClickOk = async (): Promise<void> => {
   if (!await validateForm(formRef)) return
 
   try {
-    const stock: Omit<IStock, 'cID'> = {
+    const stock: Omit<IStockDB, 'cID'> = {
       cCompany: company.value.trim(),
       cISIN: isin.value,
-      // cWKN: wkn.value,
       cSymbol: symbol.value,
       cMeetingDay: '',
       cQuarterDay: '',
       cFadeOut: 0,
       cFirstPage: 0,
       cURL: '',
-      cAccountNumberID: activeAccountId.value,
-      mPortfolio: 0,
-      mChange: 0,
-      mBuyValue: 0,
-      mEuroChange: 0,
-      mMin: 0,
-      mValue: 0,
-      mMax: 0
+      cAccountNumberID: activeAccountId.value
     }
 
     const addStockID = await addStock(stock)
     if (addStockID > 0) {
-      const completeStock: IStock = {cID: addStockID, ...stock}
-      records.stocks.add({
-        ...completeStock,
-        mPortfolio: 0,
-        mChange: 0,
-        mBuyValue: 0,
-        mEuroChange: 0,
-        mMin: 0,
-        mValue: 0,
-        mMax: 0
-      })
+      const dbStock: IStockDB = {cID: addStockID, ...stock}
+      records.stocks.add(dbStock)
       await notice([t('dialogs.addStock.success')])
       reset()
       runtime.resetTeleport()

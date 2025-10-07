@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock, IStockDB} from '@/types.d'
+import type {IStockDB} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -22,7 +22,6 @@ interface IFormData {
   id: number
   isin: string
   company: string
-  // wkn: string
   symbol: string
   meetingDay: string
   quarterDay: string
@@ -75,17 +74,7 @@ const onClickOk = async (): Promise<void> => {
       cURL: formData.url,
       cAccountNumberID: activeAccountId.value
     }
-    const stocksStore: IStock = {
-      ...stock,
-      mPortfolio: 0,
-      mChange: 0,
-      mBuyValue: 0,
-      mEuroChange: 0,
-      mMin: 0,
-      mValue: 0,
-      mMax: 0
-    }
-    records.stocks.updateStock(stocksStore)
+    records.stocks.updateStock(stock)
     await updateStock(stock)
     await notice([t('dialogs.updateStock.success')])
     runtime.resetTeleport()
