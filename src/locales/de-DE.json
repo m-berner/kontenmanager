@@ -201,6 +201,8 @@
       "descriptionLabel": "Bemerkung",
       "creditLabel": "Einnahme",
       "debitLabel": "Ausgabe",
+      "fees": "Gebühren",
+      "taxes": "Steuern",
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?"
     },

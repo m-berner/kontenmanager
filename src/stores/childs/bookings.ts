@@ -55,6 +55,29 @@ export const useBookingsStore = defineStore('bookings', () => {
         const findings = items.value.filter((entry: IBooking) => entry.cBookingTypeID === ident)
         return findings.length > 0
     })
+    const sumFees = computed(() => {
+        return items.value.map((entry: IBooking) => {
+            return entry.cFee
+        }).reduce((acc: number, cur: number) => acc + cur, 0)
+    })
+    const sumTaxes = computed(() => {
+        return items.value.map((entry: IBooking) => {
+            return entry.cTax || entry.cSoli || entry.cSourceTax || entry.cTransactionTax
+        }).reduce((acc: number, cur: number) => acc + cur, 0)
+    })
+    const portfolioByStockId = computed(() => (ident: number) => {
+        const bought = items.value.filter((entry: IBooking) => {
+            return entry.cStockID === ident && entry.cBookingTypeID === 1
+        }).map((entry: IBooking) => {
+            return entry.cCount
+        }).reduce((acc: number, cur: number) => acc + cur, 0)
+        const sold = items.value.filter((entry: IBooking) => {
+            return entry.cStockID === ident && entry.cBookingTypeID === 2
+        }).map((entry: IBooking) => {
+            return entry.cCount
+        }).reduce((acc: number, cur: number) => acc + cur, 0)
+        return bought - sold
+    })
 
     function add(booking: IBooking, prepend: boolean = false): void {
         log('BOOKINGS_STORE: add')
@@ -91,7 +114,10 @@ export const useBookingsStore = defineStore('bookings', () => {
         getIndexById,
         getTextById,
         sumBookings,
+        sumFees,
+        sumTaxes,
         hasBookingType,
+        portfolioByStockId,
         add,
         update,
         remove,

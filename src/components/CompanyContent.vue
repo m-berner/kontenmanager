@@ -134,10 +134,14 @@ const onUpdatePage = async (page: number): Promise<void> => {
 }
 
 onMounted(async () => {
+  log('COMPANY_CONTENT: onMounted')
   if (!loadedStocksPages.has(stocksPage.value)) {
     loading.value = true
     await records.stocks.loadOnlineData(stocksPage.value)
     loading.value = false
+  }
+  for (let i = 1; i < records.stocks.active.length; i++) {
+    records.stocks.active[i].mPortfolio = records.bookings.portfolioByStockId(records.stocks.active[i].cID)
   }
 })
 

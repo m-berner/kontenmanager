@@ -17,9 +17,9 @@ const {n, t} = useI18n()
 const records = useRecordsStore()
 const {log} = useApp()
 
-const _result: Ref<Array<{ title: string, subtitle: string }>> = ref([])
+const _result: Ref<Array<{ title: string, subtitle: number }>> = ref([])
 
-const addEntryToResult = (value: { title: string, subtitle: string }) => {
+const addEntryToResult = (value: { title: string, subtitle: number }) => {
   _result.value.push(value)
 }
 const title = t('dialogs.showAccounting.title')
@@ -35,19 +35,8 @@ onMounted(() => {
     }).map((entry: IBooking) => {
       return entry.cCredit - entry.cDebit
     }).reduce((acc: number, cur: number) => acc + cur, 0)
-    addEntryToResult({title: records.bookingTypes.items[i].cName, subtitle: n(sums[i], 'currency')})
+    addEntryToResult({title: records.bookingTypes.items[i].cName, subtitle: sums[i]})
   }
-
-  const sumFees = records.bookings.items.map((entry: IBooking) => {
-    return entry.cFee
-  }).reduce((acc: number, cur: number) => acc + cur, 0)
-  console.error(sumFees)
-
-  const sumTaxes = records.bookings.items.map((entry: IBooking) => {
-    return entry.cTax || entry.cSoli || entry.cSourceTax || entry.cTransactionTax
-  }).reduce((acc: number, cur: number) => acc + cur, 0)
-  console.error(sumTaxes)
-
 })
 
 log('--- ShowAccounting.vue setup ---')
@@ -57,9 +46,15 @@ log('--- ShowAccounting.vue setup ---')
   <v-form>
     <v-list height="440">
       <v-list-item
+          :subtitle="n(records.bookings.sumTaxes, 'currency')"
+          :title="t('dialogs.showAccounting.taxes')"/>
+      <v-list-item
+          :subtitle="n(records.bookings.sumFees, 'currency')"
+          :title="t('dialogs.showAccounting.fees')"/>
+      <v-list-item
           v-for="entry in _result"
           :key="entry.title"
-          :subtitle="entry.subtitle"
+          :subtitle="n(entry.subtitle, 'currency')"
           :title="entry.title"/>
     </v-list>
   </v-form>
