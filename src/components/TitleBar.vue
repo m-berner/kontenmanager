@@ -10,7 +10,7 @@ import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
-//import {useRuntime} from '@/composables/useRuntime'
+import {useRuntime} from '@/composables/useRuntime'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
@@ -20,6 +20,7 @@ import {useBrowser} from '@/composables/useBrowser'
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const {activeAccountId} = useSettings()
+const {isCompanyPage} = useRuntime()
 const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
@@ -43,6 +44,9 @@ const logoUrl = computed((): string => {
 const balance = computed((): string => {
   return n(records.bookings.sumBookings(), 'currency')
 })
+const depot = computed((): string => {
+  return n(records.stocks.sumDepot(), 'currency')
+})
 
 log('--- TitleBar.vue setup ---')
 </script>
@@ -54,6 +58,14 @@ log('--- TitleBar.vue setup ---')
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
+        v-if="isCompanyPage"
+        :disabled="true"
+        :label="t('titleBar.depotSumLabel')"
+        :model-value="depot"
+        hide-details
+        max-width="150"/>
+    <v-text-field
+        v-else
         :disabled="true"
         :label="t('titleBar.bookingsSumLabel')"
         :model-value="balance"

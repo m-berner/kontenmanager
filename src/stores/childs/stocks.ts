@@ -35,6 +35,12 @@ export const useStocksStore = defineStore('stocks', () => {
         })
     })
 
+    const sumDepot = computed(() => (): number => {
+        return active.value.map(rec => {
+            return rec.mPortfolio * rec.mValue
+        }).reduce((acc: number, cur: number) => acc + cur, 0)
+    })
+
     function add(stock: IStockDB, prepend: boolean = false): void {
         log('STOCKS_STORE: add')
         const stocksOnlyMemory: IStockOnlyMemory = {
@@ -87,7 +93,7 @@ export const useStocksStore = defineStore('stocks', () => {
                 mDividendYieldb: items.value[index].mDividendYieldb,
                 mDividendYearb: items.value[index].mDividendYearb,
                 mRealDividend: items.value[index].mRealDividend,
-                mRealBuyValue:items.value[index].mRealBuyValue,
+                mRealBuyValue: items.value[index].mRealBuyValue,
                 mDeleteable: items.value[index].mDeleteable,
                 mAskDates: items.value[index].mAskDates
             }
@@ -173,6 +179,7 @@ export const useStocksStore = defineStore('stocks', () => {
         getIndexById,
         active,
         passive,
+        sumDepot,
         add,
         // addActive,
         updateStock,

@@ -19,6 +19,11 @@ export const useStocksStore = defineStore('stocks', () => {
             return rec.cFadeOut === 0 && ind > 0;
         });
     });
+    const sumDepot = computed(() => () => {
+        return active.value.map(rec => {
+            return rec.mPortfolio * rec.mValue;
+        }).reduce((acc, cur) => acc + cur, 0);
+    });
     function add(stock, prepend = false) {
         log('STOCKS_STORE: add');
         const stocksOnlyMemory = {
@@ -141,6 +146,7 @@ export const useStocksStore = defineStore('stocks', () => {
         getIndexById,
         active,
         passive,
+        sumDepot,
         add,
         updateStock,
         remove,

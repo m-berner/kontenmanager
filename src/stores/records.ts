@@ -52,9 +52,6 @@ export const useRecordsStore = defineStore('records', () => {
 
         for (const entry of stores.stocks) {
             stocksStore.add(entry)
-            // if (entry.cFadeOut === 0) {
-            //     stocksStore.addActive(entry)
-            // }
         }
         stocksStore.add({
             cID: 0,

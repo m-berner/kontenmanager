@@ -26,6 +26,7 @@ const curUsd: Ref<number> = ref(1)
 const curEur: Ref<number> = ref(1)
 const stocksPage: Ref<number> = ref(1)
 const loadedStocksPages = new Set()
+const isCompanyPage = ref(false)
 
 export const useRuntime = () => {
 
@@ -67,6 +68,7 @@ export const useRuntime = () => {
         curEur,
         stocksPage,
         loadedStocksPages,
+        isCompanyPage,
         setTeleport,
         resetTeleport,
         resetOptionsMenuColors,

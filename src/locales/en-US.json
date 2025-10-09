@@ -2,6 +2,7 @@
   "titleBar": {
     "title": "KontenManager",
     "bookingsSumLabel": "Kontostand",
+    "depotSumLabel": "Depotkonto",
     "selectAccountLabel": "IBAN",
     "iconsAlt": {
       "logo": "logo",
