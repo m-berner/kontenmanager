@@ -28,6 +28,7 @@ export const useStocksStore = defineStore('stocks', () => {
         log('STOCKS_STORE: add');
         const stocksOnlyMemory = {
             mPortfolio: 0,
+            mInvest: 0,
             mChange: 0,
             mBuyValue: 0,
             mEuroChange: 0,
@@ -60,6 +61,7 @@ export const useStocksStore = defineStore('stocks', () => {
         if (index !== -1) {
             const stocksOnlyMemory = {
                 mPortfolio: items.value[index].mPortfolio,
+                mInvest: items.value[index].mInvest,
                 mChange: items.value[index].mChange,
                 mBuyValue: items.value[index].mBuyValue,
                 mEuroChange: items.value[index].mEuroChange,
@@ -134,11 +136,9 @@ export const useStocksStore = defineStore('stocks', () => {
             pageStocks[i].mMin = toNumber(minRateMaxResponse[i].min);
             pageStocks[i].mValue = toNumber(minRateMaxResponse[i].rate);
             pageStocks[i].mMax = toNumber(minRateMaxResponse[i].max);
+            pageStocks[i].mEuroChange = pageStocks[i].mValue * pageStocks[i].mPortfolio - pageStocks[i].mInvest;
         }
         loadedStocksPages.add(page);
-        items.value.sort((a, b) => {
-            return a.cFirstPage - b.cFirstPage;
-        });
     }
     return {
         items,

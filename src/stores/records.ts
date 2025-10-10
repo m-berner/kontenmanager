@@ -84,6 +84,7 @@ export const useRecordsStore = defineStore('records', () => {
         //
         const stocksOnlyMemory: IStockOnlyMemory = {
             mPortfolio: 0,
+            mInvest: 0,
             mChange: 0,
             mBuyValue: 0,
             mEuroChange: 0,
@@ -99,7 +100,6 @@ export const useRecordsStore = defineStore('records', () => {
             mDeleteable: false,
             mAskDates: false
         }
-
         const stores: IStores = {
             accounts: storesDB.accountsDB,
             bookings: storesDB.bookingsDB,
@@ -108,6 +108,7 @@ export const useRecordsStore = defineStore('records', () => {
                 return {...stock, ...stocksOnlyMemory}
             })
         }
+
         clean()
         load(stores)
     }

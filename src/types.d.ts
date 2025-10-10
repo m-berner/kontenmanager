@@ -115,6 +115,7 @@ export interface IStockDB {
 
 export interface IStockOnlyMemory {
     mPortfolio: number
+    mInvest: number
     mChange: number
     mBuyValue: number
     mEuroChange: number
@@ -133,6 +134,7 @@ export interface IStockOnlyMemory {
 
 export interface IStock extends IStockDB {
     mPortfolio: number
+    mInvest: number
     mChange: number
     mBuyValue: number
     mEuroChange: number

@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IMenuItem} from '@/types.d'
+import type {IMenuItem, IStock} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
 import {computed, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -19,7 +19,7 @@ import {useRuntime} from '@/composables/useRuntime'
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const records = useRecordsStore()
-const settings = useSettings()
+const {stocksPerPage} = useSettings()
 const {loadedStocksPages, stocksPage} = useRuntime()
 
 const loading = ref(false)
@@ -121,7 +121,7 @@ const winLossClass = computed(() => {
 })
 
 const onUpdateItemsPerPage = (count: number): void => {
-  settings.stocksPerPage.value = (count)
+  stocksPerPage.value = (count)
 }
 const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
@@ -135,14 +135,32 @@ const onUpdatePage = async (page: number): Promise<void> => {
 
 onMounted(async () => {
   log('COMPANY_CONTENT: onMounted')
-  if (!loadedStocksPages.has(stocksPage.value)) {
-    loading.value = true
-    await records.stocks.loadOnlineData(stocksPage.value)
-    loading.value = false
+  const requiredOnlineData = async (page: number = 1) => {
+    if (records.stocks.active[stocksPerPage.value * page].mPortfolio >= 1) {
+      await records.stocks.loadOnlineData(Math.ceil(stocksPerPage.value * page / stocksPerPage.value) + 1)
+      await requiredOnlineData(page + 1)
+    }
   }
   for (let i = 1; i < records.stocks.active.length; i++) {
     records.stocks.active[i].mPortfolio = records.bookings.portfolioByStockId(records.stocks.active[i].cID)
+    records.stocks.active[i].mInvest = records.bookings.investByStockId(records.stocks.active[i].cID)
   }
+  records.stocks.active.sort((a: IStock, b: IStock) => {
+    return b.cFirstPage - a.cFirstPage
+  }).sort((a: IStock, b: IStock) => {
+    return b.mPortfolio - a.mPortfolio
+  })
+  if (!loadedStocksPages.has(stocksPage.value)) {
+    loading.value = true
+    await records.stocks.loadOnlineData(stocksPage.value)
+    await requiredOnlineData()
+    loading.value = false
+  }
+  //TODO calculate win loss
+  // per stock portfolio * mValue - sum of verkaufbookings
+  //for (let i = 1; i < records.stocks.active.length; i++) {
+  //  records.stocks.active[i].mPortfolio = records.bookings.investByStockId(records.stocks.active[i].cID)
+  //}
 })
 
 log('--- StocksTable.vue setup ---')
@@ -154,7 +172,7 @@ log('--- StocksTable.vue setup ---')
       :hide-no-data="false"
       :hover="true"
       :items="records.stocks.active"
-      :items-per-page="settings.stocksPerPage.value"
+      :items-per-page="stocksPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('stocksTable.itemsPerPageText')"
       :no-data-text="t('stocksTable.noDataText')"

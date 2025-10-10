@@ -66,6 +66,7 @@ export const useRecordsStore = defineStore('records', () => {
         }
         const stocksOnlyMemory = {
             mPortfolio: 0,
+            mInvest: 0,
             mChange: 0,
             mBuyValue: 0,
             mEuroChange: 0,

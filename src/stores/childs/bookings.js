@@ -65,6 +65,19 @@ export const useBookingsStore = defineStore('bookings', () => {
         }).reduce((acc, cur) => acc + cur, 0);
         return bought - sold;
     });
+    const investByStockId = computed(() => (ident) => {
+        const bought = items.value.filter((entry) => {
+            return entry.cStockID === ident && entry.cBookingTypeID === 1;
+        }).map((entry) => {
+            return entry.cCount * entry.cDebit;
+        }).reduce((acc, cur) => acc + cur, 0);
+        const sold = items.value.filter((entry) => {
+            return entry.cStockID === ident && entry.cBookingTypeID === 2;
+        }).map((entry) => {
+            return entry.cCount * entry.cCredit;
+        }).reduce((acc, cur) => acc + cur, 0);
+        return bought - sold;
+    });
     function add(booking, prepend = false) {
         log('BOOKINGS_STORE: add');
         if (prepend) {
@@ -101,6 +114,7 @@ export const useBookingsStore = defineStore('bookings', () => {
         sumTaxes,
         hasBookingType,
         portfolioByStockId,
+        investByStockId,
         add,
         update,
         remove,
