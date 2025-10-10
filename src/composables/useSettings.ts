@@ -32,8 +32,9 @@ export const useSettings = () => {
         skin.value = value
     }
 
-    function init(storage: { [p: string]: string | number | boolean | string[] }): void {
-        //setSkin(theme, storage.sSkin as string)
+    function init(theme: ThemeInstance, storage: { [p: string]: string | number | boolean | string[] }): void {
+        theme.global.name.value = storage.sSkin as string
+        skin.value = storage.sSkin as string
         bookingsPerPage.value = storage.sBookingsPerPage as number
         stocksPerPage.value = storage.sStocksPerPage as number
         dividendsPerPage.value = storage.sDividendsPerPage as number

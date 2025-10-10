@@ -36,7 +36,7 @@ onBeforeMount(async () => {
     const curUsd = `${cur}${CONS.CURRENCIES.USD}`
 
     if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
-      settings.init(storage)
+      settings.init(theme, storage)
     } else {
       await notice(['Your local storage is corrupt.', 'Reset to default by STRG+ALT+r'])
     }
@@ -87,6 +87,7 @@ onBeforeMount(async () => {
       keyStrokeController.length = 0
     }
     const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }): void => {
+      log('APP_INDEX: changeHandler')
       const changesKey = Object.keys(changes)
       switch (changesKey[0]) {
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN:

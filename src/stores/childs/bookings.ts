@@ -93,18 +93,12 @@ export const useBookingsStore = defineStore('bookings', () => {
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
 
-    const dividendByStockId = computed(() => (ident: number) => {
-        let portfolio = 0
+    const dividendsByStockId = computed(() => (ident: number) => {
         return items.value.filter((entry: IBooking) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 3
         }).map((entry: IBooking) => {
-            portfolio += entry.cCount
-            if (portfolio <= portfolioByStockId.value(ident)) {
-                return entry.cDebit
-            } else {
-                return 0
-            }
-        }).reduce((acc: number, cur: number) => acc + cur, 0)
+            return { id: ident, year: entry.cExDate, sum: entry.cCredit }
+        })
     })
 
     function add(booking: IBooking, prepend: boolean = false): void {
@@ -147,7 +141,7 @@ export const useBookingsStore = defineStore('bookings', () => {
         hasBookingType,
         portfolioByStockId,
         investByStockId,
-        dividendByStockId,
+        dividendsByStockId,
         add,
         update,
         remove,

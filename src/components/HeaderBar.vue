@@ -6,7 +6,7 @@
   - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onMounted, onUpdated} from 'vue'
+import {onUpdated} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
@@ -18,7 +18,7 @@ import {useRouter} from 'vue-router'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {openOptionsPage} = useBrowser()
-const runtime = useRuntime()
+const {isCompanyPage, setTeleport} = useRuntime()
 const records = useRecordsStore()
 const router = useRouter()
 
@@ -28,98 +28,98 @@ const onIconClick = async (ev: Event): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.ADD_STOCK:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_STOCK,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.DELETE_STOCK,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING:
-        runtime.setTeleport({
+        setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING,
           dialogOk: false,
           dialogVisibility: true
@@ -139,12 +139,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
 }
 
 onUpdated(() => {
-  runtime.isCompanyPage.value = router.currentRoute.value.path.includes('company')
-})
-
-onMounted(() => {
-  //isVisible.value = !window.location.href.includes('company')
-  //console.error(router.currentRoute.value.path, 'lplplp', isVisible.value, !window.location.href.includes('company'))
+  isCompanyPage.value = router.currentRoute.value.path.includes('company')
 })
 
 log('--- HeaderBar.vue setup ---')
@@ -182,7 +177,7 @@ log('--- HeaderBar.vue setup ---')
     </router-link>
     <v-spacer/>
     <v-tooltip
-        v-if="runtime.isCompanyPage"
+        v-if="isCompanyPage"
         :text="t('headerBar.addStock')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -196,7 +191,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-tooltip
-        v-if="runtime.isCompanyPage"
+        v-if="isCompanyPage"
         :text="t('headerBar.fadeInStock')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -211,7 +206,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.addAccount')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -225,7 +220,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.updateAccount')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -239,7 +234,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.deleteAccount')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -254,7 +249,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.addBooking')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -269,7 +264,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.addBookingType')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -283,7 +278,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.addBookingType')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -297,7 +292,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.deleteBookingType')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -312,7 +307,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.exportToFile')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -326,7 +321,7 @@ log('--- HeaderBar.vue setup ---')
       </template>
     </v-tooltip>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.importDatabase')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -341,7 +336,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.showAccounting')"
         location="top">
       <template v-slot:activator="{ props }">
@@ -356,7 +351,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        v-if="!runtime.isCompanyPage"
+        v-if="!isCompanyPage"
         :text="t('headerBar.settings')"
         location="top">
       <template v-slot:activator="{ props }">

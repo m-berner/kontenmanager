@@ -19,7 +19,9 @@ export const useSettings = () => {
         }
         skin.value = value;
     }
-    function init(storage) {
+    function init(theme, storage) {
+        theme.global.name.value = storage.sSkin;
+        skin.value = storage.sSkin;
         bookingsPerPage.value = storage.sBookingsPerPage;
         stocksPerPage.value = storage.sStocksPerPage;
         dividendsPerPage.value = storage.sDividendsPerPage;

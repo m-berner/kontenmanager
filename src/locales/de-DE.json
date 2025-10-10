@@ -209,7 +209,7 @@
     },
     "showDividend": {
       "title": "Dividenden Übersicht",
-      "yearLabel": "Jahr",
+      "yearLabel": "Ex-Tag",
       "sumLabel": "Dividendenauszahlung",
       "itemsPerPageText": "Einträge pro Seite",
       "noDataText": "Bisher keine Dividende erhalten"

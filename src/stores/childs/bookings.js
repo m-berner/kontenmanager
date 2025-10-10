@@ -79,19 +79,12 @@ export const useBookingsStore = defineStore('bookings', () => {
             }
         }).reduce((acc, cur) => acc + cur, 0);
     });
-    const dividendByStockId = computed(() => (ident) => {
-        let portfolio = 0;
+    const dividendsByStockId = computed(() => (ident) => {
         return items.value.filter((entry) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 3;
         }).map((entry) => {
-            portfolio += entry.cCount;
-            if (portfolio <= portfolioByStockId.value(ident)) {
-                return entry.cDebit;
-            }
-            else {
-                return 0;
-            }
-        }).reduce((acc, cur) => acc + cur, 0);
+            return { id: ident, year: entry.cExDate, sum: entry.cCredit };
+        });
     });
     function add(booking, prepend = false) {
         log('BOOKINGS_STORE: add');
@@ -130,7 +123,7 @@ export const useBookingsStore = defineStore('bookings', () => {
         hasBookingType,
         portfolioByStockId,
         investByStockId,
-        dividendByStockId,
+        dividendsByStockId,
         add,
         update,
         remove,
