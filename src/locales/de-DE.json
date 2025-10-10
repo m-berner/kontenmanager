@@ -207,6 +207,13 @@
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?"
     },
+    "showDividend": {
+      "title": "Dividenden Übersicht",
+      "yearLabel": "Jahr",
+      "sumLabel": "Dividendenauszahlung",
+      "itemsPerPageText": "Einträge pro Seite",
+      "noDataText": "Bisher keine Dividende erhalten"
+    },
     "exportToFile": {
       "title": "Datenbank exportieren",
       "filename": "Dateiname"

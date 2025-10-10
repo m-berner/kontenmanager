@@ -111,6 +111,7 @@ const CONS = Object.freeze({
             EXPORT_DATABASE: 'ExportDatabase',
             IMPORT_DATABASE: 'ImportDatabase',
             SHOW_ACCOUNTING: 'ShowAccounting',
+            SHOW_STOCK_DIVIDEND: 'ShowDividend',
             DELETE_ACCOUNT_CONFIRMATION: 'DeleteAccountConfirmation',
             SETTING: 'setting',
             PLACEHOLDER: {
@@ -136,6 +137,7 @@ const CONS = Object.freeze({
             ACTIVE_ACCOUNT_ID: -1,
             BOOKINGS_PER_PAGE: 9,
             STOCKS_PER_PAGE: 9,
+            DIVIDENDS_PER_PAGE: 9,
             SKIN: 'ocean',
             MATERIALS: ['au', 'brent'],
             INDEXES: ['dax', 'dow'],
@@ -153,7 +155,8 @@ const CONS = Object.freeze({
                 PARTNER: 'sPartner',
                 ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
                 BOOKINGS_PER_PAGE: 'sBookingsPerPage',
-                STOCKS_PER_PAGE: 'sStocksPerPage'
+                STOCKS_PER_PAGE: 'sStocksPerPage',
+                DIVIDENDS_PER_PAGE: 'sDividendsPerPage'
             }
         },
         LOCAL_STORAGE: {

@@ -14,6 +14,7 @@ const {CONS} = useApp()
 const skin: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 const bookingsPerPage: Ref<number> = ref(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
 const stocksPerPage: Ref<number> = ref(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
+const dividendsPerPage: Ref<number> = ref(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
 const activeAccountId: Ref<number> = ref(0)
 const partner: Ref<boolean> = ref(false)
 const service: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
@@ -35,6 +36,7 @@ export const useSettings = () => {
         //setSkin(theme, storage.sSkin as string)
         bookingsPerPage.value = storage.sBookingsPerPage as number
         stocksPerPage.value = storage.sStocksPerPage as number
+        dividendsPerPage.value = storage.sDividendsPerPage as number
         activeAccountId.value = storage.sActiveAccountId as number
         partner.value = storage.sPartner as boolean
         service.value = storage.sService as string
@@ -48,6 +50,7 @@ export const useSettings = () => {
         skin,
         bookingsPerPage,
         stocksPerPage,
+        dividendsPerPage,
         activeAccountId,
         partner,
         service,

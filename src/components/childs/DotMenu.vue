@@ -79,6 +79,13 @@ const onIconClick = async (ev: Event): Promise<void> => {
           runtime.optionMenuColors.value.set(m, '')
         }
         break
+      case CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND:
+        runtime.setTeleport({
+          dialogName: CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND,
+          dialogOk: false,
+          dialogVisibility: true
+        })
+        break
       default:
         loop += 1
         await parse(elem!.parentElement, loop)

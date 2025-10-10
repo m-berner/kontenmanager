@@ -80,17 +80,31 @@ export const useBookingsStore = defineStore('bookings', () => {
     })
 
     const investByStockId = computed(() => (ident: number) => {
-        const bought = items.value.filter((entry: IBooking) => {
+        let portfolio = 0
+        return items.value.filter((entry: IBooking) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 1
         }).map((entry: IBooking) => {
-            return entry.cCount * entry.cDebit
+            portfolio += entry.cCount
+            if (portfolio <= portfolioByStockId.value(ident)) {
+                return entry.cDebit
+            } else {
+                return 0
+            }
         }).reduce((acc: number, cur: number) => acc + cur, 0)
-        const sold = items.value.filter((entry: IBooking) => {
-            return entry.cStockID === ident && entry.cBookingTypeID === 2
+    })
+
+    const dividendByStockId = computed(() => (ident: number) => {
+        let portfolio = 0
+        return items.value.filter((entry: IBooking) => {
+            return entry.cStockID === ident && entry.cBookingTypeID === 3
         }).map((entry: IBooking) => {
-            return entry.cCount * entry.cCredit
+            portfolio += entry.cCount
+            if (portfolio <= portfolioByStockId.value(ident)) {
+                return entry.cDebit
+            } else {
+                return 0
+            }
         }).reduce((acc: number, cur: number) => acc + cur, 0)
-        return bought - sold
     })
 
     function add(booking: IBooking, prepend: boolean = false): void {
@@ -133,6 +147,7 @@ export const useBookingsStore = defineStore('bookings', () => {
         hasBookingType,
         portfolioByStockId,
         investByStockId,
+        dividendByStockId,
         add,
         update,
         remove,

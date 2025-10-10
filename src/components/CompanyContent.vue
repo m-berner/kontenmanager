@@ -61,12 +61,6 @@ const stocksHeaders = computed<DataTableHeader[]>(() => [
     key: 'mPortfolio'
   },
   {
-    title: t('stocksTable.headers.buy'),
-    align: 'start',
-    sortable: false,
-    key: 'mBuyValue'
-  },
-  {
     title: t('stocksTable.headers.winLoss'),
     align: 'start',
     sortable: false,
@@ -156,11 +150,6 @@ onMounted(async () => {
     await requiredOnlineData()
     loading.value = false
   }
-  //TODO calculate win loss
-  // per stock portfolio * mValue - sum of verkaufbookings
-  //for (let i = 1; i < records.stocks.active.length; i++) {
-  //  records.stocks.active[i].mPortfolio = records.bookings.investByStockId(records.stocks.active[i].cID)
-  //}
 })
 
 log('--- StocksTable.vue setup ---')
@@ -196,13 +185,14 @@ log('--- StocksTable.vue setup ---')
         <td v-else/>
         <td v-if="new Date(item.cMeetingDay).getTime() > 0">{{ d(new Date(item.cMeetingDay), 'short') }}</td>
         <td v-else/>
-        <td>{{ item.mPortfolio }}</td>
-        <td>{{ n(item.mBuyValue ?? 0, 'currency3') }}</td>
-        <v-tooltip :text="n((item.mChange ?? 0) / 100, 'percent')" location="left">
+        <td v-if="item.mPortfolio >= 1">{{ item.mPortfolio }}</td>
+        <td v-else/>
+        <v-tooltip :text="n(item.mInvest !== 0 ? item.mEuroChange / item.mInvest : 1, 'percent')" location="left">
           <template v-slot:activator="{ props }">
-            <td :class="winLossClass(item.mEuroChange)" v-bind="props">
+            <td v-if="item.mPortfolio >= 1" :class="winLossClass(item.mEuroChange)" v-bind="props">
               {{ n(item.mEuroChange ?? 0, 'currency') }}
             </td>
+            <td v-else/>
           </template>
         </v-tooltip>
         <td>{{ n(item.mMin ?? 0, 'currency') }}</td>

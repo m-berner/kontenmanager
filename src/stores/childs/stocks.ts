@@ -18,7 +18,6 @@ const {log, toNumber} = useApp()
 
 export const useStocksStore = defineStore('stocks', () => {
     const items: Ref<IStock[]> = ref([])
-    // const itemsActive: Ref<IStock[]> = ref([])
 
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(stock => stock.cID === id)
@@ -71,11 +70,6 @@ export const useStocksStore = defineStore('stocks', () => {
             items.value.push(completeStock)
         }
     }
-
-    // function addActive(stock: IStock): void {
-    //     log('STOCKS_STORE: addActive')
-    //     itemsActive.value.push(stock)
-    // }
 
     function updateStock(stock: IStockDB): void {
         log('STOCKS_STORE: updateStock')
