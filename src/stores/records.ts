@@ -55,8 +55,8 @@ export const useRecordsStore = defineStore('records', () => {
         }
         stocksStore.add({
             cID: 0,
-            cISIN: 'XX0000000000000000',
-            cSymbol: 'XYZOO',
+            cISIN: 'XX0000000000',
+            cSymbol: 'XYZOO6',
             cFadeOut: 0,
             cFirstPage: 0,
             cURL: '',

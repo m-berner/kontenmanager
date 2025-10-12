@@ -136,25 +136,6 @@ export interface IStock extends IStockOnlyMemory, IStockDB {
     //
 }
 
-// {
-//     mPortfolio: number
-//     mInvest: number
-//     mChange: number
-//     mBuyValue: number
-//     mEuroChange: number
-//     mMin: number
-//     mValue: number
-//     mMax: number
-//     mDividendYielda?: number
-//     mDividendYeara?: number
-//     mDividendYieldb?: number
-//     mDividendYearb?: number
-//     mRealDividend?: number
-//     mRealBuyValue?: number
-//     mDeleteable?: boolean
-//     mAskDates?: boolean
-// }
-
 export interface IStores {
     accounts: IAccount[],
     bookings: IBooking[],
@@ -174,7 +155,7 @@ export interface ICompanyData {
 }
 
 export interface IContent {
-    readonly title: string
+    readonly subTitle: string
     readonly content: string
     readonly icon: string
 }

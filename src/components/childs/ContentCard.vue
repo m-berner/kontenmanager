@@ -23,10 +23,18 @@ const contentCardProps = defineProps<ContentCardProps>()
       {{ contentCardProps.title }}
     </v-card-title>
   </v-card>
-  <v-card v-for="item in contentCardProps.data" :key="item.title">
-    <v-card-title>
-      <v-icon v-if="item.icon" :icon="item.icon"/>
-      {{ item.title }}
+  <v-card v-for="item in contentCardProps.data" :key="item.subTitle">
+    <v-card-title class="d-flex">
+      <span v-if="item.icon !== ''">
+      <v-icon v-if="item.icon.substring(0,1) === '$'" :icon="item.icon"/>
+      <v-img
+          v-else
+          :src="item.icon"
+          :inline="true"
+          width="32"
+          height="32"/><span>&nbsp;</span>
+      </span>
+      {{ item.subTitle }}
     </v-card-title>
     <v-card-text>
       {{ item.content }}

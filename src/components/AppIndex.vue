@@ -64,7 +64,7 @@ onBeforeMount(async () => {
       runtime.infoMaterials.value.set(materialsInfoData[i].key, materialsInfoData[i].value)
     }
     // TODO fetchDateData, fetchMinRateMaxData
-
+    // TODO Hilfe, Datenschutz überarbeiten
     const keyStrokeController: string[] = []
     const handleSearch = async (query: string) => {
       keyStrokeController.push(query)

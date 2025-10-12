@@ -13,13 +13,13 @@ interface IRouter {
     router: Router
 }
 
-const {log} = useApp()
+const {CONS, log} = useApp()
 
 const routerInstance = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
-            path: '/',
+            path: CONS.ROUTES.HOME,
             name: 'home',
             components: {
                 default: () => import('@/components/HomeContent.vue'),
@@ -29,7 +29,7 @@ const routerInstance = createRouter({
             }
         },
         {
-            path: '/company',
+            path: CONS.ROUTES.COMPANY,
             name: 'company',
             components: {
                 default: () => import('@/components/CompanyContent.vue'),
@@ -40,20 +40,20 @@ const routerInstance = createRouter({
             }
         },
         {
-            path: '/help',
+            path: CONS.ROUTES.HELP,
             name: 'help',
             components: {
-                default: () => import('@/components/HelpContent.vue'),
+                default: () => import('@/components/SheetContent.vue'),
                 title: () => import('@/components/TitleBar.vue'),
                 header: () => import ('@/components/HeaderBar.vue'),
                 footer: () => import('@/components/FooterBar.vue')
             }
         },
         {
-            path: '/privacy',
+            path: CONS.ROUTES.PRIVACY,
             name: 'privacy',
             components: {
-                default: () => import('@/components/PrivacyContent.vue'),
+                default: () => import('@/components/SheetContent.vue'),
                 title: () => import('@/components/TitleBar.vue'),
                 header: () => import ('@/components/HeaderBar.vue'),
                 footer: () => import('@/components/FooterBar.vue')

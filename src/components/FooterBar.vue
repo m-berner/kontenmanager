@@ -18,13 +18,13 @@ log('--- FooterBar.vue setup ---')
 <template>
   <v-bottom-navigation color="primary">
     <v-btn color="white">
-      <router-link class="router-link-active" to="/help">
+      <router-link class="router-link-active" :to="CONS.ROUTES.HELP">
         <v-icon icon="$help"/>
         <div>{{ t('footer.help') }}</div>
       </router-link>
     </v-btn>
     <v-btn color="white">
-      <router-link class="router-link-active" to="/privacy">
+      <router-link class="router-link-active" :to="CONS.ROUTES.PRIVACY">
         <v-icon icon="
         $privacy"/>
         <div>{{ t('footer.privacy') }}</div>

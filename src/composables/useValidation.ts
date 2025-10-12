@@ -77,8 +77,8 @@ export const useValidation = () => {
                 const branchCode = v.replace(/\s/g, '').length === 11 ? v.replace(/\s/g, '').substring(8, 11) : null
                 return branchCode?.match(/^[A-Z0-9]{3}$/) !== null || msgArray[6]
             },
-            (v: string) => !v.replace(/\s/g, '').substring(6, 8).startsWith('0') || msgArray[7],
-            (v: string) => !v.replace(/\s/g, '').substring(6, 8).endsWith('1') || msgArray[8]
+            (v: string) => !v.replace(/\s/g, '').substring(6, 8).startsWith('0') || msgArray[7]
+            //(v: string) => !v.replace(/\s/g, '').substring(6, 8).endsWith('1') || msgArray[8]
         ]
     }
 

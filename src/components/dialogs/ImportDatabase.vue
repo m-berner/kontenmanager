@@ -154,7 +154,7 @@ const onClickOk = async (): Promise<void> => {
       } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
         const accountRecords = [{
           cID: activeId,
-          cSwift: 'KMKLPJJ9099',
+          cSwift: 'KMKLPJJ9',
           cIban: 'XX13120300001064506999',
           cLogoUrl: '',
           cWithDepot: true

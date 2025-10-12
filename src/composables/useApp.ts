@@ -325,6 +325,12 @@ const CONS = Object.freeze({
         OPTIONS: 'options.html',
         INDEX: 'pages/app.html'
     },
+    ROUTES: {
+        HOME: '/',
+        HELP: '/help',
+        PRIVACY: '/privacy',
+        COMPANY: '/company'
+    },
     RECORDS: {
         CONTROLLER: {
             TOTAL: {

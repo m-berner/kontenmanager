@@ -48,12 +48,12 @@ const formSearch: Ref<string> = ref('')
 const onUpdateSwift = (swift: string): void => {
   if (!swift) return
   const clean = swift.replace(/\s/g, '').toUpperCase()
-  let result: string
-  if (clean.length <= 4) result = clean
-  if (clean.length <= 6) result = `${clean.substring(0, 4)} ${clean.substring(4)}`
-  if (clean.length <= 8) result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6)}`
-  result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6, 8)} ${clean.substring(8)}`
-  formData.swift = result
+  // let result: string
+  // if (clean.length <= 4) result = clean
+  // if (clean.length <= 6) result = `${clean.substring(0, 4)} ${clean.substring(4)}`
+  // if (clean.length <= 8) result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6)}`
+  // result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6, 8)} ${clean.substring(8)}`
+  formData.swift = clean
 }
 
 const onUpdateIban = (iban: string): void => {
