@@ -93,14 +93,14 @@ const stocksMenuItems = computed<IMenuItem[]>(() => [
     icon: '$deleteCompany'
   },
   {
-    id: 'ShowDividend',
-    title: t('stocksTable.menuItems.dividend'),
-    icon: '$showDividend'
-  },
-  {
     id: 'UpdateStock',
     title: t('stocksTable.menuItems.update'),
     icon: '$showCompany'
+  },
+  {
+    id: 'ShowDividend',
+    title: t('stocksTable.menuItems.dividend'),
+    icon: '$showDividend'
   },
   {
     id: 'ExternalLink',

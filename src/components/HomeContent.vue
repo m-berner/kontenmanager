@@ -15,7 +15,7 @@ import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useRecordsStore} from '@/stores/records'
 import DotMenu from '@/components/childs/DotMenu.vue'
-
+// TODO show daily changes
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()

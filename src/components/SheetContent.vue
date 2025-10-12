@@ -23,7 +23,9 @@ const HELP = [
   {title: 'helpContent.requirements.title', data: 'helpContent.requirements.data'},
   {title: 'helpContent.browserBar.title', data: 'helpContent.browserBar.data'},
   {title: 'helpContent.toolBar.title', data: 'helpContent.toolBar.data'},
-  {title: 'helpContent.dotMenu.title', data: 'helpContent.dotMenu.data'}
+  {title: 'helpContent.dotMenu.title', data: 'helpContent.dotMenu.data'},
+  {title: 'helpContent.stocksToolBar.title', data: 'helpContent.stocksToolBar.data'},
+  {title: 'helpContent.stocksDotMenu.title', data: 'helpContent.stocksDotMenu.data'}
 ]
 const PRIVACY = [
   {title: 'privacyContent.general.title', data: 'privacyContent.general.data'}

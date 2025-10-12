@@ -327,7 +327,7 @@
         },
         "content": {
           "0": "Zur Startseite zurückkehren.",
-          "1": "Zur Unternehmen Ansicht zu wechseln.",
+          "1": "Zu Unternehmen wechseln.",
           "2": "",
           "3": "",
           "4": "",
@@ -357,32 +357,26 @@
         }
       }
     },
-    "stockToolBar": {
-      "title": "Unternehmen Werkzeuge",
+    "stocksDotMenu": {
+      "title": "Unternehmen Aktionen",
       "data": {
         "subTitle": {
-          "0": "Aktien kaufen",
-          "1": "Aktien verkaufen",
-          "2": "Dividenden Einnahmen",
-          "3": "Dividenden-Übersicht",
-          "4": "Unternehmen konfigurieren",
-          "5": "Unternehmen-Brokerseite"
+          "0": "Unternehmen löschen",
+          "1": "Unternehmen aktualisieren",
+          "2": "Dividenden Übersicht",
+          "3": "Unternehmen-Brokerseite"
         },
         "content": {
           "0": "",
           "1": "",
           "2": "",
-          "3": "",
-          "4": "",
-          "5": ""
+          "3": ""
         },
         "icon": {
-          "0": "$addAccount",
-          "1": "$sellStock",
-          "2": "$addDividend",
-          "3": "$addDividend",
-          "4": "$addDividend",
-          "5": "$link"
+          "0": "$deleteCompany",
+          "1": "$showCompany",
+          "2": "$showDividend",
+          "3": "$link"
         }
       }
     },
@@ -403,17 +397,26 @@
         }
       }
     },
-    "stocksDotMenu": {
-      "title": "",
+    "stocksToolBar": {
+      "title": "Werkzeugleiste Unternehmen",
       "data": {
         "subTitle": {
-          "0": ""
+          "0": "Startseite",
+          "1": "Unternehmen",
+          "2": "Unternhemen hinzufügen",
+          "3": "Unternehmen einblenden"
         },
         "content": {
-          "0": ""
+          "0": "Zur Startseite zurückkehren.",
+          "1": "Zu Unternehmen wechseln.",
+          "2": "",
+          "3": ""
         },
         "icon": {
-          "0": ""
+          "0": "$home",
+          "1": "$showCompany",
+          "2": "$addCompany",
+          "3": "$fadeInCompany"
         }
       }
     }
