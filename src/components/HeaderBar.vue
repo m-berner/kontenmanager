@@ -279,7 +279,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.addBookingType')"
+        :text="t('headerBar.updateBookingType')"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon

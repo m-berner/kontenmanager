@@ -283,16 +283,27 @@
       "title": "Anforderungen",
       "data": {
         "subTitle": {
-          "0": "Einstellungen - Datenschutz - Chronik",
-          "1": "KontenManager starten"
+          "0": "Einstellungen - Datenschutz - Chronik"
         },
         "content": {
-          "0": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
-          "1": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden."
+          "0": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt."
         },
         "icon": {
-          "0": "",
-          "1": "../assets/icon64.png"
+          "0": ""
+        }
+      }
+    },
+    "browserBar": {
+      "title": "Browserleiste",
+      "data": {
+        "subTitle": {
+          "0": "KontenManager starten"
+        },
+        "content": {
+          "0": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden."
+        },
+        "icon": {
+          "0": "../assets/icon64.png"
         }
       }
     },
@@ -425,8 +436,8 @@
         },
         "content": {
           "0": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
-          "1": "Nur Bank-Logos von brandfetch.com werden verwendet und über das Internet abgerufen. KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
-          "2": "Verbindungen werden nur hergestellt, um Bank-Logos von brandfetch.com herunterzuladen."
+          "1": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
+          "2": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen."
         },
         "icon": {
           "0": "",

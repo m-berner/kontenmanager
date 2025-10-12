@@ -85,6 +85,7 @@ const stocksHeaders = computed<DataTableHeader[]>(() => [
     key: 'mMax'
   }
 ])
+
 const stocksMenuItems = computed<IMenuItem[]>(() => [
   {
     id: 'DeleteStock',

@@ -102,7 +102,6 @@ onMounted(() => {
   formData.firstPage = currentStock.cFirstPage === 1
   formData.url = currentStock.cURL
 })
-// TODO remove WKN everywhere!
 // TODO Buchungstyp Übertrag?
 log('--- UpdateStock.vue setup ---')
 </script>

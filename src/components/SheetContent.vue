@@ -21,6 +21,7 @@ const router = useRouter()
 const HELP = [
   {title: 'helpContent.successor.title', data: 'helpContent.successor.data'},
   {title: 'helpContent.requirements.title', data: 'helpContent.requirements.data'},
+  {title: 'helpContent.browserBar.title', data: 'helpContent.browserBar.data'},
   {title: 'helpContent.toolBar.title', data: 'helpContent.toolBar.data'},
   {title: 'helpContent.dotMenu.title', data: 'helpContent.dotMenu.data'}
 ]

@@ -283,16 +283,27 @@
       "title": "Anforderungen",
       "data": {
         "subTitle": {
-          "0": "Einstellungen - Datenschutz - Chronik",
-          "1": "KontenManager starten"
+          "0": "Einstellungen - Datenschutz - Chronik"
         },
         "content": {
-          "0": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt.",
-          "1": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden."
+          "0": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt."
         },
         "icon": {
-          "0": "",
-          "1": "../assets/icon64.png"
+          "0": ""
+        }
+      }
+    },
+    "browserBar": {
+      "title": "Browserleiste/Symbolleiste",
+      "data": {
+        "subTitle": {
+          "0": "KontenManager starten"
+        },
+        "content": {
+          "0": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden."
+        },
+        "icon": {
+          "0": "../assets/icon64.png"
         }
       }
     },
@@ -301,54 +312,48 @@
       "data": {
         "subTitle": {
           "0": "Startseite",
-          "1": "Buchungen",
-          "2": "Kurse aktualisieren",
-          "3": "Unternehmen hinzufügen",
-          "4": "Unternehmen entfernen",
-          "5": "Unternehmen einblenden",
-          "6": "Einzahlung",
-          "7": "Auszahlung",
-          "8": "Tagesveränderungen",
-          "9": "Tagesveränderungen (alle)",
-          "10": "Datenbank exportieren",
-          "11": "Datenbank importieren",
-          "12": "Buchungen",
-          "13": "Jahres-Berechnungen",
-          "14": "Einstellungen"
+          "1": "Unternehmen",
+          "2": "Konto hinzufügen",
+          "3": "Konto aktualisieren",
+          "4": "Konto löschen",
+          "5": "Buchung hinzufügen",
+          "6": "Buchungstyp hinzufügen",
+          "7": "Buchungstyp aktualisieren",
+          "8": "Buchungstyp löschen",
+          "9": "Datenbank exportieren",
+          "10": "Datenbank importieren",
+          "11": "Jahres-Berechnungen",
+          "12": "Einstellungen"
         },
         "content": {
-          "0": "Klicken, um zur Startseite zurückzukehren.",
-          "1": "Klicken, um auf die Buchungsseite zu gelangen.",
-          "2": "Klicken, um die Kurse zu aktualisieren.",
-          "3": "Klicken, um den erforderlichen Dialog zu öffnen.",
-          "4": "Klicken, um den erforderlichen Dialog zu öffnen.",
-          "5": "Klicken, um den erforderlichen Dialog zu öffnen.",
-          "6": "Klicken um den erforderlichen Dialog zu öffner.",
-          "7": "Klicken, um den erforderlichen Dialog zu öffnen.",
-          "8": "Klicken, um die Tagesveränderungen anzuzeigen.",
-          "9": "Klicken, um alle Tagesveränderungen anzuzeigen.",
-          "10": "Klicken, um den erforderlichen Dialog zu exportieren.",
-          "11": "Klicken, um den erforderlichen Dialog zu importieren.",
-          "12": "Klicken, um die Buchungen anzuzeigen.",
-          "13": "Klicken, um die Jahres-Berechnungen anzuzeigen.",
-          "14": "Klicken, um das KontenManager-Einstellungen-Tab anzuzeigen."
+          "0": "Zur Startseite zurückkehren.",
+          "1": "Zur Unternehmen Ansicht zu wechseln.",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
+          "6": "",
+          "7": "",
+          "8": "",
+          "9": "Die aktuellen Daten exportieren.",
+          "10": "Klicken, um Daten aus einer Sicherungsdatei zu importieren.",
+          "11": "Summierte Buchungstypen, Kalkulationen",
+          "12": "Einstellungen Ansicht wird geöffnet."
         },
         "icon": {
           "0": "$home",
-          "1": "$transfersTable",
-          "2": "$reload",
-          "3": "$addAccount",
-          "4": "$deleteCompany",
-          "5": "$fadeInStock",
-          "6": "$cashPlus",
-          "7": "$cashMinus",
-          "8": "$dailyChanges",
-          "9": "$dailyChangesAll",
-          "10": "$exportToFile",
-          "11": "$importDatabase",
-          "12": "$transfersTable",
-          "13": "$showAccounting",
-          "14": "$settings"
+          "1": "$showCompany",
+          "2": "$addAccount",
+          "3": "$updateAccount",
+          "4": "$deleteAccount",
+          "5": "$addBooking",
+          "6": "$addBookingType",
+          "7": "$updateBookingType",
+          "8": "$deleteBookingType",
+          "9": "$exportToFile",
+          "10": "$importDatabase",
+          "11": "$showAccounting",
+          "12": "$settings"
         }
       }
     },
@@ -386,15 +391,15 @@
       "data": {
         "subTitle": {
           "0": "Buchung löschen",
-          "1": "Buchung korrigieren"
+          "1": "Buchung aktualisieren"
         },
         "content": {
-          "0": "",
-          "1": ""
+          "0": "Ausgewählte Buchung wird gelöscht.",
+          "1": "Gewählte Buchung aktualisieren."
         },
         "icon": {
-          "0": "$removeDocument",
-          "1": "$editDocument"
+          "0": "$deleteBooking",
+          "1": "$updateBooking"
         }
       }
     },
@@ -425,8 +430,8 @@
         },
         "content": {
           "0": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
-          "1": "Nur Bank-Logos von brandfetch.com werden verwendet und über das Internet abgerufen. KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
-          "2": "Verbindungen werden nur hergestellt, um Bank-Logos von brandfetch.com herunterzuladen."
+          "1": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
+          "2": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen."
         },
         "icon": {
           "0": "",
