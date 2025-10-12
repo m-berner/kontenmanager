@@ -72,6 +72,8 @@
     "noFallthroughCasesInSwitch": true
   },
   "vueCompilerOption": {
-    "target": 3.5
+    "target": 3.5,
+    "experimentalRFC": false,
+    "experimentalDisableTemplateSupport": false
   }
 }
