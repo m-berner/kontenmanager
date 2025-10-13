@@ -500,7 +500,7 @@ const CONS = Object.freeze({
         NO_RENDER: 'no_render'
     },
     SYSTEM: {
-        COPYRIGHT: '2013-2025 Martin Berner',
+        COPYRIGHT: '2025-2026 Martin Berner',
         MAILTO: 'mailto:kontenmanager@gmx.de',
         HTML_ENTITY: '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
         KEYS: {

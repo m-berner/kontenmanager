@@ -20,7 +20,7 @@ import {useFavicon} from '@/composables/useFavicon'
 import {useDomain} from '@/composables/useDomain'
 import {useRecordsStore} from '@/stores/records'
 
-interface IFormData {
+interface INewAccount {
   swift: string
   iban: string
   logoUrl: string
@@ -32,11 +32,11 @@ const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {addAccount} = useAccountsDB()
 const {ibanRules, ibanDuplicateRules, swiftRules, validateForm} = useValidation()
-const runtime = useRuntime()
-const settings = useSettings()
+const {resetTeleport} = useRuntime()
+const {activeAccountId} = useSettings()
 const records = useRecordsStore()
 
-const formData: IFormData = reactive({
+const newAccount: INewAccount = reactive({
   swift: '',
   iban: '',
   logoUrl: '',
@@ -59,6 +59,18 @@ const joinedIbanRules = computed(() => [
   ])
 ])
 
+const reset = (): void => {
+  Object.assign(newAccount, {
+    swift: '',
+    iban: '',
+    logoUrl: '',
+    withDepot: false
+  })
+  formRef.value = null
+  formPreviewUrl.value = ''
+  formSearch.value = ''
+}
+
 const onUpdateSwift = (swift: string): void => {
   if (!swift) return
   const clean = swift.replace(/\s/g, '').toUpperCase()
@@ -67,13 +79,13 @@ const onUpdateSwift = (swift: string): void => {
   if (clean.length <= 6) result = `${clean.substring(0, 4)} ${clean.substring(4)}`
   if (clean.length <= 8) result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6)}`
   result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6, 8)} ${clean.substring(8)}`
-  formData.swift = result
+  newAccount.swift = result
 }
 
 const onUpdateIban = (iban: string): void => {
   if (!iban) return
   const clean = iban.replace(/\s/g, '').toUpperCase()
-  formData.iban = clean.replace(/(.{4})/g, '$1 ').trim()
+  newAccount.iban = clean.replace(/(.{4})/g, '$1 ').trim()
 }
 
 const onClickOk = async (): Promise<void> => {
@@ -82,19 +94,20 @@ const onClickOk = async (): Promise<void> => {
 
   try {
     const account = {
-      cSwift: formData.swift.trim().toUpperCase(),
-      cIban: formData.iban.replace(/\s/g, ''),
+      cSwift: newAccount.swift.trim().toUpperCase(),
+      cIban: newAccount.iban.replace(/\s/g, ''),
       cLogoUrl: formPreviewUrl.value,
-      cWithDepot: formData.withDepot
+      cWithDepot: newAccount.withDepot
     }
-    const addAccountID = await addAccount(account)
-    const completeAccount: IAccount = {cID: addAccountID, ...account}
-    // Update stores
-    records.accounts.add(completeAccount)
-    settings.activeAccountId.value = addAccountID
-    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
-    runtime.resetTeleport()
-    await notice([t('dialogs.addAccount.success')])
+    const addAccountID = await addAccount(account) //TODO could it be 0
+    if (addAccountID > 0) {
+      const completeAccount: IAccount = {cID: addAccountID, ...account}
+      records.accounts.add(completeAccount)
+      activeAccountId.value = addAccountID
+      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
+      resetTeleport()
+      await notice([t('dialogs.addAccount.success')])
+    }
   } catch (e) {
     log('ADD_ACCOUNT: onClickOk', {error: e})
     await notice([t('dialogs.addAccount.error')])
@@ -107,13 +120,7 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('ADD_ACCOUNT: onMounted')
-  Object.assign(formData, {
-    swift: '',
-    iban: '',
-    logoUrl: '',
-    withDepot: false
-  })
-  formPreviewUrl.value = ''
+  reset()
 })
 
 // Watch for logo search name changes with debouncing
@@ -138,13 +145,14 @@ log('--- AddAccount.vue setup ---')
       ref="formRef"
       validate-on="submit"
       @submit.prevent>
+    <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addAccount.message') }}</v-alert>
     <v-switch
-        v-model="formData.withDepot"
+        v-model="newAccount.withDepot"
         :label="t('dialogs.addAccount.withDepotLabel')"
         color="red"
         variant="outlined"/>
     <v-text-field
-        v-model="formData.swift"
+        v-model="newAccount.swift"
         :label="t('dialogs.addAccount.swiftLabel')"
         :rules="swiftRules([
             t('validators.swiftRules.required'),
@@ -162,7 +170,7 @@ log('--- AddAccount.vue setup ---')
         @focus="formRef?.resetValidation()"
         @update:modelValue="onUpdateSwift"/>
     <v-text-field
-        v-model="formData.iban"
+        v-model="newAccount.iban"
         :label="t('dialogs.addAccount.ibanLabel')"
         :placeholder="t('dialogs.addAccount.ibanPlaceholder')"
         :rules="joinedIbanRules"
@@ -186,22 +194,22 @@ log('--- AddAccount.vue setup ---')
   </div>
   <!-- Form Summary -->
   <v-card
-      v-if="formData.swift || formData.iban"
+      v-if="newAccount.swift || newAccount.iban"
       class="pa-3 mb-4"
       variant="outlined">
     <v-card-subtitle>{{ t('dialogs.addAccount.preview') }}</v-card-subtitle>
     <v-card-text>
       <div class="d-flex flex-column gap-2">
-        <div v-if="formData.swift">
-          <strong>{{ t('dialogs.addAccount.swiftLabel') }}:</strong> {{ formData.swift }}
+        <div v-if="newAccount.swift">
+          <strong>{{ t('dialogs.addAccount.swiftLabel') }}:</strong> {{ newAccount.swift }}
         </div>
-        <div v-if="formData.iban">
-          <strong>{{ t('dialogs.addAccount.ibanLabel') }}:</strong> {{ formData.iban }}
+        <div v-if="newAccount.iban">
+          <strong>{{ t('dialogs.addAccount.ibanLabel') }}:</strong> {{ newAccount.iban }}
         </div>
         <div>
           <strong>{{ t('dialogs.addAccount.typeLabel') }}:</strong>
           {{
-            formData.withDepot ? t('dialogs.addAccount.withDepotLabel') : t('dialogs.addAccount.withNoDepotLabel')
+            newAccount.withDepot ? t('dialogs.addAccount.withDepotLabel') : t('dialogs.addAccount.withNoDepotLabel')
           }}
         </div>
       </div>

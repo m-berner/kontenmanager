@@ -57,11 +57,11 @@ export const useValidation = () => {
         ]
     }
 
-    function valNameRules(msgArray: string[]): TStringValidator[] {
+    function nameRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => v !== null || msgArray[0],
-            (v: string) => (v !== null && v.length < 32) || msgArray[1],
-            (v: string) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
+            (v: string) => (v !== null && v.length < 24) || msgArray[1],
+            (v: string) => v.match(/^[a-zA-ZäöüÄÖÜ].*/g) === null || msgArray[2]
         ]
     }
 
@@ -206,7 +206,7 @@ export const useValidation = () => {
         ibanRules,
         ibanDuplicateRules,
         isinRules,
-        valNameRules,
+        nameRules,
         swiftRules,
         dateRules,
         valCurrencyCodeRules,

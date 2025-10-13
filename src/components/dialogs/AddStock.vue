@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import type {ICompanyData, IStockDB} from '@/types.d'
 import type {Ref} from 'vue'
-import {defineExpose, onMounted, ref} from 'vue'
+import {defineExpose, onMounted, reactive, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
@@ -19,38 +19,45 @@ import {useFetch} from '@/composables/useFetch'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 
+interface INewStock {
+  isin: string,
+  company: string,
+  symbol: string
+}
+
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {addStock} = useStocksDB()
 const {fetchCompanyData} = useFetch()
-const {ibanRules, validateForm} = useValidation()
-const records = useRecordsStore()
+const {isinRules, validateForm} = useValidation()
 const {activeAccountId} = useSettings()
-const runtime = useRuntime()
+const {resetTeleport} = useRuntime()
+const records = useRecordsStore()
 
-const isin = ref('')
-const company = ref('')
-const wkn = ref('')
-const symbol = ref('')
-const auto = ref(false)
+const newStock: INewStock = reactive({
+  isin: '',
+  company: '',
+  symbol: ''
+})
 const formRef: Ref<HTMLFormElement | null> = ref(null)
+const formDisabled = ref(false)
 
 const reset = (): void => {
-  isin.value = ''
-  company.value = ''
-  wkn.value = ''
-  symbol.value = ''
-  auto.value = false
+  Object.assign(newStock, {
+    isin: '',
+    company: '',
+    symbol: ''
+  })
   formRef.value = null
+  formDisabled.value = false
 }
 
 const onIsin = async (): Promise<void> => {
-  if (isin.value !== '' && isin.value?.length === 12) {
-    const fetchedCompanyData: ICompanyData = await fetchCompanyData(isin.value)
-    company.value = fetchedCompanyData.company
-    // wkn.value = fetchedCompanyData.wkn.toUpperCase()
-    symbol.value = fetchedCompanyData.symbol.toUpperCase()
+  if (newStock.isin !== '' && newStock.isin?.length === 12) {
+    const fetchedCompanyData: ICompanyData = await fetchCompanyData(newStock.isin)
+    newStock.company = fetchedCompanyData.company
+    newStock.symbol = fetchedCompanyData.symbol.toUpperCase()
   }
 }
 
@@ -60,9 +67,9 @@ const onClickOk = async (): Promise<void> => {
 
   try {
     const stock: Omit<IStockDB, 'cID'> = {
-      cCompany: company.value.trim(),
-      cISIN: isin.value,
-      cSymbol: symbol.value,
+      cCompany: newStock.company.trim(),
+      cISIN: newStock.isin,
+      cSymbol: newStock.symbol,
       cMeetingDay: '',
       cQuarterDay: '',
       cFadeOut: 0,
@@ -70,14 +77,12 @@ const onClickOk = async (): Promise<void> => {
       cURL: '',
       cAccountNumberID: activeAccountId.value
     }
-
     const addStockID = await addStock(stock)
     if (addStockID > 0) {
       const dbStock: IStockDB = {cID: addStockID, ...stock}
       records.stocks.add(dbStock)
+      resetTeleport()
       await notice([t('dialogs.addStock.success')])
-      reset()
-      runtime.resetTeleport()
     }
   } catch (e) {
     log('ADD_STOCK: onClickOk', {error: e})
@@ -102,31 +107,36 @@ log('--- AddStock.vue setup ---')
       ref="formRef"
       validate-on="submit"
       @submit.prevent>
-    <v-card-text class="pa-5">
-      <v-text-field
-          v-model="isin"
+    <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addStock.message') }}</v-alert>
+    <v-text-field
+          v-model="newStock.isin"
           :counter="12"
           :label="t('dialogs.addStock.isin')"
-          :rules="ibanRules([t('validators.ibanRules', 0), t('validators.ibanRules', 1), t('validators.ibanRules', 2)])"
+          :rules="isinRules([
+              t('validators.isinRules.required'),
+              t('validators.isinRules.length'),
+              t('validators.isinRules.format'),
+              t('validators.isinRules.country'),
+              t('validators.isinRules.luhn'),
+          ])"
           autofocus
-          required
           variant="outlined"
-          @update:modelValue="onIsin"
-      />
+          @focus="formRef?.resetValidation()"
+          @update:modelValue="onIsin"/>
+    <v-switch
+        v-model="formDisabled"
+        :label="t('dialogs.addStock.formDisabledLabel')"
+        color="red"
+        variant="outlined"/>
       <v-text-field
-          v-model="company"
-          :disabled="auto"
+          v-model="newStock.company"
+          :disabled="!formDisabled"
           :label="t('dialogs.addStock.company')"
-          required
-          variant="outlined"
-      />
+          variant="outlined"/>
       <v-text-field
-          v-model="symbol"
-          :disabled="auto"
+          v-model="newStock.symbol"
+          :disabled="!formDisabled"
           :label="t('dialogs.addStock.symbol')"
-          required
-          variant="outlined"
-      />
-    </v-card-text>
+          variant="outlined"/>
   </v-form>
 </template>

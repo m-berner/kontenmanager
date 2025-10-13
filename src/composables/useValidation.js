@@ -42,11 +42,11 @@ export const useValidation = () => {
             }
         ];
     }
-    function valNameRules(msgArray) {
+    function nameRules(msgArray) {
         return [
             (v) => v !== null || msgArray[0],
-            (v) => (v !== null && v.length < 32) || msgArray[1],
-            (v) => v.match(/[^a-zA-Z\-äöüÄÖÜ]/g) === null || msgArray[2]
+            (v) => (v !== null && v.length < 24) || msgArray[1],
+            (v) => v.match(/^[a-zA-ZäöüÄÖÜ].*/g) === null || msgArray[2]
         ];
     }
     function swiftRules(msgArray) {
@@ -177,7 +177,7 @@ export const useValidation = () => {
         ibanRules,
         ibanDuplicateRules,
         isinRules,
-        valNameRules,
+        nameRules,
         swiftRules,
         dateRules,
         valCurrencyCodeRules,

@@ -108,13 +108,14 @@
       "searchLabel": "Web-Adresse",
       "withDepotLabel": "Depot Verrechnungskonto",
       "withNoDepotLabel": "Konto",
-      "ibanLabel": "Kontonummer",
+      "ibanLabel": "IBAN/Kontonummer",
       "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
       "typeLabel": "Kontotyp",
       "preview": "Vorschau",
       "missingLogo": "Kein Logo gefunden",
       "success": "Konto wurde hinzugefügt",
-      "error": "Konto existiert bereits"
+      "error": "Konto existiert bereits",
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
     },
     "addStock": {
       "title": "Unternehmen hinzufügen",
@@ -122,8 +123,10 @@
       "isin": "ISIN",
       "wkn": "WKN",
       "symbol": "Kürzel",
+      "formDisabledLabel": "Manuell eintragen",
       "success": "Unternehmen wurde hinzugefügt",
-      "error": "Unternehmen existiert bereits"
+      "error": "Unternehmen existiert bereits",
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
     },
     "deleteStock": {
       "title": "Unternehmen entfernen",
@@ -171,12 +174,11 @@
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",
       "label": "Buchungstyp",
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
       "success": "Buchungstyp wurde hinzugefügt",
       "error1a": "Der Buchungstyp existiert bereits",
       "error1b": "(Eine Duplette wurde nicht hinzugefügt)",
       "catch": "Problem beim Hinzufügen!",
-      "rule1": "ewettert"
+      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
     },
     "updateBookingType": {
       "title": "Buchungstyp aktualisieren",
@@ -494,11 +496,15 @@
     "isinRules": {
       "required": "ISIN ist erforderlich",
       "length": "Ungültige ISIN Länge",
-      "format": "Ungültige IBAN",
+      "format": "Ungültige ISIN",
       "country": "Falscher Ländercode",
       "luhn": "Ungültige Prüfsumme (Luhn)"
     },
-    "nameRules": "Name ist erforderlich | Nur 15 Zeichen | Nur Buchstaben",
+    "nameRules": {
+      "required": "Name ist erforderlich",
+      "length": "Maximal 24 Zeichen",
+      "begin": "Erstes Zeichen muss ein Buchstabe sein"
+    },
     "swiftRules": {
       "required": "SWIFT ist erforderlich",
       "length": "Nur 8 bzw. 11 Zeichen",

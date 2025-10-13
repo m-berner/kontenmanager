@@ -139,11 +139,13 @@ const onClickOk = async (): Promise<void> => {
           cMarketPlace: ''
         }
     }
-    const addBookingID = await addBooking(booking)
-    const completeBooking: IBooking = {cID: addBookingID, ...booking}
-    records.bookings.add(completeBooking)
-    reset()
-    await notice([t('dialogs.addBooking.success')])
+    const addBookingID = await addBooking(booking) // TODO minimum limit?
+    if (addBookingID > 0) {
+      const completeBooking: IBooking = {cID: addBookingID, ...booking}
+      records.bookings.add(completeBooking)
+      reset()
+      await notice([t('dialogs.addBooking.success')])
+    } //TODO user notice in case it failed
   } catch (e) {
     log('ADD_BOOKING: onClickOk', {error: e})
     await notice([t('dialogs.addBooking.catch')])

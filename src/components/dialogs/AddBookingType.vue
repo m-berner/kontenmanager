@@ -21,9 +21,9 @@ const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {addBookingType} = useBookingTypesDB()
-const {valNameRules, validateForm} = useValidation()
+const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
-const settings = useSettings()
+const {activeAccountId} = useSettings()
 
 const formName: Ref<string> = ref('')
 const formRef: Ref<HTMLFormElement | null> = ref(null)
@@ -36,13 +36,15 @@ const onClickOk = async (): Promise<void> => {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const bookingType = {
         cName: formName.value.trim(),
-        cAccountNumberID: settings.activeAccountId.value
+        cAccountNumberID: activeAccountId.value
       }
-      const addBookingTypeID: number = await addBookingType(bookingType)
-      const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
-      records.bookingTypes.add(completeBookingType)
-      formName.value = ''
-      await notice([t('dialogs.addBookingType.success')])
+      const addBookingTypeID: number = await addBookingType(bookingType) // TODO below limit 0,1,2?
+      if (addBookingTypeID > 0) {
+        const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
+        records.bookingTypes.add(completeBookingType)
+        formName.value = ''
+        await notice([t('dialogs.addBookingType.success')])
+      }
     } else {
       await notice([t('dialogs.addBookingType.error1a'), t('dialogs.addBookingType.error1b')])
     }
@@ -66,10 +68,15 @@ log('--- AddBookingType.vue setup ---')
       @submit.prevent>
     <v-text-field
         v-model="formName"
-        :disabled="settings.activeAccountId.value === -1"
+        :disabled="activeAccountId === -1"
         :label="t('dialogs.addBookingType.label')"
-        :rules="valNameRules(['dgdf'])"
+        :rules="nameRules([
+            t('dialogs.validators.nameRules.required'),
+            t('dialogs.validators.nameRules.length'),
+            t('dialogs.validators.nameRules.begin')
+        ])"
         density="compact"
+        :counter="24"
         variant="outlined"
         @focus="formRef?.resetValidation()"/>
   </v-form>
