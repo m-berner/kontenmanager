@@ -49,7 +49,7 @@ export const useBookingsStore = defineStore('bookings', () => {
     });
     const sumTaxes = computed(() => {
         return items.value.map((entry) => {
-            return entry.cTax || entry.cSoli || entry.cSourceTax || entry.cTransactionTax;
+            return entry.cTax + entry.cSoli + entry.cSourceTax + entry.cTransactionTax;
         }).reduce((acc, cur) => acc + cur, 0);
     });
     const portfolioByStockId = computed(() => (ident) => {

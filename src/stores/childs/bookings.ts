@@ -62,7 +62,7 @@ export const useBookingsStore = defineStore('bookings', () => {
     })
     const sumTaxes = computed(() => {
         return items.value.map((entry: IBooking) => {
-            return entry.cTax || entry.cSoli || entry.cSourceTax || entry.cTransactionTax
+            return entry.cTax + entry.cSoli + entry.cSourceTax + entry.cTransactionTax
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
     const portfolioByStockId = computed(() => (ident: number) => {
