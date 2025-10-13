@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+ * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 const CONS = Object.freeze({
     CURRENCIES: {
@@ -513,7 +513,7 @@ const CONS = Object.freeze({
         NO_RENDER: 'no_render'
     },
     SYSTEM: {
-        COPYRIGHT: '2013-2025 Martin Berner',
+        COPYRIGHT: '2025-2026 Martin Berner',
         MAILTO: 'mailto:kontenmanager@gmx.de',
         HTML_ENTITY:
             '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',

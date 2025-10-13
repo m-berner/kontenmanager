@@ -265,7 +265,7 @@
     "successor": {
       "title": "Weiterentwicklung von StockManager",
       "data": {
-        "subTitle" : {
+        "subTitle": {
           "0": "Allgemein",
           "1": "Import von StockManager Daten"
         },

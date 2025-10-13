@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {DataTableHeader} from 'vuetify'
@@ -58,13 +58,13 @@ log('--- ShowDividend.vue setup ---')
             :no-data-text="t('dialogs.showDividend.noDataText')"
             density="compact"
             item-key="id">
-        <template v-slot:[`item`]="{ item }">
-          <tr class="table-row">
-            <td class="d-none">{{ item.id }}</td>
-            <td>{{ d(item.year, 'short') }}</td>
-            <td>{{ n(item.sum, 'currency') }}</td>
-          </tr>
-        </template>
+          <template v-slot:[`item`]="{ item }">
+            <tr class="table-row">
+              <td class="d-none">{{ item.id }}</td>
+              <td>{{ d(item.year, 'short') }}</td>
+              <td>{{ n(item.sum, 'currency') }}</td>
+            </tr>
+          </template>
         </v-data-table>
       </v-card-text>
     </v-card>

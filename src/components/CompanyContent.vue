@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IMenuItem, IStock} from '@/types.d'
@@ -165,8 +165,8 @@ log('--- StocksTable.vue setup ---')
       :items-per-page="stocksPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('stocksTable.itemsPerPageText')"
-      :no-data-text="t('stocksTable.noDataText')"
       :loading="loading"
+      :no-data-text="t('stocksTable.noDataText')"
       density="compact"
       item-key="cID"
       @update:items-per-page="onUpdateItemsPerPage"

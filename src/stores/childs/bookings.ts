@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+ * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {IBooking} from '@/types'
 import type {Ref} from 'vue'
@@ -97,7 +97,7 @@ export const useBookingsStore = defineStore('bookings', () => {
         return items.value.filter((entry: IBooking) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 3
         }).map((entry: IBooking) => {
-            return { id: ident, year: entry.cExDate, sum: entry.cCredit }
+            return {id: ident, year: entry.cExDate, sum: entry.cCredit}
         })
     })
 

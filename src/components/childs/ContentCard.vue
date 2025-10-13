@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IContent} from '@/types.d'
@@ -29,10 +29,10 @@ const contentCardProps = defineProps<ContentCardProps>()
       <v-icon v-if="item.icon.substring(0,1) === '$'" :icon="item.icon"/>
       <v-img
           v-else
-          :src="item.icon"
           :inline="true"
-          width="32"
-          height="32"/><span>&nbsp;</span>
+          :src="item.icon"
+          height="32"
+          width="32"/><span>&nbsp;</span>
       </span>
       {{ item.subTitle }}
     </v-card-title>

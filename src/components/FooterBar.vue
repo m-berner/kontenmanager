@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2014-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
@@ -18,13 +18,13 @@ log('--- FooterBar.vue setup ---')
 <template>
   <v-bottom-navigation color="primary">
     <v-btn color="white">
-      <router-link class="router-link-active" :to="CONS.ROUTES.HELP">
+      <router-link :to="CONS.ROUTES.HELP" class="router-link-active">
         <v-icon icon="$help"/>
         <div>{{ t('footer.help') }}</div>
       </router-link>
     </v-btn>
     <v-btn color="white">
-      <router-link class="router-link-active" :to="CONS.ROUTES.PRIVACY">
+      <router-link :to="CONS.ROUTES.PRIVACY" class="router-link-active">
         <v-icon icon="
         $privacy"/>
         <div>{{ t('footer.privacy') }}</div>
