@@ -47,13 +47,7 @@ const formSearch: Ref<string> = ref('')
 
 const onUpdateSwift = (swift: string): void => {
   if (!swift) return
-  const clean = swift.replace(/\s/g, '').toUpperCase()
-  // let result: string
-  // if (clean.length <= 4) result = clean
-  // if (clean.length <= 6) result = `${clean.substring(0, 4)} ${clean.substring(4)}`
-  // if (clean.length <= 8) result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6)}`
-  // result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6, 8)} ${clean.substring(8)}`
-  formData.swift = clean
+  formData.swift = swift.replace(/\s/g, '').toUpperCase()
 }
 
 const onUpdateIban = (iban: string): void => {
@@ -116,12 +110,13 @@ watch(formSearch, async () => {
     formPreviewUrl.value = faviconUrl.value
   }, 600)
 })
-
 log('--- UpdateAccount.vue setup ---')
 </script>
 
 <template>
+  <v-alert v-if="records.accounts.items.length === 0">{{ t('dialogs.updateAccount.message') }}</v-alert>
   <v-form
+      v-else
       ref="formRef"
       validate-on="submit"
       @submit.prevent>
@@ -170,37 +165,13 @@ log('--- UpdateAccount.vue setup ---')
         :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.UPDATE_ACCOUNT_URL"
         variant="outlined"
     />
+    <!-- Logo Preview -->
+    <div class="mb-4">
+      <v-avatar class="me-3" color="white" size="48">
+        <v-img
+            :alt="t('dialogs.updateAccount.missingLogo')"
+            :src="formPreviewUrl"/>
+      </v-avatar>
+    </div>
   </v-form>
-
-  <!-- Logo Preview -->
-  <div class="mb-4">
-    <v-avatar class="me-3" color="white" size="48">
-      <v-img
-          :alt="t('dialogs.updateAccount.missingLogo')"
-          :src="formPreviewUrl"/>
-    </v-avatar>
-  </div>
-  <!-- Form Summary -->
-  <v-card
-      v-if="formData.swift || formData.iban"
-      class="pa-3 mb-4"
-      variant="outlined">
-    <v-card-subtitle>{{ t('dialogs.updateAccount.preview') }}</v-card-subtitle>
-    <v-card-text>
-      <div class="d-flex flex-column gap-2">
-        <div v-if="formData.swift">
-          <strong>{{ t('dialogs.updateAccount.swiftLabel') }}:</strong> {{ formData.swift }}
-        </div>
-        <div v-if="formData.iban">
-          <strong>{{ t('dialogs.updateAccount.ibanLabel') }}:</strong> {{ formData.iban }}
-        </div>
-        <div>
-          <strong>{{ t('dialogs.updateAccount.typeLabel') }}:</strong>
-          {{
-            formData.withDepot ? t('dialogs.updateAccount.withDepotLabel') : t('dialogs.updateAccount.withNoDepotLabel')
-          }}
-        </div>
-      </div>
-    </v-card-text>
-  </v-card>
 </template>

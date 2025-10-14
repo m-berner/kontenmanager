@@ -84,7 +84,7 @@ const {clearAllAccounts, importAccounts} = useAccountsDB()
 const {clearAllBookings, importBookings} = useBookingsDB()
 const {clearAllBookingTypes, importBookingTypes} = useBookingTypesDB()
 const {clearAllStocks, importStocks} = useStocksDB()
-const runtime = useRuntime()
+const {resetTeleport} = useRuntime()
 const {activeAccountId} = useSettings()
 
 const fileBlob = ref<Blob>(new Blob())
@@ -243,7 +243,7 @@ const onClickOk = async (): Promise<void> => {
       await importBookingTypes(bookingTypesImportData)
       await importBookings(bookingsImportData)
       await importStocks(stocksImportData)
-      runtime.resetTeleport()
+      resetTeleport()
     }
   }
 

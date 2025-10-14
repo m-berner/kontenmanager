@@ -152,6 +152,7 @@ log('--- HeaderBar.vue setup ---')
       <v-tooltip :text="t('headerBar.home')" location="top">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
+              color="grey"
               icon="$home"
               size="large"
               v-bind="props"
@@ -167,6 +168,7 @@ log('--- HeaderBar.vue setup ---')
       <v-tooltip :text="t('headerBar.company')" location="top">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
+              color="grey"
               icon="$showCompany"
               size="large"
               v-bind="props"
@@ -357,6 +359,7 @@ log('--- HeaderBar.vue setup ---')
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
             :id="CONS.COMPONENTS.DIALOGS.SETTING"
+            color="grey"
             icon="$settings"
             size="large"
             v-bind="props"

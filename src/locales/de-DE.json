@@ -89,7 +89,7 @@
       "marketPlaceLabel": "Handelsplatz",
       "transactionTaxLabel": "Transaktionssteuer",
       "sourceTaxLabel": "Quellensteuer",
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
+      "message": "Es gibt noch keine Buchung.",
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?",
       "validators": [
@@ -145,10 +145,12 @@
       "quarterDay": "Quartalszahlen",
       "url": "URL",
       "success": "Unternehmen wurde aktualisiert",
-      "error": "Fehler"
+      "error": "Fehler",
+      "message": "Es wurde noch kein Unternehmen angelegt. Zuerst müssen Sie ein Konto anlegen."
     },
     "fadeInStock": {
-      "title": "Unternehmen einblenden"
+      "title": "Unternehmen einblenden",
+      "message": "Alle Unternehmen sind eingeblendet."
     },
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
@@ -162,14 +164,16 @@
       "preview": "Vorschau",
       "missingLogo": "Kein Logo gefunden",
       "success": "Konto wurde aktualisiert",
-      "error": "Konto existiert bereits"
+      "error": "Konto existiert bereits",
+      "message": "Es gibt noch kein Konto."
     },
     "deleteAccount": {
       "title": "Bankkonto - alle Daten löschen",
       "accountNumberLabel": "Kontonummer",
       "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
       "success": "Konto wurde entfernt",
-      "error": "Konto wurde nicht entfernt?"
+      "error": "Konto wurde nicht entfernt?",
+      "message": "Es gibt noch kein Konto."
     },
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",
@@ -183,7 +187,7 @@
     "updateBookingType": {
       "title": "Buchungstyp aktualisieren",
       "label": "Buchungstyp",
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
+      "message": "Es gibt noch keinen Buchungstyp.",
       "success": "Buchungstyp wurde aktualisiert",
       "error1a": "Der Buchungstyp konnte nicht aktualisiert werden",
       "error1b": "",
@@ -196,7 +200,7 @@
       "error1a": "Es existiert eine Buchung.",
       "error1b": "(Buchungstyp konnte nicht entfernt werden)",
       "catch": "Problem beim Löschen!",
-      "rule1": "Eingabe ist erforderlich"
+      "message": "Es gibt noch keinen Buchungstyp."
     },
     "showAccounting": {
       "title": "Buchungsergebnisse",
@@ -207,14 +211,16 @@
       "fees": "Gebühren",
       "taxes": "Steuern",
       "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?"
+      "error": "Eingabe Fehler?",
+      "message": "Es gibt noch keine Buchungen."
     },
     "showDividend": {
       "title": "Dividenden Übersicht",
       "yearLabel": "Ex-Tag",
       "sumLabel": "Dividendenauszahlung",
       "itemsPerPageText": "Einträge pro Seite",
-      "noDataText": "Bisher keine Dividende erhalten"
+      "noDataText": "Bisher keine Dividende erhalten",
+      "message": "Bisher keine Dividende erhalten."
     },
     "exportToFile": {
       "title": "Datenbank exportieren",

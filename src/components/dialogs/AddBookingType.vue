@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import type {IBookingType} from '@/types.d'
 import type {Ref} from 'vue'
-import {defineExpose, ref} from 'vue'
+import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
@@ -28,6 +28,9 @@ const {activeAccountId} = useSettings()
 const formName: Ref<string> = ref('')
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
+const reset = () => {
+  formName.value = ''
+}
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: onClickOk')
   if (!await validateForm(formRef)) return
@@ -42,7 +45,7 @@ const onClickOk = async (): Promise<void> => {
       if (addBookingTypeID > 0) {
         const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
         records.bookingTypes.add(completeBookingType)
-        formName.value = ''
+        reset()
         await notice([t('dialogs.addBookingType.success')])
       }
     } else {
@@ -58,16 +61,23 @@ const title = t('dialogs.addBookingType.title')
 
 defineExpose({onClickOk, title})
 
+onMounted(() => {
+  log('ADD_BOOKING_TYPE: onMounted')
+  reset()
+})
+
 log('--- AddBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
+  <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addAccount.message') }}</v-alert>
+  <v-form v-else
+          ref="formRef"
+          validate-on="submit"
+          @submit.prevent>
     <v-text-field
         v-model="formName"
+        :counter="24"
         :disabled="activeAccountId === -1"
         :label="t('dialogs.addBookingType.label')"
         :rules="nameRules([
@@ -75,8 +85,8 @@ log('--- AddBookingType.vue setup ---')
             t('dialogs.validators.nameRules.length'),
             t('dialogs.validators.nameRules.begin')
         ])"
+        autofocus
         density="compact"
-        :counter="24"
         variant="outlined"
         @focus="formRef?.resetValidation()"/>
   </v-form>

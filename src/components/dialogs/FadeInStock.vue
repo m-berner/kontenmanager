@@ -48,10 +48,11 @@ log('--- FadeInStock.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      v-on:submit.prevent>
+  <v-alert v-if="records.stocks.passive.length === 0">{{ t('dialogs.fadeInStock.message') }}</v-alert>
+  <v-form v-else
+          ref="formRef"
+          validate-on="submit"
+          v-on:submit.prevent>
     <v-card-text class="pa-5">
       <v-select
           v-model="_selected"

@@ -94,10 +94,11 @@ log('--- UpdateBooking.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
+  <v-alert v-if="records.bookings.items.length === 0">{{ t('dialogs.updateBooking.message') }}</v-alert>
+  <v-form v-else
+          ref="formRef"
+          validate-on="submit"
+          @submit.prevent>
     <BookingContainer/>
   </v-form>
 </template>

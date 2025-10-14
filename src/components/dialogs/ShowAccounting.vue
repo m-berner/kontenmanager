@@ -43,12 +43,15 @@ log('--- ShowAccounting.vue setup ---')
 </script>
 
 <template>
-  <v-form>
+  <v-alert v-if="records.bookings.items.length === 0">{{ t('dialogs.showAccounting.message') }}</v-alert>
+  <v-form v-else>
     <v-list height="440">
       <v-list-item
+          v-if="records.accounts.isDepot"
           :subtitle="n(records.bookings.sumTaxes, 'currency')"
           :title="t('dialogs.showAccounting.taxes')"/>
       <v-list-item
+          v-if="records.accounts.isDepot"
           :subtitle="n(records.bookings.sumFees, 'currency')"
           :title="t('dialogs.showAccounting.fees')"/>
       <v-list-item

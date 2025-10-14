@@ -103,40 +103,40 @@ log('--- AddStock.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
-    <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addStock.message') }}</v-alert>
+  <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addStock.message') }}</v-alert>
+  <v-form v-else
+          ref="formRef"
+          validate-on="submit"
+          @submit.prevent>
     <v-text-field
-          v-model="newStock.isin"
-          :counter="12"
-          :label="t('dialogs.addStock.isin')"
-          :rules="isinRules([
+        v-model="newStock.isin"
+        :counter="12"
+        :label="t('dialogs.addStock.isin')"
+        :rules="isinRules([
               t('validators.isinRules.required'),
               t('validators.isinRules.length'),
               t('validators.isinRules.format'),
               t('validators.isinRules.country'),
               t('validators.isinRules.luhn'),
           ])"
-          autofocus
-          variant="outlined"
-          @focus="formRef?.resetValidation()"
-          @update:modelValue="onIsin"/>
+        autofocus
+        variant="outlined"
+        @focus="formRef?.resetValidation()"
+        @update:modelValue="onIsin"/>
     <v-switch
         v-model="formDisabled"
         :label="t('dialogs.addStock.formDisabledLabel')"
         color="red"
         variant="outlined"/>
-      <v-text-field
-          v-model="newStock.company"
-          :disabled="!formDisabled"
-          :label="t('dialogs.addStock.company')"
-          variant="outlined"/>
-      <v-text-field
-          v-model="newStock.symbol"
-          :disabled="!formDisabled"
-          :label="t('dialogs.addStock.symbol')"
-          variant="outlined"/>
+    <v-text-field
+        v-model="newStock.company"
+        :disabled="!formDisabled"
+        :label="t('dialogs.addStock.company')"
+        variant="outlined"/>
+    <v-text-field
+        v-model="newStock.symbol"
+        :disabled="!formDisabled"
+        :label="t('dialogs.addStock.symbol')"
+        variant="outlined"/>
   </v-form>
 </template>

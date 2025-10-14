@@ -61,10 +61,11 @@ log('--- UpdateBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
+  <v-alert v-if="records.bookingTypes.items.length === 0">{{ t('dialogs.updateBookingType.message') }}</v-alert>
+  <v-form v-else
+          ref="formRef"
+          validate-on="submit"
+          @submit.prevent>
     <v-text-field
         v-if="formSelectedIndex > 0"
         v-model="formName"

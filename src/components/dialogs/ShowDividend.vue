@@ -42,6 +42,10 @@ log('--- ShowDividend.vue setup ---')
 </script>
 
 <template>
+  <v-alert v-if="records.bookings.dividendsByStockId(activeId).length === 0">{{
+      t('dialogs.showDividend.message')
+    }}
+  </v-alert>
   <v-form
       validate-on="submit"
       @submit.prevent>

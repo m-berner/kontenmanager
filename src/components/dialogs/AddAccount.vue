@@ -74,12 +74,7 @@ const reset = (): void => {
 const onUpdateSwift = (swift: string): void => {
   if (!swift) return
   const clean = swift.replace(/\s/g, '').toUpperCase()
-  let result: string
-  if (clean.length <= 4) result = clean
-  if (clean.length <= 6) result = `${clean.substring(0, 4)} ${clean.substring(4)}`
-  if (clean.length <= 8) result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6)}`
-  result = `${clean.substring(0, 4)} ${clean.substring(4, 6)} ${clean.substring(6, 8)} ${clean.substring(8)}`
-  newAccount.swift = result
+  newAccount.swift = clean.replace(/(.{4})/g, '$1 ').trim()
 }
 
 const onUpdateIban = (iban: string): void => {
@@ -105,6 +100,7 @@ const onClickOk = async (): Promise<void> => {
       records.accounts.add(completeAccount)
       activeAccountId.value = addAccountID
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
+      records.clean(false)
       resetTeleport()
       await notice([t('dialogs.addAccount.success')])
     }
@@ -145,7 +141,6 @@ log('--- AddAccount.vue setup ---')
       ref="formRef"
       validate-on="submit"
       @submit.prevent>
-    <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addAccount.message') }}</v-alert>
     <v-switch
         v-model="newAccount.withDepot"
         :label="t('dialogs.addAccount.withDepotLabel')"
@@ -182,37 +177,13 @@ log('--- AddAccount.vue setup ---')
         :label="t('dialogs.addAccount.searchLabel')"
         :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ADD_ACCOUNT_URL"
         variant="outlined"/>
+    <!-- Logo Preview -->
+    <div class="mb-4">
+      <v-avatar class="me-3" color="white" size="48">
+        <v-img
+            :alt="t('dialogs.addAccount.missingLogo')"
+            :src="formPreviewUrl"/>
+      </v-avatar>
+    </div>
   </v-form>
-
-  <!-- Logo Preview -->
-  <div class="mb-4">
-    <v-avatar class="me-3" color="white" size="48">
-      <v-img
-          :alt="t('dialogs.addAccount.missingLogo')"
-          :src="formPreviewUrl"/>
-    </v-avatar>
-  </div>
-  <!-- Form Summary -->
-  <v-card
-      v-if="newAccount.swift || newAccount.iban"
-      class="pa-3 mb-4"
-      variant="outlined">
-    <v-card-subtitle>{{ t('dialogs.addAccount.preview') }}</v-card-subtitle>
-    <v-card-text>
-      <div class="d-flex flex-column gap-2">
-        <div v-if="newAccount.swift">
-          <strong>{{ t('dialogs.addAccount.swiftLabel') }}:</strong> {{ newAccount.swift }}
-        </div>
-        <div v-if="newAccount.iban">
-          <strong>{{ t('dialogs.addAccount.ibanLabel') }}:</strong> {{ newAccount.iban }}
-        </div>
-        <div>
-          <strong>{{ t('dialogs.addAccount.typeLabel') }}:</strong>
-          {{
-            newAccount.withDepot ? t('dialogs.addAccount.withDepotLabel') : t('dialogs.addAccount.withNoDepotLabel')
-          }}
-        </div>
-      </div>
-    </v-card-text>
-  </v-card>
 </template>

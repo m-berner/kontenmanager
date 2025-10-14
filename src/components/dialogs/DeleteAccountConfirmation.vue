@@ -12,6 +12,7 @@ import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useRuntime} from '@/composables/useRuntime'
 import {useRecordsStore} from '@/stores/records'
 
 const {t} = useI18n()
@@ -19,22 +20,21 @@ const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {deleteDatabaseWithAccount, getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = useSettings()
+const {resetTeleport} = useRuntime()
 const records = useRecordsStore()
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
   try {
-    records.clean(false)
-    records.accounts.remove(activeAccountId.value)
     await deleteDatabaseWithAccount(activeAccountId.value)
-
+    records.accounts.remove(activeAccountId.value)
+    activeAccountId.value = -1
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     if (records.accounts.items.length > 0) {
       const storesDB = await getDatabaseStores()
       await records.init(storesDB)
-    } else {
-      activeAccountId.value = -1
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     }
+    resetTeleport()
     await notice([t('dialogs.deleteAccount.success')])
   } catch (e) {
     log('HEADER_BAR: onIconClick', {error: e})
@@ -50,5 +50,6 @@ log('--- DeleteAccountConfirmation.vue setup ---')
 </script>
 
 <template>
-  <v-alert>{{ t('dialogs.deleteAccount.confirm') }}</v-alert>
+  <v-alert v-if="records.accounts.items.length === 0">{{ t('dialogs.deleteAccount.message') }}</v-alert>
+  <v-alert v-else>{{ t('dialogs.deleteAccount.confirm') }}</v-alert>
 </template>

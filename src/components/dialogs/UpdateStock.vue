@@ -102,15 +102,16 @@ onMounted(() => {
   formData.firstPage = currentStock.cFirstPage === 1
   formData.url = currentStock.cURL
 })
-// TODO Buchungstyp Übertrag?
+
 log('--- UpdateStock.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
+  <v-alert v-if="records.stocks.items.length === 0">{{ t('dialogs.updateStock.message') }}</v-alert>
+  <v-form v-else
+          ref="formRef"
+          validate-on="submit"
+          @submit.prevent>
     <v-container>
       <v-row>
         <v-text-field

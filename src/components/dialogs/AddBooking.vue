@@ -26,7 +26,7 @@ const {addBooking} = useBookingsDB()
 const {validateForm} = useValidation()
 const {containerData} = useBookingContainer()
 const records = useRecordsStore()
-const settings = useSettings()
+const {activeAccountId} = useSettings()
 
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
@@ -69,7 +69,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: containerData.description,
           cBookingTypeID: containerData.bookingTypeId,
           cStockID: containerData.stockId,
-          cAccountNumberID: settings.activeAccountId.value,
+          cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
           cCount: containerData.count,
           cSoli: containerData.soli,
@@ -89,7 +89,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: containerData.description,
           cBookingTypeID: containerData.bookingTypeId,
           cStockID: containerData.stockId,
-          cAccountNumberID: settings.activeAccountId.value,
+          cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
           cCount: containerData.count,
           cSoli: containerData.soli,
@@ -109,7 +109,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: containerData.description,
           cBookingTypeID: containerData.bookingTypeId,
           cStockID: containerData.stockId,
-          cAccountNumberID: settings.activeAccountId.value,
+          cAccountNumberID: activeAccountId.value,
           cExDate: containerData.exDate,
           cCount: containerData.count,
           cSoli: containerData.soli,
@@ -128,7 +128,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: containerData.description,
           cBookingTypeID: containerData.bookingTypeId,
           cStockID: 0,
-          cAccountNumberID: settings.activeAccountId.value,
+          cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
           cCount: 0,
           cSoli: 0,
@@ -165,11 +165,11 @@ log('--- AddBooking.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
-    <v-alert v-if="settings.activeAccountId.value === -1">{{ t('dialogs.addBooking.message') }}</v-alert>
-    <BookingContainer v-else/>
+  <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addBooking.message') }}</v-alert>
+  <v-form v-else
+          ref="formRef"
+          validate-on="submit"
+          @submit.prevent>
+    <BookingContainer/>
   </v-form>
 </template>
