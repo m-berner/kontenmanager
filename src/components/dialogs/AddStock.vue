@@ -49,11 +49,10 @@ const reset = (): void => {
     company: '',
     symbol: ''
   })
-  formRef.value = null
   formDisabled.value = false
 }
 
-const onIsin = async (): Promise<void> => {
+const onUpdateIsin = async (): Promise<void> => {
   if (newStock.isin !== '' && newStock.isin?.length === 12) {
     const fetchedCompanyData: ICompanyData = await fetchCompanyData(newStock.isin)
     newStock.company = fetchedCompanyData.company
@@ -64,7 +63,7 @@ const onIsin = async (): Promise<void> => {
 const onClickOk = async (): Promise<void> => {
   log('ADD_STOCK : onClickOk')
   if (!await validateForm(formRef)) return
-
+  log('AFTEROK')
   try {
     const stock: Omit<IStockDB, 'cID'> = {
       cCompany: newStock.company.trim(),
@@ -104,10 +103,11 @@ log('--- AddStock.vue setup ---')
 
 <template>
   <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addStock.message') }}</v-alert>
-  <v-form v-else
-          ref="formRef"
-          validate-on="submit"
-          @submit.prevent>
+  <v-form
+      v-else
+      ref="formRef"
+      validate-on="submit"
+      @submit.prevent>
     <v-text-field
         v-model="newStock.isin"
         :counter="12"
@@ -122,7 +122,7 @@ log('--- AddStock.vue setup ---')
         autofocus
         variant="outlined"
         @focus="formRef?.resetValidation()"
-        @update:modelValue="onIsin"/>
+        @update:modelValue="onUpdateIsin"/>
     <v-switch
         v-model="formDisabled"
         :label="t('dialogs.addStock.formDisabledLabel')"

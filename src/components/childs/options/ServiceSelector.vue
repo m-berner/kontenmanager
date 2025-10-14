@@ -10,14 +10,17 @@ import type {Ref} from 'vue'
 import {onBeforeMount, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useTheme} from 'vuetify'
 
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
+const theme = useTheme()
 
 const service: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const setService = async (service: string | null): Promise<void> => {
   if (service !== null) {
+    theme.global.name.value = service
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service)
   }
 }

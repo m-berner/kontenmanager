@@ -59,13 +59,11 @@ const onUpdateISIN = () => {
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
   if (!await validateForm(formRef)) return
-
   try {
     const stock: IStockDB = {
       cID: formData.id,
       cISIN: formData.isin.replace(/\s/g, '').toUpperCase(),
       cCompany: formData.company,
-      // cWKN: formData.wkn,
       cSymbol: formData.symbol,
       cMeetingDay: formData.meetingDay,
       cQuarterDay: formData.quarterDay,
@@ -94,7 +92,6 @@ onMounted(() => {
   formData.id = runtime.activeId.value
   formData.isin = formatISIN(currentStock.cISIN)
   formData.company = currentStock.cCompany
-  //formData.wkn = currentStock.cWKN
   formData.symbol = currentStock.cSymbol
   formData.meetingDay = currentStock.cMeetingDay
   formData.quarterDay = currentStock.cQuarterDay

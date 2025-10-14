@@ -66,7 +66,6 @@ const reset = (): void => {
     logoUrl: '',
     withDepot: false
   })
-  formRef.value = null
   formPreviewUrl.value = ''
   formSearch.value = ''
 }

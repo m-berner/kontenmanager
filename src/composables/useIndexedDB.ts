@@ -563,9 +563,9 @@ export const useBookingTypesDB = () => {
 
 export const useStocksDB = () => {
     const db = useIndexedDB()
-
     async function addStock(stockData: unknown) {
         try {
+            console.error('sdffs', db)
             return await db.add(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData)
         } catch (err) {
             log('Failed to add stock:', {error: err})

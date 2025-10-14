@@ -97,8 +97,10 @@ export const useValidation = () => {
         ];
     }
     async function validateForm(form) {
+        console.error('vv', form.value);
         if (form.value !== null) {
             const { valid } = await form.value.validate();
+            console.error(valid);
             return valid;
         }
         return false;

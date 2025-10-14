@@ -467,6 +467,7 @@ export const useStocksDB = () => {
     const db = useIndexedDB();
     async function addStock(stockData) {
         try {
+            console.error('sdffs', db);
             return await db.add(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData);
         }
         catch (err) {

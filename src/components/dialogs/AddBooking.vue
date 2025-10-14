@@ -48,7 +48,6 @@ const reset = (): void => {
     sourceTax: 0,
     transactionTax: 0
   })
-  formRef.value = null
 }
 
 const onClickOk = async (): Promise<void> => {
