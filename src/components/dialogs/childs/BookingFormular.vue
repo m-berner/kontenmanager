@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IBookingType, IStock} from '@/types.d'
@@ -11,16 +11,16 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useValidation} from '@/composables/useValidation'
+import {useBookingFormular} from '@/composables/useBookingFormular'
 import {useRecordsStore} from '@/stores/records'
 import CurrencyInput from '@/components/dialogs/childs/CurrencyInput.vue'
-import {useBookingContainer} from '@/composables/useBookingContainer'
 
 const {t} = useI18n()
 const {CONS} = useApp()
 const {dateRules, requiredRules} = useValidation()
-const {containerData} = useBookingContainer()
-const records = useRecordsStore()
-const settings = useSettings()
+const {bookingFormularData} = useBookingFormular()
+const {bookingTypes, stocks} = useRecordsStore()
+const {markets} = useSettings()
 </script>
 
 <template>
@@ -28,7 +28,7 @@ const settings = useSettings()
     <v-row>
       <v-col>
         <v-text-field
-            v-model="containerData.bookDate"
+            v-model="bookingFormularData.bookDate"
             :label="t('dialogs.addBooking.dateLabel')"
             :rules="dateRules([t('validators.dateRules.required')])"
             autofocus
@@ -39,10 +39,10 @@ const settings = useSettings()
       </v-col>
       <v-col>
         <v-select
-            v-model="containerData.bookingTypeId"
+            v-model="bookingFormularData.bookingTypeId"
             :itemTitle="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
             :itemValue="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
-            :items="records.bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+            :items="bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
             :label="t('dialogs.addBooking.bookingTypeLabel')"
             :menu=false
             :menuProps="{ maxHeight: 250 }"
@@ -56,8 +56,8 @@ const settings = useSettings()
     <v-row justify="center">
       <v-col cols="6">
         <v-text-field
-            v-if="containerData.bookingTypeId < 4 && containerData.bookingTypeId > 0"
-            v-model="containerData.count"
+            v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 0"
+            v-model="bookingFormularData.count"
             :label="t('dialogs.addBooking.countLabel')"
             class="withoutSpinner"
             density="compact"
@@ -65,57 +65,49 @@ const settings = useSettings()
             variant="outlined"
         />
       </v-col>
-      <v-col>
-        <CurrencyInput
-            v-if="containerData.bookingTypeId < 4 && containerData.bookingTypeId > 0"
-            v-model="containerData.unitQuotation"
-            :label="t('dialogs.addBooking.unitQuotationLabel')"
-            @amount="(a) => { containerData.unitQuotation = a }"
-        />
-      </v-col>
     </v-row>
     <v-row justify="center">
       <v-col cols="6">
         <CurrencyInput
-            v-if="containerData.bookingTypeId > 3"
-            v-model="containerData.credit"
+            v-if="bookingFormularData.bookingTypeId > 3"
+            v-model="bookingFormularData.credit"
             :label="t('dialogs.addBooking.creditLabel')"
-            @amount="(a) => { containerData.credit = a }"
+            @amount="(a) => { bookingFormularData.credit = a }"
         />
       </v-col>
       <v-col>
         <CurrencyInput
-            v-if="containerData.bookingTypeId > 3"
-            v-model="containerData.debit"
+            v-if="bookingFormularData.bookingTypeId > 3"
+            v-model="bookingFormularData.debit"
             :label="t('dialogs.addBooking.debitLabel')"
-            @amount="(a) => { containerData.debit = a }"
+            @amount="(a) => { bookingFormularData.debit = a }"
         />
       </v-col>
     </v-row>
     <v-row justify="center">
       <v-col cols="6">
         <CurrencyInput
-            v-if="containerData.bookingTypeId < 4 && containerData.bookingTypeId > 1"
-            v-model="containerData.tax"
+            v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1"
+            v-model="bookingFormularData.tax"
             :label="t('dialogs.addBooking.taxLabel')"
-            @amount="(a) => { containerData.tax = a }"
+            @amount="(a) => { bookingFormularData.tax = a }"
         />
       </v-col>
       <v-col>
         <CurrencyInput
-            v-if="containerData.bookingTypeId < 4 && containerData.bookingTypeId > 1"
-            v-model="containerData.soli"
+            v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1"
+            v-model="bookingFormularData.soli"
             :label="t('dialogs.addBooking.soliLabel')"
-            @amount="(a) => { containerData.soli = a }"
+            @amount="(a) => { bookingFormularData.soli = a }"
         />
       </v-col>
     </v-row>
     <v-row justify="center">
       <v-col cols="6">
         <v-text-field
-            v-if="containerData.bookingTypeId === 3"
+            v-if="bookingFormularData.bookingTypeId === 3"
             ref="date-input"
-            v-model="containerData.exDate"
+            v-model="bookingFormularData.exDate"
             :label="t('dialogs.addBooking.exDateLabel')"
             :rules="dateRules([t('validators.dateRules', 0)])"
             autofocus
@@ -127,21 +119,21 @@ const settings = useSettings()
       </v-col>
       <v-col>
         <CurrencyInput
-            v-if="containerData.bookingTypeId === 3"
-            v-model="containerData.sourceTax"
+            v-if="bookingFormularData.bookingTypeId === 3"
+            v-model="bookingFormularData.sourceTax"
             :label="t('dialogs.addBooking.sourceTaxLabel')"
-            @amount="(a) => { containerData.sourceTax = a }"
+            @amount="(a) => { bookingFormularData.sourceTax = a }"
         />
       </v-col>
     </v-row>
     <v-row justify="center">
       <v-col cols="6">
         <v-select
-            v-if="containerData.bookingTypeId < 4 && containerData.bookingTypeId > 0"
-            v-model="containerData.stockId"
+            v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 0"
+            v-model="bookingFormularData.stockId"
             :item-title="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.COMPANY"
             :item-value="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ID"
-            :items="records.stocks.items.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
+            :items="stocks.items.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
             :label="t('dialogs.addBooking.stockLabel')"
             :menu=false
             :menu-props="{ maxHeight: 250 }"
@@ -153,9 +145,9 @@ const settings = useSettings()
       </v-col>
       <v-col>
         <v-select
-            v-if="containerData.bookingTypeId < 3 && containerData.bookingTypeId > 0"
-            v-model="containerData.marketPlace"
-            :items="settings.markets.value.sort((a: string, b: string): number => { return a.localeCompare(b) })"
+            v-if="bookingFormularData.bookingTypeId < 3 && bookingFormularData.bookingTypeId > 0"
+            v-model="bookingFormularData.marketPlace"
+            :items="markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
             :label="t('dialogs.addBooking.marketPlaceLabel')"
             :menu=false
             :menuProps="{ maxHeight: 250 }"
@@ -168,25 +160,25 @@ const settings = useSettings()
     <v-row justify="center">
       <v-col cols="6">
         <CurrencyInput
-            v-if="containerData.bookingTypeId < 3 && containerData.bookingTypeId > 0"
-            v-model="containerData.fee"
+            v-if="bookingFormularData.bookingTypeId < 3 && bookingFormularData.bookingTypeId > 0"
+            v-model="bookingFormularData.fee"
             :label="t('dialogs.addBooking.feeLabel')"
-            @amount="(a) => { containerData.fee = a }"
+            @amount="(a) => { bookingFormularData.fee = a }"
         />
       </v-col>
       <v-col>
         <CurrencyInput
-            v-if="containerData.bookingTypeId === 1"
-            v-model="containerData.transactionTax"
+            v-if="bookingFormularData.bookingTypeId === 1"
+            v-model="bookingFormularData.transactionTax"
             :label="t('dialogs.addBooking.transactionTaxLabel')"
-            @amount="(a) => { containerData.transactionTax = a }"
+            @amount="(a) => { bookingFormularData.transactionTax = a }"
         />
       </v-col>
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
         <v-text-field
-            v-model="containerData.description"
+            v-model="bookingFormularData.description"
             :label="t('dialogs.addBooking.descriptionLabel')"
             density="compact"
             required

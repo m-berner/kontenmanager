@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+ * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 export interface IAccountDB {
@@ -79,7 +79,15 @@ export interface IBooking {
     cMarketPlace: string
 }
 
-export interface IBookingContainerData {
+export interface IAccountFormularData {
+    id: number
+    swift: string
+    iban: string
+    logoUrl: string
+    withDepot: boolean
+}
+
+export interface IBookingFormularData {
     id: number
     bookDate: string
     exDate: string
@@ -87,7 +95,6 @@ export interface IBookingContainerData {
     debit: number
     description: string
     count: number
-    unitQuotation: number
     bookingTypeId: number
     accountTypeId: number
     stockId: number

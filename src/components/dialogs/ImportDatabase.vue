@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {
@@ -183,7 +183,6 @@ const onClickOk = async (): Promise<void> => {
           stockClone.cQuarterDay = toISODate(rec.cQuarterDay)
           stockClone.cCompany = rec.cCompany
           stockClone.cISIN = rec.cISIN
-          // stockClone.cWKN = rec.cWKN
           stockClone.cFadeOut = rec.cFadeOut
           stockClone.cFirstPage = rec.cFirstPage
           stockClone.cFirstPage = rec.cFirstPage

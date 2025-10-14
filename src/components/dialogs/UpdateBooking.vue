@@ -3,12 +3,11 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IBooking} from '@/types.d'
-import type {Ref} from 'vue'
-import {defineExpose, onMounted, ref} from 'vue'
+import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
@@ -17,61 +16,40 @@ import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
-import BookingContainer from '@/components/dialogs/childs/BookingContainer.vue'
-import {useBookingContainer} from '@/composables/useBookingContainer'
+import BookingFormular from '@/components/dialogs/childs/BookingFormular.vue'
+import {useBookingFormular} from '@/composables/useBookingFormular'
 
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {updateBooking} = useBookingsDB()
 const {validateForm} = useValidation()
-const {containerData} = useBookingContainer()
+const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const settings = useSettings()
 const runtime = useRuntime()
 
-const currentBooking = records.bookings.items[records.bookings.getIndexById(runtime.activeId.value)]
-containerData.id = currentBooking.cID
-containerData.bookingTypeId = currentBooking.cBookingTypeID
-containerData.bookDate = currentBooking.cDate
-containerData.debit = currentBooking.cDebit
-containerData.credit = currentBooking.cCredit
-containerData.description = currentBooking.cDescription
-containerData.exDate = ''
-containerData.count = 0
-containerData.unitQuotation = 0
-containerData.accountTypeId = 0
-containerData.stockId = 0
-containerData.sourceTax = 0
-containerData.transactionTax = 0
-containerData.tax = 0
-containerData.fee = 0
-containerData.soli = 0
-containerData.marketPlace = ''
-const formRef: Ref<HTMLFormElement | null> = ref(null)
-
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING : onClickOk')
   if (!await validateForm(formRef)) return
-
   try {
     const booking: IBooking = {
-      cID: containerData.id,
+      cID: bookingFormularData.id,
       cAccountNumberID: settings.activeAccountId.value,
-      cStockID: currentBooking.cStockID,
-      cBookingTypeID: containerData.bookingTypeId,
-      cDate: containerData.bookDate,
-      cExDate: currentBooking.cExDate,
-      cCount: currentBooking.cCount,
-      cDescription: containerData.description,
-      cTransactionTax: currentBooking.cTransactionTax,
-      cSourceTax: currentBooking.cSourceTax,
-      cFee: currentBooking.cFee,
-      cTax: currentBooking.cTax,
-      cMarketPlace: currentBooking.cMarketPlace,
-      cSoli: currentBooking.cSoli,
-      cDebit: containerData.debit,
-      cCredit: containerData.credit
+      cStockID: bookingFormularData.stockId,
+      cBookingTypeID: bookingFormularData.bookingTypeId,
+      cDate: bookingFormularData.bookDate,
+      cExDate: bookingFormularData.exDate,
+      cCount: bookingFormularData.count,
+      cDescription: bookingFormularData.description,
+      cTransactionTax: bookingFormularData.transactionTax,
+      cSourceTax: bookingFormularData.sourceTax,
+      cFee: bookingFormularData.fee,
+      cTax: bookingFormularData.tax,
+      cMarketPlace: bookingFormularData.marketPlace,
+      cSoli: bookingFormularData.soli,
+      cDebit: bookingFormularData.debit,
+      cCredit: bookingFormularData.credit
     }
     records.bookings.update(booking)
     const updateBookingResponse = await updateBooking(booking)
@@ -88,6 +66,28 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_BOOKING: onMounted')
+  const bookingIndex = records.bookings.getIndexById(runtime.activeId.value)
+  if (bookingIndex > -1) {
+    const currentBooking = records.bookings.items[bookingIndex]
+    Object.assign(bookingFormularData, {
+      id: currentBooking.cID,
+      bookingTypeId: currentBooking.cBookingTypeID,
+      bookDate: currentBooking.cDate,
+      debit: currentBooking.cDebit,
+      credit: currentBooking.cCredit,
+      description: currentBooking.cDescription,
+      exDate: currentBooking.cExDate,
+      count: currentBooking.cCount,
+      accountTypeId: currentBooking.cAccountNumberID,
+      stockId: currentBooking.cStockID,
+      sourceTax: currentBooking.cSourceTax,
+      transactionTax: currentBooking.cTransactionTax,
+      tax: currentBooking.cTax,
+      fee: currentBooking.cFee,
+      soli: currentBooking.cSoli,
+      marketPlace: currentBooking.cMarketPlace
+    })
+  }
 })
 
 log('--- UpdateBooking.vue setup ---')
@@ -99,6 +99,6 @@ log('--- UpdateBooking.vue setup ---')
           ref="formRef"
           validate-on="submit"
           @submit.prevent>
-    <BookingContainer/>
+    <BookingFormular/>
   </v-form>
 </template>

@@ -3,42 +3,38 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IBooking} from '@/types.d'
-import type {Ref} from 'vue'
-import {defineExpose, onMounted, ref} from 'vue'
+import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
+import {useBookingFormular} from '@/composables/useBookingFormular'
 import {useRecordsStore} from '@/stores/records'
-import BookingContainer from '@/components/dialogs/childs/BookingContainer.vue'
-import {useBookingContainer} from '@/composables/useBookingContainer'
+import BookingFormular from '@/components/dialogs/childs/BookingFormular.vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {addBooking} = useBookingsDB()
 const {validateForm} = useValidation()
-const {containerData} = useBookingContainer()
+const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const {activeAccountId} = useSettings()
 
-const formRef: Ref<HTMLFormElement | null> = ref(null)
-
 const reset = (): void => {
-  Object.assign(containerData, {
+  Object.assign(bookingFormularData, {
     bookDate: '',
     exDate: '',
     description: '',
     debit: 0,
     credit: 0,
     count: 0,
-    unitQuotation: 0,
     bookingTypeId: 0,
     accountTypeId: -1,
     stockId: 0,
@@ -49,83 +45,77 @@ const reset = (): void => {
     transactionTax: 0
   })
 }
-
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING : onClickOk')
   if (!await validateForm(formRef)) return
 
   try {
     let booking: Omit<IBooking, 'cID'>
-    let result: number = 0
-    const costs = containerData.soli + containerData.transactionTax + containerData.tax + containerData.fee + containerData.sourceTax
-    switch (containerData.bookingTypeId) {
+    switch (bookingFormularData.bookingTypeId) {
       case 1:
-        result = containerData.count * containerData.unitQuotation + costs
         booking = {
-          cDate: containerData.bookDate,
-          cCredit: result < 0 ? -result : 0,
-          cDebit: result > 0 ? result : 0,
-          cDescription: containerData.description,
-          cBookingTypeID: containerData.bookingTypeId,
-          cStockID: containerData.stockId,
+          cDate: bookingFormularData.bookDate,
+          cCredit: bookingFormularData.credit,
+          cDebit: bookingFormularData.debit,
+          cDescription: bookingFormularData.description,
+          cBookingTypeID: bookingFormularData.bookingTypeId,
+          cStockID: bookingFormularData.stockId,
           cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
-          cCount: containerData.count,
-          cSoli: containerData.soli,
-          cTax: containerData.tax,
-          cFee: containerData.fee,
-          cSourceTax: containerData.sourceTax,
-          cTransactionTax: containerData.transactionTax,
-          cMarketPlace: containerData.marketPlace
+          cCount: bookingFormularData.count,
+          cSoli: bookingFormularData.soli,
+          cTax: bookingFormularData.tax,
+          cFee: bookingFormularData.fee,
+          cSourceTax: bookingFormularData.sourceTax,
+          cTransactionTax: bookingFormularData.transactionTax,
+          cMarketPlace: bookingFormularData.marketPlace
         }
         break
       case 2:
-        result = containerData.count * containerData.unitQuotation - costs
         booking = {
-          cDate: containerData.bookDate,
-          cCredit: result > 0 ? result : 0,
-          cDebit: result < 0 ? -result : 0,
-          cDescription: containerData.description,
-          cBookingTypeID: containerData.bookingTypeId,
-          cStockID: containerData.stockId,
+          cDate: bookingFormularData.bookDate,
+          cCredit: bookingFormularData.credit,
+          cDebit: bookingFormularData.debit,
+          cDescription: bookingFormularData.description,
+          cBookingTypeID: bookingFormularData.bookingTypeId,
+          cStockID: bookingFormularData.stockId,
           cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
-          cCount: containerData.count,
-          cSoli: containerData.soli,
-          cTax: containerData.tax,
-          cFee: containerData.fee,
-          cSourceTax: containerData.sourceTax,
-          cTransactionTax: containerData.transactionTax,
-          cMarketPlace: containerData.marketPlace
+          cCount: bookingFormularData.count,
+          cSoli: bookingFormularData.soli,
+          cTax: bookingFormularData.tax,
+          cFee: bookingFormularData.fee,
+          cSourceTax: bookingFormularData.sourceTax,
+          cTransactionTax: bookingFormularData.transactionTax,
+          cMarketPlace: bookingFormularData.marketPlace
         }
         break
       case 3:
-        result = containerData.count * containerData.unitQuotation - costs
         booking = {
-          cDate: containerData.bookDate,
-          cCredit: result > 0 ? result : 0,
-          cDebit: result < 0 ? -result : 0,
-          cDescription: containerData.description,
-          cBookingTypeID: containerData.bookingTypeId,
-          cStockID: containerData.stockId,
+          cDate: bookingFormularData.bookDate,
+          cCredit: bookingFormularData.credit,
+          cDebit: bookingFormularData.debit,
+          cDescription: bookingFormularData.description,
+          cBookingTypeID: bookingFormularData.bookingTypeId,
+          cStockID: bookingFormularData.stockId,
           cAccountNumberID: activeAccountId.value,
-          cExDate: containerData.exDate,
-          cCount: containerData.count,
-          cSoli: containerData.soli,
-          cTax: containerData.tax,
-          cFee: containerData.fee,
-          cSourceTax: containerData.sourceTax,
-          cTransactionTax: containerData.transactionTax,
+          cExDate: bookingFormularData.exDate,
+          cCount: bookingFormularData.count,
+          cSoli: bookingFormularData.soli,
+          cTax: bookingFormularData.tax,
+          cFee: bookingFormularData.fee,
+          cSourceTax: bookingFormularData.sourceTax,
+          cTransactionTax: bookingFormularData.transactionTax,
           cMarketPlace: ''
         }
         break
       default:
         booking = {
-          cDate: containerData.bookDate,
-          cCredit: containerData.credit,
-          cDebit: containerData.debit,
-          cDescription: containerData.description,
-          cBookingTypeID: containerData.bookingTypeId,
+          cDate: bookingFormularData.bookDate,
+          cCredit: bookingFormularData.credit,
+          cDebit: bookingFormularData.debit,
+          cDescription: bookingFormularData.description,
+          cBookingTypeID: bookingFormularData.bookingTypeId,
           cStockID: 0,
           cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DEFAULTS.DATE,
@@ -138,7 +128,7 @@ const onClickOk = async (): Promise<void> => {
           cMarketPlace: ''
         }
     }
-    const addBookingID = await addBooking(booking) // TODO minimum limit?
+    const addBookingID = await addBooking(booking) // TODO minimum limit 0, -1?
     if (addBookingID > 0) {
       const completeBooking: IBooking = {cID: addBookingID, ...booking}
       records.bookings.add(completeBooking)
@@ -150,9 +140,7 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.addBooking.catch')])
   }
 }
-
 const title = t('dialogs.addBooking.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -169,6 +157,6 @@ log('--- AddBooking.vue setup ---')
           ref="formRef"
           validate-on="submit"
           @submit.prevent>
-    <BookingContainer/>
+    <BookingFormular/>
   </v-form>
 </template>

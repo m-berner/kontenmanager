@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+ * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 const CONS = Object.freeze({
     CURRENCIES: {
@@ -122,8 +122,7 @@ const CONS = Object.freeze({
             DELETE_ACCOUNT_CONFIRMATION: 'DeleteAccountConfirmation',
             SETTING: 'setting',
             PLACEHOLDER: {
-                ADD_ACCOUNT_URL: 'z. B. https://www.ing.de',
-                UPDATE_ACCOUNT_URL: 'z. B. https://www.ing.de'
+                ACCOUNT_LOGO_URL: 'z. B. https://www.ing.de'
             }
         }
     },
@@ -513,7 +512,7 @@ const CONS = Object.freeze({
         NO_RENDER: 'no_render'
     },
     SYSTEM: {
-        COPYRIGHT: '2025-2026 Martin Berner',
+        COPYRIGHT: `2025-${new Date().getFullYear()} Martin Berner`,
         MAILTO: 'mailto:kontenmanager@gmx.de',
         HTML_ENTITY:
             '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
