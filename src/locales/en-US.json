@@ -51,6 +51,10 @@
   "dialogs": {
     "cancel": "Abbrechen",
     "ok": "OK",
+    "stockFormula": {
+      "noAccount": "Sie müssen erst ein Konto anlegen u. auswählen.",
+      "noStocks": "Es gibt noch kein Unternehmen."
+    },
     "addBooking": {
       "title": "Buchung hinzufügen",
       "dateLabel": "Buchungstag",

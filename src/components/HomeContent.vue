@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IMenuItem} from 'types.d'
+import type {IMenuItem} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
 import type {ComputedRef, Ref} from 'vue'
 import {computed, ref} from 'vue'

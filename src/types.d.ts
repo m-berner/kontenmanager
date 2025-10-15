@@ -6,6 +6,11 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
+import {useApp} from "@/composables/useApp";
+import {useBrowser} from "@/composables/useBrowser";
+import {useStocksDB} from "@/composables/useIndexedDB";
+import {useValidation} from "@/composables/useValidation";
+
 export interface IAccountDB {
     cID: number
     cSwift: string
@@ -77,6 +82,18 @@ export interface IBooking {
     cSourceTax: number
     cTransactionTax: number
     cMarketPlace: string
+}
+
+interface IStockFormularData {
+    id: number
+    isin: string
+    company: string
+    symbol: string
+    meetingDay: string
+    quarterDay: string
+    fadeOut: boolean
+    firstPage: boolean
+    url: string
 }
 
 export interface IAccountFormularData {

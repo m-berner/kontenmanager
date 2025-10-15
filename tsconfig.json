@@ -18,9 +18,9 @@
     "./kontenmanager@gmx.de"
   ],
   "compilerOptions": {
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     },
     "module": "esnext",
     "target": "es2024",

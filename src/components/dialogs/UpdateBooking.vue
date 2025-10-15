@@ -16,7 +16,7 @@ import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
-import BookingFormular from '@/components/dialogs/childs/BookingFormular.vue'
+import BookingFormular from '@/components/dialogs/forms/BookingFormular.vue'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 
 const {t} = useI18n()

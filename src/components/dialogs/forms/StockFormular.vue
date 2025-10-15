@@ -1,0 +1,133 @@
+<!--
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - you could obtain one at https://mozilla.org/MPL/2.0/.
+  -
+  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  -->
+<script lang="ts" setup>
+import {defineProps, onMounted} from 'vue'
+import {useI18n} from 'vue-i18n'
+import {useValidation} from '@/composables/useValidation'
+import {useApp} from '@/composables/useApp'
+import {useRuntime} from '@/composables/useRuntime'
+import {useRecordsStore} from '@/stores/records'
+import {useStockFormular} from '@/composables/useStockFormular'
+
+interface IStockFormularProps {
+  isUpdate: boolean
+}
+
+const stockFormularProps = defineProps<IStockFormularProps>()
+
+const {t} = useI18n()
+const {formatISIN, log} = useApp()
+const {isinRules} = useValidation()
+const records = useRecordsStore()
+const runtime = useRuntime()
+const {stockFormularData, formRef} = useStockFormular()
+
+const onUpdateISIN = () => {
+  stockFormularData.isin = formatISIN(stockFormularData.isin)
+}
+
+onMounted(() => {
+  log('UPDATE_STOCK: onMounted')
+  const currentStock = records.stocks.getItemById(runtime.activeId.value)
+  stockFormularData.id = runtime.activeId.value
+  stockFormularData.isin = formatISIN(currentStock.cISIN)
+  stockFormularData.company = currentStock.cCompany
+  stockFormularData.symbol = currentStock.cSymbol
+  stockFormularData.meetingDay = currentStock.cMeetingDay
+  stockFormularData.quarterDay = currentStock.cQuarterDay
+  stockFormularData.fadeOut = currentStock.cFadeOut === 1
+  stockFormularData.firstPage = currentStock.cFirstPage === 1
+  stockFormularData.url = currentStock.cURL
+})
+
+log('--- UpdateStock.vue setup ---')
+</script>
+
+<template>
+    <v-container>
+      <v-row>
+        <v-text-field
+            v-model="stockFormularData.isin"
+            :label="t('dialogs.updateStock.isin')"
+            :rules="isinRules([
+                t('validators.isinRules.required'),
+                t('validators.isinRules.length'),
+                t('validators.isinRules.format'),
+                t('validators.isinRules.country'),
+                t('validators.isinRules.luhn')
+                ])"
+            autofocus
+            required
+            variant="outlined"
+            @focus="formRef?.resetValidation()"
+            @update:model-value="onUpdateISIN"/>
+      </v-row>
+      <v-row>
+        <v-text-field
+            v-model="stockFormularData.company"
+            :label="t('dialogs.updateStock.company')"
+            required
+            variant="outlined"
+        />
+      </v-row>
+      <v-row cols="2" sm="2">
+        <v-col/>
+        <v-col>
+          <v-text-field
+              v-model="stockFormularData.symbol"
+              :label="t('dialogs.updateStock.symbol')"
+              required
+              variant="outlined"
+          />
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-container v-if="stockFormularProps.isUpdate">
+      <v-row cols="2" sm="2">
+        <v-col>
+          <v-text-field
+              v-model="stockFormularData.meetingDay"
+              :label="t('dialogs.updateStock.meetingDay')"
+              type="date"
+              variant="outlined"
+          />
+        </v-col>
+        <v-col>
+          <v-text-field
+              v-model="stockFormularData.quarterDay"
+              :label="t('dialogs.updateStock.quarterDay')"
+              type="date"
+              variant="outlined"
+          />
+        </v-col>
+      </v-row>
+      <v-row cols="2" sm="2">
+        <v-col>
+          <v-checkbox
+              v-model="stockFormularData.fadeOut"
+              :label="t('dialogs.updateStock.fadeOut')"
+              variant="outlined"
+          />
+        </v-col>
+        <v-col>
+          <v-checkbox
+              v-model="stockFormularData.firstPage"
+              :label="t('dialogs.updateStock.firstPage')"
+              variant="outlined"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-text-field
+            v-model="stockFormularData.url"
+            :label="t('dialogs.updateStock.url')"
+            variant="outlined"
+        />
+      </v-row>
+    </v-container>
+</template>

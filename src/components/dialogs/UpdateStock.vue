@@ -7,8 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IStockDB} from '@/types.d'
-import type {Ref} from 'vue'
-import {defineExpose, onMounted, reactive, ref} from 'vue'
+import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -16,60 +15,34 @@ import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
 import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
+import {useStockFormular} from '@/composables/useStockFormular'
 import {useRecordsStore} from '@/stores/records'
-
-interface IFormData {
-  id: number
-  isin: string
-  company: string
-  symbol: string
-  meetingDay: string
-  quarterDay: string
-  fadeOut: boolean
-  firstPage: boolean
-  url: string
-}
+import StockFormular from '@/components/dialogs/forms/StockFormular'
 
 const {t} = useI18n()
 const {formatISIN, log} = useApp()
 const {notice} = useBrowser()
 const {updateStock} = useStocksDB()
-const {isinRules, validateForm} = useValidation()
+const {validateForm} = useValidation()
 const records = useRecordsStore()
 const {activeAccountId} = useSettings()
 const runtime = useRuntime()
+const {stockFormularData, formRef} = useStockFormular()
 
-const formData: IFormData = reactive({
-  id: -1,
-  isin: '',
-  company: '',
-  wkn: '',
-  symbol: '',
-  meetingDay: '',
-  quarterDay: '',
-  fadeOut: false,
-  firstPage: false,
-  url: ''
-})
-const formRef: Ref<HTMLFormElement | null> = ref(null)
-
-const onUpdateISIN = () => {
-  formData.isin = formatISIN(formData.isin)
-}
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
   if (!await validateForm(formRef)) return
   try {
     const stock: IStockDB = {
-      cID: formData.id,
-      cISIN: formData.isin.replace(/\s/g, '').toUpperCase(),
-      cCompany: formData.company,
-      cSymbol: formData.symbol,
-      cMeetingDay: formData.meetingDay,
-      cQuarterDay: formData.quarterDay,
-      cFadeOut: formData.fadeOut ? 1 : 0,
-      cFirstPage: formData.firstPage ? 1 : 0,
-      cURL: formData.url,
+      cID: stockFormularData.id,
+      cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
+      cCompany: stockFormularData.company,
+      cSymbol: stockFormularData.symbol,
+      cMeetingDay: stockFormularData.meetingDay,
+      cQuarterDay: stockFormularData.quarterDay,
+      cFadeOut: stockFormularData.fadeOut ? 1 : 0,
+      cFirstPage: stockFormularData.firstPage ? 1 : 0,
+      cURL: stockFormularData.url,
       cAccountNumberID: activeAccountId.value
     }
     records.stocks.updateStock(stock)
@@ -81,112 +54,37 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.updateStock.error')])
   }
 }
-
 const title = t('dialogs.updateStock.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
   const currentStock = records.stocks.getItemById(runtime.activeId.value)
-  formData.id = runtime.activeId.value
-  formData.isin = formatISIN(currentStock.cISIN)
-  formData.company = currentStock.cCompany
-  formData.symbol = currentStock.cSymbol
-  formData.meetingDay = currentStock.cMeetingDay
-  formData.quarterDay = currentStock.cQuarterDay
-  formData.fadeOut = currentStock.cFadeOut === 1
-  formData.firstPage = currentStock.cFirstPage === 1
-  formData.url = currentStock.cURL
+  if (currentStock !== undefined) {
+    Object.assign(stockFormularData, {
+      id: runtime.activeId.value,
+      isin: formatISIN(currentStock.cISIN),
+      company: currentStock.cCompany,
+      symbol: currentStock.cSymbol,
+      meetingDay: currentStock.cMeetingDay,
+      quarterDay: currentStock.cQuarterDay,
+      fadeOut: currentStock.cFadeOut === 1,
+      firstPage: currentStock.cFirstPage === 1,
+      url: currentStock.cURL
+    })
+  } // TODO error notice for user
 })
 
 log('--- UpdateStock.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="records.stocks.items.length === 0">{{ t('dialogs.updateStock.message') }}</v-alert>
+  <v-alert v-if="activeAccountId !== -1">{{ t('dialogs.stockFormular.noAccount') }}</v-alert>
+  <v-alert v-if="records.stocks.items.length === 0">{{ t('dialogs.stockFormular.noStocks') }}</v-alert>
   <v-form v-else
           ref="formRef"
           validate-on="submit"
           @submit.prevent>
-    <v-container>
-      <v-row>
-        <v-text-field
-            v-model="formData.isin"
-            :label="t('dialogs.updateStock.isin')"
-            :rules="isinRules([
-                t('validators.isinRules.required'),
-                t('validators.isinRules.length'),
-                t('validators.isinRules.format'),
-                t('validators.isinRules.country'),
-                t('validators.isinRules.luhn')
-                ])"
-            autofocus
-            required
-            variant="outlined"
-            @focus="formRef?.resetValidation()"
-            @update:model-value="onUpdateISIN"/>
-      </v-row>
-      <v-row>
-        <v-text-field
-            v-model="formData.company"
-            :label="t('dialogs.updateStock.company')"
-            required
-            variant="outlined"
-        />
-      </v-row>
-      <v-row cols="2" sm="2">
-        <v-col/>
-        <v-col>
-          <v-text-field
-              v-model="formData.symbol"
-              :label="t('dialogs.updateStock.symbol')"
-              required
-              variant="outlined"
-          />
-        </v-col>
-      </v-row>
-      <v-row cols="2" sm="2">
-        <v-col>
-          <v-text-field
-              v-model="formData.meetingDay"
-              :label="t('dialogs.updateStock.meetingDay')"
-              type="date"
-              variant="outlined"
-          />
-        </v-col>
-        <v-col>
-          <v-text-field
-              v-model="formData.quarterDay"
-              :label="t('dialogs.updateStock.quarterDay')"
-              type="date"
-              variant="outlined"
-          />
-        </v-col>
-      </v-row>
-      <v-row cols="2" sm="2">
-        <v-col>
-          <v-checkbox
-              v-model="formData.fadeOut"
-              :label="t('dialogs.updateStock.fadeOut')"
-              variant="outlined"
-          />
-        </v-col>
-        <v-col>
-          <v-checkbox
-              v-model="formData.firstPage"
-              :label="t('dialogs.updateStock.firstPage')"
-              variant="outlined"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-text-field
-            v-model="formData.url"
-            :label="t('dialogs.updateStock.url')"
-            variant="outlined"
-        />
-      </v-row>
-    </v-container>
+    <StockFormular :isUpdate="true"/>
   </v-form>
 </template>

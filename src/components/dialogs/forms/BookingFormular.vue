@@ -13,7 +13,7 @@ import {useSettings} from '@/composables/useSettings'
 import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import {useRecordsStore} from '@/stores/records'
-import CurrencyInput from '@/components/dialogs/childs/CurrencyInput.vue'
+import CurrencyInput from '@/components/dialogs/forms/CurrencyInput.vue'
 
 const {t} = useI18n()
 const {CONS} = useApp()
