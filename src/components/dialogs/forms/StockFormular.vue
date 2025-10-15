@@ -49,85 +49,85 @@ log('--- UpdateStock.vue setup ---')
 </script>
 
 <template>
-    <v-container>
-      <v-row>
-        <v-text-field
-            v-model="stockFormularData.isin"
-            :label="t('dialogs.updateStock.isin')"
-            :rules="isinRules([
+  <v-container>
+    <v-row>
+      <v-text-field
+          v-model="stockFormularData.isin"
+          :label="t('dialogs.updateStock.isin')"
+          :rules="isinRules([
                 t('validators.isinRules.required'),
                 t('validators.isinRules.length'),
                 t('validators.isinRules.format'),
                 t('validators.isinRules.country'),
                 t('validators.isinRules.luhn')
                 ])"
-            autofocus
-            required
-            variant="outlined"
-            @focus="formRef?.resetValidation()"
-            @update:model-value="onUpdateISIN"/>
-      </v-row>
-      <v-row>
+          autofocus
+          required
+          variant="outlined"
+          @focus="formRef?.resetValidation()"
+          @update:model-value="onUpdateISIN"/>
+    </v-row>
+    <v-row>
+      <v-text-field
+          v-model="stockFormularData.company"
+          :label="t('dialogs.updateStock.company')"
+          required
+          variant="outlined"
+      />
+    </v-row>
+    <v-row cols="2" sm="2">
+      <v-col/>
+      <v-col>
         <v-text-field
-            v-model="stockFormularData.company"
-            :label="t('dialogs.updateStock.company')"
+            v-model="stockFormularData.symbol"
+            :label="t('dialogs.updateStock.symbol')"
             required
             variant="outlined"
         />
-      </v-row>
-      <v-row cols="2" sm="2">
-        <v-col/>
-        <v-col>
-          <v-text-field
-              v-model="stockFormularData.symbol"
-              :label="t('dialogs.updateStock.symbol')"
-              required
-              variant="outlined"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container v-if="stockFormularProps.isUpdate">
-      <v-row cols="2" sm="2">
-        <v-col>
-          <v-text-field
-              v-model="stockFormularData.meetingDay"
-              :label="t('dialogs.updateStock.meetingDay')"
-              type="date"
-              variant="outlined"
-          />
-        </v-col>
-        <v-col>
-          <v-text-field
-              v-model="stockFormularData.quarterDay"
-              :label="t('dialogs.updateStock.quarterDay')"
-              type="date"
-              variant="outlined"
-          />
-        </v-col>
-      </v-row>
-      <v-row cols="2" sm="2">
-        <v-col>
-          <v-checkbox
-              v-model="stockFormularData.fadeOut"
-              :label="t('dialogs.updateStock.fadeOut')"
-              variant="outlined"
-          />
-        </v-col>
-        <v-col>
-          <v-checkbox
-              v-model="stockFormularData.firstPage"
-              :label="t('dialogs.updateStock.firstPage')"
-              variant="outlined"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container v-if="stockFormularProps.isUpdate">
+    <v-row cols="2" sm="2">
+      <v-col>
         <v-text-field
-            v-model="stockFormularData.url"
-            :label="t('dialogs.updateStock.url')"
+            v-model="stockFormularData.meetingDay"
+            :label="t('dialogs.updateStock.meetingDay')"
+            type="date"
             variant="outlined"
         />
-      </v-row>
-    </v-container>
+      </v-col>
+      <v-col>
+        <v-text-field
+            v-model="stockFormularData.quarterDay"
+            :label="t('dialogs.updateStock.quarterDay')"
+            type="date"
+            variant="outlined"
+        />
+      </v-col>
+    </v-row>
+    <v-row cols="2" sm="2">
+      <v-col>
+        <v-checkbox
+            v-model="stockFormularData.fadeOut"
+            :label="t('dialogs.updateStock.fadeOut')"
+            variant="outlined"
+        />
+      </v-col>
+      <v-col>
+        <v-checkbox
+            v-model="stockFormularData.firstPage"
+            :label="t('dialogs.updateStock.firstPage')"
+            variant="outlined"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-text-field
+          v-model="stockFormularData.url"
+          :label="t('dialogs.updateStock.url')"
+          variant="outlined"
+      />
+    </v-row>
+  </v-container>
 </template>

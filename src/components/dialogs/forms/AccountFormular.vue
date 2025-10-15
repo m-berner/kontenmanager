@@ -65,15 +65,15 @@ log('--- AccountFormular.vue setup ---')
 </script>
 
 <template>
-    <v-switch
-        v-model="accountFormularData.withDepot"
-        :label="t('dialogs.addAccount.withDepotLabel')"
-        color="red"
-        variant="outlined"/>
-    <v-text-field
-        v-model="accountFormularData.swift"
-        :label="t('dialogs.addAccount.swiftLabel')"
-        :rules="swiftRules([
+  <v-switch
+      v-model="accountFormularData.withDepot"
+      :label="t('dialogs.addAccount.withDepotLabel')"
+      color="red"
+      variant="outlined"/>
+  <v-text-field
+      v-model="accountFormularData.swift"
+      :label="t('dialogs.addAccount.swiftLabel')"
+      :rules="swiftRules([
             t('validators.swiftRules.required'),
             t('validators.swiftRules.length'),
             t('validators.swiftRules.format'),
@@ -84,29 +84,29 @@ log('--- AccountFormular.vue setup ---')
             t('validators.swiftRules.test'),
             t('validators.swiftRules.passive'),
         ])"
-        autofocus
-        variant="outlined"
-        @focus="formRef?.resetValidation()"
-        @update:modelValue="onUpdateSwift"/>
-    <v-text-field
-        v-model="accountFormularData.iban"
-        :label="t('dialogs.addAccount.ibanLabel')"
-        :placeholder="t('dialogs.addAccount.ibanPlaceholder')"
-        :rules="joinedIbanRules"
-        variant="outlined"
-        @focus="formRef?.resetValidation()"
-        @update:modelValue="onUpdateIban"/>
-    <v-text-field
-        v-model="formSearch"
-        :label="t('dialogs.addAccount.searchLabel')"
-        :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
-        variant="outlined"/>
-    <!-- Logo Preview -->
-    <div class="mb-4">
-      <v-avatar class="me-3" color="white" size="48">
-        <v-img
-            :alt="t('dialogs.addAccount.missingLogo')"
-            :src="accountFormularData.logoUrl"/>
-      </v-avatar>
-    </div>
+      autofocus
+      variant="outlined"
+      @focus="formRef?.resetValidation()"
+      @update:modelValue="onUpdateSwift"/>
+  <v-text-field
+      v-model="accountFormularData.iban"
+      :label="t('dialogs.addAccount.ibanLabel')"
+      :placeholder="t('dialogs.addAccount.ibanPlaceholder')"
+      :rules="joinedIbanRules"
+      variant="outlined"
+      @focus="formRef?.resetValidation()"
+      @update:modelValue="onUpdateIban"/>
+  <v-text-field
+      v-model="formSearch"
+      :label="t('dialogs.addAccount.searchLabel')"
+      :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
+      variant="outlined"/>
+  <!-- Logo Preview -->
+  <div class="mb-4">
+    <v-avatar class="me-3" color="white" size="48">
+      <v-img
+          :alt="t('dialogs.addAccount.missingLogo')"
+          :src="accountFormularData.logoUrl"/>
+    </v-avatar>
+  </div>
 </template>

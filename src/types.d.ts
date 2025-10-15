@@ -6,11 +6,6 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import {useApp} from "@/composables/useApp";
-import {useBrowser} from "@/composables/useBrowser";
-import {useStocksDB} from "@/composables/useIndexedDB";
-import {useValidation} from "@/composables/useValidation";
-
 export interface IAccountDB {
     cID: number
     cSwift: string

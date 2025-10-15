@@ -563,6 +563,7 @@ export const useBookingTypesDB = () => {
 
 export const useStocksDB = () => {
     const db = useIndexedDB()
+
     async function addStock(stockData: unknown) {
         try {
             console.error('sdffs', db)
