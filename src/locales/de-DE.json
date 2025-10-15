@@ -51,7 +51,7 @@
   "dialogs": {
     "cancel": "Abbrechen",
     "ok": "OK",
-    "stockFormula": {
+    "stockFormular": {
       "noAccount": "Sie müssen erst ein Konto anlegen u. auswählen.",
       "noStocks": "Es gibt noch kein Unternehmen."
     },

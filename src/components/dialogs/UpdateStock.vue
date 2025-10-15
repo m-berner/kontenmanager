@@ -17,7 +17,7 @@ import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useRecordsStore} from '@/stores/records'
-import StockFormular from '@/components/dialogs/forms/StockFormular'
+import StockFormular from '@/components/dialogs/forms/StockFormular.vue'
 
 const {t} = useI18n()
 const {formatISIN, log} = useApp()
@@ -79,7 +79,7 @@ log('--- UpdateStock.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="activeAccountId !== -1">{{ t('dialogs.stockFormular.noAccount') }}</v-alert>
+  <v-alert v-if="activeAccountId === -1">{{ t('dialogs.stockFormular.noAccount') }}</v-alert>
   <v-alert v-if="records.stocks.items.length === 0">{{ t('dialogs.stockFormular.noStocks') }}</v-alert>
   <v-form v-else
           ref="formRef"

@@ -1,5 +1,4 @@
-import {reactive, ref} from 'vue';
-
+import { reactive, ref } from 'vue';
 const bookingFormularData = reactive({
     id: 0,
     bookDate: '',
