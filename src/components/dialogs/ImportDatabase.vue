@@ -78,7 +78,7 @@ interface IEventTarget extends HTMLInputElement {
 }
 
 const {t} = useI18n()
-const {CONS, log, toISODate} = useApp()
+const {CONS, log, isoDate} = useApp()
 const {notice, setStorage} = useBrowser()
 const {clearAllAccounts, importAccounts} = useAccountsDB()
 const {clearAllBookings, importBookings} = useBookingsDB()
@@ -179,14 +179,15 @@ const onClickOk = async (): Promise<void> => {
           stockClone.cID = rec.cID
           stockClone.cAccountNumberID = activeId
           stockClone.cSymbol = rec.cSym
-          stockClone.cMeetingDay = toISODate(rec.cMeetingDay)
-          stockClone.cQuarterDay = toISODate(rec.cQuarterDay)
+          stockClone.cMeetingDay = isoDate(rec.cMeetingDay)
+          stockClone.cQuarterDay = isoDate(rec.cQuarterDay)
           stockClone.cCompany = rec.cCompany
           stockClone.cISIN = rec.cISIN
           stockClone.cFadeOut = rec.cFadeOut
           stockClone.cFirstPage = rec.cFirstPage
           stockClone.cFirstPage = rec.cFirstPage
           stockClone.cURL = rec.cURL
+          stockClone.cAskDates = CONS.DATE.DEFAULT_ISO
           stocksImportData.push({type: 'add', data: stockClone, key: -1})
           stocksStoreData.push(stockClone)
         }
@@ -196,9 +197,9 @@ const onClickOk = async (): Promise<void> => {
           booking.cID = i + 1
           booking.cAccountNumberID = activeId
           booking.cStockID = smTransfer.cStockID
-          booking.cDate = toISODate(smTransfer.cDate)
+          booking.cDate = isoDate(smTransfer.cDate)
           booking.cBookingTypeID = smTransfer.cType
-          booking.cExDate = toISODate(smTransfer.cExDay)
+          booking.cExDate = isoDate(smTransfer.cExDay)
           booking.cCount = smTransfer.cCount < 0 ? -smTransfer.cCount : smTransfer.cCount
           booking.cDescription = smTransfer.cDescription
           booking.cTransactionTax = smTransfer.cFTax

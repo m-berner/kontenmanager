@@ -20,7 +20,7 @@ import {useStockFormular} from '@/composables/useStockFormular'
 import StockFormular from '@/components/dialogs/forms/StockFormular.vue'
 
 const {t} = useI18n()
-const {log} = useApp()
+const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {addStock} = useStocksDB()
 const {validateForm} = useValidation()
@@ -53,7 +53,8 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: 0,
       cFirstPage: 0,
       cURL: '',
-      cAccountNumberID: activeAccountId.value
+      cAccountNumberID: activeAccountId.value,
+      cAskDates: CONS.DATE.DEFAULT_ISO
     }
     const addStockID = await addStock(stock)
     if (addStockID > 0) {
@@ -68,7 +69,11 @@ const onClickOk = async (): Promise<void> => {
   }
 }
 const title = t('dialogs.addStock.title')
-
+// TODO update button in Company Content...
+// TODO open company link not working
+// TODO Setting button also in company view
+// TODO Aktien check dollar kurse, euro mix?
+// TODO bookingtypeformular usebookingTypeFormular,...
 defineExpose({onClickOk, title})
 
 onMounted(() => {

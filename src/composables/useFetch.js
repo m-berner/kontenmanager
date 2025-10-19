@@ -505,61 +505,63 @@ export const useFetch = () => {
             const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01';
             return new Date(`${year}-${month}-${day}`).getTime();
         };
-        const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${obj.isin}`);
-        if (firstResponse.url.length === 0 ||
-            !firstResponse.ok ||
-            firstResponse.status >= CONS.STATES.SRV ||
-            (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-            log('USE_FETCH: fetchDatesData: First request failed', { error: 'SYstem' });
-        }
-        else {
-            const atoms = firstResponse.url.split('/');
-            const stockName = atoms[atoms.length - 1].replace('-aktie', '');
-            const secondResponse = await fetch(`https://www.finanzen.net/termine/${stockName}`);
-            if (!secondResponse.ok ||
-                secondResponse.status >= CONS.STATES.SRV ||
-                (secondResponse.status > 0 &&
-                    secondResponse.status < CONS.STATES.SUCCESS)) {
-                log('USE_FETCH: fetchDatesData: Second request failed');
+        return obj.map(async (entry) => {
+            const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${entry.isin}`);
+            if (firstResponse.url.length === 0 ||
+                !firstResponse.ok ||
+                firstResponse.status >= CONS.STATES.SRV ||
+                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
+                log('USE_FETCH: fetchDatesData: First request failed', { error: 'System' });
             }
             else {
-                const secondResponseText = await secondResponse.text();
-                const qfgmDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
-                const tables = qfgmDocument.querySelectorAll('.table');
-                const rows = tables[1].querySelectorAll('tr');
-                let stopGm = false;
-                let stopQf = false;
-                const gmqfString = { gm: '01.01.1970', qf: '01.01.1970' };
-                for (let j = 0; j < rows.length && !!(rows[j].cells[3]); j++) {
-                    const row = rows[j].cells[3].textContent?.replaceAll('(e)*', '').trim() ?? '01.01.1970';
-                    if (rows[j].cells[0].textContent === 'Quartalszahlen' &&
-                        row !== '01.01.1970' &&
-                        row.length === 10 &&
-                        !stopQf) {
-                        gmqfString.qf = row;
-                        stopQf = true;
-                    }
-                    else if (rows[j].cells[0].textContent === 'Hauptversammlung' &&
-                        row !== '01.01.1970' &&
-                        row.length === 10 &&
-                        !stopGm) {
-                        gmqfString.gm = row;
-                        stopGm = true;
-                    }
-                    if (stopQf && stopGm)
-                        break;
+                const atoms = firstResponse.url.split('/');
+                const stockName = atoms[atoms.length - 1].replace('-aktie', '');
+                const secondResponse = await fetch(`https://www.finanzen.net/termine/${stockName}`);
+                if (!secondResponse.ok ||
+                    secondResponse.status >= CONS.STATES.SRV ||
+                    (secondResponse.status > 0 &&
+                        secondResponse.status < CONS.STATES.SUCCESS)) {
+                    log('USE_FETCH: fetchDatesData: Second request failed');
                 }
-                gmqf.qf =
-                    gmqfString.qf !== undefined && gmqfString.qf !== ''
-                        ? parseGermanDate(gmqfString.qf)
-                        : 0;
-                gmqf.gm =
-                    gmqfString.gm !== undefined && gmqfString.gm !== ''
-                        ? parseGermanDate(gmqfString.gm)
-                        : 0;
+                else {
+                    const secondResponseText = await secondResponse.text();
+                    const qfgmDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                    const tables = qfgmDocument.querySelectorAll('.table');
+                    const rows = tables[1].querySelectorAll('tr');
+                    let stopGm = false;
+                    let stopQf = false;
+                    const gmqfString = { gm: '01.01.1970', qf: '01.01.1970' };
+                    for (let j = 0; j < rows.length && !!(rows[j].cells[3]); j++) {
+                        const row = rows[j].cells[3].textContent?.replaceAll('(e)*', '').trim() ?? '01.01.1970';
+                        if (rows[j].cells[0].textContent === 'Quartalszahlen' &&
+                            row !== '01.01.1970' &&
+                            row.length === 10 &&
+                            !stopQf) {
+                            gmqfString.qf = row;
+                            stopQf = true;
+                        }
+                        else if (rows[j].cells[0].textContent === 'Hauptversammlung' &&
+                            row !== '01.01.1970' &&
+                            row.length === 10 &&
+                            !stopGm) {
+                            gmqfString.gm = row;
+                            stopGm = true;
+                        }
+                        if (stopQf && stopGm)
+                            break;
+                    }
+                    gmqf.qf =
+                        gmqfString.qf !== undefined && gmqfString.qf !== ''
+                            ? parseGermanDate(gmqfString.qf)
+                            : 0;
+                    gmqf.gm =
+                        gmqfString.gm !== undefined && gmqfString.gm !== ''
+                            ? parseGermanDate(gmqfString.gm)
+                            : 0;
+                }
             }
-        }
-        return { key: obj.id, value: gmqf };
+            return { key: entry.id, value: gmqf };
+        });
     }
     return {
         fetchCompanyData,

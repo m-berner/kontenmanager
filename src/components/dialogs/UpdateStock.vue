@@ -43,7 +43,8 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: stockFormularData.fadeOut ? 1 : 0,
       cFirstPage: stockFormularData.firstPage ? 1 : 0,
       cURL: stockFormularData.url,
-      cAccountNumberID: activeAccountId.value
+      cAccountNumberID: activeAccountId.value,
+      cAskDates: stockFormularData.askDates
     }
     records.stocks.updateStock(stock)
     await updateStock(stock)
@@ -70,7 +71,8 @@ onMounted(() => {
       quarterDay: currentStock.cQuarterDay,
       fadeOut: currentStock.cFadeOut === 1,
       firstPage: currentStock.cFirstPage === 1,
-      url: currentStock.cURL
+      url: currentStock.cURL,
+      askDate: currentStock.cAskDates
     })
   } // TODO error notice for user
 })

@@ -131,7 +131,7 @@ const onUpdatePage = async (page: number): Promise<void> => {
 onMounted(async () => {
   log('COMPANY_CONTENT: onMounted')
   const requiredOnlineData = async (page: number = 1) => {
-    if (records.stocks.active[stocksPerPage.value * page].mPortfolio >= 1) {
+    if ((records.stocks.active[stocksPerPage.value * page].mPortfolio ?? 0) >= 1) {
       await records.stocks.loadOnlineData(Math.ceil(stocksPerPage.value * page / stocksPerPage.value) + 1)
       await requiredOnlineData(page + 1)
     }
@@ -143,7 +143,7 @@ onMounted(async () => {
   records.stocks.active.sort((a: IStock, b: IStock) => {
     return b.cFirstPage - a.cFirstPage
   }).sort((a: IStock, b: IStock) => {
-    return b.mPortfolio - a.mPortfolio
+    return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
   })
   if (!loadedStocksPages.has(stocksPage.value)) {
     loading.value = true
@@ -186,11 +186,11 @@ log('--- StocksTable.vue setup ---')
         <td v-else/>
         <td v-if="new Date(item.cMeetingDay).getTime() > 0">{{ d(new Date(item.cMeetingDay), 'short') }}</td>
         <td v-else/>
-        <td v-if="item.mPortfolio >= 1">{{ item.mPortfolio }}</td>
+        <td v-if="(item.mPortfolio ?? 0) >= 1">{{ item.mPortfolio }}</td>
         <td v-else/>
-        <v-tooltip :text="n(item.mInvest !== 0 ? item.mEuroChange / item.mInvest : 1, 'percent')" location="left">
+        <v-tooltip :text="n((item.mInvest !== 0 && item.mInvest !== undefined )? (item.mEuroChange ?? 0) / item.mInvest : 1, 'percent')" location="left">
           <template v-slot:activator="{ props }">
-            <td v-if="item.mPortfolio >= 1" :class="winLossClass(item.mEuroChange)" v-bind="props">
+            <td v-if="(item.mPortfolio ?? 0) >= 1" :class="winLossClass((item.mEuroChange ?? 0))" v-bind="props">
               {{ n(item.mEuroChange ?? 0, 'currency') }}
             </td>
             <td v-else/>

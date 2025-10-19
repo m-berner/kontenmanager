@@ -89,6 +89,7 @@ interface IStockFormularData {
     fadeOut: boolean
     firstPage: boolean
     url: string
+    askDates: string
 }
 
 export interface IAccountFormularData {
@@ -122,7 +123,6 @@ export interface IStockDB {
     cID: number
     cCompany: string
     cISIN: string
-    //cWKN: string
     cSymbol: string
     cFirstPage: number
     cFadeOut: number
@@ -130,17 +130,18 @@ export interface IStockDB {
     cQuarterDay: string
     cURL: string
     cAccountNumberID: number
+    cAskDates: string
 }
 
 export interface IStockOnlyMemory {
-    mPortfolio: number
-    mInvest: number
-    mChange: number
-    mBuyValue: number
-    mEuroChange: number
-    mMin: number
-    mValue: number
-    mMax: number
+    mPortfolio?: number
+    mInvest?: number
+    mChange?: number
+    mBuyValue?: number
+    mEuroChange?: number
+    mMin?: number
+    mValue?: number
+    mMax?: number
     mDividendYielda?: number
     mDividendYeara?: number
     mDividendYieldb?: number
@@ -148,7 +149,6 @@ export interface IStockOnlyMemory {
     mRealDividend?: number
     mRealBuyValue?: number
     mDeleteable?: boolean
-    mAskDates?: boolean
 }
 
 export interface IStock extends IStockOnlyMemory, IStockDB {

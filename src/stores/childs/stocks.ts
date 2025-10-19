@@ -13,8 +13,9 @@ import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useFetch} from '@/composables/useFetch'
 import {useRuntime} from '@/composables/useRuntime'
+import {useStocksDB} from '@/composables/useIndexedDB'
 
-const {log, toNumber} = useApp()
+const {log, isoDate, toNumber, utcDate} = useApp()
 
 export const useStocksStore = defineStore('stocks', () => {
     const items: Ref<IStock[]> = ref([])
@@ -36,7 +37,7 @@ export const useStocksStore = defineStore('stocks', () => {
 
     const sumDepot = computed(() => (): number => {
         return active.value.map(rec => {
-            return rec.mPortfolio * rec.mValue
+            return (rec.mPortfolio ?? 0) * (rec.mValue ?? 0)
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
 
@@ -57,8 +58,7 @@ export const useStocksStore = defineStore('stocks', () => {
             mDividendYearb: 0,
             mRealDividend: 0,
             mRealBuyValue: 0,
-            mDeleteable: false,
-            mAskDates: false
+            mDeleteable: false
         }
         const completeStock = {
             ...stock,
@@ -90,8 +90,7 @@ export const useStocksStore = defineStore('stocks', () => {
                 mDividendYearb: items.value[index].mDividendYearb,
                 mRealDividend: items.value[index].mRealDividend,
                 mRealBuyValue: items.value[index].mRealBuyValue,
-                mDeleteable: items.value[index].mDeleteable,
-                mAskDates: items.value[index].mAskDates
+                mDeleteable: items.value[index].mDeleteable
             }
             items.value[index] = {...stock, ...stocksOnlyMemory}
         }
@@ -112,14 +111,17 @@ export const useStocksStore = defineStore('stocks', () => {
 
     async function loadOnlineData(page: number) {
         log('INDEXED_DB/STOCKS: loadOnlineData')
-        const {fetchMinRateMaxData} = useFetch()
-        const {loadedStocksPages} = useRuntime()
+        const {fetchDateData, fetchMinRateMaxData} = useFetch()
+        const {curEur, curUsd, loadedStocksPages} = useRuntime()
         const {stocksPerPage} = useSettings()
+        const {updateStock} = useStocksDB()
+        const {CONS} = useApp()
         const isin = []
         const isinDates = []
         const itemsLength = active.value.length
         const rest = itemsLength % stocksPerPage.value
         const lastPage = Math.ceil(itemsLength / stocksPerPage.value)
+
         let pageStocks: IStock[] = []
         if (itemsLength > 0) {
             if (page < lastPage || rest === 0) {
@@ -144,29 +146,45 @@ export const useStocksStore = defineStore('stocks', () => {
                         cur: ''
                     })
                 }
-                if ((pageStocks[i].cMeetingDay === '1970-01-01' || pageStocks[i].cQuarterDay === '1970-01-01') && pageStocks[i].mAskDates) {
+                if ((utcDate(pageStocks[i].cMeetingDay).getTime() < Date.now() || utcDate(pageStocks[i].cQuarterDay).getTime() < Date.now()) && utcDate(pageStocks[i].cAskDates).getTime() < Date.now()) {
                     isinDates.push({
                         id: pageStocks[i].cID,
-                        isin: pageStocks[i].cISIN,
-                        gm: pageStocks[i].cMeetingDay,
-                        qf: pageStocks[i].cQuarterDay
+                        isin: pageStocks[i].cISIN
                     })
-                    pageStocks[i].mAskDates = false
                 }
             }
         }
         const minRateMaxResponse = await fetchMinRateMaxData(isin)
+        const dateResponse = await fetchDateData(isinDates)
         for (let i = 0; i < pageStocks.length; i++) {
-            pageStocks[i].mMin = toNumber(minRateMaxResponse[i].min)
-            pageStocks[i].mValue = toNumber(minRateMaxResponse[i].rate)
-            pageStocks[i].mMax = toNumber(minRateMaxResponse[i].max)
-            pageStocks[i].mEuroChange = pageStocks[i].mValue * pageStocks[i].mPortfolio - pageStocks[i].mInvest
+            pageStocks[i].mMin = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].min) / curUsd.value : toNumber(minRateMaxResponse[i].min) / curEur.value
+            pageStocks[i].mValue = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].rate) / curUsd.value : toNumber(minRateMaxResponse[i].rate) / curEur.value
+            pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd.value : toNumber(minRateMaxResponse[i].max) / curEur.value
+            pageStocks[i].mEuroChange = (pageStocks[i].mValue ?? 0) * (pageStocks[i].mPortfolio ?? 0) - (pageStocks[i].mInvest ?? 0)
+            if (isinDates.length > 0) {
+                pageStocks[i].cMeetingDay = (await dateResponse[i]).value.gm > 0 ? isoDate((await dateResponse[i]).value.gm) : CONS.DATE.DEFAULT_ISO
+                pageStocks[i].cQuarterDay = (await dateResponse[i]).value.qf > 0 ? isoDate((await dateResponse[i]).value.qf) : CONS.DATE.DEFAULT_ISO
+                pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000)
+            }
+            const dbStock = {...pageStocks[i]}
+            delete dbStock.mPortfolio
+            delete dbStock.mInvest
+            delete dbStock.mChange
+            delete dbStock.mBuyValue
+            delete dbStock.mEuroChange
+            delete dbStock.mMin
+            delete dbStock.mValue
+            delete dbStock.mMax
+            delete dbStock.mDividendYielda
+            delete dbStock.mDividendYeara
+            delete dbStock.mDividendYieldb
+            delete dbStock.mDividendYearb
+            delete dbStock.mRealDividend
+            delete dbStock.mRealBuyValue
+            delete dbStock.mDeleteable
+            await updateStock(dbStock)
         }
         loadedStocksPages.add(page)
-
-        // items.value.sort((a: IStock, b: IStock) => {
-        //     return a.cFirstPage - b.cFirstPage
-        // })
     }
 
     return {

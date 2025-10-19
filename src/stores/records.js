@@ -48,7 +48,8 @@ export const useRecordsStore = defineStore('records', () => {
                 cCompany: '',
                 cMeetingDay: '',
                 cQuarterDay: '',
-                cAccountNumberID: activeAccountId.value
+                cAccountNumberID: activeAccountId.value,
+                cAskDates: CONS.DATE.DEFAULT_ISO
             }, true);
             bookingsStore.items.sort((a, b) => {
                 const dateA = new Date(a.cDate).getTime();
@@ -77,8 +78,7 @@ export const useRecordsStore = defineStore('records', () => {
             mDividendYearb: 0,
             mRealDividend: 0,
             mRealBuyValue: 0,
-            mDeleteable: false,
-            mAskDates: false
+            mDeleteable: false
         };
         const stores = {
             accounts: storesDB.accountsDB,

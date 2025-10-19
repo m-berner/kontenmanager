@@ -8,6 +8,9 @@
 import type {Ref} from 'vue'
 import {reactive, ref} from 'vue'
 import type {IStockFormularData} from '@/types'
+import {useApp} from '@/composables/useApp'
+
+const {CONS} = useApp()
 
 const stockFormularData: IStockFormularData = reactive({
     id: -1,
@@ -19,7 +22,8 @@ const stockFormularData: IStockFormularData = reactive({
     quarterDay: '',
     fadeOut: false,
     firstPage: false,
-    url: ''
+    url: '',
+    askDates: CONS.DATE.DEFAULT_ISO
 })
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 

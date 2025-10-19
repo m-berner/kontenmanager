@@ -137,8 +137,8 @@ const CONS = Object.freeze({
         CURRENCY: 'EUR',
         LANG: 'de',
         LOCALE: 'de-DE',
-        DATE: '1970-01-01',
         YEAR: 9999,
+        ASK_DATE_INTERVAL: 7,
         BROWSER_STORAGE: {
             ACTIVE_ACCOUNT_ID: -1,
             BOOKINGS_PER_PAGE: 9,
@@ -544,7 +544,7 @@ export const useApp = () => {
         return new Date(`${iso}T00:00:00.000`)
     }
 
-    function toISODate(ms: number): string {
+    function isoDate(ms: number): string {
         return new Date(ms).toISOString().substring(0, 10)
     }
 
@@ -668,7 +668,7 @@ export const useApp = () => {
         CONS,
         formatISIN,
         utcDate,
-        toISODate,
+        isoDate,
         toNumber,
         haveSameStrings,
         log,
