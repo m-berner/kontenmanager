@@ -51,7 +51,6 @@ onBeforeMount(async () => {
       }
     }
     const exchangesInfoData: IExchangeData[] = await fetchExchangesData(settings.exchanges.value)
-    // TODO check except baseData
     for (let i = 0; i < settings.exchanges.value.length; i++) {
       runtime.infoExchanges.value.set(settings.exchanges.value[i], exchangesInfoData[i].value)
     }
@@ -63,8 +62,6 @@ onBeforeMount(async () => {
     for (let i = 0; i < materialsInfoData.length; i++) {
       runtime.infoMaterials.value.set(materialsInfoData[i].key, materialsInfoData[i].value)
     }
-    // TODO fetchDateData
-    // TODO Hilfe, Datenschutz überarbeiten
     const keyStrokeController: string[] = []
     const handleSearch = async (query: string) => {
       keyStrokeController.push(query)

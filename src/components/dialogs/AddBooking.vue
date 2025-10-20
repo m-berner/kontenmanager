@@ -128,8 +128,8 @@ const onClickOk = async (): Promise<void> => {
           cMarketPlace: ''
         }
     }
-    const addBookingID = await addBooking(booking) // TODO minimum limit 0, -1?
-    if (addBookingID > 0) {
+    const addBookingID = await addBooking(booking)
+    if (addBookingID > -1) {
       const completeBooking: IBooking = {cID: addBookingID, ...booking}
       records.bookings.add(completeBooking)
       reset()

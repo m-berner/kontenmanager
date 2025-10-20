@@ -70,9 +70,7 @@ const onClickOk = async (): Promise<void> => {
 }
 const title = t('dialogs.addStock.title')
 // TODO update button in Company Content...
-// TODO open company link not working
 // TODO Setting button also in company view
-// TODO Aktien check dollar kurse, euro mix?
 // TODO bookingtypeformular usebookingTypeFormular,...
 defineExpose({onClickOk, title})
 

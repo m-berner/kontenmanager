@@ -13,11 +13,13 @@ export const useStocksStore = defineStore('stocks', () => {
     });
     const getItemById = computed(() => (id) => items.value[getIndexById.value(id)]);
     const passive = computed(() => {
-        return items.value.filter(rec => rec.cFadeOut === 1);
+        return items.value.filter(rec => {
+            return rec.cFadeOut === 1 && rec.cID > 0;
+        });
     });
     const active = computed(() => {
-        return items.value.filter((rec, ind) => {
-            return rec.cFadeOut === 0 && ind > 0;
+        return items.value.filter(rec => {
+            return rec.cFadeOut === 0 && rec.cID > 0;
         });
     });
     const sumDepot = computed(() => () => {
@@ -136,9 +138,9 @@ export const useStocksStore = defineStore('stocks', () => {
             pageStocks[i].mValue = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].rate) / curUsd.value : toNumber(minRateMaxResponse[i].rate) / curEur.value;
             pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd.value : toNumber(minRateMaxResponse[i].max) / curEur.value;
             pageStocks[i].mEuroChange = (pageStocks[i].mValue ?? 0) * (pageStocks[i].mPortfolio ?? 0) - (pageStocks[i].mInvest ?? 0);
-            if (isinDates.length > 0) {
-                pageStocks[i].cMeetingDay = (await dateResponse[i]).value.gm > 0 ? isoDate((await dateResponse[i]).value.gm) : CONS.DATE.DEFAULT_ISO;
-                pageStocks[i].cQuarterDay = (await dateResponse[i]).value.qf > 0 ? isoDate((await dateResponse[i]).value.qf) : CONS.DATE.DEFAULT_ISO;
+            for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].id; j++) {
+                pageStocks[i].cMeetingDay = (await dateResponse[j]).value.gm > 0 ? isoDate((await dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO;
+                pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO;
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000);
             }
             const dbStock = { ...pageStocks[i] };

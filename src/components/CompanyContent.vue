@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import type {IMenuItem, IStock} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
-import {computed, onMounted, ref} from 'vue'
+import {computed, onBeforeUpdate, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
@@ -85,7 +85,6 @@ const stocksHeaders = computed<DataTableHeader[]>(() => [
     key: 'mMax'
   }
 ])
-
 const stocksMenuItems = computed<IMenuItem[]>(() => [
   {
     id: 'DeleteStock',
@@ -128,6 +127,14 @@ const onUpdatePage = async (page: number): Promise<void> => {
   }
 }
 
+onBeforeUpdate(() => {
+  records.stocks.active.sort((a: IStock, b: IStock) => {
+    return b.cFirstPage - a.cFirstPage
+  }).sort((a: IStock, b: IStock) => {
+    return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
+  })
+})
+
 onMounted(async () => {
   log('COMPANY_CONTENT: onMounted')
   const requiredOnlineData = async (page: number = 1) => {
@@ -136,7 +143,7 @@ onMounted(async () => {
       await requiredOnlineData(page + 1)
     }
   }
-  for (let i = 1; i < records.stocks.active.length; i++) {
+  for (let i = 0; i < records.stocks.active.length; i++) {
     records.stocks.active[i].mPortfolio = records.bookings.portfolioByStockId(records.stocks.active[i].cID)
     records.stocks.active[i].mInvest = records.bookings.investByStockId(records.stocks.active[i].cID)
   }
@@ -188,7 +195,9 @@ log('--- StocksTable.vue setup ---')
         <td v-else/>
         <td v-if="(item.mPortfolio ?? 0) >= 1">{{ item.mPortfolio }}</td>
         <td v-else/>
-        <v-tooltip :text="n((item.mInvest !== 0 && item.mInvest !== undefined )? (item.mEuroChange ?? 0) / item.mInvest : 1, 'percent')" location="left">
+        <v-tooltip
+            :text="n((item.mInvest !== 0 && item.mInvest !== undefined )? (item.mEuroChange ?? 0) / item.mInvest : 1, 'percent')"
+            location="left">
           <template v-slot:activator="{ props }">
             <td v-if="(item.mPortfolio ?? 0) >= 1" :class="winLossClass((item.mEuroChange ?? 0))" v-bind="props">
               {{ n(item.mEuroChange ?? 0, 'currency') }}

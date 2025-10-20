@@ -23,46 +23,8 @@ export const useRecordsStore = defineStore('records', () => {
     }
     async function init(storesDB, removeAccounts = true) {
         log('RECORDS: init');
-        const load = (stores) => {
-            log('RECORDS: load');
-            const { activeAccountId } = useSettings();
-            for (const entry of stores.accounts) {
-                accountsStore.add(entry);
-            }
-            for (const entry of stores.bookings) {
-                bookingsStore.add(entry);
-            }
-            for (const entry of stores.bookingTypes) {
-                bookingTypesStore.add(entry);
-            }
-            for (const entry of stores.stocks) {
-                stocksStore.add(entry);
-            }
-            stocksStore.add({
-                cID: 0,
-                cISIN: 'XX0000000000',
-                cSymbol: 'XYZOO6',
-                cFadeOut: 0,
-                cFirstPage: 0,
-                cURL: '',
-                cCompany: '',
-                cMeetingDay: '',
-                cQuarterDay: '',
-                cAccountNumberID: activeAccountId.value,
-                cAskDates: CONS.DATE.DEFAULT_ISO
-            }, true);
-            bookingsStore.items.sort((a, b) => {
-                const dateA = new Date(a.cDate).getTime();
-                const dateB = new Date(b.cDate).getTime();
-                return dateB - dateA;
-            });
-        };
         const { activeAccountId } = useSettings();
         const { setStorage } = useBrowser();
-        if (activeAccountId.value > -1 && storesDB.accountsDB.length > 0) {
-            activeAccountId.value = storesDB.accountsDB[0].cID;
-            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value);
-        }
         const stocksOnlyMemory = {
             mPortfolio: 0,
             mInvest: 0,
@@ -88,8 +50,48 @@ export const useRecordsStore = defineStore('records', () => {
                 return { ...stock, ...stocksOnlyMemory };
             })
         };
+        const load = (stores) => {
+            log('RECORDS: load');
+            for (const entry of stores.accounts) {
+                accountsStore.add(entry);
+            }
+            for (const entry of stores.bookings) {
+                bookingsStore.add(entry);
+            }
+            for (const entry of stores.bookingTypes) {
+                bookingTypesStore.add(entry);
+            }
+            for (const entry of stores.stocks) {
+                stocksStore.add(entry);
+            }
+            stocksStore.items.sort((a, b) => {
+                return b.cFirstPage - a.cFirstPage;
+            });
+            bookingsStore.items.sort((a, b) => {
+                const dateA = new Date(a.cDate).getTime();
+                const dateB = new Date(b.cDate).getTime();
+                return dateB - dateA;
+            });
+        };
         clean(removeAccounts);
         load(stores);
+        if (activeAccountId.value > -1 && storesDB.accountsDB.length > 0) {
+            activeAccountId.value = storesDB.accountsDB[0].cID;
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value);
+        }
+        stocksStore.add({
+            cID: 0,
+            cISIN: 'XX0000000000',
+            cSymbol: 'XYZOO6',
+            cFadeOut: 0,
+            cFirstPage: 0,
+            cURL: '',
+            cCompany: '',
+            cMeetingDay: '',
+            cQuarterDay: '',
+            cAccountNumberID: activeAccountId.value,
+            cAskDates: CONS.DATE.DEFAULT_ISO
+        }, true);
     }
     return {
         accounts: accountsStore,

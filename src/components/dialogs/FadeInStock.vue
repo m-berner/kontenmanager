@@ -15,7 +15,7 @@ import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
 
 const {t} = useI18n()
-const {log, toNumber} = useApp()
+const {log} = useApp()
 const runtime = useRuntime()
 const records = useRecordsStore()
 
@@ -24,15 +24,10 @@ const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
   log('FADE_IN_STOCK: onClickOk')
-  const records = useRecordsStore()
-  const indexOfPassiveStock = records.stocks.passive.findIndex((passiveStock: IStock) => {
-    return _selected.value?.cID === passiveStock.cID
-  })
-  if (indexOfPassiveStock > -1 && toNumber(_selected.value?.cFadeOut) === 0) {
-    records.stocks.passive.splice(indexOfPassiveStock, 1)
-    //records.stocks.itemsActive.push(_selected.value as IStock)
+  if (_selected.value !== null) {
+    _selected.value.cFadeOut = 0
+  // TODO save rec to database?
   }
-  records.stocks.updateStock(_selected.value as IStock)
   runtime.resetTeleport()
 }
 const title = t('dialogs.fadeInStock.title')
@@ -58,12 +53,12 @@ log('--- FadeInStock.vue setup ---')
           v-model="_selected"
           density="compact"
           item-title="cCompany"
+          item-key="cID"
           v-bind:clearable="true"
           v-bind:items="records.stocks.passive"
           v-bind:label="t('dialogs.fadeInStock.title')"
           v-bind:return-object="true"
-          variant="outlined"
-          v-on:update:modelValue="() => (_selected as IStock).cFadeOut = 0"/>
+          variant="outlined"/>
     </v-card-text>
   </v-form>
 </template>

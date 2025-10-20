@@ -41,8 +41,8 @@ const onClickOk = async (): Promise<void> => {
         cName: formName.value.trim(),
         cAccountNumberID: activeAccountId.value
       }
-      const addBookingTypeID: number = await addBookingType(bookingType) // TODO below limit 0,1,2?
-      if (addBookingTypeID > 0) {
+      const addBookingTypeID: number = await addBookingType(bookingType)
+      if (addBookingTypeID > 1) {
         const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
         records.bookingTypes.add(completeBookingType)
         reset()

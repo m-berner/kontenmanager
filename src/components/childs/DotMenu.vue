@@ -86,6 +86,9 @@ const onIconClick = async (ev: Event): Promise<void> => {
           dialogVisibility: true
         })
         break
+      case CONS.COMPONENTS.DIALOGS.OPEN_LINK:
+        window.open(records.stocks.items[records.stocks.getIndexById(optionMenuProps.recordID)].cURL)
+        break
       default:
         loop += 1
         await parse(elem!.parentElement, loop)

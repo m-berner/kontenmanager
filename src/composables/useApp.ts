@@ -121,6 +121,7 @@ const CONS = Object.freeze({
             SHOW_STOCK_DIVIDEND: 'ShowDividend',
             DELETE_ACCOUNT_CONFIRMATION: 'DeleteAccountConfirmation',
             SETTING: 'setting',
+            OPEN_LINK: 'ExternalLink',
             PLACEHOLDER: {
                 ACCOUNT_LOGO_URL: 'z. B. https://www.ing.de'
             }
@@ -138,7 +139,7 @@ const CONS = Object.freeze({
         LANG: 'de',
         LOCALE: 'de-DE',
         YEAR: 9999,
-        ASK_DATE_INTERVAL: 7,
+        ASK_DATE_INTERVAL: 7, // days
         BROWSER_STORAGE: {
             ACTIVE_ACCOUNT_ID: -1,
             BOOKINGS_PER_PAGE: 9,

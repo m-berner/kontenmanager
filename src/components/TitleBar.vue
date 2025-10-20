@@ -32,6 +32,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
   const storesDB = await getDatabaseStores()
   await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
   await records.init(storesDB)
+  console.error('titlebar', records.stocks)
 }
 const logoUrl = computed((): string => {
   const ind = records.accounts.getIndexById(activeAccountId.value)
