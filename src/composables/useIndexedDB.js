@@ -486,6 +486,21 @@ export const useStocksDB = () => {
     }
     async function updateStock(stockData) {
         try {
+            delete stockData.mPortfolio;
+            delete stockData.mInvest;
+            delete stockData.mChange;
+            delete stockData.mBuyValue;
+            delete stockData.mEuroChange;
+            delete stockData.mMin;
+            delete stockData.mValue;
+            delete stockData.mMax;
+            delete stockData.mDividendYielda;
+            delete stockData.mDividendYeara;
+            delete stockData.mDividendYieldb;
+            delete stockData.mDividendYearb;
+            delete stockData.mRealDividend;
+            delete stockData.mRealBuyValue;
+            delete stockData.mDeleteable;
             return await db.update(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData);
         }
         catch (err) {

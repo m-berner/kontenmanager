@@ -13,9 +13,11 @@ import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
+import {useStocksDB} from '@/composables/useIndexedDB'
 
 const {t} = useI18n()
 const {log} = useApp()
+const {updateStock} = useStocksDB()
 const runtime = useRuntime()
 const records = useRecordsStore()
 
@@ -26,7 +28,7 @@ const onClickOk = async (): Promise<void> => {
   log('FADE_IN_STOCK: onClickOk')
   if (_selected.value !== null) {
     _selected.value.cFadeOut = 0
-  // TODO save rec to database?
+    await updateStock(_selected.value)
   }
   runtime.resetTeleport()
 }

@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IAccountDB, IBookingDB, IBookingTypeDB, IRecordsDB, IStockDB, IStoresDB} from '@/types'
+import type {IAccountDB, IBookingDB, IBookingTypeDB, IRecordsDB, IStock, IStockDB, IStoresDB} from '@/types'
 import type {Ref} from 'vue'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
@@ -583,8 +583,23 @@ export const useStocksDB = () => {
         }
     }
 
-    async function updateStock(stockData: unknown) {
+    async function updateStock(stockData: IStock) {
         try {
+            delete stockData.mPortfolio
+            delete stockData.mInvest
+            delete stockData.mChange
+            delete stockData.mBuyValue
+            delete stockData.mEuroChange
+            delete stockData.mMin
+            delete stockData.mValue
+            delete stockData.mMax
+            delete stockData.mDividendYielda
+            delete stockData.mDividendYeara
+            delete stockData.mDividendYieldb
+            delete stockData.mDividendYearb
+            delete stockData.mRealDividend
+            delete stockData.mRealBuyValue
+            delete stockData.mDeleteable
             return await db.update(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData)
         } catch (err) {
             log('Failed to update stock:', {error: err})

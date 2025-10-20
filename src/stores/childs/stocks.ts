@@ -168,23 +168,7 @@ export const useStocksStore = defineStore('stocks', () => {
                 pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000)
             }
-            const dbStock = {...pageStocks[i]}
-            delete dbStock.mPortfolio
-            delete dbStock.mInvest
-            delete dbStock.mChange
-            delete dbStock.mBuyValue
-            delete dbStock.mEuroChange
-            delete dbStock.mMin
-            delete dbStock.mValue
-            delete dbStock.mMax
-            delete dbStock.mDividendYielda
-            delete dbStock.mDividendYeara
-            delete dbStock.mDividendYieldb
-            delete dbStock.mDividendYearb
-            delete dbStock.mRealDividend
-            delete dbStock.mRealBuyValue
-            delete dbStock.mDeleteable
-            await updateStock(dbStock)
+            await updateStock({...pageStocks[i]})
         }
         loadedStocksPages.add(page)
     }
