@@ -17,6 +17,7 @@ import {useFetch} from '@/composables/useFetch'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useTheme} from 'vuetify'
+import {RouterView} from 'vue-router'
 
 const {CONS, haveSameStrings, log} = useApp()
 
@@ -127,12 +128,12 @@ log('--- AppIndex.vue setup ---', {info: window.location.href})
 
 <template>
   <v-app :flat="true">
-    <router-view name="title"/>
-    <router-view name="header"/>
-    <router-view name="info"/>
+    <RouterView name="title"/>
+    <RouterView name="header"/>
+    <RouterView name="info"/>
     <v-main>
-      <router-view/>
+      <RouterView/>
     </v-main>
-    <router-view name="footer"/>
+    <RouterView name="footer"/>
   </v-app>
 </template>

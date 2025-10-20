@@ -13,6 +13,8 @@ import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
 import {useRecordsStore} from '@/stores/records'
 import {useStockFormular} from '@/composables/useStockFormular'
+import {useFetch} from '@/composables/useFetch'
+import {useDebounce} from '@/composables/useDebounce'
 
 interface IStockFormularProps {
   isUpdate: boolean
@@ -21,31 +23,40 @@ interface IStockFormularProps {
 const stockFormularProps = defineProps<IStockFormularProps>()
 
 const {t} = useI18n()
-const {formatISIN, log} = useApp()
+const {log} = useApp()
 const {isinRules} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntime()
+const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
-const onUpdateISIN = () => {
-  stockFormularData.isin = formatISIN(stockFormularData.isin)
+const onUpdateISIN = async () => {
+  log('STOCK_FORMULAR: onUpdateISIN')
+  stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g,'')
+  const companyData = await fetchCompanyData(stockFormularData.isin)
+  stockFormularData.company = companyData.company
+  stockFormularData.symbol = companyData.symbol
 }
 
+const {debouncedFunction: debouncedIsin} = useDebounce(onUpdateISIN, 400)
+
 onMounted(() => {
-  log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks.getItemById(runtime.activeId.value)
-  stockFormularData.id = runtime.activeId.value
-  stockFormularData.isin = formatISIN(currentStock.cISIN)
-  stockFormularData.company = currentStock.cCompany
-  stockFormularData.symbol = currentStock.cSymbol
-  stockFormularData.meetingDay = currentStock.cMeetingDay
-  stockFormularData.quarterDay = currentStock.cQuarterDay
-  stockFormularData.fadeOut = currentStock.cFadeOut === 1
-  stockFormularData.firstPage = currentStock.cFirstPage === 1
-  stockFormularData.url = currentStock.cURL
+  log('STOCK_FORMULAR: onMounted')
+  if (stockFormularProps.isUpdate) {
+    const currentStock = records.stocks.getItemById(runtime.activeId.value)
+    stockFormularData.id = runtime.activeId.value
+    stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g,'')
+    stockFormularData.company = currentStock.cCompany
+    stockFormularData.symbol = currentStock.cSymbol
+    stockFormularData.meetingDay = currentStock.cMeetingDay
+    stockFormularData.quarterDay = currentStock.cQuarterDay
+    stockFormularData.fadeOut = currentStock.cFadeOut === 1
+    stockFormularData.firstPage = currentStock.cFirstPage === 1
+    stockFormularData.url = currentStock.cURL
+  }
 })
 
-log('--- UpdateStock.vue setup ---')
+log('--- StockFormular.vue setup ---')
 </script>
 
 <template>
@@ -62,10 +73,10 @@ log('--- UpdateStock.vue setup ---')
                 t('validators.isinRules.luhn')
                 ])"
           autofocus
-          required
+          :counter="12"
           variant="outlined"
           @focus="formRef?.resetValidation()"
-          @update:model-value="onUpdateISIN"/>
+          @update:model-value="debouncedIsin"/>
     </v-row>
     <v-row>
       <v-text-field
