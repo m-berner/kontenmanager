@@ -14,25 +14,20 @@ import {useRuntime} from '@/composables/useRuntime'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
-//import type {IExchangeData} from '@/types'
-//import {useFetch} from '@/composables/useFetch'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const {activeAccountId} = useSettings()
-const {isCompanyPage} = useRuntime()
+const {isCompanyPage, isDownloading} = useRuntime()
 const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
-//const {fetchExchangesData} = useFetch()
-//const {infoExchanges} = useRuntime()
 
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLE_BAR onUpdateTitleBar')
   const storesDB = await getDatabaseStores()
   await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
   await records.init(storesDB)
-  console.error('titlebar', records.stocks)
 }
 const logoUrl = computed((): string => {
   const ind = records.accounts.getIndexById(activeAccountId.value)
@@ -59,14 +54,14 @@ log('--- TitleBar.vue setup ---')
     </template>
     <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
     <v-text-field
-        v-if="isCompanyPage"
+        v-if="isCompanyPage && !isDownloading"
         :disabled="true"
         :label="t('titleBar.depotSumLabel')"
         :model-value="depot"
         hide-details
         max-width="150"/>
     <v-text-field
-        v-else
+        v-if="!isCompanyPage"
         :disabled="true"
         :label="t('titleBar.bookingsSumLabel')"
         :model-value="balance"

@@ -27,6 +27,7 @@ const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
   try {
     await deleteDatabaseWithAccount(activeAccountId.value)
+    records.bookings.items = []
     records.accounts.remove(activeAccountId.value)
     activeAccountId.value = -1
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
@@ -51,5 +52,5 @@ log('--- DeleteAccountConfirmation.vue setup ---')
 
 <template>
   <v-alert v-if="records.accounts.items.length === 0">{{ t('dialogs.deleteAccount.message') }}</v-alert>
-  <v-alert v-else>{{ t('dialogs.deleteAccount.confirm') }}</v-alert>
+  <v-alert v-else type="warning">{{ t('dialogs.deleteAccount.confirm') }}</v-alert>
 </template>

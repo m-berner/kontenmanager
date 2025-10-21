@@ -20,7 +20,7 @@ const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const records = useRecordsStore()
 const {stocksPerPage} = useSettings()
-const {loadedStocksPages, stocksPage} = useRuntime()
+const {isDownloading, loadedStocksPages, stocksPage} = useRuntime()
 
 const loading = ref(false)
 const stocksHeaders = computed<DataTableHeader[]>(() => [
@@ -153,10 +153,12 @@ onMounted(async () => {
     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
   })
   if (!loadedStocksPages.has(stocksPage.value)) {
+    isDownloading.value = true
     loading.value = true
     await records.stocks.loadOnlineData(stocksPage.value)
     await requiredOnlineData()
     loading.value = false
+    isDownloading.value = false
   }
 })
 

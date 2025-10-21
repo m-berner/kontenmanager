@@ -62,10 +62,10 @@ const setChecked = async (): Promise<void> => {
   const checkedBoxes = checked.value
   switch (checkboxGridProps.type) {
     case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, checkedBoxes)
+      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, [...checkedBoxes])
       break
     case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS, checkedBoxes)
+      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS, [...checkedBoxes])
       break
   }
 }

@@ -12,6 +12,7 @@ const curEur = ref(1);
 const stocksPage = ref(1);
 const loadedStocksPages = new Set();
 const isCompanyPage = ref(false);
+const isDownloading = ref(false);
 export const useRuntime = () => {
     function clearStocksPages() {
         loadedStocksPages.clear();
@@ -48,6 +49,7 @@ export const useRuntime = () => {
         stocksPage,
         loadedStocksPages,
         isCompanyPage,
+        isDownloading,
         setTeleport,
         resetTeleport,
         resetOptionsMenuColors,

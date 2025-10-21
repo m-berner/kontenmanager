@@ -107,11 +107,11 @@
     },
     "addAccount": {
       "title": "Bankkonto hinzufügen",
-      "swiftLabel": "BIC/SWIFT Code",
-      "searchLabel": "Web-Adresse",
+      "swiftLabel": "BIC / SWIFT",
+      "searchLabel": "Logo Suche",
       "withDepotLabel": "Depot Verrechnungskonto",
       "withNoDepotLabel": "Konto",
-      "ibanLabel": "IBAN/Kontonummer",
+      "ibanLabel": "IBAN / Kontonummer",
       "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
       "typeLabel": "Kontotyp",
       "preview": "Vorschau",
@@ -157,7 +157,7 @@
     },
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
-      "swiftLabel": "BIC/SWIFT Code",
+      "swiftLabel": "BIC / SWIFT",
       "searchLabel": "Web-Adresse",
       "withDepotLabel": "Depot Verrechnungskonto",
       "withNoDepotLabel": "Konto",

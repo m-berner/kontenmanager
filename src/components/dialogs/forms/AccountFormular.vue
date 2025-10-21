@@ -21,6 +21,8 @@ const {accountFormularData, formRef} = useAccountFormular()
 const {ibanRules, ibanDuplicateRules, swiftRules} = useValidation()
 
 const formSearch: Ref<string> = ref('')
+const formattedIban: Ref<string> = ref('')
+const formattedSwift: Ref<string> = ref('')
 
 const joinedIbanRules = computed(() => [
   ...ibanRules([
@@ -38,15 +40,17 @@ const joinedIbanRules = computed(() => [
 const onUpdateSwift = (swift: string): void => {
   if (!swift) return
   const clean = swift.replace(/\s/g, '').toUpperCase()
-  accountFormularData.swift = clean.replace(/(.{4})/g, '$1 ').trim()
+  accountFormularData.swift = clean
+  formattedSwift.value = accountFormularData.swift.length > 1 ? ` / ${clean.replace(/(.{4})/g, '$1 ')}` : ''
 }
 
 const onUpdateIban = (iban: string): void => {
   if (!iban) return
   const clean = iban.replace(/\s/g, '').toUpperCase()
-  accountFormularData.iban = clean.replace(/(.{4})/g, '$1 ').trim()
+  accountFormularData.iban = clean
+  formattedIban.value = accountFormularData.iban.length > 1 ? ` / ${clean.replace(/(.{4})/g, '$1 ')}` : ''
 }
-
+// TODO useDebounce
 // Watch for logo search name changes with debouncing
 let logoTimeout: NodeJS.Timeout
 watch(formSearch, async () => {
@@ -72,7 +76,7 @@ log('--- AccountFormular.vue setup ---')
       variant="outlined"/>
   <v-text-field
       v-model="accountFormularData.swift"
-      :label="t('dialogs.addAccount.swiftLabel')"
+      :label="`${t('dialogs.addAccount.swiftLabel')}${formattedSwift}`"
       :rules="swiftRules([
             t('validators.swiftRules.required'),
             t('validators.swiftRules.length'),
@@ -86,11 +90,12 @@ log('--- AccountFormular.vue setup ---')
         ])"
       autofocus
       variant="outlined"
+      :counter="11"
       @focus="formRef?.resetValidation()"
       @update:modelValue="onUpdateSwift"/>
   <v-text-field
       v-model="accountFormularData.iban"
-      :label="t('dialogs.addAccount.ibanLabel')"
+      :label="`${t('dialogs.addAccount.ibanLabel')}${formattedIban}`"
       :placeholder="t('dialogs.addAccount.ibanPlaceholder')"
       :rules="joinedIbanRules"
       variant="outlined"
