@@ -26,7 +26,7 @@ const runtime = useRuntime()
 
 const selected = ref()
 const formRef: Ref<HTMLFormElement | null> = ref(null)
-
+//TODO Titlebar Depotkonto erst anzeigen nachdem Depotkontostand bekannt ist
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE : onClickOk')
   if (!await validateForm(formRef)) return
