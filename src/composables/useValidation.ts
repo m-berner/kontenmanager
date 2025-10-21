@@ -60,8 +60,8 @@ export const useValidation = () => {
     function nameRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => v !== null || msgArray[0],
-            (v: string) => (v !== null && v.length < 24) || msgArray[1],
-            (v: string) => v.match(/^[a-zA-ZäöüÄÖÜ].*/g) === null || msgArray[2]
+            (v: string) => (v !== null && v.length < 32) || msgArray[1],
+            (v: string) => v.match(/^[a-zA-ZäöüÄÖÜ].*/g) !== null || msgArray[2]
         ]
     }
 
@@ -121,10 +121,8 @@ export const useValidation = () => {
     }
 
     async function validateForm(form: Ref<HTMLFormElement | null>): Promise<boolean> {
-        console.error('vv', form.value)
         if (form.value !== null) {
             const {valid} = await form.value.validate()
-            console.error(valid)
             return valid
         }
         return false

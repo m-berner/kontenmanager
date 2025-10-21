@@ -16,6 +16,7 @@
     "reload": "Kurse aktualisieren",
     "addBookingType": "Buchungstyp hinzufügen",
     "deleteBookingType": "Buchungstyp entfernen",
+    "updateBookingType": "Buchungstyp aktualisieren",
     "addAccount": "Bankkonto hinzufügen",
     "updateAccount": "Bankkonto bearbeiten",
     "deleteAccount": "Bankkonto entfernen",
@@ -180,6 +181,7 @@
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",
       "label": "Buchungstyp",
+      "placeholder": "Name eingeben",
       "success": "Buchungstyp wurde hinzugefügt",
       "error1a": "Der Buchungstyp existiert bereits",
       "error1b": "(Eine Duplette wurde nicht hinzugefügt)",
@@ -198,6 +200,7 @@
     "deleteBookingType": {
       "title": "Buchungstyp löschen",
       "label": "Buchungstyp",
+      "placeholder": "Buchungstyp zum Löschen auswählen",
       "success": "Buchungstyp wurde entfernt",
       "error1a": "Es existiert eine Buchung.",
       "error1b": "(Buchungstyp konnte nicht entfernt werden)",

@@ -20,11 +20,11 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {deleteBookingType} = useBookingTypesDB()
-const {requiredSelect, validateForm} = useValidation()
+const {validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntime()
 
-const selected: Ref<number> = ref(0)
+const selected = ref()
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
@@ -65,10 +65,11 @@ log('--- DeleteBookingType.vue setup ---')
         :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"
         :label="t('dialogs.deleteBookingType.label')"
-        :rules="requiredSelect([t('dialogs.deleteBookingType.rule1')])"
         autocomplete
+        clearable
+        :placeholder="t('dialogs.deleteBookingType.placeholder')"
         density="compact"
-        required
+        autofocus
         variant="outlined"
         @focus="formRef?.resetValidation()"/>
   </v-form>

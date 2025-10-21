@@ -20,7 +20,7 @@ import {useRecordsStore} from '@/stores/records'
 import StockFormular from '@/components/dialogs/forms/StockFormular.vue'
 
 const {t} = useI18n()
-const {formatISIN, log} = useApp()
+const {log} = useApp()
 const {notice} = useBrowser()
 const {updateStock} = useStocksDB()
 const {validateForm} = useValidation()
@@ -64,7 +64,7 @@ onMounted(() => {
   if (currentStock !== undefined) {
     Object.assign(stockFormularData, {
       id: runtime.activeId.value,
-      isin: formatISIN(currentStock.cISIN),
+      isin: currentStock.cISIN.replace(/\s/g, '').toUpperCase(),
       company: currentStock.cCompany,
       symbol: currentStock.cSymbol,
       meetingDay: currentStock.cMeetingDay,

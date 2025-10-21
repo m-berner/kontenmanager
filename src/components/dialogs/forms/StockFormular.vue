@@ -31,11 +31,13 @@ const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
 const onUpdateISIN = async () => {
-  log('STOCK_FORMULAR: onUpdateISIN')
-  stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g,'')
-  const companyData = await fetchCompanyData(stockFormularData.isin)
-  stockFormularData.company = companyData.company
-  stockFormularData.symbol = companyData.symbol
+  if (!stockFormularProps.isUpdate) {
+    log('STOCK_FORMULAR: onUpdateISIN')
+    stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g, '')
+    const companyData = await fetchCompanyData(stockFormularData.isin)
+    stockFormularData.company = companyData.company
+    stockFormularData.symbol = companyData.symbol
+  }
 }
 
 const {debouncedFunction: debouncedIsin} = useDebounce(onUpdateISIN, 400)

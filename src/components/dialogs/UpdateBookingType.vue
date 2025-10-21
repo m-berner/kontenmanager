@@ -21,12 +21,13 @@ const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {updateBookingType} = useBookingTypesDB()
-const {requiredSelect, requiredSelectNumber, validateForm} = useValidation()
+const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntime()
 
-const formSelectedIndex: Ref<number> = ref(0)
+const formSelectedIndex = ref()
 const formName: Ref<string> = ref('')
+const formVisible = ref(true)
 const formRef: Ref<HTMLFormElement | null> = ref(null)
 
 const onClickOk = async (): Promise<void> => {
@@ -67,29 +68,32 @@ log('--- UpdateBookingType.vue setup ---')
           validate-on="submit"
           @submit.prevent>
     <v-text-field
-        v-if="formSelectedIndex > 0"
+        v-if="!formVisible"
         v-model="formName"
         :label="t('dialogs.updateBookingType.label')"
-        :rules="requiredSelect([t('dialogs.updateBookingType.rule1')])"
-        clearable
+        :rules="nameRules([
+            t('dialogs.validators.nameRules.required'),
+            t('dialogs.validators.nameRules.length'),
+            t('dialogs.validators.nameRules.begin')
+        ])"
         density="compact"
         variant="outlined"
         @focus="formRef?.resetValidation()"
         @update:modelValue="(mValue) => {if (mValue === null) { formSelectedIndex = 0 }}"
     />
     <v-select
-        v-if="formSelectedIndex < 1"
+        v-if="formVisible"
         v-model="formSelectedIndex"
         :items="records.bookingTypes.getNamesWithIndex"
         :label="t('dialogs.deleteBookingType.label')"
         :menu="true"
         :menu-props="{ maxHeight: '200px' }"
-        :rules="requiredSelectNumber([t('dialogs.deleteBookingType.rule1')])"
         density="compact"
         item-title="name"
         item-value="index"
+        placeholder=""
         variant="outlined"
         @focus="formRef?.resetValidation()"
-        @update:modelValue="formName = records.bookingTypes.items[formSelectedIndex].cName"/>
+        @update:modelValue="formName = records.bookingTypes.items[formSelectedIndex].cName; formVisible=false"/>
   </v-form>
 </template>

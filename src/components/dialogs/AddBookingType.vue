@@ -75,7 +75,7 @@ log('--- AddBookingType.vue setup ---')
           @submit.prevent>
     <v-text-field
         v-model="formName"
-        :counter="24"
+        :counter="32"
         :disabled="activeAccountId === -1"
         :label="t('dialogs.addBookingType.label')"
         :rules="nameRules([
@@ -83,6 +83,7 @@ log('--- AddBookingType.vue setup ---')
             t('dialogs.validators.nameRules.length'),
             t('dialogs.validators.nameRules.begin')
         ])"
+        :placeholder="t('dialogs.addBookingType.placeholder')"
         autofocus
         density="compact"
         variant="outlined"
