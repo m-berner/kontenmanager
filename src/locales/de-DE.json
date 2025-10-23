@@ -42,7 +42,8 @@
     "messages": {
       "infoTitle": "INFO",
       "noDelete": "Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.",
-      "restrictedImport": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde."
+      "restrictedImport": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde.",
+      "corruptStorage": "Der lokale Browser Speicher ist korrupt. Zurücksetzen zum Standard mit <STRG + ALT + r>."
     },
     "search": "Suchen",
     "headers": {

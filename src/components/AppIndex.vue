@@ -20,14 +20,17 @@ import {useTheme} from 'vuetify'
 import {RouterView} from 'vue-router'
 import AlertOverlay from '@/components/AlertOverlay.vue'
 import {useI18n} from 'vue-i18n'
+import {useAlert} from '@/composables/useAlert'
 
 const {CONS, haveSameStrings, log} = useApp()
 const {t} = useI18n()
 const records = useRecordsStore()
+const alert = useAlert()
 
 const MESSAGES = Object.freeze({
   INFO_TITLE: t('appPage.messages.infoTitle'),
-  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport')
+  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport'),
+  CORRUPT_STORAGE: t('appPage.messages.corruptStorage')
 })
 
 onBeforeMount(async () => {
@@ -35,7 +38,7 @@ onBeforeMount(async () => {
     const theme = useTheme()
     const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch()
     const {getDB, getDatabaseStores} = useIndexedDB()
-    const {clearStorage, getStorage, installStorageLocal, notice, addStorageChangedListener, uiLanguage} = useBrowser()
+    const {clearStorage, getStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
     const db = await getDB()
     const runtime = useRuntime()
     const settings = useSettings()
@@ -47,7 +50,7 @@ onBeforeMount(async () => {
     if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
       settings.init(theme, storage)
     } else {
-      await notice(['Your local storage is corrupt.', 'Reset to default by STRG+ALT+r'])
+      alert.info(MESSAGES.INFO_TITLE, MESSAGES.CORRUPT_STORAGE, null)
     }
     const storesDB = await getDatabaseStores()
     await records.init(storesDB, MESSAGES)
