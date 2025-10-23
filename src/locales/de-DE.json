@@ -5,8 +5,7 @@
     "depotSumLabel": "Depotkonto",
     "selectAccountLabel": "IBAN",
     "iconsAlt": {
-      "logo": "logo",
-      "brandfetch": "brandfetch.com logo"
+      "logo": "Bank Logo"
     },
     "error": "Es wurde noch kein Konto angelegt?"
   },
@@ -28,9 +27,23 @@
     "exportToFile": "Datenbank exportieren",
     "importDatabase": "Datenbank importieren",
     "showAccounting": "Jahres-Berechnungen",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "messages" : {
+      "infoTitle": "INFO",
+      "noBookings": "Es sind keine Buchungen vorhanden.",
+      "noAccount": "Es ist noch kein Konto vorhanden.",
+      "nothingToExport": "Es existieren noch keine Objekte zum Exportieren.",
+      "noBookingTypes": "Es sind keine Buchungskategorien vorhanden.",
+      "createAccount": "Sie müssen erst ein Konto anlegen...",
+      "allStocksVisible": "Es sind keine Unternehmen ausgeblendet."
+    }
   },
   "appPage": {
+    "messages": {
+      "infoTitle": "INFO",
+      "noDelete": "Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.",
+      "restrictedImport": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde."
+    },
     "search": "Suchen",
     "headers": {
       "id": "ID",
@@ -216,8 +229,7 @@
       "fees": "Gebühren",
       "taxes": "Steuern",
       "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?",
-      "message": "Es gibt noch keine Buchungen."
+      "error": "Eingabe Fehler?"
     },
     "showDividend": {
       "title": "Dividenden Übersicht",
@@ -234,6 +246,9 @@
     "importDatabase": {
       "title": "Datenbank importieren",
       "filename": "Dateiname",
+      "invalid": "Die Datendatei ist ungültig!",
+      "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
+      "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann die Datendatei nicht wiederhergestellt werden!",
       "messageStockmanager": "Stockmanager Daten können nur in eine leere Datenbank importiert werden!",
       "messageVersion": "Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version {version} oder neuer.",
       "messageImported": "Die Daten wurden bereits importiert.",

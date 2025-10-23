@@ -26,16 +26,6 @@ const routerInstance = createRouter({
             }
         },
         {
-            path: CONS.ROUTES.HELP,
-            name: 'help',
-            components: {
-                default: () => import('@/components/SheetContent.vue'),
-                title: () => import('@/components/TitleBar.vue'),
-                header: () => import('@/components/HeaderBar.vue'),
-                footer: () => import('@/components/FooterBar.vue')
-            }
-        },
-        {
             path: CONS.ROUTES.PRIVACY,
             name: 'privacy',
             components: {

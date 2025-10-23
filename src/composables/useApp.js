@@ -165,7 +165,8 @@ const CONS = Object.freeze({
             }
         },
         SESSION_STORAGE: {
-            EXTENSION_TAB_ID: 'sExtensionTabId'
+            EXTENSION_TAB_ID: 'sExtensionTabId',
+            HIDE_IMPORT_ALERT: 'sHideImportAlert'
         },
         DRAWER_KEYS: [
             'winloss',

@@ -14,6 +14,7 @@ import {useRuntime} from '@/composables/useRuntime'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
+import {useAlert} from '@/composables/useAlert'
 
 interface OptionMenuProps {
   recordID: number
@@ -28,6 +29,12 @@ const {deleteStock} = useStocksDB()
 const {rt, t} = useI18n()
 const runtime = useRuntime()
 const records = useRecordsStore()
+const alert = useAlert()
+
+const MESSAGES = Object.freeze({
+  INFO_TITLE: t('appPage.messages.infoTitle'),
+  NO_DELETE: t('appPage.messages.noDelete')
+})
 
 const onButtonClick = async (): Promise<void> => {
   log('OPTION_MENU: onButtonClick', {info: optionMenuProps.recordID})
@@ -73,7 +80,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
           await deleteStock(optionMenuProps.recordID)
           await notice([t('dialogs.deleteStock.success')])
         } else {
-          await notice(['Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.'])
+          alert.info(MESSAGES.INFO_TITLE, MESSAGES.NO_DELETE, null)
         }
         for (const m of runtime.optionMenuColors.value.keys()) {
           runtime.optionMenuColors.value.set(m, '')

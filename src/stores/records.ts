@@ -14,8 +14,10 @@ import {useBookingsStore} from '@/stores/childs/bookings'
 import {useBookingTypesStore} from '@/stores/childs/bookingTypes'
 import {useStocksStore} from '@/stores/childs/stocks'
 import {useBrowser} from '@/composables/useBrowser'
+import {useAlert} from '@/composables/useAlert'
 
 const {CONS, log} = useApp()
+const alert = useAlert()
 
 export const useRecordsStore = defineStore('records', () => {
     const accountsStore = useAccountsStore()
@@ -33,7 +35,7 @@ export const useRecordsStore = defineStore('records', () => {
         stocksStore.clean()
     }
 
-    async function init(storesDB: IStoresDB, removeAccounts = true): Promise<void> {
+    async function init(storesDB: IStoresDB, messages: Record<string, string>, removeAccounts = true): Promise<void> {
         log('RECORDS: init')
         const {activeAccountId} = useSettings()
         const {setStorage} = useBrowser()
@@ -113,6 +115,11 @@ export const useRecordsStore = defineStore('records', () => {
             cAccountNumberID: activeAccountId.value,
             cAskDates: CONS.DATE.DEFAULT_ISO
         }, true)
+        //
+        if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
+            alert.info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null)
+            sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true')
+        }
     }
 
     return {

@@ -23,6 +23,11 @@ const {activeAccountId} = useSettings()
 const {resetTeleport} = useRuntime()
 const records = useRecordsStore()
 
+const MESSAGES = Object.freeze({
+  INFO_TITLE: t('appPage.messages.infoTitle'),
+  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport')
+})
+
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
   try {
@@ -33,7 +38,7 @@ const onClickOk = async (): Promise<void> => {
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     if (records.accounts.items.length > 0) {
       const storesDB = await getDatabaseStores()
-      await records.init(storesDB)
+      await records.init(storesDB, MESSAGES)
     }
     resetTeleport()
     await notice([t('dialogs.deleteAccount.success')])

@@ -26,6 +26,7 @@ import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
+import {useAlert} from '@/composables/useAlert'
 
 namespace StockManager {
   export interface IStock {
@@ -86,6 +87,16 @@ const {clearAllBookingTypes, importBookingTypes} = useBookingTypesDB()
 const {clearAllStocks, importStocks} = useStocksDB()
 const {resetTeleport} = useRuntime()
 const {activeAccountId} = useSettings()
+const alert = useAlert()
+
+const MESSAGES = Object.freeze({
+  INFO_TITLE: t('appPage.messages.infoTitle'),
+  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport'),
+  IMPORT_TITLE: t('dialogs.importDatabase.title'),
+  VERSION: t('dialogs.importDatabase.version'),
+  NOT_EMPTY: t('dialogs.importDatabase.notEmpty'),
+  INVALID: t('dialogs.importDatabase.invalid')
+})
 
 const fileBlob = ref<Blob>(new Blob())
 const onChange = (ev: IEventTarget) => {
@@ -142,16 +153,18 @@ const onClickOk = async (): Promise<void> => {
         }
         return result
       }
-      records.clean()
-      await clearAllAccounts()
-      await clearAllBookings()
-      await clearAllBookingTypes()
-      await clearAllStocks()
       if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
-        await notice(['IMPORT_DATABASE: onFileLoaded', 'Could not read backup file'])
+        alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.INVALID, null)
       } else if (backupObject.sm.cDBVersion < CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
-        await notice([t('dialogs.importDatabase.messageVersion', {version: CONS.INDEXED_DB.IMPORT_MIN_VERSION.toString()})])
-      } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
+        alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.VERSION, null)
+      } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && records.accounts.items.length > 0) {
+        alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.NOT_EMPTY, null)
+      } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && records.accounts.items.length === 0) {
+        records.clean()
+        await clearAllAccounts()
+        await clearAllBookings()
+        await clearAllBookingTypes()
+        await clearAllStocks()
         const accountRecords = [{
           cID: activeId,
           cSwift: 'KMKLPJJ9',
@@ -214,6 +227,11 @@ const onClickOk = async (): Promise<void> => {
           bookingsImportData.push({type: 'add', data: booking, key: -1})
         }
       } else if (backupObject.sm.cDBVersion > CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
+        records.clean()
+        await clearAllAccounts()
+        await clearAllBookings()
+        await clearAllBookingTypes()
+        await clearAllStocks()
         for (const rec of backupObject.accounts) {
           accountsStoreData.push(rec)
           accountsImportData.push({type: 'add', data: rec, key: -1})
@@ -238,7 +256,7 @@ const onClickOk = async (): Promise<void> => {
         bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeId),
         bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeId),
         stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeId)
-      })
+      }, MESSAGES)
       await importAccounts(accountsImportData)
       await importBookingTypes(bookingTypesImportData)
       await importBookings(bookingsImportData)
@@ -254,9 +272,7 @@ const onClickOk = async (): Promise<void> => {
     fr.readAsText(fileBlob.value, 'UTF-8')
   }
 }
-
 const title = t('dialogs.importDatabase.title')
-
 defineExpose({onClickOk, title})
 
 log('--- ImportDatabase.vue setup ---')

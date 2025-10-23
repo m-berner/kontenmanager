@@ -6,7 +6,9 @@ import { useBookingsStore } from '@/stores/childs/bookings';
 import { useBookingTypesStore } from '@/stores/childs/bookingTypes';
 import { useStocksStore } from '@/stores/childs/stocks';
 import { useBrowser } from '@/composables/useBrowser';
+import { useAlert } from '@/composables/useAlert';
 const { CONS, log } = useApp();
+const alert = useAlert();
 export const useRecordsStore = defineStore('records', () => {
     const accountsStore = useAccountsStore();
     const bookingsStore = useBookingsStore();
@@ -21,7 +23,7 @@ export const useRecordsStore = defineStore('records', () => {
         bookingTypesStore.clean();
         stocksStore.clean();
     }
-    async function init(storesDB, removeAccounts = true) {
+    async function init(storesDB, messages, removeAccounts = true) {
         log('RECORDS: init');
         const { activeAccountId } = useSettings();
         const { setStorage } = useBrowser();
@@ -92,6 +94,10 @@ export const useRecordsStore = defineStore('records', () => {
             cAccountNumberID: activeAccountId.value,
             cAskDates: CONS.DATE.DEFAULT_ISO
         }, true);
+        if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
+            alert.info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null);
+            sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true');
+        }
     }
     return {
         accounts: accountsStore,

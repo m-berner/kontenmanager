@@ -23,11 +23,16 @@ const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
 
+const MESSAGES = Object.freeze({
+  INFO_TITLE: t('appPage.messages.infoTitle'),
+  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport')
+})
+
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLE_BAR onUpdateTitleBar')
   const storesDB = await getDatabaseStores()
   await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-  await records.init(storesDB)
+  await records.init(storesDB, MESSAGES)
 }
 const logoUrl = computed((): string => {
   const ind = records.accounts.getIndexById(activeAccountId.value)
@@ -77,11 +82,12 @@ log('--- TitleBar.vue setup ---')
         :label="t('titleBar.selectAccountLabel')"
         density="compact"
         hide-details
+        placeholder="WWW"
         max-width="350"
         variant="outlined"
         @update:model-value="onUpdateTitleBar">
       <template #prepend>
-        <img :alt="t('titleBar.iconsAlt.brandfetch')" :src="logoUrl"/>
+        <img :alt="t('titleBar.iconsAlt.logo')" :src="logoUrl"/>
       </template>
     </v-select>
   </v-app-bar>

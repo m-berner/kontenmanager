@@ -8,6 +8,7 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
+import {RouterLink} from 'vue-router'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -18,17 +19,17 @@ log('--- FooterBar.vue setup ---')
 <template>
   <v-bottom-navigation color="primary">
     <v-btn color="white">
-      <router-link :to="CONS.ROUTES.HELP" class="router-link-active">
+      <a href="https://kontenmanager8.wixsite.com/kontenmanager"  class="router-link-active" target="_blank" rel="noopener noreferrer">
         <v-icon icon="$help"/>
         <div>{{ t('footer.help') }}</div>
-      </router-link>
+      </a>
     </v-btn>
     <v-btn color="white">
-      <router-link :to="CONS.ROUTES.PRIVACY" class="router-link-active">
+      <RouterLink :to="CONS.ROUTES.PRIVACY" class="router-link-active">
         <v-icon icon="
         $privacy"/>
         <div>{{ t('footer.privacy') }}</div>
-      </router-link>
+      </RouterLink>
     </v-btn>
     <v-btn :href="CONS.SYSTEM.MAILTO" color="white">
       <v-icon icon="$mail"/>

@@ -15,10 +15,11 @@ import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useRecordsStore} from '@/stores/records'
 import DotMenu from '@/components/childs/DotMenu.vue'
+
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
-const settings = useSettings()
+const {bookingsPerPage} = useSettings()
 const homeHeaders: ComputedRef<DataTableHeader[]> = computed(() => [
   {
     title: t('appPage.headers.action'),
@@ -73,7 +74,7 @@ const homeMenuItems: ComputedRef<IMenuItem[]> = computed(() => [
 const search: Ref<string> = ref('')
 
 const onUpdateItemsPerPage = (count: number): void => {
-  settings.bookingsPerPage.value = count
+  bookingsPerPage.value = count
 }
 const onUpdatePage = (page: number): void => {
   log('HOME_CONTENT: onUpdatePage', {info: page})
@@ -96,7 +97,7 @@ log('--- HomeContent.vue setup ---')
       :hide-no-data="false"
       :hover="true"
       :items="records.bookings.items"
-      :items-per-page="settings.bookingsPerPage.value"
+      :items-per-page="bookingsPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('appPage.itemsPerPageText')"
       :no-data-text="t('appPage.noDataText')"

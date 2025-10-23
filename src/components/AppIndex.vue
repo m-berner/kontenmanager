@@ -18,8 +18,17 @@ import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useTheme} from 'vuetify'
 import {RouterView} from 'vue-router'
+import AlertOverlay from '@/components/AlertOverlay.vue'
+import {useI18n} from 'vue-i18n'
 
 const {CONS, haveSameStrings, log} = useApp()
+const {t} = useI18n()
+const records = useRecordsStore()
+
+const MESSAGES = Object.freeze({
+  INFO_TITLE: t('appPage.messages.infoTitle'),
+  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport')
+})
 
 onBeforeMount(async () => {
   try {
@@ -28,7 +37,6 @@ onBeforeMount(async () => {
     const {getDB, getDatabaseStores} = useIndexedDB()
     const {clearStorage, getStorage, installStorageLocal, notice, addStorageChangedListener, uiLanguage} = useBrowser()
     const db = await getDB()
-    const records = useRecordsStore()
     const runtime = useRuntime()
     const settings = useSettings()
     const storage = await getStorage()
@@ -42,7 +50,7 @@ onBeforeMount(async () => {
       await notice(['Your local storage is corrupt.', 'Reset to default by STRG+ALT+r'])
     }
     const storesDB = await getDatabaseStores()
-    await records.init(storesDB)
+    await records.init(storesDB, MESSAGES)
     const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
     for (let i = 0; i < exchangesBaseData.length; i++) {
       if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
@@ -135,5 +143,6 @@ log('--- AppIndex.vue setup ---', {info: window.location.href})
       <RouterView/>
     </v-main>
     <RouterView name="footer"/>
+    <AlertOverlay />
   </v-app>
 </template>

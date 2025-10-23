@@ -43,8 +43,7 @@ log('--- ShowAccounting.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="records.bookings.items.length === 0">{{ t('dialogs.showAccounting.message') }}</v-alert>
-  <v-form v-else>
+  <v-form>
     <v-list height="440">
       <v-list-item
           v-if="records.accounts.isDepot"
