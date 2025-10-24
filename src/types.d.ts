@@ -41,7 +41,7 @@ export interface IBookingDB {
 
 export interface IStoresDB {
     accountsDB: IAccountDB[],
-    bookingsDB: IBookingDB[],
+    bookingsDB: IBooking_DB[],
     bookingTypesDB: IBookingTypeDB[],
     stocksDB: IStockDB[]
 }
@@ -60,9 +60,26 @@ export interface IBookingType {
     cAccountNumberID: number
 }
 
-export interface IBooking {
+export interface IBooking_SM {
+    cDate: number
+    cExDay: number
+    cUnitQuotation: number
+    cAmount: number
+    cDescription: string
+    cCount: number
+    cType: number
+    cStockID: number
+    cSoli: number
+    cTax: number
+    cFees: number
+    cSTax: number
+    cFTax: number
+    cMarketPlace: string
+}
+
+export interface IBooking_DB {
     cID: number
-    cDate: string
+    cBookDate: string
     cExDate: string
     cDebit: number
     cCredit: number
@@ -71,25 +88,44 @@ export interface IBooking {
     cBookingTypeID: number
     cAccountNumberID: number
     cStockID: number
-    cSoli: number
-    cTax: number
-    cFee: number
-    cSourceTax: number
-    cTransactionTax: number
+    cSoliCredit: number
+    cSoliDebit: number
+    cTaxCredit: number
+    cTaxDebit: number
+    cFeeCredit: number
+    cFeeDebit: number
+    cSourceTaxCredit: number
+    cSourceTaxDebit: number
+    cTransactionTaxCredit: number
+    cTransactionTaxDebit: number
     cMarketPlace: string
 }
 
-interface IStockFormularData {
+export interface IBooking_Store extends IBooking_DB {
+}
+
+export interface IBooking_Formular {
     id: number
-    isin: string
-    company: string
-    symbol: string
-    meetingDay: string
-    quarterDay: string
-    fadeOut: boolean
-    firstPage: boolean
-    url: string
-    askDates: string
+    bookDate: string
+    exDate: string
+    credit: number
+    debit: number
+    description: string
+    count: number
+    bookingTypeId: number
+    accountTypeId: number
+    stockId: number
+    soliCredit: number
+    soliDebit: number
+    taxCredit: number
+    taxDebit: number
+    feeCredit: number
+    feeDebit: number
+    sourceTaxCredit: number
+    sourceTaxDebit: number
+    transactionTaxCredit: number
+    transactionTaxDebit: number
+    marketPlace: string
 }
 
 export interface IAccountFormularData {
@@ -113,7 +149,8 @@ export interface IBookingFormularData {
     stockId: number
     sourceTax: number
     transactionTax: number
-    tax: number
+    taxCredit: number
+    taxDebit: number
     fee: number
     soli: number
     marketPlace: string

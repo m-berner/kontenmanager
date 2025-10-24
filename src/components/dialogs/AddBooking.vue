@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking} from '@/types.d'
+import type {IBooking_DB, IBooking_Store} from '@/types.d'
 import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -38,11 +38,16 @@ const reset = (): void => {
     bookingTypeId: 0,
     accountTypeId: -1,
     stockId: 0,
-    soli: 0,
-    tax: 0,
-    fee: 0,
-    sourceTax: 0,
-    transactionTax: 0
+    soliCredit: 0,
+    soliDebit: 0,
+    taxCredit: 0,
+    taxDebit: 0,
+    feeCredit: 0,
+    feeDebit: 0,
+    sourceTaxCredit: 0,
+    sourceTaxDebit: 0,
+    transactionTaxCredit: 0,
+    transactionTaxDebit: 0
   })
 }
 const onClickOk = async (): Promise<void> => {
@@ -50,11 +55,11 @@ const onClickOk = async (): Promise<void> => {
   if (!await validateForm(formRef)) return
 
   try {
-    let booking: Omit<IBooking, 'cID'>
+    let booking: Omit<IBooking_DB, 'cID'>
     switch (bookingFormularData.bookingTypeId) {
       case 1:
         booking = {
-          cDate: bookingFormularData.bookDate,
+          cBookDate: bookingFormularData.bookDate,
           cCredit: bookingFormularData.credit,
           cDebit: bookingFormularData.debit,
           cDescription: bookingFormularData.description,
@@ -63,17 +68,22 @@ const onClickOk = async (): Promise<void> => {
           cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DATE.DEFAULT_ISO,
           cCount: bookingFormularData.count,
-          cSoli: bookingFormularData.soli,
-          cTax: bookingFormularData.tax,
-          cFee: bookingFormularData.fee,
-          cSourceTax: bookingFormularData.sourceTax,
-          cTransactionTax: bookingFormularData.transactionTax,
+          cSoliCredit: bookingFormularData.soliCredit,
+          cSoliDebit: bookingFormularData.soliDebit,
+          cTaxCredit: bookingFormularData.taxCredit,
+          cTaxDebit: bookingFormularData.taxDebit,
+          cFeeCredit: bookingFormularData.feeCredit,
+          cFeeDebit: bookingFormularData.feeDebit,
+          cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
+          cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
+          cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
+          cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
           cMarketPlace: bookingFormularData.marketPlace
         }
         break
       case 2:
         booking = {
-          cDate: bookingFormularData.bookDate,
+          cBookDate: bookingFormularData.bookDate,
           cCredit: bookingFormularData.credit,
           cDebit: bookingFormularData.debit,
           cDescription: bookingFormularData.description,
@@ -82,17 +92,22 @@ const onClickOk = async (): Promise<void> => {
           cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DATE.DEFAULT_ISO,
           cCount: bookingFormularData.count,
-          cSoli: bookingFormularData.soli,
-          cTax: bookingFormularData.tax,
-          cFee: bookingFormularData.fee,
-          cSourceTax: bookingFormularData.sourceTax,
-          cTransactionTax: bookingFormularData.transactionTax,
+          cSoliCredit: bookingFormularData.soliCredit,
+          cSoliDebit: bookingFormularData.soliDebit,
+          cTaxCredit: bookingFormularData.taxCredit,
+          cTaxDebit: bookingFormularData.taxDebit,
+          cFeeCredit: bookingFormularData.feeCredit,
+          cFeeDebit: bookingFormularData.feeDebit,
+          cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
+          cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
+          cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
+          cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
           cMarketPlace: bookingFormularData.marketPlace
         }
         break
       case 3:
         booking = {
-          cDate: bookingFormularData.bookDate,
+          cBookDate: bookingFormularData.bookDate,
           cCredit: bookingFormularData.credit,
           cDebit: bookingFormularData.debit,
           cDescription: bookingFormularData.description,
@@ -101,17 +116,22 @@ const onClickOk = async (): Promise<void> => {
           cAccountNumberID: activeAccountId.value,
           cExDate: bookingFormularData.exDate,
           cCount: bookingFormularData.count,
-          cSoli: bookingFormularData.soli,
-          cTax: bookingFormularData.tax,
-          cFee: bookingFormularData.fee,
-          cSourceTax: bookingFormularData.sourceTax,
-          cTransactionTax: bookingFormularData.transactionTax,
+          cSoliCredit: bookingFormularData.soliCredit,
+          cSoliDebit: bookingFormularData.soliDebit,
+          cTaxCredit: bookingFormularData.taxCredit,
+          cTaxDebit: bookingFormularData.taxDebit,
+          cFeeCredit: bookingFormularData.feeCredit,
+          cFeeDebit: bookingFormularData.feeDebit,
+          cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
+          cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
+          cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
+          cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
           cMarketPlace: ''
         }
         break
       default:
         booking = {
-          cDate: bookingFormularData.bookDate,
+          cBookDate: bookingFormularData.bookDate,
           cCredit: bookingFormularData.credit,
           cDebit: bookingFormularData.debit,
           cDescription: bookingFormularData.description,
@@ -120,17 +140,22 @@ const onClickOk = async (): Promise<void> => {
           cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DATE.DEFAULT_ISO,
           cCount: 0,
-          cSoli: 0,
-          cTax: 0,
-          cFee: 0,
-          cSourceTax: 0,
-          cTransactionTax: 0,
+          cSoliCredit: bookingFormularData.soliCredit,
+          cSoliDebit: bookingFormularData.soliDebit,
+          cTaxCredit: bookingFormularData.taxCredit,
+          cTaxDebit: bookingFormularData.taxDebit,
+          cFeeCredit: bookingFormularData.feeCredit,
+          cFeeDebit: bookingFormularData.feeDebit,
+          cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
+          cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
+          cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
+          cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
           cMarketPlace: ''
         }
     }
     const addBookingID = await addBooking(booking)
     if (addBookingID > -1) {
-      const completeBooking: IBooking = {cID: addBookingID, ...booking}
+      const completeBooking: IBooking_Store = {cID: addBookingID, ...booking}
       records.bookings.add(completeBooking)
       reset()
       await notice([t('dialogs.addBooking.success')])
@@ -152,11 +177,10 @@ log('--- AddBooking.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addBooking.message') }}</v-alert>
-  <v-form v-else
-          ref="formRef"
-          validate-on="submit"
-          @submit.prevent>
+  <v-form
+      ref="formRef"
+      validate-on="submit"
+      @submit.prevent>
     <BookingFormular/>
   </v-form>
 </template>

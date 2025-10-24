@@ -83,9 +83,7 @@ log('--- AddStock.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addStock.message') }}</v-alert>
   <v-form
-      v-else
       ref="formRef"
       validate-on="submit"
       @submit.prevent>

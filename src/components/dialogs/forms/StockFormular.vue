@@ -47,7 +47,7 @@ onMounted(() => {
   if (stockFormularProps.isUpdate) {
     const currentStock = records.stocks.getItemById(runtime.activeId.value)
     stockFormularData.id = runtime.activeId.value
-    stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g,'')
+    stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g, '')
     stockFormularData.company = currentStock.cCompany
     stockFormularData.symbol = currentStock.cSymbol
     stockFormularData.meetingDay = currentStock.cMeetingDay
@@ -66,6 +66,7 @@ log('--- StockFormular.vue setup ---')
     <v-row>
       <v-text-field
           v-model="stockFormularData.isin"
+          :counter="12"
           :label="t('dialogs.updateStock.isin')"
           :rules="isinRules([
                 t('validators.isinRules.required'),
@@ -75,7 +76,6 @@ log('--- StockFormular.vue setup ---')
                 t('validators.isinRules.luhn')
                 ])"
           autofocus
-          :counter="12"
           variant="outlined"
           @focus="formRef?.resetValidation()"
           @update:model-value="debouncedIsin"/>

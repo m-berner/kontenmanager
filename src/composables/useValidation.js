@@ -1,4 +1,6 @@
 import { useRecordsStore } from '@/stores/records';
+import { useApp } from '@/composables/useApp';
+const { toNumber } = useApp();
 export const useValidation = () => {
     function ibanRules(msgArray) {
         const ibanLengths = {
@@ -78,12 +80,16 @@ export const useValidation = () => {
     }
     function requiredRules(msgArray) {
         return [
-            (v) => v !== null || msgArray[0]
+            (v) => {
+                return (v !== null && v !== '' && v !== undefined) || msgArray[0];
+            }
         ];
     }
-    function valPositiveIntegerRules(msgArray) {
+    function isGreaterZeroRules(msgArray) {
         return [
-            (v) => v > 0 || msgArray[0]
+            (v) => {
+                return toNumber(v) >= 0 || msgArray[0];
+            }
         ];
     }
     function requiredSelect(msgArray) {
@@ -97,6 +103,7 @@ export const useValidation = () => {
         ];
     }
     async function validateForm(form) {
+        console.error(form.value);
         if (form.value !== null) {
             const { valid } = await form.value.validate();
             return valid;
@@ -182,7 +189,7 @@ export const useValidation = () => {
         dateRules,
         valCurrencyCodeRules,
         requiredRules,
-        valPositiveIntegerRules,
+        isGreaterZeroRules,
         requiredSelect,
         requiredSelectNumber,
         validateForm

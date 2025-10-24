@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccountDB, IBookingDB, IBookingTypeDB, IStockDB} from '@/types'
+import type {IAccountDB, IBooking_DB, IBookingTypeDB, IStockDB} from '@/types'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -28,7 +28,7 @@ const localeText = t('dialogs.exportDialog', {filename: fn})
 const onClickOk = async (): Promise<void> => {
   log('EXPORT_DATABASE : onClickOk')
   const accounts: IAccountDB[] = await getAllAccounts()
-  const bookings: IBookingDB[] = await getAllBookings()
+  const bookings: IBooking_DB[] = await getAllBookings()
   const stocks: IStockDB[] = await getAllStocks()
   const bookingTypes: IBookingTypeDB[] = await getAllBookingTypes()
   const stringifyDB = (): string => {

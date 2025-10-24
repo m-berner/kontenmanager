@@ -6,6 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IAccount} from '@/types.d'
 import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -24,16 +25,15 @@ const {notice} = useBrowser()
 const {updateAccount} = useAccountsDB()
 const {validateForm} = useValidation()
 const settings = useSettings()
-const records = useRecordsStore()
 const runtime = useRuntime()
 const {accountFormularData, formRef} = useAccountFormular()
+const records = useRecordsStore()
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_ACCOUNT : onClickOk')
   if (!await validateForm(formRef)) return
-
   try {
-    const account = {
+    const account: IAccount = {
       cID: settings.activeAccountId.value,
       cSwift: accountFormularData.swift.trim().toUpperCase(),
       cIban: accountFormularData.iban.replace(/\s/g, ''),
@@ -71,9 +71,7 @@ log('--- UpdateAccount.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="records.accounts.items.length === 0">{{ t('dialogs.updateAccount.message') }}</v-alert>
   <v-form
-      v-else
       ref="formRef"
       validate-on="submit"
       @submit.prevent>

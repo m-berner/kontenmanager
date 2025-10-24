@@ -146,6 +146,6 @@ log('--- AppIndex.vue setup ---', {info: window.location.href})
       <RouterView/>
     </v-main>
     <RouterView name="footer"/>
-    <AlertOverlay />
+    <AlertOverlay/>
   </v-app>
 </template>

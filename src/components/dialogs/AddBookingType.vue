@@ -68,22 +68,21 @@ log('--- AddBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="activeAccountId === -1">{{ t('dialogs.addAccount.message') }}</v-alert>
-  <v-form v-else
-          ref="formRef"
-          validate-on="submit"
-          @submit.prevent>
+  <v-form
+      ref="formRef"
+      validate-on="submit"
+      @submit.prevent>
     <v-text-field
         v-model="formName"
         :counter="32"
         :disabled="activeAccountId === -1"
         :label="t('dialogs.addBookingType.label')"
+        :placeholder="t('dialogs.addBookingType.placeholder')"
         :rules="nameRules([
             t('dialogs.validators.nameRules.required'),
             t('dialogs.validators.nameRules.length'),
             t('dialogs.validators.nameRules.begin')
         ])"
-        :placeholder="t('dialogs.addBookingType.placeholder')"
         autofocus
         density="compact"
         variant="outlined"

@@ -76,6 +76,7 @@ log('--- AccountFormular.vue setup ---')
       variant="outlined"/>
   <v-text-field
       v-model="accountFormularData.swift"
+      :counter="11"
       :label="`${t('dialogs.addAccount.swiftLabel')}${formattedSwift}`"
       :rules="swiftRules([
             t('validators.swiftRules.required'),
@@ -90,7 +91,6 @@ log('--- AccountFormular.vue setup ---')
         ])"
       autofocus
       variant="outlined"
-      :counter="11"
       @focus="formRef?.resetValidation()"
       @update:modelValue="onUpdateSwift"/>
   <v-text-field

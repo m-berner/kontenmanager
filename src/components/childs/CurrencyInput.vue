@@ -7,21 +7,24 @@
   -->
 <script lang="ts" setup>
 import type {Ref} from 'vue'
-import {defineEmits, defineProps, onMounted, ref, watch} from 'vue'
+import {defineProps, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
+import {useValidation} from '@/composables/useValidation'
+import {useBookingFormular} from '@/composables/useBookingFormular'
 
 interface CurrencyInputProps {
-  modelValue: number
+  modelValue: number,
+  disabled?: boolean,
   label: string
-  disabled?: boolean
 }
 
 const currencyInputProps = defineProps<CurrencyInputProps>()
-const emit = defineEmits<{ 'amount': [value: number] }>()
-const {n} = useI18n()
+const {n, t} = useI18n()
+const {formRef} = useBookingFormular()
+const {isGreaterZeroRules} = useValidation()
 
 const formatCurrency = (value: number): string => {
-  if (!value) return ''
+  if (!value || value === 0) return ''
   return n(value, 'currency')
 }
 
@@ -37,7 +40,11 @@ const isFocused: Ref<boolean> = ref(false)
 const onFocus = (): void => {
   isFocused.value = true
   // Show raw number for editing
-  formattedValue.value = unformattedValue.value.toString()
+  if (unformattedValue.value === 0) {
+    formattedValue.value = ''
+  } else {
+    formattedValue.value = unformattedValue.value.toString()
+  }
 }
 
 const onBlur = (): void => {
@@ -46,32 +53,34 @@ const onBlur = (): void => {
   formattedValue.value = formatCurrency(unformattedValue.value)
 }
 
-const onInput = (value: number): void => {
-  if (isFocused.value) {
-    unformattedValue.value = value
+const onInput = (ev: Event): void => {
+  if (ev.target instanceof HTMLInputElement) {
+    const inValue = Number.parseFloat(ev.target.value)
+    if (isFocused.value && !Number.isNaN(inValue)) {
+      // if (inValue < 0) {
+      //   console.error('v', inValue)
+      //   formattedValue.value = (-inValue).toString()
+      // } else {
+      //   formattedValue.value = inValue.toString()
+      // }
+      formattedValue.value = ev.target.value
+    }
   }
 }
 
 onMounted(() => {
   formattedValue.value = formatCurrency(unformattedValue.value)
 })
-
-watch(() => unformattedValue.value, (value) => {
-  emit('amount', value)
-})
 </script>
 
 <template>
   <v-text-field
-      v-model="formattedValue"
-      :disabled="currencyInputProps.disabled"
-      :label="currencyInputProps.label"
+      v-bind="currencyInputProps"
       density="compact"
-      hide-details
-      type="text"
-      variant="outlined"
+      variant="solo-filled"
+      :rules="isGreaterZeroRules([t('validators.isGreaterZeroRules')])"
       @blur="onBlur"
-      @focus="onFocus"
+      @focus="formRef?.resetValidation(); onFocus"
       @input="onInput"
   />
 </template>

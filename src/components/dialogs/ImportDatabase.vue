@@ -9,13 +9,13 @@
 import type {
   IAccount,
   IAccountDB,
-  IBooking,
-  IBookingDB,
+  IBooking_DB,
+  IBooking_SM,
+  IBooking_Store,
   IBookingType,
   IBookingTypeDB,
   IRecordsDB,
-  IStock,
-  IStockDB
+  IStock, IStockDB
 } from '@/types.d'
 import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'
@@ -68,10 +68,10 @@ interface IBackup {
     cEngine: string
   }
   accounts: IAccount[]
-  bookings: IBooking[]
+  bookings: IBooking_DB[]
   bookingTypes: IBookingType[]
   stocks: IStock[] & StockManager.IStock[]
-  transfers?: IBooking[] & StockManager.ITransfer[]
+  transfers?: IBooking_SM[]
 }
 
 interface IEventTarget extends HTMLInputElement {
@@ -117,7 +117,7 @@ const onClickOk = async (): Promise<void> => {
     const bookingTypesImportData: IRecordsDB[] = []
     const stocksImportData: IRecordsDB[] = []
     const accountsStoreData: IAccountDB[] = []
-    const bookingsStoreData: IBookingDB[] = []
+    const bookingsDbData: IBooking_DB[] = []
     const bookingTypesStoreData: IBookingTypeDB[] = []
     const stocksStoreData: IStockDB[] = []
     if (typeof fr.result === 'string') {
@@ -125,7 +125,7 @@ const onClickOk = async (): Promise<void> => {
       const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : 1
       activeAccountId.value = activeId
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
-      const getCreditDebit = (rec: StockManager.ITransfer): number => {
+      const getCreditDebit = (rec: IBooking_SM): number => {
         let result: number
         switch (rec.cType) {
           case 1:
@@ -205,25 +205,30 @@ const onClickOk = async (): Promise<void> => {
           stocksStoreData.push(stockClone)
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
-          const booking: IBooking = {} as IBooking
-          const smTransfer: StockManager.ITransfer = backupObject.transfers[i]
+          const booking: IBooking_Store = {} as IBooking_Store
+          const smTransfer: IBooking_SM = backupObject.transfers[i]
           booking.cID = i + 1
           booking.cAccountNumberID = activeId
           booking.cStockID = smTransfer.cStockID
-          booking.cDate = isoDate(smTransfer.cDate)
+          booking.cBookDate = isoDate(smTransfer.cDate)
           booking.cBookingTypeID = smTransfer.cType
           booking.cExDate = isoDate(smTransfer.cExDay)
           booking.cCount = smTransfer.cCount < 0 ? -smTransfer.cCount : smTransfer.cCount
           booking.cDescription = smTransfer.cDescription
-          booking.cTransactionTax = smTransfer.cFTax
-          booking.cSourceTax = smTransfer.cSTax
-          booking.cFee = smTransfer.cFees
-          booking.cTax = smTransfer.cTax
+          booking.cTransactionTaxCredit = smTransfer.cFTax > 0 ? smTransfer.cFTax : 0
+          booking.cTransactionTaxDebit = smTransfer.cFTax < 0 ? -smTransfer.cFTax : 0
+          booking.cSourceTaxCredit = smTransfer.cSTax > 0 ? smTransfer.cSTax : 0
+          booking.cSourceTaxDebit = smTransfer.cSTax < 0 ? -smTransfer.cSTax : 0
+          booking.cFeeCredit = smTransfer.cFees > 0 ? smTransfer.cFees : 0
+          booking.cFeeDebit = smTransfer.cFees < 0 ? -smTransfer.cFees : 0
+          booking.cTaxCredit = smTransfer.cTax > 0 ? smTransfer.cTax : 0
+          booking.cTaxDebit = smTransfer.cTax < 0 ? -smTransfer.cTax : 0
+          booking.cSoliCredit = smTransfer.cSoli > 0 ? smTransfer.cSoli : 0
+          booking.cSoliDebit = smTransfer.cSoli < 0 ? -smTransfer.cSoli : 0
           booking.cMarketPlace = smTransfer.cMarketPlace
-          booking.cSoli = smTransfer.cSoli
           booking.cDebit = smTransfer.cType === 1 || smTransfer.cType === 5 ? getCreditDebit(smTransfer) : 0
           booking.cCredit = smTransfer.cType === 2 || smTransfer.cType === 3 || smTransfer.cType === 4 ? getCreditDebit(smTransfer) : 0
-          bookingsStoreData.push(booking)
+          bookingsDbData.push(booking)
           bookingsImportData.push({type: 'add', data: booking, key: -1})
         }
       } else if (backupObject.sm.cDBVersion > CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
@@ -245,7 +250,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypesImportData.push({type: 'add', data: rec, key: -1})
         }
         for (const rec of backupObject.bookings) {
-          bookingsStoreData.push(rec)
+          bookingsDbData.push(rec)
           bookingsImportData.push({type: 'add', data: rec, key: -1})
         }
       } else {
@@ -253,7 +258,7 @@ const onClickOk = async (): Promise<void> => {
       }
       records.init({
         accountsDB: accountsStoreData,
-        bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeId),
+        bookingsDB: bookingsDbData.filter(rec => rec.cAccountNumberID === activeId),
         bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeId),
         stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeId)
       }, MESSAGES)

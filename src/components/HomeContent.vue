@@ -114,7 +114,7 @@ log('--- HomeContent.vue setup ---')
               :menuItems="homeMenuItems"
               :recordID="item.cID"/>
         </td>
-        <td>{{ d(utcDate(item.cDate), 'short') }}</td>
+        <td>{{ d(utcDate(item.cBookDate), 'short') }}</td>
         <td>{{ n(item.cDebit, 'currency') }}</td>
         <td>{{ n(item.cCredit, 'currency') }}</td>
         <td>{{ item.cDescription }}</td>

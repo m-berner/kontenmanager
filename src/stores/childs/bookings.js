@@ -14,7 +14,7 @@ export const useBookingsStore = defineStore('bookings', () => {
     const getTextById = computed(() => (ident) => {
         const booking = items.value.find((entry) => entry.cID === ident);
         if (booking) {
-            return `${booking.cDate} : ${booking.cDebit} : ${booking.cCredit}`;
+            return `${booking.cBookDate} : ${booking.cDebit} : ${booking.cCredit}`;
         }
         else {
             throw new Error('getTextById: No booking found for given ID');
@@ -28,9 +28,9 @@ export const useBookingsStore = defineStore('bookings', () => {
         if (items.value.length > 0) {
             return items.value
                 .map((entry) => {
-                const fees = entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli + entry.cFee;
+                const fees = entry.cTaxDebit - entry.cTaxCredit + entry.cSourceTaxDebit - entry.cSourceTaxCredit + entry.cTransactionTaxDebit - entry.cTransactionTaxCredit + entry.cSoliDebit - entry.cSoliCredit + entry.cFeeDebit - entry.cFeeCredit;
                 const balance = entry.cCredit - entry.cDebit;
-                return fees + balance;
+                return balance - fees;
             })
                 .reduce((acc, cur) => acc + cur, 0);
         }
@@ -44,12 +44,12 @@ export const useBookingsStore = defineStore('bookings', () => {
     });
     const sumFees = computed(() => {
         return items.value.map((entry) => {
-            return entry.cFee;
+            return entry.cFeeDebit - entry.cFeeCredit;
         }).reduce((acc, cur) => acc + cur, 0);
     });
     const sumTaxes = computed(() => {
         return items.value.map((entry) => {
-            return entry.cTax + entry.cSoli + entry.cSourceTax + entry.cTransactionTax;
+            return entry.cTaxDebit - entry.cTaxCredit + entry.cSoliDebit - entry.cSoliCredit + entry.cSourceTaxDebit - entry.cSourceTaxCredit + entry.cTransactionTaxDebit - entry.cTransactionTaxCredit;
         }).reduce((acc, cur) => acc + cur, 0);
     });
     const portfolioByStockId = computed(() => (ident) => {

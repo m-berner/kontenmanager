@@ -7,9 +7,9 @@
  */
 import type {Ref} from 'vue'
 import {reactive, ref} from 'vue'
-import type {IBookingFormularData} from '@/types'
+import type {IBooking_Formular} from '@/types.d'
 
-const bookingFormularData: IBookingFormularData = reactive({
+const bookingFormularData: IBooking_Formular = reactive({
     id: 0,
     bookDate: '',
     exDate: '',
@@ -20,11 +20,16 @@ const bookingFormularData: IBookingFormularData = reactive({
     bookingTypeId: 0,
     accountTypeId: 0,
     stockId: 0,
-    sourceTax: 0,
-    transactionTax: 0,
-    tax: 0,
-    fee: 0,
-    soli: 0,
+    sourceTaxCredit: 0,
+    sourceTaxDebit: 0,
+    transactionTaxCredit: 0,
+    transactionTaxDebit: 0,
+    taxCredit: 0,
+    taxDebit: 0,
+    feeCredit: 0,
+    feeDebit: 0,
+    soliCredit: 0,
+    soliDebit: 0,
     marketPlace: ''
 })
 const formRef: Ref<HTMLFormElement | null> = ref(null)

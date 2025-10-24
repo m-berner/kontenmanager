@@ -82,8 +82,8 @@ log('--- TitleBar.vue setup ---')
         :label="t('titleBar.selectAccountLabel')"
         density="compact"
         hide-details
-        placeholder="WWW"
         max-width="350"
+        placeholder="WWW"
         variant="outlined"
         @update:model-value="onUpdateTitleBar">
       <template #prepend>

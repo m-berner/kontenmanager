@@ -13,11 +13,11 @@ import {useSettings} from '@/composables/useSettings'
 import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import {useRecordsStore} from '@/stores/records'
-import CurrencyInput from '@/components/dialogs/forms/CurrencyInput.vue'
+import CreditDebitFieldset from '@/components/childs/CreditDebitFieldset.vue'
 
 const {t} = useI18n()
 const {CONS} = useApp()
-const {dateRules, requiredRules} = useValidation()
+const {dateRules} = useValidation()
 const {bookingFormularData} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
 const {markets} = useSettings()
@@ -46,7 +46,6 @@ const {markets} = useSettings()
             :label="t('dialogs.addBooking.bookingTypeLabel')"
             :menu=false
             :menuProps="{ maxHeight: 250 }"
-            :rules="requiredRules([t('validators.requiredRules')])"
             density="compact"
             max-width="300"
             variant="outlined"
@@ -66,41 +65,24 @@ const {markets} = useSettings()
         />
       </v-col>
     </v-row>
-    <v-row justify="center">
-      <v-col cols="6">
-        <CurrencyInput
-            v-if="bookingFormularData.bookingTypeId > 3"
-            v-model="bookingFormularData.credit"
-            :label="t('dialogs.addBooking.creditLabel')"
-            @amount="(a) => { bookingFormularData.credit = a }"
-        />
-      </v-col>
-      <v-col>
-        <CurrencyInput
-            v-if="bookingFormularData.bookingTypeId > 3"
-            v-model="bookingFormularData.debit"
-            :label="t('dialogs.addBooking.debitLabel')"
-            @amount="(a) => { bookingFormularData.debit = a }"
-        />
-      </v-col>
+    <v-row justify="center" v-if="bookingFormularData.bookingTypeId > 3">
+      <CreditDebitFieldset
+          :credit-model-value="bookingFormularData.credit"
+          :debit-model-value="bookingFormularData.debit"
+          legend="Buchung"
+      />
     </v-row>
-    <v-row justify="center">
-      <v-col cols="6">
-        <CurrencyInput
-            v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1"
-            v-model="bookingFormularData.tax"
-            :label="t('dialogs.addBooking.taxLabel')"
-            @amount="(a) => { bookingFormularData.tax = a }"
-        />
-      </v-col>
-      <v-col>
-        <CurrencyInput
-            v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1"
-            v-model="bookingFormularData.soli"
-            :label="t('dialogs.addBooking.soliLabel')"
-            @amount="(a) => { bookingFormularData.soli = a }"
-        />
-      </v-col>
+    <v-row justify="center" v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1">
+      <CreditDebitFieldset
+          :credit-model-value="bookingFormularData.taxCredit"
+          :debit-model-value="bookingFormularData.taxDebit"
+          :legend="t('dialogs.addBooking.taxLabel')"/>
+    </v-row>
+    <v-row justify="center" v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1">
+      <CreditDebitFieldset
+          :credit-model-value="bookingFormularData.soliCredit"
+          :debit-model-value="bookingFormularData.soliDebit"
+          :legend="t('dialogs.addBooking.soliLabel')"/>
     </v-row>
     <v-row justify="center">
       <v-col cols="6">
@@ -117,14 +99,12 @@ const {markets} = useSettings()
             variant="outlined"
         />
       </v-col>
-      <v-col>
-        <CurrencyInput
-            v-if="bookingFormularData.bookingTypeId === 3"
-            v-model="bookingFormularData.sourceTax"
-            :label="t('dialogs.addBooking.sourceTaxLabel')"
-            @amount="(a) => { bookingFormularData.sourceTax = a }"
-        />
-      </v-col>
+    </v-row>
+    <v-row justify="center" v-if="bookingFormularData.bookingTypeId === 3">
+      <CreditDebitFieldset
+          :credit-model-value="bookingFormularData.sourceTaxCredit"
+          :debit-model-value="bookingFormularData.sourceTaxDebit"
+          :legend="t('dialogs.addBooking.sourceTaxLabel')"/>
     </v-row>
     <v-row justify="center">
       <v-col cols="6">
@@ -137,7 +117,6 @@ const {markets} = useSettings()
             :label="t('dialogs.addBooking.stockLabel')"
             :menu=false
             :menu-props="{ maxHeight: 250 }"
-            :rules="requiredRules([t('validators.requiredRules')])"
             density="compact"
             max-width="300"
             variant="outlined"
@@ -157,31 +136,25 @@ const {markets} = useSettings()
         />
       </v-col>
     </v-row>
-    <v-row justify="center">
-      <v-col cols="6">
-        <CurrencyInput
-            v-if="bookingFormularData.bookingTypeId < 3 && bookingFormularData.bookingTypeId > 0"
-            v-model="bookingFormularData.fee"
-            :label="t('dialogs.addBooking.feeLabel')"
-            @amount="(a) => { bookingFormularData.fee = a }"
-        />
-      </v-col>
-      <v-col>
-        <CurrencyInput
-            v-if="bookingFormularData.bookingTypeId === 1"
-            v-model="bookingFormularData.transactionTax"
-            :label="t('dialogs.addBooking.transactionTaxLabel')"
-            @amount="(a) => { bookingFormularData.transactionTax = a }"
-        />
-      </v-col>
+    <v-row justify="center" v-if="bookingFormularData.bookingTypeId < 3 && bookingFormularData.bookingTypeId > 0">
+      <CreditDebitFieldset
+          :credit-model-value="bookingFormularData.feeCredit"
+          :debit-model-value="bookingFormularData.feeDebit"
+          :legend="t('dialogs.addBooking.feeLabel')"/>
+    </v-row>
+    <v-row justify="center" v-if="bookingFormularData.bookingTypeId === 1">
+      <CreditDebitFieldset
+          :credit-model-value="bookingFormularData.transactionTaxCredit"
+          :debit-model-value="bookingFormularData.transactionTaxDebit"
+          :legend="t('dialogs.addBooking.transactionTaxLabel')"/>
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
         <v-text-field
             v-model="bookingFormularData.description"
             :label="t('dialogs.addBooking.descriptionLabel')"
+            type="text"
             density="compact"
-            required
             variant="outlined"
         />
       </v-col>

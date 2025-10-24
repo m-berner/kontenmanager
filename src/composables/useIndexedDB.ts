@@ -5,7 +5,15 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IAccountDB, IBookingDB, IBookingTypeDB, IRecordsDB, IStock, IStockDB, IStoresDB} from '@/types'
+import type {
+    IAccountDB,
+    IBooking_DB,
+    IBookingTypeDB,
+    IRecordsDB,
+    IStock,
+    IStockDB,
+    IStoresDB
+} from '@/types'
 import type {Ref} from 'vue'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
@@ -308,7 +316,7 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const {getAllStocks} = useStocksDB()
 
         const accountsDB: IAccountDB[] = await getAllAccounts()
-        const bookingsDB: IBookingDB[] = (await getAllBookings()).filter((booking: IBookingDB) => booking.cAccountNumberID === activeAccountId.value)
+        const bookingsDB: IBooking_DB[] = (await getAllBookings()).filter((booking: IBooking_DB) => booking.cAccountNumberID === activeAccountId.value)
         const bookingTypesDB: IBookingTypeDB[] = (await getAllBookingTypes()).filter((bookingType: IBookingTypeDB) => bookingType.cAccountNumberID === activeAccountId.value)
         const stocksDB: IStockDB[] = (await getAllStocks()).filter((stock: IStockDB) => stock.cAccountNumberID === activeAccountId.value)
 
@@ -429,7 +437,7 @@ export const useBookingsDB = () => {
         }
     }
 
-    async function getAllBookings(): Promise<IBookingDB[]> {
+    async function getAllBookings(): Promise<IBooking_DB[]> {
         try {
             return await db.getAll(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
         } catch (err) {

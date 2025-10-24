@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking} from '@/types.d'
+import type {IBooking_Store} from '@/types.d'
 import type {Ref} from 'vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -30,9 +30,9 @@ onMounted(() => {
   log('SHOW_ACCOUNTING: onMounted')
   const sums: number[] = []
   for (let i = 0; i < records.bookingTypes.items.length; i++) {
-    sums[i] = records.bookings.items.filter((entry: IBooking) => {
+    sums[i] = records.bookings.items.filter((entry: IBooking_Store) => {
       return entry.cBookingTypeID === records.bookingTypes.items[i].cID
-    }).map((entry: IBooking) => {
+    }).map((entry: IBooking_Store) => {
       return entry.cCredit - entry.cDebit
     }).reduce((acc: number, cur: number) => acc + cur, 0)
     addEntryToResult({title: records.bookingTypes.items[i].cName, subtitle: sums[i]})

@@ -54,22 +54,21 @@ log('--- DeleteBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="records.bookingTypes.items.length === 0">{{ t('dialogs.deleteBookingType.message') }}</v-alert>
-  <v-form v-else
-          ref="formRef"
-          validate-on="submit"
-          @submit.prevent>
+  <v-form
+      ref="formRef"
+      validate-on="submit"
+      @submit.prevent>
     <v-select
         v-model="selected"
         :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"
         :label="t('dialogs.deleteBookingType.label')"
-        autocomplete
-        clearable
         :placeholder="t('dialogs.deleteBookingType.placeholder')"
-        density="compact"
+        autocomplete
         autofocus
+        clearable
+        density="compact"
         variant="outlined"
         @focus="formRef?.resetValidation()"/>
   </v-form>

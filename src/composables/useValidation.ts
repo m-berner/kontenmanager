@@ -7,9 +7,12 @@
  */
 import type {Ref} from 'vue'
 import {useRecordsStore} from '@/stores/records'
+import {useApp} from '@/composables/useApp'
 
-type TStringValidator = (_v: string) => boolean | string
+export type TStringValidator = (_v: string) => boolean | string
 type TNumberValidator = (_v: number) => boolean | string
+
+const {toNumber} = useApp()
 
 export const useValidation = () => {
     function ibanRules(msgArray: string[]): TStringValidator[] {
@@ -98,13 +101,17 @@ export const useValidation = () => {
 
     function requiredRules(msgArray: string[]): TStringValidator[] {
         return [
-            (v: string) => v !== null || msgArray[0]
+            (v: string) => {
+                return (v !== null && v !== '' && v !== undefined) || msgArray[0]
+            }
         ]
     }
 
-    function valPositiveIntegerRules(msgArray: string[]): TNumberValidator[] {
+    function isGreaterZeroRules(msgArray: string[]): TStringValidator[] {
         return [
-            (v: number) => v > 0 || msgArray[0]
+            (v: string) => {
+                return toNumber(v) >= 0 || msgArray[0]
+            }
         ]
     }
 
@@ -121,6 +128,7 @@ export const useValidation = () => {
     }
 
     async function validateForm(form: Ref<HTMLFormElement | null>): Promise<boolean> {
+        console.error(form.value)
         if (form.value !== null) {
             const {valid} = await form.value.validate()
             return valid
@@ -211,7 +219,7 @@ export const useValidation = () => {
         dateRules,
         valCurrencyCodeRules,
         requiredRules,
-        valPositiveIntegerRules,
+        isGreaterZeroRules,
         requiredSelect,
         requiredSelectNumber,
         validateForm

@@ -7,8 +7,20 @@
  */
 import type {Ref} from 'vue'
 import {reactive, ref} from 'vue'
-import type {IStockFormularData} from '@/types'
 import {useApp} from '@/composables/useApp'
+
+interface IStockFormularData {
+    id: number
+    isin: string
+    company: string
+    symbol: string
+    meetingDay: string
+    quarterDay: string
+    fadeOut: boolean
+    firstPage: boolean
+    url: string
+    askDates: string
+}
 
 const {CONS} = useApp()
 

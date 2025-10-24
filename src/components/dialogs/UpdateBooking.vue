@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking} from '@/types.d'
+import type {IBooking_DB, IBooking_Store} from '@/types.d'
 import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -15,39 +15,44 @@ import {useSettings} from '@/composables/useSettings'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useBrowser} from '@/composables/useBrowser'
+import {useBookingFormular} from '@/composables/useBookingFormular'
 import {useRecordsStore} from '@/stores/records'
 import BookingFormular from '@/components/dialogs/forms/BookingFormular.vue'
-import {useBookingFormular} from '@/composables/useBookingFormular'
 
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {updateBooking} = useBookingsDB()
 const {validateForm} = useValidation()
-const {bookingFormularData, formRef} = useBookingFormular()
-const records = useRecordsStore()
 const settings = useSettings()
 const runtime = useRuntime()
+const {bookingFormularData, formRef} = useBookingFormular()
+const records = useRecordsStore()
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING : onClickOk')
   if (!await validateForm(formRef)) return
   try {
-    const booking: IBooking = {
+    const booking: IBooking_Store & IBooking_DB = {
       cID: bookingFormularData.id,
       cAccountNumberID: settings.activeAccountId.value,
       cStockID: bookingFormularData.stockId,
       cBookingTypeID: bookingFormularData.bookingTypeId,
-      cDate: bookingFormularData.bookDate,
+      cBookDate: bookingFormularData.bookDate,
       cExDate: bookingFormularData.exDate,
       cCount: bookingFormularData.count,
       cDescription: bookingFormularData.description,
-      cTransactionTax: bookingFormularData.transactionTax,
-      cSourceTax: bookingFormularData.sourceTax,
-      cFee: bookingFormularData.fee,
-      cTax: bookingFormularData.tax,
+      cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
+      cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
+      cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
+      cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
+      cFeeCredit: bookingFormularData.feeCredit,
+      cFeeDebit: bookingFormularData.feeDebit,
+      cTaxCredit: bookingFormularData.taxCredit,
+      cTaxDebit: bookingFormularData.taxDebit,
       cMarketPlace: bookingFormularData.marketPlace,
-      cSoli: bookingFormularData.soli,
+      cSoliCredit: bookingFormularData.soliCredit,
+      cSoliDebit: bookingFormularData.soliDebit,
       cDebit: bookingFormularData.debit,
       cCredit: bookingFormularData.credit
     }
@@ -72,7 +77,7 @@ onMounted(() => {
     Object.assign(bookingFormularData, {
       id: currentBooking.cID,
       bookingTypeId: currentBooking.cBookingTypeID,
-      bookDate: currentBooking.cDate,
+      bookDate: currentBooking.cBookDate,
       debit: currentBooking.cDebit,
       credit: currentBooking.cCredit,
       description: currentBooking.cDescription,
@@ -80,11 +85,16 @@ onMounted(() => {
       count: currentBooking.cCount,
       accountTypeId: currentBooking.cAccountNumberID,
       stockId: currentBooking.cStockID,
-      sourceTax: currentBooking.cSourceTax,
-      transactionTax: currentBooking.cTransactionTax,
-      tax: currentBooking.cTax,
-      fee: currentBooking.cFee,
-      soli: currentBooking.cSoli,
+      sourceTaxCredit: currentBooking.cSourceTaxCredit,
+      sourceTaxDebit: currentBooking.cSourceTaxDebit,
+      transactionTaxCredit: currentBooking.cTransactionTaxCredit,
+      transactionTaxDebit: currentBooking.cTransactionTaxDebit,
+      taxCredit: currentBooking.cTaxCredit,
+      taxDebit: currentBooking.cTaxDebit,
+      feeCredit: currentBooking.cFeeCredit,
+      feeDebit: currentBooking.cFeeDebit,
+      soliCredit: currentBooking.cSoliCredit,
+      soliDebit: currentBooking.cSoliDebit,
       marketPlace: currentBooking.cMarketPlace
     })
   }
@@ -94,11 +104,10 @@ log('--- UpdateBooking.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="records.bookings.items.length === 0">{{ t('dialogs.updateBooking.message') }}</v-alert>
-  <v-form v-else
-          ref="formRef"
-          validate-on="submit"
-          @submit.prevent>
+  <v-form
+      ref="formRef"
+      validate-on="submit"
+      @submit.prevent>
     <BookingFormular/>
   </v-form>
 </template>

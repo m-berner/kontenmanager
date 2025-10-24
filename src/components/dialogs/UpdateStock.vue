@@ -81,12 +81,10 @@ log('--- UpdateStock.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="activeAccountId === -1">{{ t('dialogs.stockFormular.noAccount') }}</v-alert>
-  <v-alert v-if="records.stocks.items.length === 0">{{ t('dialogs.stockFormular.noStocks') }}</v-alert>
-  <v-form v-else
-          ref="formRef"
-          validate-on="submit"
-          @submit.prevent>
+  <v-form
+      ref="formRef"
+      validate-on="submit"
+      @submit.prevent>
     <StockFormular :isUpdate="true"/>
   </v-form>
 </template>

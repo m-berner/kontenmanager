@@ -19,7 +19,8 @@ log('--- FooterBar.vue setup ---')
 <template>
   <v-bottom-navigation color="primary">
     <v-btn color="white">
-      <a href="https://kontenmanager8.wixsite.com/kontenmanager"  class="router-link-active" target="_blank" rel="noopener noreferrer">
+      <a class="router-link-active" href="https://kontenmanager8.wixsite.com/kontenmanager" rel="noopener noreferrer"
+         target="_blank">
         <v-icon icon="$help"/>
         <div>{{ t('footer.help') }}</div>
       </a>

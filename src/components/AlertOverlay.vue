@@ -12,17 +12,16 @@
       persistent
   >
     <v-card
-        max-width="500"
         class="mx-auto"
+        max-width="500"
     >
       <v-card-text class="pa-6">
         <v-alert
-            :type="alertType"
             :title="alertTitle"
-            variant="tonal"
+            :type="alertType"
             closable
-            @click:close="dismiss"
-        >
+            variant="tonal"
+            @click:close="dismiss">
           {{ alertMessage }}
         </v-alert>
       </v-card-text>
@@ -53,10 +52,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useAlert } from '@/composables/useAlert'
+import {computed} from 'vue'
+import {useAlert} from '@/composables/useAlert'
 
-const { currentAlert, dismissAlert, pendingCount } = useAlert()
+const {currentAlert, dismissAlert, pendingCount} = useAlert()
 
 const showOverlay = computed(() => !!currentAlert.value)
 

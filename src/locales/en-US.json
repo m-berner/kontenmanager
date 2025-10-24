@@ -28,7 +28,7 @@
     "importDatabase": "Datenbank importieren",
     "showAccounting": "Jahres-Berechnungen",
     "settings": "Einstellungen",
-    "messages" : {
+    "messages": {
       "infoTitle": "INFO",
       "noBookings": "Es sind keine Buchungen vorhanden.",
       "noAccount": "Es ist noch kein Konto vorhanden.",
@@ -64,6 +64,10 @@
     "itemsPerPageText": "Einträge pro Seite:"
   },
   "dialogs": {
+    "formular": {
+      "credit": "Haben",
+      "debit": "Soll"
+    },
     "cancel": "Abbrechen",
     "ok": "OK",
     "stockFormular": {
@@ -548,6 +552,7 @@
       "iso": ""
     },
     "currencyCodeRules": "Ist erforderlich | 3 Zeichen | Nur Buchstaben",
-    "requiredRules": "Ist erforderlich"
+    "requiredRules": "Ist erforderlich",
+    "isGreaterZeroRules": "Nur positive Werte sind erlaubt"
   }
 }

@@ -70,8 +70,8 @@ export const useRecordsStore = defineStore('records', () => {
                 return b.cFirstPage - a.cFirstPage;
             });
             bookingsStore.items.sort((a, b) => {
-                const dateA = new Date(a.cDate).getTime();
-                const dateB = new Date(b.cDate).getTime();
+                const dateA = new Date(a.cBookDate).getTime();
+                const dateB = new Date(b.cBookDate).getTime();
                 return dateB - dateA;
             });
         };
