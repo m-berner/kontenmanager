@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {ComputedRef, Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -23,8 +22,8 @@ interface ITabs {
 const {rt, t} = useI18n()
 const {CONS, log} = useApp()
 
-const tab: Ref<number> = ref(0)
-const optionsTabs: ComputedRef<ITabs[]> = computed(() => [
+const tab = ref<number>(0)
+const optionsTabs = computed<ITabs[]>(() => [
   {
     title: t('optionsPage.tabs.ge'),
     id: 'register_ge'

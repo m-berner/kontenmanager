@@ -253,7 +253,7 @@
       "filename": "Dateiname",
       "invalid": "Die Datendatei ist ungültig!",
       "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
-      "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann die Datendatei nicht wiederhergestellt werden!",
+      "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
       "messageStockmanager": "Stockmanager Daten können nur in eine leere Datenbank importiert werden!",
       "messageVersion": "Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version {version} oder neuer.",
       "messageImported": "Die Daten wurden bereits importiert.",

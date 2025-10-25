@@ -7,7 +7,6 @@
   -->
 <script lang="ts" setup>
 import type {IContent} from '@/types.d'
-import type {Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -41,7 +40,7 @@ const formatData = computed(() => (dataStr: string): IContent[] => {
   }
   return data
 })
-const stringsArray: Ref<{ title: string, data: string }[]> = ref([])
+const stringsArray = ref<{ title: string, data: string }[]>([])
 
 if (router.currentRoute.value.path === CONS.ROUTES.HELP) {
   stringsArray.value = HELP

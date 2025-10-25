@@ -5,7 +5,7 @@ let dbInstance = null;
 let dbPromise = null;
 const { CONS, log } = useApp();
 const { activeAccountId } = useSettings();
-export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) => {
+export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
     const isConnected = ref(false);
     const error = ref(null);
     const isLoading = ref(false);
@@ -258,8 +258,8 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         deleteDatabaseWithAccount,
         getDatabaseStores
     };
-};
-export const useAccountsDB = () => {
+}
+export function useAccountsDB() {
     const db = useIndexedDB();
     async function addAccount(accountData) {
         try {
@@ -326,8 +326,8 @@ export const useAccountsDB = () => {
         clearAllAccounts,
         importAccounts
     };
-};
-export const useBookingsDB = () => {
+}
+export function useBookingsDB() {
     const db = useIndexedDB();
     async function addBooking(bookingData) {
         try {
@@ -394,8 +394,8 @@ export const useBookingsDB = () => {
         clearAllBookings,
         importBookings
     };
-};
-export const useBookingTypesDB = () => {
+}
+export function useBookingTypesDB() {
     const db = useIndexedDB();
     async function addBookingType(bookingTypeData) {
         try {
@@ -462,12 +462,11 @@ export const useBookingTypesDB = () => {
         clearAllBookingTypes,
         importBookingTypes
     };
-};
-export const useStocksDB = () => {
+}
+export function useStocksDB() {
     const db = useIndexedDB();
     async function addStock(stockData) {
         try {
-            console.error('sdffs', db);
             return await db.add(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData);
         }
         catch (err) {
@@ -546,4 +545,4 @@ export const useStocksDB = () => {
         clearAllStocks,
         importStocks
     };
-};
+}

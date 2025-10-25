@@ -12,7 +12,7 @@ const materials = ref(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS);
 const markets = ref(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS);
 const indexes = ref(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES);
 const exchanges = ref(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES);
-export const useSettings = () => {
+export function useSettings() {
     function setSkin(theme, value) {
         if (theme?.global?.name) {
             theme.global.name.value = value;
@@ -48,4 +48,4 @@ export const useSettings = () => {
         setSkin,
         init
     };
-};
+}

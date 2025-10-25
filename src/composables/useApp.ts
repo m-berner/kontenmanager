@@ -541,7 +541,7 @@ const CONS = Object.freeze({
     }
 })
 
-export const useApp = () => {
+export function useApp() {
     function utcDate(iso: string): Date {
         return new Date(`${iso}T00:00:00.000`)
     }

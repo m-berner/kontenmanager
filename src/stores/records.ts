@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IBooking_Store, IStock, IStockOnlyMemory, IStores, IStoresDB} from '@/types'
+import type {IBooking_Store, IStock, IStockOnlyMemory, IStores, IStoresDB} from '@/types.d'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'

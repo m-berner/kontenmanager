@@ -5,11 +5,10 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Ref} from 'vue'
 import {reactive, ref} from 'vue'
 import type {IBooking_Formular} from '@/types.d'
 
-const bookingFormularData: IBooking_Formular = reactive({
+const bookingFormularData = reactive<IBooking_Formular>({
     id: 0,
     bookDate: '',
     exDate: '',
@@ -32,9 +31,9 @@ const bookingFormularData: IBooking_Formular = reactive({
     soliDebit: 0,
     marketPlace: ''
 })
-const formRef: Ref<HTMLFormElement | null> = ref(null)
+const formRef = ref<HTMLFormElement | null>(null)
 
-export const useBookingFormular = () => {
+export function useBookingFormular() {
     return {
         formRef,
         bookingFormularData

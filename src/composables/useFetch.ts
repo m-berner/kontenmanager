@@ -23,7 +23,7 @@ interface IUrlWithId {
 const {CONS, log, mean, toNumber} = useApp()
 const {notice, getStorage} = useBrowser()
 
-export const useFetch = () => {
+export function useFetch() {
     async function fetchCompanyData(isin: string): Promise<ICompanyData> {
         return new Promise(async (resolve, reject) => {
             let sDocument: Document

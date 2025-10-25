@@ -7,7 +7,7 @@
  */
 import {computed, ref} from 'vue'
 
-export const useFavicon = (domain: string, size = 48) => {
+export function useFavicon(domain: string, size = 48) {
     const error = ref(false)
     const loading = ref(true)
 

@@ -7,7 +7,6 @@
   -->
 <script lang="ts" setup>
 import type {IBookingType} from '@/types.d'
-import type {Ref} from 'vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -25,8 +24,8 @@ const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const {activeAccountId} = useSettings()
 
-const formName: Ref<string> = ref('')
-const formRef: Ref<HTMLFormElement | null> = ref(null)
+const formName = ref<string>('')
+const formRef = ref<HTMLFormElement | null>(null)
 
 const reset = () => {
   formName.value = ''

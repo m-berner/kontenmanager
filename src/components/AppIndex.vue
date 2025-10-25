@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IExchangeData} from '@/types'
+import type {IExchangeData} from '@/types.d'
 import {onBeforeMount} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'

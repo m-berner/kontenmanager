@@ -13,7 +13,7 @@ const stocksPage = ref(1);
 const loadedStocksPages = new Set();
 const isCompanyPage = ref(false);
 const isDownloading = ref(false);
-export const useRuntime = () => {
+export function useRuntime() {
     function clearStocksPages() {
         loadedStocksPages.clear();
     }
@@ -55,4 +55,4 @@ export const useRuntime = () => {
         resetOptionsMenuColors,
         clearStocksPages
     };
-};
+}

@@ -5,25 +5,24 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Ref} from 'vue'
 import {ref} from 'vue'
 import type {ThemeInstance} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 
 const {CONS} = useApp()
-const skin: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
-const bookingsPerPage: Ref<number> = ref(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
-const stocksPerPage: Ref<number> = ref(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
-const dividendsPerPage: Ref<number> = ref(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
-const activeAccountId: Ref<number> = ref(-1)
-const partner: Ref<boolean> = ref(false)
-const service: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
-const materials: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS)
-const markets: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS)
-const indexes: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
-const exchanges: Ref<string[]> = ref(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
+const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
+const bookingsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
+const stocksPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
+const dividendsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
+const activeAccountId = ref<number>(-1)
+const partner = ref<boolean>(false)
+const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
+const materials = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS)
+const markets = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS)
+const indexes = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
+const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
 
-export const useSettings = () => {
+export function useSettings() {
 
     function setSkin(theme: ThemeInstance, value: string) {
         if (theme?.global?.name) {

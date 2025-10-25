@@ -5,7 +5,6 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Ref} from 'vue'
 import {ref} from 'vue'
 
 interface ITeleport {
@@ -14,22 +13,22 @@ interface ITeleport {
     dialogVisibility: boolean
 }
 
-const activeId: Ref<number> = ref(-1)
-const optionMenuColors: Ref<Map<number, string>> = ref(new Map())
-const dialogName: Ref<string> = ref('')
-const dialogOk: Ref<boolean> = ref(true)
-const dialogVisibility: Ref<boolean> = ref(false)
-const infoExchanges: Ref<Map<string, number>> = ref(new Map())
-const infoIndexes: Ref<Map<string, number>> = ref(new Map())
-const infoMaterials: Ref<Map<string, number>> = ref(new Map())
-const curUsd: Ref<number> = ref(1)
-const curEur: Ref<number> = ref(1)
-const stocksPage: Ref<number> = ref(1)
+const activeId = ref<number>(-1)
+const optionMenuColors = ref<Map<number, string>>(new Map())
+const dialogName = ref<string>('')
+const dialogOk = ref<boolean>(true)
+const dialogVisibility= ref<boolean>(false)
+const infoExchanges = ref<Map<string, number>>(new Map())
+const infoIndexes = ref<Map<string, number>>(new Map())
+const infoMaterials = ref<Map<string, number>>(new Map())
+const curUsd = ref<number>(1)
+const curEur = ref<number>(1)
+const stocksPage = ref<number>(1)
 const loadedStocksPages = new Set()
 const isCompanyPage = ref(false)
 const isDownloading = ref(false)
 
-export const useRuntime = () => {
+export function useRuntime(){
 
     function clearStocksPages() {
         loadedStocksPages.clear()

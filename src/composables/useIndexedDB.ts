@@ -13,8 +13,7 @@ import type {
     IStock,
     IStockDB,
     IStoresDB
-} from '@/types'
-import type {Ref} from 'vue'
+} from '@/types.d'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
@@ -25,10 +24,10 @@ let dbPromise: Promise<IDBDatabase> | null = null
 const {CONS, log} = useApp()
 const {activeAccountId} = useSettings()
 
-export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) => {
-    const isConnected: Ref<boolean> = ref(false)
-    const error: Ref<unknown | null> = ref(null)
-    const isLoading: Ref<boolean> = ref(false)
+export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
+    const isConnected = ref<boolean>(false)
+    const error = ref<unknown | null>(null)
+    const isLoading = ref<boolean>(false)
 
     // Database schema setup
     function _setupDatabase(db: IDBDatabase): void {
@@ -353,7 +352,7 @@ export const useIndexedDB = (dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 }
 
-export const useAccountsDB = () => {
+export function useAccountsDB() {
     const db = useIndexedDB()
 
     async function addAccount(accountData: unknown) {
@@ -425,7 +424,7 @@ export const useAccountsDB = () => {
     }
 }
 
-export const useBookingsDB = () => {
+export function useBookingsDB() {
     const db = useIndexedDB()
 
     async function addBooking(bookingData: unknown) {
@@ -497,7 +496,7 @@ export const useBookingsDB = () => {
     }
 }
 
-export const useBookingTypesDB = () => {
+export function useBookingTypesDB() {
     const db = useIndexedDB()
 
     async function addBookingType(bookingTypeData: unknown) {
@@ -569,12 +568,11 @@ export const useBookingTypesDB = () => {
     }
 }
 
-export const useStocksDB = () => {
+export function useStocksDB() {
     const db = useIndexedDB()
 
     async function addStock(stockData: unknown) {
         try {
-            console.error('sdffs', db)
             return await db.add(CONS.INDEXED_DB.STORES.STOCKS.NAME, stockData)
         } catch (err) {
             log('Failed to add stock:', {error: err})

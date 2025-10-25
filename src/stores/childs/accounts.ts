@@ -5,8 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IAccount} from '@/types'
-import type {Ref} from 'vue'
+import type {IAccount} from '@/types.d'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
@@ -17,7 +16,7 @@ const {activeAccountId} = useSettings()
 
 export const useAccountsStore = defineStore('accounts', () => {
 
-    const items: Ref<IAccount[]> = ref([])
+    const items = ref<IAccount[]>([])
 
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(account => account.cID === id)

@@ -83,6 +83,6 @@ export function useAlert() {
         dismissAlert,
         clearAll,
         currentAlert: readonly(currentAlert),
-        pendingCount: readonly(() => alerts.value.length - 1)
+        pendingCount: readonly(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1)
     }
 }

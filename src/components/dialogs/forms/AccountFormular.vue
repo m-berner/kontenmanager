@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {Ref} from 'vue'
 import {computed, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -20,9 +19,9 @@ const {CONS, log} = useApp()
 const {accountFormularData, formRef} = useAccountFormular()
 const {ibanRules, ibanDuplicateRules, swiftRules} = useValidation()
 
-const formSearch: Ref<string> = ref('')
-const formattedIban: Ref<string> = ref('')
-const formattedSwift: Ref<string> = ref('')
+const formSearch = ref<string>('')
+const formattedIban = ref<string>('')
+const formattedSwift = ref<string>('')
 
 const joinedIbanRules = computed(() => [
   ...ibanRules([

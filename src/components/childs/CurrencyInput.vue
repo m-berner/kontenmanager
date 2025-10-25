@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {Ref} from 'vue'
 import {defineProps, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useValidation} from '@/composables/useValidation'
@@ -33,9 +32,9 @@ const parseCurrency = (value: string): number => {
   return Number.parseFloat(value.replace(/[^0-9.-]+/g, ''))
 }
 
-const unformattedValue: Ref<number> = ref(currencyInputProps.modelValue)
-const formattedValue: Ref<string> = ref(formatCurrency(currencyInputProps.modelValue))
-const isFocused: Ref<boolean> = ref(false)
+const unformattedValue = ref<number>(currencyInputProps.modelValue)
+const formattedValue = ref<string>(formatCurrency(currencyInputProps.modelValue))
+const isFocused = ref<boolean>(false)
 
 const onFocus = (): void => {
   isFocused.value = true
@@ -57,12 +56,6 @@ const onInput = (ev: Event): void => {
   if (ev.target instanceof HTMLInputElement) {
     const inValue = Number.parseFloat(ev.target.value)
     if (isFocused.value && !Number.isNaN(inValue)) {
-      // if (inValue < 0) {
-      //   console.error('v', inValue)
-      //   formattedValue.value = (-inValue).toString()
-      // } else {
-      //   formattedValue.value = inValue.toString()
-      // }
       formattedValue.value = ev.target.value
     }
   }

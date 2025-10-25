@@ -7,7 +7,6 @@
   -->
 <script lang="ts" setup>
 import type {IBooking_Store} from '@/types.d'
-import type {Ref} from 'vue'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -17,7 +16,7 @@ const {n, t} = useI18n()
 const records = useRecordsStore()
 const {log} = useApp()
 
-const _result: Ref<Array<{ title: string, subtitle: number }>> = ref([])
+const _result = ref<Array<{ title: string, subtitle: number }>>([])
 
 const addEntryToResult = (value: { title: string, subtitle: number }) => {
   _result.value.push(value)

@@ -9,7 +9,7 @@
 import type {Ref} from 'vue'
 import {computed} from 'vue'
 
-export const useDomain = (url: Ref<string | null>) => {
+export function useDomain(url: Ref<string | null>) {
     const domain = computed(() => {
         if (!url.value) return null
         try {

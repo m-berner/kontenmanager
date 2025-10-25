@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {Ref} from 'vue'
 import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -21,7 +20,7 @@ const {t} = useI18n()
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const checked: Ref<string[]> = ref([])
+const checked = ref<string[]>([])
 
 const indexesKeys: string[] = Array.from(CONS.SETTINGS.INDEXES.keys())
 const materialsKeys: string[] = Array.from(CONS.SETTINGS.MATERIALS.keys())

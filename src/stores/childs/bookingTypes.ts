@@ -5,8 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IBookingType} from '@/types'
-import type {Ref} from 'vue'
+import type {IBookingType} from '@/types.d'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
@@ -14,7 +13,7 @@ import {useApp} from '@/composables/useApp'
 const {log} = useApp()
 
 export const useBookingTypesStore = defineStore('bookingTypes', () => {
-    const items: Ref<IBookingType[]> = ref([])
+    const items = ref<IBookingType[]>([])
 
     const getNameById = computed(() => (ident: number): string => {
         const bookingType = items.value.find((entry: IBookingType) => entry.cID === ident)

@@ -23,9 +23,9 @@ const bookingFormularData = reactive({
     marketPlace: ''
 });
 const formRef = ref(null);
-export const useBookingFormular = () => {
+export function useBookingFormular() {
     return {
         formRef,
         bookingFormularData
     };
-};
+}

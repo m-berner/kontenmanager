@@ -7,7 +7,6 @@
   -->
 <script lang="ts" setup>
 import type {IBookingType} from '@/types.d'
-import type {Ref} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -25,10 +24,10 @@ const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntime()
 
-const formSelectedIndex = ref()
-const formName: Ref<string> = ref('')
-const formVisible = ref(true)
-const formRef: Ref<HTMLFormElement | null> = ref(null)
+const formSelectedIndex = ref<number>(-1)
+const formName = ref<string>('')
+const formVisible = ref<boolean>(true)
+const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING_TYPE: onClickOk')

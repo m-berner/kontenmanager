@@ -2,7 +2,7 @@ import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
 const { CONS, log, mean, toNumber } = useApp();
 const { notice, getStorage } = useBrowser();
-export const useFetch = () => {
+export function useFetch() {
     async function fetchCompanyData(isin) {
         return new Promise(async (resolve, reject) => {
             let sDocument;
@@ -572,4 +572,4 @@ export const useFetch = () => {
         fetchIndexData,
         fetchDateData
     };
-};
+}

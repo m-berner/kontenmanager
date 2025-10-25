@@ -5,8 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IStock, IStockDB, IStockOnlyMemory} from '@/types'
-import type {Ref} from 'vue'
+import type {IStock, IStockDB, IStockOnlyMemory} from '@/types.d'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
@@ -18,7 +17,7 @@ import {useStocksDB} from '@/composables/useIndexedDB'
 const {log, isoDate, toNumber, utcDate} = useApp()
 
 export const useStocksStore = defineStore('stocks', () => {
-    const items: Ref<IStock[]> = ref([])
+    const items = ref<IStock[]>([])
 
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(stock => stock.cID === id)

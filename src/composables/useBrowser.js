@@ -1,7 +1,7 @@
 import { useApp } from '@/composables/useApp';
 import { computed } from 'vue';
 const { CONS } = useApp();
-export const useBrowser = () => {
+export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(CONS.PAGES.INDEX));
     const manifest = computed(() => browser.runtime.getManifest());
     const uiLanguage = computed(() => browser.i18n.getUILanguage());
@@ -157,4 +157,4 @@ export const useBrowser = () => {
         windowsUpdate,
         writeBufferToFile
     };
-};
+}

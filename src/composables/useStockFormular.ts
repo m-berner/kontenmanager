@@ -5,7 +5,6 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Ref} from 'vue'
 import {reactive, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 
@@ -24,11 +23,10 @@ interface IStockFormularData {
 
 const {CONS} = useApp()
 
-const stockFormularData: IStockFormularData = reactive({
+const stockFormularData = reactive<IStockFormularData>({
     id: -1,
     isin: '',
     company: '',
-    wkn: '',
     symbol: '',
     meetingDay: '',
     quarterDay: '',
@@ -37,9 +35,9 @@ const stockFormularData: IStockFormularData = reactive({
     url: '',
     askDates: CONS.DATE.DEFAULT_ISO
 })
-const formRef: Ref<HTMLFormElement | null> = ref(null)
+const formRef = ref<HTMLFormElement | null>(null)
 
-export const useStockFormular = () => {
+export function useStockFormular() {
     return {
         formRef,
         stockFormularData

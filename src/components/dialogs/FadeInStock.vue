@@ -6,8 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock} from '@/types'
-import type {Ref} from 'vue'
+import type {IStock} from '@/types.d'
 import {onMounted, ref} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
@@ -21,8 +20,8 @@ const {updateStock} = useStocksDB()
 const runtime = useRuntime()
 const records = useRecordsStore()
 
-const _selected: Ref<IStock | null> = ref(null)
-const formRef: Ref<HTMLFormElement | null> = ref(null)
+const _selected = ref<IStock | null>(null)
+const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
   log('FADE_IN_STOCK: onClickOk')

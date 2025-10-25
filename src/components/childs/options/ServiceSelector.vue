@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {Ref} from 'vue'
 import {onBeforeMount, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
@@ -16,7 +15,7 @@ const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 const theme = useTheme()
 
-const service: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
+const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const setService = async (service: string | null): Promise<void> => {
   if (service !== null) {

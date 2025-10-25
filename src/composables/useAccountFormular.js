@@ -7,9 +7,9 @@ const accountFormularData = reactive({
     withDepot: false
 });
 const formRef = ref(null);
-export const useAccountFormular = () => {
+export function useAccountFormular() {
     return {
         formRef,
         accountFormularData
     };
-};
+}

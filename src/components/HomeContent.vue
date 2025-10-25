@@ -8,7 +8,6 @@
 <script lang="ts" setup>
 import type {IMenuItem} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
-import type {ComputedRef, Ref} from 'vue'
 import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -20,7 +19,7 @@ const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
 const {bookingsPerPage} = useSettings()
-const homeHeaders: ComputedRef<DataTableHeader[]> = computed(() => [
+const homeHeaders = computed<DataTableHeader[]>(() => [
   {
     title: t('appPage.headers.action'),
     align: 'start',
@@ -58,7 +57,7 @@ const homeHeaders: ComputedRef<DataTableHeader[]> = computed(() => [
     key: 'cBookingType'
   }
 ])
-const homeMenuItems: ComputedRef<IMenuItem[]> = computed(() => [
+const homeMenuItems = computed<IMenuItem[]>(() => [
   {
     id: 'DeleteBooking',
     title: t('appPage.menuItems.delete'),
@@ -70,8 +69,7 @@ const homeMenuItems: ComputedRef<IMenuItem[]> = computed(() => [
     icon: '$updateBooking'
   }
 ])
-
-const search: Ref<string> = ref('')
+const search = ref<string>('')
 
 const onUpdateItemsPerPage = (count: number): void => {
   bookingsPerPage.value = count

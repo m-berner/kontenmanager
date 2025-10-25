@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccountDB, IBooking_DB, IBookingTypeDB, IStockDB} from '@/types'
+import type {IAccountDB, IBooking_DB, IBookingTypeDB, IStockDB} from '@/types.d'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'

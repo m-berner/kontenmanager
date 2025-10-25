@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {Ref} from 'vue'
 import {onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify/framework'
@@ -18,7 +17,7 @@ const theme = useTheme()
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const skin: Ref<string> = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
+const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const themeNames: { [p: string]: string } = {
   earth: t('optionsPage.themeNames.earth'),

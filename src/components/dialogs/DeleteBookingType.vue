@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {Ref} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -25,8 +24,8 @@ const records = useRecordsStore()
 const runtime = useRuntime()
 
 const selected = ref()
-const formRef: Ref<HTMLFormElement | null> = ref(null)
-//TODO Titlebar Depotkonto erst anzeigen nachdem Depotkontostand bekannt ist
+const formRef = ref<HTMLFormElement | null>(null)
+
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE : onClickOk')
   if (!await validateForm(formRef)) return

@@ -526,7 +526,7 @@ const CONS = Object.freeze({
         ONCE: { once: true }
     }
 });
-export const useApp = () => {
+export function useApp() {
     function utcDate(iso) {
         return new Date(`${iso}T00:00:00.000`);
     }
@@ -618,4 +618,4 @@ export const useApp = () => {
         log,
         mean
     };
-};
+}

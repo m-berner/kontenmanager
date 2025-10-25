@@ -42,11 +42,11 @@
         >
           Confirm
         </v-btn>
-      </v-card-actions>-->
+      </v-card-actions>
 
       <v-card-text v-if="pendingCount > 0" class="text-center text-caption pb-4">
         {{ pendingCount }} more alert{{ pendingCount !== 1 ? 's' : '' }} pending
-      </v-card-text>
+      </v-card-text>-->
     </v-card>
   </v-overlay>
 </template>
@@ -55,7 +55,7 @@
 import {computed} from 'vue'
 import {useAlert} from '@/composables/useAlert'
 
-const {currentAlert, dismissAlert, pendingCount} = useAlert()
+const {currentAlert, dismissAlert} = useAlert()
 
 const showOverlay = computed(() => !!currentAlert.value)
 

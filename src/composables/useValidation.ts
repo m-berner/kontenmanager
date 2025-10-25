@@ -14,7 +14,7 @@ type TNumberValidator = (_v: number) => boolean | string
 
 const {toNumber} = useApp()
 
-export const useValidation = () => {
+export function useValidation() {
     function ibanRules(msgArray: string[]): TStringValidator[] {
         const ibanLengths: Record<string, number> = {
             AD: 24, AE: 23, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22,
@@ -128,7 +128,6 @@ export const useValidation = () => {
     }
 
     async function validateForm(form: Ref<HTMLFormElement | null>): Promise<boolean> {
-        console.error(form.value)
         if (form.value !== null) {
             const {valid} = await form.value.validate()
             return valid

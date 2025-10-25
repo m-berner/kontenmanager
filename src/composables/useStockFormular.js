@@ -5,7 +5,6 @@ const stockFormularData = reactive({
     id: -1,
     isin: '',
     company: '',
-    wkn: '',
     symbol: '',
     meetingDay: '',
     quarterDay: '',
@@ -15,9 +14,9 @@ const stockFormularData = reactive({
     askDates: CONS.DATE.DEFAULT_ISO
 });
 const formRef = ref(null);
-export const useStockFormular = () => {
+export function useStockFormular() {
     return {
         formRef,
         stockFormularData
     };
-};
+}

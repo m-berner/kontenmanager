@@ -5,20 +5,19 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Ref} from 'vue'
 import {reactive, ref} from 'vue'
-import type {IAccountFormularData} from '@/types'
+import type {IAccountFormularData} from '@/types.d'
 
-const accountFormularData: IAccountFormularData = reactive({
+const accountFormularData = reactive<IAccountFormularData>({
     id: 0,
     swift: '',
     iban: '',
     logoUrl: '',
     withDepot: false
 })
-const formRef: Ref<HTMLFormElement | null> = ref(null)
+const formRef = ref<HTMLFormElement | null>(null)
 
-export const useAccountFormular = () => {
+export function useAccountFormular() {
     return {
         formRef,
         accountFormularData

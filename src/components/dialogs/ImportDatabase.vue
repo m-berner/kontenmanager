@@ -155,10 +155,13 @@ const onClickOk = async (): Promise<void> => {
       }
       if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
         alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.INVALID, null)
+        return
       } else if (backupObject.sm.cDBVersion < CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
         alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.VERSION, null)
+        return
       } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && records.accounts.items.length > 0) {
         alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.NOT_EMPTY, null)
+        return
       } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && records.accounts.items.length === 0) {
         records.clean()
         await clearAllAccounts()

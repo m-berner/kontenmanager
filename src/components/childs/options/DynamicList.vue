@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {Ref} from 'vue'
 import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -23,9 +22,9 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const newItem: Ref<string> = ref('')
-const list: Ref<string[]> = ref([])
-const label = computed((): string => {
+const newItem = ref<string>('')
+const list = ref<string[]>([])
+const label = computed<string>((): string => {
   let resultLabel = 'Error'
   switch (dynamicListProps.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:

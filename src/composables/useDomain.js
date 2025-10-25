@@ -1,5 +1,5 @@
 import { computed } from 'vue';
-export const useDomain = (url) => {
+export function useDomain(url) {
     const domain = computed(() => {
         if (!url.value)
             return null;
@@ -34,4 +34,4 @@ export const useDomain = (url) => {
         domain,
         subdomain
     };
-};
+}

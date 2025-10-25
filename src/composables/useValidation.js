@@ -1,7 +1,7 @@
 import { useRecordsStore } from '@/stores/records';
 import { useApp } from '@/composables/useApp';
 const { toNumber } = useApp();
-export const useValidation = () => {
+export function useValidation() {
     function ibanRules(msgArray) {
         const ibanLengths = {
             AD: 24, AE: 23, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22,
@@ -103,7 +103,6 @@ export const useValidation = () => {
         ];
     }
     async function validateForm(form) {
-        console.error(form.value);
         if (form.value !== null) {
             const { valid } = await form.value.validate();
             return valid;
@@ -194,4 +193,4 @@ export const useValidation = () => {
         requiredSelectNumber,
         validateForm
     };
-};
+}
