@@ -15,7 +15,8 @@ import type {
   IBookingType,
   IBookingTypeDB,
   IRecordsDB,
-  IStock, IStockDB
+  IStock,
+  IStockDB
 } from '@/types.d'
 import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'

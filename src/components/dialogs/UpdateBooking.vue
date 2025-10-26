@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IBooking_DB, IBooking_Store} from '@/types.d'
-import {defineExpose, onMounted} from 'vue'
+import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
@@ -29,9 +29,38 @@ const runtime = useRuntime()
 const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 
+const bookingIndex = records.bookings.getIndexById(runtime.activeId.value)
+if (bookingIndex > -1) {
+  const currentBooking = records.bookings.items[bookingIndex]
+  Object.assign(bookingFormularData, {
+    id: currentBooking.cID,
+    bookingTypeId: currentBooking.cBookingTypeID,
+    bookDate: currentBooking.cBookDate,
+    debit: currentBooking.cDebit,
+    credit: currentBooking.cCredit,
+    description: currentBooking.cDescription,
+    exDate: currentBooking.cExDate,
+    count: currentBooking.cCount,
+    accountTypeId: currentBooking.cAccountNumberID,
+    stockId: currentBooking.cStockID,
+    sourceTaxCredit: currentBooking.cSourceTaxCredit,
+    sourceTaxDebit: currentBooking.cSourceTaxDebit,
+    transactionTaxCredit: currentBooking.cTransactionTaxCredit,
+    transactionTaxDebit: currentBooking.cTransactionTaxDebit,
+    taxCredit: currentBooking.cTaxCredit,
+    taxDebit: currentBooking.cTaxDebit,
+    feeCredit: currentBooking.cFeeCredit,
+    feeDebit: currentBooking.cFeeDebit,
+    soliCredit: currentBooking.cSoliCredit,
+    soliDebit: currentBooking.cSoliDebit,
+    marketPlace: currentBooking.cMarketPlace
+  })
+}
+
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING : onClickOk')
   if (!await validateForm(formRef)) return
+  console.error(bookingFormularData)
   try {
     const booking: IBooking_Store & IBooking_DB = {
       cID: bookingFormularData.id,
@@ -68,37 +97,6 @@ const onClickOk = async (): Promise<void> => {
 }
 const title = t('dialogs.updateBooking.title')
 defineExpose({onClickOk, title})
-
-onMounted(() => {
-  log('UPDATE_BOOKING: onMounted')
-  const bookingIndex = records.bookings.getIndexById(runtime.activeId.value)
-  if (bookingIndex > -1) {
-    const currentBooking = records.bookings.items[bookingIndex]
-    Object.assign(bookingFormularData, {
-      id: currentBooking.cID,
-      bookingTypeId: currentBooking.cBookingTypeID,
-      bookDate: currentBooking.cBookDate,
-      debit: currentBooking.cDebit,
-      credit: currentBooking.cCredit,
-      description: currentBooking.cDescription,
-      exDate: currentBooking.cExDate,
-      count: currentBooking.cCount,
-      accountTypeId: currentBooking.cAccountNumberID,
-      stockId: currentBooking.cStockID,
-      sourceTaxCredit: currentBooking.cSourceTaxCredit,
-      sourceTaxDebit: currentBooking.cSourceTaxDebit,
-      transactionTaxCredit: currentBooking.cTransactionTaxCredit,
-      transactionTaxDebit: currentBooking.cTransactionTaxDebit,
-      taxCredit: currentBooking.cTaxCredit,
-      taxDebit: currentBooking.cTaxDebit,
-      feeCredit: currentBooking.cFeeCredit,
-      feeDebit: currentBooking.cFeeDebit,
-      soliCredit: currentBooking.cSoliCredit,
-      soliDebit: currentBooking.cSoliDebit,
-      marketPlace: currentBooking.cMarketPlace
-    })
-  }
-})
 
 log('--- UpdateBooking.vue setup ---')
 </script>

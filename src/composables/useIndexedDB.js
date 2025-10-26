@@ -349,7 +349,7 @@ export function useBookingsDB() {
     }
     async function updateBooking(bookingData) {
         try {
-            return await db.update(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, bookingData);
+            return await db.update(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingData);
         }
         catch (err) {
             log('Failed to update booking:', { error: err });

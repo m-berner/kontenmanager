@@ -7,12 +7,9 @@
  */
 import type {Ref} from 'vue'
 import {useRecordsStore} from '@/stores/records'
-import {useApp} from '@/composables/useApp'
 
 export type TStringValidator = (_v: string) => boolean | string
 type TNumberValidator = (_v: number) => boolean | string
-
-const {toNumber} = useApp()
 
 export function useValidation() {
     function ibanRules(msgArray: string[]): TStringValidator[] {
@@ -107,10 +104,50 @@ export function useValidation() {
         ]
     }
 
-    function isGreaterZeroRules(msgArray: string[]): TStringValidator[] {
+    // function isValidCredit(msgArray: string[], debit: number): TStringValidator[] {
+    //     return [
+    //         (v: string) => {
+    //             const result = (toNumber(v) >= 0 && debit === 0) || (toNumber(v) <= 0 && debit > 0)
+    //             return result || msgArray[0]
+    //         }
+    //     ]
+    // }
+    //
+    // function isValidDebit(msgArray: string[], credit: number): TStringValidator[] {
+    //     return [
+    //         (v: string) => {
+    //             const result = (toNumber(v) >= 0 && credit === 0) || (toNumber(v) <= 0 && credit > 0)
+    //             return result || msgArray[0]
+    //         }
+    //     ]
+    // }
+
+    function isValidCredit(msgArray: string[], debitValue: Ref<number> | number): TNumberValidator[] {
         return [
-            (v: string) => {
-                return toNumber(v) >= 0 || msgArray[0]
+            (v: number) => {
+                const debit = typeof debitValue === 'number' ? debitValue : debitValue.value
+                // Nur einer der beiden Werte darf größer als 0 sein
+                if (v > 0 && debit > 0) {
+                    return msgArray[0]
+                } else if (v < 0) {
+                    return msgArray[1]
+                }
+                return true
+            }
+        ]
+    }
+
+    function isValidDebit(msgArray: string[], creditValue: Ref<number> | number): TNumberValidator[] {
+        return [
+            (v: number) => {
+                const credit = typeof creditValue === 'number' ? creditValue : creditValue.value
+                // Nur einer der beiden Werte darf größer als 0 sein
+                if (v > 0 && credit > 0) {
+                    return msgArray[0]
+                } else if (v < 0) {
+                    return msgArray[1]
+                }
+                return true
             }
         ]
     }
@@ -213,12 +250,13 @@ export function useValidation() {
         ibanRules,
         ibanDuplicateRules,
         isinRules,
+        isValidCredit,
+        isValidDebit,
         nameRules,
         swiftRules,
         dateRules,
         valCurrencyCodeRules,
         requiredRules,
-        isGreaterZeroRules,
         requiredSelect,
         requiredSelectNumber,
         validateForm

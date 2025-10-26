@@ -65,8 +65,11 @@
   },
   "dialogs": {
     "formular": {
-      "credit": "Haben",
-      "debit": "Soll"
+      "bookingLabel": "Buchung",
+      "creditLabel": "Haben",
+      "debitLabel": "Soll",
+      "notNegative": "Nur positive Werte",
+      "onlyOnePositive": "Ein Wert muss 0 sein"
     },
     "cancel": "Abbrechen",
     "ok": "OK",

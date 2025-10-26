@@ -7,33 +7,61 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
+import {computed} from 'vue'
 import CurrencyInput from '@/components/childs/CurrencyInput.vue'
+import {useValidation} from '@/composables/useValidation'
 
 interface CreditDebitFieldsetProps {
-  creditModelValue: number,
-  debitModelValue: number,
+  modelValue: { credit: number, debit: number }
   disabled?: boolean,
   legend: string
 }
 
-const creditDebitFieldsetProps = defineProps<CreditDebitFieldsetProps>()
+const props = defineProps<CreditDebitFieldsetProps>()
+// eslint-disable-next-line vue/define-emits-declaration
+const emit = defineEmits(['update:modelValue'])
 const {t} = useI18n()
+const {isValidCredit, isValidDebit} = useValidation()
+
+const creditValue = computed({
+  get: () => props.modelValue.credit,
+  set: (val: number) => {
+    emit('update:modelValue', {
+      credit: val,
+      debit: props.modelValue.debit
+    })
+  }
+})
+
+const debitValue = computed({
+  get: () => props.modelValue.debit,
+  set: (val: number) => {
+    emit('update:modelValue', {
+      credit: props.modelValue.credit,
+      debit: val
+    })
+  }
+})
+
+// Reaktive Rules - werden neu berechnet wenn sich der jeweils andere Wert ändert
+const creditRules = computed(() => isValidCredit([t('dialogs.formular.onlyOnePositive'),t('dialogs.formular.notNegative')], props.modelValue.debit))
+const debitRules = computed(() => isValidDebit([t('dialogs.formular.onlyOnePositive'),t('dialogs.formular.notNegative')], props.modelValue.credit))
 </script>
 
 <template>
   <fieldset class="horizontal-fieldset">
-    <legend>{{ creditDebitFieldsetProps.legend }}</legend>
+    <legend>{{ props.legend }}</legend>
     <div class="fields-container">
       <CurrencyInput
-          v-bind="creditDebitFieldsetProps"
-          v-model="creditDebitFieldsetProps.creditModelValue"
-          :label="t('dialogs.formular.credit')"
-      />
+          v-model="creditValue"
+          :disabled="props.disabled"
+          :label="t('dialogs.formular.creditLabel')"
+          :rules="creditRules"/>
       <CurrencyInput
-          v-bind="creditDebitFieldsetProps"
-          v-model="creditDebitFieldsetProps.debitModelValue"
-          :label="t('dialogs.formular.debit')"
-      />
+          v-model="debitValue"
+          :disabled="props.disabled"
+          :label="t('dialogs.formular.debitLabel')"
+          :rules="debitRules"/>
     </div>
   </fieldset>
 </template>

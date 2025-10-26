@@ -20,25 +20,6 @@ export interface IBookingTypeDB {
     cAccountNumberID: number
 }
 
-export interface IBookingDB {
-    cID: number
-    cDate: string
-    cExDate: string
-    cDebit: number
-    cCredit: number
-    cDescription: string
-    cCount: number
-    cBookingTypeID: number
-    cAccountNumberID: number
-    cStockID: number
-    cSoli: number
-    cTax: number
-    cFee: number
-    cSourceTax: number
-    cTransactionTax: number
-    cMarketPlace: string
-}
-
 export interface IStoresDB {
     accountsDB: IAccountDB[],
     bookingsDB: IBooking_DB[],

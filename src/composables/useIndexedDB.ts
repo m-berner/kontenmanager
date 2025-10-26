@@ -5,15 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {
-    IAccountDB,
-    IBooking_DB,
-    IBookingTypeDB,
-    IRecordsDB,
-    IStock,
-    IStockDB,
-    IStoresDB
-} from '@/types.d'
+import type {IAccountDB, IBooking_DB, IBookingTypeDB, IRecordsDB, IStock, IStockDB, IStoresDB} from '@/types.d'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
@@ -423,7 +415,7 @@ export function useAccountsDB() {
         importAccounts
     }
 }
-
+// TODO addBooking calculations
 export function useBookingsDB() {
     const db = useIndexedDB()
 
@@ -447,7 +439,7 @@ export function useBookingsDB() {
 
     async function updateBooking(bookingData: unknown) {
         try {
-            return await db.update(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, bookingData)
+            return await db.update(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingData)
         } catch (err) {
             log('Failed to update booking:', {error: err})
             throw err

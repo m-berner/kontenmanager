@@ -17,7 +17,7 @@ const activeId = ref<number>(-1)
 const optionMenuColors = ref<Map<number, string>>(new Map())
 const dialogName = ref<string>('')
 const dialogOk = ref<boolean>(true)
-const dialogVisibility= ref<boolean>(false)
+const dialogVisibility = ref<boolean>(false)
 const infoExchanges = ref<Map<string, number>>(new Map())
 const infoIndexes = ref<Map<string, number>>(new Map())
 const infoMaterials = ref<Map<string, number>>(new Map())
@@ -28,7 +28,7 @@ const loadedStocksPages = new Set()
 const isCompanyPage = ref(false)
 const isDownloading = ref(false)
 
-export function useRuntime(){
+export function useRuntime() {
 
     function clearStocksPages() {
         loadedStocksPages.clear()

@@ -1,6 +1,4 @@
 import { useRecordsStore } from '@/stores/records';
-import { useApp } from '@/composables/useApp';
-const { toNumber } = useApp();
 export function useValidation() {
     function ibanRules(msgArray) {
         const ibanLengths = {
@@ -85,10 +83,31 @@ export function useValidation() {
             }
         ];
     }
-    function isGreaterZeroRules(msgArray) {
+    function isValidCredit(msgArray, debitValue) {
         return [
             (v) => {
-                return toNumber(v) >= 0 || msgArray[0];
+                const debit = typeof debitValue === 'number' ? debitValue : debitValue.value;
+                if (v > 0 && debit > 0) {
+                    return msgArray[0];
+                }
+                else if (v < 0) {
+                    return msgArray[1];
+                }
+                return true;
+            }
+        ];
+    }
+    function isValidDebit(msgArray, creditValue) {
+        return [
+            (v) => {
+                const credit = typeof creditValue === 'number' ? creditValue : creditValue.value;
+                if (v > 0 && credit > 0) {
+                    return msgArray[0];
+                }
+                else if (v < 0) {
+                    return msgArray[1];
+                }
+                return true;
             }
         ];
     }
@@ -183,12 +202,13 @@ export function useValidation() {
         ibanRules,
         ibanDuplicateRules,
         isinRules,
+        isValidCredit,
+        isValidDebit,
         nameRules,
         swiftRules,
         dateRules,
         valCurrencyCodeRules,
         requiredRules,
-        isGreaterZeroRules,
         requiredSelect,
         requiredSelectNumber,
         validateForm

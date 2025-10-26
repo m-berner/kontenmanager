@@ -71,7 +71,6 @@ const onClickOk = async (): Promise<void> => {
 const title = t('dialogs.addStock.title')
 // TODO update button in Company Content...
 // TODO Setting button also in company view
-// TODO bookingtypeformular usebookingTypeFormular,...
 defineExpose({onClickOk, title})
 
 onMounted(() => {

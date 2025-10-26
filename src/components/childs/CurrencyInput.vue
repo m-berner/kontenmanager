@@ -6,21 +6,22 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineProps, onMounted, ref} from 'vue'
+import {computed, defineProps, onMounted, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 
 interface CurrencyInputProps {
-  modelValue: number,
-  disabled?: boolean,
+  modelValue: number
+  disabled?: boolean
   label: string
+  rules?: Array<(_v: number) => boolean | string>  // Number validator!
 }
 
-const currencyInputProps = defineProps<CurrencyInputProps>()
-const {n, t} = useI18n()
+const props = defineProps<CurrencyInputProps>()
+// eslint-disable-next-line vue/define-emits-declaration
+const emit = defineEmits(['update:modelValue'])
+const {n} = useI18n()
 const {formRef} = useBookingFormular()
-const {isGreaterZeroRules} = useValidation()
 
 const formatCurrency = (value: number): string => {
   if (!value || value === 0) return ''
@@ -32,9 +33,16 @@ const parseCurrency = (value: string): number => {
   return Number.parseFloat(value.replace(/[^0-9.-]+/g, ''))
 }
 
-const unformattedValue = ref<number>(currencyInputProps.modelValue)
-const formattedValue = ref<string>(formatCurrency(currencyInputProps.modelValue))
+const unformattedValue = ref<number>(props.modelValue)
+const formattedValue = ref('7') //ref<string>(formatCurrency(props.modelValue))
 const isFocused = ref<boolean>(false)
+
+// Watch für prop changes
+watch(() => props.modelValue, (newVal) => {
+  if (!isFocused.value) {
+    formattedValue.value = formatCurrency(newVal)
+  }
+})
 
 const onFocus = (): void => {
   isFocused.value = true
@@ -48,32 +56,42 @@ const onFocus = (): void => {
 
 const onBlur = (): void => {
   isFocused.value = false
-  unformattedValue.value = parseCurrency(formattedValue.value)
-  formattedValue.value = formatCurrency(unformattedValue.value)
+  const parsed = parseCurrency(formattedValue.value)
+  emit('update:modelValue', parsed)
+  formattedValue.value = formatCurrency(parsed)
 }
 
 const onInput = (ev: Event): void => {
-  if (ev.target instanceof HTMLInputElement) {
-    const inValue = Number.parseFloat(ev.target.value)
-    if (isFocused.value && !Number.isNaN(inValue)) {
-      formattedValue.value = ev.target.value
-    }
+  if (ev.target instanceof HTMLInputElement && isFocused.value) {
+    formattedValue.value = ev.target.value
   }
 }
 
+// Wrapper für Rules: String-Input → Number für Validation
+const wrappedRules = computed(() => {
+  if (!props.rules) return undefined
+  return props.rules.map(rule => {
+    return (v: string) => {
+      const numValue = parseCurrency(v)
+      return rule(numValue)
+    }
+  })
+})
+
 onMounted(() => {
-  formattedValue.value = formatCurrency(unformattedValue.value)
+  formattedValue.value = formatCurrency(props.modelValue)
 })
 </script>
 
 <template>
   <v-text-field
-      v-bind="currencyInputProps"
+      v-bind="props"
+      :model-value="formattedValue"
       density="compact"
       variant="solo-filled"
-      :rules="isGreaterZeroRules([t('validators.isGreaterZeroRules')])"
+      :rules="wrappedRules"
       @blur="onBlur"
-      @focus="formRef?.resetValidation(); onFocus"
+      @focus="formRef?.resetValidation(); onFocus()"
       @input="onInput"
   />
 </template>
