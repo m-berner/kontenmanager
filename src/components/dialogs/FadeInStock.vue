@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock} from '@/types.d'
+import type {IStock_Store} from '@/types.d'
 import {onMounted, ref} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
@@ -20,7 +20,7 @@ const {updateStock} = useStocksDB()
 const runtime = useRuntime()
 const records = useRecordsStore()
 
-const _selected = ref<IStock | null>(null)
+const _selected = ref<IStock_Store | null>(null)
 const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {

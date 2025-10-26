@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IAccount} from '@/types.d'
+import type {IAccount_Store} from '@/types.d'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
@@ -16,16 +16,16 @@ const {activeAccountId} = useSettings()
 
 export const useAccountsStore = defineStore('accounts', () => {
 
-    const items = ref<IAccount[]>([])
+    const items = ref<IAccount_Store[]>([])
 
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(account => account.cID === id)
     })
-    const getById = computed(() => (id: number): IAccount | undefined => {
+    const getById = computed(() => (id: number): IAccount_Store | undefined => {
         return items.value.find(account => account.cID === id)
     })
     const isDuplicate = computed(() => (name: string): boolean => {
-        const duplicates = items.value.filter((entry: IAccount) => entry.cIban === name)
+        const duplicates = items.value.filter((entry: IAccount_Store) => entry.cIban === name)
         return duplicates.length > 0
     })
 
@@ -38,7 +38,7 @@ export const useAccountsStore = defineStore('accounts', () => {
         }
     })
 
-    function add(account: IAccount, prepend: boolean = false): void {
+    function add(account: IAccount_Store, prepend: boolean = false): void {
         log('ACCOUNTS_STORE: add')
         if (prepend) {
             items.value.unshift(account)
@@ -47,7 +47,7 @@ export const useAccountsStore = defineStore('accounts', () => {
         }
     }
 
-    function update(account: IAccount): void {
+    function update(account: IAccount_Store): void {
         log('ACCOUNTS_STORE: update')
         const index = getIndexById.value(account.cID)
         if (index !== -1) {

@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IStock, IStockDB, IStockOnlyMemory} from '@/types.d'
+import type {IStock_DB, IStock_Memory, IStock_Store} from '@/types.d'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
@@ -17,12 +17,12 @@ import {useStocksDB} from '@/composables/useIndexedDB'
 const {log, isoDate, toNumber, utcDate} = useApp()
 
 export const useStocksStore = defineStore('stocks', () => {
-    const items = ref<IStock[]>([])
+    const items = ref<IStock_Store[]>([])
 
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(stock => stock.cID === id)
     })
-    const getItemById = computed(() => (id: number): IStock => items.value[getIndexById.value(id)])
+    const getItemById = computed(() => (id: number): IStock_Store => items.value[getIndexById.value(id)])
 
     const passive = computed(() => {
         return items.value.filter(rec => {
@@ -42,9 +42,9 @@ export const useStocksStore = defineStore('stocks', () => {
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
 
-    function add(stock: IStockDB, prepend: boolean = false): void {
+    function add(stock: IStock_DB, prepend: boolean = false): void {
         log('STOCKS_STORE: add')
-        const stocksOnlyMemory: IStockOnlyMemory = {
+        const stocksOnlyMemory: IStock_Memory = {
             mPortfolio: 0,
             mInvest: 0,
             mChange: 0,
@@ -72,7 +72,7 @@ export const useStocksStore = defineStore('stocks', () => {
         }
     }
 
-    function updateStock(stock: IStockDB): void {
+    function updateStock(stock: IStock_DB): void {
         log('STOCKS_STORE: updateStock')
         const index = getIndexById.value(stock?.cID ?? -1)
         if (index !== -1) {
@@ -123,7 +123,7 @@ export const useStocksStore = defineStore('stocks', () => {
         const rest = itemsLength % stocksPerPage.value
         const lastPage = Math.ceil(itemsLength / stocksPerPage.value)
 
-        let pageStocks: IStock[] = []
+        let pageStocks: IStock_Store[] = []
         if (itemsLength > 0) {
             if (page < lastPage || rest === 0) {
                 pageStocks = active.value.slice(

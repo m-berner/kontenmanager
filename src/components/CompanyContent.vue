@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IMenuItem, IStock} from '@/types.d'
+import type {IMenuItem, IStock_Store} from '@/types.d'
 import type {DataTableHeader} from 'vuetify'
 import {computed, onBeforeUpdate, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -128,9 +128,9 @@ const onUpdatePage = async (page: number): Promise<void> => {
 }
 
 onBeforeUpdate(() => {
-  records.stocks.active.sort((a: IStock, b: IStock) => {
+  records.stocks.active.sort((a: IStock_Store, b: IStock_Store) => {
     return b.cFirstPage - a.cFirstPage
-  }).sort((a: IStock, b: IStock) => {
+  }).sort((a: IStock_Store, b: IStock_Store) => {
     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
   })
 })
@@ -147,9 +147,9 @@ onMounted(async () => {
     records.stocks.active[i].mPortfolio = records.bookings.portfolioByStockId(records.stocks.active[i].cID)
     records.stocks.active[i].mInvest = records.bookings.investByStockId(records.stocks.active[i].cID)
   }
-  records.stocks.active.sort((a: IStock, b: IStock) => {
+  records.stocks.active.sort((a: IStock_Store, b: IStock_Store) => {
     return b.cFirstPage - a.cFirstPage
-  }).sort((a: IStock, b: IStock) => {
+  }).sort((a: IStock_Store, b: IStock_Store) => {
     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
   })
   if (!loadedStocksPages.has(stocksPage.value)) {

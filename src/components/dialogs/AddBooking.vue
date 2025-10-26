@@ -159,7 +159,9 @@ const onClickOk = async (): Promise<void> => {
       records.bookings.add(completeBooking)
       reset()
       await notice([t('dialogs.addBooking.success')])
-    } //TODO user notice in case it failed
+    } else {
+      await notice(['Could not add to database'])
+    }
   } catch (e) {
     log('ADD_BOOKING: onClickOk', {error: e})
     await notice([t('dialogs.addBooking.catch')])

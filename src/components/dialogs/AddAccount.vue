@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount} from '@/types.d'
+import type {IAccount_Store} from '@/types.d'
 import {computed, defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -51,7 +51,7 @@ const onClickOk = async (): Promise<void> => {
     }
     const addAccountID = await addAccount(account)
     if (addAccountID > -1) {
-      const completeAccount: IAccount = {cID: addAccountID, ...account}
+      const completeAccount: IAccount_Store = {cID: addAccountID, ...account}
       records.accounts.add(completeAccount)
       activeAccountId.value = addAccountID
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)

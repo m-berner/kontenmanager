@@ -7,16 +7,15 @@
   -->
 <script lang="ts" setup>
 import type {
-  IAccount,
-  IAccountDB,
+  IAccount_DB,
+  IAccount_Store,
   IBooking_DB,
-  IBooking_SM,
   IBooking_Store,
-  IBookingType,
-  IBookingTypeDB,
-  IRecordsDB,
-  IStock,
-  IStockDB
+  IBookingType_DB,
+  IBookingType_Store,
+  IRecords_DB,
+  IStock_DB,
+  IStock_Store
 } from '@/types.d'
 import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'
@@ -29,37 +28,34 @@ import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/co
 import {useRecordsStore} from '@/stores/records'
 import {useAlert} from '@/composables/useAlert'
 
-namespace StockManager {
-  export interface IStock {
-    cID: number
-    cCompany: string
-    cISIN: string
-    cWKN: string
-    cSym: string
-    cMeetingDay: number
-    cQuarterDay: number
-    cFadeOut: number
-    cFirstPage: number
-    cURL: string
-  }
+interface IStock_SM {
+  cID: number
+  cCompany: string
+  cISIN: string
+  cWKN: string
+  cSym: string
+  cMeetingDay: number
+  cQuarterDay: number
+  cFadeOut: number
+  cFirstPage: number
+  cURL: string
+}
 
-  export interface ITransfer {
-    cID: number
-    cStockID: number
-    cDate: number
-    cExDay: number
-    cUnitQuotation: number
-    cAmount: number
-    cCount: number
-    cFees: number
-    cSTax: number
-    cFTax: number
-    cTax: number
-    cSoli: number
-    cMarketPlace: string
-    cDescription: string
-    cType: number
-  }
+interface IBooking_SM {
+  cDate: number
+  cExDay: number
+  cUnitQuotation: number
+  cAmount: number
+  cDescription: string
+  cCount: number
+  cType: number
+  cStockID: number
+  cSoli: number
+  cTax: number
+  cFees: number
+  cSTax: number
+  cFTax: number
+  cMarketPlace: string
 }
 
 interface IBackup {
@@ -68,10 +64,10 @@ interface IBackup {
     cDBVersion: number
     cEngine: string
   }
-  accounts: IAccount[]
+  accounts: IAccount_Store[]
   bookings: IBooking_DB[]
-  bookingTypes: IBookingType[]
-  stocks: IStock[] & StockManager.IStock[]
+  bookingTypes: IBookingType_Store[]
+  stocks: IStock_Store[] & IStock_SM[]
   transfers?: IBooking_SM[]
 }
 
@@ -113,14 +109,14 @@ const onClickOk = async (): Promise<void> => {
   }
   const onReaderLoaded = async (): Promise<void> => {
     log('IMPORT_DATABASE: onFileLoaded')
-    const accountsImportData: IRecordsDB[] = []
-    const bookingsImportData: IRecordsDB[] = []
-    const bookingTypesImportData: IRecordsDB[] = []
-    const stocksImportData: IRecordsDB[] = []
-    const accountsStoreData: IAccountDB[] = []
+    const accountsImportData: IRecords_DB[] = []
+    const bookingsImportData: IRecords_DB[] = []
+    const bookingTypesImportData: IRecords_DB[] = []
+    const stocksImportData: IRecords_DB[] = []
+    const accountsStoreData: IAccount_DB[] = []
     const bookingsDbData: IBooking_DB[] = []
-    const bookingTypesStoreData: IBookingTypeDB[] = []
-    const stocksStoreData: IStockDB[] = []
+    const bookingTypesStoreData: IBookingType_DB[] = []
+    const stocksStoreData: IStock_DB[] = []
     if (typeof fr.result === 'string') {
       const backupObject: IBackup = JSON.parse(fr.result)
       const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : 1
@@ -192,7 +188,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypesImportData.push({type: 'add', data: rec, key: -1})
         }
         for (const rec of backupObject.stocks) {
-          const stockClone: IStock = {} as IStock
+          const stockClone: IStock_Store = {} as IStock_Store
           stockClone.cID = rec.cID
           stockClone.cAccountNumberID = activeId
           stockClone.cSymbol = rec.cSym

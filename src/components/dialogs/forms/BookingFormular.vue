@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBookingType, IStock} from '@/types.d'
+import type {IBookingType_Store, IStock_Store} from '@/types.d'
 import {useI18n} from 'vue-i18n'
 import {computed} from 'vue'
 import {useApp} from '@/composables/useApp'
@@ -25,7 +25,7 @@ const {markets} = useSettings()
 
 const creditDebitModel = computed({
   get: () => ({credit: bookingFormularData.credit, debit: bookingFormularData.debit}),
-  set: (val: {credit: number, debit: number}) => {
+  set: (val: { credit: number, debit: number }) => {
     bookingFormularData.credit = val.credit
     bookingFormularData.debit = val.debit
   }
@@ -92,7 +92,7 @@ const feeModel = computed({
             v-model="bookingFormularData.stockId"
             :item-title="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.COMPANY"
             :item-value="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ID"
-            :items="stocks.items.sort((a: IStock, b: IStock): number => { return a.cCompany.localeCompare(b.cCompany) })"
+            :items="stocks.items.sort((a: IStock_Store, b: IStock_Store): number => { return a.cCompany.localeCompare(b.cCompany) })"
             :label="t('dialogs.addBooking.stockLabel')"
             :menu=false
             :menu-props="{ maxHeight: 250 }"
@@ -108,7 +108,7 @@ const feeModel = computed({
             v-model="bookingFormularData.bookingTypeId"
             :itemTitle="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
             :itemValue="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
-            :items="bookingTypes.items.sort((a: IBookingType, b: IBookingType): number => { return a.cName.localeCompare(b.cName) })"
+            :items="bookingTypes.items.sort((a: IBookingType_Store, b: IBookingType_Store): number => { return a.cName.localeCompare(b.cName) })"
             :label="t('dialogs.addBooking.bookingTypeLabel')"
             :menu=false
             :menuProps="{ maxHeight: 250 }"

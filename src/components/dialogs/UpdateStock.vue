@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStockDB} from '@/types.d'
+import type {IStock_DB} from '@/types.d'
 import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useStocksDB} from '@/composables/useIndexedDB'
@@ -33,7 +33,7 @@ const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
   if (!await validateForm(formRef)) return
   try {
-    const stock: IStockDB = {
+    const stock: IStock_DB = {
       cID: stockFormularData.id,
       cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
       cCompany: stockFormularData.company,

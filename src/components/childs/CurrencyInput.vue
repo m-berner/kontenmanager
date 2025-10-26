@@ -85,11 +85,11 @@ onMounted(() => {
 
 <template>
   <v-text-field
-      v-bind="props"
       :model-value="formattedValue"
-      density="compact"
-      variant="solo-filled"
       :rules="wrappedRules"
+      density="compact"
+      v-bind="props"
+      variant="solo-filled"
       @blur="onBlur"
       @focus="formRef?.resetValidation(); onFocus()"
       @input="onInput"

@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBookingType} from '@/types.d'
+import type {IBookingType_Store} from '@/types.d'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -42,7 +42,7 @@ const onClickOk = async (): Promise<void> => {
       }
       const addBookingTypeID: number = await addBookingType(bookingType)
       if (addBookingTypeID > 1) {
-        const completeBookingType: IBookingType = {cID: addBookingTypeID, ...bookingType}
+        const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
         records.bookingTypes.add(completeBookingType)
         reset()
         await notice([t('dialogs.addBookingType.success')])

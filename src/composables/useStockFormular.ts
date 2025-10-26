@@ -8,7 +8,7 @@
 import {reactive, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 
-interface IStockFormularData {
+interface IStock_Formular {
     id: number
     isin: string
     company: string
@@ -23,7 +23,7 @@ interface IStockFormularData {
 
 const {CONS} = useApp()
 
-const stockFormularData = reactive<IStockFormularData>({
+const stockFormularData = reactive<IStock_Formular>({
     id: -1,
     isin: '',
     company: '',

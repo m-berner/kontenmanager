@@ -44,8 +44,8 @@ const debitValue = computed({
 })
 
 // Reaktive Rules - werden neu berechnet wenn sich der jeweils andere Wert ändert
-const creditRules = computed(() => isValidCredit([t('dialogs.formular.onlyOnePositive'),t('dialogs.formular.notNegative')], props.modelValue.debit))
-const debitRules = computed(() => isValidDebit([t('dialogs.formular.onlyOnePositive'),t('dialogs.formular.notNegative')], props.modelValue.credit))
+const creditRules = computed(() => isValidCredit([t('dialogs.formular.onlyOnePositive'), t('dialogs.formular.notNegative')], props.modelValue.debit))
+const debitRules = computed(() => isValidDebit([t('dialogs.formular.onlyOnePositive'), t('dialogs.formular.notNegative')], props.modelValue.credit))
 </script>
 
 <template>

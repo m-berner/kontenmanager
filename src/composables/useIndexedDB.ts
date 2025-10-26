@@ -5,7 +5,15 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IAccountDB, IBooking_DB, IBookingTypeDB, IRecordsDB, IStock, IStockDB, IStoresDB} from '@/types.d'
+import type {
+    IAccount_DB,
+    IBooking_DB,
+    IBookingType_DB,
+    IRecords_DB,
+    IStock_DB,
+    IStock_Store,
+    IStores_DB
+} from '@/types.d'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
@@ -299,17 +307,17 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         await deleteAccount(accountId)
     }
 
-    async function getDatabaseStores(): Promise<IStoresDB> {
+    async function getDatabaseStores(): Promise<IStores_DB> {
         log('INDEXED_DB: getDatabaseStores')
         const {getAllAccounts} = useAccountsDB()
         const {getAllBookings} = useBookingsDB()
         const {getAllBookingTypes} = useBookingTypesDB()
         const {getAllStocks} = useStocksDB()
 
-        const accountsDB: IAccountDB[] = await getAllAccounts()
+        const accountsDB: IAccount_DB[] = await getAllAccounts()
         const bookingsDB: IBooking_DB[] = (await getAllBookings()).filter((booking: IBooking_DB) => booking.cAccountNumberID === activeAccountId.value)
-        const bookingTypesDB: IBookingTypeDB[] = (await getAllBookingTypes()).filter((bookingType: IBookingTypeDB) => bookingType.cAccountNumberID === activeAccountId.value)
-        const stocksDB: IStockDB[] = (await getAllStocks()).filter((stock: IStockDB) => stock.cAccountNumberID === activeAccountId.value)
+        const bookingTypesDB: IBookingType_DB[] = (await getAllBookingTypes()).filter((bookingType: IBookingType_DB) => bookingType.cAccountNumberID === activeAccountId.value)
+        const stocksDB: IStock_DB[] = (await getAllStocks()).filter((stock: IStock_DB) => stock.cAccountNumberID === activeAccountId.value)
 
         return {
             accountsDB,
@@ -356,7 +364,7 @@ export function useAccountsDB() {
         }
     }
 
-    async function getAllAccounts(): Promise<IAccountDB[]> {
+    async function getAllAccounts(): Promise<IAccount_DB[]> {
         try {
             return await db.getAll(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
         } catch (err) {
@@ -392,7 +400,7 @@ export function useAccountsDB() {
         }
     }
 
-    async function importAccounts(accountsBatch: IRecordsDB[]) {
+    async function importAccounts(accountsBatch: IRecords_DB[]) {
         try {
             return await db.batchOperations(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountsBatch)
         } catch (err) {
@@ -415,6 +423,7 @@ export function useAccountsDB() {
         importAccounts
     }
 }
+
 // TODO addBooking calculations
 export function useBookingsDB() {
     const db = useIndexedDB()
@@ -464,7 +473,7 @@ export function useBookingsDB() {
         }
     }
 
-    async function importBookings(bookingsBatch: IRecordsDB[]) {
+    async function importBookings(bookingsBatch: IRecords_DB[]) {
         try {
             return await db.batchOperations(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, bookingsBatch)
         } catch (err) {
@@ -500,7 +509,7 @@ export function useBookingTypesDB() {
         }
     }
 
-    async function getAllBookingTypes(): Promise<IBookingTypeDB[]> {
+    async function getAllBookingTypes(): Promise<IBookingType_DB[]> {
         try {
             return await db.getAll(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
         } catch (err) {
@@ -536,7 +545,7 @@ export function useBookingTypesDB() {
         }
     }
 
-    async function importBookingTypes(bookingTypesBatch: IRecordsDB[]) {
+    async function importBookingTypes(bookingTypesBatch: IRecords_DB[]) {
         try {
             return await db.batchOperations(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, bookingTypesBatch)
         } catch (err) {
@@ -572,7 +581,7 @@ export function useStocksDB() {
         }
     }
 
-    async function getAllStocks(): Promise<IStockDB[]> {
+    async function getAllStocks(): Promise<IStock_DB[]> {
         try {
             return await db.getAll(CONS.INDEXED_DB.STORES.STOCKS.NAME)
         } catch (err) {
@@ -581,7 +590,7 @@ export function useStocksDB() {
         }
     }
 
-    async function updateStock(stockData: IStock) {
+    async function updateStock(stockData: IStock_Store) {
         try {
             delete stockData.mPortfolio
             delete stockData.mInvest
@@ -623,7 +632,7 @@ export function useStocksDB() {
         }
     }
 
-    async function importStocks(stocksBatch: IRecordsDB[]) {
+    async function importStocks(stocksBatch: IRecords_DB[]) {
         try {
             return await db.batchOperations(CONS.INDEXED_DB.STORES.STOCKS.NAME, stocksBatch)
         } catch (err) {

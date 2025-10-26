@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStockDB} from '@/types.d'
+import type {IStock_DB} from '@/types.d'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -44,7 +44,7 @@ const onClickOk = async (): Promise<void> => {
   log('ADD_STOCK : onClickOk')
   if (!await validateForm(formRef)) return
   try {
-    const stock: Omit<IStockDB, 'cID'> = {
+    const stock: Omit<IStock_DB, 'cID'> = {
       cCompany: stockFormularData.company.trim(),
       cISIN: stockFormularData.isin,
       cSymbol: stockFormularData.symbol,
@@ -58,7 +58,7 @@ const onClickOk = async (): Promise<void> => {
     }
     const addStockID = await addStock(stock)
     if (addStockID > 0) {
-      const dbStock: IStockDB = {cID: addStockID, ...stock}
+      const dbStock: IStock_DB = {cID: addStockID, ...stock}
       records.stocks.add(dbStock)
       resetTeleport()
       await notice([t('dialogs.addStock.success')])

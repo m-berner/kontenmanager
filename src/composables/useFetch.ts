@@ -5,9 +5,50 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {FetchedResources, ICompanyData, IExchangeData} from '@/types.d'
+import type {ICompanyData, IExchangeData} from '@/types.d'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+
+interface IIdIsin {
+    id: number
+    isin: string
+}
+
+interface IMinRateMaxData {
+    id: number,
+    isin: string,
+    rate: string,
+    min: string,
+    max: string,
+    cur: string
+}
+
+interface IDailyChangesData {
+    key: string
+    value: {
+        percentChange: string,
+        change: number,
+        stringChange: string
+    }
+}
+
+interface IMaterialData {
+    key: string,
+    value: number
+}
+
+interface IIndexData {
+    key: string,
+    value: number
+}
+
+interface IDateData {
+    key: number | undefined
+    value: {
+        qf: number
+        gm: number
+    }
+}
 
 interface IService {
     NAME: string
@@ -94,14 +135,14 @@ export function useFetch() {
         })
     }
 
-    async function fetchMinRateMaxData(storageOnline: FetchedResources.IIdIsin[]): Promise<FetchedResources.IMinRateMaxData[]> {
+    async function fetchMinRateMaxData(storageOnline: IIdIsin[]): Promise<IMinRateMaxData[]> {
         log('USE_FETCH: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
             const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
             const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
-            const _fnet = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
+            const _fnet = async (urls: IUrlWithId[]): Promise<IMinRateMaxData[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
+                    urls.map(async (urlObj: IUrlWithId): Promise<IMinRateMaxData> => {
                         const firstResponse = await fetch(urlObj.url)
                         const secondResponse = await fetch(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
@@ -147,9 +188,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _ard = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
+            const _ard = async (urls: IUrlWithId[]): Promise<IMinRateMaxData[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
+                    urls.map(async (urlObj: IUrlWithId): Promise<IMinRateMaxData> => {
                         const firstResponse = await fetch(urlObj.url)
                         const firstResponseText = await firstResponse.text()
                         const firstResponseDocument = new DOMParser().parseFromString(
@@ -204,9 +245,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _wstreet = async (urls: IUrlWithId[], homeUrl: string): Promise<FetchedResources.IMinRateMaxData[]> => {
+            const _wstreet = async (urls: IUrlWithId[], homeUrl: string): Promise<IMinRateMaxData[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
+                    urls.map(async (urlObj: IUrlWithId): Promise<IMinRateMaxData> => {
                         const firstResponse = await fetch(urlObj.url)
                         const firstResponseJson = await firstResponse.json()
                         const url2 = homeUrl + firstResponseJson.result[0].link
@@ -241,9 +282,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _goyax = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
+            const _goyax = async (urls: IUrlWithId[]): Promise<IMinRateMaxData[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
+                    urls.map(async (urlObj: IUrlWithId): Promise<IMinRateMaxData> => {
                         const firstResponse = await fetch(urlObj.url)
                         const secondResponse = await fetch(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
@@ -280,9 +321,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _acheck = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
+            const _acheck = async (urls: IUrlWithId[]): Promise<IMinRateMaxData[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
+                    urls.map(async (urlObj: IUrlWithId): Promise<IMinRateMaxData> => {
                         const firstResponse = await fetch(urlObj.url)
                         let onlineCurrency = ''
                         const secondResponse = await fetch(firstResponse.url)
@@ -336,9 +377,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _tgate = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
+            const _tgate = async (urls: IUrlWithId[]): Promise<IMinRateMaxData[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: IUrlWithId): Promise<FetchedResources.IMinRateMaxData> => {
+                    urls.map(async (urlObj: IUrlWithId): Promise<IMinRateMaxData> => {
                         const firstResponse = await fetch(urlObj.url)
                         const onlineCurrency = 'EUR'
                         const onlineMax = '0'
@@ -368,7 +409,7 @@ export function useFetch() {
                     })
                 )
             }
-            const _select = async (urls: IUrlWithId[]): Promise<FetchedResources.IMinRateMaxData[]> => {
+            const _select = async (urls: IUrlWithId[]): Promise<IMinRateMaxData[]> => {
                 return new Promise(async (resolve, reject) => {
                     const service = CONS.SERVICES.MAP.get(serviceName)
                     switch (serviceName) {
@@ -419,7 +460,7 @@ export function useFetch() {
         })
     }
 
-    async function fetchDailyChangeData(table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<FetchedResources.IDailyChangesData[]> {
+    async function fetchDailyChangeData(table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<IDailyChangesData[]> {
         log('USE_FETCH: fetchDailyChangesData')
         let valuestr: string
         let company: string
@@ -460,7 +501,7 @@ export function useFetch() {
             }
             return result
         }
-        const entry: FetchedResources.IDailyChangesData = {
+        const entry: IDailyChangesData = {
             key: '',
             value: {
                 percentChange: '',
@@ -469,7 +510,7 @@ export function useFetch() {
             }
         }
         const firstResponse = await fetch(url)
-        const _changes: FetchedResources.IDailyChangesData[] = []
+        const _changes: IDailyChangesData[] = []
         if (
             firstResponse.url.length === 0 ||
             !firstResponse.ok ||
@@ -545,10 +586,10 @@ export function useFetch() {
         })
     }
 
-    async function fetchMaterialData(): Promise<FetchedResources.IMaterialData[]> {
+    async function fetchMaterialData(): Promise<IMaterialData[]> {
         log('USE_FETCH: fetchMaterialData')
         return new Promise(async (resolve, reject) => {
-            const materials: FetchedResources.IMaterialData[] = []
+            const materials: IMaterialData[] = []
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '')
             if (
                 !firstResponse.ok ||
@@ -583,10 +624,10 @@ export function useFetch() {
         })
     }
 
-    async function fetchIndexData(): Promise<FetchedResources.IIndexData[]> {
+    async function fetchIndexData(): Promise<IIndexData[]> {
         log('USE_FETCH: fetchIndexData')
         return new Promise(async (resolve, reject) => {
-            const indexes: FetchedResources.IIndexData[] = []
+            const indexes: IIndexData[] = []
             const indexesKeys = CONS.SETTINGS.INDEXES.keys()
             //const indexesValues = CONS.SETTINGS.INDEXES.values()
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.INDEXES ?? '')
@@ -621,7 +662,7 @@ export function useFetch() {
         })
     }
 
-    async function fetchDateData(obj: FetchedResources.IIdIsin[]): Promise<Promise<FetchedResources.IDateData>[]> {
+    async function fetchDateData(obj: IIdIsin[]): Promise<Promise<IDateData>[]> {
         log('USE_FETCH: fetchDatesData')
         //if (obj.length === 0) return Promise.resolve([])
         const gmqf = {gm: 0, qf: 0}
@@ -633,7 +674,7 @@ export function useFetch() {
             const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01'
             return new Date(`${year}-${month}-${day}`).getTime()
         }
-        return obj.map(async (entry: FetchedResources.IIdIsin): Promise<FetchedResources.IDateData> => {
+        return obj.map(async (entry: IIdIsin): Promise<IDateData> => {
             const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${entry.isin}`)
             if (
                 firstResponse.url.length === 0 ||

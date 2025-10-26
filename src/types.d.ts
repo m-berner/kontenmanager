@@ -6,56 +6,13 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export interface IAccountDB {
-    cID: number
-    cSwift: string
-    cIban: string
-    cLogoUrl: string
-    cWithDepot: boolean
-}
-
-export interface IBookingTypeDB {
+export interface IBookingType_DB {
     cID: number
     cName: string
     cAccountNumberID: number
 }
 
-export interface IStoresDB {
-    accountsDB: IAccountDB[],
-    bookingsDB: IBooking_DB[],
-    bookingTypesDB: IBookingTypeDB[],
-    stocksDB: IStockDB[]
-}
-
-export interface IAccount {
-    cID: number
-    cSwift: string
-    cIban: string
-    cLogoUrl: string
-    cWithDepot: boolean
-}
-
-export interface IBookingType {
-    cID: number
-    cName: string
-    cAccountNumberID: number
-}
-
-export interface IBooking_SM {
-    cDate: number
-    cExDay: number
-    cUnitQuotation: number
-    cAmount: number
-    cDescription: string
-    cCount: number
-    cType: number
-    cStockID: number
-    cSoli: number
-    cTax: number
-    cFees: number
-    cSTax: number
-    cFTax: number
-    cMarketPlace: string
+export interface IBookingType_Store extends IBookingType_DB {
 }
 
 export interface IBooking_DB {
@@ -85,59 +42,18 @@ export interface IBooking_DB {
 export interface IBooking_Store extends IBooking_DB {
 }
 
-export interface IBooking_Formular {
-    id: number
-    bookDate: string
-    exDate: string
-    credit: number
-    debit: number
-    description: string
-    count: number
-    bookingTypeId: number
-    accountTypeId: number
-    stockId: number
-    soliCredit: number
-    soliDebit: number
-    taxCredit: number
-    taxDebit: number
-    feeCredit: number
-    feeDebit: number
-    sourceTaxCredit: number
-    sourceTaxDebit: number
-    transactionTaxCredit: number
-    transactionTaxDebit: number
-    marketPlace: string
+export interface IAccount_DB {
+    cID: number
+    cSwift: string
+    cIban: string
+    cLogoUrl: string
+    cWithDepot: boolean
 }
 
-export interface IAccountFormularData {
-    id: number
-    swift: string
-    iban: string
-    logoUrl: string
-    withDepot: boolean
+export interface IAccount_Store extends IAccount_DB {
 }
 
-export interface IBookingFormularData {
-    id: number
-    bookDate: string
-    exDate: string
-    credit: number
-    debit: number
-    description: string
-    count: number
-    bookingTypeId: number
-    accountTypeId: number
-    stockId: number
-    sourceTax: number
-    transactionTax: number
-    taxCredit: number
-    taxDebit: number
-    fee: number
-    soli: number
-    marketPlace: string
-}
-
-export interface IStockDB {
+export interface IStock_DB {
     cID: number
     cCompany: string
     cISIN: string
@@ -151,7 +67,7 @@ export interface IStockDB {
     cAskDates: string
 }
 
-export interface IStockOnlyMemory {
+export interface IStock_Memory {
     mPortfolio?: number
     mInvest?: number
     mChange?: number
@@ -169,15 +85,22 @@ export interface IStockOnlyMemory {
     mDeleteable?: boolean
 }
 
-export interface IStock extends IStockOnlyMemory, IStockDB {
+export interface IStock_Store extends IStock_Memory, IStock_DB {
     //
 }
 
-export interface IStores {
-    accounts: IAccount[],
-    bookings: IBooking[],
-    bookingTypes: IBookingType[],
-    stocks: IStock[]
+export interface IStores_DB {
+    accountsDB: IAccount_DB[],
+    bookingsDB: IBooking_DB[],
+    bookingTypesDB: IBookingType_DB[],
+    stocksDB: IStock_DB[]
+}
+
+export interface IStores_Store {
+    accounts: IAccount_Store[],
+    bookings: IBooking_Store[],
+    bookingTypes: IBookingType_Store[],
+    stocks: IStock_Store[]
 }
 
 export interface IExchangeData {
@@ -203,51 +126,8 @@ export interface IMenuItem {
     readonly icon: string
 }
 
-export interface IRecordsDB {
+export interface IRecords_DB {
     type: string
     data: unknown
     key: number
-}
-
-export namespace FetchedResources {
-    export interface IIdIsin {
-        id: number
-        isin: string
-    }
-
-    export interface IMinRateMaxData {
-        id: number,
-        isin: string,
-        rate: string,
-        min: string,
-        max: string,
-        cur: string
-    }
-
-    export interface IDailyChangesData {
-        key: string
-        value: {
-            percentChange: string,
-            change: number,
-            stringChange: string
-        }
-    }
-
-    export interface IMaterialData {
-        key: string,
-        value: number
-    }
-
-    export interface IIndexData {
-        key: string,
-        value: number
-    }
-
-    export interface IDateData {
-        key: number | undefined
-        value: {
-            qf: number
-            gm: number
-        }
-    }
 }

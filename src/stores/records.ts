@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IBooking_Store, IStock, IStockOnlyMemory, IStores, IStoresDB} from '@/types.d'
+import type {IBooking_Store, IStock_Memory, IStock_Store, IStores_DB, IStores_Store} from '@/types.d'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
@@ -35,11 +35,11 @@ export const useRecordsStore = defineStore('records', () => {
         stocksStore.clean()
     }
 
-    async function init(storesDB: IStoresDB, messages: Record<string, string>, removeAccounts = true): Promise<void> {
+    async function init(storesDB: IStores_DB, messages: Record<string, string>, removeAccounts = true): Promise<void> {
         log('RECORDS: init')
         const {activeAccountId} = useSettings()
         const {setStorage} = useBrowser()
-        const stocksOnlyMemory: IStockOnlyMemory = {
+        const stocksOnlyMemory: IStock_Memory = {
             mPortfolio: 0,
             mInvest: 0,
             mChange: 0,
@@ -56,7 +56,7 @@ export const useRecordsStore = defineStore('records', () => {
             mRealBuyValue: 0,
             mDeleteable: false
         }
-        const stores: IStores = {
+        const stores: IStores_Store = {
             accounts: storesDB.accountsDB,
             bookings: storesDB.bookingsDB,
             bookingTypes: storesDB.bookingTypesDB,
@@ -64,7 +64,7 @@ export const useRecordsStore = defineStore('records', () => {
                 return {...stock, ...stocksOnlyMemory}
             })
         }
-        const load = (stores: IStores) => {
+        const load = (stores: IStores_Store) => {
             log('RECORDS: load')
             //const {activeAccountId} = useSettings()
 
@@ -86,7 +86,7 @@ export const useRecordsStore = defineStore('records', () => {
                 stocksStore.add(entry)
             }
 
-            stocksStore.items.sort((a: IStock, b: IStock) => {
+            stocksStore.items.sort((a: IStock_Store, b: IStock_Store) => {
                 return b.cFirstPage - a.cFirstPage
             })
             bookingsStore.items.sort((a: IBooking_Store, b: IBooking_Store) => {

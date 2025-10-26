@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBookingType} from '@/types.d'
+import type {IBookingType_Store} from '@/types.d'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -35,7 +35,7 @@ const onClickOk = async (): Promise<void> => {
 
   try {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
-      const bookingType: IBookingType = {
+      const bookingType: IBookingType_Store = {
         cID: records.bookingTypes.items[formSelectedIndex.value].cID,
         cName: formName.value.trim(),
         cAccountNumberID: records.bookingTypes.items[formSelectedIndex.value].cAccountNumberID

@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount} from '@/types.d'
+import type {IAccount_Store} from '@/types.d'
 import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
@@ -33,7 +33,7 @@ const onClickOk = async (): Promise<void> => {
   log('UPDATE_ACCOUNT : onClickOk')
   if (!await validateForm(formRef)) return
   try {
-    const account: IAccount = {
+    const account: IAccount_Store = {
       cID: settings.activeAccountId.value,
       cSwift: accountFormularData.swift.trim().toUpperCase(),
       cIban: accountFormularData.iban.replace(/\s/g, ''),

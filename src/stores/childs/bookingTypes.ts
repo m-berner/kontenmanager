@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IBookingType} from '@/types.d'
+import type {IBookingType_Store} from '@/types.d'
 import {computed, ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
@@ -13,21 +13,21 @@ import {useApp} from '@/composables/useApp'
 const {log} = useApp()
 
 export const useBookingTypesStore = defineStore('bookingTypes', () => {
-    const items = ref<IBookingType[]>([])
+    const items = ref<IBookingType_Store[]>([])
 
     const getNameById = computed(() => (ident: number): string => {
-        const bookingType = items.value.find((entry: IBookingType) => entry.cID === ident)
+        const bookingType = items.value.find((entry: IBookingType_Store) => entry.cID === ident)
         return bookingType ? bookingType.cName : ''
     })
-    const getById = computed(() => (ident: number): IBookingType | null => {
-        const bookingType = items.value.find((entry: IBookingType) => entry.cID === ident)
+    const getById = computed(() => (ident: number): IBookingType_Store | null => {
+        const bookingType = items.value.find((entry: IBookingType_Store) => entry.cID === ident)
         return bookingType ? bookingType : null
     })
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(bookingType => bookingType.cID === id)
     })
     const isDuplicate = computed(() => (name: string): boolean => {
-        const duplicates = items.value.filter((entry: IBookingType) => entry.cName === name)
+        const duplicates = items.value.filter((entry: IBookingType_Store) => entry.cName === name)
         return duplicates.length > 0
     })
     const getNames = computed(() => items.value.map(item => item.cName))
@@ -36,7 +36,7 @@ export const useBookingTypesStore = defineStore('bookingTypes', () => {
         index
     })))
 
-    function add(bookingType: IBookingType, prepend: boolean = false): void {
+    function add(bookingType: IBookingType_Store, prepend: boolean = false): void {
         log('BOOKING_TYPES_STORE: add')
         if (prepend) {
             items.value.unshift(bookingType)
@@ -45,7 +45,7 @@ export const useBookingTypesStore = defineStore('bookingTypes', () => {
         }
     }
 
-    function update(bookingType: IBookingType): void {
+    function update(bookingType: IBookingType_Store): void {
         log('BOOKING_TYPES_STORE: update')
         const index = getIndexById.value(bookingType.cID)
         if (index !== -1) {
