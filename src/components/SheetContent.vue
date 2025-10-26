@@ -17,15 +17,6 @@ const {t, tm} = useI18n()
 const {CONS, log} = useApp()
 const router = useRouter()
 
-const HELP = [
-  {title: 'helpContent.successor.title', data: 'helpContent.successor.data'},
-  {title: 'helpContent.requirements.title', data: 'helpContent.requirements.data'},
-  {title: 'helpContent.browserBar.title', data: 'helpContent.browserBar.data'},
-  {title: 'helpContent.toolBar.title', data: 'helpContent.toolBar.data'},
-  {title: 'helpContent.dotMenu.title', data: 'helpContent.dotMenu.data'},
-  {title: 'helpContent.stocksToolBar.title', data: 'helpContent.stocksToolBar.data'},
-  {title: 'helpContent.stocksDotMenu.title', data: 'helpContent.stocksDotMenu.data'}
-]
 const PRIVACY = [
   {title: 'privacyContent.general.title', data: 'privacyContent.general.data'}
 ]
@@ -42,16 +33,12 @@ const formatData = computed(() => (dataStr: string): IContent[] => {
 })
 const stringsArray = ref<{ title: string, data: string }[]>([])
 
-if (router.currentRoute.value.path === CONS.ROUTES.HELP) {
-  stringsArray.value = HELP
-} else {
+if (router.currentRoute.value.path === CONS.ROUTES.PRIVACY) {
   stringsArray.value = PRIVACY
 }
 
 router.beforeEach((to) => {
-  if (to.path === CONS.ROUTES.HELP) {
-    stringsArray.value = HELP
-  } else if (to.path === CONS.ROUTES.PRIVACY) {
+  if (to.path === CONS.ROUTES.PRIVACY) {
     stringsArray.value = PRIVACY
   }
 })

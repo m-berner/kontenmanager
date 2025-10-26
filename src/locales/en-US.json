@@ -68,8 +68,8 @@
       "bookingLabel": "Buchung",
       "creditLabel": "Haben",
       "debitLabel": "Soll",
-      "notNegative": "Negative Werte sind ungültig",
-      "onlyOnePositive": "Entweder Haben>0 oder Soll>0"
+      "notNegative": "Nur positive Werte",
+      "onlyOnePositive": "Ein Wert muss 0 sein"
     },
     "cancel": "Abbrechen",
     "ok": "OK",
@@ -296,167 +296,6 @@
     "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
     "itemsPerPageText": "Einträge pro Seite:"
   },
-  "helpContent": {
-    "title": "KontenManager Hilfe",
-    "successor": {
-      "title": "Weiterentwicklung von StockManager",
-      "data": {
-        "subTitle": {
-          "0": "Allgemein",
-          "1": "Import von StockManager Daten"
-        },
-        "content": {
-          "0": "Das KontenManager Add-on ist eine Weiterentwicklung von vormals StockManager.",
-          "1": "Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde."
-        },
-        "icon": {
-          "0": "",
-          "1": ""
-        }
-      }
-    },
-    "requirements": {
-      "title": "Anforderungen",
-      "data": {
-        "subTitle": {
-          "0": "Einstellungen - Datenschutz - Chronik"
-        },
-        "content": {
-          "0": "KontenManager funktioniert im privaten Modus nicht. Grund ist die permanente Datenbank. Im privaten Modus sind nur temporäre Datenbanken erlaubt."
-        },
-        "icon": {
-          "0": ""
-        }
-      }
-    },
-    "browserBar": {
-      "title": "Browserleiste/Symbolleiste",
-      "data": {
-        "subTitle": {
-          "0": "KontenManager starten"
-        },
-        "content": {
-          "0": "In der Firefox Symbolleiste erscheint nach der Installation das gezeigte Symbol. Falls dieses Symbol nicht installiert bzw. vom Benutzer aus der Symbolleiste verbannt wurde, kann es dorthin durch den Firefox 'Symbolleiste anpassen' Dialog zurückgebracht werden."
-        },
-        "icon": {
-          "0": "../assets/icon64.png"
-        }
-      }
-    },
-    "toolBar": {
-      "title": "Werkzeugleiste",
-      "data": {
-        "subTitle": {
-          "0": "Startseite",
-          "1": "Unternehmen",
-          "2": "Konto hinzufügen",
-          "3": "Konto aktualisieren",
-          "4": "Konto löschen",
-          "5": "Buchung hinzufügen",
-          "6": "Buchungstyp hinzufügen",
-          "7": "Buchungstyp aktualisieren",
-          "8": "Buchungstyp löschen",
-          "9": "Datenbank exportieren",
-          "10": "Datenbank importieren",
-          "11": "Jahres-Berechnungen",
-          "12": "Einstellungen"
-        },
-        "content": {
-          "0": "Zur Startseite zurückkehren.",
-          "1": "Zu Unternehmen wechseln.",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": "",
-          "9": "Die aktuellen Daten exportieren.",
-          "10": "Klicken, um Daten aus einer Sicherungsdatei zu importieren.",
-          "11": "Summierte Buchungstypen, Kalkulationen",
-          "12": "Einstellungen Ansicht wird geöffnet."
-        },
-        "icon": {
-          "0": "$home",
-          "1": "$showCompany",
-          "2": "$addAccount",
-          "3": "$updateAccount",
-          "4": "$deleteAccount",
-          "5": "$addBooking",
-          "6": "$addBookingType",
-          "7": "$updateBookingType",
-          "8": "$deleteBookingType",
-          "9": "$exportToFile",
-          "10": "$importDatabase",
-          "11": "$showAccounting",
-          "12": "$settings"
-        }
-      }
-    },
-    "stocksDotMenu": {
-      "title": "Unternehmen Aktionen",
-      "data": {
-        "subTitle": {
-          "0": "Unternehmen löschen",
-          "1": "Unternehmen aktualisieren",
-          "2": "Dividenden Übersicht",
-          "3": "Unternehmen-Brokerseite"
-        },
-        "content": {
-          "0": "",
-          "1": "",
-          "2": "",
-          "3": ""
-        },
-        "icon": {
-          "0": "$deleteCompany",
-          "1": "$showCompany",
-          "2": "$showDividend",
-          "3": "$link"
-        }
-      }
-    },
-    "dotMenu": {
-      "title": "Buchungen Aktionen",
-      "data": {
-        "subTitle": {
-          "0": "Buchung löschen",
-          "1": "Buchung aktualisieren"
-        },
-        "content": {
-          "0": "Ausgewählte Buchung wird gelöscht.",
-          "1": "Gewählte Buchung aktualisieren."
-        },
-        "icon": {
-          "0": "$deleteBooking",
-          "1": "$updateBooking"
-        }
-      }
-    },
-    "stocksToolBar": {
-      "title": "Werkzeugleiste Unternehmen",
-      "data": {
-        "subTitle": {
-          "0": "Startseite",
-          "1": "Unternehmen",
-          "2": "Unternhemen hinzufügen",
-          "3": "Unternehmen einblenden"
-        },
-        "content": {
-          "0": "Zur Startseite zurückkehren.",
-          "1": "Zu Unternehmen wechseln.",
-          "2": "",
-          "3": ""
-        },
-        "icon": {
-          "0": "$home",
-          "1": "$showCompany",
-          "2": "$addCompany",
-          "3": "$fadeInCompany"
-        }
-      }
-    }
-  },
   "privacyContent": {
     "title": "KontenManager Datenschutz Richtlinien",
     "general": {
@@ -554,8 +393,8 @@
       "required": "Datum ist erforderlich",
       "iso": ""
     },
-    "currencyCodeRules": "Ist erforderlich | 3 Zeichen | Nur Buchstaben",
     "requiredRules": "Ist erforderlich",
-    "isGreaterZeroRules": "Nur positive Werte sind erlaubt"
+    "notNegative": "Nur positive Werte",
+    "onlyOnePositive": "Ein Wert muss 0 sein"
   }
 }
