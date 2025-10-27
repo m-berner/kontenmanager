@@ -87,8 +87,9 @@ onMounted(() => {
   <v-text-field
       :model-value="formattedValue"
       :rules="wrappedRules"
+      :disabled="props.disabled"
+      :label="props.label"
       density="compact"
-      v-bind="props"
       variant="solo-filled"
       @blur="onBlur"
       @focus="formRef?.resetValidation(); onFocus()"

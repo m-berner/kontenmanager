@@ -1,5 +1,4 @@
-import {ref} from 'vue';
-
+import { ref } from 'vue';
 const activeId = ref(-1);
 const optionMenuColors = ref(new Map());
 const dialogName = ref('');
@@ -14,18 +13,15 @@ const stocksPage = ref(1);
 const loadedStocksPages = new Set();
 const isCompanyPage = ref(false);
 const isDownloading = ref(false);
-
 export function useRuntime() {
     function clearStocksPages() {
         loadedStocksPages.clear();
     }
-
     function setTeleport(entry) {
         dialogName.value = entry.dialogName;
         dialogOk.value = entry.dialogOk;
         dialogVisibility.value = entry.dialogVisibility;
     }
-
     function resetTeleport() {
         dialogName.value = '';
         dialogOk.value = true;
@@ -34,13 +30,11 @@ export function useRuntime() {
             optionMenuColors.value.set(m, '');
         }
     }
-
     function resetOptionsMenuColors() {
         for (const m of optionMenuColors.value.keys()) {
             optionMenuColors.value.set(m, '');
         }
     }
-
     return {
         activeId,
         optionMenuColors,
