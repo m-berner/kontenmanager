@@ -17,7 +17,7 @@ import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useStockFormular} from '@/composables/useStockFormular'
-import StockFormular from '@/components/dialogs/forms/StockFormular.vue'
+import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()

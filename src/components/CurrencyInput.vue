@@ -85,10 +85,10 @@ onMounted(() => {
 
 <template>
   <v-text-field
-      :model-value="formattedValue"
-      :rules="wrappedRules"
       :disabled="props.disabled"
       :label="props.label"
+      :model-value="formattedValue"
+      :rules="wrappedRules"
       density="compact"
       variant="solo-filled"
       @blur="onBlur"

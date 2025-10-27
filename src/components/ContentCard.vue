@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IContent} from '@/types.d'
+import type {IContent} from '@/types'
 import {defineProps} from 'vue'
 
 interface ContentCardProps {

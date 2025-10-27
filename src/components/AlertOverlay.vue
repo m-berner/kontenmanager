@@ -53,7 +53,7 @@
 
 <script setup>
 import {computed} from 'vue'
-import {useAlert} from '@/composables/useAlert'
+import {useAlert} from '@/composables/useAlert.ts'
 
 const {currentAlert, dismissAlert} = useAlert()
 

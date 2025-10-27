@@ -8,31 +8,31 @@ const routerInstance = createRouter({
             path: CONS.ROUTES.HOME,
             name: 'home',
             components: {
-                default: () => import('@/components/HomeContent.vue'),
-                title: () => import('@/components/TitleBar.vue'),
-                header: () => import('@/components/HeaderBar.vue'),
-                footer: () => import('@/components/FooterBar.vue')
+                default: () => import('@/screens/HomeContent.vue'),
+                title: () => import('@/screens/TitleBar.vue'),
+                header: () => import('@/screens/HeaderBar.vue'),
+                footer: () => import('@/screens/FooterBar.vue')
             }
         },
         {
             path: CONS.ROUTES.COMPANY,
             name: 'company',
             components: {
-                default: () => import('@/components/CompanyContent.vue'),
-                title: () => import('@/components/TitleBar.vue'),
-                header: () => import('@/components/HeaderBar.vue'),
-                info: () => import('@/components/InfoBar.vue'),
-                footer: () => import('@/components/FooterBar.vue')
+                default: () => import('@/screens/CompanyContent.vue'),
+                title: () => import('@/screens/TitleBar.vue'),
+                header: () => import('@/screens/HeaderBar.vue'),
+                info: () => import('@/screens/InfoBar.vue'),
+                footer: () => import('@/screens/FooterBar.vue')
             }
         },
         {
             path: CONS.ROUTES.PRIVACY,
             name: 'privacy',
             components: {
-                default: () => import('@/components/SheetContent.vue'),
-                title: () => import('@/components/TitleBar.vue'),
-                header: () => import('@/components/HeaderBar.vue'),
-                footer: () => import('@/components/FooterBar.vue')
+                default: () => import('@/screens/SheetContent.vue'),
+                title: () => import('@/screens/TitleBar.vue'),
+                header: () => import('@/screens/HeaderBar.vue'),
+                footer: () => import('@/screens/FooterBar.vue')
             }
         }
     ]

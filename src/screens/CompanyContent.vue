@@ -6,14 +6,14 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IMenuItem, IStock_Store} from '@/types.d'
+import type {IMenuItem, IStock_Store} from '@/types'
 import type {DataTableHeader} from 'vuetify'
 import {computed, onBeforeUpdate, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useRecordsStore} from '@/stores/records'
-import DotMenu from '@/components/childs/DotMenu.vue'
+import DotMenu from '@/components/DotMenu.vue'
 import {useRuntime} from '@/composables/useRuntime'
 
 const {d, n, t} = useI18n()

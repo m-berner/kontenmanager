@@ -12,7 +12,7 @@ import i18nPlugin from '@/plugins/i18n'
 import componentsPlugin from '@/plugins/components'
 import routerPlugin from '@/plugins/router'
 import piniaPlugin from '@/plugins/pinia'
-import AppIndex from '@/components/AppIndex.vue'
+import AppIndex from '@/screens/AppIndex.vue'
 
 const {log} = useApp()
 const app = createApp(AppIndex)

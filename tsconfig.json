@@ -74,6 +74,14 @@
   "vueCompilerOption": {
     "target": 3.5,
     "experimentalRFC": false,
-    "experimentalDisableTemplateSupport": false
+    "experimentalDisableTemplateSupport": false,
+    "plugins": [
+      {
+        "name": "@vue/typescript-plugin",
+        "configOptions": {
+          "suppressWarnings": true
+        }
+      }
+    ]
   }
 }

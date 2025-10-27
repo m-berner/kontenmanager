@@ -17,7 +17,7 @@ import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useRecordsStore} from '@/stores/records'
-import StockFormular from '@/components/dialogs/forms/StockFormular.vue'
+import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
 
 const {t} = useI18n()
 const {log} = useApp()

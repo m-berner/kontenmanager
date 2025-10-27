@@ -12,7 +12,7 @@ import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
-import DialogPort from '@/components/childs/DialogPort.vue'
+import DialogPort from '@/components/DialogPort.vue'
 import {RouterLink, useRouter} from 'vue-router'
 import {useAlert} from '@/composables/useAlert'
 

@@ -17,7 +17,7 @@ import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import {useRecordsStore} from '@/stores/records'
-import AccountFormular from '@/components/dialogs/forms/AccountFormular.vue'
+import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
 
 const {t} = useI18n()
 const {log} = useApp()

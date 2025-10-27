@@ -6,11 +6,11 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IContent} from '@/types.d'
+import type {IContent} from '@/types'
 import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import ContentCard from '@/components/childs/ContentCard.vue'
+import ContentCard from '@/components/ContentCard.vue'
 import {useRouter} from 'vue-router'
 
 const {t, tm} = useI18n()

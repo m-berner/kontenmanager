@@ -9,7 +9,7 @@ import {createApp} from 'vue'
 import {useApp} from '@/composables/useApp'
 import vuetifyPlugin from '@/plugins/vuetify'
 import i18nPlugin from '@/plugins/i18n'
-import OptionsIndex from '@/components/OptionsIndex.vue'
+import OptionsIndex from '@/screens/OptionsIndex.vue'
 
 const {log} = useApp()
 
