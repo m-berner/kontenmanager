@@ -22,7 +22,7 @@ import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {updateAccount} = useAccountsDB()
+const {update} = useAccountsDB()
 const {validateForm} = useValidation()
 const settings = useSettings()
 const runtime = useRuntime()
@@ -41,7 +41,7 @@ const onClickOk = async (): Promise<void> => {
       cWithDepot: accountFormularData.withDepot
     }
     records.accounts.update(account)
-    await updateAccount(account)
+    await update(account)
     runtime.resetTeleport()
     await notice([t('dialogs.updateAccount.success')])
   } catch (e) {

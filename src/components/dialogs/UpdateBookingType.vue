@@ -19,7 +19,7 @@ import {useRecordsStore} from '@/stores/records'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {updateBookingType} = useBookingTypesDB()
+const {update} = useBookingTypesDB()
 const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntime()
@@ -41,7 +41,7 @@ const onClickOk = async (): Promise<void> => {
         cAccountNumberID: records.bookingTypes.items[formSelectedIndex.value].cAccountNumberID
       }
       records.bookingTypes.update(bookingType)
-      await updateBookingType(bookingType)
+      await update(bookingType)
       runtime.resetTeleport()
       await notice([t('dialogs.updateBookingType.success')])
     } else {

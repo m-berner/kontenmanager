@@ -18,7 +18,7 @@ import {useBookingTypesDB} from '@/composables/useIndexedDB'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
-const {deleteBookingType} = useBookingTypesDB()
+const {remove} = useBookingTypesDB()
 const {validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntime()
@@ -33,7 +33,7 @@ const onClickOk = async (): Promise<void> => {
   try {
     if (!records.bookings.hasBookingType(selected.value)) {
       records.bookingTypes.remove(selected.value)
-      await deleteBookingType(selected.value)
+      await remove(selected.value)
       await notice([t('dialogs.deleteBookingType.success')])
     } else {
       await notice([t('dialogs.deleteBookingType.error1a'), t('dialogs.deleteBookingType.error1b')])

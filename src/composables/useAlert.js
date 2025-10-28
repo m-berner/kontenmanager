@@ -1,12 +1,10 @@
-import {readonly, ref} from 'vue';
-
+import { readonly, ref } from 'vue';
 const alerts = ref([]);
 const currentAlert = ref(null);
-
 export function useAlert() {
     const showAlert = (type, title, message, duration = null) => {
         const id = Date.now() + Math.random();
-        const alert = {id, type, title, message};
+        const alert = { id, type, title, message };
         alerts.value.push(alert);
         if (!currentAlert.value) {
             showNext();
@@ -21,7 +19,8 @@ export function useAlert() {
     const showNext = () => {
         if (alerts.value.length > 0) {
             currentAlert.value = alerts.value[0];
-        } else {
+        }
+        else {
             currentAlert.value = null;
         }
     };
@@ -29,7 +28,8 @@ export function useAlert() {
         if (currentAlert.value?.id === id) {
             alerts.value.shift();
             showNext();
-        } else {
+        }
+        else {
             alerts.value = alerts.value.filter(alert => alert.id !== id);
         }
     };

@@ -128,6 +128,6 @@ export interface IMenuItem {
 
 export interface IRecords_DB {
     type: string
-    data: unknown
-    key: number
+    data?: unknown
+    key?: number
 }

@@ -16,7 +16,7 @@ import {useStocksDB} from '@/composables/useIndexedDB'
 
 const {t} = useI18n()
 const {log} = useApp()
-const {updateStock} = useStocksDB()
+const {update} = useStocksDB()
 const runtime = useRuntime()
 const records = useRecordsStore()
 
@@ -27,7 +27,7 @@ const onClickOk = async (): Promise<void> => {
   log('FADE_IN_STOCK: onClickOk')
   if (_selected.value !== null) {
     _selected.value.cFadeOut = 0
-    await updateStock(_selected.value)
+    await update(_selected.value)
   }
   runtime.resetTeleport()
 }

@@ -22,7 +22,7 @@ import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {updateBooking} = useBookingsDB()
+const {update} = useBookingsDB()
 const {validateForm} = useValidation()
 const settings = useSettings()
 const runtime = useRuntime()
@@ -86,7 +86,7 @@ const onClickOk = async (): Promise<void> => {
       cCredit: bookingFormularData.credit
     }
     records.bookings.update(booking)
-    const updateBookingResponse = await updateBooking(booking)
+    const updateBookingResponse = await update(booking)
     await notice([updateBookingResponse as string])
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()

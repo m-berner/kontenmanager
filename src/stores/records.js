@@ -6,7 +6,6 @@ import { useBrowser } from '@/composables/useBrowser';
 import { useAlert } from '@/composables/useAlert';
 import { useFetch } from '@/composables/useFetch';
 import { useRuntime } from '@/composables/useRuntime';
-import { useStocksDB } from '@/composables/useIndexedDB';
 const { CONS, isoDate, toNumber, utcDate, log } = useApp();
 const alert = useAlert();
 const { activeAccountId } = useSettings();
@@ -101,7 +100,6 @@ const useStocksStore = defineStore('stocks', function () {
         const { fetchDateData, fetchMinRateMaxData } = useFetch();
         const { curEur, curUsd, loadedStocksPages } = useRuntime();
         const { stocksPerPage } = useSettings();
-        const { updateStock } = useStocksDB();
         const { CONS } = useApp();
         const isin = [];
         const isinDates = [];
@@ -147,7 +145,7 @@ const useStocksStore = defineStore('stocks', function () {
                 pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO;
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000);
             }
-            await updateStock({ ...pageStocks[i] });
+            updateStock({ ...pageStocks[i] });
         }
         loadedStocksPages.add(page);
     }

@@ -22,7 +22,7 @@ import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {updateStock} = useStocksDB()
+const {update} = useStocksDB()
 const {validateForm} = useValidation()
 const records = useRecordsStore()
 const {activeAccountId} = useSettings()
@@ -47,7 +47,7 @@ const onClickOk = async (): Promise<void> => {
       cAskDates: stockFormularData.askDates
     }
     records.stocks.updateStock(stock)
-    await updateStock(stock)
+    await update(stock)
     await notice([t('dialogs.updateStock.success')])
     runtime.resetTeleport()
   } catch (e) {

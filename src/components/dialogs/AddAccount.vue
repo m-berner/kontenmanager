@@ -22,7 +22,7 @@ import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
-const {addAccount} = useAccountsDB()
+const {add} = useAccountsDB()
 const {validateForm} = useValidation()
 const {resetTeleport} = useRuntime()
 const {accountFormularData, formRef} = useAccountFormular()
@@ -49,7 +49,7 @@ const onClickOk = async (): Promise<void> => {
       cLogoUrl: accountFormularData.logoUrl,
       cWithDepot: accountFormularData.withDepot
     }
-    const addAccountID = await addAccount(account)
+    const addAccountID = await add(account)
     if (addAccountID > -1) {
       const completeAccount: IAccount_Store = {cID: addAccountID, ...account}
       records.accounts.add(completeAccount)

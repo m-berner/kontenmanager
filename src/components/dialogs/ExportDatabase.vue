@@ -16,10 +16,10 @@ import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/co
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {manifest, writeBufferToFile} = useBrowser()
-const {getAllAccounts} = useAccountsDB()
-const {getAllBookings} = useBookingsDB()
-const {getAllBookingTypes} = useBookingTypesDB()
-const {getAllStocks} = useStocksDB()
+const {getAll: getAllAccounts} = useAccountsDB()
+const {getAll: getAllBookings} = useBookingsDB()
+const {getAll: getAllBookingTypes} = useBookingTypesDB()
+const {getAll: getAllStocks} = useStocksDB()
 
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}.json`

@@ -24,8 +24,8 @@ interface OptionMenuProps {
 const optionMenuProps = defineProps<OptionMenuProps>()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
-const {deleteBooking} = useBookingsDB()
-const {deleteStock} = useStocksDB()
+const {remove: removeBooking} = useBookingsDB()
+const {remove: removeStock} = useStocksDB()
 const {rt, t} = useI18n()
 const runtime = useRuntime()
 const records = useRecordsStore()
@@ -58,7 +58,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
         records.bookings.remove(optionMenuProps.recordID)
-        await deleteBooking(optionMenuProps.recordID)
+        await removeBooking(optionMenuProps.recordID)
         await notice([t('dialogs.deleteBooking.success')])
         for (const m of runtime.optionMenuColors.value.keys()) {
           runtime.optionMenuColors.value.set(m, '')
@@ -77,7 +77,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         if (deleteAble.length === 0) {
           records.stocks.remove(optionMenuProps.recordID)
-          await deleteStock(optionMenuProps.recordID)
+          await removeStock(optionMenuProps.recordID)
           await notice([t('dialogs.deleteStock.success')])
         } else {
           alert.info(MESSAGES.INFO_TITLE, MESSAGES.NO_DELETE, null)

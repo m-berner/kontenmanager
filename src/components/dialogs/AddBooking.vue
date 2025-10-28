@@ -21,7 +21,7 @@ import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
-const {addBooking} = useBookingsDB()
+const {add} = useBookingsDB()
 const {validateForm} = useValidation()
 const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
@@ -153,7 +153,7 @@ const onClickOk = async (): Promise<void> => {
           cMarketPlace: ''
         }
     }
-    const addBookingID = await addBooking(booking)
+    const addBookingID = await add(booking)
     if (addBookingID > -1) {
       const completeBooking: IBooking_Store = {cID: addBookingID, ...booking}
       records.bookings.add(completeBooking)

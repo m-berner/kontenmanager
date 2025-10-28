@@ -19,7 +19,7 @@ import {useRecordsStore} from '@/stores/records'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {addBookingType} = useBookingTypesDB()
+const {add} = useBookingTypesDB()
 const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const {activeAccountId} = useSettings()
@@ -40,7 +40,7 @@ const onClickOk = async (): Promise<void> => {
         cName: formName.value.trim(),
         cAccountNumberID: activeAccountId.value
       }
-      const addBookingTypeID: number = await addBookingType(bookingType)
+      const addBookingTypeID: number = await add(bookingType)
       if (addBookingTypeID > 1) {
         const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
         records.bookingTypes.add(completeBookingType)

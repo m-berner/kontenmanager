@@ -22,7 +22,7 @@ import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
-const {addStock} = useStocksDB()
+const {add} = useStocksDB()
 const {validateForm} = useValidation()
 const {activeAccountId} = useSettings()
 const {resetTeleport} = useRuntime()
@@ -56,7 +56,7 @@ const onClickOk = async (): Promise<void> => {
       cAccountNumberID: activeAccountId.value,
       cAskDates: CONS.DATE.DEFAULT_ISO
     }
-    const addStockID = await addStock(stock)
+    const addStockID = await add(stock)
     if (addStockID > 0) {
       const dbStock: IStock_DB = {cID: addStockID, ...stock}
       records.stocks.add(dbStock)
