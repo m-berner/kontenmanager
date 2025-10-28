@@ -11,13 +11,6 @@ import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
 import {useSettings} from '@/composables/useSettings'
 
-export interface _IDrawerControl {
-  id: number
-  title: string
-  value: string
-  class: string
-}
-
 const {n, t} = useI18n()
 const {CONS, log} = useApp()
 const runtime = useRuntime()
@@ -36,7 +29,7 @@ log('--- InfoBar.vue setup ---')
 
 <template>
   <v-app-bar app color="secondary" flat>
-    <v-list bg-color="secondary" class="horizontal-list hide-scroll-bar" lines="two">
+    <v-list bg-color="secondary" class="horizontal-list" lines="two">
       <v-list-item v-for="item in settings.exchanges.value" :key="item">
         <v-list-item-title>{{ item }}</v-list-item-title>
         <v-list-item-subtitle>{{ n(runtime.infoExchanges.value.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
@@ -56,3 +49,24 @@ log('--- InfoBar.vue setup ---')
     </v-list>
   </v-app-bar>
 </template>
+
+<style scoped>
+.horizontal-list {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  /* Hide scrollbar */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.horizontal-list .v-list-item {
+  flex: 0 0 auto;
+  min-width: 200px; /* Set minimum width if needed */
+}
+</style>
