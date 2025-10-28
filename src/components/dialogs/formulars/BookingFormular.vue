@@ -70,6 +70,7 @@ const feeModel = computed({
     bookingFormularData.feeDebit = val.debit
   }
 })
+console.error(bookingTypes.items, stocks.items)
 </script>
 
 <template>
@@ -106,12 +107,12 @@ const feeModel = computed({
       <v-col cols="6">
         <v-select
             v-model="bookingFormularData.bookingTypeId"
-            :itemTitle="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-            :itemValue="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
+            :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+            :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
             :items="bookingTypes.items.sort((a: IBookingType_Store, b: IBookingType_Store): number => { return a.cName.localeCompare(b.cName) })"
             :label="t('dialogs.addBooking.bookingTypeLabel')"
             :menu=false
-            :menuProps="{ maxHeight: 250 }"
+            :menu-props="{ maxHeight: 250 }"
             density="compact"
             max-width="300"
             variant="outlined"

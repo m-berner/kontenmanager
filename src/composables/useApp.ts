@@ -516,6 +516,7 @@ const CONS = Object.freeze({
     SYSTEM: {
         COPYRIGHT: `2025-${new Date().getFullYear()} Martin Berner`,
         MAILTO: 'mailto:kontenmanager@gmx.de',
+        HELP_URL: 'https://kontenmanager8.wixsite.com/kontenmanager',
         HTML_ENTITY:
             '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
         KEYS: {

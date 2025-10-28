@@ -10,6 +10,10 @@
     height: calc(100vh - 300px);
 }
 
+.d-none {
+    display: none;
+}
+
 .table-row {
     /* Set the display to `table-row` because Vuetify makes `flex` */
     display: table-row;

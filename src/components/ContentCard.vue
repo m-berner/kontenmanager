@@ -18,13 +18,17 @@ const contentCardProps = defineProps<ContentCardProps>()
 </script>
 
 <template>
-  <v-card color="secondary">
-    <v-card-title>
-      {{ contentCardProps.title }}
-    </v-card-title>
-  </v-card>
-  <v-card v-for="item in contentCardProps.data" :key="item.subTitle">
-    <v-card-title class="d-flex">
+  <v-row justify="center">
+    <v-col cols="12">
+      <v-card color="secondary">
+        <v-card-title>
+          {{ contentCardProps.title }}
+        </v-card-title>
+      </v-card>
+    </v-col>
+    <v-col v-for="item in contentCardProps.data" :key="item.subTitle" cols="12">
+      <v-card>
+        <v-card-title class="d-flex">
       <span v-if="item.icon !== ''">
       <v-icon v-if="item.icon.substring(0,1) === '$'" :icon="item.icon"/>
       <v-img
@@ -34,10 +38,12 @@ const contentCardProps = defineProps<ContentCardProps>()
           height="32"
           width="32"/><span>&nbsp;</span>
       </span>
-      {{ item.subTitle }}
-    </v-card-title>
-    <v-card-text>
-      {{ item.content }}
-    </v-card-text>
-  </v-card>
+          {{ item.subTitle }}
+        </v-card-title>
+        <v-card-text>
+          {{ item.content }}
+        </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>

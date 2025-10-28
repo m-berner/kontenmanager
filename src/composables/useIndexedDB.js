@@ -8,7 +8,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     const isConnected = ref(false);
     const error = ref(null);
     const isLoading = ref(false);
-    function setupDatabase(db) {
+    function _setupDatabase(db) {
         const stores = CONS.INDEXED_DB.STORES;
         if (!db.objectStoreNames.contains(stores.ACCOUNTS.NAME)) {
             const store = db.createObjectStore(stores.ACCOUNTS.NAME, {
@@ -46,6 +46,15 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             store.createIndex(`${stores.STOCKS.NAME}_k3`, stores.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
         }
     }
+    function closeDB() {
+        if (dbPromise) {
+            dbPromise.then(db => {
+                db.close();
+                dbPromise = null;
+                isConnected.value = false;
+            });
+        }
+    }
     async function getDB() {
         if (!dbPromise) {
             isLoading.value = true;
@@ -76,7 +85,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 };
                 request.onupgradeneeded = (ev) => {
                     if (ev.target instanceof IDBRequest) {
-                        setupDatabase(ev.target.result);
+                        _setupDatabase(ev.target.result);
                     }
                 };
             });
@@ -89,6 +98,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const store = tx.objectStore(storeName);
         const request = store.add(data);
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
@@ -99,6 +110,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const store = tx.objectStore(storeName);
         const request = store.get(key);
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
@@ -109,6 +122,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const store = tx.objectStore(storeName);
         const request = store.getAll();
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
@@ -119,6 +134,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const store = tx.objectStore(storeName);
         const request = store.put(data);
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
@@ -129,6 +146,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const store = tx.objectStore(storeName);
         const request = store.delete(key);
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
         });
@@ -139,6 +158,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const store = tx.objectStore(storeName);
         const request = store.clear();
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
         });
@@ -158,21 +179,40 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                         request = store.put(op.data);
                         break;
                     case 'delete':
+                        if (!op.key) {
+                            reject(new Error('Delete operation requires a key'));
+                            return;
+                        }
                         request = store.delete(op.key);
                         break;
+                    default:
+                        reject(new Error(`Unknown operation type: ${op.type}`));
+                        return;
                 }
+                tx.onerror = () => reject(tx.error);
+                tx.onabort = () => reject(new Error('Transaction aborted'));
                 request.onsuccess = () => resolve(request.result);
                 request.onerror = () => reject(request.error);
             });
         });
         return Promise.all(promises);
     }
-    async function getByIndex(storeName, indexName, value) {
+    async function getAllByIndex(storeName, indexName, value) {
         const db = await getDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const index = store.index(indexName);
-        const request = index.get(value);
+        const request = index.getAll(value);
+        return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    async function _getAllInTransaction(tx, storeName) {
+        const store = tx.objectStore(storeName);
+        const request = store.getAll();
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
@@ -180,19 +220,28 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
     async function deleteDatabaseWithAccount(accountId) {
         log('INDEXED_DB: deleteDatabaseWithAccount');
-        const bookings = (await getAll(CONS.INDEXED_DB.STORES.BOOKINGS.NAME))
-            .filter(item => item.cAccountNumberID === accountId);
-        const bookingTypes = (await getAll(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME))
-            .filter(item => item.cAccountNumberID === accountId);
-        const stocks = (await getAll(CONS.INDEXED_DB.STORES.STOCKS.NAME))
-            .filter(item => item.cAccountNumberID === accountId);
-        for (const rec of bookings)
-            await remove(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, rec.cID);
-        for (const rec of bookingTypes)
-            await remove(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, rec.cID);
-        for (const rec of stocks)
-            await remove(CONS.INDEXED_DB.STORES.STOCKS.NAME, rec.cID);
-        await remove(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountId);
+        const db = await getDB();
+        const tx = db.transaction([
+            CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
+            CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
+            CONS.INDEXED_DB.STORES.STOCKS.NAME,
+            CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+        ], 'readwrite');
+        const bookings = await _getAllInTransaction(tx, CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
+        const bookingTypes = await _getAllInTransaction(tx, CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
+        const stocks = await _getAllInTransaction(tx, CONS.INDEXED_DB.STORES.STOCKS.NAME);
+        const bookingsStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
+        const bookingTypesStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
+        const stocksStore = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME);
+        const accountsStore = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
+        bookings.filter((b) => b.cAccountNumberID === accountId).forEach((b) => bookingsStore.delete(b.cID));
+        bookingTypes.filter((bt) => bt.cAccountNumberID === accountId).forEach((bt) => bookingTypesStore.delete(bt.cID));
+        stocks.filter((s) => s.cAccountNumberID === accountId).forEach((s) => stocksStore.delete(s.cID));
+        accountsStore.delete(accountId);
+        return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
     }
     async function getDatabaseStores() {
         log('INDEXED_DB: getDatabaseStores');
@@ -207,11 +256,44 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             stocksDB: allStocks.filter(s => s.cAccountNumberID === activeAccountId.value)
         };
     }
+    async function countByIndex(storeName, indexName, value) {
+        const db = await getDB();
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+        const index = store.index(indexName);
+        const request = index.count(value);
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    async function processWithCursor(storeName, callback, indexName, range) {
+        const db = await getDB();
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+        const source = indexName ? store.index(indexName) : store;
+        const request = source.openCursor(range);
+        return new Promise((resolve, reject) => {
+            request.onsuccess = async (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    await callback(cursor.value);
+                    cursor.continue();
+                }
+                else {
+                    resolve();
+                }
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
     return {
         isConnected,
         error,
         isLoading,
         getDB,
+        closeDB,
+        countByIndex,
         add,
         get,
         getAll,
@@ -219,12 +301,13 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         remove,
         clear,
         batchOperations,
-        getByIndex,
+        getAllByIndex,
         deleteDatabaseWithAccount,
-        getDatabaseStores
+        getDatabaseStores,
+        processWithCursor
     };
 }
-export function useStore(storeName) {
+function useDBStore(storeName) {
     const db = useIndexedDB();
     return {
         isConnected: db.isConnected,
@@ -238,11 +321,17 @@ export function useStore(storeName) {
         batchImport: (batch) => db.batchOperations(storeName, batch)
     };
 }
-export const useAccountsDB = () => useStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
-export const useBookingsDB = () => useStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
-export const useBookingTypesDB = () => useStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
+export function useAccountsDB() {
+    return useDBStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
+}
+export function useBookingsDB() {
+    return useDBStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
+}
+export function useBookingTypesDB() {
+    return useDBStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
+}
 export function useStocksDB() {
-    const store = useStore(CONS.INDEXED_DB.STORES.STOCKS.NAME);
+    const store = useDBStore(CONS.INDEXED_DB.STORES.STOCKS.NAME);
     return {
         ...store,
         update: (stockData) => {

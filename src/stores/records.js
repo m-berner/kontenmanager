@@ -497,6 +497,7 @@ export const useRecordsStore = defineStore('records', function () {
             cAccountNumberID: activeAccountId.value,
             cAskDates: CONS.DATE.DEFAULT_ISO
         }, true);
+        bookingTypesStore.add({ cID: 0, cName: '', cAccountNumberID: activeAccountId.value }, true);
         if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
             alert.info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null);
             sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true');

@@ -70,9 +70,3 @@ log('--- ShowDividend.vue setup ---')
     </v-card>
   </v-form>
 </template>
-
-<style scoped>
-.d-none {
-  display: none;
-}
-</style>

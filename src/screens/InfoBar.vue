@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
@@ -19,27 +18,10 @@ export interface _IDrawerControl {
   class: string
 }
 
-// interface IState {
-//   show: boolean
-//   drawerControls: _IDrawerControl[]
-//   totalController: any
-// }
-
 const {n, t} = useI18n()
 const {CONS, log} = useApp()
 const runtime = useRuntime()
 const settings = useSettings()
-
-// const state: IState = reactive({
-//   // show: false,
-//   drawerControls: CONS.DEFAULTS.DRAWER_CONTROLS.map(() => ({
-//     id: 0,
-//     title: '',
-//     value: '',
-//     class: ''
-//   })),
-//   totalController: {}
-// })
 
 const usd = (mat: string, usd = true): number => {
   const materialCode = CONS.SETTINGS.MATERIALS.get(mat) ?? ''
@@ -48,22 +30,6 @@ const usd = (mat: string, usd = true): number => {
   }
   return (runtime.infoMaterials.value.get(materialCode) ?? 0) / runtime.curUsd.value
 }
-// const updateDrawerControls = (): void => {
-//   log('INFO_BAR: updateDrawerControls')
-//   state.drawerControls = CONS.DEFAULTS.DRAWER_KEYS.map((key, index) => {
-//     const value = state.totalController[key] ?? 0
-//     return {
-//       id: index,
-//       title: t(`infoBar.drawerTitles.${key}`),
-//       value: key === 'winLoss' ? `${n(value, 'currency')} ' / ' ${n(state.totalController.winLossPercent ?? 0, 'percent')}` : '',
-//       class: value < 0 ? `${key}_minus` : key
-//     }
-//   })
-// }
-
-onMounted(() => {
-  // updateDrawerControls()
-})
 
 log('--- InfoBar.vue setup ---')
 </script>
@@ -90,30 +56,3 @@ log('--- InfoBar.vue setup ---')
     </v-list>
   </v-app-bar>
 </template>
-
-<!--suppress CssUnusedSymbol -->
-<style scoped>
-.winLoss {
-  font-weight: bold;
-  color: green;
-}
-
-.winLoss_minus,
-.fees_minus,
-.taxes_minus,
-.withdrawals_minus,
-.account_minus,
-.earnings_minus {
-  color: red;
-}
-
-.hide-scroll-bar {
-  overflow: hidden;
-}
-
-.horizontal-list {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: space-between;
-}
-</style>

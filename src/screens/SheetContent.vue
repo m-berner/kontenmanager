@@ -49,15 +49,11 @@ log('--- SheetContent.vue setup ---')
 <template>
   <v-sheet class="sheet" color="surface-light">
     <v-container>
-      <v-row justify="center">
-        <v-col cols="8" s="8">
-          <ContentCard
-              v-for="item in stringsArray"
-              :key="item.title"
-              :data="formatData(item.data)"
-              :title="t(item.title)"/>
-        </v-col>
-      </v-row>
+      <ContentCard
+          v-for="item in stringsArray"
+          :key="item.title"
+          :data="formatData(item.data)"
+          :title="t(item.title)"/>
     </v-container>
   </v-sheet>
 </template>

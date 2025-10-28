@@ -216,9 +216,3 @@ log('--- StocksTable.vue setup ---')
     </template>
   </v-data-table>
 </template>
-
-<style scoped>
-.d-none {
-  display: none;
-}
-</style>

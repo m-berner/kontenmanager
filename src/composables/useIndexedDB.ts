@@ -9,7 +9,8 @@
 import type {
     IAccount_DB,
     IBooking_DB,
-    IBookingType_DB, IRecords_DB,
+    IBookingType_DB,
+    IRecords_DB,
     IStock_DB,
     IStock_Store,
     IStores_DB
@@ -30,7 +31,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     const isLoading = ref<boolean>(false)
 
     // Database schema setup
-    function setupDatabase(db: IDBDatabase): void {
+    function _setupDatabase(db: IDBDatabase): void {
         const stores = CONS.INDEXED_DB.STORES
 
         // Accounts store
@@ -77,7 +78,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         }
     }
 
-    // Get database connection
+    function closeDB(): void {
+        if (dbPromise) {
+            dbPromise.then(db => {
+                db.close()
+                dbPromise = null
+                isConnected.value = false
+            })
+        }
+    }
+
     async function getDB(): Promise<IDBDatabase> {
         if (!dbPromise) {
             isLoading.value = true
@@ -115,7 +125,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 
                 request.onupgradeneeded = (ev: Event) => {
                     if (ev.target instanceof IDBRequest) {
-                        setupDatabase(ev.target.result)
+                        _setupDatabase(ev.target.result)
                     }
                 }
             })
@@ -124,7 +134,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         return dbPromise
     }
 
-    // Generic CRUD operations
     async function add<T>(storeName: string, data: T): Promise<number> {
         const db = await getDB()
         const tx = db.transaction(storeName, 'readwrite')
@@ -132,6 +141,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = store.add(data)
 
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
             request.onsuccess = () => resolve(request.result as number)
             request.onerror = () => reject(request.error)
         })
@@ -144,6 +155,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = store.get(key)
 
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
             request.onsuccess = () => resolve(request.result)
             request.onerror = () => reject(request.error)
         })
@@ -156,6 +169,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = store.getAll()
 
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
             request.onsuccess = () => resolve(request.result)
             request.onerror = () => reject(request.error)
         })
@@ -168,6 +183,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = store.put(data)
 
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
             request.onsuccess = () => resolve(request.result)
             request.onerror = () => reject(request.error)
         })
@@ -180,6 +197,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = store.delete(key)
 
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
             request.onsuccess = () => resolve()
             request.onerror = () => reject(request.error)
         })
@@ -192,6 +211,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = store.clear()
 
         return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
             request.onsuccess = () => resolve()
             request.onerror = () => reject(request.error)
         })
@@ -213,10 +234,19 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                         request = store.put(op.data)
                         break
                     case 'delete':
-                        request = store.delete(op.key!)
+                        if (!op.key) {
+                            reject(new Error('Delete operation requires a key'))
+                            return
+                        }
+                        request = store.delete(op.key)
                         break
+                    default:
+                        reject(new Error(`Unknown operation type: ${(op as any).type}`))
+                        return
                 }
 
+                tx.onerror = () => reject(tx.error)
+                tx.onabort = () => reject(new Error('Transaction aborted'))
                 request.onsuccess = () => resolve(request.result)
                 request.onerror = () => reject(request.error)
             })
@@ -225,12 +255,24 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         return Promise.all(promises)
     }
 
-    async function getByIndex<T>(storeName: string, indexName: string, value: number): Promise<T> {
+    async function getAllByIndex<T>(storeName: string, indexName: string, value: number | string): Promise<T[]> {
         const db = await getDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const index = store.index(indexName)
-        const request = index.get(value)
+        const request = index.getAll(value)
+
+        return new Promise((resolve, reject) => {
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
+            request.onsuccess = () => resolve(request.result)
+            request.onerror = () => reject(request.error)
+        })
+    }
+
+    async function _getAllInTransaction<T>(tx: IDBTransaction, storeName: string): Promise<T[]> {
+        const store = tx.objectStore(storeName)
+        const request = store.getAll()
 
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result)
@@ -238,23 +280,37 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    // High-level operations
     async function deleteDatabaseWithAccount(accountId: number): Promise<void> {
         log('INDEXED_DB: deleteDatabaseWithAccount')
 
-        const bookings = (await getAll<IBooking_DB>(CONS.INDEXED_DB.STORES.BOOKINGS.NAME))
-            .filter(item => item.cAccountNumberID === accountId)
-        const bookingTypes = (await getAll<IBookingType_DB>(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME))
-            .filter(item => item.cAccountNumberID === accountId)
-        const stocks = (await getAll<IStock_DB>(CONS.INDEXED_DB.STORES.STOCKS.NAME))
-            .filter(item => item.cAccountNumberID === accountId)
+        const db = await getDB()
+        const tx = db.transaction([
+            CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
+            CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
+            CONS.INDEXED_DB.STORES.STOCKS.NAME,
+            CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+        ], 'readwrite')
 
-        // Batch delete operations
-        for (const rec of bookings) await remove(CONS.INDEXED_DB.STORES.BOOKINGS.NAME, rec.cID)
-        for (const rec of bookingTypes) await remove(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME, rec.cID)
-        for (const rec of stocks) await remove(CONS.INDEXED_DB.STORES.STOCKS.NAME, rec.cID)
+        // Get all records first
+        const bookings = await _getAllInTransaction<IBooking_DB>(tx, CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
+        const bookingTypes = await _getAllInTransaction<IBookingType_DB>(tx, CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
+        const stocks = await _getAllInTransaction<IStock_DB>(tx, CONS.INDEXED_DB.STORES.STOCKS.NAME)
 
-        await remove(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME, accountId)
+        // Delete in one transaction
+        const bookingsStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
+        const bookingTypesStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
+        const stocksStore = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME)
+        const accountsStore = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
+
+        bookings.filter((b: IBooking_DB) => b.cAccountNumberID === accountId).forEach((b: IBooking_DB) => bookingsStore.delete(b.cID))
+        bookingTypes.filter((bt: IBookingType_DB) => bt.cAccountNumberID === accountId).forEach((bt: IBookingType_DB) => bookingTypesStore.delete(bt.cID))
+        stocks.filter((s: IStock_DB) => s.cAccountNumberID === accountId).forEach((s: IStock_DB) => stocksStore.delete(s.cID))
+        accountsStore.delete(accountId)
+
+        return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve()
+            tx.onerror = () => reject(tx.error)
+        })
     }
 
     async function getDatabaseStores(): Promise<IStores_DB> {
@@ -273,11 +329,52 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         }
     }
 
+    async function countByIndex(storeName: string, indexName: string, value: number | string): Promise<number> {
+        const db = await getDB()
+        const tx = db.transaction(storeName, 'readonly')
+        const store = tx.objectStore(storeName)
+        const index = store.index(indexName)
+        const request = index.count(value)
+
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result)
+            request.onerror = () => reject(request.error)
+        })
+    }
+
+    async function processWithCursor<T>(
+        storeName: string,
+        callback: (item: T) => void | Promise<void>,
+        indexName?: string,
+        range?: IDBKeyRange
+    ): Promise<void> {
+        const db = await getDB()
+        const tx = db.transaction(storeName, 'readonly')
+        const store = tx.objectStore(storeName)
+        const source = indexName ? store.index(indexName) : store
+        const request = source.openCursor(range)
+
+        return new Promise((resolve, reject) => {
+            request.onsuccess = async (event) => {
+                const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result
+                if (cursor) {
+                    await callback(cursor.value)
+                    cursor.continue()
+                } else {
+                    resolve()
+                }
+            }
+            request.onerror = () => reject(request.error)
+        })
+    }
+
     return {
         isConnected,
         error,
         isLoading,
         getDB,
+        closeDB,
+        countByIndex,
         add,
         get,
         getAll,
@@ -285,14 +382,14 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         remove,
         clear,
         batchOperations,
-        getByIndex,
+        getAllByIndex,
         deleteDatabaseWithAccount,
-        getDatabaseStores
+        getDatabaseStores,
+        processWithCursor
     }
 }
 
-// Generic store wrapper - replaces all 4 store-specific composables
-export function useStore<T>(storeName: string) {
+function useDBStore<T>(storeName: string) {
     const db = useIndexedDB()
 
     return {
@@ -309,21 +406,31 @@ export function useStore<T>(storeName: string) {
     }
 }
 
-// Convenience exports
-export const useAccountsDB = () => useStore<IAccount_DB>(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
-export const useBookingsDB = () => useStore<IBooking_DB>(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
-export const useBookingTypesDB = () => useStore<IBookingType_DB>(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
+export function useAccountsDB() {
+    return useDBStore<IAccount_DB>(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
+}
+
+export function useBookingsDB() {
+    return useDBStore<IBooking_DB>(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
+}
+
+export function useBookingTypesDB() {
+    return useDBStore<IBookingType_DB>(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
+}
+
 // Stocks need special handling for computed properties
 export function useStocksDB() {
-    const store = useStore<IStock_DB>(CONS.INDEXED_DB.STORES.STOCKS.NAME)
+    const store = useDBStore<IStock_DB>(CONS.INDEXED_DB.STORES.STOCKS.NAME)
 
     return {
         ...store,
         update: (stockData: IStock_Store) => {
             // Remove computed properties before saving
-            const {mPortfolio, mInvest, mChange, mBuyValue, mEuroChange, mMin,
+            const {
+                mPortfolio, mInvest, mChange, mBuyValue, mEuroChange, mMin,
                 mValue, mMax, mDividendYielda, mDividendYeara, mDividendYieldb,
-                mDividendYearb, mRealDividend, mRealBuyValue, mDeleteable, ...cleanData} = stockData
+                mDividendYearb, mRealDividend, mRealBuyValue, mDeleteable, ...cleanData
+            } = stockData
             return store.update(cleanData as IStock_DB)
         }
     }
