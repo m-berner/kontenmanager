@@ -234,8 +234,13 @@
       "descriptionLabel": "Bemerkung",
       "creditLabel": "Einnahme",
       "debitLabel": "Ausgabe",
+      "nameLabel": "Buchungskategorie",
+      "sumLabel": "Betrag",
+      "sum": "Summe",
       "fees": "Gebühren",
       "taxes": "Steuern",
+      "itemsPerPageText": "Einträge pro Seite",
+      "noDataText": "Bisher keine Dividende erhalten",
       "success": "Buchung wurde hinzugefügt",
       "error": "Eingabe Fehler?"
     },

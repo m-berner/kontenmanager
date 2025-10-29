@@ -14,6 +14,7 @@ const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 const bookingsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
 const stocksPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
 const dividendsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
+const sumsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE)
 const activeAccountId = ref<number>(-1)
 const partner = ref<boolean>(false)
 const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
@@ -37,6 +38,7 @@ export function useSettings() {
         bookingsPerPage.value = storage.sBookingsPerPage as number
         stocksPerPage.value = storage.sStocksPerPage as number
         dividendsPerPage.value = storage.sDividendsPerPage as number
+        sumsPerPage.value = storage.sSumsPerPage as number
         activeAccountId.value = storage.sActiveAccountId as number
         partner.value = storage.sPartner as boolean
         service.value = storage.sService as string
@@ -51,6 +53,7 @@ export function useSettings() {
         bookingsPerPage,
         stocksPerPage,
         dividendsPerPage,
+        sumsPerPage,
         activeAccountId,
         partner,
         service,

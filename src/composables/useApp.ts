@@ -145,6 +145,7 @@ const CONS = Object.freeze({
             BOOKINGS_PER_PAGE: 9,
             STOCKS_PER_PAGE: 9,
             DIVIDENDS_PER_PAGE: 9,
+            SUMS_PER_PAGE: 9,
             SKIN: 'ocean',
             MATERIALS: ['au', 'brent'],
             INDEXES: ['dax', 'dow'],

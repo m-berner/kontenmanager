@@ -6,57 +6,116 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking_Store} from '@/types.d'
-import {defineExpose, onMounted, ref} from 'vue'
+import type {DataTableHeader} from 'vuetify'
+import {computed, defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRecordsStore} from '@/stores/records'
+import {useSettings} from '@/composables/useSettings'
+
+interface IAccountEntry {
+  id: number
+  name: string
+  sum: number
+  nameClass: string
+  sumClass: string
+}
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {log} = useApp()
+const {sumsPerPage} = useSettings()
+const {CONS, log} = useApp()
 
-const _result = ref<Array<{ title: string, subtitle: number }>>([])
+const sumsHeaders = computed<DataTableHeader[]>(() => [
+  {
+    title: t('dialogs.showAccounting.nameLabel'),
+    align: 'start',
+    sortable: false,
+    key: 'name'
+  },
+  {
+    title: t('dialogs.showAccounting.sumLabel'),
+    align: 'start',
+    sortable: false,
+    key: 'sum'
+  }
+])
 
-const addEntryToResult = (value: { title: string, subtitle: number }) => {
-  _result.value.push(value)
-}
+const accountEntries = computed(() => {
+  const result: IAccountEntry[] = []
+  const categories = records.bookingTypes.items.filter((rec) => rec.cID > 0)
+  for (let i = 0; i < categories.length; i++) {
+    let sc = ''
+    if (records.bookings.sumBookingTypes[i] < 0) {
+      sc = 'color-red'
+    }
+    result.push({
+      id: i,
+      name: categories[i].cName,
+      sum: records.bookings.sumBookingTypes[i],
+      nameClass: '',
+      sumClass: sc
+    })
+  }
+  result.push({
+    id: categories.length,
+    name: t('dialogs.showAccounting.sum'),
+    sum: records.bookings.sumBookingTypes.reduce((acc: number, cur: number) => acc + cur, 0) + records.bookings.sumTaxes + records.bookings.sumFees,
+    nameClass: 'font-weight-bold',
+    sumClass: 'font-weight-bold'
+  })
+  if (records.accounts.isDepot) {
+    result.unshift({
+      id: categories.length + 1,
+      name: t('dialogs.showAccounting.taxes'),
+      sum: records.bookings.sumTaxes,
+      nameClass: '',
+      sumClass: 'color-red'
+    })
+    result.unshift({
+      id: categories.length + 2,
+      name: t('dialogs.showAccounting.fees'),
+      sum: records.bookings.sumFees,
+      nameClass: '',
+      sumClass: 'color-red'
+    })
+  }
+  return result
+})
+
 const title = t('dialogs.showAccounting.title')
 
 defineExpose({title})
-
-onMounted(() => {
-  log('SHOW_ACCOUNTING: onMounted')
-  const sums: number[] = []
-  for (let i = 0; i < records.bookingTypes.items.length; i++) {
-    sums[i] = records.bookings.items.filter((entry: IBooking_Store) => {
-      return entry.cBookingTypeID === records.bookingTypes.items[i].cID
-    }).map((entry: IBooking_Store) => {
-      return entry.cCredit - entry.cDebit
-    }).reduce((acc: number, cur: number) => acc + cur, 0)
-    addEntryToResult({title: records.bookingTypes.items[i].cName, subtitle: sums[i]})
-  }
-})
 
 log('--- ShowAccounting.vue setup ---')
 </script>
 
 <template>
-  <v-form>
-    <v-list height="440">
-      <v-list-item
-          v-if="records.accounts.isDepot"
-          :subtitle="n(records.bookings.sumTaxes, 'currency')"
-          :title="t('dialogs.showAccounting.taxes')"/>
-      <v-list-item
-          v-if="records.accounts.isDepot"
-          :subtitle="n(records.bookings.sumFees, 'currency')"
-          :title="t('dialogs.showAccounting.fees')"/>
-      <v-list-item
-          v-for="entry in _result"
-          :key="entry.title"
-          :subtitle="n(entry.subtitle, 'currency')"
-          :title="entry.title"/>
-    </v-list>
+  <v-form
+      validate-on="submit"
+      @submit.prevent>
+    <v-card>
+      <v-card-text class="pa-5">
+        <v-data-table
+            :headers="sumsHeaders"
+            :hide-no-data="false"
+            :hover="false"
+            :items="accountEntries"
+            :items-per-page="sumsPerPage"
+            :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+            :items-per-page-text="t('dialogs.showAccounting.itemsPerPageText')"
+            :no-data-text="t('dialogs.showAccounting.noDataText')"
+            density="compact"
+            item-key="id">
+          <template v-slot:[`item`]="{ item }">
+            <tr class="table-row">
+              <td class="d-none">{{ item.id }}</td>
+              <td :class="item.nameClass">{{ item.name }}</td>
+              <td :class="item.sumClass">{{ n(item.sum, 'currency') }}</td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-card-text>
+    </v-card>
   </v-form>
 </template>

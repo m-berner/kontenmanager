@@ -5,6 +5,7 @@ const skin = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN);
 const bookingsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE);
 const stocksPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE);
 const dividendsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE);
+const sumsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE);
 const activeAccountId = ref(-1);
 const partner = ref(false);
 const service = ref(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE);
@@ -25,6 +26,7 @@ export function useSettings() {
         bookingsPerPage.value = storage.sBookingsPerPage;
         stocksPerPage.value = storage.sStocksPerPage;
         dividendsPerPage.value = storage.sDividendsPerPage;
+        sumsPerPage.value = storage.sSumsPerPage;
         activeAccountId.value = storage.sActiveAccountId;
         partner.value = storage.sPartner;
         service.value = storage.sService;
@@ -38,6 +40,7 @@ export function useSettings() {
         bookingsPerPage,
         stocksPerPage,
         dividendsPerPage,
+        sumsPerPage,
         activeAccountId,
         partner,
         service,

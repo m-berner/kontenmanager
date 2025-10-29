@@ -263,13 +263,25 @@ const useBookingsStore = defineStore('bookings', function () {
     });
     const sumFees = computed(() => {
         return items.value.map((entry) => {
-            return entry.cFeeDebit - entry.cFeeCredit;
+            return entry.cFeeCredit - entry.cFeeDebit;
         }).reduce((acc, cur) => acc + cur, 0);
     });
     const sumTaxes = computed(() => {
         return items.value.map((entry) => {
-            return entry.cTaxDebit - entry.cTaxCredit + entry.cSoliDebit - entry.cSoliCredit + entry.cSourceTaxDebit - entry.cSourceTaxCredit + entry.cTransactionTaxDebit - entry.cTransactionTaxCredit;
+            return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit;
         }).reduce((acc, cur) => acc + cur, 0);
+    });
+    const sumBookingTypes = computed(() => {
+        const bt = useBookingTypesStore();
+        const sums = [];
+        for (let i = 1; i < bt.items.length; i++) {
+            sums[i - 1] = items.value.filter((entry) => {
+                return entry.cBookingTypeID === bt.items[i].cID;
+            }).map((entry) => {
+                return entry.cCredit - entry.cDebit;
+            }).reduce((acc, cur) => acc + cur, 0);
+        }
+        return sums;
     });
     const portfolioByStockId = computed(() => (ident) => {
         const bought = items.value.filter((entry) => {
@@ -339,6 +351,7 @@ const useBookingsStore = defineStore('bookings', function () {
         sumBookings,
         sumFees,
         sumTaxes,
+        sumBookingTypes,
         hasBookingType,
         portfolioByStockId,
         investByStockId,
