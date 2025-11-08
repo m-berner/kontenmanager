@@ -11,14 +11,14 @@ import type {DataTableHeader} from 'vuetify'
 import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useSettings} from '@/composables/useSettings'
+import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import DotMenu from '@/components/DotMenu.vue'
 
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
-const {bookingsPerPage} = useSettings()
+const {bookingsPerPage, setBookingsPerPage} = useSettingsStore()
 const homeHeaders = computed<DataTableHeader[]>(() => [
   {
     title: t('appPage.headers.action'),
@@ -72,7 +72,7 @@ const homeMenuItems = computed<IMenuItem[]>(() => [
 const search = ref<string>('')
 
 const onUpdateItemsPerPage = (count: number): void => {
-  bookingsPerPage.value = count
+  setBookingsPerPage(count)
 }
 const onUpdatePage = (page: number): void => {
   log('HOME_CONTENT: onUpdatePage', {info: page})

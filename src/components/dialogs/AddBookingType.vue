@@ -10,7 +10,7 @@ import type {IBookingType_Store} from '@/types.d'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useSettings} from '@/composables/useSettings'
+import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -22,7 +22,7 @@ const {notice} = useBrowser()
 const {add} = useBookingTypesDB()
 const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
-const {activeAccountId} = useSettings()
+const {activeAccountId} = useSettingsStore()
 
 const formName = ref<string>('')
 const formRef = ref<HTMLFormElement | null>(null)
@@ -38,7 +38,7 @@ const onClickOk = async (): Promise<void> => {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const bookingType = {
         cName: formName.value.trim(),
-        cAccountNumberID: activeAccountId.value
+        cAccountNumberID: activeAccountId
       }
       const addBookingTypeID: number = await add(bookingType)
       if (addBookingTypeID > 1) {

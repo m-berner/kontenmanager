@@ -8,28 +8,28 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useRuntime} from '@/composables/useRuntime'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
-const runtime = useRuntime()
+const runtime = useRuntimeStore()
 </script>
 
 <template>
   <Teleport to="body">
-    <v-dialog :model-value="runtime.dialogVisibility.value" :persistent="true" width="500">
+    <v-dialog :model-value="runtime.dialogVisibility" :persistent="true" width="500">
       <v-card>
         <v-card-title class="text-center">
           {{ dialogRef?.title }}
         </v-card-title>
         <v-card-text class="pa-5">
-          <component :is="runtime.dialogName.value" ref="dialogRef"/>
+          <component :is="runtime.dialogName" ref="dialogRef"/>
         </v-card-text>
         <v-card-actions class="pa-5">
           <v-tooltip :text="t('dialogs.ok')" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
-                  v-if="runtime.dialogOk.value"
+                  v-if="runtime.dialogOk"
                   class="ml-auto"
                   icon="$check"
                   type="submit"

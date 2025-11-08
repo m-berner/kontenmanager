@@ -12,8 +12,8 @@ import {useI18n} from 'vue-i18n'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useRecordsStore} from '@/stores/records'
@@ -25,8 +25,8 @@ const {notice} = useBrowser()
 const {update} = useStocksDB()
 const {validateForm} = useValidation()
 const records = useRecordsStore()
-const {activeAccountId} = useSettings()
-const runtime = useRuntime()
+const {activeAccountId} = useSettingsStore()
+const runtime = useRuntimeStore()
 const {stockFormularData, formRef} = useStockFormular()
 
 const onClickOk = async (): Promise<void> => {
@@ -43,7 +43,7 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: stockFormularData.fadeOut ? 1 : 0,
       cFirstPage: stockFormularData.firstPage ? 1 : 0,
       cURL: stockFormularData.url,
-      cAccountNumberID: activeAccountId.value,
+      cAccountNumberID: activeAccountId,
       cAskDates: stockFormularData.askDates
     }
     records.stocks.updateStock(stock)
@@ -60,10 +60,10 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks.getItemById(runtime.activeId.value)
+  const currentStock = records.stocks.getItemById(runtime.activeId)
   if (currentStock !== undefined) {
     Object.assign(stockFormularData, {
-      id: runtime.activeId.value,
+      id: runtime.activeId,
       isin: currentStock.cISIN.replace(/\s/g, '').toUpperCase(),
       company: currentStock.cCompany,
       symbol: currentStock.cSymbol,

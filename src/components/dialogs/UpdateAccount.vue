@@ -10,8 +10,8 @@ import type {IAccount_Store} from '@/types.d'
 import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -24,8 +24,8 @@ const {log} = useApp()
 const {notice} = useBrowser()
 const {update} = useAccountsDB()
 const {validateForm} = useValidation()
-const settings = useSettings()
-const runtime = useRuntime()
+const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 const {accountFormularData, formRef} = useAccountFormular()
 const records = useRecordsStore()
 
@@ -34,7 +34,7 @@ const onClickOk = async (): Promise<void> => {
   if (!await validateForm(formRef)) return
   try {
     const account: IAccount_Store = {
-      cID: settings.activeAccountId.value,
+      cID: settings.activeAccountId,
       cSwift: accountFormularData.swift.trim().toUpperCase(),
       cIban: accountFormularData.iban.replace(/\s/g, ''),
       cLogoUrl: accountFormularData.logoUrl,
@@ -54,7 +54,7 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_ACCOUNT: onMounted')
-  const accountIndex = records.accounts.getIndexById(settings.activeAccountId.value)
+  const accountIndex = records.accounts.getIndexById(settings.activeAccountId)
   if (accountIndex !== -1) {
     const currentAccount = records.accounts.items[accountIndex]
     Object.assign(accountFormularData, {

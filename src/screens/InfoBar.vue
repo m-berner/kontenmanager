@@ -8,20 +8,20 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 
 const {n, t} = useI18n()
 const {CONS, log} = useApp()
-const runtime = useRuntime()
-const settings = useSettings()
+const runtime = useRuntimeStore()
+const settings = useSettingsStore()
 
 const usd = (mat: string, usd = true): number => {
   const materialCode = CONS.SETTINGS.MATERIALS.get(mat) ?? ''
   if (usd) {
-    return runtime.infoMaterials.value.get(materialCode) ?? 0
+    return runtime.infoMaterials.get(materialCode) ?? 0
   }
-  return (runtime.infoMaterials.value.get(materialCode) ?? 0) / runtime.curUsd.value
+  return (runtime.infoMaterials.get(materialCode) ?? 0) / runtime.curUsd
 }
 
 log('--- InfoBar.vue setup ---')
@@ -30,17 +30,17 @@ log('--- InfoBar.vue setup ---')
 <template>
   <v-app-bar app color="secondary" flat>
     <v-list bg-color="secondary" class="horizontal-list" lines="two">
-      <v-list-item v-for="item in settings.exchanges.value" :key="item">
+      <v-list-item v-for="item in settings.exchanges" :key="item">
         <v-list-item-title>{{ item }}</v-list-item-title>
-        <v-list-item-subtitle>{{ n(runtime.infoExchanges.value.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ n(runtime.infoExchanges.get(item) ?? 1, 'decimal3') }}</v-list-item-subtitle>
       </v-list-item>
 
-      <v-list-item v-for="item in settings.indexes.value" :key="item">
+      <v-list-item v-for="item in settings.indexes" :key="item">
         <v-list-item-title>{{ CONS.SETTINGS.INDEXES.get(item) }}</v-list-item-title>
-        <v-list-item-subtitle>{{ n(runtime.infoIndexes.value.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ n(runtime.infoIndexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
       </v-list-item>
 
-      <v-list-item v-for="item in settings.materials.value" :key="item">
+      <v-list-item v-for="item in settings.materials" :key="item">
         <v-list-item-title>{{ t('optionsPage.materials.' + item) }}</v-list-item-title>
         <v-list-item-subtitle>
           {{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}

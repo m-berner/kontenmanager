@@ -6,6 +6,8 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {ref} from 'vue'
+import {defineStore} from 'pinia'
+import {useApp} from '@/composables/useApp'
 
 interface ITeleport {
     dialogName: string
@@ -13,22 +15,35 @@ interface ITeleport {
     dialogVisibility: boolean
 }
 
-const activeId = ref<number>(-1)
-const optionMenuColors = ref<Map<number, string>>(new Map())
-const dialogName = ref<string>('')
-const dialogOk = ref<boolean>(true)
-const dialogVisibility = ref<boolean>(false)
-const infoExchanges = ref<Map<string, number>>(new Map())
-const infoIndexes = ref<Map<string, number>>(new Map())
-const infoMaterials = ref<Map<string, number>>(new Map())
-const curUsd = ref<number>(1)
-const curEur = ref<number>(1)
-const stocksPage = ref<number>(1)
-const loadedStocksPages = new Set()
-const isCompanyPage = ref(false)
-const isDownloading = ref(false)
+const {log} = useApp()
 
-export function useRuntime() {
+export const useRuntimeStore = defineStore('runtime', function () {
+    const activeId = ref<number>(-1)
+    const optionMenuColors = ref<Map<number, string>>(new Map())
+    const dialogName = ref<string>('')
+    const dialogOk = ref<boolean>(true)
+    const dialogVisibility = ref<boolean>(false)
+    const infoExchanges = ref<Map<string, number>>(new Map())
+    const infoIndexes = ref<Map<string, number>>(new Map())
+    const infoMaterials = ref<Map<string, number>>(new Map())
+    const curUsd = ref<number>(1)
+    const curEur = ref<number>(1)
+    const stocksPage = ref<number>(1)
+    const loadedStocksPages = new Set()
+    const isCompanyPage = ref(false)
+    const isDownloading = ref(false)
+
+    function setIsDownloading(v: boolean) {
+        isDownloading.value = v
+    }
+
+    function setIsCompanyPage(v: boolean) {
+        isCompanyPage.value = v
+    }
+
+    function setStocksPage(v: number) {
+        stocksPage.value = v
+    }
 
     function clearStocksPages() {
         loadedStocksPages.clear()
@@ -70,9 +85,14 @@ export function useRuntime() {
         loadedStocksPages,
         isCompanyPage,
         isDownloading,
+        setIsCompanyPage,
+        setIsDownloading,
+        setStocksPage,
         setTeleport,
         resetTeleport,
         resetOptionsMenuColors,
         clearStocksPages
     }
-}
+})
+
+log('--- STORES runtime.ts ---')

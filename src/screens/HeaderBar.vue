@@ -9,7 +9,7 @@
 import {onUpdated} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
+import {useRuntimeStore} from '@/stores/runtime'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import DialogPort from '@/components/DialogPort.vue'
@@ -19,7 +19,7 @@ import {useAlertStore} from '@/stores/alerts'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {openOptionsPage} = useBrowser()
-const {isCompanyPage, setTeleport} = useRuntime()
+const {isCompanyPage, setIsCompanyPage, setTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const router = useRouter()
 const {info} = useAlertStore()
@@ -187,7 +187,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
 }
 
 onUpdated(() => {
-  isCompanyPage.value = router.currentRoute.value.path.includes('company')
+  setIsCompanyPage(router.currentRoute.value.path.includes('company'))
 })
 
 log('--- HeaderBar.vue setup ---')

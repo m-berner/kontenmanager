@@ -9,8 +9,8 @@
 import type {IExchangeData} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useFetch} from '@/composables/useFetch'
 import {useRecordsStore} from '@/stores/records'
@@ -38,8 +38,8 @@ onBeforeMount(async () => {
     const {getDB, getDatabaseStores} = useIndexedDB()
     const {clearStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
     const db = await getDB()
-    const runtime = useRuntime()
-    const settings = useSettings()
+    const runtime = useRuntimeStore()
+    const settings = useSettingsStore()
     const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
     const curEur = `${cur}${CONS.CURRENCIES.EUR}`
     const curUsd = `${cur}${CONS.CURRENCIES.USD}`
@@ -48,22 +48,22 @@ onBeforeMount(async () => {
     const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
     for (let i = 0; i < exchangesBaseData.length; i++) {
       if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
-        runtime.curUsd.value = exchangesBaseData[i].value
+        runtime.curUsd = exchangesBaseData[i].value
       } else {
-        runtime.curEur.value = exchangesBaseData[i].value
+        runtime.curEur = exchangesBaseData[i].value
       }
     }
-    const exchangesInfoData: IExchangeData[] = await fetchExchangesData(settings.exchanges.value)
-    for (let i = 0; i < settings.exchanges.value.length; i++) {
-      runtime.infoExchanges.value.set(settings.exchanges.value[i], exchangesInfoData[i].value)
+    const exchangesInfoData: IExchangeData[] = await fetchExchangesData(settings.exchanges)
+    for (let i = 0; i < settings.exchanges.length; i++) {
+      runtime.infoExchanges.set(settings.exchanges[i], exchangesInfoData[i].value)
     }
     const indexesInfoData: IExchangeData[] = await fetchIndexData()
     for (let i = 0; i < indexesInfoData.length; i++) {
-      runtime.infoIndexes.value.set(indexesInfoData[i].key, indexesInfoData[i].value)
+      runtime.infoIndexes.set(indexesInfoData[i].key, indexesInfoData[i].value)
     }
     const materialsInfoData: IExchangeData[] = await fetchMaterialData()
     for (let i = 0; i < materialsInfoData.length; i++) {
-      runtime.infoMaterials.value.set(materialsInfoData[i].key, materialsInfoData[i].value)
+      runtime.infoMaterials.set(materialsInfoData[i].key, materialsInfoData[i].value)
     }
     const keyStrokeController: string[] = []
     const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
@@ -97,19 +97,19 @@ onBeforeMount(async () => {
           settings.setSkin(theme, changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
-          settings.service.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue)
+          settings.service = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
-          settings.indexes.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue)
+          settings.indexes = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
-          settings.markets.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue)
+          settings.markets = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
-          settings.materials.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue)
+          settings.materials = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
-          settings.exchanges.value = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue)
+          settings.exchanges = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue)
           break
         default:
       }

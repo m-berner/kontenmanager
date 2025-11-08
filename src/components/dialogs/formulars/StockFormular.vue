@@ -10,7 +10,7 @@ import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useValidation} from '@/composables/useValidation'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
+import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useFetch} from '@/composables/useFetch'
@@ -26,7 +26,7 @@ const {t} = useI18n()
 const {log} = useApp()
 const {isinRules} = useValidation()
 const records = useRecordsStore()
-const runtime = useRuntime()
+const runtime = useRuntimeStore()
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
@@ -45,8 +45,8 @@ const {debouncedFunction: debouncedIsin} = useDebounce(onUpdateISIN, 400)
 onMounted(() => {
   log('STOCK_FORMULAR: onMounted')
   if (stockFormularProps.isUpdate) {
-    const currentStock = records.stocks.getItemById(runtime.activeId.value)
-    stockFormularData.id = runtime.activeId.value
+    const currentStock = records.stocks.getItemById(runtime.activeId)
+    stockFormularData.id = runtime.activeId
     stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g, '')
     stockFormularData.company = currentStock.cCompany
     stockFormularData.symbol = currentStock.cSymbol

@@ -11,13 +11,13 @@ import {onMounted, ref} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
+import {useRuntimeStore} from '@/stores/runtime'
 import {useStocksDB} from '@/composables/useIndexedDB'
 
 const {t} = useI18n()
 const {log} = useApp()
 const {update} = useStocksDB()
-const runtime = useRuntime()
+const runtime = useRuntimeStore()
 const records = useRecordsStore()
 
 const _selected = ref<IStock_Store | null>(null)

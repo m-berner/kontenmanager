@@ -21,8 +21,8 @@ import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
@@ -82,8 +82,8 @@ const {clear: clearAllAccounts, batchImport: importAccounts} = useAccountsDB()
 const {clear: clearAllBookings, batchImport: importBookings} = useBookingsDB()
 const {clear: clearAllBookingTypes, batchImport: importBookingTypes} = useBookingTypesDB()
 const {clear: clearAllStocks, batchImport: importStocks} = useStocksDB()
-const {resetTeleport} = useRuntime()
-const {activeAccountId} = useSettings()
+const {resetTeleport} = useRuntimeStore()
+const {setActiveAccountId} = useSettingsStore()
 const {info} = useAlertStore()
 
 const MESSAGES = Object.freeze({
@@ -120,7 +120,7 @@ const onClickOk = async (): Promise<void> => {
     if (typeof fr.result === 'string') {
       const backupObject: IBackup = JSON.parse(fr.result)
       const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : 1
-      activeAccountId.value = activeId
+      setActiveAccountId(activeId)
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
       const getCreditDebit = (rec: IBooking_SM): number => {
         let result: number

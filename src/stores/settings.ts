@@ -8,22 +8,31 @@
 import {ref} from 'vue'
 import type {ThemeInstance} from 'vuetify'
 import {useApp} from '@/composables/useApp'
+import {defineStore} from 'pinia'
 
-const {CONS} = useApp()
-const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
-const bookingsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
-const stocksPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
-const dividendsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
-const sumsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE)
-const activeAccountId = ref<number>(-1)
-const partner = ref<boolean>(false)
-const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
-const materials = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS)
-const markets = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS)
-const indexes = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
-const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
+const {CONS, log} = useApp()
 
-export function useSettings() {
+export const useSettingsStore = defineStore('settings', function () {
+    const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
+    const bookingsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
+    const stocksPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
+    const dividendsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
+    const sumsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE)
+    const activeAccountId = ref<number>(-1)
+    const partner = ref<boolean>(false)
+    const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
+    const materials = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS)
+    const markets = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS)
+    const indexes = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
+    const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
+
+    function setStocksPerPage(v: number) {
+        stocksPerPage.value = v
+    }
+
+    function setBookingsPerPage(v: number) {
+        bookingsPerPage.value = v
+    }
 
     function setSkin(theme: ThemeInstance, value: string) {
         if (theme?.global?.name) {
@@ -48,6 +57,10 @@ export function useSettings() {
         exchanges.value = [...storage.sExchanges as string[]]
     }
 
+    function setActiveAccountId(v: number) {
+        activeAccountId.value = v
+    }
+
     return {
         skin,
         bookingsPerPage,
@@ -61,7 +74,12 @@ export function useSettings() {
         markets,
         indexes,
         exchanges,
+        setActiveAccountId,
+        setStocksPerPage,
+        setBookingsPerPage,
         setSkin,
         init
     }
-}
+})
+
+log('--- STORES settings.ts ---')

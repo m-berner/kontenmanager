@@ -10,7 +10,7 @@ import type {IBookingType_Store, IStock_Store} from '@/types.d'
 import {useI18n} from 'vue-i18n'
 import {computed} from 'vue'
 import {useApp} from '@/composables/useApp'
-import {useSettings} from '@/composables/useSettings'
+import {useSettingsStore} from '@/stores/settings'
 import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import {useRecordsStore} from '@/stores/records'
@@ -21,7 +21,7 @@ const {CONS} = useApp()
 const {dateRules} = useValidation()
 const {bookingFormularData} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
-const {markets} = useSettings()
+const {markets} = useSettingsStore()
 
 const creditDebitModel = computed({
   get: () => ({credit: bookingFormularData.credit, debit: bookingFormularData.debit}),

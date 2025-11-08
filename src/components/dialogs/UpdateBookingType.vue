@@ -10,7 +10,7 @@ import type {IBookingType_Store} from '@/types.d'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
+import {useRuntimeStore} from '@/stores/runtime'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -22,7 +22,7 @@ const {notice} = useBrowser()
 const {update} = useBookingTypesDB()
 const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
-const runtime = useRuntime()
+const runtime = useRuntimeStore()
 
 const formSelectedIndex = ref<number>(-1)
 const formName = ref<string>('')

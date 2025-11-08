@@ -11,16 +11,16 @@ import type {DataTableHeader} from 'vuetify'
 import {computed, onBeforeUpdate, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useSettings} from '@/composables/useSettings'
+import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import DotMenu from '@/components/DotMenu.vue'
-import {useRuntime} from '@/composables/useRuntime'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const records = useRecordsStore()
-const {stocksPerPage} = useSettings()
-const {isDownloading, loadedStocksPages, stocksPage} = useRuntime()
+const {setStocksPerPage, stocksPerPage} = useSettingsStore()
+const {setIsDownloading, loadedStocksPages, setStocksPage, stocksPage} = useRuntimeStore()
 
 const loading = ref(false)
 const stocksHeaders = computed<DataTableHeader[]>(() => [
@@ -115,11 +115,11 @@ const winLossClass = computed(() => {
 })
 
 const onUpdateItemsPerPage = (count: number): void => {
-  stocksPerPage.value = (count)
+  setStocksPerPage(count)
 }
 const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
-  stocksPage.value = page
+  setStocksPage(page)
   if (!loadedStocksPages.has(page)) {
     loading.value = true
     await records.stocks.loadOnlineData(page)
@@ -138,8 +138,8 @@ onBeforeUpdate(() => {
 onMounted(async () => {
   log('COMPANY_CONTENT: onMounted')
   const requiredOnlineData = async (page: number = 1) => {
-    if ((records.stocks.active[stocksPerPage.value * page].mPortfolio ?? 0) >= 1) {
-      await records.stocks.loadOnlineData(Math.ceil(stocksPerPage.value * page / stocksPerPage.value) + 1)
+    if ((records.stocks.active[stocksPerPage * page].mPortfolio ?? 0) >= 1) {
+      await records.stocks.loadOnlineData(Math.ceil(stocksPerPage * page / stocksPerPage) + 1)
       await requiredOnlineData(page + 1)
     }
   }
@@ -152,13 +152,13 @@ onMounted(async () => {
   }).sort((a: IStock_Store, b: IStock_Store) => {
     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
   })
-  if (!loadedStocksPages.has(stocksPage.value)) {
-    isDownloading.value = true
+  if (!loadedStocksPages.has(stocksPage)) {
+    setIsDownloading(true)
     loading.value = true
-    await records.stocks.loadOnlineData(stocksPage.value)
+    await records.stocks.loadOnlineData(stocksPage)
     await requiredOnlineData()
     loading.value = false
-    isDownloading.value = false
+    setIsDownloading(false)
   }
 })
 

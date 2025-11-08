@@ -10,8 +10,8 @@ import type {IBooking_DB, IBooking_Store} from '@/types.d'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useBrowser} from '@/composables/useBrowser'
@@ -24,12 +24,12 @@ const {log} = useApp()
 const {notice} = useBrowser()
 const {update} = useBookingsDB()
 const {validateForm} = useValidation()
-const settings = useSettings()
-const runtime = useRuntime()
+const settings = useSettingsStore()
+const runtime = useRuntimeStore()
 const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 
-const bookingIndex = records.bookings.getIndexById(runtime.activeId.value)
+const bookingIndex = records.bookings.getIndexById(runtime.activeId)
 if (bookingIndex > -1) {
   const currentBooking = records.bookings.items[bookingIndex]
   Object.assign(bookingFormularData, {
@@ -64,7 +64,7 @@ const onClickOk = async (): Promise<void> => {
   try {
     const booking: IBooking_Store & IBooking_DB = {
       cID: bookingFormularData.id,
-      cAccountNumberID: settings.activeAccountId.value,
+      cAccountNumberID: settings.activeAccountId,
       cStockID: bookingFormularData.stockId,
       cBookingTypeID: bookingFormularData.bookingTypeId,
       cBookDate: bookingFormularData.bookDate,

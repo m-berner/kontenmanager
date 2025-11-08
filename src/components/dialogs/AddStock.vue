@@ -10,8 +10,8 @@ import type {IStock_DB} from '@/types.d'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -24,8 +24,8 @@ const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {add} = useStocksDB()
 const {validateForm} = useValidation()
-const {activeAccountId} = useSettings()
-const {resetTeleport} = useRuntime()
+const {activeAccountId} = useSettingsStore()
+const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {stockFormularData, formRef} = useStockFormular()
 
@@ -53,7 +53,7 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: 0,
       cFirstPage: 0,
       cURL: '',
-      cAccountNumberID: activeAccountId.value,
+      cAccountNumberID: activeAccountId,
       cAskDates: CONS.DATE.DEFAULT_ISO
     }
     const addStockID = await add(stock)

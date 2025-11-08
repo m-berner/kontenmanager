@@ -1,19 +1,31 @@
 import { ref } from 'vue';
-const activeId = ref(-1);
-const optionMenuColors = ref(new Map());
-const dialogName = ref('');
-const dialogOk = ref(true);
-const dialogVisibility = ref(false);
-const infoExchanges = ref(new Map());
-const infoIndexes = ref(new Map());
-const infoMaterials = ref(new Map());
-const curUsd = ref(1);
-const curEur = ref(1);
-const stocksPage = ref(1);
-const loadedStocksPages = new Set();
-const isCompanyPage = ref(false);
-const isDownloading = ref(false);
-export function useRuntime() {
+import { defineStore } from 'pinia';
+import { useApp } from '@/composables/useApp';
+const { log } = useApp();
+export const useRuntimeStore = defineStore('runtime', function () {
+    const activeId = ref(-1);
+    const optionMenuColors = ref(new Map());
+    const dialogName = ref('');
+    const dialogOk = ref(true);
+    const dialogVisibility = ref(false);
+    const infoExchanges = ref(new Map());
+    const infoIndexes = ref(new Map());
+    const infoMaterials = ref(new Map());
+    const curUsd = ref(1);
+    const curEur = ref(1);
+    const stocksPage = ref(1);
+    const loadedStocksPages = new Set();
+    const isCompanyPage = ref(false);
+    const isDownloading = ref(false);
+    function setIsDownloading(v) {
+        isDownloading.value = v;
+    }
+    function setIsCompanyPage(v) {
+        isCompanyPage.value = v;
+    }
+    function setStocksPage(v) {
+        stocksPage.value = v;
+    }
     function clearStocksPages() {
         loadedStocksPages.clear();
     }
@@ -50,9 +62,13 @@ export function useRuntime() {
         loadedStocksPages,
         isCompanyPage,
         isDownloading,
+        setIsCompanyPage,
+        setIsDownloading,
+        setStocksPage,
         setTeleport,
         resetTeleport,
         resetOptionsMenuColors,
         clearStocksPages
     };
-}
+});
+log('--- STORES runtime.ts ---');

@@ -9,16 +9,16 @@
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useSettings} from '@/composables/useSettings'
-import {useRuntime} from '@/composables/useRuntime'
+import {useSettingsStore} from '@/stores/settings'
+import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {activeAccountId} = useSettings()
-const {isCompanyPage, isDownloading} = useRuntime()
+const {activeAccountId} = useSettingsStore()
+const {isCompanyPage, isDownloading} = useRuntimeStore()
 const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
@@ -31,11 +31,11 @@ const MESSAGES = Object.freeze({
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLE_BAR onUpdateTitleBar')
   const storesDB = await getDatabaseStores()
-  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId)
   await records.init(storesDB, MESSAGES)
 }
 const logoUrl = computed((): string => {
-  const ind = records.accounts.getIndexById(activeAccountId.value)
+  const ind = records.accounts.getIndexById(activeAccountId)
   if (ind > -1) {
     return records.accounts.items[ind].cLogoUrl
   } else {

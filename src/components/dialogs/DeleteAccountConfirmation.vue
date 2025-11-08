@@ -9,18 +9,18 @@
 import {computed, defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useSettings} from '@/composables/useSettings'
+import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
-import {useRuntime} from '@/composables/useRuntime'
+import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {deleteDatabaseWithAccount, getDatabaseStores} = useIndexedDB()
-const {activeAccountId} = useSettings()
-const {resetTeleport} = useRuntime()
+const {activeAccountId, setActiveAccountId} = useSettingsStore()
+const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 
 const MESSAGES = Object.freeze({
@@ -31,10 +31,10 @@ const MESSAGES = Object.freeze({
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
   try {
-    await deleteDatabaseWithAccount(activeAccountId.value)
+    await deleteDatabaseWithAccount(activeAccountId)
     records.bookings.items = []
-    records.accounts.remove(activeAccountId.value)
-    activeAccountId.value = -1
+    records.accounts.remove(activeAccountId)
+    setActiveAccountId(-1)
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     if (records.accounts.items.length > 0) {
       const storesDB = await getDatabaseStores()

@@ -9,7 +9,7 @@
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
+import {useRuntimeStore} from '@/stores/runtime'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import {useValidation} from '@/composables/useValidation'
@@ -21,7 +21,7 @@ const {notice} = useBrowser()
 const {remove} = useBookingTypesDB()
 const {validateForm} = useValidation()
 const records = useRecordsStore()
-const runtime = useRuntime()
+const runtime = useRuntimeStore()
 
 const selected = ref()
 const formRef = ref<HTMLFormElement | null>(null)

@@ -10,8 +10,8 @@ import type {IAccount_Store} from '@/types.d'
 import {computed, defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useRuntime} from '@/composables/useRuntime'
-import {useSettings} from '@/composables/useSettings'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -24,9 +24,9 @@ const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {add} = useAccountsDB()
 const {validateForm} = useValidation()
-const {resetTeleport} = useRuntime()
+const {resetTeleport} = useRuntimeStore()
 const {accountFormularData, formRef} = useAccountFormular()
-const {activeAccountId} = useSettings()
+const {setActiveAccountId} = useSettingsStore()
 const records = useRecordsStore()
 
 const reset = (): void => {
@@ -53,7 +53,7 @@ const onClickOk = async (): Promise<void> => {
     if (addAccountID > -1) {
       const completeAccount: IAccount_Store = {cID: addAccountID, ...account}
       records.accounts.add(completeAccount)
-      activeAccountId.value = addAccountID
+      setActiveAccountId(addAccountID)
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
       records.clean(false)
       resetTeleport()

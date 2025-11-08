@@ -11,7 +11,7 @@ import {computed, defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRecordsStore} from '@/stores/records'
-import {useSettings} from '@/composables/useSettings'
+import {useSettingsStore} from '@/stores/settings'
 
 interface IAccountEntry {
   id: number
@@ -23,7 +23,7 @@ interface IAccountEntry {
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {sumsPerPage} = useSettings()
+const {sumsPerPage} = useSettingsStore()
 const {CONS, log} = useApp()
 
 const sumsHeaders = computed<DataTableHeader[]>(() => [
