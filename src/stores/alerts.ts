@@ -6,8 +6,8 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import {defineStore} from 'pinia'
+import {computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 
 interface IAlert {
@@ -17,7 +17,7 @@ interface IAlert {
     message: string
 }
 
-const defaultAlert = { id: -1, type: '', title: '', message: '' }
+const defaultAlert = {id: -1, type: '', title: '', message: ''}
 const {log} = useApp()
 
 export const useAlertStore = defineStore('alert', () => {
@@ -28,7 +28,7 @@ export const useAlertStore = defineStore('alert', () => {
 
     function showAlert(type: string, title: string, message: string, duration: number | null = null) {
         const id = Date.now() + Math.random()
-        const alert: IAlert = { id, type, title, message }
+        const alert: IAlert = {id, type, title, message}
 
         alerts.value.push(alert)
 
@@ -46,9 +46,9 @@ export const useAlertStore = defineStore('alert', () => {
 
     function showNext() {
         if (alerts.value.length > 0) {
-            currentAlert.value = { ...alerts.value[0] }
+            currentAlert.value = {...alerts.value[0]}
         } else {
-            currentAlert.value = { ...defaultAlert }
+            currentAlert.value = {...defaultAlert}
         }
     }
 
@@ -79,7 +79,7 @@ export const useAlertStore = defineStore('alert', () => {
 
     function clearAll() {
         alerts.value = []
-        currentAlert.value = { ...defaultAlert }
+        currentAlert.value = {...defaultAlert}
     }
 
     return {
