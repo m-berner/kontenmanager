@@ -12,6 +12,7 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
+import {storeToRefs} from 'pinia'
 
 interface IAccountEntry {
   id: number
@@ -43,7 +44,8 @@ const sumsHeaders = computed<DataTableHeader[]>(() => [
 
 const accountEntries = computed(() => {
   const result: IAccountEntry[] = []
-  const categories = records.bookingTypes.items.filter((rec) => rec.cID > 0)
+  const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
+  const categories = bookingTypeItems.value.filter((rec) => rec.cID > 0)
   for (let i = 0; i < categories.length; i++) {
     let sc = ''
     if (records.bookings.sumBookingTypes[i] < 0) {

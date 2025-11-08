@@ -18,6 +18,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useRecordsStore} from '@/stores/records'
 import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -25,8 +26,10 @@ const {notice} = useBrowser()
 const {update} = useStocksDB()
 const {validateForm} = useValidation()
 const records = useRecordsStore()
-const {activeAccountId} = useSettingsStore()
+const settings = useSettingsStore()
+const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
+const {activeId} = storeToRefs(runtime)
 const {stockFormularData, formRef} = useStockFormular()
 
 const onClickOk = async (): Promise<void> => {
@@ -43,7 +46,7 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: stockFormularData.fadeOut ? 1 : 0,
       cFirstPage: stockFormularData.firstPage ? 1 : 0,
       cURL: stockFormularData.url,
-      cAccountNumberID: activeAccountId,
+      cAccountNumberID: activeAccountId.value,
       cAskDates: stockFormularData.askDates
     }
     records.stocks.updateStock(stock)
@@ -60,10 +63,10 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks.getItemById(runtime.activeId)
+  const currentStock = records.stocks.getItemById(activeId.value)
   if (currentStock !== undefined) {
     Object.assign(stockFormularData, {
-      id: runtime.activeId,
+      id: activeId.value,
       isin: currentStock.cISIN.replace(/\s/g, '').toUpperCase(),
       company: currentStock.cCompany,
       symbol: currentStock.cSymbol,

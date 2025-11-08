@@ -18,6 +18,7 @@ import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import {useRecordsStore} from '@/stores/records'
 import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -25,6 +26,7 @@ const {notice} = useBrowser()
 const {update} = useAccountsDB()
 const {validateForm} = useValidation()
 const settings = useSettingsStore()
+const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {accountFormularData, formRef} = useAccountFormular()
 const records = useRecordsStore()
@@ -34,7 +36,7 @@ const onClickOk = async (): Promise<void> => {
   if (!await validateForm(formRef)) return
   try {
     const account: IAccount_Store = {
-      cID: settings.activeAccountId,
+      cID: activeAccountId.value,
       cSwift: accountFormularData.swift.trim().toUpperCase(),
       cIban: accountFormularData.iban.replace(/\s/g, ''),
       cLogoUrl: accountFormularData.logoUrl,
@@ -54,9 +56,10 @@ defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('UPDATE_ACCOUNT: onMounted')
-  const accountIndex = records.accounts.getIndexById(settings.activeAccountId)
+  const {items: accountItems} = storeToRefs(records.accounts)
+  const accountIndex = records.accounts.getIndexById(activeAccountId.value)
   if (accountIndex !== -1) {
-    const currentAccount = records.accounts.items[accountIndex]
+    const currentAccount = accountItems.value[accountIndex]
     Object.assign(accountFormularData, {
       id: currentAccount.cID,
       swift: currentAccount.cSwift,

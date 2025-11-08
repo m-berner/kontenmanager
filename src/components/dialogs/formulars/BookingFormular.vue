@@ -70,7 +70,6 @@ const feeModel = computed({
     bookingFormularData.feeDebit = val.debit
   }
 })
-console.error(bookingTypes.items, stocks.items)
 </script>
 
 <template>

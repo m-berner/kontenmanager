@@ -18,13 +18,15 @@ import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
 import {useStockFormular} from '@/composables/useStockFormular'
 import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {add} = useStocksDB()
 const {validateForm} = useValidation()
-const {activeAccountId} = useSettingsStore()
+const settings = useSettingsStore()
+const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {stockFormularData, formRef} = useStockFormular()
@@ -53,7 +55,7 @@ const onClickOk = async (): Promise<void> => {
       cFadeOut: 0,
       cFirstPage: 0,
       cURL: '',
-      cAccountNumberID: activeAccountId,
+      cAccountNumberID: activeAccountId.value,
       cAskDates: CONS.DATE.DEFAULT_ISO
     }
     const addStockID = await add(stock)

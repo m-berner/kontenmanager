@@ -27,6 +27,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useAlertStore} from '@/stores/alerts'
+import {storeToRefs} from 'pinia'
 
 interface IStock_SM {
   cID: number
@@ -109,6 +110,7 @@ const onClickOk = async (): Promise<void> => {
   }
   const onReaderLoaded = async (): Promise<void> => {
     log('IMPORT_DATABASE: onFileLoaded')
+    const {items: accountItems} = storeToRefs(records.accounts)
     const accountsImportData: IRecords_DB[] = []
     const bookingsImportData: IRecords_DB[] = []
     const bookingTypesImportData: IRecords_DB[] = []
@@ -156,10 +158,10 @@ const onClickOk = async (): Promise<void> => {
       } else if (backupObject.sm.cDBVersion < CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
         info(MESSAGES.IMPORT_TITLE, MESSAGES.VERSION, null)
         return
-      } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && records.accounts.items.length > 0) {
+      } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length > 0) {
         info(MESSAGES.IMPORT_TITLE, MESSAGES.NOT_EMPTY, null)
         return
-      } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && records.accounts.items.length === 0) {
+      } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length === 0) {
         records.clean()
         await clearAllAccounts()
         await clearAllBookings()

@@ -15,6 +15,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -31,14 +32,15 @@ const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING_TYPE: onClickOk')
+  const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
   if (!await validateForm(formRef)) return
 
   try {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const bookingType: IBookingType_Store = {
-        cID: records.bookingTypes.items[formSelectedIndex.value].cID,
+        cID: bookingTypeItems.value[formSelectedIndex.value].cID,
         cName: formName.value.trim(),
-        cAccountNumberID: records.bookingTypes.items[formSelectedIndex.value].cAccountNumberID
+        cAccountNumberID: bookingTypeItems.value[formSelectedIndex.value].cAccountNumberID
       }
       records.bookingTypes.update(bookingType)
       await update(bookingType)

@@ -15,6 +15,7 @@ import {useRecordsStore} from '@/stores/records'
 import DialogPort from '@/components/DialogPort.vue'
 import {RouterLink, useRouter} from 'vue-router'
 import {useAlertStore} from '@/stores/alerts'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -36,6 +37,9 @@ const MESSAGES = Object.freeze({
 
 const onIconClick = async (ev: Event): Promise<void> => {
   log('HEADER_BAR: onIconClick')
+  const {items: accountItems} = storeToRefs(records.accounts)
+  const {items: bookingItems} = storeToRefs(records.bookings)
+  const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
@@ -79,7 +83,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT:
-        if (records.accounts.items.length === 0) {
+        if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
         } else {
           setTeleport({
@@ -90,7 +94,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION:
-        if (records.accounts.items.length === 0) {
+        if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
         } else {
           setTeleport({
@@ -101,7 +105,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE:
-        if (records.accounts.items.length === 0) {
+        if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
         } else {
           setTeleport({
@@ -112,7 +116,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE:
-        if (records.bookingTypes.items.length < 2) {
+        if (bookingTypeItems.value.length < 2) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
         } else {
           setTeleport({
@@ -123,7 +127,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
-        if (records.bookingTypes.items.length < 2) {
+        if (bookingTypeItems.value.length < 2) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
         } else {
           setTeleport({
@@ -134,7 +138,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING:
-        if (records.accounts.items.length === 0) {
+        if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
         } else {
           setTeleport({
@@ -145,7 +149,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE:
-        if (records.accounts.items.length === 0) {
+        if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NOTHING_TO_EXPORT, null)
         } else {
           setTeleport({
@@ -163,7 +167,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         break
       case CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING:
-        if (records.bookings.items.length === 0) {
+        if (bookingItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.SHOW_ACCOUNTING, null)
         } else {
           setTeleport({

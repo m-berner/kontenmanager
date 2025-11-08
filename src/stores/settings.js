@@ -18,6 +18,21 @@ export const useSettingsStore = defineStore('settings', function () {
     function setStocksPerPage(v) {
         stocksPerPage.value = v;
     }
+    function setService(v) {
+        service.value = v;
+    }
+    function setIndexes(v) {
+        indexes.value = v;
+    }
+    function setMaterials(v) {
+        materials.value = v;
+    }
+    function setMarkets(v) {
+        markets.value = v;
+    }
+    function setExchanges(v) {
+        exchanges.value = v;
+    }
     function setBookingsPerPage(v) {
         bookingsPerPage.value = v;
     }
@@ -59,6 +74,11 @@ export const useSettingsStore = defineStore('settings', function () {
         indexes,
         exchanges,
         setActiveAccountId,
+        setService,
+        setIndexes,
+        setMaterials,
+        setMarkets,
+        setExchanges,
         setStocksPerPage,
         setBookingsPerPage,
         setSkin,

@@ -18,6 +18,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import {useRecordsStore} from '@/stores/records'
 import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -25,13 +26,16 @@ const {notice} = useBrowser()
 const {update} = useBookingsDB()
 const {validateForm} = useValidation()
 const settings = useSettingsStore()
+const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
+const {activeId} = storeToRefs(runtime)
 const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
+const {items: bookingItems} = storeToRefs(records.bookings)
 
-const bookingIndex = records.bookings.getIndexById(runtime.activeId)
+const bookingIndex = records.bookings.getIndexById(activeId.value)
 if (bookingIndex > -1) {
-  const currentBooking = records.bookings.items[bookingIndex]
+  const currentBooking = bookingItems.value[bookingIndex]
   Object.assign(bookingFormularData, {
     id: currentBooking.cID,
     bookingTypeId: currentBooking.cBookingTypeID,
@@ -64,7 +68,7 @@ const onClickOk = async (): Promise<void> => {
   try {
     const booking: IBooking_Store & IBooking_DB = {
       cID: bookingFormularData.id,
-      cAccountNumberID: settings.activeAccountId,
+      cAccountNumberID: activeAccountId.value,
       cStockID: bookingFormularData.stockId,
       cBookingTypeID: bookingFormularData.bookingTypeId,
       cBookDate: bookingFormularData.bookDate,

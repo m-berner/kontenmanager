@@ -17,6 +17,7 @@ import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import {useRecordsStore} from '@/stores/records'
 import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -25,7 +26,8 @@ const {add} = useBookingsDB()
 const {validateForm} = useValidation()
 const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
-const {activeAccountId} = useSettingsStore()
+const settings = useSettingsStore()
+const {activeAccountId} = storeToRefs(settings)
 
 const reset = (): void => {
   Object.assign(bookingFormularData, {
@@ -65,7 +67,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: bookingFormularData.description,
           cBookingTypeID: bookingFormularData.bookingTypeId,
           cStockID: bookingFormularData.stockId,
-          cAccountNumberID: activeAccountId,
+          cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DATE.DEFAULT_ISO,
           cCount: bookingFormularData.count,
           cSoliCredit: bookingFormularData.soliCredit,
@@ -89,7 +91,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: bookingFormularData.description,
           cBookingTypeID: bookingFormularData.bookingTypeId,
           cStockID: bookingFormularData.stockId,
-          cAccountNumberID: activeAccountId,
+          cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DATE.DEFAULT_ISO,
           cCount: bookingFormularData.count,
           cSoliCredit: bookingFormularData.soliCredit,
@@ -113,7 +115,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: bookingFormularData.description,
           cBookingTypeID: bookingFormularData.bookingTypeId,
           cStockID: bookingFormularData.stockId,
-          cAccountNumberID: activeAccountId,
+          cAccountNumberID: activeAccountId.value,
           cExDate: bookingFormularData.exDate,
           cCount: bookingFormularData.count,
           cSoliCredit: bookingFormularData.soliCredit,
@@ -137,7 +139,7 @@ const onClickOk = async (): Promise<void> => {
           cDescription: bookingFormularData.description,
           cBookingTypeID: bookingFormularData.bookingTypeId,
           cStockID: 0,
-          cAccountNumberID: activeAccountId,
+          cAccountNumberID: activeAccountId.value,
           cExDate: CONS.DATE.DEFAULT_ISO,
           cCount: 0,
           cSoliCredit: bookingFormularData.soliCredit,

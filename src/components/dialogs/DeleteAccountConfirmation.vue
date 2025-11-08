@@ -14,12 +14,14 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {deleteDatabaseWithAccount, getDatabaseStores} = useIndexedDB()
-const {activeAccountId, setActiveAccountId} = useSettingsStore()
+const settings = useSettingsStore()
+const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 
@@ -30,13 +32,14 @@ const MESSAGES = Object.freeze({
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
+  const {items: accountItems} = storeToRefs(records.accounts)
   try {
-    await deleteDatabaseWithAccount(activeAccountId)
-    records.bookings.items = []
-    records.accounts.remove(activeAccountId)
-    setActiveAccountId(-1)
+    await deleteDatabaseWithAccount(activeAccountId.value)
+    records.bookings.set([])
+    records.accounts.remove(activeAccountId.value)
+    settings.setActiveAccountId(-1)
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
-    if (records.accounts.items.length > 0) {
+    if (accountItems.value.length > 0) {
       const storesDB = await getDatabaseStores()
       await records.init(storesDB, MESSAGES)
     }

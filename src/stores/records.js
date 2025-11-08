@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useApp } from '@/composables/useApp';
 import { useSettingsStore } from '@/stores/settings';
@@ -96,21 +96,24 @@ const useStocksStore = defineStore('stocks', function () {
     async function loadOnlineData(page) {
         log('INDEXED_DB/STOCKS: loadOnlineData');
         const { fetchDateData, fetchMinRateMaxData } = useFetch();
-        const { curEur, curUsd, loadedStocksPages } = useRuntimeStore();
-        const { stocksPerPage } = useSettingsStore();
+        const { loadedStocksPages } = useRuntimeStore();
+        const runtime = useRuntimeStore();
+        const { curEur, curUsd } = storeToRefs(runtime);
+        const settings = useSettingsStore();
+        const { stocksPerPage } = storeToRefs(settings);
         const { CONS } = useApp();
         const isin = [];
         const isinDates = [];
         const itemsLength = active.value.length;
-        const rest = itemsLength % stocksPerPage;
-        const lastPage = Math.ceil(itemsLength / stocksPerPage);
+        const rest = itemsLength % stocksPerPage.value;
+        const lastPage = Math.ceil(itemsLength / stocksPerPage.value);
         let pageStocks = [];
         if (itemsLength > 0) {
             if (page < lastPage || rest === 0) {
-                pageStocks = active.value.slice((page - 1) * stocksPerPage, (page - 1) * stocksPerPage + stocksPerPage);
+                pageStocks = active.value.slice((page - 1) * stocksPerPage.value, (page - 1) * stocksPerPage.value + stocksPerPage.value);
             }
             else {
-                pageStocks = active.value.slice((page - 1) * stocksPerPage, (page - 1) * stocksPerPage + rest);
+                pageStocks = active.value.slice((page - 1) * stocksPerPage.value, (page - 1) * stocksPerPage.value + rest);
             }
             for (let i = 0; i < pageStocks.length; i++) {
                 if (pageStocks[i].mValue === 0) {
@@ -134,9 +137,9 @@ const useStocksStore = defineStore('stocks', function () {
         const minRateMaxResponse = await fetchMinRateMaxData(isin);
         const dateResponse = await fetchDateData(isinDates);
         for (let i = 0; i < pageStocks.length; i++) {
-            pageStocks[i].mMin = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].min) / curUsd : toNumber(minRateMaxResponse[i].min) / curEur;
-            pageStocks[i].mValue = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].rate) / curUsd : toNumber(minRateMaxResponse[i].rate) / curEur;
-            pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd : toNumber(minRateMaxResponse[i].max) / curEur;
+            pageStocks[i].mMin = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].min) / curUsd.value : toNumber(minRateMaxResponse[i].min) / curEur.value;
+            pageStocks[i].mValue = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].rate) / curUsd.value : toNumber(minRateMaxResponse[i].rate) / curEur.value;
+            pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd.value : toNumber(minRateMaxResponse[i].max) / curEur.value;
             pageStocks[i].mEuroChange = (pageStocks[i].mValue ?? 0) * (pageStocks[i].mPortfolio ?? 0) - (pageStocks[i].mInvest ?? 0);
             for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].id; j++) {
                 pageStocks[i].cMeetingDay = (await dateResponse[j]).value.gm > 0 ? isoDate((await dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO;
@@ -162,7 +165,8 @@ const useStocksStore = defineStore('stocks', function () {
     };
 });
 const useAccountsStore = defineStore('accounts', function () {
-    const { activeAccountId } = useSettingsStore();
+    const settings = useSettingsStore();
+    const { activeAccountId } = storeToRefs(settings);
     const items = ref([]);
     const getIndexById = computed(() => (id) => {
         return items.value.findIndex(account => account.cID === id);
@@ -175,7 +179,7 @@ const useAccountsStore = defineStore('accounts', function () {
         return duplicates.length > 0;
     });
     const isDepot = computed(() => {
-        const ind = getIndexById.value(activeAccountId);
+        const ind = getIndexById.value(activeAccountId.value);
         if (ind > -1) {
             return items.value[ind].cWithDepot;
         }
@@ -239,8 +243,9 @@ const useBookingsStore = defineStore('bookings', function () {
         }
     });
     const sumBookings = computed(() => () => {
-        const { activeAccountId } = useSettingsStore();
-        if (activeAccountId === -1) {
+        const settings = useSettingsStore();
+        const { activeAccountId } = storeToRefs(settings);
+        if (activeAccountId.value === -1) {
             return 0;
         }
         if (items.value.length > 0) {
@@ -342,6 +347,9 @@ const useBookingsStore = defineStore('bookings', function () {
     function clean() {
         items.value.length = 0;
     }
+    function set(bookings) {
+        items.value = bookings;
+    }
     return {
         items,
         getById,
@@ -358,6 +366,7 @@ const useBookingsStore = defineStore('bookings', function () {
         add,
         update,
         remove,
+        set,
         clean
     };
 });
@@ -440,7 +449,8 @@ export const useRecordsStore = defineStore('records', function () {
     }
     async function init(storesDB, messages, removeAccounts = true) {
         log('RECORDS: init');
-        const { activeAccountId, setActiveAccountId } = useSettingsStore();
+        const settings = useSettingsStore();
+        const { activeAccountId } = storeToRefs(settings);
         const { setStorage } = useBrowser();
         const { info } = useAlertStore();
         const stocksOnlyMemory = {
@@ -493,9 +503,9 @@ export const useRecordsStore = defineStore('records', function () {
         };
         clean(removeAccounts);
         load(stores);
-        if (activeAccountId > -1 && storesDB.accountsDB.length > 0) {
-            setActiveAccountId(storesDB.accountsDB[0].cID);
-            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId);
+        if (activeAccountId.value > -1 && storesDB.accountsDB.length > 0) {
+            settings.setActiveAccountId(storesDB.accountsDB[0].cID);
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value);
         }
         stocksStore.add({
             cID: 0,
@@ -507,10 +517,10 @@ export const useRecordsStore = defineStore('records', function () {
             cCompany: '',
             cMeetingDay: '',
             cQuarterDay: '',
-            cAccountNumberID: activeAccountId,
+            cAccountNumberID: activeAccountId.value,
             cAskDates: CONS.DATE.DEFAULT_ISO
         }, true);
-        bookingTypesStore.add({ cID: 0, cName: '', cAccountNumberID: activeAccountId }, true);
+        bookingTypesStore.add({ cID: 0, cName: '', cAccountNumberID: activeAccountId.value }, true);
         if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
             info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null);
             sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true');

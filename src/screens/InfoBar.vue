@@ -10,18 +10,20 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
+import {storeToRefs} from 'pinia'
 
 const {n, t} = useI18n()
 const {CONS, log} = useApp()
 const runtime = useRuntimeStore()
+const {curUsd, infoMaterials} = storeToRefs(runtime)
 const settings = useSettingsStore()
 
 const usd = (mat: string, usd = true): number => {
   const materialCode = CONS.SETTINGS.MATERIALS.get(mat) ?? ''
   if (usd) {
-    return runtime.infoMaterials.get(materialCode) ?? 0
+    return infoMaterials.value.get(materialCode) ?? 0
   }
-  return (runtime.infoMaterials.get(materialCode) ?? 0) / runtime.curUsd
+  return (infoMaterials.value.get(materialCode) ?? 0) / curUsd.value
 }
 
 log('--- InfoBar.vue setup ---')

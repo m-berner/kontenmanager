@@ -14,11 +14,14 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
+import {storeToRefs} from 'pinia'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {activeAccountId} = useSettingsStore()
-const {isCompanyPage, isDownloading} = useRuntimeStore()
+const settings = useSettingsStore()
+const {activeAccountId} = storeToRefs(settings)
+const runtime = useRuntimeStore()
+const {isCompanyPage, isDownloading} = storeToRefs(runtime)
 const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
@@ -31,13 +34,14 @@ const MESSAGES = Object.freeze({
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLE_BAR onUpdateTitleBar')
   const storesDB = await getDatabaseStores()
-  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId)
+  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
   await records.init(storesDB, MESSAGES)
 }
 const logoUrl = computed((): string => {
-  const ind = records.accounts.getIndexById(activeAccountId)
+  const ind = records.accounts.getIndexById(activeAccountId.value)
+  const {items: accountItems} = storeToRefs(records.accounts)
   if (ind > -1) {
-    return records.accounts.items[ind].cLogoUrl
+    return accountItems.value[ind].cLogoUrl
   } else {
     return ''
   }

@@ -15,12 +15,16 @@ import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import DotMenu from '@/components/DotMenu.vue'
 import {useRuntimeStore} from '@/stores/runtime'
+import {storeToRefs} from 'pinia'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const records = useRecordsStore()
-const {setStocksPerPage, stocksPerPage} = useSettingsStore()
-const {setIsDownloading, loadedStocksPages, setStocksPage, stocksPage} = useRuntimeStore()
+const settings = useSettingsStore()
+const {stocksPerPage} = storeToRefs(settings)
+const {setIsDownloading, loadedStocksPages, setStocksPage} = useRuntimeStore()
+const runtime = useRuntimeStore()
+const {stocksPage} = storeToRefs(runtime)
 
 const loading = ref(false)
 const stocksHeaders = computed<DataTableHeader[]>(() => [
@@ -115,7 +119,7 @@ const winLossClass = computed(() => {
 })
 
 const onUpdateItemsPerPage = (count: number): void => {
-  setStocksPerPage(count)
+  settings.setStocksPerPage(count)
 }
 const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
@@ -138,8 +142,8 @@ onBeforeUpdate(() => {
 onMounted(async () => {
   log('COMPANY_CONTENT: onMounted')
   const requiredOnlineData = async (page: number = 1) => {
-    if ((records.stocks.active[stocksPerPage * page].mPortfolio ?? 0) >= 1) {
-      await records.stocks.loadOnlineData(Math.ceil(stocksPerPage * page / stocksPerPage) + 1)
+    if ((records.stocks.active[stocksPerPage.value * page].mPortfolio ?? 0) >= 1) {
+      await records.stocks.loadOnlineData(Math.ceil(stocksPerPage.value * page / stocksPerPage.value) + 1)
       await requiredOnlineData(page + 1)
     }
   }
@@ -155,7 +159,7 @@ onMounted(async () => {
   if (!loadedStocksPages.has(stocksPage)) {
     setIsDownloading(true)
     loading.value = true
-    await records.stocks.loadOnlineData(stocksPage)
+    await records.stocks.loadOnlineData(stocksPage.value)
     await requiredOnlineData()
     loading.value = false
     setIsDownloading(false)

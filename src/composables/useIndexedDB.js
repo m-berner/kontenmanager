@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { useApp } from '@/composables/useApp';
 import { useSettingsStore } from '@/stores/settings';
+import { storeToRefs } from 'pinia';
 const { CONS, log } = useApp();
 let dbPromise = null;
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
@@ -244,16 +245,17 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
     async function getDatabaseStores() {
         log('INDEXED_DB: getDatabaseStores');
-        const { activeAccountId } = useSettingsStore();
+        const settings = useSettingsStore();
+        const { activeAccountId } = storeToRefs(settings);
         const accountsDB = await getAll(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
         const allBookings = await getAll(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
         const allBookingTypes = await getAll(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
         const allStocks = await getAll(CONS.INDEXED_DB.STORES.STOCKS.NAME);
         return {
             accountsDB,
-            bookingsDB: allBookings.filter(b => b.cAccountNumberID === activeAccountId),
-            bookingTypesDB: allBookingTypes.filter(bt => bt.cAccountNumberID === activeAccountId),
-            stocksDB: allStocks.filter(s => s.cAccountNumberID === activeAccountId)
+            bookingsDB: allBookings.filter(b => b.cAccountNumberID === activeAccountId.value),
+            bookingTypesDB: allBookingTypes.filter(bt => bt.cAccountNumberID === activeAccountId.value),
+            stocksDB: allStocks.filter(s => s.cAccountNumberID === activeAccountId.value)
         };
     }
     async function countByIndex(storeName, indexName, value) {

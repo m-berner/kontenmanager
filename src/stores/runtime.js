@@ -14,9 +14,9 @@ export const useRuntimeStore = defineStore('runtime', function () {
     const curUsd = ref(1);
     const curEur = ref(1);
     const stocksPage = ref(1);
-    const loadedStocksPages = new Set();
     const isCompanyPage = ref(false);
     const isDownloading = ref(false);
+    const loadedStocksPages = new Set();
     function setIsDownloading(v) {
         isDownloading.value = v;
     }

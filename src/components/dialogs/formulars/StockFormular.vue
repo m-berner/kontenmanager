@@ -15,6 +15,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useFetch} from '@/composables/useFetch'
 import {useDebounce} from '@/composables/useDebounce'
+import {storeToRefs} from 'pinia'
 
 interface IStockFormularProps {
   isUpdate: boolean
@@ -27,6 +28,7 @@ const {log} = useApp()
 const {isinRules} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
+const {activeId} = storeToRefs(runtime)
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
@@ -45,8 +47,8 @@ const {debouncedFunction: debouncedIsin} = useDebounce(onUpdateISIN, 400)
 onMounted(() => {
   log('STOCK_FORMULAR: onMounted')
   if (stockFormularProps.isUpdate) {
-    const currentStock = records.stocks.getItemById(runtime.activeId)
-    stockFormularData.id = runtime.activeId
+    const currentStock = records.stocks.getItemById(activeId.value)
+    stockFormularData.id = activeId.value
     stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g, '')
     stockFormularData.company = currentStock.cCompany
     stockFormularData.symbol = currentStock.cSymbol

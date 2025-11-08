@@ -19,6 +19,7 @@ import {useTheme} from 'vuetify'
 import {RouterView} from 'vue-router'
 import AlertOverlay from '@/components/AlertOverlay.vue'
 import {useI18n} from 'vue-i18n'
+import {storeToRefs} from 'pinia'
 
 const {CONS, log} = useApp()
 const {t} = useI18n()
@@ -39,23 +40,25 @@ onBeforeMount(async () => {
     const {clearStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
     const db = await getDB()
     const runtime = useRuntimeStore()
+    const {curUsd, curEur} = storeToRefs(runtime)
     const settings = useSettingsStore()
+    const {exchanges} = storeToRefs(settings)
     const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
-    const curEur = `${cur}${CONS.CURRENCIES.EUR}`
-    const curUsd = `${cur}${CONS.CURRENCIES.USD}`
+    const CUREUR = `${cur}${CONS.CURRENCIES.EUR}`
+    const CURUSD = `${cur}${CONS.CURRENCIES.USD}`
     const storesDB = await getDatabaseStores()
     await records.init(storesDB, MESSAGES)
-    const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
+    const exchangesBaseData: IExchangeData[] = await fetchExchangesData([CURUSD, CUREUR])
     for (let i = 0; i < exchangesBaseData.length; i++) {
       if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
-        runtime.curUsd = exchangesBaseData[i].value
+        curUsd.value = exchangesBaseData[i].value
       } else {
-        runtime.curEur = exchangesBaseData[i].value
+        curEur.value = exchangesBaseData[i].value
       }
     }
-    const exchangesInfoData: IExchangeData[] = await fetchExchangesData(settings.exchanges)
-    for (let i = 0; i < settings.exchanges.length; i++) {
-      runtime.infoExchanges.set(settings.exchanges[i], exchangesInfoData[i].value)
+    const exchangesInfoData: IExchangeData[] = await fetchExchangesData(exchanges.value)
+    for (let i = 0; i < exchanges.value.length; i++) {
+      runtime.infoExchanges.set(exchanges.value[i], exchangesInfoData[i].value)
     }
     const indexesInfoData: IExchangeData[] = await fetchIndexData()
     for (let i = 0; i < indexesInfoData.length; i++) {
@@ -97,19 +100,19 @@ onBeforeMount(async () => {
           settings.setSkin(theme, changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
-          settings.service = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue)
+          settings.setService(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
-          settings.indexes = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue)
+          settings.setIndexes(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
-          settings.markets = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue)
+          settings.setMarkets(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
-          settings.materials = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue)
+          settings.setMaterials(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue)
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
-          settings.exchanges = (changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue)
+          settings.setExchanges(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue)
           break
         default:
       }

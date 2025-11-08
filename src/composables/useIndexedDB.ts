@@ -18,6 +18,7 @@ import type {
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
+import {storeToRefs} from 'pinia'
 
 const {CONS, log} = useApp()
 
@@ -314,7 +315,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 
     async function getDatabaseStores(): Promise<IStores_DB> {
         log('INDEXED_DB: getDatabaseStores')
-        const {activeAccountId} = useSettingsStore()
+        const settings = useSettingsStore()
+        const {activeAccountId} = storeToRefs(settings)
         const accountsDB = await getAll<IAccount_DB>(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
         const allBookings = await getAll<IBooking_DB>(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
         const allBookingTypes = await getAll<IBookingType_DB>(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
@@ -322,9 +324,9 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 
         return {
             accountsDB,
-            bookingsDB: allBookings.filter(b => b.cAccountNumberID === activeAccountId),
-            bookingTypesDB: allBookingTypes.filter(bt => bt.cAccountNumberID === activeAccountId),
-            stocksDB: allStocks.filter(s => s.cAccountNumberID === activeAccountId)
+            bookingsDB: allBookings.filter(b => b.cAccountNumberID === activeAccountId.value),
+            bookingTypesDB: allBookingTypes.filter(bt => bt.cAccountNumberID === activeAccountId.value),
+            stocksDB: allStocks.filter(s => s.cAccountNumberID === activeAccountId.value)
         }
     }
 

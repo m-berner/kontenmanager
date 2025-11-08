@@ -15,6 +15,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useAlertStore} from '@/stores/alerts'
+import {storeToRefs} from 'pinia'
 
 interface OptionMenuProps {
   recordID: number
@@ -28,6 +29,7 @@ const {remove: removeBooking} = useBookingsDB()
 const {remove: removeStock} = useStocksDB()
 const {rt, t} = useI18n()
 const runtime = useRuntimeStore()
+const {optionMenuColors} = storeToRefs(runtime)
 const records = useRecordsStore()
 const {info} = useAlertStore()
 
@@ -38,14 +40,17 @@ const MESSAGES = Object.freeze({
 
 const onButtonClick = async (): Promise<void> => {
   log('OPTION_MENU: onButtonClick', {info: optionMenuProps.recordID})
-  for (const m of runtime.optionMenuColors.keys()) {
-    runtime.optionMenuColors.set(m, '')
+  for (const m of optionMenuColors.value.keys()) {
+    optionMenuColors.value.set(m, '')
   }
-  runtime.optionMenuColors.set(optionMenuProps.recordID, 'green')
+  optionMenuColors.value.set(optionMenuProps.recordID, 'green')
 }
+
 const onIconClick = async (ev: Event): Promise<void> => {
   log('OPTION_MENU: onIconClick', {info: optionMenuProps.recordID})
-  runtime.activeId = (optionMenuProps.recordID)
+  runtime.activeId = optionMenuProps.recordID
+  const {items: bookingItems} = storeToRefs(records.bookings)
+  const {items: stockItems} = storeToRefs(records.stocks)
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
@@ -60,8 +65,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         records.bookings.remove(optionMenuProps.recordID)
         await removeBooking(optionMenuProps.recordID)
         await notice([t('dialogs.deleteBooking.success')])
-        for (const m of runtime.optionMenuColors.keys()) {
-          runtime.optionMenuColors.set(m, '')
+        for (const m of optionMenuColors.value.keys()) {
+          optionMenuColors.value.set(m, '')
         }
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
@@ -72,7 +77,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
-        const deleteAble = records.bookings.items.filter((booking) => {
+        const deleteAble = bookingItems.value.filter((booking) => {
           return optionMenuProps.recordID === booking.cStockID
         })
         if (deleteAble.length === 0) {
@@ -82,8 +87,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         } else {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_DELETE, null)
         }
-        for (const m of runtime.optionMenuColors.keys()) {
-          runtime.optionMenuColors.set(m, '')
+        for (const m of optionMenuColors.value.keys()) {
+          optionMenuColors.value.set(m, '')
         }
         break
       case CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND:
@@ -94,7 +99,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         break
       case CONS.COMPONENTS.DIALOGS.OPEN_LINK:
-        window.open(records.stocks.items[records.stocks.getIndexById(optionMenuProps.recordID)].cURL)
+        window.open(stockItems.value[records.stocks.getIndexById(optionMenuProps.recordID)].cURL)
         break
       default:
         loop += 1
@@ -107,7 +112,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
 }
 
 onMounted(() => {
-  runtime.optionMenuColors.set(optionMenuProps.recordID, '')
+  optionMenuColors.value.set(optionMenuProps.recordID, '')
 })
 </script>
 

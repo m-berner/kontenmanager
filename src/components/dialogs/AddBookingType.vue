@@ -15,6 +15,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useRecordsStore} from '@/stores/records'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -22,7 +23,8 @@ const {notice} = useBrowser()
 const {add} = useBookingTypesDB()
 const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
-const {activeAccountId} = useSettingsStore()
+const settings = useSettingsStore()
+const {activeAccountId} = storeToRefs(settings)
 
 const formName = ref<string>('')
 const formRef = ref<HTMLFormElement | null>(null)
@@ -38,7 +40,7 @@ const onClickOk = async (): Promise<void> => {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const bookingType = {
         cName: formName.value.trim(),
-        cAccountNumberID: activeAccountId
+        cAccountNumberID: activeAccountId.value
       }
       const addBookingTypeID: number = await add(bookingType)
       if (addBookingTypeID > 1) {

@@ -18,8 +18,8 @@ import {useAlertStore} from '@/stores/alerts.ts'
 const {CONS, log, haveSameStrings} = useApp()
 const {t} = useI18n()
 const alertStore = useAlertStore()
-const {currentAlert, pendingCount} = storeToRefs(alertStore)
-const {dismissAlert, info} = alertStore
+const {currentAlert} = storeToRefs(alertStore)
+const {dismissAlert, info, pendingCount} = alertStore
 
 const MESSAGES = Object.freeze({
   INFO_TITLE: t('appPage.messages.infoTitle'),
