@@ -104,24 +104,6 @@ export function useValidation() {
         ]
     }
 
-    // function isValidCredit(msgArray: string[], debit: number): TStringValidator[] {
-    //     return [
-    //         (v: string) => {
-    //             const result = (toNumber(v) >= 0 && debit === 0) || (toNumber(v) <= 0 && debit > 0)
-    //             return result || msgArray[0]
-    //         }
-    //     ]
-    // }
-    //
-    // function isValidDebit(msgArray: string[], credit: number): TStringValidator[] {
-    //     return [
-    //         (v: string) => {
-    //             const result = (toNumber(v) >= 0 && credit === 0) || (toNumber(v) <= 0 && credit > 0)
-    //             return result || msgArray[0]
-    //         }
-    //     ]
-    // }
-
     function isValidCredit(msgArray: string[], debitValue: Ref<number> | number): TNumberValidator[] {
         return [
             (v: number) => {

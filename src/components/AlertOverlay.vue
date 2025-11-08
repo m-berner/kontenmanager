@@ -5,67 +5,69 @@
   -
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
+<script setup>
+import {computed, onMounted} from 'vue'
+import {useApp} from '@/composables/useApp.ts'
+import {useBrowser} from '@/composables/useBrowser.ts'
+import {useSettings} from '@/composables/useSettings.ts'
+import {useTheme} from 'vuetify'
+import {useI18n} from 'vue-i18n'
+import {storeToRefs} from 'pinia'
+import {useAlertStore} from '@/stores/alerts.ts'
+
+const {CONS, log, haveSameStrings} = useApp()
+const {t} = useI18n()
+const alertStore = useAlertStore()
+const {currentAlert, pendingCount} = storeToRefs(alertStore)
+const {dismissAlert, info} = alertStore
+
+const MESSAGES = Object.freeze({
+  INFO_TITLE: t('appPage.messages.infoTitle'),
+  CORRUPT_STORAGE: t('appPage.messages.corruptStorage')
+})
+
+const showOverlay = computed(() => currentAlert.value.id > -1)
+const alertType = computed(() => currentAlert.value?.type || 'info')
+const alertTitle = computed(() => currentAlert.value?.title || '')
+const alertMessage = computed(() => currentAlert.value?.message || '')
+
+onMounted(async () => {
+  log('ALERT_OVERLAY: onMounted')
+  const theme = useTheme()
+  const {getStorage} = useBrowser()
+  const storage = await getStorage()
+  const settings = useSettings()
+  if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
+    settings.init(theme, storage)
+  } else {
+    info(MESSAGES.INFO_TITLE, MESSAGES.CORRUPT_STORAGE, null)
+  }
+})
+
+log('--- AlertOverlay.vue setup ---')
+</script>
+
 <template>
   <v-overlay
       v-model="showOverlay"
       class="align-center justify-center"
-      persistent
-  >
+      persistent>
     <v-card
         class="mx-auto"
-        max-width="500"
-    >
+        max-width="500">
       <v-card-text class="pa-6">
         <v-alert
             :title="alertTitle"
             :type="alertType"
             closable
             variant="tonal"
-            @click:close="dismiss">
+            @click:close="dismissAlert(currentAlert?.id)">
           {{ alertMessage }}
         </v-alert>
       </v-card-text>
-
-      <!--<v-card-actions class="px-6 pb-6">
-        <v-spacer />
-        <v-btn
-            color="grey-darken-1"
-            variant="text"
-            @click="dismiss"
-        >
-          Close
-        </v-btn>
-        <v-btn
-            color="primary"
-            variant="elevated"
-            @click="dismiss"
-        >
-          Confirm
-        </v-btn>
-      </v-card-actions>
-
       <v-card-text v-if="pendingCount > 0" class="text-center text-caption pb-4">
         {{ pendingCount }} more alert{{ pendingCount !== 1 ? 's' : '' }} pending
-      </v-card-text>-->
+      </v-card-text>
     </v-card>
   </v-overlay>
 </template>
-
-<script setup>
-import {computed} from 'vue'
-import {useAlert} from '@/composables/useAlert.ts'
-
-const {currentAlert, dismissAlert} = useAlert()
-
-const showOverlay = computed(() => !!currentAlert.value)
-
-const alertType = computed(() => currentAlert.value?.type || 'info')
-const alertTitle = computed(() => currentAlert.value?.title || '')
-const alertMessage = computed(() => currentAlert.value?.message || '')
-
-const dismiss = () => {
-  if (currentAlert.value) {
-    dismissAlert(currentAlert.value.id)
-  }
-}
-</script>

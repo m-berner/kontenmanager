@@ -19,8 +19,8 @@ log('--- FooterBar.vue setup ---')
 <template>
   <v-bottom-navigation color="primary">
     <v-btn color="white">
-      <a class="router-link-active"
-         :href="CONS.SYSTEM.HELP_URL"
+      <a :href="CONS.SYSTEM.HELP_URL"
+         class="router-link-active"
          rel="noopener noreferrer"
          target="_blank">
         <v-icon icon="$help"/>

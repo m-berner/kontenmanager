@@ -20,13 +20,11 @@ import {computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
-import {useAlert} from '@/composables/useAlert'
+import {useAlertStore} from '@/stores/alerts'
 import {useFetch} from '@/composables/useFetch'
 import {useRuntime} from '@/composables/useRuntime'
-//import {useStocksDB} from '@/composables/useIndexedDB'
 
 const {CONS, isoDate, toNumber, utcDate, log} = useApp()
-const alert = useAlert()
 const {activeAccountId} = useSettings()
 
 const useStocksStore = defineStore('stocks', function () {
@@ -505,6 +503,7 @@ export const useRecordsStore = defineStore('records', function () {
         log('RECORDS: init')
         const {activeAccountId} = useSettings()
         const {setStorage} = useBrowser()
+        const {info} = useAlertStore()
         const stocksOnlyMemory: IStock_Memory = {
             mPortfolio: 0,
             mInvest: 0,
@@ -581,10 +580,9 @@ export const useRecordsStore = defineStore('records', function () {
             cAskDates: CONS.DATE.DEFAULT_ISO
         }, true)
         bookingTypesStore.add({cID: 0, cName: '', cAccountNumberID: activeAccountId.value}, true)
-
         //
         if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
-            alert.info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null)
+            info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null)
             sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true')
         }
     }

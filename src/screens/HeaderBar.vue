@@ -14,7 +14,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import DialogPort from '@/components/DialogPort.vue'
 import {RouterLink, useRouter} from 'vue-router'
-import {useAlert} from '@/composables/useAlert'
+import {useAlertStore} from '@/stores/alerts'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -22,7 +22,7 @@ const {openOptionsPage} = useBrowser()
 const {isCompanyPage, setTeleport} = useRuntime()
 const records = useRecordsStore()
 const router = useRouter()
-const alert = useAlert()
+const {info} = useAlertStore()
 
 const MESSAGES = Object.freeze({
   INFO_TITLE: t('headerBar.messages.infoTitle'),
@@ -41,7 +41,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
     switch (elem!.id) {
       case CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK:
         if (records.stocks.passive.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.ALL_STOCKS_VISIBLE, null)
+          info(MESSAGES.INFO_TITLE, MESSAGES.ALL_STOCKS_VISIBLE, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK,
@@ -79,8 +79,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         })
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT:
-        if (records.bookingTypes.items.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
+        if (records.accounts.items.length === 0) {
+          info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
@@ -90,8 +90,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION:
-        if (records.bookingTypes.items.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
+        if (records.accounts.items.length === 0) {
+          info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
@@ -101,8 +101,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE:
-        if (records.bookingTypes.items.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
+        if (records.accounts.items.length === 0) {
+          info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
@@ -112,8 +112,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE:
-        if (records.bookingTypes.items.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
+        if (records.bookingTypes.items.length < 2) {
+          info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE,
@@ -123,8 +123,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
-        if (records.bookingTypes.items.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
+        if (records.bookingTypes.items.length < 2) {
+          info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
@@ -134,8 +134,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING:
-        if (records.bookingTypes.items.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
+        if (records.accounts.items.length === 0) {
+          info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
@@ -145,8 +145,8 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE:
-        if (records.bookings.items.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.NOTHING_TO_EXPORT, null)
+        if (records.accounts.items.length === 0) {
+          info(MESSAGES.INFO_TITLE, MESSAGES.NOTHING_TO_EXPORT, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
@@ -164,7 +164,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING:
         if (records.bookings.items.length === 0) {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.SHOW_ACCOUNTING, null)
+          info(MESSAGES.INFO_TITLE, MESSAGES.SHOW_ACCOUNTING, null)
         } else {
           setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING,
@@ -225,6 +225,21 @@ log('--- HeaderBar.vue setup ---')
         </template>
       </v-tooltip>
     </RouterLink>
+    <v-spacer/>
+    <v-tooltip
+        v-if="isCompanyPage"
+        :text="t('headerBar.updateQuote')"
+        location="top">
+      <template v-slot:activator="{ props }">
+        <v-app-bar-nav-icon
+            :id="CONS.COMPONENTS.DIALOGS.UPDATE_QUOTE"
+            icon="$reload"
+            size="large"
+            v-bind="props"
+            variant="tonal"
+            @click="onIconClick"/>
+      </template>
+    </v-tooltip>
     <v-spacer/>
     <v-tooltip
         v-if="isCompanyPage"
@@ -401,7 +416,6 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        v-if="!isCompanyPage"
         :text="t('headerBar.settings')"
         location="top">
       <template v-slot:activator="{ props }">

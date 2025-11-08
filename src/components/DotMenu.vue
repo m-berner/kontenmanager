@@ -14,7 +14,7 @@ import {useRuntime} from '@/composables/useRuntime'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
-import {useAlert} from '@/composables/useAlert'
+import {useAlertStore} from '@/stores/alerts'
 
 interface OptionMenuProps {
   recordID: number
@@ -29,7 +29,7 @@ const {remove: removeStock} = useStocksDB()
 const {rt, t} = useI18n()
 const runtime = useRuntime()
 const records = useRecordsStore()
-const alert = useAlert()
+const {info} = useAlertStore()
 
 const MESSAGES = Object.freeze({
   INFO_TITLE: t('appPage.messages.infoTitle'),
@@ -80,7 +80,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
           await removeStock(optionMenuProps.recordID)
           await notice([t('dialogs.deleteStock.success')])
         } else {
-          alert.info(MESSAGES.INFO_TITLE, MESSAGES.NO_DELETE, null)
+          info(MESSAGES.INFO_TITLE, MESSAGES.NO_DELETE, null)
         }
         for (const m of runtime.optionMenuColors.value.keys()) {
           runtime.optionMenuColors.value.set(m, '')

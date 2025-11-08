@@ -12,7 +12,6 @@ import {useApp} from '@/composables/useApp'
 import {useRuntime} from '@/composables/useRuntime'
 import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
-import {useDebounce} from '@/composables/useDebounce'
 import {useFetch} from '@/composables/useFetch'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
@@ -20,12 +19,10 @@ import {useTheme} from 'vuetify'
 import {RouterView} from 'vue-router'
 import AlertOverlay from '@/components/AlertOverlay.vue'
 import {useI18n} from 'vue-i18n'
-import {useAlert} from '@/composables/useAlert'
 
-const {CONS, haveSameStrings, log} = useApp()
+const {CONS, log} = useApp()
 const {t} = useI18n()
 const records = useRecordsStore()
-const alert = useAlert()
 
 const MESSAGES = Object.freeze({
   INFO_TITLE: t('appPage.messages.infoTitle'),
@@ -33,25 +30,19 @@ const MESSAGES = Object.freeze({
   CORRUPT_STORAGE: t('appPage.messages.corruptStorage')
 })
 
+// TODO erfolgsmeldung update buchung, ID mit text ersetzen
 onBeforeMount(async () => {
   try {
     const theme = useTheme()
     const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch()
     const {getDB, getDatabaseStores} = useIndexedDB()
-    const {clearStorage, getStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
+    const {clearStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
     const db = await getDB()
     const runtime = useRuntime()
     const settings = useSettings()
-    const storage = await getStorage()
     const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
     const curEur = `${cur}${CONS.CURRENCIES.EUR}`
     const curUsd = `${cur}${CONS.CURRENCIES.USD}`
-
-    if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
-      settings.init(theme, storage)
-    } else {
-      alert.info(MESSAGES.INFO_TITLE, MESSAGES.CORRUPT_STORAGE, null)
-    }
     const storesDB = await getDatabaseStores()
     await records.init(storesDB, MESSAGES)
     const exchangesBaseData: IExchangeData[] = await fetchExchangesData([curUsd, curEur])
@@ -75,25 +66,28 @@ onBeforeMount(async () => {
       runtime.infoMaterials.value.set(materialsInfoData[i].key, materialsInfoData[i].value)
     }
     const keyStrokeController: string[] = []
-    const handleSearch = async (query: string) => {
-      keyStrokeController.push(query)
-      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && query === 'r') {
+    const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
+      if (!keyStrokeController.includes(ev.key)) {
+        keyStrokeController.push(ev.key)
+      }
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'r') {
         await clearStorage()
         await installStorageLocal()
       }
-      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && query === 'd' && Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0) {
-        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
-      }
-      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && query === 'd' && !(Number.parseInt(localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG) ?? '0') > 0)) {
-        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd') {
+        const debugValue = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
+        if (debugValue !== '1') {
+          localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
+        } else {
+          localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
+        }
       }
     }
-    const {debouncedFunction: debouncedSearch} = useDebounce(handleSearch, 100)
-    const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
-      debouncedSearch(ev.key)
-    }
-    const onKeyUp = (): void => {
-      keyStrokeController.length = 0
+    const onKeyUp = (ev: KeyboardEvent): void => {
+      const index = keyStrokeController.indexOf(ev.key)
+      if (index > -1) {
+        keyStrokeController.splice(index, 1)
+      }
     }
     const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }): void => {
       log('APP_INDEX: changeHandler')

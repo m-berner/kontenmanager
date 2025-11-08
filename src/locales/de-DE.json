@@ -12,7 +12,7 @@
   "headerBar": {
     "home": "Startseite",
     "company": "Aktien-Unternehmen",
-    "reload": "Kurse aktualisieren",
+    "updateQuote": "Kurse aktualisieren",
     "addBookingType": "Buchungstyp hinzufügen",
     "deleteBookingType": "Buchungstyp entfernen",
     "updateBookingType": "Buchungstyp aktualisieren",

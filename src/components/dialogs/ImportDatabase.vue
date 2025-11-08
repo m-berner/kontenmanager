@@ -26,7 +26,7 @@ import {useSettings} from '@/composables/useSettings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
-import {useAlert} from '@/composables/useAlert'
+import {useAlertStore} from '@/stores/alerts'
 
 interface IStock_SM {
   cID: number
@@ -84,7 +84,7 @@ const {clear: clearAllBookingTypes, batchImport: importBookingTypes} = useBookin
 const {clear: clearAllStocks, batchImport: importStocks} = useStocksDB()
 const {resetTeleport} = useRuntime()
 const {activeAccountId} = useSettings()
-const alert = useAlert()
+const {info} = useAlertStore()
 
 const MESSAGES = Object.freeze({
   INFO_TITLE: t('appPage.messages.infoTitle'),
@@ -151,13 +151,13 @@ const onClickOk = async (): Promise<void> => {
         return result
       }
       if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
-        alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.INVALID, null)
+        info(MESSAGES.IMPORT_TITLE, MESSAGES.INVALID, null)
         return
       } else if (backupObject.sm.cDBVersion < CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
-        alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.VERSION, null)
+        info(MESSAGES.IMPORT_TITLE, MESSAGES.VERSION, null)
         return
       } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && records.accounts.items.length > 0) {
-        alert.info(MESSAGES.IMPORT_TITLE, MESSAGES.NOT_EMPTY, null)
+        info(MESSAGES.IMPORT_TITLE, MESSAGES.NOT_EMPTY, null)
         return
       } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && records.accounts.items.length === 0) {
         records.clean()

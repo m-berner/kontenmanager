@@ -20,6 +20,7 @@ const router = useRouter()
 const PRIVACY = [
   {title: 'privacyContent.general.title', data: 'privacyContent.general.data'}
 ]
+
 const formatData = computed(() => (dataStr: string): IContent[] => {
   const data = []
   for (let i = 0; i < Object.keys(tm(`${dataStr}.subTitle`)).length; i++) {
