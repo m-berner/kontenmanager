@@ -5,6 +5,9 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+export type TStorageChange = {
+    [key: string]: browser.storage.StorageChange
+}
 
 export interface IBookingType_DB {
     cID: number

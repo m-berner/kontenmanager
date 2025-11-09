@@ -21,7 +21,6 @@ import {useSettingsStore} from '@/stores/settings'
 import {storeToRefs} from 'pinia'
 
 const {CONS, log} = useApp()
-
 // Single global database promise
 let dbPromise: Promise<IDBDatabase> | null = null
 

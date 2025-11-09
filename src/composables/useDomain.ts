@@ -5,7 +5,6 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-
 import type {Ref} from 'vue'
 import {computed} from 'vue'
 

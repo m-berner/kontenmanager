@@ -7,5 +7,5 @@ export function useDebounce(func, delay) {
     const cancel = () => {
         clearTimeout(timeoutId);
     };
-    return {debouncedFunction, cancel};
+    return { debouncedFunction, cancel };
 }

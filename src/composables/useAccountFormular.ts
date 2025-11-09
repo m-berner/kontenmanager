@@ -15,16 +15,16 @@ interface IAccount_Formular {
     withDepot: boolean
 }
 
-const accountFormularData = reactive<IAccount_Formular>({
-    id: 0,
-    swift: '',
-    iban: '',
-    logoUrl: '',
-    withDepot: false
-})
-const formRef = ref<HTMLFormElement | null>(null)
-
 export function useAccountFormular() {
+    const accountFormularData = reactive<IAccount_Formular>({
+        id: 0,
+        swift: '',
+        iban: '',
+        logoUrl: '',
+        withDepot: false
+    })
+    const formRef = ref<HTMLFormElement | null>(null)
+
     return {
         formRef,
         accountFormularData

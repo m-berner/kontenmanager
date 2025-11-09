@@ -5,6 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {TStorageChange} from '@/types.d'
 import {useApp} from '@/composables/useApp'
 import {computed} from 'vue'
 
@@ -12,11 +13,8 @@ const {CONS} = useApp()
 
 export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(CONS.PAGES.INDEX))
-
     const manifest = computed(() => browser.runtime.getManifest())
-
     const uiLanguage = computed(() => browser.i18n.getUILanguage())
-
     const locale5 = computed(() => {
         const defaultLanguage = navigator.languages[0]
         let result = ''
@@ -83,9 +81,7 @@ export function useBrowser() {
         }
     }
 
-    async function addStorageChangedListener(callback: (_changes: {
-        [key: string]: browser.storage.StorageChange
-    }) => void) {
+    async function addStorageChangedListener(callback: (_changes: TStorageChange) => void) {
         browser.storage.local.onChanged.addListener(callback)
         // Return cleanup function
         return () => browser.storage.local.onChanged.removeListener(callback)

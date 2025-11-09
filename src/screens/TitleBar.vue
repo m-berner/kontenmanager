@@ -31,12 +31,6 @@ const MESSAGES = Object.freeze({
   RESTRICTED_IMPORT: t('appPage.messages.restrictedImport')
 })
 
-const onUpdateTitleBar = async (): Promise<void> => {
-  log('TITLE_BAR onUpdateTitleBar')
-  const storesDB = await getDatabaseStores()
-  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-  await records.init(storesDB, MESSAGES)
-}
 const logoUrl = computed((): string => {
   const ind = records.accounts.getIndexById(activeAccountId.value)
   const {items: accountItems} = storeToRefs(records.accounts)
@@ -52,6 +46,13 @@ const balance = computed((): string => {
 const depot = computed((): string => {
   return n(records.stocks.sumDepot(), 'currency')
 })
+
+const onUpdateTitleBar = async (): Promise<void> => {
+  log('TITLE_BAR onUpdateTitleBar')
+  const storesDB = await getDatabaseStores()
+  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+  await records.init(storesDB, MESSAGES)
+}
 
 log('--- TitleBar.vue setup ---')
 </script>

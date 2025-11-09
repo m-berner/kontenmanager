@@ -8,7 +8,7 @@
 import type {Ref} from 'vue'
 import {useRecordsStore} from '@/stores/records'
 
-export type TStringValidator = (_v: string) => boolean | string
+type TStringValidator = (_v: string) => boolean | string
 type TNumberValidator = (_v: number) => boolean | string
 
 export function useValidation() {

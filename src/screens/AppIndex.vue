@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IExchangeData} from '@/types'
+import type {IExchangeData, TStorageChange} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -68,31 +68,7 @@ onBeforeMount(async () => {
     for (let i = 0; i < materialsInfoData.length; i++) {
       runtime.infoMaterials.set(materialsInfoData[i].key, materialsInfoData[i].value)
     }
-    const keyStrokeController: string[] = []
-    const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
-      if (!keyStrokeController.includes(ev.key)) {
-        keyStrokeController.push(ev.key)
-      }
-      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'r') {
-        await clearStorage()
-        await installStorageLocal()
-      }
-      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd') {
-        const debugValue = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
-        if (debugValue !== '1') {
-          localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
-        } else {
-          localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
-        }
-      }
-    }
-    const onKeyUp = (ev: KeyboardEvent): void => {
-      const index = keyStrokeController.indexOf(ev.key)
-      if (index > -1) {
-        keyStrokeController.splice(index, 1)
-      }
-    }
-    const changeHandler = (changes: { [key: string]: browser.storage.StorageChange }): void => {
+    const changeHandler = (changes: TStorageChange): void => {
       log('APP_INDEX: changeHandler')
       const changesKey = Object.keys(changes)
       switch (changesKey[0]) {
@@ -118,6 +94,30 @@ onBeforeMount(async () => {
       }
     }
     const removeStorageChangedListener = await addStorageChangedListener(changeHandler)
+    const keyStrokeController: string[] = []
+    const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
+      if (!keyStrokeController.includes(ev.key)) {
+        keyStrokeController.push(ev.key)
+      }
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'r') {
+        await clearStorage()
+        await installStorageLocal()
+      }
+      if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd') {
+        const debugValue = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
+        if (debugValue !== '1') {
+          localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
+        } else {
+          localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
+        }
+      }
+    }
+    const onKeyUp = (ev: KeyboardEvent): void => {
+      const index = keyStrokeController.indexOf(ev.key)
+      if (index > -1) {
+        keyStrokeController.splice(index, 1)
+      }
+    }
     const onBeforeUnload = (): void => {
       log('APP_INDEX: onBeforeUnload')
       removeStorageChangedListener()

@@ -1,5 +1,4 @@
-import {computed, ref} from 'vue';
-
+import { computed, ref } from 'vue';
 export function useFavicon(domain, size = 48) {
     const error = ref(false);
     const loading = ref(true);
@@ -12,23 +11,19 @@ export function useFavicon(domain, size = 48) {
         }
         return '';
     });
-
     function onLoad() {
         loading.value = false;
     }
-
     function onError() {
         if (!error.value) {
             error.value = true;
             loading.value = false;
         }
     }
-
     function reset() {
         error.value = false;
         loading.value = true;
     }
-
     return {
         faviconUrl,
         loading,
