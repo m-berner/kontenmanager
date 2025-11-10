@@ -17,12 +17,13 @@ import type {
 } from '@/types.d'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
-import {useSettingsStore} from '@/stores/settings'
-import {storeToRefs} from 'pinia'
+//import {useSettingsStore} from '@/stores/settings'
+//import {storeToRefs} from 'pinia'
 
 const {CONS, log} = useApp()
 // Single global database promise
 let dbPromise: Promise<IDBDatabase> | null = null
+console.error('DB', dbPromise)
 
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
     const isConnected = ref<boolean>(false)
@@ -78,6 +79,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     function closeDB(): void {
+        log('USE_INDEXED_DB: closeDB', {info: dbPromise})
         if (dbPromise) {
             dbPromise.then(db => {
                 db.close()
@@ -87,8 +89,10 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         }
     }
 
-    async function getDB(): Promise<IDBDatabase> {
+    async function openDB(): Promise<IDBDatabase> {
+        log('USE_INDEXED_DB: openDB', {info: dbPromise})
         if (!dbPromise) {
+            console.error('NO DB!')
             isLoading.value = true
             error.value = null
 
@@ -134,7 +138,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function add<T>(storeName: string, data: T): Promise<number> {
-        const db = await getDB()
+        const db = await openDB()
+        console.error('add', db)
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.add(data)
@@ -148,7 +153,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function get<T>(storeName: string, key: number): Promise<T> {
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const request = store.get(key)
@@ -162,7 +167,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function getAll<T>(storeName: string): Promise<T[]> {
-        const db = await getDB()
+        const db = await openDB()
+        console.error('getAll', db)
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const request = store.getAll()
@@ -176,7 +182,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function update<T>(storeName: string, data: T): Promise<IDBValidKey> {
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.put(data)
@@ -190,7 +196,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function remove(storeName: string, key: number): Promise<void> {
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.delete(key)
@@ -204,7 +210,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function clear(storeName: string): Promise<void> {
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.clear()
@@ -218,7 +224,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function batchOperations(storeName: string, operations: IRecords_DB[]): Promise<unknown[]> {
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
 
@@ -255,7 +261,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function getAllByIndex<T>(storeName: string, indexName: string, value: number | string): Promise<T[]> {
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const index = store.index(indexName)
@@ -282,7 +288,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     async function deleteDatabaseWithAccount(accountId: number): Promise<void> {
         log('INDEXED_DB: deleteDatabaseWithAccount')
 
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction([
             CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
             CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
@@ -312,25 +318,54 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    async function getDatabaseStores(): Promise<IStores_DB> {
-        log('INDEXED_DB: getDatabaseStores')
-        const settings = useSettingsStore()
-        const {activeAccountId} = storeToRefs(settings)
-        const accountsDB = await getAll<IAccount_DB>(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
-        const allBookings = await getAll<IBooking_DB>(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
-        const allBookingTypes = await getAll<IBookingType_DB>(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
-        const allStocks = await getAll<IStock_DB>(CONS.INDEXED_DB.STORES.STOCKS.NAME)
+    async function getDatabaseStores(accountId: number): Promise<IStores_DB> {
+        log('USE_INDEXED_DB: getDatabaseStores')
+        const db = await openDB()
+        const tx = db.transaction([
+            CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
+            CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
+            CONS.INDEXED_DB.STORES.STOCKS.NAME,
+            CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+        ], 'readonly')
 
-        return {
-            accountsDB,
-            bookingsDB: allBookings.filter(b => b.cAccountNumberID === activeAccountId.value),
-            bookingTypesDB: allBookingTypes.filter(bt => bt.cAccountNumberID === activeAccountId.value),
-            stocksDB: allStocks.filter(s => s.cAccountNumberID === activeAccountId.value)
+        const accountsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
+        const bookingsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
+        const bookingTypesStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
+        const stocksStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME)
+
+        const requestAccounts = accountsStoreDB.getAll()
+        const requestBookings = bookingsStoreDB.getAll()
+        const requestBookingTypes = bookingTypesStoreDB.getAll()
+        const requestStocks = stocksStoreDB.getAll()
+
+        const results: IStores_DB = {
+            accountsDB: [],
+            bookingsDB: [],
+            bookingTypesDB: [],
+            stocksDB: []
         }
+        requestAccounts.onsuccess = () => {
+            results.accountsDB = [...requestAccounts.result]
+        }
+        requestBookings.onsuccess = () => {
+            results.bookingsDB = [...requestBookings.result.filter(b => b.cAccountNumberID === accountId)]
+        }
+        requestBookingTypes.onsuccess = () => {
+            results.bookingTypesDB = [...requestBookingTypes.result.filter(bt => bt.cAccountNumberID === accountId)]
+        }
+        requestStocks.onsuccess = () => {
+            results.stocksDB = [...requestStocks.result.filter(s => s.cAccountNumberID === accountId)]
+        }
+        return new Promise((resolve, reject) => {
+            tx.oncomplete = () => {
+                resolve({accountsDB: results.accountsDB, bookingsDB: results.bookingsDB, bookingTypesDB: results.bookingTypesDB, stocksDB: results.stocksDB})
+            }
+            tx.onerror = () => reject(tx.error)
+        })
     }
 
     async function countByIndex(storeName: string, indexName: string, value: number | string): Promise<number> {
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const index = store.index(indexName)
@@ -348,7 +383,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         indexName?: string,
         range?: IDBKeyRange
     ): Promise<void> {
-        const db = await getDB()
+        const db = await openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const source = indexName ? store.index(indexName) : store
@@ -372,7 +407,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         isConnected,
         error,
         isLoading,
-        getDB,
+        openDB,
         closeDB,
         countByIndex,
         add,
@@ -390,19 +425,19 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 }
 
 function useDBStore<T>(storeName: string) {
-    const db = useIndexedDB()
+    const dbi = useIndexedDB()
 
     return {
-        isConnected: db.isConnected,
-        error: db.error,
-        isLoading: db.isLoading,
+        isConnected: dbi.isConnected,
+        error: dbi.error,
+        isLoading: dbi.isLoading,
 
-        add: (data: Omit<T, 'cID'>) => db.add(storeName, data),
-        getAll: () => db.getAll<T>(storeName),
-        update: (data: T) => db.update(storeName, data),
-        remove: (id: number) => db.remove(storeName, id),
-        clear: () => db.clear(storeName),
-        batchImport: (batch: IRecords_DB[]) => db.batchOperations(storeName, batch)
+        add: (data: Omit<T, 'cID'>) => dbi.add(storeName, data),
+        getAll: () => dbi.getAll<T>(storeName),
+        update: (data: T) => dbi.update(storeName, data),
+        remove: (id: number) => dbi.remove(storeName, id),
+        clear: () => dbi.clear(storeName),
+        batchImport: (batch: IRecords_DB[]) => dbi.batchOperations(storeName, batch)
     }
 }
 

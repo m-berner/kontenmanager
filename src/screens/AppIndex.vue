@@ -21,7 +21,7 @@ import AlertOverlay from '@/components/AlertOverlay.vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 
-const {CONS, log} = useApp()
+const {CONS, haveSameStrings, log} = useApp()
 const {t} = useI18n()
 const records = useRecordsStore()
 
@@ -36,17 +36,22 @@ onBeforeMount(async () => {
   try {
     const theme = useTheme()
     const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch()
-    const {getDB, getDatabaseStores} = useIndexedDB()
-    const {clearStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
-    const db = await getDB()
+    const {closeDB, getDatabaseStores} = useIndexedDB()
+    const {clearStorage, getStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
+    const storage = await getStorage()
+    const settings = useSettingsStore()
     const runtime = useRuntimeStore()
     const {curUsd, curEur} = storeToRefs(runtime)
-    const settings = useSettingsStore()
     const {exchanges} = storeToRefs(settings)
     const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
     const CUREUR = `${cur}${CONS.CURRENCIES.EUR}`
     const CURUSD = `${cur}${CONS.CURRENCIES.USD}`
-    const storesDB = await getDatabaseStores()
+    if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
+      settings.init(theme, storage)
+    } else {
+      console.error('corrupt Storage!')
+    }
+    const storesDB = await getDatabaseStores(settings.activeAccountId)
     await records.init(storesDB, MESSAGES)
     const exchangesBaseData: IExchangeData[] = await fetchExchangesData([CURUSD, CUREUR])
     for (let i = 0; i < exchangesBaseData.length; i++) {
@@ -121,7 +126,8 @@ onBeforeMount(async () => {
     const onBeforeUnload = (): void => {
       log('APP_INDEX: onBeforeUnload')
       removeStorageChangedListener()
-      db.close()
+      //db.close()
+      closeDB()
     }
     window.addEventListener('keydown', onKeyDown, false)
     window.addEventListener('keyup', onKeyUp, false)

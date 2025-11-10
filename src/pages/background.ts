@@ -7,7 +7,7 @@
  */
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import {useIndexedDB} from '@/composables/useIndexedDB'
+//import {useIndexedDB} from '@/composables/useIndexedDB'
 
 const {CONS, log} = useApp()
 
@@ -21,13 +21,13 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
         tabsUpdate,
         windowsUpdate
     } = useBrowser()
-    const {getDB} = useIndexedDB()
+    //const {getDB} = useIndexedDB()
     // NOTE: onInstall runs at the installation or update of the add-on. And it runs on firefox update.
     const onInstall = async (): Promise<void> => {
         log('BACKGROUND: onInstall')
         await installStorageLocal()
-        const db = await getDB()
-        db.close()
+        //const db = await openDB()
+        //db.close()
     }
     const onClick = async (): Promise<void> => {
         log('BACKGROUND: onClick')

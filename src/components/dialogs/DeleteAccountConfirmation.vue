@@ -36,11 +36,12 @@ const onClickOk = async (): Promise<void> => {
   try {
     await deleteDatabaseWithAccount(activeAccountId.value)
     records.bookings.set([])
+    //TODO bookingTypes, stocks!!!!
     records.accounts.remove(activeAccountId.value)
     settings.setActiveAccountId(-1)
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     if (accountItems.value.length > 0) {
-      const storesDB = await getDatabaseStores()
+      const storesDB = await getDatabaseStores(-1)
       await records.init(storesDB, MESSAGES)
     }
     resetTeleport()

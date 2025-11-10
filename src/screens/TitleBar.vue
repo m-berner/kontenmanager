@@ -49,7 +49,8 @@ const depot = computed((): string => {
 
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLE_BAR onUpdateTitleBar')
-  const storesDB = await getDatabaseStores()
+  const settings = useSettingsStore()
+  const storesDB = await getDatabaseStores(settings.activeAccountId)
   await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
   await records.init(storesDB, MESSAGES)
 }

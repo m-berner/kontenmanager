@@ -1,9 +1,8 @@
 import { ref } from 'vue';
 import { useApp } from '@/composables/useApp';
-import { useSettingsStore } from '@/stores/settings';
-import { storeToRefs } from 'pinia';
 const { CONS, log } = useApp();
 let dbPromise = null;
+console.error('DB', dbPromise);
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
     const isConnected = ref(false);
     const error = ref(null);
@@ -47,6 +46,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         }
     }
     function closeDB() {
+        log('USE_INDEXED_DB: closeDB', { info: dbPromise });
         if (dbPromise) {
             dbPromise.then(db => {
                 db.close();
@@ -55,8 +55,10 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             });
         }
     }
-    async function getDB() {
+    async function openDB() {
+        log('USE_INDEXED_DB: openDB', { info: dbPromise });
         if (!dbPromise) {
+            console.error('NO DB!');
             isLoading.value = true;
             error.value = null;
             dbPromise = new Promise((resolve, reject) => {
@@ -93,7 +95,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         return dbPromise;
     }
     async function add(storeName, data) {
-        const db = await getDB();
+        const db = await openDB();
+        console.error('add', db);
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.add(data);
@@ -105,7 +108,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         });
     }
     async function get(storeName, key) {
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const request = store.get(key);
@@ -117,7 +120,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         });
     }
     async function getAll(storeName) {
-        const db = await getDB();
+        const db = await openDB();
+        console.error('getAll', db);
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const request = store.getAll();
@@ -129,7 +133,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         });
     }
     async function update(storeName, data) {
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.put(data);
@@ -141,7 +145,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         });
     }
     async function remove(storeName, key) {
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.delete(key);
@@ -153,7 +157,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         });
     }
     async function clear(storeName) {
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.clear();
@@ -165,7 +169,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         });
     }
     async function batchOperations(storeName, operations) {
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const promises = operations.map(op => {
@@ -198,7 +202,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         return Promise.all(promises);
     }
     async function getAllByIndex(storeName, indexName, value) {
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const index = store.index(indexName);
@@ -220,7 +224,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
     async function deleteDatabaseWithAccount(accountId) {
         log('INDEXED_DB: deleteDatabaseWithAccount');
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction([
             CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
             CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
@@ -243,23 +247,51 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             tx.onerror = () => reject(tx.error);
         });
     }
-    async function getDatabaseStores() {
-        log('INDEXED_DB: getDatabaseStores');
-        const settings = useSettingsStore();
-        const { activeAccountId } = storeToRefs(settings);
-        const accountsDB = await getAll(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
-        const allBookings = await getAll(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
-        const allBookingTypes = await getAll(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
-        const allStocks = await getAll(CONS.INDEXED_DB.STORES.STOCKS.NAME);
-        return {
-            accountsDB,
-            bookingsDB: allBookings.filter(b => b.cAccountNumberID === activeAccountId.value),
-            bookingTypesDB: allBookingTypes.filter(bt => bt.cAccountNumberID === activeAccountId.value),
-            stocksDB: allStocks.filter(s => s.cAccountNumberID === activeAccountId.value)
+    async function getDatabaseStores(accountId) {
+        log('USE_INDEXED_DB: getDatabaseStores');
+        const db = await openDB();
+        const tx = db.transaction([
+            CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
+            CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
+            CONS.INDEXED_DB.STORES.STOCKS.NAME,
+            CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+        ], 'readonly');
+        const accountsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
+        const bookingsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
+        const bookingTypesStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
+        const stocksStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME);
+        const requestAccounts = accountsStoreDB.getAll();
+        const requestBookings = bookingsStoreDB.getAll();
+        const requestBookingTypes = bookingTypesStoreDB.getAll();
+        const requestStocks = stocksStoreDB.getAll();
+        const results = {
+            accountsDB: [],
+            bookingsDB: [],
+            bookingTypesDB: [],
+            stocksDB: []
         };
+        requestAccounts.onsuccess = () => {
+            results.accountsDB = [...requestAccounts.result];
+        };
+        requestBookings.onsuccess = () => {
+            results.bookingsDB = [...requestBookings.result.filter(b => b.cAccountNumberID === accountId)];
+        };
+        requestBookingTypes.onsuccess = () => {
+            results.bookingTypesDB = [...requestBookingTypes.result.filter(bt => bt.cAccountNumberID === accountId)];
+        };
+        requestStocks.onsuccess = () => {
+            results.stocksDB = [...requestStocks.result.filter(s => s.cAccountNumberID === accountId)];
+        };
+        return new Promise((resolve, reject) => {
+            tx.oncomplete = () => {
+                console.error('re', results);
+                resolve({ accountsDB: results.accountsDB, bookingsDB: results.bookingsDB, bookingTypesDB: results.bookingTypesDB, stocksDB: results.stocksDB });
+            };
+            tx.onerror = () => reject(tx.error);
+        });
     }
     async function countByIndex(storeName, indexName, value) {
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const index = store.index(indexName);
@@ -270,7 +302,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         });
     }
     async function processWithCursor(storeName, callback, indexName, range) {
-        const db = await getDB();
+        const db = await openDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const source = indexName ? store.index(indexName) : store;
@@ -293,7 +325,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         isConnected,
         error,
         isLoading,
-        getDB,
+        openDB,
         closeDB,
         countByIndex,
         add,
@@ -310,17 +342,17 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     };
 }
 function useDBStore(storeName) {
-    const db = useIndexedDB();
+    const dbi = useIndexedDB();
     return {
-        isConnected: db.isConnected,
-        error: db.error,
-        isLoading: db.isLoading,
-        add: (data) => db.add(storeName, data),
-        getAll: () => db.getAll(storeName),
-        update: (data) => db.update(storeName, data),
-        remove: (id) => db.remove(storeName, id),
-        clear: () => db.clear(storeName),
-        batchImport: (batch) => db.batchOperations(storeName, batch)
+        isConnected: dbi.isConnected,
+        error: dbi.error,
+        isLoading: dbi.isLoading,
+        add: (data) => dbi.add(storeName, data),
+        getAll: () => dbi.getAll(storeName),
+        update: (data) => dbi.update(storeName, data),
+        remove: (id) => dbi.remove(storeName, id),
+        clear: () => dbi.clear(storeName),
+        batchImport: (batch) => dbi.batchOperations(storeName, batch)
     };
 }
 export function useAccountsDB() {

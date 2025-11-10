@@ -9,8 +9,6 @@
 import {computed, onMounted} from 'vue'
 import {useApp} from '@/composables/useApp.ts'
 import {useBrowser} from '@/composables/useBrowser.ts'
-import {useSettingsStore} from '@/stores/settings.ts'
-import {useTheme} from 'vuetify'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useAlertStore} from '@/stores/alerts.ts'
@@ -33,13 +31,9 @@ const alertMessage = computed(() => currentAlert.value?.message || '')
 
 onMounted(async () => {
   log('ALERT_OVERLAY: onMounted')
-  const theme = useTheme()
   const {getStorage} = useBrowser()
   const storage = await getStorage()
-  const settings = useSettingsStore()
-  if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
-    settings.init(theme, storage)
-  } else {
+  if (!haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
     info(MESSAGES.INFO_TITLE, MESSAGES.CORRUPT_STORAGE, null)
   }
 })

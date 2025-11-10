@@ -1,15 +1,11 @@
 import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
-import { useIndexedDB } from '@/composables/useIndexedDB';
 const { CONS, log } = useApp();
 if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
     const { actionOnClicked, installStorageLocal, runtimeOnInstalled, tabsCreate, tabsQuery, tabsUpdate, windowsUpdate } = useBrowser();
-    const { getDB } = useIndexedDB();
     const onInstall = async () => {
         log('BACKGROUND: onInstall');
         await installStorageLocal();
-        const db = await getDB();
-        db.close();
     };
     const onClick = async () => {
         log('BACKGROUND: onClick');

@@ -250,6 +250,7 @@ const useAccountsStore = defineStore('accounts', function () {
     }
 
     function clean() {
+        log('ACCOUNTS_STORE: clean')
         items.value.length = 0
     }
 
@@ -390,6 +391,7 @@ const useBookingsStore = defineStore('bookings', function () {
     }
 
     function clean(): void {
+        log('BOOKINGS_STORE: clean')
         items.value.length = 0
     }
 
@@ -419,6 +421,7 @@ const useBookingsStore = defineStore('bookings', function () {
 })
 
 const useBookingTypesStore = defineStore('bookingTypes', function () {
+
     const items = ref<IBookingType_Store[]>([])
 
     const getNameById = computed(() => (ident: number): string => {
@@ -492,6 +495,7 @@ export const useRecordsStore = defineStore('records', function () {
     const bookingsStore = useBookingsStore()
     const bookingTypesStore = useBookingTypesStore()
     const stocksStore = useStocksStore()
+    console.error(accountsStore, bookingsStore, bookingTypesStore, stocksStore)
 
     function clean(all = true) {
         log('RECORDS: clean')
@@ -504,7 +508,7 @@ export const useRecordsStore = defineStore('records', function () {
     }
 
     async function init(storesDB: IStores_DB, messages: Record<string, string>, removeAccounts = true): Promise<void> {
-        log('RECORDS: init')
+        log('RECORDS: init', {info: storesDB})
         const settings = useSettingsStore()
         const {activeAccountId} = storeToRefs(settings)
         const {setStorage} = useBrowser()
@@ -535,7 +539,7 @@ export const useRecordsStore = defineStore('records', function () {
             })
         }
         const load = (stores: IStores_Store) => {
-            log('RECORDS: load')
+            log('RECORDS: load', {info: stores})
             //const {activeAccountId} = useSettingsStore()
 
             for (const entry of stores.accounts) {

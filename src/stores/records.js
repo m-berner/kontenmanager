@@ -211,6 +211,7 @@ const useAccountsStore = defineStore('accounts', function () {
         }
     }
     function clean() {
+        log('ACCOUNTS_STORE: clean');
         items.value.length = 0;
     }
     return {
@@ -345,6 +346,7 @@ const useBookingsStore = defineStore('bookings', function () {
         }
     }
     function clean() {
+        log('BOOKINGS_STORE: clean');
         items.value.length = 0;
     }
     function set(bookings) {
@@ -438,6 +440,7 @@ export const useRecordsStore = defineStore('records', function () {
     const bookingsStore = useBookingsStore();
     const bookingTypesStore = useBookingTypesStore();
     const stocksStore = useStocksStore();
+    console.error(accountsStore, bookingsStore, bookingTypesStore, stocksStore);
     function clean(all = true) {
         log('RECORDS: clean');
         if (all) {
@@ -448,7 +451,7 @@ export const useRecordsStore = defineStore('records', function () {
         stocksStore.clean();
     }
     async function init(storesDB, messages, removeAccounts = true) {
-        log('RECORDS: init');
+        log('RECORDS: init', { info: storesDB });
         const settings = useSettingsStore();
         const { activeAccountId } = storeToRefs(settings);
         const { setStorage } = useBrowser();
@@ -479,7 +482,7 @@ export const useRecordsStore = defineStore('records', function () {
             })
         };
         const load = (stores) => {
-            log('RECORDS: load');
+            log('RECORDS: load', { info: stores });
             for (const entry of stores.accounts) {
                 accountsStore.add(entry);
             }
