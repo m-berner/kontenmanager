@@ -18,6 +18,7 @@ import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import {useRecordsStore} from '@/stores/records'
 import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
+import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -26,7 +27,7 @@ const {add} = useAccountsDB()
 const {validateForm} = useValidation()
 const {resetTeleport} = useRuntimeStore()
 const {accountFormularData, formRef} = useAccountFormular()
-const {setActiveAccountId} = useSettingsStore()
+const settings = useSettingsStore()
 const records = useRecordsStore()
 
 const reset = (): void => {
@@ -43,6 +44,7 @@ const onClickOk = async (): Promise<void> => {
   if (!await validateForm(formRef)) return
 
   try {
+    const {activeAccountId} = storeToRefs(settings)
     const account = {
       cSwift: accountFormularData.swift.trim().toUpperCase(),
       cIban: accountFormularData.iban.replace(/\s/g, ''),
@@ -53,7 +55,7 @@ const onClickOk = async (): Promise<void> => {
     if (addAccountID > -1) {
       const completeAccount: IAccount_Store = {cID: addAccountID, ...account}
       records.accounts.add(completeAccount)
-      setActiveAccountId(addAccountID)
+      activeAccountId.value = addAccountID
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
       records.clean(false)
       resetTeleport()

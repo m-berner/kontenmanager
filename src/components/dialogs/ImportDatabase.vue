@@ -84,12 +84,14 @@ const {clear: clearAllBookings, batchImport: importBookings} = useBookingsDB()
 const {clear: clearAllBookingTypes, batchImport: importBookingTypes} = useBookingTypesDB()
 const {clear: clearAllStocks, batchImport: importStocks} = useStocksDB()
 const {resetTeleport} = useRuntimeStore()
-const {setActiveAccountId} = useSettingsStore()
+const settings = useSettingsStore()
 const {info} = useAlertStore()
 
-const MESSAGES = Object.freeze({
+const MESSAGES_INIT = Object.freeze({
   INFO_TITLE: t('appPage.messages.infoTitle'),
-  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport'),
+  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport')
+})
+const MESSAGES = Object.freeze({
   IMPORT_TITLE: t('dialogs.importDatabase.title'),
   VERSION: t('dialogs.importDatabase.version'),
   NOT_EMPTY: t('dialogs.importDatabase.notEmpty'),
@@ -111,19 +113,21 @@ const onClickOk = async (): Promise<void> => {
   }
   const onReaderLoaded = async (): Promise<void> => {
     log('IMPORT_DATABASE: onFileLoaded')
+    const STOCKMANAGER_RESTORE_ACCOUNT_ID = 1
+    const {activeAccountId} = storeToRefs(settings)
     const {items: accountItems} = storeToRefs(records.accounts)
     const accountsImportData: IRecords_DB[] = []
     const bookingsImportData: IRecords_DB[] = []
     const bookingTypesImportData: IRecords_DB[] = []
     const stocksImportData: IRecords_DB[] = []
     const accountsStoreData: IAccount_DB[] = []
-    const bookingsDbData: IBooking_DB[] = []
+    const bookingsStoreData: IBooking_DB[] = []
     const bookingTypesStoreData: IBookingType_DB[] = []
     const stocksStoreData: IStock_DB[] = []
     if (typeof fr.result === 'string') {
       const backupObject: IBackup = JSON.parse(fr.result)
-      const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : 1
-      setActiveAccountId(activeId)
+      const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : STOCKMANAGER_RESTORE_ACCOUNT_ID
+      activeAccountId.value = activeId
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
       const getCreditDebit = (rec: IBooking_SM): number => {
         let result: number
@@ -162,12 +166,12 @@ const onClickOk = async (): Promise<void> => {
       } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length > 0) {
         info(MESSAGES.IMPORT_TITLE, MESSAGES.NOT_EMPTY, null)
         return
-      } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length === 0) {
-        records.clean()
-        await clearAllAccounts()
-        await clearAllBookings()
-        await clearAllBookingTypes()
-        await clearAllStocks()
+      }
+      await clearAllAccounts()
+      await clearAllBookings()
+      await clearAllBookingTypes()
+      await clearAllStocks()
+      if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length === 0) {
         const accountRecords = [{
           cID: activeId,
           cSwift: 'KMKLPJJ9',
@@ -231,15 +235,10 @@ const onClickOk = async (): Promise<void> => {
           booking.cMarketPlace = smTransfer.cMarketPlace
           booking.cDebit = smTransfer.cType === 1 || smTransfer.cType === 5 ? getCreditDebit(smTransfer) : 0
           booking.cCredit = smTransfer.cType === 2 || smTransfer.cType === 3 || smTransfer.cType === 4 ? getCreditDebit(smTransfer) : 0
-          bookingsDbData.push(booking)
+          bookingsStoreData.push(booking)
           bookingsImportData.push({type: 'add', data: booking, key: -1})
         }
       } else if (backupObject.sm.cDBVersion > CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
-        records.clean()
-        await clearAllAccounts()
-        await clearAllBookings()
-        await clearAllBookingTypes()
-        await clearAllStocks()
         for (const rec of backupObject.accounts) {
           accountsStoreData.push(rec)
           accountsImportData.push({type: 'add', data: rec, key: -1})
@@ -253,7 +252,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypesImportData.push({type: 'add', data: rec, key: -1})
         }
         for (const rec of backupObject.bookings) {
-          bookingsDbData.push(rec)
+          bookingsStoreData.push(rec)
           bookingsImportData.push({type: 'add', data: rec, key: -1})
         }
       } else {
@@ -261,10 +260,10 @@ const onClickOk = async (): Promise<void> => {
       }
       records.init({
         accountsDB: accountsStoreData,
-        bookingsDB: bookingsDbData.filter(rec => rec.cAccountNumberID === activeId),
+        bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeId),
         bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeId),
         stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeId)
-      }, MESSAGES)
+      }, MESSAGES_INIT)
       await importAccounts(accountsImportData)
       await importBookingTypes(bookingTypesImportData)
       await importBookings(bookingsImportData)

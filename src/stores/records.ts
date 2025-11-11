@@ -19,7 +19,7 @@ import {defineStore, storeToRefs} from 'pinia'
 import {computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
-import {useBrowser} from '@/composables/useBrowser'
+//import {useBrowser} from '@/composables/useBrowser'
 import {useAlertStore} from '@/stores/alerts'
 import {useFetch} from '@/composables/useFetch'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -502,11 +502,11 @@ export const useRecordsStore = defineStore('records', function () {
         stocksStore.clean()
     }
 
-    async function init(storesDB: IStores_DB, messages: Record<string, string>, removeAccounts = true): Promise<void> {
+    async function init(storesDB: IStores_DB, messages: {INFO_TITLE: string, RESTRICTED_IMPORT: string}, removeAccounts = true): Promise<void> {
         log('RECORDS: init', {info: storesDB})
         const settings = useSettingsStore()
         const {activeAccountId} = storeToRefs(settings)
-        const {setStorage} = useBrowser()
+        //const {setStorage} = useBrowser()
         const {info} = useAlertStore()
         const stocksOnlyMemory: IStock_Memory = {
             mPortfolio: 0,
@@ -563,13 +563,13 @@ export const useRecordsStore = defineStore('records', function () {
                 return dateB - dateA
             })
         }
-
+        //
+        // if (activeAccountId.value === -1 && storesDB.accountsDB.length > 0) {
+        //     activeAccountId.value = storesDB.accountsDB[0].cID
+        //     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+        // }
         clean(removeAccounts)
         load(stores)
-        if (activeAccountId.value > -1 && storesDB.accountsDB.length > 0) {
-            settings.setActiveAccountId(storesDB.accountsDB[0].cID)
-            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-        }
         stocksStore.add({
             cID: 0,
             cISIN: 'XX0000000000',

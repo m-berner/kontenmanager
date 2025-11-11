@@ -76,24 +76,28 @@ onBeforeMount(async () => {
     const changeHandler = (changes: TStorageChange): void => {
       log('APP_INDEX: changeHandler')
       const changesKey = Object.keys(changes)
+      const {service, skin, indexes, markets, materials, exchanges} = storeToRefs(settings)
       switch (changesKey[0]) {
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN:
-          settings.setSkin(theme, changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue)
+          if (theme?.global?.name) {
+            theme.global.name.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue
+          }
+          skin.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
-          settings.setService(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue)
+          service.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
-          settings.setIndexes(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue)
+          indexes.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
-          settings.setMarkets(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue)
+          markets.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
-          settings.setMaterials(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue)
+          materials.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue
           break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
-          settings.setExchanges(changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue)
+          exchanges.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue
           break
         default:
       }

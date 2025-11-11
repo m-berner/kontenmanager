@@ -26,41 +26,6 @@ export const useSettingsStore = defineStore('settings', function () {
     const indexes = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
     const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
 
-    function setStocksPerPage(v: number) {
-        stocksPerPage.value = v
-    }
-
-    function setService(v: string) {
-        service.value = v
-    }
-
-    function setIndexes(v: string[]) {
-        indexes.value = v
-    }
-
-    function setMaterials(v: string[]) {
-        materials.value = v
-    }
-
-    function setMarkets(v: string[]) {
-        markets.value = v
-    }
-
-    function setExchanges(v: string[]) {
-        exchanges.value = v
-    }
-
-    function setBookingsPerPage(v: number) {
-        bookingsPerPage.value = v
-    }
-
-    function setSkin(theme: ThemeInstance, value: string) {
-        if (theme?.global?.name) {
-            theme.global.name.value = value
-        }
-        skin.value = value
-    }
-
     function init(theme: ThemeInstance, storage: { [p: string]: string | number | boolean | string[] }): void {
         theme.global.name.value = storage.sSkin as string
         skin.value = storage.sSkin as string
@@ -77,10 +42,6 @@ export const useSettingsStore = defineStore('settings', function () {
         exchanges.value = [...storage.sExchanges as string[]]
     }
 
-    function setActiveAccountId(v: number) {
-        activeAccountId.value = v
-    }
-
     return {
         skin,
         bookingsPerPage,
@@ -94,15 +55,6 @@ export const useSettingsStore = defineStore('settings', function () {
         markets,
         indexes,
         exchanges,
-        setActiveAccountId,
-        setService,
-        setIndexes,
-        setMaterials,
-        setMarkets,
-        setExchanges,
-        setStocksPerPage,
-        setBookingsPerPage,
-        setSkin,
         init
     }
 })

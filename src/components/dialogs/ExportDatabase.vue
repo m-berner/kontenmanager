@@ -12,6 +12,7 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
+import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -27,6 +28,7 @@ const localeText = t('dialogs.exportDialog', {filename: fn})
 
 const onClickOk = async (): Promise<void> => {
   log('EXPORT_DATABASE : onClickOk')
+  const {resetTeleport} = useRuntimeStore()
   const accounts: IAccount_DB[] = await getAllAccounts()
   const bookings: IBooking_DB[] = await getAllBookings()
   const stocks: IStock_DB[] = await getAllStocks()
@@ -80,6 +82,7 @@ const onClickOk = async (): Promise<void> => {
   buffer += stringifyDB()
   buffer += '}'
   await writeBufferToFile(buffer, fn)
+  resetTeleport()
 }
 const title = t('dialogs.exportToFile.title')
 defineExpose({onClickOk, title})

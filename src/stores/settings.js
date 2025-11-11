@@ -15,33 +15,6 @@ export const useSettingsStore = defineStore('settings', function () {
     const markets = ref(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS);
     const indexes = ref(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES);
     const exchanges = ref(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES);
-    function setStocksPerPage(v) {
-        stocksPerPage.value = v;
-    }
-    function setService(v) {
-        service.value = v;
-    }
-    function setIndexes(v) {
-        indexes.value = v;
-    }
-    function setMaterials(v) {
-        materials.value = v;
-    }
-    function setMarkets(v) {
-        markets.value = v;
-    }
-    function setExchanges(v) {
-        exchanges.value = v;
-    }
-    function setBookingsPerPage(v) {
-        bookingsPerPage.value = v;
-    }
-    function setSkin(theme, value) {
-        if (theme?.global?.name) {
-            theme.global.name.value = value;
-        }
-        skin.value = value;
-    }
     function init(theme, storage) {
         theme.global.name.value = storage.sSkin;
         skin.value = storage.sSkin;
@@ -57,9 +30,6 @@ export const useSettingsStore = defineStore('settings', function () {
         indexes.value = [...storage.sIndexes];
         exchanges.value = [...storage.sExchanges];
     }
-    function setActiveAccountId(v) {
-        activeAccountId.value = v;
-    }
     return {
         skin,
         bookingsPerPage,
@@ -73,15 +43,6 @@ export const useSettingsStore = defineStore('settings', function () {
         markets,
         indexes,
         exchanges,
-        setActiveAccountId,
-        setService,
-        setIndexes,
-        setMaterials,
-        setMarkets,
-        setExchanges,
-        setStocksPerPage,
-        setBookingsPerPage,
-        setSkin,
         init
     };
 });

@@ -24,6 +24,7 @@ const {isCompanyPage, isDownloading} = storeToRefs(runtime)
 const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
+const  {activeAccountId} = storeToRefs(settings)
 
 const MESSAGES = Object.freeze({
   INFO_TITLE: t('appPage.messages.infoTitle'),
@@ -31,7 +32,7 @@ const MESSAGES = Object.freeze({
 })
 
 const logoUrl = computed((): string => {
-  const ind = records.accounts.getIndexById(settings.activeAccountId)
+  const ind = records.accounts.getIndexById(activeAccountId.value)
   const {items: accountItems} = storeToRefs(records.accounts)
   if (ind > -1) {
     return accountItems.value[ind].cLogoUrl
@@ -48,8 +49,8 @@ const depot = computed((): string => {
 
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLE_BAR onUpdateTitleBar')
-  const storesDB = await getDatabaseStores(settings.activeAccountId)
-  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
+  const storesDB = await getDatabaseStores(activeAccountId.value)
+  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
   await records.init(storesDB, MESSAGES)
 }
 
@@ -78,8 +79,8 @@ log('--- TitleBar.vue setup ---')
         max-width="150"/>
     <v-spacer/>
     <v-select
-        v-if="settings.activeAccountId > 0"
-        v-model="settings.activeAccountId"
+        v-if="activeAccountId > 0"
+        v-model="activeAccountId"
         :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
         :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.accounts.items"

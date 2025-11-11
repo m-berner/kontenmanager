@@ -119,7 +119,8 @@ const winLossClass = computed(() => {
 })
 
 const onUpdateItemsPerPage = (count: number): void => {
-  settings.setStocksPerPage(count)
+  const {stocksPerPage} = storeToRefs(settings)
+  stocksPerPage.value = count
 }
 const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
