@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IStock_DB} from '@/types.d'
-import {defineExpose, onMounted} from 'vue'
+import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
@@ -29,7 +29,6 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
-const {activeId} = storeToRefs(runtime)
 const {stockFormularData, formRef} = useStockFormular()
 
 const onClickOk = async (): Promise<void> => {
@@ -60,25 +59,6 @@ const onClickOk = async (): Promise<void> => {
 }
 const title = t('dialogs.updateStock.title')
 defineExpose({onClickOk, title})
-
-onMounted(() => {
-  log('UPDATE_STOCK: onMounted')
-  const currentStock = records.stocks.getItemById(activeId.value)
-  if (currentStock !== undefined) {
-    Object.assign(stockFormularData, {
-      id: activeId.value,
-      isin: currentStock.cISIN.replace(/\s/g, '').toUpperCase(),
-      company: currentStock.cCompany,
-      symbol: currentStock.cSymbol,
-      meetingDay: currentStock.cMeetingDay,
-      quarterDay: currentStock.cQuarterDay,
-      fadeOut: currentStock.cFadeOut === 1,
-      firstPage: currentStock.cFirstPage === 1,
-      url: currentStock.cURL,
-      askDate: currentStock.cAskDates
-    })
-  } // TODO error notice for user
-})
 
 log('--- UpdateStock.vue setup ---')
 </script>

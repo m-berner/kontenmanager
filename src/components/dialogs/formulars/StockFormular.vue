@@ -54,7 +54,7 @@ onMounted(() => {
   if (stockFormularProps.isUpdate) {
     const currentStock = records.stocks.getItemById(activeId.value)
     stockFormularData.id = activeId.value
-    stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g, '')
+    stockFormularData.isin = currentStock.cISIN.toUpperCase().replace(/\s/g, '')
     stockFormularData.company = currentStock.cCompany
     stockFormularData.symbol = currentStock.cSymbol
     stockFormularData.meetingDay = currentStock.cMeetingDay

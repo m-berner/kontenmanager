@@ -22,22 +22,21 @@ interface IStock_Formular {
 }
 
 const {CONS} = useApp()
+const stockFormularData = reactive<IStock_Formular>({
+    id: -1,
+    isin: '',
+    company: '',
+    symbol: '',
+    meetingDay: '',
+    quarterDay: '',
+    fadeOut: false,
+    firstPage: false,
+    url: '',
+    askDates: CONS.DATE.DEFAULT_ISO
+})
+const formRef = ref<HTMLFormElement | null>(null)
 
 export function useStockFormular() {
-    const stockFormularData = reactive<IStock_Formular>({
-        id: -1,
-        isin: '',
-        company: '',
-        symbol: '',
-        meetingDay: '',
-        quarterDay: '',
-        fadeOut: false,
-        firstPage: false,
-        url: '',
-        askDates: CONS.DATE.DEFAULT_ISO
-    })
-    const formRef = ref<HTMLFormElement | null>(null)
-
     return {
         formRef,
         stockFormularData

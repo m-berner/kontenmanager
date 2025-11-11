@@ -80,7 +80,7 @@ const useStocksStore = defineStore('stocks', function () {
     }
 
     function update(stock: IStock_DB): void {
-        log('STOCKS_STORE: updateStock')
+        log('STOCKS_STORE: updateStock', {info: stock})
         const index = getIndexById.value(stock?.cID ?? -1)
         if (index !== -1) {
             const stocksOnlyMemory = {
