@@ -33,15 +33,14 @@ const MESSAGES = Object.freeze({
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
   const {items: accountItems} = storeToRefs(records.accounts)
-  console.error(activeAccountId.value)
   try {
     await deleteDatabaseWithAccount(activeAccountId.value)
     records.accounts.remove(activeAccountId.value)
     if (accountItems.value.length > 0) {
-      const aId = accountItems.value[0].cID
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, aId)
-      const storesDB = await getDatabaseStores(aId)
-      await records.init(storesDB, MESSAGES, false)
+      activeAccountId.value = accountItems.value[0].cID
+      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+      const storesDB = await getDatabaseStores(activeAccountId.value)
+      await records.init(storesDB, MESSAGES)
     } else {
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     }
