@@ -24,7 +24,7 @@ const {getStorage, setStorage} = useBrowser()
 
 const newItem = ref<string>('')
 const list = ref<string[]>([])
-const label = computed<string>((): string => {
+const label = computed<string>(() => {
   let resultLabel = 'Error'
   switch (dynamicListProps.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
@@ -37,7 +37,7 @@ const label = computed<string>((): string => {
   }
   return resultLabel
 })
-const title = computed((): string => {
+const title = computed<string>(() => {
   let resultTitle = 'Error'
   switch (dynamicListProps.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:

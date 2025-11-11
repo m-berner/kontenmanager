@@ -6,13 +6,14 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, ref, watch} from 'vue'
+import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useValidation} from '@/composables/useValidation'
 import {useFavicon} from '@/composables/useFavicon'
 import {useDomain} from '@/composables/useDomain'
 import {useAccountFormular} from '@/composables/useAccountFormular'
+import {useDebounce} from '@/composables/useDebounce'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -49,20 +50,13 @@ const onUpdateIban = (iban: string): void => {
   accountFormularData.iban = clean
   formattedIban.value = accountFormularData.iban.length > 1 ? ` / ${clean.replace(/(.{4})/g, '$1 ')}` : ''
 }
-// TODO useDebounce
-// Watch for logo search name changes with debouncing
-let logoTimeout: NodeJS.Timeout
-watch(formSearch, async () => {
-  log('ACCOUNT_FORMULAR: watch')
-  if (logoTimeout !== undefined) {
-    clearTimeout(logoTimeout)
-  }
-  logoTimeout = setTimeout(() => {
-    const {domain} = useDomain(formSearch)
-    const {faviconUrl} = useFavicon(domain.value ?? '')
-    accountFormularData.logoUrl = faviconUrl.value
-  }, 600)
-})
+
+const onSearch = () => {
+  const {domain} = useDomain(formSearch)
+  const {faviconUrl} = useFavicon(domain.value ?? '')
+  accountFormularData.logoUrl = faviconUrl.value
+}
+const {debouncedFunction: debouncedSearch} = useDebounce(onSearch, 500)
 
 log('--- AccountFormular.vue setup ---')
 </script>
@@ -91,7 +85,7 @@ log('--- AccountFormular.vue setup ---')
       autofocus
       variant="outlined"
       @focus="formRef?.resetValidation()"
-      @update:modelValue="onUpdateSwift"/>
+      @update:model-value="onUpdateSwift"/>
   <v-text-field
       v-model="accountFormularData.iban"
       :label="`${t('dialogs.addAccount.ibanLabel')}${formattedIban}`"
@@ -99,12 +93,13 @@ log('--- AccountFormular.vue setup ---')
       :rules="joinedIbanRules"
       variant="outlined"
       @focus="formRef?.resetValidation()"
-      @update:modelValue="onUpdateIban"/>
+      @update:model-value="onUpdateIban"/>
   <v-text-field
       v-model="formSearch"
       :label="t('dialogs.addAccount.searchLabel')"
       :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
-      variant="outlined"/>
+      variant="outlined"
+      @update:model-value="debouncedSearch"/>
   <!-- Logo Preview -->
   <div class="mb-4">
     <v-avatar class="me-3" color="white" size="48">

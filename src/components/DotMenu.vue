@@ -19,7 +19,7 @@ import {storeToRefs} from 'pinia'
 
 interface OptionMenuProps {
   recordID: number
-  menuItems: IMenuItem[]
+  menuItems: readonly IMenuItem[]
 }
 
 const optionMenuProps = defineProps<OptionMenuProps>()

@@ -27,7 +27,7 @@ const records = useRecordsStore()
 const {sumsPerPage} = useSettingsStore()
 const {CONS, log} = useApp()
 
-const sumsHeaders = computed<DataTableHeader[]>(() => [
+const sumsHeaders: readonly DataTableHeader[] = Object.freeze([
   {
     title: t('dialogs.showAccounting.nameLabel'),
     align: 'start',
@@ -86,7 +86,6 @@ const accountEntries = computed(() => {
 })
 
 const title = t('dialogs.showAccounting.title')
-
 defineExpose({title})
 
 log('--- ShowAccounting.vue setup ---')

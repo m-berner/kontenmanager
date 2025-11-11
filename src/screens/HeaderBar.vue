@@ -20,7 +20,8 @@ import {storeToRefs} from 'pinia'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {openOptionsPage} = useBrowser()
-const {isCompanyPage, setIsCompanyPage, setTeleport} = useRuntimeStore()
+const runtime = useRuntimeStore()
+const {isCompanyPage} = storeToRefs(runtime)
 const records = useRecordsStore()
 const router = useRouter()
 const {info} = useAlertStore()
@@ -47,7 +48,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (records.stocks.passive.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.ALL_STOCKS_VISIBLE, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK,
             dialogOk: true,
             dialogVisibility: true
@@ -55,28 +56,28 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.ADD_STOCK:
-        setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_STOCK,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
-        setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
-        setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.DELETE_STOCK,
           dialogOk: true,
           dialogVisibility: true
         })
         break
       case CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT:
-        setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT,
           dialogOk: true,
           dialogVisibility: true
@@ -86,7 +87,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
             dialogOk: true,
             dialogVisibility: true
@@ -97,7 +98,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
             dialogOk: true,
             dialogVisibility: true
@@ -108,7 +109,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
             dialogOk: true,
             dialogVisibility: true
@@ -119,7 +120,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (bookingTypeItems.value.length < 2) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE,
             dialogOk: true,
             dialogVisibility: true
@@ -130,7 +131,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (bookingTypeItems.value.length < 2) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
             dialogOk: true,
             dialogVisibility: true
@@ -141,7 +142,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
             dialogOk: true,
             dialogVisibility: true
@@ -152,7 +153,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (accountItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NOTHING_TO_EXPORT, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
             dialogOk: true,
             dialogVisibility: true
@@ -160,7 +161,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE:
-        setTeleport({
+        runtime.setTeleport({
           dialogName: CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE,
           dialogOk: true,
           dialogVisibility: true
@@ -170,7 +171,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (bookingItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.SHOW_ACCOUNTING, null)
         } else {
-          setTeleport({
+          runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING,
             dialogOk: false,
             dialogVisibility: true
@@ -191,7 +192,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
 }
 
 onUpdated(() => {
-  setIsCompanyPage(router.currentRoute.value.path.includes('company'))
+  isCompanyPage.value = router.currentRoute.value.path.includes('company')
 })
 
 log('--- HeaderBar.vue setup ---')

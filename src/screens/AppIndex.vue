@@ -22,34 +22,34 @@ import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 
 const {CONS, haveSameStrings, log} = useApp()
+const {notice} = useBrowser()
 const {t} = useI18n()
-const records = useRecordsStore()
-
-const MESSAGES = Object.freeze({
-  INFO_TITLE: t('appPage.messages.infoTitle'),
-  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport'),
-  CORRUPT_STORAGE: t('appPage.messages.corruptStorage')
-})
 
 // TODO erfolgsmeldung update buchung, ID mit text ersetzen
 onBeforeMount(async () => {
   try {
+    const MESSAGES = Object.freeze({
+      INFO_TITLE: t('appPage.messages.infoTitle'),
+      RESTRICTED_IMPORT: t('appPage.messages.restrictedImport'),
+      CORRUPT_STORAGE: t('appPage.messages.corruptStorage')
+    })
     const theme = useTheme()
-    const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch()
-    const {closeDB, getDatabaseStores} = useIndexedDB()
-    const {clearStorage, getStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
-    const storage = await getStorage()
+    const records = useRecordsStore()
     const settings = useSettingsStore()
     const runtime = useRuntimeStore()
     const {curUsd, curEur} = storeToRefs(runtime)
     const {exchanges} = storeToRefs(settings)
+    const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch()
+    const {closeDB, getDatabaseStores} = useIndexedDB()
+    const {clearStorage, getStorage, installStorageLocal, addStorageChangedListener, uiLanguage} = useBrowser()
+    const storage = await getStorage()
     const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
     const CUREUR = `${cur}${CONS.CURRENCIES.EUR}`
     const CURUSD = `${cur}${CONS.CURRENCIES.USD}`
     if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
       settings.init(theme, storage)
     } else {
-      console.error('corrupt Storage!')
+      await notice(['corrupt Storage!'])
     }
     const storesDB = await getDatabaseStores(settings.activeAccountId)
     await records.init(storesDB, MESSAGES)

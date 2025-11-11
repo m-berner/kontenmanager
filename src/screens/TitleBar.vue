@@ -19,7 +19,6 @@ import {storeToRefs} from 'pinia'
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
-const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {isCompanyPage, isDownloading} = storeToRefs(runtime)
 const {setStorage} = useBrowser()
@@ -32,7 +31,7 @@ const MESSAGES = Object.freeze({
 })
 
 const logoUrl = computed((): string => {
-  const ind = records.accounts.getIndexById(activeAccountId.value)
+  const ind = records.accounts.getIndexById(settings.activeAccountId)
   const {items: accountItems} = storeToRefs(records.accounts)
   if (ind > -1) {
     return accountItems.value[ind].cLogoUrl
@@ -49,9 +48,8 @@ const depot = computed((): string => {
 
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLE_BAR onUpdateTitleBar')
-  const settings = useSettingsStore()
   const storesDB = await getDatabaseStores(settings.activeAccountId)
-  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, settings.activeAccountId)
   await records.init(storesDB, MESSAGES)
 }
 
@@ -80,8 +78,8 @@ log('--- TitleBar.vue setup ---')
         max-width="150"/>
     <v-spacer/>
     <v-select
-        v-if="activeAccountId > 0"
-        v-model="activeAccountId"
+        v-if="settings.activeAccountId > 0"
+        v-model="settings.activeAccountId"
         :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
         :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.accounts.items"

@@ -2,7 +2,6 @@ import { ref } from 'vue';
 import { useApp } from '@/composables/useApp';
 const { CONS, log } = useApp();
 let dbPromise = null;
-console.error('DB', dbPromise);
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
     const isConnected = ref(false);
     const error = ref(null);
@@ -58,7 +57,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     async function openDB() {
         log('USE_INDEXED_DB: openDB', { info: dbPromise });
         if (!dbPromise) {
-            console.error('NO DB!');
             isLoading.value = true;
             error.value = null;
             dbPromise = new Promise((resolve, reject) => {
@@ -96,7 +94,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
     async function add(storeName, data) {
         const db = await openDB();
-        console.error('add', db);
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.add(data);
@@ -121,7 +118,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
     async function getAll(storeName) {
         const db = await openDB();
-        console.error('getAll', db);
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const request = store.getAll();
@@ -284,7 +280,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         };
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => {
-                console.error('re', results);
                 resolve({ accountsDB: results.accountsDB, bookingsDB: results.bookingsDB, bookingTypesDB: results.bookingTypesDB, stocksDB: results.stocksDB });
             };
             tx.onerror = () => reject(tx.error);

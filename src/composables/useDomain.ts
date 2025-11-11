@@ -23,7 +23,6 @@ export function useDomain(url: Ref<string | null>) {
             return null
         }
     })
-
     const subdomain = computed(() => {
         if (!url.value) return null
         try {

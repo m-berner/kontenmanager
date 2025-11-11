@@ -5,30 +5,29 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 
-interface IAlert {
+interface IVisibleAlert {
     id: number
     type: string
     title: string
     message: string
 }
 
-const defaultAlert = {id: -1, type: '', title: '', message: ''}
+const defaultAlert: IVisibleAlert = {id: -1, type: '', title: '', message: ''}
 const {log} = useApp()
 
 export const useAlertStore = defineStore('alert', () => {
-    const alerts = ref<IAlert[]>([])
-    const currentAlert = ref<IAlert>(defaultAlert)
+    const alerts = ref<IVisibleAlert[]>([])
+    const currentAlert = ref<IVisibleAlert>(defaultAlert)
 
     const pendingCount = computed(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1)
 
     function showAlert(type: string, title: string, message: string, duration: number | null = null) {
         const id = Date.now() + Math.random()
-        const alert: IAlert = {id, type, title, message}
+        const alert: IVisibleAlert = {id, type, title, message}
 
         alerts.value.push(alert)
 

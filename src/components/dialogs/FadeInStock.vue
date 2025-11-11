@@ -32,7 +32,6 @@ const onClickOk = async (): Promise<void> => {
   runtime.resetTeleport()
 }
 const title = t('dialogs.fadeInStock.title')
-
 defineExpose({onClickOk, title})
 
 onMounted(() => {

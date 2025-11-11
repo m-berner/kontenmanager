@@ -51,9 +51,7 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.deleteAccount.error')])
   }
 }
-
 const title = computed(() => t('dialogs.deleteAccount.title'))
-
 defineExpose({onClickOk, title})
 
 log('--- DeleteAccountConfirmation.vue setup ---')

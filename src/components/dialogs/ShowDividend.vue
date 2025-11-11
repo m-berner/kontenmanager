@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {DataTableHeader} from 'vuetify'
-import {computed, defineExpose} from 'vue'
+import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
@@ -20,7 +20,7 @@ const {dividendsPerPage} = useSettingsStore()
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
 
-const dividendsHeaders = computed<DataTableHeader[]>(() => [
+const dividendsHeaders: readonly DataTableHeader[] = Object.freeze([
   {
     title: t('dialogs.showDividend.yearLabel'),
     align: 'start',

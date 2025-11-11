@@ -97,6 +97,7 @@ const MESSAGES = Object.freeze({
 })
 
 const fileBlob = ref<Blob>(new Blob())
+
 const onChange = (ev: IEventTarget) => {
   fileBlob.value = ev.target.files[0]
 }

@@ -33,19 +33,16 @@ const useStocksStore = defineStore('stocks', function () {
         return items.value.findIndex(stock => stock.cID === id)
     })
     const getItemById = computed(() => (id: number): IStock_Store => items.value[getIndexById.value(id)])
-
     const passive = computed(() => {
         return items.value.filter(rec => {
             return rec.cFadeOut === 1 && rec.cID > 0
         })
     })
-
     const active = computed(() => {
         return items.value.filter(rec => {
             return rec.cFadeOut === 0 && rec.cID > 0
         })
     })
-
     const sumDepot = computed(() => (): number => {
         return active.value.map(rec => {
             return (rec.mPortfolio ?? 0) * (rec.mValue ?? 0)
@@ -82,7 +79,7 @@ const useStocksStore = defineStore('stocks', function () {
         }
     }
 
-    function updateStock(stock: IStock_DB): void {
+    function update(stock: IStock_DB): void {
         log('STOCKS_STORE: updateStock')
         const index = getIndexById.value(stock?.cID ?? -1)
         if (index !== -1) {
@@ -179,7 +176,7 @@ const useStocksStore = defineStore('stocks', function () {
                 pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000)
             }
-            updateStock({...pageStocks[i]})
+            update({...pageStocks[i]})
         }
         loadedStocksPages.add(page)
     }
@@ -192,7 +189,7 @@ const useStocksStore = defineStore('stocks', function () {
         passive,
         sumDepot,
         add,
-        updateStock,
+        update,
         remove,
         clean,
         loadOnlineData
@@ -214,7 +211,6 @@ const useAccountsStore = defineStore('accounts', function () {
         const duplicates = items.value.filter((entry: IAccount_Store) => entry.cIban === name)
         return duplicates.length > 0
     })
-
     const isDepot = computed((): boolean => {
         const ind = getIndexById.value(activeAccountId.value)
         if (ind > -1) {
@@ -495,7 +491,6 @@ export const useRecordsStore = defineStore('records', function () {
     const bookingsStore = useBookingsStore()
     const bookingTypesStore = useBookingTypesStore()
     const stocksStore = useStocksStore()
-    console.error(accountsStore, bookingsStore, bookingTypesStore, stocksStore)
 
     function clean(all = true) {
         log('RECORDS: clean')

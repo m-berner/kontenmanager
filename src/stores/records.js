@@ -58,7 +58,7 @@ const useStocksStore = defineStore('stocks', function () {
             items.value.push(completeStock);
         }
     }
-    function updateStock(stock) {
+    function update(stock) {
         log('STOCKS_STORE: updateStock');
         const index = getIndexById.value(stock?.cID ?? -1);
         if (index !== -1) {
@@ -146,7 +146,7 @@ const useStocksStore = defineStore('stocks', function () {
                 pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO;
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000);
             }
-            updateStock({ ...pageStocks[i] });
+            update({ ...pageStocks[i] });
         }
         loadedStocksPages.add(page);
     }
@@ -158,7 +158,7 @@ const useStocksStore = defineStore('stocks', function () {
         passive,
         sumDepot,
         add,
-        updateStock,
+        update,
         remove,
         clean,
         loadOnlineData
@@ -440,7 +440,6 @@ export const useRecordsStore = defineStore('records', function () {
     const bookingsStore = useBookingsStore();
     const bookingTypesStore = useBookingTypesStore();
     const stocksStore = useStocksStore();
-    console.error(accountsStore, bookingsStore, bookingTypesStore, stocksStore);
     function clean(all = true) {
         log('RECORDS: clean');
         if (all) {

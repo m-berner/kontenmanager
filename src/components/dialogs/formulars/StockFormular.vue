@@ -14,8 +14,8 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useFetch} from '@/composables/useFetch'
-import {useDebounce} from '@/composables/useDebounce'
 import {storeToRefs} from 'pinia'
+import {useBrowser} from '@/composables/useBrowser'
 
 interface IStockFormularProps {
   isUpdate: boolean
@@ -25,6 +25,7 @@ const stockFormularProps = defineProps<IStockFormularProps>()
 
 const {t} = useI18n()
 const {log} = useApp()
+const {notice} = useBrowser()
 const {isinRules} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
@@ -32,17 +33,21 @@ const {activeId} = storeToRefs(runtime)
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
-const onUpdateISIN = async () => {
-  if (!stockFormularProps.isUpdate) {
-    log('STOCK_FORMULAR: onUpdateISIN')
-    stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g, '')
-    const companyData = await fetchCompanyData(stockFormularData.isin)
-    stockFormularData.company = companyData.company
-    stockFormularData.symbol = companyData.symbol
+const onUpdateIsin = async () => {
+  log('STOCK_FORMULAR: onUpdateISIN')
+  try {
+    if (!stockFormularProps.isUpdate && stockFormularData.isin.length === 12) {
+      stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g, '')
+      const companyData = await fetchCompanyData(stockFormularData.isin)
+      stockFormularData.company = companyData.company
+      stockFormularData.symbol = companyData.symbol
+    }
+  } catch (e) {
+    await notice([e as string, 'No company data'])
+    stockFormularData.company = ''
+    stockFormularData.symbol = ''
   }
 }
-
-const {debouncedFunction: debouncedIsin} = useDebounce(onUpdateISIN, 400)
 
 onMounted(() => {
   log('STOCK_FORMULAR: onMounted')
@@ -80,7 +85,7 @@ log('--- StockFormular.vue setup ---')
           autofocus
           variant="outlined"
           @focus="formRef?.resetValidation()"
-          @update:model-value="debouncedIsin"/>
+          @update:model-value="onUpdateIsin"/>
     </v-row>
     <v-row>
       <v-text-field

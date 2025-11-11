@@ -17,16 +17,15 @@ const theme = useTheme()
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
-
-const themeNames: { [p: string]: string } = {
+const themeNames: { [p: string]: string } = Object.freeze({
   earth: t('optionsPage.themeNames.earth'),
   ocean: t('optionsPage.themeNames.ocean'),
   sky: t('optionsPage.themeNames.sky'),
   meadow: t('optionsPage.themeNames.meadow'),
   dark: t('optionsPage.themeNames.dark'),
   light: t('optionsPage.themeNames.light')
-}
+})
+const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const setSkin = async (skin: string | null): Promise<void> => {
   if (skin !== null) {

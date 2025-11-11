@@ -17,9 +17,7 @@ const {t, tm} = useI18n()
 const {CONS, log} = useApp()
 const router = useRouter()
 
-const PRIVACY = [
-  {title: 'privacyContent.general.title', data: 'privacyContent.general.data'}
-]
+const stringsArray = ref<{ title: string, data: string }[]>([])
 
 const formatData = computed(() => (dataStr: string): IContent[] => {
   const data = []
@@ -32,17 +30,10 @@ const formatData = computed(() => (dataStr: string): IContent[] => {
   }
   return data
 })
-const stringsArray = ref<{ title: string, data: string }[]>([])
 
 if (router.currentRoute.value.path === CONS.ROUTES.PRIVACY) {
-  stringsArray.value = PRIVACY
+  stringsArray.value[0] = {title: 'privacyContent.general.title', data: 'privacyContent.general.data'}
 }
-
-router.beforeEach((to) => {
-  if (to.path === CONS.ROUTES.PRIVACY) {
-    stringsArray.value = PRIVACY
-  }
-})
 
 log('--- SheetContent.vue setup ---')
 </script>

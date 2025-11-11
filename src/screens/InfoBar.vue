@@ -68,9 +68,4 @@ log('--- InfoBar.vue setup ---')
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-.horizontal-list .v-list-item {
-  flex: 0 0 auto;
-  min-width: 200px; /* Set minimum width if needed */
-}
 </style>

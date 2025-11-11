@@ -44,9 +44,7 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.deleteBookingType.catch')])
   }
 }
-
 const title = t('dialogs.deleteBookingType.title')
-
 defineExpose({title, onClickOk})
 
 log('--- DeleteBookingType.vue setup ---')

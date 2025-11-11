@@ -17,13 +17,10 @@ import type {
 } from '@/types.d'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
-//import {useSettingsStore} from '@/stores/settings'
-//import {storeToRefs} from 'pinia'
 
 const {CONS, log} = useApp()
 // Single global database promise
 let dbPromise: Promise<IDBDatabase> | null = null
-console.error('DB', dbPromise)
 
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
     const isConnected = ref<boolean>(false)
@@ -92,7 +89,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     async function openDB(): Promise<IDBDatabase> {
         log('USE_INDEXED_DB: openDB', {info: dbPromise})
         if (!dbPromise) {
-            console.error('NO DB!')
             isLoading.value = true
             error.value = null
 
@@ -139,7 +135,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 
     async function add<T>(storeName: string, data: T): Promise<number> {
         const db = await openDB()
-        console.error('add', db)
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.add(data)
@@ -168,7 +163,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 
     async function getAll<T>(storeName: string): Promise<T[]> {
         const db = await openDB()
-        console.error('getAll', db)
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const request = store.getAll()

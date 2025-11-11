@@ -33,18 +33,6 @@ export const useRuntimeStore = defineStore('runtime', function () {
     const isDownloading = ref(false)
     const loadedStocksPages = new Set()
 
-    function setIsDownloading(v: boolean) {
-        isDownloading.value = v
-    }
-
-    function setIsCompanyPage(v: boolean) {
-        isCompanyPage.value = v
-    }
-
-    function setStocksPage(v: number) {
-        stocksPage.value = v
-    }
-
     function clearStocksPages() {
         loadedStocksPages.clear()
     }
@@ -85,9 +73,6 @@ export const useRuntimeStore = defineStore('runtime', function () {
         loadedStocksPages,
         isCompanyPage,
         isDownloading,
-        setIsCompanyPage,
-        setIsDownloading,
-        setStocksPage,
         setTeleport,
         resetTeleport,
         resetOptionsMenuColors,

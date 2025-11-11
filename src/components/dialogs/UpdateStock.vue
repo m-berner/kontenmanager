@@ -49,7 +49,7 @@ const onClickOk = async (): Promise<void> => {
       cAccountNumberID: activeAccountId.value,
       cAskDates: stockFormularData.askDates
     }
-    records.stocks.updateStock(stock)
+    records.stocks.update(stock)
     await update(stock)
     await notice([t('dialogs.updateStock.success')])
     runtime.resetTeleport()

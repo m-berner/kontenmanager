@@ -8,18 +8,20 @@
 <script lang="ts" setup>
 import type {IMenuItem} from '@/types'
 import type {DataTableHeader} from 'vuetify'
-import {computed, ref} from 'vue'
+import {ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import DotMenu from '@/components/DotMenu.vue'
+import {storeToRefs} from 'pinia'
 
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
-const {bookingsPerPage, setBookingsPerPage} = useSettingsStore()
-const homeHeaders = computed<DataTableHeader[]>(() => [
+const settings = useSettingsStore()
+const {bookingsPerPage} = storeToRefs(settings)
+const homeHeaders: readonly DataTableHeader[] = Object.freeze([
   {
     title: t('appPage.headers.action'),
     align: 'start',
@@ -57,7 +59,7 @@ const homeHeaders = computed<DataTableHeader[]>(() => [
     key: 'cBookingType'
   }
 ])
-const homeMenuItems = computed<IMenuItem[]>(() => [
+const homeMenuItems: readonly IMenuItem[] = Object.freeze([
   {
     id: 'DeleteBooking',
     title: t('appPage.menuItems.delete'),
@@ -72,7 +74,7 @@ const homeMenuItems = computed<IMenuItem[]>(() => [
 const search = ref<string>('')
 
 const onUpdateItemsPerPage = (count: number): void => {
-  setBookingsPerPage(count)
+  bookingsPerPage.value = count
 }
 const onUpdatePage = (page: number): void => {
   log('HOME_CONTENT: onUpdatePage', {info: page})

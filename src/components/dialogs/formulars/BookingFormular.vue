@@ -30,7 +30,6 @@ const creditDebitModel = computed({
     bookingFormularData.debit = val.debit
   }
 })
-
 const taxModel = computed({
   get: () => ({credit: bookingFormularData.taxCredit, debit: bookingFormularData.taxDebit}),
   set: (val) => {
@@ -38,7 +37,6 @@ const taxModel = computed({
     bookingFormularData.taxDebit = val.debit
   }
 })
-
 const soliModel = computed({
   get: () => ({credit: bookingFormularData.soliCredit, debit: bookingFormularData.soliDebit}),
   set: (val) => {
@@ -46,7 +44,6 @@ const soliModel = computed({
     bookingFormularData.soliDebit = val.debit
   }
 })
-
 const sourceTaxModel = computed({
   get: () => ({credit: bookingFormularData.sourceTaxCredit, debit: bookingFormularData.sourceTaxDebit}),
   set: (val) => {
@@ -54,7 +51,6 @@ const sourceTaxModel = computed({
     bookingFormularData.sourceTaxDebit = val.debit
   }
 })
-
 const transactionTaxModel = computed({
   get: () => ({credit: bookingFormularData.transactionTaxCredit, debit: bookingFormularData.transactionTaxDebit}),
   set: (val) => {
@@ -62,7 +58,6 @@ const transactionTaxModel = computed({
     bookingFormularData.transactionTaxDebit = val.debit
   }
 })
-
 const feeModel = computed({
   get: () => ({credit: bookingFormularData.feeCredit, debit: bookingFormularData.feeDebit}),
   set: (val) => {

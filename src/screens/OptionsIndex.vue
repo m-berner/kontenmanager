@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, ref} from 'vue'
+import {ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import DynamicList from '@/components/DynamicList.vue'
@@ -22,8 +22,7 @@ interface ITabs {
 const {rt, t} = useI18n()
 const {CONS, log} = useApp()
 
-const tab = ref<number>(0)
-const optionsTabs = computed<ITabs[]>(() => [
+const optionsTabs: readonly ITabs[] = Object.freeze([
   {
     title: t('optionsPage.tabs.ge'),
     id: 'register_ge'
@@ -45,6 +44,7 @@ const optionsTabs = computed<ITabs[]>(() => [
     id: 'register_ex'
   }
 ])
+const tab = ref<number>(0)
 
 log('--- OptionsIndex.vue setup ---', {info: window.location.href})
 </script>

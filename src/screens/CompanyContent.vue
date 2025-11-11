@@ -22,9 +22,9 @@ const {CONS, log} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {stocksPerPage} = storeToRefs(settings)
-const {setIsDownloading, loadedStocksPages, setStocksPage} = useRuntimeStore()
+//const {setIsDownloading, loadedStocksPages, setStocksPage} = useRuntimeStore()
 const runtime = useRuntimeStore()
-const {stocksPage} = storeToRefs(runtime)
+const {stocksPage, isDownloading} = storeToRefs(runtime)
 
 const loading = ref(false)
 const stocksHeaders = computed<DataTableHeader[]>(() => [
@@ -123,8 +123,8 @@ const onUpdateItemsPerPage = (count: number): void => {
 }
 const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
-  setStocksPage(page)
-  if (!loadedStocksPages.has(page)) {
+  stocksPage.value = page
+  if (!runtime.loadedStocksPages.has(page)) {
     loading.value = true
     await records.stocks.loadOnlineData(page)
     loading.value = false
@@ -156,13 +156,13 @@ onMounted(async () => {
   }).sort((a: IStock_Store, b: IStock_Store) => {
     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
   })
-  if (!loadedStocksPages.has(stocksPage)) {
-    setIsDownloading(true)
+  if (!runtime.loadedStocksPages.has(stocksPage)) {
+    isDownloading.value = true
     loading.value = true
     await records.stocks.loadOnlineData(stocksPage.value)
     await requiredOnlineData()
     loading.value = false
-    setIsDownloading(false)
+    isDownloading.value = false
   }
 })
 
