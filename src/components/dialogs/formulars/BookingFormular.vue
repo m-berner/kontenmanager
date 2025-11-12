@@ -168,7 +168,7 @@ const feeModel = computed({
           v-model="soliModel"
           :legend="t('dialogs.addBooking.soliLabel')"/>
     </v-row>
-    <v-row v-if="bookingFormularData.bookingTypeId === 3" justify="center">
+    <v-row v-if="bookingFormularData.bookingTypeId === 2 || bookingFormularData.bookingTypeId === 3" justify="center">
       <CreditDebitFieldset
           v-model="sourceTaxModel"
           :legend="t('dialogs.addBooking.sourceTaxLabel')"/>

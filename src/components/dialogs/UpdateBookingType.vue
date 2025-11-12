@@ -18,14 +18,14 @@ import {useRecordsStore} from '@/stores/records'
 import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
-const {log} = useApp()
+const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {update} = useBookingTypesDB()
 const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const formSelectedIndex = ref<number>(-1)
+const formSelectedIndex = ref()
 const formName = ref<string>('')
 const formVisible = ref<boolean>(true)
 const formRef = ref<HTMLFormElement | null>(null)
@@ -54,9 +54,7 @@ const onClickOk = async (): Promise<void> => {
     await notice([t('dialogs.updateBookingType.catch')])
   }
 }
-
 const title = t('dialogs.updateBookingType.title')
-
 defineExpose({onClickOk, title})
 
 log('--- UpdateBookingType.vue setup ---')
@@ -84,13 +82,13 @@ log('--- UpdateBookingType.vue setup ---')
     <v-select
         v-if="formVisible"
         v-model="formSelectedIndex"
-        :items="records.bookingTypes.getNamesWithIndex"
+        :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+        :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
+        :items="records.bookingTypes.items"
         :label="t('dialogs.deleteBookingType.label')"
         :menu="true"
         :menu-props="{ maxHeight: '200px' }"
         density="compact"
-        item-title="name"
-        item-value="index"
         placeholder=""
         variant="outlined"
         @focus="formRef?.resetValidation()"
