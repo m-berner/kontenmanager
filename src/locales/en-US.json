@@ -1,320 +1,320 @@
 {
   "titleBar": {
-    "title": "KontenManager",
-    "bookingsSumLabel": "Kontostand",
-    "depotSumLabel": "Depotkonto",
+    "title": "AccountManager",
+    "bookingsSumLabel": "Account Balance",
+    "depotSumLabel": "Depot Account",
     "selectAccountLabel": "IBAN",
     "iconsAlt": {
       "logo": "Bank Logo"
     },
-    "error": "Es wurde noch kein Konto angelegt?"
+    "error": "No account has been created yet?"
   },
   "headerBar": {
-    "home": "Startseite",
-    "company": "Aktien-Unternehmen",
-    "updateQuote": "Kurse aktualisieren",
-    "addBookingType": "Buchungstyp hinzufügen",
-    "deleteBookingType": "Buchungstyp entfernen",
-    "updateBookingType": "Buchungstyp aktualisieren",
-    "addAccount": "Bankkonto hinzufügen",
-    "updateAccount": "Bankkonto bearbeiten",
-    "deleteAccount": "Bankkonto entfernen",
-    "addStock": "Aktien-Unternehmen hinzufügen",
-    "fadeInStock": "Unternehmen einblenden",
-    "deleteStock": "Aktien-Unternehmen entfernen",
-    "updateStock": "Aktien-Unternehmen bearbeiten",
-    "addBooking": "Buchung hinzufügen",
-    "exportToFile": "Datenbank exportieren",
-    "importDatabase": "Datenbank importieren",
-    "showAccounting": "Jahres-Berechnungen",
-    "settings": "Einstellungen",
+    "home": "Home",
+    "company": "Stock Companies",
+    "updateQuote": "Update Quotes",
+    "addBookingType": "Add Booking Type",
+    "deleteBookingType": "Remove Booking Type",
+    "updateBookingType": "Update Booking Type",
+    "addAccount": "Add Bank Account",
+    "updateAccount": "Edit Bank Account",
+    "deleteAccount": "Remove Bank Account",
+    "addStock": "Add Stock Company",
+    "fadeInStock": "Show Company",
+    "deleteStock": "Remove Stock Company",
+    "updateStock": "Edit Stock Company",
+    "addBooking": "Add Booking",
+    "exportToFile": "Export Database",
+    "importDatabase": "Import Database",
+    "showAccounting": "Annual Calculations",
+    "settings": "Settings",
     "messages": {
       "infoTitle": "INFO",
-      "noBookings": "Es sind keine Buchungen vorhanden.",
-      "noAccount": "Es ist noch kein Konto vorhanden.",
-      "nothingToExport": "Es existieren noch keine Objekte zum Exportieren.",
-      "noBookingTypes": "Es sind keine Buchungskategorien vorhanden.",
-      "createAccount": "Sie müssen erst ein Konto anlegen...",
-      "allStocksVisible": "Es sind keine Unternehmen ausgeblendet."
+      "noBookings": "There are no bookings available.",
+      "noAccount": "There is no account yet.",
+      "nothingToExport": "There are no objects to export yet.",
+      "noBookingTypes": "There are no booking categories available.",
+      "createAccount": "You must first create an account...",
+      "allStocksVisible": "No companies are hidden."
     }
   },
   "appPage": {
     "messages": {
       "infoTitle": "INFO",
-      "noDelete": "Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.",
-      "restrictedImport": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde.",
-      "corruptStorage": "Der lokale Browser Speicher ist korrupt. Zurücksetzen zum Standard mit <STRG + ALT + r>."
+      "noDelete": "This company cannot be deleted. Bookings exist.",
+      "restrictedImport": "AccountManager is a further development of the former StockManager. Importing StockManager data is only possible directly after installation, before any AccountManager object has been manually created.",
+      "corruptStorage": "Local browser storage is corrupt. Reset to default with <CTRL + ALT + r>."
     },
-    "search": "Suchen",
+    "search": "Search",
     "headers": {
       "id": "ID",
-      "action": "Aktionen",
-      "date": "Datum",
-      "debit": "Soll",
-      "credit": "Haben",
-      "description": "Bemerkung",
-      "bookingType": "Buchungstyp",
-      "accountNumberId": "Konto"
+      "action": "Actions",
+      "date": "Date",
+      "debit": "Debit",
+      "credit": "Credit",
+      "description": "Note",
+      "bookingType": "Booking Type",
+      "accountNumberId": "Account"
     },
     "menuItems": {
-      "delete": "Buchung löschen",
-      "update": "Buchung bearbeiten"
+      "delete": "Delete Booking",
+      "update": "Edit Booking"
     },
-    "noDataText": "Keine Einträge gefunden.",
-    "itemsPerPageText": "Einträge pro Seite:"
+    "noDataText": "No entries found.",
+    "itemsPerPageText": "Entries per page:"
   },
   "dialogs": {
     "formular": {
-      "bookingLabel": "Buchung",
-      "creditLabel": "Haben",
-      "debitLabel": "Soll",
-      "notNegative": "Nur positive Werte",
-      "onlyOnePositive": "Ein Wert muss 0 sein"
+      "bookingLabel": "Booking",
+      "creditLabel": "Credit",
+      "debitLabel": "Debit",
+      "notNegative": "Only positive values",
+      "onlyOnePositive": "One value must be 0"
     },
-    "cancel": "Abbrechen",
+    "cancel": "Cancel",
     "ok": "OK",
     "stockFormular": {
-      "noAccount": "Sie müssen erst ein Konto anlegen u. auswählen.",
-      "noStocks": "Es gibt noch kein Unternehmen."
+      "noAccount": "You must first create and select an account.",
+      "noStocks": "There is no company yet."
     },
     "addBooking": {
-      "title": "Buchung hinzufügen",
-      "dateLabel": "Buchungstag",
-      "exDateLabel": "Ex-Tag",
-      "descriptionLabel": "Bemerkung",
-      "creditLabel": "Haben",
-      "debitLabel": "Soll",
-      "countLabel": "Anzahl",
-      "bookingTypeLabel": "Buchungstyp",
-      "feeLabel": "Gebühr",
-      "taxLabel": "Steuer",
-      "soliLabel": "Soli",
-      "stockLabel": "Unternehmen",
-      "marketPlaceLabel": "Handelsplatz",
-      "transactionTaxLabel": "Transaktionssteuer",
-      "sourceTaxLabel": "Quellensteuer",
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
-      "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?"
+      "title": "Add Booking",
+      "dateLabel": "Booking Date",
+      "exDateLabel": "Ex-Date",
+      "descriptionLabel": "Note",
+      "creditLabel": "Credit",
+      "debitLabel": "Debit",
+      "countLabel": "Quantity",
+      "bookingTypeLabel": "Booking Type",
+      "feeLabel": "Fee",
+      "taxLabel": "Tax",
+      "soliLabel": "Solidarity Surcharge",
+      "stockLabel": "Company",
+      "marketPlaceLabel": "Trading Place",
+      "transactionTaxLabel": "Transaction Tax",
+      "sourceTaxLabel": "Withholding Tax",
+      "message": "You must first create and select an account.",
+      "success": "Booking has been added",
+      "error": "Input error?"
     },
     "updateBooking": {
-      "title": "Buchung bearbeiten",
-      "dateLabel": "Buchungstag",
-      "exDateLabel": "Ex-Tag",
-      "descriptionLabel": "Bemerkung",
-      "creditLabel": "Haben",
-      "debitLabel": "Soll",
-      "countLabel": "Anzahl",
-      "bookingTypeLabel": "Buchungstyp",
-      "feeLabel": "Gebühr",
-      "taxLabel": "Steuer",
-      "soliLabel": "Soli",
-      "stockLabel": "Unternehmen",
-      "marketPlaceLabel": "Handelsplatz",
-      "transactionTaxLabel": "Transaktionssteuer",
-      "sourceTaxLabel": "Quellensteuer",
-      "message": "Es gibt noch keine Buchung.",
-      "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?",
+      "title": "Edit Booking",
+      "dateLabel": "Booking Date",
+      "exDateLabel": "Ex-Date",
+      "descriptionLabel": "Note",
+      "creditLabel": "Credit",
+      "debitLabel": "Debit",
+      "countLabel": "Quantity",
+      "bookingTypeLabel": "Booking Type",
+      "feeLabel": "Fee",
+      "taxLabel": "Tax",
+      "soliLabel": "Solidarity Surcharge",
+      "stockLabel": "Company",
+      "marketPlaceLabel": "Trading Place",
+      "transactionTaxLabel": "Transaction Tax",
+      "sourceTaxLabel": "Withholding Tax",
+      "message": "There is no booking yet.",
+      "success": "Booking has been added",
+      "error": "Input error?",
       "validators": [
-        "ist erforderlich"
+        "is required"
       ]
     },
     "deleteBooking": {
-      "title": "Buchung",
-      "ask": "jetzt löschen?",
-      "success": "Buchung wurde entfernt",
-      "error": "Eingabe Fehler?"
+      "title": "Booking",
+      "ask": "delete now?",
+      "success": "Booking has been removed",
+      "error": "Input error?"
     },
     "addAccount": {
-      "title": "Bankkonto hinzufügen",
+      "title": "Add Bank Account",
       "swiftLabel": "BIC / SWIFT",
-      "searchLabel": "Logo Suche",
-      "withDepotLabel": "Depot Verrechnungskonto",
-      "withNoDepotLabel": "Konto",
-      "ibanLabel": "IBAN / Kontonummer",
-      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "typeLabel": "Kontotyp",
-      "preview": "Vorschau",
-      "missingLogo": "Kein Logo gefunden",
-      "success": "Konto wurde hinzugefügt",
-      "error": "Konto existiert bereits",
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
+      "searchLabel": "Logo Search",
+      "withDepotLabel": "Depot Settlement Account",
+      "withNoDepotLabel": "Account",
+      "ibanLabel": "IBAN / Account Number",
+      "ibanPlaceholder": "e.g. DE67 1234 5678 9123 8531 78",
+      "typeLabel": "Account Type",
+      "preview": "Preview",
+      "missingLogo": "No logo found",
+      "success": "Account has been added",
+      "error": "Account already exists",
+      "message": "You must first create and select an account."
     },
     "addStock": {
-      "title": "Unternehmen hinzufügen",
-      "company": "Unternehmen",
+      "title": "Add Company",
+      "company": "Company",
       "isin": "ISIN",
       "wkn": "WKN",
-      "symbol": "Kürzel",
-      "formDisabledLabel": "Manuell eintragen",
-      "success": "Unternehmen wurde hinzugefügt",
-      "error": "Unternehmen existiert bereits",
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
+      "symbol": "Symbol",
+      "formDisabledLabel": "Enter manually",
+      "success": "Company has been added",
+      "error": "Company already exists",
+      "message": "You must first create and select an account."
     },
     "deleteStock": {
-      "title": "Unternehmen entfernen",
-      "success": "Unternehmen wurde entfernt",
-      "error": "Unternehmen existiert bereits"
+      "title": "Remove Company",
+      "success": "Company has been removed",
+      "error": "Company already exists"
     },
     "updateStock": {
-      "title": "Unternehmen bearbeiten",
+      "title": "Edit Company",
       "isin": "ISIN",
       "wkn": "WKN",
-      "symbol": "Kürzel",
-      "company": "Unternehmen",
-      "fadeOut": "Ausblenden",
-      "firstPage": "Erste Seite",
-      "meetingDay": "Hauptversammlung",
-      "quarterDay": "Quartalszahlen",
+      "symbol": "Symbol",
+      "company": "Company",
+      "fadeOut": "Hide",
+      "firstPage": "First Page",
+      "meetingDay": "Annual General Meeting",
+      "quarterDay": "Quarterly Results",
       "url": "URL",
-      "success": "Unternehmen wurde aktualisiert",
-      "error": "Fehler",
-      "message": "Es wurde noch kein Unternehmen angelegt. Zuerst müssen Sie ein Konto anlegen."
+      "success": "Company has been updated",
+      "error": "Error",
+      "message": "No company has been created yet. You must first create an account."
     },
     "fadeInStock": {
-      "title": "Unternehmen einblenden",
-      "message": "Alle Unternehmen sind eingeblendet."
+      "title": "Show Company",
+      "message": "All companies are visible."
     },
     "updateAccount": {
-      "title": "Bankkonto aktualisieren",
+      "title": "Update Bank Account",
       "swiftLabel": "BIC / SWIFT",
-      "searchLabel": "Web-Adresse",
-      "withDepotLabel": "Depot Verrechnungskonto",
-      "withNoDepotLabel": "Konto",
-      "ibanLabel": "Kontonummer",
-      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "typeLabel": "Kontotyp",
-      "preview": "Vorschau",
-      "missingLogo": "Kein Logo gefunden",
-      "success": "Konto wurde aktualisiert",
-      "error": "Konto existiert bereits",
-      "message": "Es gibt noch kein Konto."
+      "searchLabel": "Web Address",
+      "withDepotLabel": "Depot Settlement Account",
+      "withNoDepotLabel": "Account",
+      "ibanLabel": "Account Number",
+      "ibanPlaceholder": "e.g. DE67 1234 5678 9123 8531 78",
+      "typeLabel": "Account Type",
+      "preview": "Preview",
+      "missingLogo": "No logo found",
+      "success": "Account has been updated",
+      "error": "Account already exists",
+      "message": "There is no account yet."
     },
     "deleteAccount": {
-      "title": "Bankkonto - alle Daten löschen",
-      "accountNumberLabel": "Kontonummer",
-      "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
-      "success": "Konto wurde entfernt",
-      "error": "Konto wurde nicht entfernt?",
-      "message": "Es gibt noch kein Konto."
+      "title": "Bank Account - Delete All Data",
+      "accountNumberLabel": "Account Number",
+      "confirm": "Do you really want to delete the account with all associated data?",
+      "success": "Account has been removed",
+      "error": "Account was not removed?",
+      "message": "There is no account yet."
     },
     "addBookingType": {
-      "title": "Buchungstyp hinzufügen",
-      "label": "Buchungstyp",
-      "placeholder": "Name eingeben",
-      "success": "Buchungstyp wurde hinzugefügt",
-      "error1a": "Der Buchungstyp existiert bereits",
-      "error1b": "(Eine Duplette wurde nicht hinzugefügt)",
-      "catch": "Problem beim Hinzufügen!",
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
+      "title": "Add Booking Type",
+      "label": "Booking Type",
+      "placeholder": "Enter name",
+      "success": "Booking type has been added",
+      "error1a": "The booking type already exists",
+      "error1b": "(A duplicate was not added)",
+      "catch": "Problem adding!",
+      "message": "You must first create and select an account."
     },
     "updateBookingType": {
-      "title": "Buchungstyp aktualisieren",
-      "label": "Buchungstyp",
-      "message": "Es gibt noch keinen Buchungstyp.",
-      "success": "Buchungstyp wurde aktualisiert",
-      "error1a": "Der Buchungstyp konnte nicht aktualisiert werden",
+      "title": "Update Booking Type",
+      "label": "Booking Type",
+      "message": "There is no booking type yet.",
+      "success": "Booking type has been updated",
+      "error1a": "The booking type could not be updated",
       "error1b": "",
-      "catch": "Problem beim Aktualisieren!"
+      "catch": "Problem updating!"
     },
     "deleteBookingType": {
-      "title": "Buchungstyp löschen",
-      "label": "Buchungstyp",
-      "placeholder": "Buchungstyp zum Löschen auswählen",
-      "success": "Buchungstyp wurde entfernt",
-      "error1a": "Es existiert eine Buchung.",
-      "error1b": "(Buchungstyp konnte nicht entfernt werden)",
-      "catch": "Problem beim Löschen!",
-      "message": "Es gibt noch keinen Buchungstyp."
+      "title": "Delete Booking Type",
+      "label": "Booking Type",
+      "placeholder": "Select booking type to delete",
+      "success": "Booking type has been removed",
+      "error1a": "A booking exists.",
+      "error1b": "(Booking type could not be removed)",
+      "catch": "Problem deleting!",
+      "message": "There is no booking type yet."
     },
     "showAccounting": {
-      "title": "Buchungsergebnisse",
-      "dateLabel": "Buchungstag",
-      "descriptionLabel": "Bemerkung",
-      "creditLabel": "Einnahme",
-      "debitLabel": "Ausgabe",
-      "nameLabel": "Buchungskategorie",
-      "sumLabel": "Betrag",
-      "sum": "Summe",
-      "fees": "Gebühren",
-      "taxes": "Steuern",
-      "itemsPerPageText": "Einträge pro Seite",
-      "noDataText": "Bisher keine Dividende erhalten",
-      "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?"
+      "title": "Booking Results",
+      "dateLabel": "Booking Date",
+      "descriptionLabel": "Note",
+      "creditLabel": "Income",
+      "debitLabel": "Expense",
+      "nameLabel": "Booking Category",
+      "sumLabel": "Amount",
+      "sum": "Total",
+      "fees": "Fees",
+      "taxes": "Taxes",
+      "itemsPerPageText": "Entries per page",
+      "noDataText": "No dividend received yet",
+      "success": "Booking has been added",
+      "error": "Input error?"
     },
     "showDividend": {
-      "title": "Dividenden Übersicht",
-      "yearLabel": "Ex-Tag",
-      "sumLabel": "Dividendenauszahlung",
-      "itemsPerPageText": "Einträge pro Seite",
-      "noDataText": "Bisher keine Dividende erhalten",
-      "message": "Bisher keine Dividende erhalten."
+      "title": "Dividend Overview",
+      "yearLabel": "Ex-Date",
+      "sumLabel": "Dividend Payment",
+      "itemsPerPageText": "Entries per page",
+      "noDataText": "No dividend received yet",
+      "message": "No dividend received yet."
     },
     "exportToFile": {
-      "title": "Datenbank exportieren",
-      "filename": "Dateiname"
+      "title": "Export Database",
+      "filename": "Filename"
     },
     "importDatabase": {
-      "title": "Datenbank importieren",
-      "filename": "Dateiname",
-      "invalid": "Die Datendatei ist ungültig!",
-      "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
-      "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
-      "messageStockmanager": "Stockmanager Daten können nur in eine leere Datenbank importiert werden!",
-      "messageVersion": "Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version {version} oder neuer.",
-      "messageImported": "Die Daten wurden bereits importiert.",
-      "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
-      "databaseLabel": "in leere Datenbank installieren",
-      "fakeLabel": "Fake Konto ID",
-      "label": "aus Datei"
+      "title": "Import Database",
+      "filename": "Filename",
+      "invalid": "The data file is invalid!",
+      "version": "The data file is too old and cannot be restored!",
+      "notEmpty": "AccountManager objects already exist. Therefore a StockManager backup file cannot be restored!",
+      "messageStockmanager": "Stockmanager data can only be imported into an empty database!",
+      "messageVersion": "This database version cannot be imported. Version {version} or newer is required.",
+      "messageImported": "The data has already been imported.",
+      "messageDelete": "All existing data will be deleted!",
+      "databaseLabel": "install in empty database",
+      "fakeLabel": "Fake Account ID",
+      "label": "from file"
     },
-    "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
+    "exportDialog": "When saving, the file {filename} will be created and saved in the user's downloads folder. (This file can be used for database restoration)."
   },
   "footer": {
-    "help": "Hilfe",
-    "privacy": "Datenschutz",
+    "help": "Help",
+    "privacy": "Privacy",
     "mail": "Email"
   },
   "stocksTable": {
     "headers": {
       "id": "ID",
-      "action": "Aktionen",
-      "company": "Unternehmen",
+      "action": "Actions",
+      "company": "Company",
       "isin": "ISIN",
-      "qf": "Quartals-Zahlen",
-      "gm": "Hauptversammlung",
+      "qf": "Quarterly Results",
+      "gm": "Annual General Meeting",
       "portfolio": "Portfolio",
-      "buy": "Kaufpreis",
-      "winLoss": "Gewinn-Verlust",
-      "52low": "52-Wochen-Tief",
-      "rate": "Kurs",
-      "52high": "52-Wochen-Hoch"
+      "buy": "Purchase Price",
+      "winLoss": "Profit-Loss",
+      "52low": "52-Week Low",
+      "rate": "Quote",
+      "52high": "52-Week High"
     },
     "menuItems": {
-      "delete": "Unternehmen löschen",
-      "dividend": "Dividenden Übersicht",
-      "update": "Unternehmen aktualisieren",
-      "link": "Externen Link öffnen"
+      "delete": "Delete Company",
+      "dividend": "Dividend Overview",
+      "update": "Update Company",
+      "link": "Open External Link"
     },
-    "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
-    "itemsPerPageText": "Einträge pro Seite:"
+    "noDataText": "No entries found. Import a database or create new entries manually.",
+    "itemsPerPageText": "Entries per page:"
   },
   "privacyContent": {
-    "title": "KontenManager Datenschutz Richtlinien",
+    "title": "AccountManager Privacy Policy",
     "general": {
-      "title": "Allgemein",
+      "title": "General",
       "data": {
         "subTitle": {
-          "0": "Lokale Daten",
-          "1": "Öffentliche Daten",
-          "2": "Internetverbindungen"
+          "0": "Local Data",
+          "1": "Public Data",
+          "2": "Internet Connections"
         },
         "content": {
-          "0": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
-          "1": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
-          "2": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen."
+          "0": "No data is sent to a server. Data is stored in an IndexedDB database. Only this add-on has access to the database. AccountManager does not personalize any data. Settings are stored in the browser's extension storage.",
+          "1": "AccountManager does not guarantee the accuracy of the data. When retrieving data, URIs including ISINs are sent over the internet. Other data is not shared.",
+          "2": "Connections are established to download bank logo, exchange rate, stock quote, min/max, index, and commodity data."
         },
         "icon": {
           "0": "",
@@ -326,80 +326,80 @@
   },
   "optionsPage": {
     "tabs": {
-      "ge": "Themen & Dienste",
-      "mp": "Marktplätze",
-      "ind": "Indizes",
-      "mat": "Rohstoffe",
-      "ex": "Währungen"
+      "ge": "Themes & Services",
+      "mp": "Marketplaces",
+      "ind": "Indices",
+      "mat": "Commodities",
+      "ex": "Currencies"
     },
     "themeNames": {
-      "earth": "Erde",
-      "ocean": "Ozean",
-      "sky": "Himmel",
-      "meadow": "Wiese",
-      "dark": "Dunkel",
-      "light": "Hell"
+      "earth": "Earth",
+      "ocean": "Ocean",
+      "sky": "Sky",
+      "meadow": "Meadow",
+      "dark": "Dark",
+      "light": "Light"
     },
     "markets": {
-      "title": "Marktplätze",
-      "label": "Neuer Marktplatz"
+      "title": "Marketplaces",
+      "label": "New Marketplace"
     },
     "exchanges": {
-      "title": "Wechselkurse",
-      "label": "Neues Wechselkurs-Kürzel"
+      "title": "Exchange Rates",
+      "label": "New Exchange Rate Symbol"
     },
     "materials": {
       "au": "Gold",
-      "ag": "Silber",
-      "brent": "Ölpreis (Brent)",
-      "wti": "Ölpreis (WTI)",
-      "cu": "Kupfer",
-      "pt": "Platin",
-      "al": "Aluminium",
+      "ag": "Silver",
+      "brent": "Oil Price (Brent)",
+      "wti": "Oil Price (WTI)",
+      "cu": "Copper",
+      "pt": "Platinum",
+      "al": "Aluminum",
       "ni": "Nickel",
-      "sn": "Zinn",
-      "pb": "Blei",
+      "sn": "Tin",
+      "pb": "Lead",
       "pd": "Palladium"
     }
   },
   "validators": {
     "ibanRules": {
-      "required": "IBAN ist erforderlich",
-      "country": "Falscher Ländercode",
-      "length": "Ungültige IBAN Länge",
-      "format": "Ungültige IBAN",
-      "checksum": "Ungültige Prüfsumme",
-      "duplicate": "Konto existiert bereits"
+      "required": "IBAN is required",
+      "country": "Invalid country code",
+      "length": "Invalid IBAN length",
+      "format": "Invalid IBAN",
+      "checksum": "Invalid checksum",
+      "duplicate": "Account already exists"
     },
     "isinRules": {
-      "required": "ISIN ist erforderlich",
-      "length": "Ungültige ISIN Länge",
-      "format": "Ungültige ISIN",
-      "country": "Falscher Ländercode",
-      "luhn": "Ungültige Prüfsumme (Luhn)"
+      "required": "ISIN is required",
+      "length": "Invalid ISIN length",
+      "format": "Invalid ISIN",
+      "country": "Invalid country code",
+      "luhn": "Invalid checksum (Luhn)"
     },
     "nameRules": {
-      "required": "Name ist erforderlich",
-      "length": "Maximal 24 Zeichen",
-      "begin": "Erstes Zeichen muss ein Buchstabe sein"
+      "required": "Name is required",
+      "length": "Maximum 24 characters",
+      "begin": "First character must be a letter"
     },
     "swiftRules": {
-      "required": "SWIFT ist erforderlich",
-      "length": "Nur 8 bzw. 11 Zeichen",
-      "format": "Ungültiges SWIFT Format",
-      "bankCode": "Ungültige Bank",
-      "countryCode": "Ungültiges Land",
-      "locationCode": "Ungültige Region",
-      "branchCode": "Ungültige Branche",
+      "required": "SWIFT is required",
+      "length": "Only 8 or 11 characters",
+      "format": "Invalid SWIFT format",
+      "bankCode": "Invalid bank",
+      "countryCode": "Invalid country",
+      "locationCode": "Invalid region",
+      "branchCode": "Invalid branch",
       "test": "Test BIC",
-      "passive": "BIC von passivem Teilnehmer"
+      "passive": "BIC of passive participant"
     },
     "dateRules": {
-      "required": "Datum ist erforderlich",
+      "required": "Date is required",
       "iso": ""
     },
-    "requiredRules": "Ist erforderlich",
-    "notNegative": "Nur positive Werte",
-    "onlyOnePositive": "Ein Wert muss 0 sein"
+    "requiredRules": "Is required",
+    "notNegative": "Only positive values",
+    "onlyOnePositive": "One value must be 0"
   }
 }
