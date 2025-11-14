@@ -88,8 +88,8 @@ const settings = useSettingsStore()
 const {info} = useAlertStore()
 
 const MESSAGES_INIT = Object.freeze({
-  INFO_TITLE: t('appPage.messages.infoTitle'),
-  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport')
+  INFO_TITLE: t('homePage.messages.infoTitle'),
+  RESTRICTED_IMPORT: t('homePage.messages.restrictedImport')
 })
 const MESSAGES = Object.freeze({
   IMPORT_TITLE: t('dialogs.importDatabase.title'),

@@ -20,8 +20,8 @@ const {currentAlert} = storeToRefs(alertStore)
 const {dismissAlert, info, pendingCount} = alertStore
 
 const MESSAGES = Object.freeze({
-  INFO_TITLE: t('appPage.messages.infoTitle'),
-  CORRUPT_STORAGE: t('appPage.messages.corruptStorage')
+  INFO_TITLE: t('homePage.messages.infoTitle'),
+  CORRUPT_STORAGE: t('homePage.messages.corruptStorage')
 })
 
 const showOverlay = computed(() => currentAlert.value.id > -1)

@@ -23,37 +23,37 @@ const settings = useSettingsStore()
 const {bookingsPerPage} = storeToRefs(settings)
 const homeHeaders: readonly DataTableHeader[] = Object.freeze([
   {
-    title: t('appPage.headers.action'),
+    title: t('homePage.bookingsTable.headers.action'),
     align: 'start',
     sortable: false,
     key: 'mAction'
   },
   {
-    title: t('appPage.headers.date'),
+    title: t('homePage.bookingsTable.headers.date'),
     align: 'start',
     sortable: false,
     key: 'cDate'
   },
   {
-    title: t('appPage.headers.debit'),
+    title: t('homePage.bookingsTable.headers.debit'),
     align: 'start',
     sortable: false,
     key: 'cDebit'
   },
   {
-    title: t('appPage.headers.credit'),
+    title: t('homePage.bookingsTable.headers.credit'),
     align: 'start',
     sortable: false,
     key: 'cCredit'
   },
   {
-    title: t('appPage.headers.description'),
+    title: t('homePage.bookingsTable.headers.description'),
     align: 'start',
     sortable: false,
     key: 'cDescription'
   },
   {
-    title: t('appPage.headers.bookingType'),
+    title: t('homePage.bookingsTable.headers.bookingType'),
     align: 'start',
     sortable: false,
     key: 'cBookingType'
@@ -62,12 +62,12 @@ const homeHeaders: readonly DataTableHeader[] = Object.freeze([
 const homeMenuItems: readonly IMenuItem[] = Object.freeze([
   {
     id: 'DeleteBooking',
-    title: t('appPage.menuItems.delete'),
+    title: t('homePage.bookingsTable.menuItems.delete'),
     icon: '$deleteBooking'
   },
   {
     id: 'UpdateBooking',
-    title: t('appPage.menuItems.update'),
+    title: t('homePage.bookingsTable.menuItems.update'),
     icon: '$updateBooking'
   }
 ])
@@ -86,7 +86,7 @@ log('--- HomeContent.vue setup ---')
 <template>
   <v-text-field
       v-model="search"
-      :label="t('appPage.search')"
+      :label="t('homePage.search')"
       density="compact"
       hide-details
       prepend-inner-icon="$magnify"
@@ -99,8 +99,8 @@ log('--- HomeContent.vue setup ---')
       :items="records.bookings.items"
       :items-per-page="bookingsPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-      :items-per-page-text="t('appPage.itemsPerPageText')"
-      :no-data-text="t('appPage.noDataText')"
+      :items-per-page-text="t('homePage.bookingsTable.itemsPerPageText')"
+      :no-data-text="t('homePage.bookingsTable.noDataText')"
       :search="search"
       density="compact"
       item-key="cID"

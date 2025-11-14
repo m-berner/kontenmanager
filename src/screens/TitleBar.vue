@@ -27,8 +27,8 @@ const {getDatabaseStores} = useIndexedDB()
 const  {activeAccountId} = storeToRefs(settings)
 
 const MESSAGES = Object.freeze({
-  INFO_TITLE: t('appPage.messages.infoTitle'),
-  RESTRICTED_IMPORT: t('appPage.messages.restrictedImport')
+  INFO_TITLE: t('homePage.messages.infoTitle'),
+  RESTRICTED_IMPORT: t('homePage.messages.restrictedImport')
 })
 
 const logoUrl = computed((): string => {

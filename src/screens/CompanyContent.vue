@@ -22,68 +22,67 @@ const {CONS, log} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {stocksPerPage} = storeToRefs(settings)
-//const {setIsDownloading, loadedStocksPages, setStocksPage} = useRuntimeStore()
 const runtime = useRuntimeStore()
 const {stocksPage, isDownloading} = storeToRefs(runtime)
 
 const loading = ref(false)
 const stocksHeaders = computed<DataTableHeader[]>(() => [
   {
-    title: t('stocksTable.headers.action'),
+    title: t('homePage.stocksTable.headers.action'),
     align: 'start',
     sortable: false,
     key: 'mAction'
   },
   {
-    title: t('stocksTable.headers.company'),
+    title: t('homePage.stocksTable.headers.company'),
     align: 'start',
     sortable: true,
     key: 'cCompany'
   },
   {
-    title: t('stocksTable.headers.isin'),
+    title: t('homePage.stocksTable.headers.isin'),
     align: 'start',
     sortable: false,
     key: 'cISIN'
   },
   {
-    title: t('stocksTable.headers.qf'),
+    title: t('homePage.stocksTable.headers.qf'),
     align: 'start',
     sortable: false,
     key: 'cQuarterDay'
   },
   {
-    title: t('stocksTable.headers.gm'),
+    title: t('homePage.stocksTable.headers.gm'),
     align: 'start',
     sortable: false,
     key: 'cMeetingDay'
   },
   {
-    title: t('stocksTable.headers.portfolio'),
+    title: t('homePage.stocksTable.headers.portfolio'),
     align: 'start',
     sortable: true,
     key: 'mPortfolio'
   },
   {
-    title: t('stocksTable.headers.winLoss'),
+    title: t('homePage.stocksTable.headers.winLoss'),
     align: 'start',
     sortable: false,
     key: 'mEuroChange'
   },
   {
-    title: t('stocksTable.headers.52low'),
+    title: t('homePage.stocksTable.headers.52low'),
     align: 'start',
     sortable: false,
     key: 'mMin'
   },
   {
-    title: t('stocksTable.headers.rate'),
+    title: t('homePage.stocksTable.headers.rate'),
     align: 'start',
     sortable: false,
     key: 'mValue'
   },
   {
-    title: t('stocksTable.headers.52high'),
+    title: t('homePage.stocksTable.headers.52high'),
     align: 'start',
     sortable: false,
     key: 'mMax'
@@ -92,22 +91,22 @@ const stocksHeaders = computed<DataTableHeader[]>(() => [
 const stocksMenuItems = computed<IMenuItem[]>(() => [
   {
     id: 'DeleteStock',
-    title: t('stocksTable.menuItems.delete'),
+    title: t('homePage.stocksTable.menuItems.delete'),
     icon: '$deleteCompany'
   },
   {
     id: 'UpdateStock',
-    title: t('stocksTable.menuItems.update'),
+    title: t('homePage.stocksTable.menuItems.update'),
     icon: '$showCompany'
   },
   {
     id: 'ShowDividend',
-    title: t('stocksTable.menuItems.dividend'),
+    title: t('homePage.stocksTable.menuItems.dividend'),
     icon: '$showDividend'
   },
   {
     id: 'ExternalLink',
-    title: t('stocksTable.menuItems.link'),
+    title: t('homePage.stocksTable.menuItems.link'),
     icon: '$link'
   }
 ])
@@ -178,9 +177,9 @@ log('--- StocksTable.vue setup ---')
       :items="records.stocks.active"
       :items-per-page="stocksPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-      :items-per-page-text="t('stocksTable.itemsPerPageText')"
+      :items-per-page-text="t('homePage.stocksTable.itemsPerPageText')"
       :loading="loading"
-      :no-data-text="t('stocksTable.noDataText')"
+      :no-data-text="t('homePage.stocksTable.noDataText')"
       density="compact"
       item-key="cID"
       @update:items-per-page="onUpdateItemsPerPage"

@@ -32,7 +32,7 @@ const formatData = computed(() => (dataStr: string): IContent[] => {
 })
 
 if (router.currentRoute.value.path === CONS.ROUTES.PRIVACY) {
-  stringsArray.value[0] = {title: 'privacyContent.general.title', data: 'privacyContent.general.data'}
+  stringsArray.value[0] = {title: 'homePage.privacyContent.general.title', data: 'homePage.privacyContent.general.data'}
 }
 
 log('--- SheetContent.vue setup ---')

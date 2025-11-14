@@ -38,7 +38,8 @@
       "allStocksVisible": "No companies are hidden."
     }
   },
-  "appPage": {
+  "infoBar": {},
+  "homePage": {
     "messages": {
       "infoTitle": "INFO",
       "noDelete": "This company cannot be deleted. Bookings exist.",
@@ -46,22 +47,76 @@
       "corruptStorage": "Local browser storage is corrupt. Reset to default with <CTRL + ALT + r>."
     },
     "search": "Search",
-    "headers": {
-      "id": "ID",
-      "action": "Actions",
-      "date": "Date",
-      "debit": "Debit",
-      "credit": "Credit",
-      "description": "Note",
-      "bookingType": "Booking Type",
-      "accountNumberId": "Account"
+    "bookingsTable": {
+      "headers": {
+        "id": "ID",
+        "action": "Actions",
+        "date": "Date",
+        "debit": "Debit",
+        "credit": "Credit",
+        "description": "Note",
+        "bookingType": "Booking Type",
+        "accountNumberId": "Account"
+      },
+      "menuItems": {
+        "delete": "Delete Booking",
+        "update": "Edit Booking"
+      },
+      "noDataText": "No entries found.",
+      "itemsPerPageText": "Entries per page:"
     },
-    "menuItems": {
-      "delete": "Delete Booking",
-      "update": "Edit Booking"
+    "stocksTable": {
+      "headers": {
+        "id": "ID",
+        "action": "Actions",
+        "company": "Company",
+        "isin": "ISIN",
+        "qf": "Quarterly Results",
+        "gm": "Annual General Meeting",
+        "portfolio": "Portfolio",
+        "buy": "Purchase Price",
+        "winLoss": "Profit-Loss",
+        "52low": "52-Week Low",
+        "rate": "Quote",
+        "52high": "52-Week High"
+      },
+      "menuItems": {
+        "delete": "Delete Company",
+        "dividend": "Dividend Overview",
+        "update": "Update Company",
+        "link": "Open External Link"
+      },
+      "noDataText": "No entries found. Import a database or create new entries manually.",
+      "itemsPerPageText": "Entries per page:"
     },
-    "noDataText": "No entries found.",
-    "itemsPerPageText": "Entries per page:"
+    "privacyContent": {
+      "title": "AccountManager Privacy Policy",
+      "general": {
+        "title": "General",
+        "data": {
+          "subTitle": {
+            "0": "Local Data",
+            "1": "Public Data",
+            "2": "Internet Connections"
+          },
+          "content": {
+            "0": "No data is sent to a server. Data is stored in an IndexedDB database. Only this add-on has access to the database. AccountManager does not personalize any data. Settings are stored in the browser's extension storage.",
+            "1": "AccountManager does not guarantee the accuracy of the data. When retrieving data, URIs including ISINs are sent over the internet. Other data is not shared.",
+            "2": "Connections are established to download bank logo, exchange rate, stock quote, min/max, index, and commodity data."
+          },
+          "icon": {
+            "0": "",
+            "1": "",
+            "2": ""
+          }
+        }
+      }
+    }
+  },
+  "footer": {
+    "help": "Help",
+    "privacy": "Privacy",
+    "mail": "Email"
   },
   "dialogs": {
     "formular": {
@@ -271,58 +326,6 @@
       "label": "from file"
     },
     "exportDialog": "When saving, the file {filename} will be created and saved in the user's downloads folder. (This file can be used for database restoration)."
-  },
-  "footer": {
-    "help": "Help",
-    "privacy": "Privacy",
-    "mail": "Email"
-  },
-  "stocksTable": {
-    "headers": {
-      "id": "ID",
-      "action": "Actions",
-      "company": "Company",
-      "isin": "ISIN",
-      "qf": "Quarterly Results",
-      "gm": "Annual General Meeting",
-      "portfolio": "Portfolio",
-      "buy": "Purchase Price",
-      "winLoss": "Profit-Loss",
-      "52low": "52-Week Low",
-      "rate": "Quote",
-      "52high": "52-Week High"
-    },
-    "menuItems": {
-      "delete": "Delete Company",
-      "dividend": "Dividend Overview",
-      "update": "Update Company",
-      "link": "Open External Link"
-    },
-    "noDataText": "No entries found. Import a database or create new entries manually.",
-    "itemsPerPageText": "Entries per page:"
-  },
-  "privacyContent": {
-    "title": "AccountManager Privacy Policy",
-    "general": {
-      "title": "General",
-      "data": {
-        "subTitle": {
-          "0": "Local Data",
-          "1": "Public Data",
-          "2": "Internet Connections"
-        },
-        "content": {
-          "0": "No data is sent to a server. Data is stored in an IndexedDB database. Only this add-on has access to the database. AccountManager does not personalize any data. Settings are stored in the browser's extension storage.",
-          "1": "AccountManager does not guarantee the accuracy of the data. When retrieving data, URIs including ISINs are sent over the internet. Other data is not shared.",
-          "2": "Connections are established to download bank logo, exchange rate, stock quote, min/max, index, and commodity data."
-        },
-        "icon": {
-          "0": "",
-          "1": "",
-          "2": ""
-        }
-      }
-    }
   },
   "optionsPage": {
     "tabs": {

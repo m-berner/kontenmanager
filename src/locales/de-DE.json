@@ -38,7 +38,8 @@
       "allStocksVisible": "Es sind keine Unternehmen ausgeblendet."
     }
   },
-  "appPage": {
+  "infoBar": {},
+  "homePage": {
     "messages": {
       "infoTitle": "INFO",
       "noDelete": "Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.",
@@ -46,22 +47,76 @@
       "corruptStorage": "Der lokale Browser Speicher ist korrupt. Zurücksetzen zum Standard mit <STRG + ALT + r>."
     },
     "search": "Suchen",
-    "headers": {
-      "id": "ID",
-      "action": "Aktionen",
-      "date": "Datum",
-      "debit": "Soll",
-      "credit": "Haben",
-      "description": "Bemerkung",
-      "bookingType": "Buchungstyp",
-      "accountNumberId": "Konto"
+    "bookingsTable": {
+      "headers": {
+        "id": "ID",
+        "action": "Aktionen",
+        "date": "Datum",
+        "debit": "Soll",
+        "credit": "Haben",
+        "description": "Bemerkung",
+        "bookingType": "Buchungstyp",
+        "accountNumberId": "Konto"
+      },
+      "menuItems": {
+        "delete": "Buchung löschen",
+        "update": "Buchung bearbeiten"
+      },
+      "noDataText": "Keine Einträge gefunden.",
+      "itemsPerPageText": "Einträge pro Seite:"
     },
-    "menuItems": {
-      "delete": "Buchung löschen",
-      "update": "Buchung bearbeiten"
+    "stocksTable": {
+      "headers": {
+        "id": "ID",
+        "action": "Aktionen",
+        "company": "Unternehmen",
+        "isin": "ISIN",
+        "qf": "Quartals-Zahlen",
+        "gm": "Hauptversammlung",
+        "portfolio": "Portfolio",
+        "buy": "Kaufpreis",
+        "winLoss": "Gewinn-Verlust",
+        "52low": "52-Wochen-Tief",
+        "rate": "Kurs",
+        "52high": "52-Wochen-Hoch"
+      },
+      "menuItems": {
+        "delete": "Unternehmen löschen",
+        "dividend": "Dividenden Übersicht",
+        "update": "Unternehmen aktualisieren",
+        "link": "Externen Link öffnen"
+      },
+      "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
+      "itemsPerPageText": "Einträge pro Seite:"
     },
-    "noDataText": "Keine Einträge gefunden.",
-    "itemsPerPageText": "Einträge pro Seite:"
+    "privacyContent": {
+      "title": "KontenManager Datenschutz Richtlinien",
+      "general": {
+        "title": "Allgemein",
+        "data": {
+          "subTitle": {
+            "0": "Lokale Daten",
+            "1": "Öffentliche Daten",
+            "2": "Internetverbindungen"
+          },
+          "content": {
+            "0": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
+            "1": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
+            "2": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen."
+          },
+          "icon": {
+            "0": "",
+            "1": "",
+            "2": ""
+          }
+        }
+      }
+    }
+  },
+  "footer": {
+    "help": "Hilfe",
+    "privacy": "Datenschutz",
+    "mail": "Email"
   },
   "dialogs": {
     "formular": {
@@ -271,58 +326,6 @@
       "label": "aus Datei"
     },
     "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
-  },
-  "footer": {
-    "help": "Hilfe",
-    "privacy": "Datenschutz",
-    "mail": "Email"
-  },
-  "stocksTable": {
-    "headers": {
-      "id": "ID",
-      "action": "Aktionen",
-      "company": "Unternehmen",
-      "isin": "ISIN",
-      "qf": "Quartals-Zahlen",
-      "gm": "Hauptversammlung",
-      "portfolio": "Portfolio",
-      "buy": "Kaufpreis",
-      "winLoss": "Gewinn-Verlust",
-      "52low": "52-Wochen-Tief",
-      "rate": "Kurs",
-      "52high": "52-Wochen-Hoch"
-    },
-    "menuItems": {
-      "delete": "Unternehmen löschen",
-      "dividend": "Dividenden Übersicht",
-      "update": "Unternehmen aktualisieren",
-      "link": "Externen Link öffnen"
-    },
-    "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
-    "itemsPerPageText": "Einträge pro Seite:"
-  },
-  "privacyContent": {
-    "title": "KontenManager Datenschutz Richtlinien",
-    "general": {
-      "title": "Allgemein",
-      "data": {
-        "subTitle": {
-          "0": "Lokale Daten",
-          "1": "Öffentliche Daten",
-          "2": "Internetverbindungen"
-        },
-        "content": {
-          "0": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
-          "1": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
-          "2": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen."
-        },
-        "icon": {
-          "0": "",
-          "1": "",
-          "2": ""
-        }
-      }
-    }
   },
   "optionsPage": {
     "tabs": {

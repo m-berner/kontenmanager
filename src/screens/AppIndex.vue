@@ -29,9 +29,9 @@ const {t} = useI18n()
 onBeforeMount(async () => {
   try {
     const MESSAGES = Object.freeze({
-      INFO_TITLE: t('appPage.messages.infoTitle'),
-      RESTRICTED_IMPORT: t('appPage.messages.restrictedImport'),
-      CORRUPT_STORAGE: t('appPage.messages.corruptStorage')
+      INFO_TITLE: t('homePage.messages.infoTitle'),
+      RESTRICTED_IMPORT: t('homePage.messages.restrictedImport'),
+      CORRUPT_STORAGE: t('homePage.messages.corruptStorage')
     })
     const theme = useTheme()
     const records = useRecordsStore()
