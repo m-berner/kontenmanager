@@ -8,10 +8,10 @@
 <script lang="ts" setup>
 import type {IStock_Store} from '@/types.d'
 import {onMounted, ref} from 'vue'
-import {useRecordsStore} from '@/stores/records'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useApp} from '@/composables/useApp'
 import {useStocksDB} from '@/composables/useIndexedDB'
 
 const {t} = useI18n()

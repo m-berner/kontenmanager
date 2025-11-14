@@ -7,11 +7,11 @@
   -->
 <script setup>
 import {computed, onMounted} from 'vue'
-import {useApp} from '@/composables/useApp.ts'
-import {useBrowser} from '@/composables/useBrowser.ts'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useAlertStore} from '@/stores/alerts.ts'
+import {useApp} from '@/composables/useApp.ts'
+import {useBrowser} from '@/composables/useBrowser.ts'
 
 const {CONS, log, haveSameStrings} = useApp()
 const {t} = useI18n()

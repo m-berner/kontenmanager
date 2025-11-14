@@ -8,10 +8,10 @@
 <script lang="ts" setup>
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
 import {useValidation} from '@/composables/useValidation'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 

@@ -9,10 +9,10 @@
 import type {IAccount_DB, IBooking_DB, IBookingType_DB, IStock_DB} from '@/types.d'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
+import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
-import {useRuntimeStore} from '@/stores/runtime'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()

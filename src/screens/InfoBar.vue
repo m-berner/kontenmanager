@@ -7,10 +7,10 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
-import {storeToRefs} from 'pinia'
+import {useApp} from '@/composables/useApp'
 
 const {n, t} = useI18n()
 const {CONS, log} = useApp()

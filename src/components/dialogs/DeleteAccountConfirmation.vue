@@ -8,13 +8,13 @@
 <script lang="ts" setup>
 import {computed, defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {storeToRefs} from 'pinia'
 import {useSettingsStore} from '@/stores/settings'
-import {useBrowser} from '@/composables/useBrowser'
-import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
-import {storeToRefs} from 'pinia'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()

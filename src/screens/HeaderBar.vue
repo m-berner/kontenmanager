@@ -8,14 +8,14 @@
 <script lang="ts" setup>
 import {onUpdated} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useBrowser} from '@/composables/useBrowser'
-import {useRecordsStore} from '@/stores/records'
-import DialogPort from '@/components/DialogPort.vue'
 import {RouterLink, useRouter} from 'vue-router'
-import {useAlertStore} from '@/stores/alerts'
 import {storeToRefs} from 'pinia'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useRecordsStore} from '@/stores/records'
+import {useAlertStore} from '@/stores/alerts'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
+import DialogPort from '@/components/DialogPort.vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()

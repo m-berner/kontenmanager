@@ -9,13 +9,13 @@
 import type {IBookingType_Store} from '@/types.d'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {storeToRefs} from 'pinia'
+import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
+import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
-import {useRecordsStore} from '@/stores/records'
-import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {log} = useApp()

@@ -8,8 +8,8 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {computed} from 'vue'
-import CurrencyInput from '@/components/CurrencyInput.vue'
 import {useValidation} from '@/composables/useValidation'
+import CurrencyInput from '@/components/CurrencyInput.vue'
 
 interface CreditDebitFieldsetProps {
   modelValue: { credit: number, debit: number }

@@ -9,9 +9,9 @@
 import type {IContent} from '@/types'
 import {computed, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
+import {useRouter} from 'vue-router'
 import {useApp} from '@/composables/useApp'
 import ContentCard from '@/components/ContentCard.vue'
-import {useRouter} from 'vue-router'
 
 const {t, tm} = useI18n()
 const {CONS, log} = useApp()

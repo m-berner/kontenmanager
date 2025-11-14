@@ -1,4 +1,5 @@
-import { reactive, ref } from 'vue';
+import {reactive, ref} from 'vue';
+
 const bookingFormularData = reactive({
     id: 0,
     bookDate: '',
@@ -23,6 +24,7 @@ const bookingFormularData = reactive({
     marketPlace: ''
 });
 const formRef = ref(null);
+
 export function useBookingFormular() {
     return {
         formRef,

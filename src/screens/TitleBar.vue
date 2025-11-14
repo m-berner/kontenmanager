@@ -8,13 +8,13 @@
 <script lang="ts" setup>
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {storeToRefs} from 'pinia'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
-import {storeToRefs} from 'pinia'
+import {useApp} from '@/composables/useApp'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
@@ -24,7 +24,7 @@ const {isCompanyPage, isDownloading} = storeToRefs(runtime)
 const {setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
-const  {activeAccountId} = storeToRefs(settings)
+const {activeAccountId} = storeToRefs(settings)
 
 const MESSAGES = Object.freeze({
   INFO_TITLE: t('homePage.messages.infoTitle'),

@@ -9,12 +9,12 @@
 import type {IMenuItem} from '@/types'
 import type {DataTableHeader} from 'vuetify'
 import {ref} from 'vue'
+import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
+import {useApp} from '@/composables/useApp'
 import DotMenu from '@/components/DotMenu.vue'
-import {storeToRefs} from 'pinia'
 
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()

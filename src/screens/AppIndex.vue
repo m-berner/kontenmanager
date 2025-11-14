@@ -8,24 +8,23 @@
 <script lang="ts" setup>
 import type {IExchangeData, TStorageChange} from '@/types'
 import {onBeforeMount} from 'vue'
-import {useApp} from '@/composables/useApp'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useSettingsStore} from '@/stores/settings'
-import {useBrowser} from '@/composables/useBrowser'
-import {useFetch} from '@/composables/useFetch'
-import {useRecordsStore} from '@/stores/records'
-import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useTheme} from 'vuetify'
 import {RouterView} from 'vue-router'
-import AlertOverlay from '@/components/AlertOverlay.vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
+import {useRecordsStore} from '@/stores/records'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
+import {useFetch} from '@/composables/useFetch'
+import {useIndexedDB} from '@/composables/useIndexedDB'
+import AlertOverlay from '@/components/AlertOverlay.vue'
 
 const {CONS, haveSameStrings, log} = useApp()
 const {notice} = useBrowser()
 const {t} = useI18n()
 
-// TODO erfolgsmeldung update buchung, ID mit text ersetzen
 onBeforeMount(async () => {
   try {
     const MESSAGES = Object.freeze({

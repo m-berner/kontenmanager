@@ -10,12 +10,12 @@ import type {IMenuItem, IStock_Store} from '@/types'
 import type {DataTableHeader} from 'vuetify'
 import {computed, onBeforeUpdate, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {storeToRefs} from 'pinia'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
-import DotMenu from '@/components/DotMenu.vue'
 import {useRuntimeStore} from '@/stores/runtime'
-import {storeToRefs} from 'pinia'
+import {useApp} from '@/composables/useApp'
+import DotMenu from '@/components/DotMenu.vue'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
@@ -25,8 +25,7 @@ const {stocksPerPage} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {stocksPage, isDownloading} = storeToRefs(runtime)
 
-const loading = ref(false)
-const stocksHeaders = computed<DataTableHeader[]>(() => [
+const stocksHeaders: readonly DataTableHeader[] = Object.freeze([
   {
     title: t('homePage.stocksTable.headers.action'),
     align: 'start',
@@ -88,7 +87,7 @@ const stocksHeaders = computed<DataTableHeader[]>(() => [
     key: 'mMax'
   }
 ])
-const stocksMenuItems = computed<IMenuItem[]>(() => [
+const stocksMenuItems: readonly IMenuItem[] = Object.freeze([
   {
     id: 'DeleteStock',
     title: t('homePage.stocksTable.menuItems.delete'),
@@ -110,6 +109,9 @@ const stocksMenuItems = computed<IMenuItem[]>(() => [
     icon: '$link'
   }
 ])
+
+const loading = ref(false)
+
 const winLossClass = computed(() => {
   return (value: number): Record<string, boolean> => ({
     'color-red font-weight-bold': value < 0,

@@ -9,16 +9,16 @@
 import type {IBooking_DB, IBooking_Store} from '@/types.d'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {storeToRefs} from 'pinia'
+import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
+import {useApp} from '@/composables/useApp'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingFormular} from '@/composables/useBookingFormular'
-import {useRecordsStore} from '@/stores/records'
 import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
-import {storeToRefs} from 'pinia'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -32,7 +32,7 @@ const {activeId} = storeToRefs(runtime)
 const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
-
+// TODO erfolgsmeldung update buchung, ID mit text ersetzen
 const bookingIndex = records.bookings.getIndexById(activeId.value)
 if (bookingIndex > -1) {
   const currentBooking = bookingItems.value[bookingIndex]

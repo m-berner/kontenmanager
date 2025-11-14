@@ -9,13 +9,13 @@
 import type {IMenuItem} from '@/types'
 import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
+import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
-import {useBrowser} from '@/composables/useBrowser'
-import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useRecordsStore} from '@/stores/records'
 import {useAlertStore} from '@/stores/alerts'
-import {storeToRefs} from 'pinia'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
+import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 
 interface OptionMenuProps {
   recordID: number

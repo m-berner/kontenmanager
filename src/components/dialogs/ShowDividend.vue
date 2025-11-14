@@ -9,10 +9,10 @@
 import type {DataTableHeader} from 'vuetify'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useApp} from '@/composables/useApp'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()

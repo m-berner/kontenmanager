@@ -502,7 +502,10 @@ export const useRecordsStore = defineStore('records', function () {
         stocksStore.clean()
     }
 
-    async function init(storesDB: IStores_DB, messages: {INFO_TITLE: string, RESTRICTED_IMPORT: string}, removeAccounts = true): Promise<void> {
+    async function init(storesDB: IStores_DB, messages: {
+        INFO_TITLE: string,
+        RESTRICTED_IMPORT: string
+    }, removeAccounts = true): Promise<void> {
         log('RECORDS: init', {info: storesDB})
         const settings = useSettingsStore()
         const {activeAccountId} = storeToRefs(settings)

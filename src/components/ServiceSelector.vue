@@ -7,9 +7,9 @@
   -->
 <script lang="ts" setup>
 import {onBeforeMount, ref} from 'vue'
+import {useTheme} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import {useTheme} from 'vuetify'
 
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
