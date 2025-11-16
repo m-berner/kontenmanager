@@ -32,7 +32,6 @@ const creditValue = computed({
     })
   }
 })
-
 const debitValue = computed({
   get: () => props.modelValue.debit,
   set: (val: number) => {
@@ -42,10 +41,8 @@ const debitValue = computed({
     })
   }
 })
-
-// Reaktive Rules - werden neu berechnet wenn sich der jeweils andere Wert ändert
-const creditRules = computed(() => isValidCredit([t('dialogs.formular.onlyOnePositive'), t('dialogs.formular.notNegative')], props.modelValue.debit))
-const debitRules = computed(() => isValidDebit([t('dialogs.formular.onlyOnePositive'), t('dialogs.formular.notNegative')], props.modelValue.credit))
+const creditRules = computed(() => isValidCredit([t('components.creditDebitFieldset.onlyOnePositive'), t('components.creditDebitFieldset.notNegative')], props.modelValue.debit))
+const debitRules = computed(() => isValidDebit([t('components.creditDebitFieldset.onlyOnePositive'), t('components.creditDebitFieldset.notNegative')], props.modelValue.credit))
 </script>
 
 <template>
@@ -55,12 +52,12 @@ const debitRules = computed(() => isValidDebit([t('dialogs.formular.onlyOnePosit
       <CurrencyInput
           v-model="creditValue"
           :disabled="props.disabled"
-          :label="t('dialogs.formular.creditLabel')"
+          :label="t('components.creditDebitFieldset.creditLabel')"
           :rules="creditRules"/>
       <CurrencyInput
           v-model="debitValue"
           :disabled="props.disabled"
-          :label="t('dialogs.formular.debitLabel')"
+          :label="t('components.creditDebitFieldset.debitLabel')"
           :rules="debitRules"/>
     </div>
   </fieldset>

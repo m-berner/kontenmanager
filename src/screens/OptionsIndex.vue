@@ -44,6 +44,7 @@ const optionsTabs: readonly ITabs[] = Object.freeze([
     id: 'register_ex'
   }
 ])
+
 const tab = ref<number>(0)
 
 log('--- OptionsIndex.vue setup ---', {info: window.location.href})

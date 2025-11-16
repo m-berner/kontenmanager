@@ -280,7 +280,12 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         };
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => {
-                resolve({ accountsDB: results.accountsDB, bookingsDB: results.bookingsDB, bookingTypesDB: results.bookingTypesDB, stocksDB: results.stocksDB });
+                resolve({
+                    accountsDB: results.accountsDB,
+                    bookingsDB: results.bookingsDB,
+                    bookingTypesDB: results.bookingTypesDB,
+                    stocksDB: results.stocksDB
+                });
             };
             tx.onerror = () => reject(tx.error);
         });

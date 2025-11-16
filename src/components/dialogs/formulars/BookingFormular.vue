@@ -156,7 +156,7 @@ const feeModel = computed({
     <v-row justify="center">
       <CreditDebitFieldset
           v-model="creditDebitModel"
-          :legend="t('dialogs.formular.bookingLabel')"/>
+          :legend="t('dialogs.bookingFormular.bookingLabel')"/>
     </v-row>
     <v-row v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1" justify="center">
       <CreditDebitFieldset

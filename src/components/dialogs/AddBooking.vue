@@ -165,8 +165,13 @@ const onClickOk = async (): Promise<void> => {
       await notice(['Could not add to database'])
     }
   } catch (e) {
-    log('ADD_BOOKING: onClickOk', {error: e})
-    await notice([t('dialogs.addBooking.catch')])
+    const prefix = t('dialogs.addBooking.errors.onClickOk')
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
   }
 }
 const title = t('dialogs.addBooking.title')

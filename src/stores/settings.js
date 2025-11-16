@@ -1,8 +1,7 @@
-import {ref} from 'vue';
-import {useApp} from '@/composables/useApp';
-import {defineStore} from 'pinia';
-
-const {CONS, log} = useApp();
+import { ref } from 'vue';
+import { useApp } from '@/composables/useApp';
+import { defineStore } from 'pinia';
+const { CONS, log } = useApp();
 export const useSettingsStore = defineStore('settings', function () {
     const skin = ref(CONS.DEFAULTS.BROWSER_STORAGE.SKIN);
     const bookingsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE);
@@ -16,7 +15,6 @@ export const useSettingsStore = defineStore('settings', function () {
     const markets = ref(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS);
     const indexes = ref(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES);
     const exchanges = ref(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES);
-
     function init(theme, storage) {
         theme.global.name.value = storage.sSkin;
         skin.value = storage.sSkin;
@@ -32,7 +30,6 @@ export const useSettingsStore = defineStore('settings', function () {
         indexes.value = [...storage.sIndexes];
         exchanges.value = [...storage.sExchanges];
     }
-
     return {
         skin,
         bookingsPerPage,

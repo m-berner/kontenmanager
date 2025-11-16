@@ -50,8 +50,13 @@ const onClickOk = async (): Promise<void> => {
       await notice([t('dialogs.updateBookingType.error1a'), t('dialogs.updateBookingType.error1b')])
     }
   } catch (e) {
-    log('UPDATE_BOOKING_TYPE: onClickOk', {error: e})
-    await notice([t('dialogs.updateBookingType.catch')])
+    const prefix = t('dialogs.updateBookingType.errors.onClickOk')
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
   }
 }
 const title = t('dialogs.updateBookingType.title')

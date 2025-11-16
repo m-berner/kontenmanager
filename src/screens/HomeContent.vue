@@ -21,6 +21,7 @@ const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {bookingsPerPage} = storeToRefs(settings)
+
 const homeHeaders: readonly DataTableHeader[] = Object.freeze([
   {
     title: t('homePage.bookingsTable.headers.action'),
@@ -71,9 +72,11 @@ const homeMenuItems: readonly IMenuItem[] = Object.freeze([
     icon: '$updateBooking'
   }
 ])
+
 const search = ref<string>('')
 
 const onUpdateItemsPerPage = (count: number): void => {
+  log('HOME_CONTENT: onUpdateItemsPerPage')
   bookingsPerPage.value = count
 }
 const onUpdatePage = (page: number): void => {

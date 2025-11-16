@@ -40,8 +40,13 @@ const onClickOk = async (): Promise<void> => {
     }
     runtime.resetTeleport()
   } catch (e) {
-    log('DELETE_BOOKING: onClickOk', {error: e})
-    await notice([t('dialogs.deleteBookingType.catch')])
+    const prefix = t('dialogs.deleteBookingType.errors.onClickOk')
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
   }
 }
 const title = t('dialogs.deleteBookingType.title')

@@ -56,7 +56,7 @@ const onSearch = () => {
   const {faviconUrl} = useFavicon(domain.value ?? '')
   accountFormularData.logoUrl = faviconUrl.value
 }
-const {debouncedFunction: debouncedSearch} = useDebounce(onSearch, 500)
+const {debouncedFunction: debouncedSearch} = useDebounce(onSearch, 400)
 
 log('--- AccountFormular.vue setup ---')
 </script>

@@ -24,6 +24,7 @@ const {getStorage, setStorage} = useBrowser()
 
 const newItem = ref<string>('')
 const list = ref<string[]>([])
+
 const label = computed<string>(() => {
   let resultLabel = 'Error'
   switch (dynamicListProps.type) {

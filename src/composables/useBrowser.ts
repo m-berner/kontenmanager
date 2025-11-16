@@ -165,7 +165,7 @@ export function useBrowser() {
                 browser.downloads.onChanged.removeListener(onDownloadChange)
             }
         }
-        browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up a blob object after the download.
+        browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up the blob object after the download.
     }
 
     return {

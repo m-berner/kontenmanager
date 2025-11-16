@@ -47,8 +47,13 @@ const onClickOk = async (): Promise<void> => {
     resetTeleport()
     await notice([t('dialogs.deleteAccount.success')])
   } catch (e) {
-    log('HEADER_BAR: onIconClick', {error: e})
-    await notice([t('dialogs.deleteAccount.error')])
+    const prefix = t('dialogs.deleteAccount.errors.onClickOk')
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
   }
 }
 const title = computed(() => t('dialogs.deleteAccount.title'))

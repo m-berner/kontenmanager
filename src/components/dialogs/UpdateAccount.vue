@@ -47,8 +47,13 @@ const onClickOk = async (): Promise<void> => {
     runtime.resetTeleport()
     await notice([t('dialogs.updateAccount.success')])
   } catch (e) {
-    log('UPDATE_ACCOUNT: onClickOk', {error: e})
-    await notice([t('dialogs.updateAccount.catch')])
+    const prefix = t('dialogs.updateAccount.errors.onClickOk')
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
   }
 }
 const title = t('dialogs.updateAccount.title')

@@ -7,7 +7,9 @@
     "iconsAlt": {
       "logo": "Bank Logo"
     },
-    "error": "No account has been created yet?"
+    "errors": {
+      "onUpdateTitleBar": "Error in 'onUpdateTitleBar'"
+    }
   },
   "headerBar": {
     "home": "Home",
@@ -38,13 +40,17 @@
       "allStocksVisible": "No companies are hidden."
     }
   },
-  "infoBar": {},
+  "infoBar": {
+  },
   "homePage": {
     "messages": {
       "infoTitle": "INFO",
       "noDelete": "This company cannot be deleted. Bookings exist.",
       "restrictedImport": "AccountManager is a further development of the former StockManager. Importing StockManager data is only possible directly after installation, before any AccountManager object has been manually created.",
       "corruptStorage": "Local browser storage is corrupt. Reset to default with <CTRL + ALT + r>."
+    },
+    "errors": {
+      "onBeforeMount": "Error in 'onBeforeMount'"
     },
     "search": "Search",
     "bookingsTable": {
@@ -118,19 +124,26 @@
     "privacy": "Privacy",
     "mail": "Email"
   },
-  "dialogs": {
-    "formular": {
-      "bookingLabel": "Booking",
+  "components": {
+    "creditDebitFieldset": {
       "creditLabel": "Credit",
       "debitLabel": "Debit",
       "notNegative": "Only positive values",
       "onlyOnePositive": "One value must be 0"
+    }
+  },
+  "dialogs": {
+    "bookingFormular": {
+      "bookingLabel": "Booking"
     },
     "cancel": "Cancel",
     "ok": "OK",
     "stockFormular": {
       "noAccount": "You must first create and select an account.",
-      "noStocks": "There is no company yet."
+      "noStocks": "There is no company yet.",
+      "errors": {
+        "onUpdateIsin": "Error in 'onUpdateIsin'"
+      }
     },
     "addBooking": {
       "title": "Add Booking",
@@ -150,7 +163,9 @@
       "sourceTaxLabel": "Withholding Tax",
       "message": "You must first create and select an account.",
       "success": "Booking has been added",
-      "error": "Input error?"
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      }
     },
     "updateBooking": {
       "title": "Edit Booking",
@@ -170,7 +185,9 @@
       "sourceTaxLabel": "Withholding Tax",
       "message": "There is no booking yet.",
       "success": "Booking has been added",
-      "error": "Input error?",
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      },
       "validators": [
         "is required"
       ]
@@ -193,7 +210,9 @@
       "preview": "Preview",
       "missingLogo": "No logo found",
       "success": "Account has been added",
-      "error": "Account already exists",
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      },
       "message": "You must first create and select an account."
     },
     "addStock": {
@@ -204,7 +223,9 @@
       "symbol": "Symbol",
       "formDisabledLabel": "Enter manually",
       "success": "Company has been added",
-      "error": "Company already exists",
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      },
       "message": "You must first create and select an account."
     },
     "deleteStock": {
@@ -224,7 +245,9 @@
       "quarterDay": "Quarterly Results",
       "url": "URL",
       "success": "Company has been updated",
-      "error": "Error",
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      },
       "message": "No company has been created yet. You must first create an account."
     },
     "fadeInStock": {
@@ -243,7 +266,9 @@
       "preview": "Preview",
       "missingLogo": "No logo found",
       "success": "Account has been updated",
-      "error": "Account already exists",
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      },
       "message": "There is no account yet."
     },
     "deleteAccount": {
@@ -251,7 +276,9 @@
       "accountNumberLabel": "Account Number",
       "confirm": "Do you really want to delete the account with all associated data?",
       "success": "Account has been removed",
-      "error": "Account was not removed?",
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      },
       "message": "There is no account yet."
     },
     "addBookingType": {
@@ -262,6 +289,9 @@
       "error1a": "The booking type already exists",
       "error1b": "(A duplicate was not added)",
       "catch": "Problem adding!",
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      },
       "message": "You must first create and select an account."
     },
     "updateBookingType": {
@@ -271,7 +301,9 @@
       "success": "Booking type has been updated",
       "error1a": "The booking type could not be updated",
       "error1b": "",
-      "catch": "Problem updating!"
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      }
     },
     "deleteBookingType": {
       "title": "Delete Booking Type",
@@ -280,7 +312,9 @@
       "success": "Booking type has been removed",
       "error1a": "A booking exists.",
       "error1b": "(Booking type could not be removed)",
-      "catch": "Problem deleting!",
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'"
+      },
       "message": "There is no booking type yet."
     },
     "showAccounting": {

@@ -43,9 +43,15 @@ const onUpdateIsin = async () => {
       stockFormularData.symbol = companyData.symbol
     }
   } catch (e) {
-    await notice([e as string, 'No company data'])
+    const prefix = t('dialogs.stockFormular.errors.onUpdateIsin')
     stockFormularData.company = ''
     stockFormularData.symbol = ''
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
   }
 }
 

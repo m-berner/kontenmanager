@@ -22,10 +22,10 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 import AlertOverlay from '@/components/AlertOverlay.vue'
 
 const {CONS, haveSameStrings, log} = useApp()
-const {notice} = useBrowser()
-const {t} = useI18n()
 
 onBeforeMount(async () => {
+  const {notice} = useBrowser()
+  const {t} = useI18n()
   try {
     const MESSAGES = Object.freeze({
       INFO_TITLE: t('homePage.messages.infoTitle'),
@@ -129,14 +129,19 @@ onBeforeMount(async () => {
     const onBeforeUnload = (): void => {
       log('APP_INDEX: onBeforeUnload')
       removeStorageChangedListener()
-      //db.close()
       closeDB()
     }
     window.addEventListener('keydown', onKeyDown, false)
     window.addEventListener('keyup', onKeyUp, false)
     window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
   } catch (e) {
-    log('APP_INDEX: onBeforeMount', {error: e})
+    const prefix = t('homePage.errors.onBeforeMount')
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
   }
 })
 

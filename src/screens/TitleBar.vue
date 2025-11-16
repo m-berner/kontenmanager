@@ -21,7 +21,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 const {isCompanyPage, isDownloading} = storeToRefs(runtime)
-const {setStorage} = useBrowser()
+const {notice, setStorage} = useBrowser()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
@@ -49,9 +49,19 @@ const depot = computed((): string => {
 
 const onUpdateTitleBar = async (): Promise<void> => {
   log('TITLE_BAR onUpdateTitleBar')
-  const storesDB = await getDatabaseStores(activeAccountId.value)
-  await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-  await records.init(storesDB, MESSAGES)
+  try {
+    const storesDB = await getDatabaseStores(activeAccountId.value)
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+    await records.init(storesDB, MESSAGES)
+  } catch (e) {
+    const prefix = t('titleBar.errors.onUpdateTitleBar')
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
+  }
 }
 
 log('--- TitleBar.vue setup ---')

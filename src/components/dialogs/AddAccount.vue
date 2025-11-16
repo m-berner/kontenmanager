@@ -62,8 +62,13 @@ const onClickOk = async (): Promise<void> => {
       await notice([t('dialogs.addAccount.success')])
     }
   } catch (e) {
-    log('ADD_ACCOUNT: onClickOk', {error: e})
-    await notice([t('dialogs.addAccount.error')])
+    const prefix = t('dialogs.addAccount.errors.onClickOk')
+    if (e instanceof Error) {
+      log(prefix, {error: e.message})
+      await notice([prefix, e.message])
+    } else {
+      throw new Error(`${prefix}: unknown`)
+    }
   }
 }
 

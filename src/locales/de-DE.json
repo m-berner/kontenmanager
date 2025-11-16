@@ -7,7 +7,9 @@
     "iconsAlt": {
       "logo": "Bank Logo"
     },
-    "error": "Es wurde noch kein Konto angelegt?"
+    "errors": {
+      "onUpdateTitleBar": "Fehler in 'onUpdateTitleBar'"
+    }
   },
   "headerBar": {
     "home": "Startseite",
@@ -38,13 +40,17 @@
       "allStocksVisible": "Es sind keine Unternehmen ausgeblendet."
     }
   },
-  "infoBar": {},
+  "infoBar": {
+  },
   "homePage": {
     "messages": {
       "infoTitle": "INFO",
       "noDelete": "Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.",
       "restrictedImport": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde.",
       "corruptStorage": "Der lokale Browser Speicher ist korrupt. Zurücksetzen zum Standard mit <STRG + ALT + r>."
+    },
+    "errors": {
+      "onBeforeMount": "Fehler in 'onBeforeMount'"
     },
     "search": "Suchen",
     "bookingsTable": {
@@ -118,19 +124,26 @@
     "privacy": "Datenschutz",
     "mail": "Email"
   },
-  "dialogs": {
-    "formular": {
-      "bookingLabel": "Buchung",
+  "components": {
+    "creditDebitFieldset": {
       "creditLabel": "Haben",
       "debitLabel": "Soll",
       "notNegative": "Nur positive Werte",
       "onlyOnePositive": "Ein Wert muss 0 sein"
+    }
+  },
+  "dialogs": {
+    "bookingFormular": {
+      "bookingLabel": "Buchung"
     },
     "cancel": "Abbrechen",
     "ok": "OK",
     "stockFormular": {
       "noAccount": "Sie müssen erst ein Konto anlegen u. auswählen.",
-      "noStocks": "Es gibt noch kein Unternehmen."
+      "noStocks": "Es gibt noch kein Unternehmen.",
+      "errors": {
+        "onUpdateIsin": "Fehler in 'onUpdateIsin'"
+      }
     },
     "addBooking": {
       "title": "Buchung hinzufügen",
@@ -150,7 +163,9 @@
       "sourceTaxLabel": "Quellensteuer",
       "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
       "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?"
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      }
     },
     "updateBooking": {
       "title": "Buchung bearbeiten",
@@ -170,7 +185,9 @@
       "sourceTaxLabel": "Quellensteuer",
       "message": "Es gibt noch keine Buchung.",
       "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?",
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      },
       "validators": [
         "ist erforderlich"
       ]
@@ -193,7 +210,9 @@
       "preview": "Vorschau",
       "missingLogo": "Kein Logo gefunden",
       "success": "Konto wurde hinzugefügt",
-      "error": "Konto existiert bereits",
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      },
       "message": "Sie müssen erst ein Konto anlegen u. auswählen."
     },
     "addStock": {
@@ -204,7 +223,9 @@
       "symbol": "Kürzel",
       "formDisabledLabel": "Manuell eintragen",
       "success": "Unternehmen wurde hinzugefügt",
-      "error": "Unternehmen existiert bereits",
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      },
       "message": "Sie müssen erst ein Konto anlegen u. auswählen."
     },
     "deleteStock": {
@@ -224,7 +245,9 @@
       "quarterDay": "Quartalszahlen",
       "url": "URL",
       "success": "Unternehmen wurde aktualisiert",
-      "error": "Fehler",
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      },
       "message": "Es wurde noch kein Unternehmen angelegt. Zuerst müssen Sie ein Konto anlegen."
     },
     "fadeInStock": {
@@ -243,7 +266,9 @@
       "preview": "Vorschau",
       "missingLogo": "Kein Logo gefunden",
       "success": "Konto wurde aktualisiert",
-      "error": "Konto existiert bereits",
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      },
       "message": "Es gibt noch kein Konto."
     },
     "deleteAccount": {
@@ -251,7 +276,9 @@
       "accountNumberLabel": "Kontonummer",
       "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
       "success": "Konto wurde entfernt",
-      "error": "Konto wurde nicht entfernt?",
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      },
       "message": "Es gibt noch kein Konto."
     },
     "addBookingType": {
@@ -262,6 +289,9 @@
       "error1a": "Der Buchungstyp existiert bereits",
       "error1b": "(Eine Duplette wurde nicht hinzugefügt)",
       "catch": "Problem beim Hinzufügen!",
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      },
       "message": "Sie müssen erst ein Konto anlegen u. auswählen."
     },
     "updateBookingType": {
@@ -271,7 +301,9 @@
       "success": "Buchungstyp wurde aktualisiert",
       "error1a": "Der Buchungstyp konnte nicht aktualisiert werden",
       "error1b": "",
-      "catch": "Problem beim Aktualisieren!"
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      }
     },
     "deleteBookingType": {
       "title": "Buchungstyp löschen",
@@ -280,7 +312,9 @@
       "success": "Buchungstyp wurde entfernt",
       "error1a": "Es existiert eine Buchung.",
       "error1b": "(Buchungstyp konnte nicht entfernt werden)",
-      "catch": "Problem beim Löschen!",
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'"
+      },
       "message": "Es gibt noch keinen Buchungstyp."
     },
     "showAccounting": {

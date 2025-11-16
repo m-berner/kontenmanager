@@ -19,11 +19,13 @@ const {curUsd, infoMaterials} = storeToRefs(runtime)
 const settings = useSettingsStore()
 
 const usd = (mat: string, usd = true): number => {
+  log('INFO_BAR: usd')
   const materialCode = CONS.SETTINGS.MATERIALS.get(mat) ?? ''
+  let result = (infoMaterials.value.get(materialCode) ?? 0) / curUsd.value
   if (usd) {
-    return infoMaterials.value.get(materialCode) ?? 0
+    result = infoMaterials.value.get(materialCode) ?? 0
   }
-  return (infoMaterials.value.get(materialCode) ?? 0) / curUsd.value
+  return result
 }
 
 log('--- InfoBar.vue setup ---')
