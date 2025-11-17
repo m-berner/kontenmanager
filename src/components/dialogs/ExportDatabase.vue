@@ -24,7 +24,11 @@ const {getAll: getAllStocks} = useStocksDB()
 
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}.json`
-const localeText = t('dialogs.exportDialog', {filename: fn})
+
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.exportDatabase.title'),
+  TEXT: t('dialogs.exportDialog.text', {filename: fn})
+})
 
 const onClickOk = async (): Promise<void> => {
   log('EXPORT_DATABASE : onClickOk')
@@ -98,7 +102,7 @@ log('--- ExportDatabase.vue setup ---')
       <v-card-text class="pa-5">
         <v-textarea
             :disabled="true"
-            :model-value="localeText"
+            :model-value="STRINGS.TEXT"
             variant="outlined"/>
       </v-card-text>
     </v-card>

@@ -29,9 +29,24 @@ const {activeAccountId} = storeToRefs(settings)
 const formName = ref<string>('')
 const formRef = ref<HTMLFormElement | null>(null)
 
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.addBookingType.title'),
+  SUCCESS_ADD: t('dialogs.addBookingType.success.add'),
+  ERROR_ADD: t('dialogs.addBookingType.errors.add'),
+  BOOKING_TYPE_LABEL: t('dialogs.addBookingType.bookingTypeLabel'),
+  PLACEHOLDER: t('dialogs.addBookingType.placeholder'),
+  ERROR_ONCLICK_OK: t('dialogs.addBookingType.errors.onClickOk'),
+  NAME_RULES: [
+    t('dialogs.validators.nameRules.required'),
+    t('dialogs.validators.nameRules.length'),
+    t('dialogs.validators.nameRules.begin')
+  ]
+})
+
 const reset = () => {
   formName.value = ''
 }
+
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: onClickOk')
   if (!await validateForm(formRef)) return
@@ -47,18 +62,17 @@ const onClickOk = async (): Promise<void> => {
         const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
         records.bookingTypes.add(completeBookingType)
         reset()
-        await notice([t('dialogs.addBookingType.success')])
+        await notice([STRINGS.SUCCESS_ADD])
       }
     } else {
-      await notice([t('dialogs.addBookingType.error1a'), t('dialogs.addBookingType.error1b')])
+      await notice([STRINGS.ERROR_ADD])
     }
   } catch (e) {
-    const prefix = t('dialogs.addBookingType.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
@@ -82,13 +96,9 @@ log('--- AddBookingType.vue setup ---')
         v-model="formName"
         :counter="32"
         :disabled="activeAccountId === -1"
-        :label="t('dialogs.addBookingType.label')"
-        :placeholder="t('dialogs.addBookingType.placeholder')"
-        :rules="nameRules([
-            t('dialogs.validators.nameRules.required'),
-            t('dialogs.validators.nameRules.length'),
-            t('dialogs.validators.nameRules.begin')
-        ])"
+        :label="STRINGS.BOOKING_TYPE_LABEL"
+        :placeholder="STRINGS.PLACEHOLDER"
+        :rules="nameRules(STRINGS.NAME_RULES)"
         autofocus
         density="compact"
         variant="outlined"

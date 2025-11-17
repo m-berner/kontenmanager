@@ -162,8 +162,14 @@
     "cancel": "Cancel",
     "ok": "OK",
     "stockFormular": {
-      "noAccount": "You must first create and select an account.",
-      "noStocks": "There is no company yet.",
+      "isinLabel": "ISIN",
+      "symbolLabel": "Symbol",
+      "companyLabel": "Company",
+      "fadeOutLabel": "Hide",
+      "firstPageLabel": "First Page",
+      "meetingDayLabel": "General Meeting",
+      "quarterDayLabel": "Quarterly Results",
+      "urlLabel": "URL",
       "errors": {
         "onUpdateIsin": "Error in 'onUpdateIsin'"
       }
@@ -201,16 +207,12 @@
     },
     "addStock": {
       "title": "Add Company",
-      "company": "Company",
-      "isin": "ISIN",
-      "wkn": "WKN",
-      "symbol": "Symbol",
-      "formDisabledLabel": "Enter manually",
-      "success": "Company has been added",
+      "success": {
+        "add": "Company has been added"
+      },
       "errors": {
         "onClickOk": "Error in 'onClickOk'"
-      },
-      "message": "You must first create and select an account."
+      }
     },
     "deleteStock": {
       "title": "Remove Company",
@@ -219,24 +221,16 @@
     },
     "updateStock": {
       "title": "Edit Company",
-      "isin": "ISIN",
-      "wkn": "WKN",
-      "symbol": "Symbol",
-      "company": "Company",
-      "fadeOut": "Hide",
-      "firstPage": "First Page",
-      "meetingDay": "Annual General Meeting",
-      "quarterDay": "Quarterly Results",
-      "url": "URL",
-      "success": "Company has been updated",
+      "success": {
+        "add": "Company has been updated"
+      },
       "errors": {
         "onClickOk": "Error in 'onClickOk'"
-      },
-      "message": "No company has been created yet. You must first create an account."
+      }
     },
     "fadeInStock": {
       "title": "Show Company",
-      "message": "All companies are visible."
+      "selectLabel": "Comapny"
     },
     "updateAccount": {
       "title": "Update Bank Account",
@@ -247,11 +241,12 @@
         "onClickOk": "Error in 'onClickOk'"
       }
     },
-    "deleteAccount": {
+    "deleteAccountConfirmation": {
       "title": "Bank Account - Delete All Data",
-      "accountNumberLabel": "Account Number",
       "confirm": "Do you really want to delete the account with all associated data?",
-      "success": "Account has been removed",
+      "success": {
+        "add": "Account has been removed"
+      },
       "errors": {
         "onClickOk": "Error in 'onClickOk'"
       },
@@ -259,83 +254,68 @@
     },
     "addBookingType": {
       "title": "Add Booking Type",
-      "label": "Booking Type",
+      "bookingTypeLabel": "Booking Type",
       "placeholder": "Enter name",
-      "success": "Booking type has been added",
-      "error1a": "The booking type already exists",
-      "error1b": "(A duplicate was not added)",
-      "catch": "Problem adding!",
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'"
+      "success": {
+        "add": "Booking type has been added"
       },
-      "message": "You must first create and select an account."
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'",
+        "add": "Booking type exists already"
+      }
     },
     "updateBookingType": {
       "title": "Update Booking Type",
-      "label": "Booking Type",
-      "message": "There is no booking type yet.",
-      "success": "Booking type has been updated",
-      "error1a": "The booking type could not be updated",
-      "error1b": "",
+      "bookingTypeLabel": "Booking Type",
+      "success": {
+        "add": "Booking type has been updated"
+      },
       "errors": {
-        "onClickOk": "Error in 'onClickOk'"
+        "onClickOk": "Error in 'onClickOk'",
+        "add": "The booking type could not be updated"
       }
     },
     "deleteBookingType": {
       "title": "Delete Booking Type",
-      "label": "Booking Type",
+      "bookingTypeLabel": "Booking Type",
       "placeholder": "Select booking type to delete",
-      "success": "Booking type has been removed",
-      "error1a": "A booking exists.",
-      "error1b": "(Booking type could not be removed)",
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'"
+      "success": {
+        "add": "Booking type has been removed"
       },
-      "message": "There is no booking type yet."
+      "errors": {
+        "onClickOk": "Error in 'onClickOk'",
+        "add": "A booking exists"
+      }
     },
     "showAccounting": {
       "title": "Booking Results",
-      "dateLabel": "Booking Date",
-      "descriptionLabel": "Note",
-      "creditLabel": "Income",
-      "debitLabel": "Expense",
       "nameLabel": "Booking Category",
       "sumLabel": "Amount",
       "sum": "Total",
       "fees": "Fees",
       "taxes": "Taxes",
       "itemsPerPageText": "Entries per page",
-      "noDataText": "No dividend received yet",
-      "success": "Booking has been added",
-      "error": "Input error?"
+      "noDataText": "No dividend received yet"
     },
     "showDividend": {
       "title": "Dividend Overview",
       "yearLabel": "Ex-Date",
       "sumLabel": "Dividend Payment",
       "itemsPerPageText": "Entries per page",
-      "noDataText": "No dividend received yet",
-      "message": "No dividend received yet."
+      "noDataText": "No dividend received yet"
     },
-    "exportToFile": {
+    "exportDatabase": {
       "title": "Export Database",
-      "filename": "Filename"
+      "text": "When saving, the file {filename} will be created and saved in the user's downloads folder. (This file can be used for database restoration)."
     },
     "importDatabase": {
       "title": "Import Database",
-      "filename": "Filename",
       "invalid": "The data file is invalid!",
       "version": "The data file is too old and cannot be restored!",
       "notEmpty": "AccountManager objects already exist. Therefore a StockManager backup file cannot be restored!",
-      "messageStockmanager": "Stockmanager data can only be imported into an empty database!",
-      "messageVersion": "This database version cannot be imported. Version {version} or newer is required.",
-      "messageImported": "The data has already been imported.",
       "messageDelete": "All existing data will be deleted!",
-      "databaseLabel": "install in empty database",
-      "fakeLabel": "Fake Account ID",
-      "label": "from file"
-    },
-    "exportDialog": "When saving, the file {filename} will be created and saved in the user's downloads folder. (This file can be used for database restoration)."
+      "fileLabel": "from file"
+    }
   },
   "optionsPage": {
     "tabs": {

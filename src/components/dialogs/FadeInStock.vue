@@ -20,6 +20,11 @@ const {update} = useStocksDB()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
 
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.fadeInStock.title'),
+  SELECT_LABEL: t('dialogs.fadeInStock.selectLabel')
+})
+
 const _selected = ref<IStock_Store | null>(null)
 const formRef = ref<HTMLFormElement | null>(null)
 
@@ -31,12 +36,12 @@ const onClickOk = async (): Promise<void> => {
   }
   runtime.resetTeleport()
 }
-const title = t('dialogs.fadeInStock.title')
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {
   log('FADE_IN_STOCK: onMounted')
-  _selected.value = null // CONS.RECORDS.TEMPLATES.STOCK
+  _selected.value = null
 })
 
 log('--- FadeInStock.vue setup ---')
@@ -55,7 +60,7 @@ log('--- FadeInStock.vue setup ---')
           item-title="cCompany"
           v-bind:clearable="true"
           v-bind:items="records.stocks.passive"
-          v-bind:label="t('dialogs.fadeInStock.title')"
+          v-bind:label="STRINGS.SELECT_LABEL"
           v-bind:return-object="true"
           variant="outlined"/>
     </v-card-text>

@@ -162,8 +162,14 @@
     "cancel": "Abbrechen",
     "ok": "OK",
     "stockFormular": {
-      "noAccount": "Sie müssen erst ein Konto anlegen u. auswählen.",
-      "noStocks": "Es gibt noch kein Unternehmen.",
+      "isinLabel": "ISIN",
+      "symbolLabel": "Kürzel",
+      "companyLabel": "Unternehmen",
+      "fadeOutLabel": "Ausblenden",
+      "firstPageLabel": "Erste Seite",
+      "meetingDayLabel": "Hauptversammlung",
+      "quarterDayLabel": "Quartalszahlen",
+      "urlLabel": "URL",
       "errors": {
         "onUpdateIsin": "Fehler in 'onUpdateIsin'"
       }
@@ -201,16 +207,12 @@
     },
     "addStock": {
       "title": "Unternehmen hinzufügen",
-      "company": "Unternehmen",
-      "isin": "ISIN",
-      "wkn": "WKN",
-      "symbol": "Kürzel",
-      "formDisabledLabel": "Manuell eintragen",
-      "success": "Unternehmen wurde hinzugefügt",
+      "success": {
+        "add": "Unternehmen wurde hinzugefügt"
+      },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
-      },
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
+      }
     },
     "deleteStock": {
       "title": "Unternehmen entfernen",
@@ -219,24 +221,16 @@
     },
     "updateStock": {
       "title": "Unternehmen bearbeiten",
-      "isin": "ISIN",
-      "wkn": "WKN",
-      "symbol": "Kürzel",
-      "company": "Unternehmen",
-      "fadeOut": "Ausblenden",
-      "firstPage": "Erste Seite",
-      "meetingDay": "Hauptversammlung",
-      "quarterDay": "Quartalszahlen",
-      "url": "URL",
-      "success": "Unternehmen wurde aktualisiert",
+      "success": {
+        "add": "Unternehmen wurde aktualisiert"
+      },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
-      },
-      "message": "Es wurde noch kein Unternehmen angelegt. Zuerst müssen Sie ein Konto anlegen."
+      }
     },
     "fadeInStock": {
       "title": "Unternehmen einblenden",
-      "message": "Alle Unternehmen sind eingeblendet."
+      "selectLabel": "Unternehmen"
     },
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
@@ -247,11 +241,12 @@
         "onClickOk": "Fehler in 'onClickOk'"
       }
     },
-    "deleteAccount": {
+    "deleteAccountConfirmation": {
       "title": "Bankkonto - alle Daten löschen",
-      "accountNumberLabel": "Kontonummer",
       "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
-      "success": "Konto wurde entfernt",
+      "success": {
+        "add": "Konto wurde entfernt"
+      },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
       },
@@ -259,83 +254,68 @@
     },
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",
-      "label": "Buchungstyp",
+      "bookingTypeLabel": "Buchungstyp",
       "placeholder": "Name eingeben",
-      "success": "Buchungstyp wurde hinzugefügt",
-      "error1a": "Der Buchungstyp existiert bereits",
-      "error1b": "(Eine Duplette wurde nicht hinzugefügt)",
-      "catch": "Problem beim Hinzufügen!",
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
+      "success": {
+        "add": "Buchungstyp wurde hinzugefügt"
       },
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'",
+        "add": "Die Buchungstyp existiert bereits"
+      }
     },
     "updateBookingType": {
       "title": "Buchungstyp aktualisieren",
-      "label": "Buchungstyp",
-      "message": "Es gibt noch keinen Buchungstyp.",
-      "success": "Buchungstyp wurde aktualisiert",
-      "error1a": "Der Buchungstyp konnte nicht aktualisiert werden",
-      "error1b": "",
+      "bookingTypeLabel": "Buchungstyp",
+      "success": {
+        "add": "Buchungstyp wurde aktualisiert"
+      },
       "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
+        "onClickOk": "Fehler in 'onClickOk'",
+        "add": "Der Buchungstyp konnte nicht aktualisiert werden"
       }
     },
     "deleteBookingType": {
       "title": "Buchungstyp löschen",
-      "label": "Buchungstyp",
+      "bookingTypeLabel": "Buchungstyp",
       "placeholder": "Buchungstyp zum Löschen auswählen",
-      "success": "Buchungstyp wurde entfernt",
-      "error1a": "Es existiert eine Buchung.",
-      "error1b": "(Buchungstyp konnte nicht entfernt werden)",
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
+      "success": {
+        "add": "Buchungstyp wurde entfernt"
       },
-      "message": "Es gibt noch keinen Buchungstyp."
+      "errors": {
+        "onClickOk": "Fehler in 'onClickOk'",
+        "add": "Es existiert eine Buchung"
+      }
     },
     "showAccounting": {
       "title": "Buchungsergebnisse",
-      "dateLabel": "Buchungstag",
-      "descriptionLabel": "Bemerkung",
-      "creditLabel": "Einnahme",
-      "debitLabel": "Ausgabe",
       "nameLabel": "Buchungskategorie",
       "sumLabel": "Betrag",
       "sum": "Summe",
       "fees": "Gebühren",
       "taxes": "Steuern",
       "itemsPerPageText": "Einträge pro Seite",
-      "noDataText": "Bisher keine Dividende erhalten",
-      "success": "Buchung wurde hinzugefügt",
-      "error": "Eingabe Fehler?"
+      "noDataText": "Bisher keine Dividende erhalten"
     },
     "showDividend": {
       "title": "Dividenden Übersicht",
       "yearLabel": "Ex-Tag",
       "sumLabel": "Dividendenauszahlung",
       "itemsPerPageText": "Einträge pro Seite",
-      "noDataText": "Bisher keine Dividende erhalten",
-      "message": "Bisher keine Dividende erhalten."
+      "noDataText": "Bisher keine Dividende erhalten"
     },
-    "exportToFile": {
+    "exportDatabase": {
       "title": "Datenbank exportieren",
-      "filename": "Dateiname"
+      "text": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
     },
     "importDatabase": {
       "title": "Datenbank importieren",
-      "filename": "Dateiname",
       "invalid": "Die Datendatei ist ungültig!",
       "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
       "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
-      "messageStockmanager": "Stockmanager Daten können nur in eine leere Datenbank importiert werden!",
-      "messageVersion": "Diese Datenbank Version kann nicht importiert werden. Erforderlich ist Version {version} oder neuer.",
-      "messageImported": "Die Daten wurden bereits importiert.",
       "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
-      "databaseLabel": "in leere Datenbank installieren",
-      "fakeLabel": "Fake Konto ID",
-      "label": "aus Datei"
-    },
-    "exportDialog": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
+      "fileLabel": "aus Datei"
+    }
   },
   "optionsPage": {
     "tabs": {

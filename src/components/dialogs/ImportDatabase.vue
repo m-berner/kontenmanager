@@ -87,15 +87,17 @@ const {resetTeleport} = useRuntimeStore()
 const settings = useSettingsStore()
 const {info} = useAlertStore()
 
-const MESSAGES_INIT = Object.freeze({
+const MESSAGES = Object.freeze({
   INFO_TITLE: t('homePage.messages.infoTitle'),
   RESTRICTED_IMPORT: t('homePage.messages.restrictedImport')
 })
-const MESSAGES = Object.freeze({
-  IMPORT_TITLE: t('dialogs.importDatabase.title'),
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.importDatabase.title'),
   VERSION: t('dialogs.importDatabase.version'),
   NOT_EMPTY: t('dialogs.importDatabase.notEmpty'),
-  INVALID: t('dialogs.importDatabase.invalid')
+  INVALID: t('dialogs.importDatabase.invalid'),
+  MESSAGE_DELETE: t('dialogs.importDatabase.messageDelete'),
+  FILE_LABEL: t('dialogs.importDatabase.fileLabel')
 })
 
 const fileBlob = ref<Blob>(new Blob())
@@ -158,13 +160,13 @@ const onClickOk = async (): Promise<void> => {
         return result
       }
       if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
-        info(MESSAGES.IMPORT_TITLE, MESSAGES.INVALID, null)
+        info(STRINGS.TITLE, STRINGS.INVALID, null)
         return
       } else if (backupObject.sm.cDBVersion < CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
-        info(MESSAGES.IMPORT_TITLE, MESSAGES.VERSION, null)
+        info(STRINGS.TITLE, STRINGS.VERSION, null)
         return
       } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length > 0) {
-        info(MESSAGES.IMPORT_TITLE, MESSAGES.NOT_EMPTY, null)
+        info(STRINGS.TITLE, STRINGS.NOT_EMPTY, null)
         return
       }
       await clearAllAccounts()
@@ -263,7 +265,7 @@ const onClickOk = async (): Promise<void> => {
         bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeId),
         bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeId),
         stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeId)
-      }, MESSAGES_INIT)
+      }, MESSAGES)
       await importAccounts(accountsImportData)
       await importBookingTypes(bookingTypesImportData)
       await importBookings(bookingsImportData)
@@ -279,7 +281,7 @@ const onClickOk = async (): Promise<void> => {
     fr.readAsText(fileBlob.value, 'UTF-8')
   }
 }
-const title = t('dialogs.importDatabase.title')
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 log('--- ImportDatabase.vue setup ---')
@@ -291,12 +293,12 @@ log('--- ImportDatabase.vue setup ---')
       @submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
-          :label="t('dialogs.importDatabase.messageDelete')"
+          :label="STRINGS.MESSAGE_DELETE"
           variant="plain"
       />
       <v-file-input
           :clearable="true"
-          :label="t('dialogs.importDatabase.label')"
+          :label="STRINGS.FILE_LABEL"
           accept=".json"
           variant="outlined"
           @change="onChange"/>

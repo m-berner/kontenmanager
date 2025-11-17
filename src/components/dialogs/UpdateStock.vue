@@ -31,6 +31,12 @@ const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {stockFormularData, formRef} = useStockFormular()
 
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.updateStock.title'),
+  SUCCESS_ADD: t('dialogs.updateStock.success.add'),
+  ERROR_ONCLICK_OK: t('dialogs.updateStock.errors.onClickOk')
+})
+
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
   if (!await validateForm(formRef)) return
@@ -50,19 +56,18 @@ const onClickOk = async (): Promise<void> => {
     }
     records.stocks.update(stock)
     await update(stock)
-    await notice([t('dialogs.updateStock.success')])
+    await notice([STRINGS.SUCCESS_ADD])
     runtime.resetTeleport()
   } catch (e) {
-    const prefix = t('dialogs.updateStock.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = t('dialogs.updateStock.title')
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 log('--- UpdateStock.vue setup ---')

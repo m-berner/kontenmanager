@@ -25,6 +25,19 @@ const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.updateBookingType.title'),
+  SUCCESS_ADD: t('dialogs.updateBookingType.success.add'),
+  ERROR_ADD: t('dialogs.updateBookingType.errors.add'),
+  ERROR_ONCLICK_OK: t('dialogs.updateBookingType.errors.onClickOk'),
+  BOOKING_TYPE_LABEL: t('dialogs.updateBookingType.bookingTypeLabel'),
+  NAME_RULES:[
+    t('dialogs.validators.nameRules.required'),
+    t('dialogs.validators.nameRules.length'),
+    t('dialogs.validators.nameRules.begin')
+  ]
+})
+
 const formSelectedIndex = ref()
 const formName = ref<string>('')
 const formVisible = ref<boolean>(true)
@@ -45,21 +58,20 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType)
       await update(bookingType)
       runtime.resetTeleport()
-      await notice([t('dialogs.updateBookingType.success')])
+      await notice([STRINGS.SUCCESS_ADD])
     } else {
-      await notice([t('dialogs.updateBookingType.error1a'), t('dialogs.updateBookingType.error1b')])
+      await notice([STRINGS.ERROR_ADD])
     }
   } catch (e) {
-    const prefix = t('dialogs.updateBookingType.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = t('dialogs.updateBookingType.title')
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 log('--- UpdateBookingType.vue setup ---')
@@ -73,12 +85,8 @@ log('--- UpdateBookingType.vue setup ---')
     <v-text-field
         v-if="!formVisible"
         v-model="formName"
-        :label="t('dialogs.updateBookingType.label')"
-        :rules="nameRules([
-            t('dialogs.validators.nameRules.required'),
-            t('dialogs.validators.nameRules.length'),
-            t('dialogs.validators.nameRules.begin')
-        ])"
+        :label="STRINGS.BOOKING_TYPE_LABEL"
+        :rules="nameRules(STRINGS.NAME_RULES)"
         density="compact"
         variant="outlined"
         @focus="formRef?.resetValidation()"

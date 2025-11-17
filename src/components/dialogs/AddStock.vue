@@ -31,6 +31,12 @@ const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {stockFormularData, formRef} = useStockFormular()
 
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.addStock.title'),
+  SUCCESS_ADD: t('dialogs.addStock.success.add'),
+  ERROR_ONCLICK_OK: t('dialogs.addStock.errors.onClickOk')
+})
+
 const formDisabled = ref(false)
 
 const reset = (): void => {
@@ -63,21 +69,18 @@ const onClickOk = async (): Promise<void> => {
       const dbStock: IStock_DB = {cID: addStockID, ...stock}
       records.stocks.add(dbStock)
       resetTeleport()
-      await notice([t('dialogs.addStock.success')])
+      await notice([STRINGS.SUCCESS_ADD])
     }
   } catch (e) {
-    const prefix = t('dialogs.addStock.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = t('dialogs.addStock.title')
-// TODO update button in Company Content...
-// TODO Setting button also in company view
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {

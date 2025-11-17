@@ -33,6 +33,25 @@ const {activeId} = storeToRefs(runtime)
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
+const STRINGS = Object.freeze({
+  ERROR_ONUPDATE_ISIN: t('dialogs.stockFormular.errors.onUpdateIsin'),
+  COMPANY_LABEL: t('dialogs.stockFormular.companyLabel'),
+  SYMBOL_LABEL:   t('dialogs.stockFormular.symbolLabel'),
+  MEETING_DAY_LABEL: t('dialogs.stockFormular.meetingDayLabel'),
+  QUARTER_DAY_LABEL: t('dialogs.stockFormular.quarterDayLabel'),
+  FADEOUT_LABEL: t('dialogs.stockFormular.fadeOutLabel'),
+  FIRST_PAGE_LABEL: t('dialogs.stockFormular.firstPageLabel'),
+  URL_LABEL: t('dialogs.stockFormular.urlLabel'),
+  ISIN_LABEL: t('dialogs.stockFormular.isinLabel'),
+  ISIN_RULES: [
+    t('validators.isinRules.required'),
+    t('validators.isinRules.length'),
+    t('validators.isinRules.format'),
+    t('validators.isinRules.country'),
+    t('validators.isinRules.luhn')
+  ]
+})
+
 const onUpdateIsin = async () => {
   log('STOCK_FORMULAR: onUpdateISIN')
   try {
@@ -43,14 +62,13 @@ const onUpdateIsin = async () => {
       stockFormularData.symbol = companyData.symbol
     }
   } catch (e) {
-    const prefix = t('dialogs.stockFormular.errors.onUpdateIsin')
     stockFormularData.company = ''
     stockFormularData.symbol = ''
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONUPDATE_ISIN, {error: e.message})
+      await notice([STRINGS.ERROR_ONUPDATE_ISIN, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONUPDATE_ISIN}: unknown`)
     }
   }
 }
@@ -80,14 +98,8 @@ log('--- StockFormular.vue setup ---')
       <v-text-field
           v-model="stockFormularData.isin"
           :counter="12"
-          :label="t('dialogs.updateStock.isin')"
-          :rules="isinRules([
-                t('validators.isinRules.required'),
-                t('validators.isinRules.length'),
-                t('validators.isinRules.format'),
-                t('validators.isinRules.country'),
-                t('validators.isinRules.luhn')
-                ])"
+          :label="STRINGS.ISIN_LABEL"
+          :rules="isinRules(STRINGS.ISIN_RULES)"
           autofocus
           variant="outlined"
           @focus="formRef?.resetValidation()"
@@ -96,7 +108,7 @@ log('--- StockFormular.vue setup ---')
     <v-row>
       <v-text-field
           v-model="stockFormularData.company"
-          :label="t('dialogs.updateStock.company')"
+          :label="STRINGS.COMPANY_LABEL"
           required
           variant="outlined"
       />
@@ -106,7 +118,7 @@ log('--- StockFormular.vue setup ---')
       <v-col>
         <v-text-field
             v-model="stockFormularData.symbol"
-            :label="t('dialogs.updateStock.symbol')"
+            :label="STRINGS.SYMBOL_LABEL"
             required
             variant="outlined"
         />
@@ -118,7 +130,7 @@ log('--- StockFormular.vue setup ---')
       <v-col>
         <v-text-field
             v-model="stockFormularData.meetingDay"
-            :label="t('dialogs.updateStock.meetingDay')"
+            :label="STRINGS.MEETING_DAY_LABEL"
             type="date"
             variant="outlined"
         />
@@ -126,7 +138,7 @@ log('--- StockFormular.vue setup ---')
       <v-col>
         <v-text-field
             v-model="stockFormularData.quarterDay"
-            :label="t('dialogs.updateStock.quarterDay')"
+            :label="STRINGS.QUARTER_DAY_LABEL"
             type="date"
             variant="outlined"
         />
@@ -136,14 +148,14 @@ log('--- StockFormular.vue setup ---')
       <v-col>
         <v-checkbox
             v-model="stockFormularData.fadeOut"
-            :label="t('dialogs.updateStock.fadeOut')"
+            :label="STRINGS.FADEOUT_LABEL"
             variant="outlined"
         />
       </v-col>
       <v-col>
         <v-checkbox
             v-model="stockFormularData.firstPage"
-            :label="t('dialogs.updateStock.firstPage')"
+            :label="STRINGS.FIRST_PAGE_LABEL"
             variant="outlined"
         />
       </v-col>
@@ -151,7 +163,7 @@ log('--- StockFormular.vue setup ---')
     <v-row>
       <v-text-field
           v-model="stockFormularData.url"
-          :label="t('dialogs.updateStock.url')"
+          :label="STRINGS.URL_LABEL"
           variant="outlined"
       />
     </v-row>

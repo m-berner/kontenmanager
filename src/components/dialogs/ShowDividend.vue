@@ -20,22 +20,30 @@ const {dividendsPerPage} = useSettingsStore()
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
 
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.showDividend.title'),
+  YEAR_LABEL: t('dialogs.showDividend.yearLabel'),
+  SUM_LABEL: t('dialogs.showDividend.sumLabel'),
+  ITEMS_PER_PAGE_TEXT: t('dialogs.showDividend.itemsPerPageText'),
+  NO_DATA_TEXT: t('dialogs.showDividend.noDataText')
+})
+
 const dividendsHeaders: readonly DataTableHeader[] = Object.freeze([
   {
-    title: t('dialogs.showDividend.yearLabel'),
+    title: STRINGS.YEAR_LABEL,
     align: 'start',
     sortable: false,
     key: 'year'
   },
   {
-    title: t('dialogs.showDividend.sumLabel'),
+    title: STRINGS.SUM_LABEL,
     align: 'start',
     sortable: false,
     key: 'sum'
   }
 ])
 
-const title = t('dialogs.showDividend.title')
+const title = STRINGS.TITLE
 defineExpose({title})
 
 log('--- ShowDividend.vue setup ---')
@@ -54,8 +62,8 @@ log('--- ShowDividend.vue setup ---')
             :items="records.bookings.dividendsByStockId(activeId)"
             :items-per-page="dividendsPerPage"
             :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-            :items-per-page-text="t('dialogs.showDividend.itemsPerPageText')"
-            :no-data-text="t('dialogs.showDividend.noDataText')"
+            :items-per-page-text="STRINGS.ITEMS_PER_PAGE_TEXT"
+            :no-data-text="STRINGS.NO_DATA_TEXT"
             density="compact"
             item-key="id">
           <template v-slot:[`item`]="{ item }">

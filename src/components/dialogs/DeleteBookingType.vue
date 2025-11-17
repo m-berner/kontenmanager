@@ -23,6 +23,20 @@ const {validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.deleteBookingType.title'),
+  SUCCESS_ADD: t('dialogs.deleteBookingType.success.add'),
+  ERROR_ADD: t('dialogs.deleteBookingType.errors.add'),
+  ERROR_ONCLICK_OK: t('dialogs.deleteBookingType.errors.onClickOk'),
+  BOOKING_TYPE_LABEL: t('dialogs.deleteBookingType.bookingTypeLabel'),
+  PLACEHOLDER: t('dialogs.deleteBookingType.placeholder'),
+  NAME_RULES:[
+    t('dialogs.validators.nameRules.required'),
+    t('dialogs.validators.nameRules.length'),
+    t('dialogs.validators.nameRules.begin')
+  ]
+})
+
 const selected = ref()
 const formRef = ref<HTMLFormElement | null>(null)
 
@@ -34,22 +48,21 @@ const onClickOk = async (): Promise<void> => {
     if (!records.bookings.hasBookingType(selected.value)) {
       records.bookingTypes.remove(selected.value)
       await remove(selected.value)
-      await notice([t('dialogs.deleteBookingType.success')])
+      await notice([STRINGS.SUCCESS_ADD])
     } else {
-      await notice([t('dialogs.deleteBookingType.error1a'), t('dialogs.deleteBookingType.error1b')])
+      await notice([STRINGS.ERROR_ADD])
     }
     runtime.resetTeleport()
   } catch (e) {
-    const prefix = t('dialogs.deleteBookingType.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = t('dialogs.deleteBookingType.title')
+const title = STRINGS.TITLE
 defineExpose({title, onClickOk})
 
 log('--- DeleteBookingType.vue setup ---')
@@ -65,8 +78,8 @@ log('--- DeleteBookingType.vue setup ---')
         :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"
-        :label="t('dialogs.deleteBookingType.label')"
-        :placeholder="t('dialogs.deleteBookingType.placeholder')"
+        :label="STRINGS.BOOKING_TYPE_LABEL"
+        :placeholder="STRINGS.PLACEHOLDER"
         autocomplete
         autofocus
         clearable

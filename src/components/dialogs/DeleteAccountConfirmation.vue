@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, defineExpose} from 'vue'
+import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useSettingsStore} from '@/stores/settings'
@@ -30,6 +30,14 @@ const MESSAGES = Object.freeze({
   RESTRICTED_IMPORT: t('homePage.messages.restrictedImport')
 })
 
+const STRINGS = Object.freeze({
+  TITLE: t('dialogs.deleteAccountConfirmation.title'),
+  SUCCESS_ADD: t('dialogs.deleteAccountConfirmation.success.add'),
+  ERROR_ONCLICK_OK: t('dialogs.deleteAccountConfirmation.errors.onClickOk'),
+  MESSAGE: t('dialogs.deleteAccountConfirmation.message'),
+  CONFIRM: t('dialogs.deleteAccountConfirmation.confirm')
+})
+
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
   const {items: accountItems} = storeToRefs(records.accounts)
@@ -45,24 +53,23 @@ const onClickOk = async (): Promise<void> => {
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     }
     resetTeleport()
-    await notice([t('dialogs.deleteAccount.success')])
+    await notice([STRINGS.SUCCESS_ADD])
   } catch (e) {
-    const prefix = t('dialogs.deleteAccount.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = computed(() => t('dialogs.deleteAccount.title'))
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 log('--- DeleteAccountConfirmation.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="records.accounts.items.length === 0">{{ t('dialogs.deleteAccount.message') }}</v-alert>
-  <v-alert v-else type="warning">{{ t('dialogs.deleteAccount.confirm') }}</v-alert>
+  <v-alert v-if="records.accounts.items.length === 0">{{ STRINGS.MESSAGE }}</v-alert>
+  <v-alert v-else type="warning">{{ STRINGS.CONFIRM }}</v-alert>
 </template>
