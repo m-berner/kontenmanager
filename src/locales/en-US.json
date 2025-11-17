@@ -133,8 +133,31 @@
     }
   },
   "dialogs": {
+    "accountFormular": {
+      "swiftLabel": "BIC / SWIFT",
+      "searchLabel": "Logo Suche",
+      "withDepotLabel": "Depot Verrechnungskonto",
+      "withNoDepotLabel": "Konto",
+      "ibanLabel": "IBAN / Kontonummer",
+      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "missingLogo": "Kein Logo gefunden"
+    },
     "bookingFormular": {
-      "bookingLabel": "Booking"
+      "bookingLabel": "Booking",
+      "dateLabel": "Booking Date",
+      "exDateLabel": "Ex-Day",
+      "descriptionLabel": "Note",
+      "countLabel": "Quantity",
+      "bookingTypeLabel": "Booking Type",
+      "feeLabel": "Fee",
+      "taxLabel": "Tax",
+      "soliLabel": "Solidarity Surcharge",
+      "stockLabel": "Company",
+      "marketPlaceLabel": "Trading Place",
+      "transactionTaxLabel": "Transaction Tax",
+      "sourceTaxLabel": "Withholding Tax",
+      "creditLabel": "Credit",
+      "debitLabel": "Debit"
     },
     "cancel": "Cancel",
     "ok": "OK",
@@ -147,50 +170,19 @@
     },
     "addBooking": {
       "title": "Add Booking",
-      "dateLabel": "Booking Date",
-      "exDateLabel": "Ex-Date",
-      "descriptionLabel": "Note",
-      "creditLabel": "Credit",
-      "debitLabel": "Debit",
-      "countLabel": "Quantity",
-      "bookingTypeLabel": "Booking Type",
-      "feeLabel": "Fee",
-      "taxLabel": "Tax",
-      "soliLabel": "Solidarity Surcharge",
-      "stockLabel": "Company",
-      "marketPlaceLabel": "Trading Place",
-      "transactionTaxLabel": "Transaction Tax",
-      "sourceTaxLabel": "Withholding Tax",
-      "message": "You must first create and select an account.",
-      "success": "Booking has been added",
+      "success": {
+        "add": "Booking has been added"
+      },
       "errors": {
-        "onClickOk": "Error in 'onClickOk'"
+        "onClickOk": "Error in 'onClickOk'",
+        "add": "add booking failed"
       }
     },
     "updateBooking": {
       "title": "Edit Booking",
-      "dateLabel": "Booking Date",
-      "exDateLabel": "Ex-Date",
-      "descriptionLabel": "Note",
-      "creditLabel": "Credit",
-      "debitLabel": "Debit",
-      "countLabel": "Quantity",
-      "bookingTypeLabel": "Booking Type",
-      "feeLabel": "Fee",
-      "taxLabel": "Tax",
-      "soliLabel": "Solidarity Surcharge",
-      "stockLabel": "Company",
-      "marketPlaceLabel": "Trading Place",
-      "transactionTaxLabel": "Transaction Tax",
-      "sourceTaxLabel": "Withholding Tax",
-      "message": "There is no booking yet.",
-      "success": "Booking has been added",
       "errors": {
         "onClickOk": "Error in 'onClickOk'"
-      },
-      "validators": [
-        "is required"
-      ]
+      }
     },
     "deleteBooking": {
       "title": "Booking",
@@ -200,20 +192,12 @@
     },
     "addAccount": {
       "title": "Add Bank Account",
-      "swiftLabel": "BIC / SWIFT",
-      "searchLabel": "Logo Search",
-      "withDepotLabel": "Depot Settlement Account",
-      "withNoDepotLabel": "Account",
-      "ibanLabel": "IBAN / Account Number",
-      "ibanPlaceholder": "e.g. DE67 1234 5678 9123 8531 78",
-      "typeLabel": "Account Type",
-      "preview": "Preview",
-      "missingLogo": "No logo found",
-      "success": "Account has been added",
+      "success": {
+        "add": "Account has been added"
+      },
       "errors": {
         "onClickOk": "Error in 'onClickOk'"
-      },
-      "message": "You must first create and select an account."
+      }
     },
     "addStock": {
       "title": "Add Company",
@@ -256,20 +240,12 @@
     },
     "updateAccount": {
       "title": "Update Bank Account",
-      "swiftLabel": "BIC / SWIFT",
-      "searchLabel": "Web Address",
-      "withDepotLabel": "Depot Settlement Account",
-      "withNoDepotLabel": "Account",
-      "ibanLabel": "Account Number",
-      "ibanPlaceholder": "e.g. DE67 1234 5678 9123 8531 78",
-      "typeLabel": "Account Type",
-      "preview": "Preview",
-      "missingLogo": "No logo found",
-      "success": "Account has been updated",
+      "success": {
+        "add": "Account has been updated"
+      },
       "errors": {
         "onClickOk": "Error in 'onClickOk'"
-      },
-      "message": "There is no account yet."
+      }
     },
     "deleteAccount": {
       "title": "Bank Account - Delete All Data",

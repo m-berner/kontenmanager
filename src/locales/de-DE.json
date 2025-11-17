@@ -133,8 +133,31 @@
     }
   },
   "dialogs": {
+    "accountFormular": {
+      "swiftLabel": "BIC / SWIFT",
+      "searchLabel": "Logo Suche",
+      "withDepotLabel": "Depot Verrechnungskonto",
+      "withNoDepotLabel": "Konto",
+      "ibanLabel": "IBAN / Kontonummer",
+      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+      "missingLogo": "Kein Logo gefunden"
+    },
     "bookingFormular": {
-      "bookingLabel": "Buchung"
+      "bookingLabel": "Buchung",
+      "dateLabel": "Buchungstag",
+      "exDateLabel": "Ex-Tag",
+      "descriptionLabel": "Bemerkung",
+      "countLabel": "Anzahl",
+      "bookingTypeLabel": "Buchungstyp",
+      "feeLabel": "Gebühr",
+      "taxLabel": "Steuer",
+      "soliLabel": "Soli",
+      "stockLabel": "Unternehmen",
+      "marketPlaceLabel": "Handelsplatz",
+      "transactionTaxLabel": "Transaktionssteuer",
+      "sourceTaxLabel": "Quellensteuer",
+      "creditLabel": "Haben",
+      "debitLabel": "Soll"
     },
     "cancel": "Abbrechen",
     "ok": "OK",
@@ -147,50 +170,19 @@
     },
     "addBooking": {
       "title": "Buchung hinzufügen",
-      "dateLabel": "Buchungstag",
-      "exDateLabel": "Ex-Tag",
-      "descriptionLabel": "Bemerkung",
-      "creditLabel": "Haben",
-      "debitLabel": "Soll",
-      "countLabel": "Anzahl",
-      "bookingTypeLabel": "Buchungstyp",
-      "feeLabel": "Gebühr",
-      "taxLabel": "Steuer",
-      "soliLabel": "Soli",
-      "stockLabel": "Unternehmen",
-      "marketPlaceLabel": "Handelsplatz",
-      "transactionTaxLabel": "Transaktionssteuer",
-      "sourceTaxLabel": "Quellensteuer",
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen.",
-      "success": "Buchung wurde hinzugefügt",
+      "success": {
+        "add": "Buchung wurde hinzugefügt"
+      },
       "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
+        "onClickOk": "Fehler in 'onClickOk'",
+        "add": "Buchung hinzufügen ist fehlgeschlagen"
       }
     },
     "updateBooking": {
       "title": "Buchung bearbeiten",
-      "dateLabel": "Buchungstag",
-      "exDateLabel": "Ex-Tag",
-      "descriptionLabel": "Bemerkung",
-      "creditLabel": "Haben",
-      "debitLabel": "Soll",
-      "countLabel": "Anzahl",
-      "bookingTypeLabel": "Buchungstyp",
-      "feeLabel": "Gebühr",
-      "taxLabel": "Steuer",
-      "soliLabel": "Soli",
-      "stockLabel": "Unternehmen",
-      "marketPlaceLabel": "Handelsplatz",
-      "transactionTaxLabel": "Transaktionssteuer",
-      "sourceTaxLabel": "Quellensteuer",
-      "message": "Es gibt noch keine Buchung.",
-      "success": "Buchung wurde hinzugefügt",
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
-      },
-      "validators": [
-        "ist erforderlich"
-      ]
+      }
     },
     "deleteBooking": {
       "title": "Buchung",
@@ -200,20 +192,12 @@
     },
     "addAccount": {
       "title": "Bankkonto hinzufügen",
-      "swiftLabel": "BIC / SWIFT",
-      "searchLabel": "Logo Suche",
-      "withDepotLabel": "Depot Verrechnungskonto",
-      "withNoDepotLabel": "Konto",
-      "ibanLabel": "IBAN / Kontonummer",
-      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "typeLabel": "Kontotyp",
-      "preview": "Vorschau",
-      "missingLogo": "Kein Logo gefunden",
-      "success": "Konto wurde hinzugefügt",
+      "success": {
+        "add": "Konto wurde hinzugefügt"
+      },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
-      },
-      "message": "Sie müssen erst ein Konto anlegen u. auswählen."
+      }
     },
     "addStock": {
       "title": "Unternehmen hinzufügen",
@@ -256,20 +240,12 @@
     },
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
-      "swiftLabel": "BIC / SWIFT",
-      "searchLabel": "Web-Adresse",
-      "withDepotLabel": "Depot Verrechnungskonto",
-      "withNoDepotLabel": "Konto",
-      "ibanLabel": "Kontonummer",
-      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "typeLabel": "Kontotyp",
-      "preview": "Vorschau",
-      "missingLogo": "Kein Logo gefunden",
-      "success": "Konto wurde aktualisiert",
+      "success": {
+        "add": "Konto wurde aktualisiert"
+      },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
-      },
-      "message": "Es gibt noch kein Konto."
+      }
     },
     "deleteAccount": {
       "title": "Bankkonto - alle Daten löschen",

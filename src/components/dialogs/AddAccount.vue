@@ -30,6 +30,12 @@ const {accountFormularData, formRef} = useAccountFormular()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
+const STRINGS = Object.freeze({
+  SUCCESS_ADD: t('dialogs.addAccount.success.add'),
+  ERROR_ONCLICK_OK: t('dialogs.addAccount.errors.onClickOk'),
+  TITLE: t('dialogs.addAccount.title')
+})
+
 const reset = (): void => {
   Object.assign(accountFormularData, {
     swift: '',
@@ -59,10 +65,10 @@ const onClickOk = async (): Promise<void> => {
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
       records.clean(false)
       resetTeleport()
-      await notice([t('dialogs.addAccount.success')])
+      await notice([STRINGS.SUCCESS_ADD])
     }
   } catch (e) {
-    const prefix = t('dialogs.addAccount.errors.onClickOk')
+    const prefix = STRINGS.ERROR_ONCLICK_OK
     if (e instanceof Error) {
       log(prefix, {error: e.message})
       await notice([prefix, e.message])
@@ -71,9 +77,7 @@ const onClickOk = async (): Promise<void> => {
     }
   }
 }
-
-const title = computed(() => t('dialogs.addAccount.title'))
-
+const title = computed(() => STRINGS.TITLE)
 defineExpose({onClickOk, title})
 
 onMounted(() => {

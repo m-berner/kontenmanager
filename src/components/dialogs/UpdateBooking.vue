@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IBooking_DB, IBooking_Store} from '@/types.d'
-import {defineExpose} from 'vue'
+import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -33,38 +33,14 @@ const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 // TODO erfolgsmeldung update buchung, ID mit text ersetzen
-const bookingIndex = records.bookings.getIndexById(activeId.value)
-if (bookingIndex > -1) {
-  const currentBooking = bookingItems.value[bookingIndex]
-  Object.assign(bookingFormularData, {
-    id: currentBooking.cID,
-    bookingTypeId: currentBooking.cBookingTypeID,
-    bookDate: currentBooking.cBookDate,
-    debit: currentBooking.cDebit,
-    credit: currentBooking.cCredit,
-    description: currentBooking.cDescription,
-    exDate: currentBooking.cExDate,
-    count: currentBooking.cCount,
-    accountTypeId: currentBooking.cAccountNumberID,
-    stockId: currentBooking.cStockID,
-    sourceTaxCredit: currentBooking.cSourceTaxCredit,
-    sourceTaxDebit: currentBooking.cSourceTaxDebit,
-    transactionTaxCredit: currentBooking.cTransactionTaxCredit,
-    transactionTaxDebit: currentBooking.cTransactionTaxDebit,
-    taxCredit: currentBooking.cTaxCredit,
-    taxDebit: currentBooking.cTaxDebit,
-    feeCredit: currentBooking.cFeeCredit,
-    feeDebit: currentBooking.cFeeDebit,
-    soliCredit: currentBooking.cSoliCredit,
-    soliDebit: currentBooking.cSoliDebit,
-    marketPlace: currentBooking.cMarketPlace
-  })
-}
+const STRINGS = Object.freeze({
+  ERROR_ONCLICK_OK: t('dialogs.addBooking.errors.onClickOk'),
+  TITLE: t('dialogs.updateBooking.title')
+})
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING : onClickOk')
   if (!await validateForm(formRef)) return
-  console.error(bookingFormularData)
   try {
     const booking: IBooking_Store & IBooking_DB = {
       cID: bookingFormularData.id,
@@ -95,17 +71,47 @@ const onClickOk = async (): Promise<void> => {
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()
   } catch (e) {
-    const prefix = t('dialogs.updateBooking.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = t('dialogs.updateBooking.title')
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
+
+onMounted(() => {
+  log('UPDATE_BOOKING: onMounted')
+  const bookingIndex = records.bookings.getIndexById(activeId.value)
+  if (bookingIndex > -1) {
+    const currentBooking = bookingItems.value[bookingIndex]
+    Object.assign(bookingFormularData, {
+      id: currentBooking.cID,
+      bookingTypeId: currentBooking.cBookingTypeID,
+      bookDate: currentBooking.cBookDate,
+      debit: currentBooking.cDebit,
+      credit: currentBooking.cCredit,
+      description: currentBooking.cDescription,
+      exDate: currentBooking.cExDate,
+      count: currentBooking.cCount,
+      accountTypeId: currentBooking.cAccountNumberID,
+      stockId: currentBooking.cStockID,
+      sourceTaxCredit: currentBooking.cSourceTaxCredit,
+      sourceTaxDebit: currentBooking.cSourceTaxDebit,
+      transactionTaxCredit: currentBooking.cTransactionTaxCredit,
+      transactionTaxDebit: currentBooking.cTransactionTaxDebit,
+      taxCredit: currentBooking.cTaxCredit,
+      taxDebit: currentBooking.cTaxDebit,
+      feeCredit: currentBooking.cFeeCredit,
+      feeDebit: currentBooking.cFeeDebit,
+      soliCredit: currentBooking.cSoliCredit,
+      soliDebit: currentBooking.cSoliDebit,
+      marketPlace: currentBooking.cMarketPlace
+    })
+  }
+})
 
 log('--- UpdateBooking.vue setup ---')
 </script>

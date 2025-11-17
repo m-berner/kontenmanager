@@ -29,6 +29,13 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 
+const STRINGS = Object.freeze({
+  SUCCESS_ADD: t('dialogs.addBooking.success.add'),
+  ERROR_ONCLICK_OK: t('dialogs.addBooking.errors.onClickOk'),
+  ERROR_ADD: t('dialogs.addBooking.errors.add'),
+  TITLE: t('dialogs.addBooking.title')
+})
+
 const reset = (): void => {
   Object.assign(bookingFormularData, {
     bookDate: '',
@@ -52,6 +59,7 @@ const reset = (): void => {
     transactionTaxDebit: 0
   })
 }
+
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING : onClickOk')
   if (!await validateForm(formRef)) return
@@ -160,21 +168,21 @@ const onClickOk = async (): Promise<void> => {
       const completeBooking: IBooking_Store = {cID: addBookingID, ...booking}
       records.bookings.add(completeBooking)
       reset()
-      await notice([t('dialogs.addBooking.success')])
+      await notice([STRINGS.SUCCESS_ADD])
     } else {
-      await notice(['Could not add to database'])
+      log('ADD_BOOKING: onClickOk', {error: STRINGS.ERROR_ADD})
+      await notice([STRINGS.ERROR_ADD])
     }
   } catch (e) {
-    const prefix = t('dialogs.addBooking.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = t('dialogs.addBooking.title')
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {

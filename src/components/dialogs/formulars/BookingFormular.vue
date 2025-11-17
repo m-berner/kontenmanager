@@ -23,6 +23,23 @@ const {bookingFormularData} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
 const {markets} = useSettingsStore()
 
+const STRINGS = Object.freeze({
+  DATE_LABEL: t('dialogs.bookingFormular.dateLabel'),
+  STOCK_LABEL: t('dialogs.bookingFormular.stockLabel'),
+  BOOKING_TYPE_LABEL: t('dialogs.bookingFormular.bookingTypeLabel'),
+  COUNT_LABEL: t('dialogs.bookingFormular.countLabel'),
+  EX_DATE_LABEL: t('dialogs.bookingFormular.exDateLabel'),
+  MARKET_PLACE_LABEL: t('dialogs.bookingFormular.marketPlaceLabel'),
+  BOOKING_LABEL: t('dialogs.bookingFormular.bookingLabel'),
+  TAX_LABEL: t('dialogs.bookingFormular.taxLabel'),
+  SOLI_LABEL: t('dialogs.bookingFormular.soliLabel'),
+  SOURCE_TAX_LABEL: t('dialogs.bookingFormular.sourceTaxLabel'),
+  FEE_LABEL: t('dialogs.bookingFormular.feeLabel'),
+  TRANSACTION_TAX_LABEL: t('dialogs.bookingFormular.transactionTaxLabel'),
+  DESCRIPTION_LABEL: t('dialogs.bookingFormular.descriptionLabel'),
+  DATE_RULES: [t('validators.dateRules.required')]
+})
+
 const creditDebitModel = computed({
   get: () => ({credit: bookingFormularData.credit, debit: bookingFormularData.debit}),
   set: (val: { credit: number, debit: number }) => {
@@ -73,8 +90,8 @@ const feeModel = computed({
       <v-col cols="6">
         <v-text-field
             v-model="bookingFormularData.bookDate"
-            :label="t('dialogs.addBooking.dateLabel')"
-            :rules="dateRules([t('validators.dateRules.required')])"
+            :label="STRINGS.DATE_LABEL"
+            :rules="dateRules(STRINGS.DATE_RULES)"
             autofocus
             density="compact"
             type="date"
@@ -88,7 +105,7 @@ const feeModel = computed({
             :item-title="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.COMPANY"
             :item-value="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ID"
             :items="stocks.items.sort((a: IStock_Store, b: IStock_Store): number => { return a.cCompany.localeCompare(b.cCompany) })"
-            :label="t('dialogs.addBooking.stockLabel')"
+            :label="STRINGS.STOCK_LABEL"
             :menu=false
             :menu-props="{ maxHeight: 250 }"
             density="compact"
@@ -104,7 +121,7 @@ const feeModel = computed({
             :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
             :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
             :items="bookingTypes.items.sort((a: IBookingType_Store, b: IBookingType_Store): number => { return a.cName.localeCompare(b.cName) })"
-            :label="t('dialogs.addBooking.bookingTypeLabel')"
+            :label="STRINGS.BOOKING_TYPE_LABEL"
             :menu=false
             :menu-props="{ maxHeight: 250 }"
             density="compact"
@@ -116,7 +133,7 @@ const feeModel = computed({
         <v-text-field
             v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 0"
             v-model="bookingFormularData.count"
-            :label="t('dialogs.addBooking.countLabel')"
+            :label="STRINGS.COUNT_LABEL"
             class="withoutSpinner"
             density="compact"
             type="number"
@@ -130,8 +147,8 @@ const feeModel = computed({
             v-if="bookingFormularData.bookingTypeId === 3"
             ref="date-input"
             v-model="bookingFormularData.exDate"
-            :label="t('dialogs.addBooking.exDateLabel')"
-            :rules="dateRules([t('validators.dateRules', 0)])"
+            :label="STRINGS.EX_DATE_LABEL"
+            :rules="dateRules(STRINGS.DATE_RULES)"
             autofocus
             density="compact"
             required
@@ -144,7 +161,7 @@ const feeModel = computed({
             v-if="bookingFormularData.bookingTypeId < 3 && bookingFormularData.bookingTypeId > 0"
             v-model="bookingFormularData.marketPlace"
             :items="markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
-            :label="t('dialogs.addBooking.marketPlaceLabel')"
+            :label="STRINGS.MARKET_PLACE_LABEL"
             :menu=false
             :menuProps="{ maxHeight: 250 }"
             density="compact"
@@ -156,38 +173,38 @@ const feeModel = computed({
     <v-row justify="center">
       <CreditDebitFieldset
           v-model="creditDebitModel"
-          :legend="t('dialogs.bookingFormular.bookingLabel')"/>
+          :legend="STRINGS.BOOKING_LABEL"/>
     </v-row>
     <v-row v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1" justify="center">
       <CreditDebitFieldset
           v-model="taxModel"
-          :legend="t('dialogs.addBooking.taxLabel')"/>
+          :legend="STRINGS.TAX_LABEL"/>
     </v-row>
     <v-row v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1" justify="center">
       <CreditDebitFieldset
           v-model="soliModel"
-          :legend="t('dialogs.addBooking.soliLabel')"/>
+          :legend="STRINGS.SOLI_LABEL"/>
     </v-row>
     <v-row v-if="bookingFormularData.bookingTypeId === 2 || bookingFormularData.bookingTypeId === 3" justify="center">
       <CreditDebitFieldset
           v-model="sourceTaxModel"
-          :legend="t('dialogs.addBooking.sourceTaxLabel')"/>
+          :legend="STRINGS.SOURCE_TAX_LABEL"/>
     </v-row>
     <v-row v-if="bookingFormularData.bookingTypeId < 3 && bookingFormularData.bookingTypeId > 0" justify="center">
       <CreditDebitFieldset
           v-model="feeModel"
-          :legend="t('dialogs.addBooking.feeLabel')"/>
+          :legend="STRINGS.FEE_LABEL"/>
     </v-row>
     <v-row v-if="bookingFormularData.bookingTypeId === 1" justify="center">
       <CreditDebitFieldset
           v-model="transactionTaxModel"
-          :legend="t('dialogs.addBooking.transactionTaxLabel')"/>
+          :legend="STRINGS.TRANSACTION_TAX_LABEL"/>
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
         <v-text-field
             v-model="bookingFormularData.description"
-            :label="t('dialogs.addBooking.descriptionLabel')"
+            :label="STRINGS.DESCRIPTION_LABEL"
             density="compact"
             type="text"
             variant="outlined"

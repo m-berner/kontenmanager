@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, ref} from 'vue'
+import {ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useValidation} from '@/composables/useValidation'
@@ -18,24 +18,39 @@ import {useDebounce} from '@/composables/useDebounce'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {accountFormularData, formRef} = useAccountFormular()
-const {ibanRules, ibanDuplicateRules, swiftRules} = useValidation()
+const {ibanRules, swiftRules} = useValidation()
 
-const formSearch = ref<string>('')
-const formattedIban = ref<string>('')
-const formattedSwift = ref<string>('')
-
-const joinedIbanRules = computed(() => [
-  ...ibanRules([
+const STRINGS = Object.freeze({
+  WITH_DEPOT_LABEL: t('dialogs.addAccount.withDepotLabel'),
+  SWIFT_LABEL: t('dialogs.addAccount.swiftLabel'),
+  IBAN_LABEL: t('dialogs.addAccount.ibanLabel'),
+  IBAN_PLACEHOLDER: t('dialogs.addAccount.ibanPlaceholder'),
+  SEARCH_LABEL: t('dialogs.addAccount.searchLabel'),
+  MISSING_LOGO_LABEL: t('dialogs.addAccount.missingLogo'),
+  SWIFT_RULES: [
+    t('validators.swiftRules.required'),
+    t('validators.swiftRules.length'),
+    t('validators.swiftRules.format'),
+    t('validators.swiftRules.bankCode'),
+    t('validators.swiftRules.countryCode'),
+    t('validators.swiftRules.locationCode'),
+    t('validators.swiftRules.branchCode'),
+    t('validators.swiftRules.test'),
+    t('validators.swiftRules.passive')
+  ],
+  IBAN_RULES: [
     t('validators.ibanRules.required'),
     t('validators.ibanRules.country'),
     t('validators.ibanRules.length'),
     t('validators.ibanRules.format'),
-    t('validators.ibanRules.checksum')
-  ]),
-  ...ibanDuplicateRules([
+    t('validators.ibanRules.checksum'),
     t('validators.ibanRules.duplicate')
-  ])
-])
+  ]
+})
+
+const formSearch = ref<string>('')
+const formattedIban = ref<string>('')
+const formattedSwift = ref<string>('')
 
 const onUpdateSwift = (swift: string): void => {
   if (!swift) return
@@ -64,39 +79,29 @@ log('--- AccountFormular.vue setup ---')
 <template>
   <v-switch
       v-model="accountFormularData.withDepot"
-      :label="t('dialogs.addAccount.withDepotLabel')"
+      :label="STRINGS.WITH_DEPOT_LABEL"
       color="red"
       variant="outlined"/>
   <v-text-field
       v-model="accountFormularData.swift"
       :counter="11"
-      :label="`${t('dialogs.addAccount.swiftLabel')}${formattedSwift}`"
-      :rules="swiftRules([
-            t('validators.swiftRules.required'),
-            t('validators.swiftRules.length'),
-            t('validators.swiftRules.format'),
-            t('validators.swiftRules.bankCode'),
-            t('validators.swiftRules.countryCode'),
-            t('validators.swiftRules.locationCode'),
-            t('validators.swiftRules.branchCode'),
-            t('validators.swiftRules.test'),
-            t('validators.swiftRules.passive'),
-        ])"
+      :label="`${STRINGS.SWIFT_LABEL}${formattedSwift}`"
+      :rules="swiftRules(STRINGS.SWIFT_RULES)"
       autofocus
       variant="outlined"
       @focus="formRef?.resetValidation()"
       @update:model-value="onUpdateSwift"/>
   <v-text-field
       v-model="accountFormularData.iban"
-      :label="`${t('dialogs.addAccount.ibanLabel')}${formattedIban}`"
-      :placeholder="t('dialogs.addAccount.ibanPlaceholder')"
-      :rules="joinedIbanRules"
+      :label="`${STRINGS.IBAN_LABEL}${formattedIban}`"
+      :placeholder="STRINGS.IBAN_PLACEHOLDER"
+      :rules="ibanRules(STRINGS.IBAN_RULES)"
       variant="outlined"
       @focus="formRef?.resetValidation()"
       @update:model-value="onUpdateIban"/>
   <v-text-field
       v-model="formSearch"
-      :label="t('dialogs.addAccount.searchLabel')"
+      :label="STRINGS.SEARCH_LABEL"
       :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
       variant="outlined"
       @update:model-value="debouncedSearch"/>
@@ -104,7 +109,7 @@ log('--- AccountFormular.vue setup ---')
   <div class="mb-4">
     <v-avatar class="me-3" color="white" size="48">
       <v-img
-          :alt="t('dialogs.addAccount.missingLogo')"
+          :alt="STRINGS.MISSING_LOGO_LABEL"
           :src="accountFormularData.logoUrl"/>
     </v-avatar>
   </div>

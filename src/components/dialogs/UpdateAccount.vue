@@ -31,6 +31,12 @@ const runtime = useRuntimeStore()
 const {accountFormularData, formRef} = useAccountFormular()
 const records = useRecordsStore()
 
+const STRINGS = Object.freeze({
+  SUCCESS_ADD: t('dialogs.updateAccount.success.add'),
+  ERROR_ONCLICK_OK: t('dialogs.updateAccount.errors.onClickOk'),
+  TITLE: t('dialogs.updateAccount.title')
+})
+
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_ACCOUNT : onClickOk')
   if (!await validateForm(formRef)) return
@@ -45,18 +51,17 @@ const onClickOk = async (): Promise<void> => {
     records.accounts.update(account)
     await update(account)
     runtime.resetTeleport()
-    await notice([t('dialogs.updateAccount.success')])
+    await notice([STRINGS.SUCCESS_ADD])
   } catch (e) {
-    const prefix = t('dialogs.updateAccount.errors.onClickOk')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = t('dialogs.updateAccount.title')
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {
