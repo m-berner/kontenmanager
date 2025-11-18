@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IAccount_DB, IBooking_DB, IBookingType_DB, IStock_DB} from '@/types.d'
@@ -27,7 +27,7 @@ const fn = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}
 
 const STRINGS = Object.freeze({
   TITLE: t('dialogs.exportDatabase.title'),
-  TEXT: t('dialogs.exportDialog.text', {filename: fn})
+  TEXT: t('dialogs.exportDatabase.text', {filename: fn})
 })
 
 const onClickOk = async (): Promise<void> => {

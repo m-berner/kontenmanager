@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import {defineProps, onMounted} from 'vue'
@@ -36,7 +36,7 @@ const {stockFormularData, formRef} = useStockFormular()
 const STRINGS = Object.freeze({
   ERROR_ONUPDATE_ISIN: t('dialogs.stockFormular.errors.onUpdateIsin'),
   COMPANY_LABEL: t('dialogs.stockFormular.companyLabel'),
-  SYMBOL_LABEL:   t('dialogs.stockFormular.symbolLabel'),
+  SYMBOL_LABEL: t('dialogs.stockFormular.symbolLabel'),
   MEETING_DAY_LABEL: t('dialogs.stockFormular.meetingDayLabel'),
   QUARTER_DAY_LABEL: t('dialogs.stockFormular.quarterDayLabel'),
   FADEOUT_LABEL: t('dialogs.stockFormular.fadeOutLabel'),

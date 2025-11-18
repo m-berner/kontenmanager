@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import {defineExpose, ref} from 'vue'
@@ -30,7 +30,7 @@ const STRINGS = Object.freeze({
   ERROR_ONCLICK_OK: t('dialogs.deleteBookingType.errors.onClickOk'),
   BOOKING_TYPE_LABEL: t('dialogs.deleteBookingType.bookingTypeLabel'),
   PLACEHOLDER: t('dialogs.deleteBookingType.placeholder'),
-  NAME_RULES:[
+  NAME_RULES: [
     t('dialogs.validators.nameRules.required'),
     t('dialogs.validators.nameRules.length'),
     t('dialogs.validators.nameRules.begin')

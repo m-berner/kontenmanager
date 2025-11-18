@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IBookingType_Store} from '@/types.d'
@@ -31,7 +31,7 @@ const STRINGS = Object.freeze({
   ERROR_ADD: t('dialogs.updateBookingType.errors.add'),
   ERROR_ONCLICK_OK: t('dialogs.updateBookingType.errors.onClickOk'),
   BOOKING_TYPE_LABEL: t('dialogs.updateBookingType.bookingTypeLabel'),
-  NAME_RULES:[
+  NAME_RULES: [
     t('dialogs.validators.nameRules.required'),
     t('dialogs.validators.nameRules.length'),
     t('dialogs.validators.nameRules.begin')

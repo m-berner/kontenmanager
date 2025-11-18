@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import {computed} from 'vue'
@@ -31,6 +31,10 @@ const MESSAGES = Object.freeze({
   RESTRICTED_IMPORT: t('homePage.messages.restrictedImport')
 })
 
+const STRINGS = Object.freeze({
+  ERROR_ONUPDATE_TITLE_BAR: t('titleBar.errors.onUpdateTitleBar')
+})
+
 const logoUrl = computed((): string => {
   const ind = records.accounts.getIndexById(activeAccountId.value)
   const {items: accountItems} = storeToRefs(records.accounts)
@@ -54,12 +58,11 @@ const onUpdateTitleBar = async (): Promise<void> => {
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
     await records.init(storesDB, MESSAGES)
   } catch (e) {
-    const prefix = t('titleBar.errors.onUpdateTitleBar')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONUPDATE_TITLE_BAR, {error: e.message})
+      await notice([STRINGS.ERROR_ONUPDATE_TITLE_BAR, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONUPDATE_TITLE_BAR}: unknown`)
     }
   }
 }

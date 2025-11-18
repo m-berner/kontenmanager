@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import {onUpdated} from 'vue'
@@ -34,6 +34,25 @@ const MESSAGES = Object.freeze({
   CREATE_ACCOUNT: t('headerBar.messages.createAccount'),
   NO_ACCOUNT: t('headerBar.messages.noAccount'),
   ALL_STOCKS_VISIBLE: t('headerBar.messages.allStocksVisible')
+})
+
+const STRINGS = Object.freeze({
+  HOME: t('headerBar.home'),
+  COMPANY: t('headerBar.company'),
+  UPDATE_QUOTE: t('headerBar.updateQuote'),
+  ADD_STOCK: t('headerBar.addStock'),
+  SHOW: t('headerBar.fadeInStock'),
+  ADD_ACCOUNT: t('headerBar.addAccount'),
+  UPDATE_ACCOUNT: t('headerBar.updateAccount'),
+  DELETE_ACCOUNT: t('headerBar.deleteAccount'),
+  ADD_BOOKING: t('headerBar.addBooking'),
+  ADD_BOOKING_TYPE: t('headerBar.addBookingType'),
+  UPDATE_BOOKING_TYPE: t('headerBar.updateBookingType'),
+  DELETE_BOOKING_TYPE: t('headerBar.deleteBookingType'),
+  EXPORT_TO_FILE: t('headerBar.exportToFile'),
+  IMPORT_DATABASE: t('headerBar.importDatabase'),
+  SHOW_ACCOUNTING: t('headerBar.showAccounting'),
+  SETTINGS: t('headerBar.settings')
 })
 
 const onIconClick = async (ev: Event): Promise<void> => {
@@ -202,7 +221,7 @@ log('--- HeaderBar.vue setup ---')
   <v-app-bar app flat height="75">
     <v-spacer/>
     <RouterLink class="router-link-active" to="/">
-      <v-tooltip :text="t('headerBar.home')" location="top">
+      <v-tooltip :text="STRINGS.HOME" location="top">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
               color="grey"
@@ -218,7 +237,7 @@ log('--- HeaderBar.vue setup ---')
         v-if="records.accounts.isDepot"
         class="router-link-active"
         to="/company">
-      <v-tooltip :text="t('headerBar.company')" location="top">
+      <v-tooltip :text="STRINGS.COMPANY" location="top">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
               color="grey"
@@ -233,7 +252,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="isCompanyPage"
-        :text="t('headerBar.updateQuote')"
+        :text="STRINGS.UPDATE_QUOTE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -248,7 +267,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="isCompanyPage"
-        :text="t('headerBar.addStock')"
+        :text="STRINGS.ADD_STOCK"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -262,7 +281,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="isCompanyPage"
-        :text="t('headerBar.fadeInStock')"
+        :text="STRINGS.SHOW"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -277,7 +296,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.addAccount')"
+        :text="STRINGS.ADD_ACCOUNT"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -291,7 +310,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.updateAccount')"
+        :text="STRINGS.UPDATE_ACCOUNT"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -305,7 +324,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.deleteAccount')"
+        :text="STRINGS.DELETE_ACCOUNT"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -320,7 +339,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.addBooking')"
+        :text="STRINGS.ADD_BOOKING"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -335,7 +354,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.addBookingType')"
+        :text="STRINGS.ADD_BOOKING_TYPE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -349,7 +368,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.updateBookingType')"
+        :text="STRINGS.UPDATE_BOOKING_TYPE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -363,7 +382,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.deleteBookingType')"
+        :text="STRINGS.DELETE_BOOKING_TYPE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -378,7 +397,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.exportToFile')"
+        :text="STRINGS.EXPORT_TO_FILE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -392,7 +411,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.importDatabase')"
+        :text="STRINGS.IMPORT_DATABASE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -407,7 +426,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="t('headerBar.showAccounting')"
+        :text="STRINGS.SHOW_ACCOUNTING"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -421,7 +440,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        :text="t('headerBar.settings')"
+        :text="STRINGS.SETTINGS"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
