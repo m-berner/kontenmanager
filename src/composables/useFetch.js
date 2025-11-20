@@ -420,7 +420,7 @@ export function useFetch() {
                     firstResponse.status >= CONS.STATES.SRV ||
                     (firstResponse.status > 0 &&
                         firstResponse.status < CONS.STATES.SUCCESS)) {
-                    await notice([firstResponse.statusText]);
+                    await notice(['fetchExhangesData: firstResponse failed']);
                     reject('System Error');
                 }
                 const firstResponseText = await firstResponse.text();
@@ -445,7 +445,7 @@ export function useFetch() {
             if (!firstResponse.ok ||
                 firstResponse.status >= CONS.STATES.SRV ||
                 (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-                await notice([firstResponse.statusText]);
+                await notice(['fetchMaterialData: firstResponse failed']);
                 reject('System error');
             }
             const firstResponseText = await firstResponse.text();
@@ -474,7 +474,7 @@ export function useFetch() {
             if (!firstResponse.ok ||
                 firstResponse.status >= CONS.STATES.SRV ||
                 (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-                await notice([firstResponse.statusText]);
+                await notice(['fetchIndexdata: firstResponse failed']);
                 reject(firstResponse.statusText);
             }
             const firstResponseText = await firstResponse.text();

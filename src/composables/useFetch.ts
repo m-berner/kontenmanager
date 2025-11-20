@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * you could obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+ * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {ICompanyData, IExchangeData} from '@/types.d'
 import {useApp} from '@/composables/useApp'
@@ -558,7 +558,7 @@ export function useFetch() {
                     (firstResponse.status > 0 &&
                         firstResponse.status < CONS.STATES.SUCCESS)
                 ) {
-                    await notice([firstResponse.statusText])
+                    await notice(['fetchExhangesData: firstResponse failed'])
                     reject('System Error')
                 }
                 const firstResponseText = await firstResponse.text()
@@ -592,7 +592,7 @@ export function useFetch() {
                 firstResponse.status >= CONS.STATES.SRV ||
                 (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
             ) {
-                await notice([firstResponse.statusText])
+                await notice(['fetchMaterialData: firstResponse failed'])
                 reject('System error')
             }
             const firstResponseText = await firstResponse.text()
@@ -632,7 +632,7 @@ export function useFetch() {
                 firstResponse.status >= CONS.STATES.SRV ||
                 (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
             ) {
-                await notice([firstResponse.statusText])
+                await notice(['fetchIndexData: firstResponse failed'])
                 reject(firstResponse.statusText)
             }
             const firstResponseText = await firstResponse.text()

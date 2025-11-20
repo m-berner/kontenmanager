@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IExchangeData, TStorageChange} from '@/types'
@@ -26,6 +26,9 @@ const {CONS, haveSameStrings, log} = useApp()
 onBeforeMount(async () => {
   const {notice} = useBrowser()
   const {t} = useI18n()
+  const STRINGS = Object.freeze({
+    ONBEFORE_MOUNT: t('homePage.errors.onBeforeMount')
+  })
   try {
     const MESSAGES = Object.freeze({
       INFO_TITLE: t('homePage.messages.infoTitle'),
@@ -135,12 +138,11 @@ onBeforeMount(async () => {
     window.addEventListener('keyup', onKeyUp, false)
     window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
   } catch (e) {
-    const prefix = t('homePage.errors.onBeforeMount')
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ONBEFORE_MOUNT, {error: e.message})
+      await notice([STRINGS.ONBEFORE_MOUNT, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ONBEFORE_MOUNT}: unknown`)
     }
   }
 })

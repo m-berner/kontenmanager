@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import {onUpdated} from 'vue'
@@ -214,6 +214,8 @@ onUpdated(() => {
   isCompanyPage.value = router.currentRoute.value.path.includes('company')
 })
 
+//TODO update quotes?
+//TODO notice overwork...
 log('--- HeaderBar.vue setup ---')
 </script>
 
@@ -251,7 +253,7 @@ log('--- HeaderBar.vue setup ---')
     </RouterLink>
     <v-spacer/>
     <v-tooltip
-        v-if="isCompanyPage"
+        v-if="false"
         :text="STRINGS.UPDATE_QUOTE"
         location="top">
       <template v-slot:activator="{ props }">

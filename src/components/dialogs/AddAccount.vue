@@ -3,7 +3,7 @@
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - you could obtain one at https://mozilla.org/MPL/2.0/.
   -
-  - Copyright (c) 2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+  - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
 import type {IAccount_Store} from '@/types.d'
@@ -68,12 +68,11 @@ const onClickOk = async (): Promise<void> => {
       await notice([STRINGS.SUCCESS_ADD])
     }
   } catch (e) {
-    const prefix = STRINGS.ERROR_ONCLICK_OK
     if (e instanceof Error) {
-      log(prefix, {error: e.message})
-      await notice([prefix, e.message])
+      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${prefix}: unknown`)
+      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
