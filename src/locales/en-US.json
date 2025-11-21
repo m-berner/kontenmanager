@@ -317,7 +317,17 @@
       "version": "The data file is too old and cannot be restored!",
       "notEmpty": "AccountManager objects already exist. Therefore a StockManager backup file cannot be restored!",
       "messageDelete": "All existing data will be deleted!",
-      "fileLabel": "from file"
+      "fileLabel": "from file",
+      "tax": "Tax",
+      "capitalTax": "CGT",
+      "fee": "Fee",
+      "sourceTax": "Withholding Tax",
+      "transactionTax": "Transaction Tax",
+      "others": "Others",
+      "soli": "Solidarity Surcharge",
+      "shareBuy": "Buy Share",
+      "shareSell": "Sell Share",
+      "dividend": "Dividend"
     }
   },
   "optionsPage": {

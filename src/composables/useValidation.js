@@ -116,11 +116,6 @@ export function useValidation() {
             (v) => (v === null || v.length > 0) || msgArray[0]
         ];
     }
-    function requiredSelectNumber(msgArray) {
-        return [
-            (v) => v > 0 || msgArray[0]
-        ];
-    }
     async function validateForm(form) {
         if (form.value !== null) {
             const { valid } = await form.value.validate();
@@ -210,7 +205,6 @@ export function useValidation() {
         valCurrencyCodeRules,
         requiredRules,
         requiredSelect,
-        requiredSelectNumber,
         validateForm
     };
 }

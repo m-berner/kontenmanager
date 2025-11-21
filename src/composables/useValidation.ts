@@ -140,12 +140,6 @@ export function useValidation() {
         ]
     }
 
-    function requiredSelectNumber(msgArray: string[]): TNumberValidator[] {
-        return [
-            (v: number) => v > 0 || msgArray[0]
-        ]
-    }
-
     async function validateForm(form: Ref<HTMLFormElement | null>): Promise<boolean> {
         if (form.value !== null) {
             const {valid} = await form.value.validate()
@@ -240,7 +234,6 @@ export function useValidation() {
         valCurrencyCodeRules,
         requiredRules,
         requiredSelect,
-        requiredSelectNumber,
         validateForm
     }
 }

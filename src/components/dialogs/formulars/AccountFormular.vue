@@ -21,12 +21,12 @@ const {accountFormularData, formRef} = useAccountFormular()
 const {ibanRules, swiftRules} = useValidation()
 
 const STRINGS = Object.freeze({
-  WITH_DEPOT_LABEL: t('dialogs.addAccount.withDepotLabel'),
-  SWIFT_LABEL: t('dialogs.addAccount.swiftLabel'),
-  IBAN_LABEL: t('dialogs.addAccount.ibanLabel'),
-  IBAN_PLACEHOLDER: t('dialogs.addAccount.ibanPlaceholder'),
-  SEARCH_LABEL: t('dialogs.addAccount.searchLabel'),
-  MISSING_LOGO_LABEL: t('dialogs.addAccount.missingLogo'),
+  WITH_DEPOT_LABEL: t('dialogs.accountFormular.withDepotLabel'),
+  SWIFT_LABEL: t('dialogs.accountFormular.swiftLabel'),
+  IBAN_LABEL: t('dialogs.accountFormular.ibanLabel'),
+  IBAN_PLACEHOLDER: t('dialogs.accountFormular.ibanPlaceholder'),
+  SEARCH_LABEL: t('dialogs.accountFormular.searchLabel'),
+  MISSING_LOGO_LABEL: t('dialogs.accountFormular.missingLogo'),
   SWIFT_RULES: [
     t('validators.swiftRules.required'),
     t('validators.swiftRules.length'),

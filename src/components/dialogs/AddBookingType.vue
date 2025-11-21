@@ -76,7 +76,7 @@ const onClickOk = async (): Promise<void> => {
     }
   }
 }
-const title = t('dialogs.addBookingType.title')
+const title = STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {

@@ -97,7 +97,17 @@ const STRINGS = Object.freeze({
   NOT_EMPTY: t('dialogs.importDatabase.notEmpty'),
   INVALID: t('dialogs.importDatabase.invalid'),
   MESSAGE_DELETE: t('dialogs.importDatabase.messageDelete'),
-  FILE_LABEL: t('dialogs.importDatabase.fileLabel')
+  FILE_LABEL: t('dialogs.importDatabase.fileLabel'),
+  TAX: t('dialogs.importDatabase.tax'),
+  CAPITAL_TAX: t('dialogs.importDatabase.capitalTax'),
+  FEE: t('dialogs.importDatabase.fee'),
+  SOLI: t('dialogs.importDatabase.soli'),
+  SOURCE_TAX: t('dialogs.importDatabase.sourceTax'),
+  TRANSACTION_TAX: t('dialogs.importDatabase.transactionTax'),
+  OTHERS: t('dialogs.importDatabase.others'),
+  SHARE_BUY: t('dialogs.importDatabase.shareBuy'),
+  SHARE_SELL: t('dialogs.importDatabase.shareSell'),
+  DIVIDEND: t('dialogs.importDatabase.dividend')
 })
 
 const fileBlob = ref<Blob>(new Blob())
@@ -159,6 +169,7 @@ const onClickOk = async (): Promise<void> => {
         }
         return result
       }
+
       if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
         info(STRINGS.TITLE, STRINGS.INVALID, null)
         return
@@ -182,11 +193,13 @@ const onClickOk = async (): Promise<void> => {
           cWithDepot: true
         }]
         const bookingTypeRecords = [
-          {cID: 1, cName: 'Aktienkauf', cAccountNumberID: activeId},
-          {cID: 2, cName: 'Aktienverkauf', cAccountNumberID: activeId},
-          {cID: 3, cName: 'Dividende', cAccountNumberID: activeId},
-          {cID: 4, cName: 'Einzahlung', cAccountNumberID: activeId},
-          {cID: 5, cName: 'Auszahlung', cAccountNumberID: activeId}
+          {cID: 1, cName: STRINGS.SHARE_BUY, cAccountNumberID: activeId},
+          {cID: 2, cName: STRINGS.SHARE_SELL, cAccountNumberID: activeId},
+          {cID: 3, cName: STRINGS.DIVIDEND, cAccountNumberID: activeId},
+          {cID: 4, cName: STRINGS.OTHERS, cAccountNumberID: activeId},
+          {cID: 5, cName: STRINGS.FEE, cAccountNumberID: activeId},
+          {cID: 6, cName: STRINGS.TAX, cAccountNumberID: activeId},
+          {cID: 7, cName: STRINGS.SOLI, cAccountNumberID: activeId}
         ]
         for (const rec of accountRecords) {
           accountsStoreData.push(rec)
@@ -224,6 +237,7 @@ const onClickOk = async (): Promise<void> => {
           booking.cExDate = isoDate(smTransfer.cExDay)
           booking.cCount = smTransfer.cCount < 0 ? -smTransfer.cCount : smTransfer.cCount
           booking.cDescription = smTransfer.cDescription
+          booking.cMarketPlace = smTransfer.cMarketPlace
           booking.cTransactionTaxCredit = smTransfer.cFTax > 0 ? smTransfer.cFTax : 0
           booking.cTransactionTaxDebit = smTransfer.cFTax < 0 ? -smTransfer.cFTax : 0
           booking.cSourceTaxCredit = smTransfer.cSTax > 0 ? smTransfer.cSTax : 0
@@ -234,9 +248,43 @@ const onClickOk = async (): Promise<void> => {
           booking.cTaxDebit = smTransfer.cTax < 0 ? -smTransfer.cTax : 0
           booking.cSoliCredit = smTransfer.cSoli > 0 ? smTransfer.cSoli : 0
           booking.cSoliDebit = smTransfer.cSoli < 0 ? -smTransfer.cSoli : 0
-          booking.cMarketPlace = smTransfer.cMarketPlace
           booking.cDebit = smTransfer.cType === 1 || smTransfer.cType === 5 ? getCreditDebit(smTransfer) : 0
           booking.cCredit = smTransfer.cType === 2 || smTransfer.cType === 3 || smTransfer.cType === 4 ? getCreditDebit(smTransfer) : 0
+          if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cFees !== 0) {
+            booking.cBookingTypeID = 5
+            booking.cDebit = smTransfer.cFees < 0 ? -smTransfer.cFees : 0
+            booking.cCredit = smTransfer.cFees > 0 ? smTransfer.cFees : 0
+            booking.cFeeCredit = 0
+            booking.cFeeDebit = 0
+          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cSoli !== 0) {
+            booking.cBookingTypeID = 7
+            booking.cDebit = smTransfer.cSoli < 0 ? -smTransfer.cSoli : 0
+            booking.cCredit = smTransfer.cSoli > 0 ? smTransfer.cSoli : 0
+            booking.cSoliCredit = 0
+            booking.cSoliDebit = 0
+          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cAmount !== 0) {
+            booking.cBookingTypeID = 4
+            booking.cDebit = smTransfer.cAmount < 0 ? getCreditDebit(smTransfer) : 0
+            booking.cCredit = smTransfer.cAmount > 0 ? getCreditDebit(smTransfer) : 0
+          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cSTax !== 0) {
+            booking.cBookingTypeID = 6
+            booking.cDebit = smTransfer.cSTax < 0 ? -smTransfer.cSTax : 0
+            booking.cCredit = smTransfer.cSTax > 0 ? smTransfer.cSTax : 0
+            booking.cSourceTaxCredit = 0
+            booking.cSourceTaxDebit = 0
+          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cFTax !== 0) {
+            booking.cBookingTypeID = 6
+            booking.cDebit = smTransfer.cFTax < 0 ? -smTransfer.cFTax : 0
+            booking.cCredit = smTransfer.cFTax > 0 ? smTransfer.cFTax : 0
+            booking.cTransactionTaxCredit = 0
+            booking.cTransactionTaxDebit = 0
+          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cTax !== 0) {
+            booking.cBookingTypeID = 6
+            booking.cDebit = smTransfer.cTax < 0 ? -smTransfer.cTax : 0
+            booking.cCredit = smTransfer.cTax > 0 ? smTransfer.cTax : 0
+            booking.cTaxCredit = 0
+            booking.cTaxDebit = 0
+          }
           bookingsStoreData.push(booking)
           bookingsImportData.push({type: 'add', data: booking, key: -1})
         }

@@ -317,7 +317,17 @@
       "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
       "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
       "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
-      "fileLabel": "aus Datei"
+      "fileLabel": "aus Datei",
+      "tax": "Steuer",
+      "capitalTax": "Ertragssteuer",
+      "fee": "Gebühr",
+      "sourceTax": "Quellensteuer",
+      "transactionTax": "Transaktionssteuer",
+      "others": "Sonstiges",
+      "soli": "Soli",
+      "shareBuy": "Aktienkauf",
+      "shareSell": "Aktienverkauf",
+      "dividend": "Dividende"
     }
   },
   "optionsPage": {
