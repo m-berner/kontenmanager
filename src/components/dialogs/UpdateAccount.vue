@@ -32,7 +32,7 @@ const {accountFormularData, formRef} = useAccountFormular()
 const records = useRecordsStore()
 
 const STRINGS = Object.freeze({
-  SUCCESS_ADD: t('dialogs.updateAccount.success.add'),
+  SUCCESS_UPDATE: t('dialogs.updateAccount.success.update'),
   ERROR_ONCLICK_OK: t('dialogs.updateAccount.errors.onClickOk'),
   TITLE: t('dialogs.updateAccount.title')
 })
@@ -51,7 +51,7 @@ const onClickOk = async (): Promise<void> => {
     records.accounts.update(account)
     await update(account)
     runtime.resetTeleport()
-    await notice([STRINGS.SUCCESS_ADD])
+    await notice([STRINGS.SUCCESS_UPDATE])
   } catch (e) {
     if (e instanceof Error) {
       log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})

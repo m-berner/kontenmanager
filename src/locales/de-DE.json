@@ -186,6 +186,9 @@
     },
     "updateBooking": {
       "title": "Buchung bearbeiten",
+      "success": {
+        "update": "Die Buchung wurde aktualisiert"
+      },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
       }
@@ -222,7 +225,7 @@
     "updateStock": {
       "title": "Unternehmen bearbeiten",
       "success": {
-        "add": "Unternehmen wurde aktualisiert"
+        "update": "Unternehmen wurde aktualisiert"
       },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
@@ -235,7 +238,7 @@
     "updateAccount": {
       "title": "Bankkonto aktualisieren",
       "success": {
-        "add": "Konto wurde aktualisiert"
+        "update": "Konto wurde aktualisiert"
       },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'"
@@ -268,11 +271,11 @@
       "title": "Buchungstyp aktualisieren",
       "bookingTypeLabel": "Buchungstyp",
       "success": {
-        "add": "Buchungstyp wurde aktualisiert"
+        "update": "Buchungstyp wurde aktualisiert"
       },
       "errors": {
         "onClickOk": "Fehler in 'onClickOk'",
-        "add": "Der Buchungstyp konnte nicht aktualisiert werden"
+        "update": "Der Buchungstyp konnte nicht aktualisiert werden"
       }
     },
     "deleteBookingType": {

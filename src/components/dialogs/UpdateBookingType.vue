@@ -27,8 +27,8 @@ const runtime = useRuntimeStore()
 
 const STRINGS = Object.freeze({
   TITLE: t('dialogs.updateBookingType.title'),
-  SUCCESS_ADD: t('dialogs.updateBookingType.success.add'),
-  ERROR_ADD: t('dialogs.updateBookingType.errors.add'),
+  SUCCESS_UPDATE: t('dialogs.updateBookingType.success.update'),
+  ERROR_UPDATE: t('dialogs.updateBookingType.errors.update'),
   ERROR_ONCLICK_OK: t('dialogs.updateBookingType.errors.onClickOk'),
   BOOKING_TYPE_LABEL: t('dialogs.updateBookingType.bookingTypeLabel'),
   NAME_RULES: [
@@ -58,9 +58,9 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType)
       await update(bookingType)
       runtime.resetTeleport()
-      await notice([STRINGS.SUCCESS_ADD])
+      await notice([STRINGS.SUCCESS_UPDATE])
     } else {
-      await notice([STRINGS.ERROR_ADD])
+      await notice([STRINGS.ERROR_UPDATE])
     }
   } catch (e) {
     if (e instanceof Error) {

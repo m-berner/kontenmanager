@@ -32,8 +32,8 @@ const {activeId} = storeToRefs(runtime)
 const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
-// TODO erfolgsmeldung update buchung, ID mit text ersetzen
 const STRINGS = Object.freeze({
+  SUCCESS_UPDATE: t('dialogs.addBooking.success.update'),
   ERROR_ONCLICK_OK: t('dialogs.addBooking.errors.onClickOk'),
   TITLE: t('dialogs.updateBooking.title')
 })
@@ -66,8 +66,8 @@ const onClickOk = async (): Promise<void> => {
       cCredit: bookingFormularData.credit
     }
     records.bookings.update(booking)
-    const updateBookingResponse = await update(booking)
-    await notice([updateBookingResponse as string])
+    await update(booking)
+    await notice([STRINGS.SUCCESS_UPDATE])
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()
   } catch (e) {

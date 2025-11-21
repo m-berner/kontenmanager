@@ -33,7 +33,7 @@ const {stockFormularData, formRef} = useStockFormular()
 
 const STRINGS = Object.freeze({
   TITLE: t('dialogs.updateStock.title'),
-  SUCCESS_ADD: t('dialogs.updateStock.success.add'),
+  SUCCESS_UPDATE: t('dialogs.updateStock.success.update'),
   ERROR_ONCLICK_OK: t('dialogs.updateStock.errors.onClickOk')
 })
 
@@ -56,7 +56,7 @@ const onClickOk = async (): Promise<void> => {
     }
     records.stocks.update(stock)
     await update(stock)
-    await notice([STRINGS.SUCCESS_ADD])
+    await notice([STRINGS.SUCCESS_UPDATE])
     runtime.resetTeleport()
   } catch (e) {
     if (e instanceof Error) {

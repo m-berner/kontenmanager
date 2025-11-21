@@ -1,8 +1,7 @@
-import {ref} from 'vue';
-import {defineStore} from 'pinia';
-import {useApp} from '@/composables/useApp';
-
-const {log} = useApp();
+import { ref } from 'vue';
+import { defineStore } from 'pinia';
+import { useApp } from '@/composables/useApp';
+const { log } = useApp();
 export const useRuntimeStore = defineStore('runtime', function () {
     const activeId = ref(-1);
     const optionMenuColors = ref(new Map());
@@ -18,17 +17,14 @@ export const useRuntimeStore = defineStore('runtime', function () {
     const isCompanyPage = ref(false);
     const isDownloading = ref(false);
     const loadedStocksPages = new Set();
-
     function clearStocksPages() {
         loadedStocksPages.clear();
     }
-
     function setTeleport(entry) {
         dialogName.value = entry.dialogName;
         dialogOk.value = entry.dialogOk;
         dialogVisibility.value = entry.dialogVisibility;
     }
-
     function resetTeleport() {
         dialogName.value = '';
         dialogOk.value = true;
@@ -37,13 +33,11 @@ export const useRuntimeStore = defineStore('runtime', function () {
             optionMenuColors.value.set(m, '');
         }
     }
-
     function resetOptionsMenuColors() {
         for (const m of optionMenuColors.value.keys()) {
             optionMenuColors.value.set(m, '');
         }
     }
-
     return {
         activeId,
         optionMenuColors,

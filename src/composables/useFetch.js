@@ -474,7 +474,7 @@ export function useFetch() {
             if (!firstResponse.ok ||
                 firstResponse.status >= CONS.STATES.SRV ||
                 (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-                await notice(['fetchIndexdata: firstResponse failed']);
+                await notice(['fetchIndexData: firstResponse failed']);
                 reject(firstResponse.statusText);
             }
             const firstResponseText = await firstResponse.text();

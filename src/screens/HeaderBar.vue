@@ -214,8 +214,7 @@ onUpdated(() => {
   isCompanyPage.value = router.currentRoute.value.path.includes('company')
 })
 
-//TODO update quotes?
-//TODO notice overwork...
+//TODO update quotes
 log('--- HeaderBar.vue setup ---')
 </script>
 
