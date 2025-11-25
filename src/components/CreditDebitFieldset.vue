@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {computed} from 'vue'
+import {computed, defineEmits, defineProps} from 'vue'
 import {useValidation} from '@/composables/useValidation'
 import CurrencyInput from '@/components/CurrencyInput.vue'
 
@@ -22,6 +22,15 @@ const props = defineProps<CreditDebitFieldsetProps>()
 const emit = defineEmits(['update:modelValue'])
 const {t} = useI18n()
 const {isValidCredit, isValidDebit} = useValidation()
+
+const STRINGS = Object.freeze({
+  CREDIT_LABEL: t('components.creditDebitFieldset.creditLabel'),
+  DEBIT_LABEL: t('components.creditDebitFieldset.debitLabel'),
+  RULES: [
+    t('components.creditDebitFieldset.onlyOnePositive'),
+    t('components.creditDebitFieldset.notNegative')
+  ]
+})
 
 const creditValue = computed({
   get: () => props.modelValue.credit,
@@ -41,8 +50,8 @@ const debitValue = computed({
     })
   }
 })
-const creditRules = computed(() => isValidCredit([t('components.creditDebitFieldset.onlyOnePositive'), t('components.creditDebitFieldset.notNegative')], props.modelValue.debit))
-const debitRules = computed(() => isValidDebit([t('components.creditDebitFieldset.onlyOnePositive'), t('components.creditDebitFieldset.notNegative')], props.modelValue.credit))
+const creditRules = computed(() => isValidCredit(STRINGS.RULES, props.modelValue.debit))
+const debitRules = computed(() => isValidDebit(STRINGS.RULES, props.modelValue.credit))
 </script>
 
 <template>
@@ -52,12 +61,12 @@ const debitRules = computed(() => isValidDebit([t('components.creditDebitFieldse
       <CurrencyInput
           v-model="creditValue"
           :disabled="props.disabled"
-          :label="t('components.creditDebitFieldset.creditLabel')"
+          :label="STRINGS.CREDIT_LABEL"
           :rules="creditRules"/>
       <CurrencyInput
           v-model="debitValue"
           :disabled="props.disabled"
-          :label="t('components.creditDebitFieldset.debitLabel')"
+          :label="STRINGS.DEBIT_LABEL"
           :rules="debitRules"/>
     </div>
   </fieldset>

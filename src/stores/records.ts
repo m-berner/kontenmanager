@@ -146,16 +146,16 @@ const useStocksStore = defineStore('stocks', function () {
                 )
             }
             for (let i = 0; i < pageStocks.length; i++) {
-                if (pageStocks[i].mValue === 0) {
-                    isin.push({
-                        id: pageStocks[i].cID,
-                        isin: pageStocks[i].cISIN,
-                        min: '0',
-                        rate: '0',
-                        max: '0',
-                        cur: ''
-                    })
-                }
+                //if (pageStocks[i].mValue === 0) {
+                isin.push({
+                    id: pageStocks[i].cID,
+                    isin: pageStocks[i].cISIN,
+                    min: '0',
+                    rate: '0',
+                    max: '0',
+                    cur: ''
+                })
+                //}
                 if ((utcDate(pageStocks[i].cMeetingDay).getTime() < Date.now() || utcDate(pageStocks[i].cQuarterDay).getTime() < Date.now()) && utcDate(pageStocks[i].cAskDates).getTime() < Date.now()) {
                     isinDates.push({
                         id: pageStocks[i].cID,

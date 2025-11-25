@@ -35,7 +35,6 @@ const MESSAGES = Object.freeze({
   NO_ACCOUNT: t('headerBar.messages.noAccount'),
   ALL_STOCKS_VISIBLE: t('headerBar.messages.allStocksVisible')
 })
-
 const STRINGS = Object.freeze({
   HOME: t('headerBar.home'),
   COMPANY: t('headerBar.company'),
@@ -63,6 +62,12 @@ const onIconClick = async (ev: Event): Promise<void> => {
   const parse = async (elem: Element | null, loop = 0): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
+      case CONS.COMPONENTS.DIALOGS.UPDATE_QUOTE:
+        //loading.value = true
+        console.error(runtime.stocksPage)
+        await records.stocks.loadOnlineData(runtime.stocksPage)
+        //loading.value = false
+        break
       case CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK:
         if (records.stocks.passive.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.ALL_STOCKS_VISIBLE, null)
@@ -136,7 +141,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE:
-        if (bookingTypeItems.value.length < 2) {
+        if (bookingTypeItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
         } else {
           runtime.setTeleport({
@@ -147,7 +152,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
-        if (bookingTypeItems.value.length < 2) {
+        if (bookingTypeItems.value.length === 0) {
           info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
         } else {
           runtime.setTeleport({
@@ -214,7 +219,6 @@ onUpdated(() => {
   isCompanyPage.value = router.currentRoute.value.path.includes('company')
 })
 
-//TODO update quotes
 log('--- HeaderBar.vue setup ---')
 </script>
 
@@ -252,7 +256,7 @@ log('--- HeaderBar.vue setup ---')
     </RouterLink>
     <v-spacer/>
     <v-tooltip
-        v-if="false"
+        v-if="isCompanyPage"
         :text="STRINGS.UPDATE_QUOTE"
         location="top">
       <template v-slot:activator="{ props }">

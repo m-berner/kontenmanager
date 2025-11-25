@@ -98,7 +98,7 @@ log('--- UpdateBookingType.vue setup ---')
         :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"
-        :label="t('dialogs.deleteBookingType.label')"
+        :label="t('dialogs.deleteBookingType.bookingTypeLabel')"
         :menu="true"
         :menu-props="{ maxHeight: '200px' }"
         density="compact"
