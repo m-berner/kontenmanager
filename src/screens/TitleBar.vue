@@ -32,7 +32,12 @@ const MESSAGES = Object.freeze({
 })
 
 const STRINGS = Object.freeze({
-  ERROR_ONUPDATE_TITLE_BAR: t('titleBar.errors.onUpdateTitleBar')
+  ERROR_ONUPDATE_TITLE_BAR: t('titleBar.errors.onUpdateTitleBar'),
+  TITLE: t('titleBar.title'),
+  LOGO_ALT: t('titleBar.iconsAlt.logo'),
+  DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
+  BOOKING_SUM_LABEL: t('titleBar.bookingsSumLabel'),
+  SELECT_ACCOUNT_LABEL: t('titleBar.selectAccountLabel')
 })
 
 const logoUrl = computed((): string => {
@@ -73,20 +78,20 @@ log('--- TitleBar.vue setup ---')
 <template>
   <v-app-bar app color="secondary" flat>
     <template #prepend>
-      <img :alt="t('titleBar.iconsAlt.logo')" :src="CONS.COMPONENTS.TITLE_BAR.LOGO"/>
+      <img :alt="STRINGS.LOGO_ALT" :src="CONS.COMPONENTS.TITLE_BAR.LOGO"/>
     </template>
-    <v-app-bar-title>{{ t('titleBar.title') }}</v-app-bar-title>
+    <v-app-bar-title>{{ STRINGS.TITLE }}</v-app-bar-title>
     <v-text-field
         v-if="isCompanyPage && !isDownloading"
         :disabled="true"
-        :label="t('titleBar.depotSumLabel')"
+        :label="STRINGS.DEPOT_SUM_LABEL"
         :model-value="depot"
         hide-details
         max-width="150"/>
     <v-text-field
         v-if="!isCompanyPage"
         :disabled="true"
-        :label="t('titleBar.bookingsSumLabel')"
+        :label="STRINGS.BOOKING_SUM_LABEL"
         :model-value="balance"
         hide-details
         max-width="150"/>
@@ -97,7 +102,7 @@ log('--- TitleBar.vue setup ---')
         :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
         :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.accounts.items"
-        :label="t('titleBar.selectAccountLabel')"
+        :label="STRINGS.SELECT_ACCOUNT_LABEL"
         density="compact"
         hide-details
         max-width="350"
@@ -105,7 +110,7 @@ log('--- TitleBar.vue setup ---')
         variant="outlined"
         @update:model-value="onUpdateTitleBar">
       <template #prepend>
-        <img :alt="t('titleBar.iconsAlt.logo')" :src="logoUrl"/>
+        <img :alt="STRINGS.LOGO_ALT" :src="logoUrl"/>
       </template>
     </v-select>
   </v-app-bar>

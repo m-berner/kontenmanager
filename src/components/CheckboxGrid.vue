@@ -21,6 +21,7 @@ const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
 const checked = ref<string[]>([])
+
 const boxes = computed((): { A: string[], B: string[] } => {
   const indexesKeys: string[] = Array.from(CONS.SETTINGS.INDEXES.keys())
   const materialsKeys: string[] = Array.from(CONS.SETTINGS.MATERIALS.keys())

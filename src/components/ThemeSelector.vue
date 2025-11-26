@@ -25,6 +25,7 @@ const themeNames: { [p: string]: string } = Object.freeze({
   dark: t('optionsPage.themeNames.dark'),
   light: t('optionsPage.themeNames.light')
 })
+
 const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const setSkin = async (skin: string | null): Promise<void> => {

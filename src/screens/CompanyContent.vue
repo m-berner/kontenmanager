@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import type {IMenuItem, IStock_Store} from '@/types'
 import type {DataTableHeader} from 'vuetify'
-import {computed, onBeforeUpdate, onMounted, ref} from 'vue'
+import {computed, onBeforeUpdate, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useSettingsStore} from '@/stores/settings'
@@ -23,7 +23,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {stocksPerPage} = storeToRefs(settings)
 const runtime = useRuntimeStore()
-const {stocksPage, isDownloading} = storeToRefs(runtime)
+const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
 const stocksHeaders: readonly DataTableHeader[] = Object.freeze([
   {
@@ -110,7 +110,7 @@ const stocksMenuItems: readonly IMenuItem[] = Object.freeze([
   }
 ])
 
-const loading = ref(false)
+//const loading = ref(false)
 
 const winLossClass = computed(() => {
   return (value: number): Record<string, boolean> => ({
@@ -127,9 +127,9 @@ const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
   stocksPage.value = page
   if (!runtime.loadedStocksPages.has(page)) {
-    loading.value = true
+    isStockLoading.value = true
     await records.stocks.loadOnlineData(page)
-    loading.value = false
+    isStockLoading.value = false
   }
 }
 
@@ -160,10 +160,10 @@ onMounted(async () => {
   })
   if (!runtime.loadedStocksPages.has(stocksPage)) {
     isDownloading.value = true
-    loading.value = true
+    isStockLoading.value = true
     await records.stocks.loadOnlineData(stocksPage.value)
     await requiredOnlineData()
-    loading.value = false
+    isStockLoading.value = false
     isDownloading.value = false
   }
 })
@@ -180,7 +180,7 @@ log('--- StocksTable.vue setup ---')
       :items-per-page="stocksPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('homePage.stocksTable.itemsPerPageText')"
-      :loading="loading"
+      :loading="isStockLoading"
       :no-data-text="t('homePage.stocksTable.noDataText')"
       density="compact"
       item-key="cID"

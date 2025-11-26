@@ -82,7 +82,7 @@ const feeModel = computed({
     bookingFormularData.feeDebit = val.debit
   }
 })
-// TODO comma in number imput false
+// TODO update bookingTypes corrected, DONE
 </script>
 
 <template>

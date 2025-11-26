@@ -16,6 +16,7 @@ export const useRuntimeStore = defineStore('runtime', function () {
     const stocksPage = ref(1);
     const isCompanyPage = ref(false);
     const isDownloading = ref(false);
+    const isStockLoading = ref(false);
     const loadedStocksPages = new Set();
     function clearStocksPages() {
         loadedStocksPages.clear();
@@ -53,6 +54,7 @@ export const useRuntimeStore = defineStore('runtime', function () {
         loadedStocksPages,
         isCompanyPage,
         isDownloading,
+        isStockLoading,
         setTeleport,
         resetTeleport,
         resetOptionsMenuColors,

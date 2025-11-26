@@ -27,7 +27,7 @@ onBeforeMount(async () => {
   const {notice} = useBrowser()
   const {t} = useI18n()
   const STRINGS = Object.freeze({
-    ONBEFORE_MOUNT: t('homePage.errors.onBeforeMount')
+    ON_BEFORE_MOUNT: t('homePage.errors.onBeforeMount')
   })
   try {
     const MESSAGES = Object.freeze({
@@ -139,10 +139,10 @@ onBeforeMount(async () => {
     window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ONBEFORE_MOUNT, {error: e.message})
-      await notice([STRINGS.ONBEFORE_MOUNT, e.message])
+      log(STRINGS.ON_BEFORE_MOUNT, {error: e.message})
+      await notice([STRINGS.ON_BEFORE_MOUNT, e.message])
     } else {
-      throw new Error(`${STRINGS.ONBEFORE_MOUNT}: unknown`)
+      throw new Error(`${STRINGS.ON_BEFORE_MOUNT}: unknown`)
     }
   }
 })

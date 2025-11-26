@@ -21,7 +21,7 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {openOptionsPage} = useBrowser()
 const runtime = useRuntimeStore()
-const {isCompanyPage} = storeToRefs(runtime)
+const {isCompanyPage, isStockLoading} = storeToRefs(runtime)
 const records = useRecordsStore()
 const router = useRouter()
 const {info} = useAlertStore()
@@ -63,10 +63,9 @@ const onIconClick = async (ev: Event): Promise<void> => {
     if (loop > 6 || elem === null) return
     switch (elem!.id) {
       case CONS.COMPONENTS.DIALOGS.UPDATE_QUOTE:
-        //loading.value = true
-        console.error(runtime.stocksPage)
+        isStockLoading.value = true
         await records.stocks.loadOnlineData(runtime.stocksPage)
-        //loading.value = false
+        isStockLoading.value = false
         break
       case CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK:
         if (records.stocks.passive.length === 0) {

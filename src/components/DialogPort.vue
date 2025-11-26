@@ -13,6 +13,11 @@ import {useRuntimeStore} from '@/stores/runtime'
 const {t} = useI18n()
 const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
 const runtime = useRuntimeStore()
+
+const STRINGS = Object.freeze({
+  OK: t('dialogs.ok'),
+  CANCEL: t('dialogs.cancel')
+})
 </script>
 
 <template>
@@ -26,7 +31,7 @@ const runtime = useRuntimeStore()
           <component :is="runtime.dialogName" ref="dialogRef"/>
         </v-card-text>
         <v-card-actions class="pa-5">
-          <v-tooltip :text="t('dialogs.ok')" location="bottom">
+          <v-tooltip :text="STRINGS.OK" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
                   v-if="runtime.dialogOk"
@@ -40,7 +45,7 @@ const runtime = useRuntimeStore()
             </template>
           </v-tooltip>
           <v-spacer/>
-          <v-tooltip :text="t('dialogs.cancel')" location="bottom">
+          <v-tooltip :text="STRINGS.CANCEL" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
                   class="ml-auto"

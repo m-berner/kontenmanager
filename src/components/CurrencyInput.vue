@@ -63,7 +63,7 @@ const onBlur = (): void => {
 
 const onInput = (ev: Event): void => {
   if (ev.target instanceof HTMLInputElement && isFocused.value) {
-    formattedValue.value = ev.target.value.replace(',','.')
+    formattedValue.value = ev.target.value.replace(',', '.')
   }
 }
 

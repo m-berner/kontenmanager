@@ -43,6 +43,11 @@ const formName = ref<string>('')
 const formVisible = ref<boolean>(true)
 const formRef = ref<HTMLFormElement | null>(null)
 
+const onSelect = () => {
+  const ind = records.bookingTypes.getIndexById(formSelectedIndex.value)
+  formName.value = records.bookingTypes.items[ind].cName
+  formVisible.value = false
+}
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING_TYPE: onClickOk')
   const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
@@ -50,10 +55,11 @@ const onClickOk = async (): Promise<void> => {
 
   try {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
+      const ind = records.bookingTypes.getIndexById(formSelectedIndex.value)
       const bookingType: IBookingType_Store = {
-        cID: bookingTypeItems.value[formSelectedIndex.value].cID,
+        cID: bookingTypeItems.value[ind].cID,
         cName: formName.value.trim(),
-        cAccountNumberID: bookingTypeItems.value[formSelectedIndex.value].cAccountNumberID
+        cAccountNumberID: bookingTypeItems.value[ind].cAccountNumberID
       }
       records.bookingTypes.update(bookingType)
       await update(bookingType)
@@ -90,7 +96,7 @@ log('--- UpdateBookingType.vue setup ---')
         density="compact"
         variant="outlined"
         @focus="formRef?.resetValidation()"
-        @update:modelValue="(mValue) => {if (mValue === null) { formSelectedIndex = 0 }}"
+        @update:model-value="(mValue) => {if (mValue === null) { formSelectedIndex = 0 }}"
     />
     <v-select
         v-if="formVisible"
@@ -98,13 +104,13 @@ log('--- UpdateBookingType.vue setup ---')
         :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"
-        :label="t('dialogs.deleteBookingType.bookingTypeLabel')"
+        :label="STRINGS.BOOKING_TYPE_LABEL"
         :menu="true"
         :menu-props="{ maxHeight: '200px' }"
         density="compact"
         placeholder=""
         variant="outlined"
         @focus="formRef?.resetValidation()"
-        @update:modelValue="formName = records.bookingTypes.items[formSelectedIndex].cName; formVisible=false"/>
+        @update:model-value="onSelect"/>
   </v-form>
 </template>
