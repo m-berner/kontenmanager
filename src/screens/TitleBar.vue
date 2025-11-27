@@ -9,6 +9,7 @@
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
+import {useRouter} from 'vue-router'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
@@ -17,6 +18,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useApp} from '@/composables/useApp'
 
 const {n, t} = useI18n()
+const router = useRouter()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const runtime = useRuntimeStore()
@@ -30,7 +32,8 @@ const MESSAGES = Object.freeze({
   INFO_TITLE: t('homePage.messages.infoTitle'),
   RESTRICTED_IMPORT: t('homePage.messages.restrictedImport')
 })
-
+// TODO aus Depotkonto wechseln zu ing, klappt nicht direkt? DONE, Kontenwechsel Korrektur
+// TODO add/remove marketplace, exchanges immediate update!
 const STRINGS = Object.freeze({
   ERROR_ONUPDATE_TITLE_BAR: t('titleBar.errors.onUpdateTitleBar'),
   TITLE: t('titleBar.title'),
@@ -62,6 +65,8 @@ const onUpdateTitleBar = async (): Promise<void> => {
     const storesDB = await getDatabaseStores(activeAccountId.value)
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
     await records.init(storesDB, MESSAGES)
+    isCompanyPage.value = false
+    await router.push('/')
   } catch (e) {
     if (e instanceof Error) {
       log(STRINGS.ERROR_ONUPDATE_TITLE_BAR, {error: e.message})

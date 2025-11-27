@@ -32,9 +32,10 @@ const {activeId} = storeToRefs(runtime)
 const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
+
 const STRINGS = Object.freeze({
-  SUCCESS_UPDATE: t('dialogs.addBooking.success.update'),
-  ERROR_ONCLICK_OK: t('dialogs.addBooking.errors.onClickOk'),
+  SUCCESS_UPDATE: t('dialogs.updateBooking.success.update'),
+  ERROR_ONCLICK_OK: t('dialogs.updateBooking.errors.onClickOk'),
   TITLE: t('dialogs.updateBooking.title')
 })
 

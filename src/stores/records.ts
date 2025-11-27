@@ -19,7 +19,6 @@ import {defineStore, storeToRefs} from 'pinia'
 import {computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useSettingsStore} from '@/stores/settings'
-//import {useBrowser} from '@/composables/useBrowser'
 import {useAlertStore} from '@/stores/alerts'
 import {useFetch} from '@/composables/useFetch'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -509,7 +508,6 @@ export const useRecordsStore = defineStore('records', function () {
         log('RECORDS: init', {info: storesDB})
         const settings = useSettingsStore()
         const {activeAccountId} = storeToRefs(settings)
-        //const {setStorage} = useBrowser()
         const {info} = useAlertStore()
         const stocksOnlyMemory: IStock_Memory = {
             mPortfolio: 0,
@@ -538,8 +536,6 @@ export const useRecordsStore = defineStore('records', function () {
         }
         const load = (stores: IStores_Store) => {
             log('RECORDS: load', {info: stores})
-            //const {activeAccountId} = useSettingsStore()
-
             for (const entry of stores.accounts) {
                 accountsStore.add(entry)
             }
@@ -566,11 +562,6 @@ export const useRecordsStore = defineStore('records', function () {
                 return dateB - dateA
             })
         }
-        //
-        // if (activeAccountId.value === -1 && storesDB.accountsDB.length > 0) {
-        //     activeAccountId.value = storesDB.accountsDB[0].cID
-        //     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-        // }
         clean(removeAccounts)
         load(stores)
         stocksStore.add({

@@ -6,10 +6,14 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import type {IExchangeData} from '@/types'
 import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
+import {useRuntimeStore} from '@/stores/runtime'
+import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useFetch} from '@/composables/useFetch'
 
 interface DynamicListProps {
   type: symbol
@@ -21,6 +25,7 @@ const dynamicListProps = defineProps<DynamicListProps>()
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
+const {fetchExchangesData} = useFetch()
 
 const newItem = ref<string>('')
 const list = ref<string[]>([])
@@ -54,15 +59,21 @@ const title = computed<string>(() => {
 
 const addItem = async (item: string): Promise<void> => {
   log('DYNAMIC_LIST: addItem')
+  const {infoExchanges} = useRuntimeStore()
+  const {exchanges, markets} = useSettingsStore()
   if (!list.value?.includes(item)) {
     switch (dynamicListProps.type) {
       case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
         list.value.push(item)
+        markets.push(item)
         await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
         break
       case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
         list.value.push(item.toUpperCase())
+        exchanges.push(item)
         await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
+        const exchangesInfoData: IExchangeData[] = await fetchExchangesData([...newItem.value])
+        infoExchanges.set(exchanges[exchanges.length], exchangesInfoData[0].value)
         break
       default:
     }
@@ -76,10 +87,10 @@ const removeItem = async (n: number): Promise<void> => {
     newItem.value = ''
     switch (dynamicListProps.type) {
       case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, list.value)
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
         break
       case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, list.value)
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
         break
       default:
     }

@@ -295,8 +295,8 @@
       "nameLabel": "Booking Category",
       "sumLabel": "Amount",
       "sum": "Total",
-      "fees": "Fees",
-      "taxes": "Taxes",
+      "fees": "Trade fees",
+      "taxes": "Trade taxes",
       "itemsPerPageText": "Entries per page",
       "noDataText": "No dividend received yet"
     },

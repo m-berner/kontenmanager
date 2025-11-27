@@ -19,8 +19,14 @@ import DotMenu from '@/components/DotMenu.vue'
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const records = useRecordsStore()
+const {items: bookingItems} = storeToRefs(records.bookings)
 const settings = useSettingsStore()
 const {bookingsPerPage} = storeToRefs(settings)
+
+const STRINGS = Object.freeze({
+  ITEMS_PER_PAGE_TEXT: t('homePage.bookingsTable.itemsPerPageText'),
+  NO_DATA_TEXT: t('homePage.bookingsTable.noDataText')
+})
 
 const homeHeaders: readonly DataTableHeader[] = Object.freeze([
   {
@@ -99,11 +105,11 @@ log('--- HomeContent.vue setup ---')
       :headers="homeHeaders"
       :hide-no-data="false"
       :hover="true"
-      :items="records.bookings.items"
+      :items="bookingItems"
       :items-per-page="bookingsPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-      :items-per-page-text="t('homePage.bookingsTable.itemsPerPageText')"
-      :no-data-text="t('homePage.bookingsTable.noDataText')"
+      :items-per-page-text="STRINGS.ITEMS_PER_PAGE_TEXT"
+      :no-data-text="STRINGS.NO_DATA_TEXT"
       :search="search"
       density="compact"
       item-key="cID"

@@ -295,8 +295,8 @@
       "nameLabel": "Buchungskategorie",
       "sumLabel": "Betrag",
       "sum": "Summe",
-      "fees": "Gebühren",
-      "taxes": "Steuern",
+      "fees": "Aktienhandel Gebühren",
+      "taxes": "Aktienhandel Steuern",
       "itemsPerPageText": "Einträge pro Seite",
       "noDataText": "Bisher keine Dividende erhalten"
     },

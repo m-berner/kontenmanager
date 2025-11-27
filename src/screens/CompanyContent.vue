@@ -20,6 +20,7 @@ import DotMenu from '@/components/DotMenu.vue'
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const records = useRecordsStore()
+const {active: activeStockItems} = storeToRefs(records.stocks)
 const settings = useSettingsStore()
 const {stocksPerPage} = storeToRefs(settings)
 const runtime = useRuntimeStore()
@@ -176,7 +177,7 @@ log('--- StocksTable.vue setup ---')
       :headers="stocksHeaders"
       :hide-no-data="false"
       :hover="true"
-      :items="records.stocks.active"
+      :items="activeStockItems"
       :items-per-page="stocksPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('homePage.stocksTable.itemsPerPageText')"
