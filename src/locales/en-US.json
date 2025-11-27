@@ -1,4 +1,55 @@
 {
+  "messages": {
+    "infoTitle": "INFO",
+    "noDelete": "This company cannot be deleted. Bookings exist.",
+    "restrictedImport": "AccountManager is a further development of the former StockManager. Importing StockManager data is only possible directly after installation, before any AccountManager object has been manually created.",
+    "corruptStorage": "Local browser storage is corrupt. Reset to default with <CTRL + ALT + r>.",
+    "noBookings": "There are no bookings available.",
+    "noAccount": "There is no account yet.",
+    "nothingToExport": "There are no objects to export yet.",
+    "noBookingTypes": "There are no booking categories available.",
+    "createAccount": "You must first create an account...",
+    "onUpdateTitleBar": "Error in 'onUpdateTitleBar'",
+    "onBeforeMount": "Error in 'onBeforeMount'",
+    "onUpdateIsin": "Error in 'onUpdateIsin'",
+    "onClickOk": "Error in 'onClickOk'",
+    "allStocksVisible": "No companies are hidden.",
+    "addBooking": {
+      "success": "Booking has been added",
+      "error": "Add booking failed"
+    },
+    "updateBooking": {
+      "success": "Booking has been updated"
+    },
+    "addAccount": {
+      "success": "Account has been added"
+    },
+    "addStock": {
+      "success": "Company has been added"
+    },
+    "updateStock": {
+      "success": "Company has been updated"
+    },
+    "updateAccount": {
+      "success": "Account has been updated"
+    },
+    "deleteAccountConfirmation": {
+      "confirm": "Do you really want to delete the account with all associated data?",
+      "success": "Account has been removed"
+    },
+    "addBookingType": {
+      "success": "Booking type has been added",
+      "error": "Booking type exists already"
+    },
+    "updateBookingType": {
+      "success": "Booking type has been updated",
+      "error": "Update booking type failed"
+    },
+    "deleteBookingType": {
+      "success": "Booking type has been removed",
+      "error": "A booking exists"
+    }
+  },
   "titleBar": {
     "title": "AccountManager",
     "bookingsSumLabel": "Account Balance",
@@ -6,9 +57,6 @@
     "selectAccountLabel": "IBAN",
     "iconsAlt": {
       "logo": "Bank Logo"
-    },
-    "errors": {
-      "onUpdateTitleBar": "Error in 'onUpdateTitleBar'"
     }
   },
   "headerBar": {
@@ -29,29 +77,11 @@
     "exportToFile": "Export Database",
     "importDatabase": "Import Database",
     "showAccounting": "Annual Calculations",
-    "settings": "Settings",
-    "messages": {
-      "infoTitle": "INFO",
-      "noBookings": "There are no bookings available.",
-      "noAccount": "There is no account yet.",
-      "nothingToExport": "There are no objects to export yet.",
-      "noBookingTypes": "There are no booking categories available.",
-      "createAccount": "You must first create an account...",
-      "allStocksVisible": "No companies are hidden."
-    }
+    "settings": "Settings"
   },
   "infoBar": {
   },
   "homePage": {
-    "messages": {
-      "infoTitle": "INFO",
-      "noDelete": "This company cannot be deleted. Bookings exist.",
-      "restrictedImport": "AccountManager is a further development of the former StockManager. Importing StockManager data is only possible directly after installation, before any AccountManager object has been manually created.",
-      "corruptStorage": "Local browser storage is corrupt. Reset to default with <CTRL + ALT + r>."
-    },
-    "errors": {
-      "onBeforeMount": "Error in 'onBeforeMount'"
-    },
     "search": "Search",
     "bookingsTable": {
       "headers": {
@@ -169,29 +199,13 @@
       "firstPageLabel": "First Page",
       "meetingDayLabel": "General Meeting",
       "quarterDayLabel": "Quarterly Results",
-      "urlLabel": "URL",
-      "errors": {
-        "onUpdateIsin": "Error in 'onUpdateIsin'"
-      }
+      "urlLabel": "URL"
     },
     "addBooking": {
-      "title": "Add Booking",
-      "success": {
-        "add": "Booking has been added"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'",
-        "add": "add booking failed"
-      }
+      "title": "Add Booking"
     },
     "updateBooking": {
-      "title": "Edit Booking",
-      "success": {
-        "update": "Booking has been updated"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'"
-      }
+      "title": "Edit Booking"
     },
     "deleteBooking": {
       "title": "Booking",
@@ -200,22 +214,10 @@
       "error": "Input error?"
     },
     "addAccount": {
-      "title": "Add Bank Account",
-      "success": {
-        "add": "Account has been added"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'"
-      }
+      "title": "Add Bank Account"
     },
     "addStock": {
-      "title": "Add Company",
-      "success": {
-        "add": "Company has been added"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'"
-      }
+      "title": "Add Company"
     },
     "deleteStock": {
       "title": "Remove Company",
@@ -223,72 +225,31 @@
       "error": "Company already exists"
     },
     "updateStock": {
-      "title": "Edit Company",
-      "success": {
-        "update": "Company has been updated"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'"
-      }
+      "title": "Edit Company"
     },
     "fadeInStock": {
       "title": "Show Company",
       "selectLabel": "Comapny"
     },
     "updateAccount": {
-      "title": "Update Bank Account",
-      "success": {
-        "update": "Account has been updated"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'"
-      }
+      "title": "Update Bank Account"
     },
     "deleteAccountConfirmation": {
-      "title": "Bank Account - Delete All Data",
-      "confirm": "Do you really want to delete the account with all associated data?",
-      "success": {
-        "add": "Account has been removed"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'"
-      },
-      "message": "There is no account yet."
+      "title": "Bank Account - Delete All Data"
     },
     "addBookingType": {
       "title": "Add Booking Type",
       "bookingTypeLabel": "Booking Type",
-      "placeholder": "Enter name",
-      "success": {
-        "add": "Booking type has been added"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'",
-        "add": "Booking type exists already"
-      }
+      "placeholder": "Enter name"
     },
     "updateBookingType": {
       "title": "Update Booking Type",
-      "bookingTypeLabel": "Booking Type",
-      "success": {
-        "update": "Booking type has been updated"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'",
-        "update": "The booking type could not be updated"
-      }
+      "bookingTypeLabel": "Booking Type"
     },
     "deleteBookingType": {
       "title": "Delete Booking Type",
       "bookingTypeLabel": "Booking Type",
-      "placeholder": "Select booking type to delete",
-      "success": {
-        "add": "Booking type has been removed"
-      },
-      "errors": {
-        "onClickOk": "Error in 'onClickOk'",
-        "add": "A booking exists"
-      }
+      "placeholder": "Select booking type to delete"
     },
     "showAccounting": {
       "title": "Booking Results",

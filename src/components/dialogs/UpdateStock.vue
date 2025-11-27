@@ -31,10 +31,12 @@ const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {stockFormularData, formRef} = useStockFormular()
 
+const MESSAGES = Object.freeze({
+  SUCCESS_UPDATE: t('messages.updateStock.success'),
+  ERROR_ONCLICK_OK: t('messages.onClickOk')
+})
 const STRINGS = Object.freeze({
-  TITLE: t('dialogs.updateStock.title'),
-  SUCCESS_UPDATE: t('dialogs.updateStock.success.update'),
-  ERROR_ONCLICK_OK: t('dialogs.updateStock.errors.onClickOk')
+  TITLE: t('dialogs.updateStock.title')
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -56,14 +58,14 @@ const onClickOk = async (): Promise<void> => {
     }
     records.stocks.update(stock)
     await update(stock)
-    await notice([STRINGS.SUCCESS_UPDATE])
+    await notice([MESSAGES.SUCCESS_UPDATE])
     runtime.resetTeleport()
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
+      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }

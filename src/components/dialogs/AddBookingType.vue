@@ -29,13 +29,15 @@ const {activeAccountId} = storeToRefs(settings)
 const formName = ref<string>('')
 const formRef = ref<HTMLFormElement | null>(null)
 
+const MESSAGES = Object.freeze({
+  SUCCESS_ADD: t('messages.addBookingType.success'),
+  ERROR_ADD: t('messages.addBookingType.error'),
+  ERROR_ONCLICK_OK: t('messages.onClickOk')
+})
 const STRINGS = Object.freeze({
   TITLE: t('dialogs.addBookingType.title'),
-  SUCCESS_ADD: t('dialogs.addBookingType.success.add'),
-  ERROR_ADD: t('dialogs.addBookingType.errors.add'),
   BOOKING_TYPE_LABEL: t('dialogs.addBookingType.bookingTypeLabel'),
   PLACEHOLDER: t('dialogs.addBookingType.placeholder'),
-  ERROR_ONCLICK_OK: t('dialogs.addBookingType.errors.onClickOk'),
   NAME_RULES: [
     t('dialogs.validators.nameRules.required'),
     t('dialogs.validators.nameRules.length'),
@@ -62,17 +64,17 @@ const onClickOk = async (): Promise<void> => {
         const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
         records.bookingTypes.add(completeBookingType)
         reset()
-        await notice([STRINGS.SUCCESS_ADD])
+        await notice([MESSAGES.SUCCESS_ADD])
       }
     } else {
-      await notice([STRINGS.ERROR_ADD])
+      await notice([MESSAGES.ERROR_ADD])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
+      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }

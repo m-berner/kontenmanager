@@ -33,9 +33,11 @@ const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 
+const MESSAGES = Object.freeze({
+  ERROR_ONCLICK_OK: t('messages.onClickOk'),
+  SUCCESS_UPDATE: t('messages.updateBooking.success')
+})
 const STRINGS = Object.freeze({
-  SUCCESS_UPDATE: t('dialogs.updateBooking.success.update'),
-  ERROR_ONCLICK_OK: t('dialogs.updateBooking.errors.onClickOk'),
   TITLE: t('dialogs.updateBooking.title')
 })
 
@@ -68,15 +70,15 @@ const onClickOk = async (): Promise<void> => {
     }
     records.bookings.update(booking)
     await update(booking)
-    await notice([STRINGS.SUCCESS_UPDATE])
+    await notice([MESSAGES.SUCCESS_UPDATE])
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
+      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }

@@ -30,9 +30,11 @@ const {accountFormularData, formRef} = useAccountFormular()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
+const MESSAGES = Object.freeze({
+  SUCCESS_ADD: t('messages.addAccount.success'),
+  ERROR_ONCLICK_OK: t('messages.onClickOk')
+})
 const STRINGS = Object.freeze({
-  SUCCESS_ADD: t('dialogs.addAccount.success.add'),
-  ERROR_ONCLICK_OK: t('dialogs.addAccount.errors.onClickOk'),
   TITLE: t('dialogs.addAccount.title')
 })
 
@@ -65,14 +67,14 @@ const onClickOk = async (): Promise<void> => {
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
       records.clean(false)
       resetTeleport()
-      await notice([STRINGS.SUCCESS_ADD])
+      await notice([MESSAGES.SUCCESS_ADD])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
+      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }

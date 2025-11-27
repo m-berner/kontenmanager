@@ -25,11 +25,13 @@ const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
+const MESSAGES = Object.freeze({
+  SUCCESS_UPDATE: t('messages.updateBookingType.success'),
+  ERROR_UPDATE: t('messages.updateBookingType.error'),
+  ERROR_ONCLICK_OK: t('messages.onClickOk')
+})
 const STRINGS = Object.freeze({
   TITLE: t('dialogs.updateBookingType.title'),
-  SUCCESS_UPDATE: t('dialogs.updateBookingType.success.update'),
-  ERROR_UPDATE: t('dialogs.updateBookingType.errors.update'),
-  ERROR_ONCLICK_OK: t('dialogs.updateBookingType.errors.onClickOk'),
   BOOKING_TYPE_LABEL: t('dialogs.updateBookingType.bookingTypeLabel'),
   NAME_RULES: [
     t('dialogs.validators.nameRules.required'),
@@ -64,16 +66,16 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType)
       await update(bookingType)
       runtime.resetTeleport()
-      await notice([STRINGS.SUCCESS_UPDATE])
+      await notice([MESSAGES.SUCCESS_UPDATE])
     } else {
-      await notice([STRINGS.ERROR_UPDATE])
+      await notice([MESSAGES.ERROR_UPDATE])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
+      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }

@@ -1,4 +1,55 @@
 {
+  "messages": {
+    "infoTitle": "INFO",
+    "noDelete": "Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.",
+    "restrictedImport": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde.",
+    "corruptStorage": "Der lokale Browser Speicher ist korrupt. Zurücksetzen zum Standard mit <STRG + ALT + r>.",
+    "noBookings": "Es sind keine Buchungen vorhanden.",
+    "noAccount": "Es ist noch kein Konto vorhanden.",
+    "nothingToExport": "Es existieren noch keine Objekte zum Exportieren.",
+    "noBookingTypes": "Es sind keine Buchungskategorien vorhanden.",
+    "createAccount": "Sie müssen erst ein Konto anlegen...",
+    "onUpdateTitleBar": "Fehler in 'onUpdateTitleBar'",
+    "onBeforeMount": "Fehler in 'onBeforeMount'",
+    "onUpdateIsin": "Fehler in 'onUpdateIsin'",
+    "onClickOk": "Fehler in 'onClickOk'",
+    "allStocksVisible": "Es sind keine Unternehmen ausgeblendet.",
+    "addBooking": {
+      "success": "Buchung wurde hinzugefügt",
+      "error": "Add booking failed"
+    },
+    "updateBooking": {
+      "success": "Die Buchung wurde aktualisiert"
+    },
+    "addAccount": {
+      "success": "Konto wurde hinzugefügt"
+    },
+    "addStock": {
+      "success": "Unternehmen wurde hinzugefügt"
+    },
+    "updateStock": {
+      "success": "Unternehmen wurde aktualisiert"
+    },
+    "updateAccount": {
+      "success": "Konto wurde aktualisiert"
+    },
+    "deleteAccountConfirmation": {
+      "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
+      "success": "Konto wurde entfernt"
+    },
+    "addBookingType": {
+      "success": "Buchungstyp wurde hinzugefügt",
+      "error": "Die Buchungstyp existiert bereits"
+    },
+    "updateBookingType": {
+      "success": "Buchungstyp wurde aktualisiert",
+      "error": "Der Buchungstyp konnte nicht aktualisiert werden"
+    },
+    "deleteBookingType": {
+      "success": "Buchungstyp wurde entfernt",
+      "error": "Es existiert eine Buchung"
+    }
+  },
   "titleBar": {
     "title": "KontenManager",
     "bookingsSumLabel": "Kontostand",
@@ -6,9 +57,6 @@
     "selectAccountLabel": "IBAN",
     "iconsAlt": {
       "logo": "Bank Logo"
-    },
-    "errors": {
-      "onUpdateTitleBar": "Fehler in 'onUpdateTitleBar'"
     }
   },
   "headerBar": {
@@ -29,29 +77,11 @@
     "exportToFile": "Datenbank exportieren",
     "importDatabase": "Datenbank importieren",
     "showAccounting": "Jahres-Berechnungen",
-    "settings": "Einstellungen",
-    "messages": {
-      "infoTitle": "INFO",
-      "noBookings": "Es sind keine Buchungen vorhanden.",
-      "noAccount": "Es ist noch kein Konto vorhanden.",
-      "nothingToExport": "Es existieren noch keine Objekte zum Exportieren.",
-      "noBookingTypes": "Es sind keine Buchungskategorien vorhanden.",
-      "createAccount": "Sie müssen erst ein Konto anlegen...",
-      "allStocksVisible": "Es sind keine Unternehmen ausgeblendet."
-    }
+    "settings": "Einstellungen"
   },
   "infoBar": {
   },
   "homePage": {
-    "messages": {
-      "infoTitle": "INFO",
-      "noDelete": "Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.",
-      "restrictedImport": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde.",
-      "corruptStorage": "Der lokale Browser Speicher ist korrupt. Zurücksetzen zum Standard mit <STRG + ALT + r>."
-    },
-    "errors": {
-      "onBeforeMount": "Fehler in 'onBeforeMount'"
-    },
     "search": "Suchen",
     "bookingsTable": {
       "headers": {
@@ -169,29 +199,13 @@
       "firstPageLabel": "Erste Seite",
       "meetingDayLabel": "Hauptversammlung",
       "quarterDayLabel": "Quartalszahlen",
-      "urlLabel": "URL",
-      "errors": {
-        "onUpdateIsin": "Fehler in 'onUpdateIsin'"
-      }
+      "urlLabel": "URL"
     },
     "addBooking": {
-      "title": "Buchung hinzufügen",
-      "success": {
-        "add": "Buchung wurde hinzugefügt"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'",
-        "add": "Buchung hinzufügen ist fehlgeschlagen"
-      }
+      "title": "Buchung hinzufügen"
     },
     "updateBooking": {
-      "title": "Buchung bearbeiten",
-      "success": {
-        "update": "Die Buchung wurde aktualisiert"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
-      }
+      "title": "Buchung bearbeiten"
     },
     "deleteBooking": {
       "title": "Buchung",
@@ -200,22 +214,10 @@
       "error": "Eingabe Fehler?"
     },
     "addAccount": {
-      "title": "Bankkonto hinzufügen",
-      "success": {
-        "add": "Konto wurde hinzugefügt"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
-      }
+      "title": "Bankkonto hinzufügen"
     },
     "addStock": {
-      "title": "Unternehmen hinzufügen",
-      "success": {
-        "add": "Unternehmen wurde hinzugefügt"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
-      }
+      "title": "Unternehmen hinzufügen"
     },
     "deleteStock": {
       "title": "Unternehmen entfernen",
@@ -223,72 +225,31 @@
       "error": "Unternehmen existiert bereits"
     },
     "updateStock": {
-      "title": "Unternehmen bearbeiten",
-      "success": {
-        "update": "Unternehmen wurde aktualisiert"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
-      }
+      "title": "Unternehmen bearbeiten"
     },
     "fadeInStock": {
       "title": "Unternehmen einblenden",
       "selectLabel": "Unternehmen"
     },
     "updateAccount": {
-      "title": "Bankkonto aktualisieren",
-      "success": {
-        "update": "Konto wurde aktualisiert"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
-      }
+      "title": "Bankkonto aktualisieren"
     },
     "deleteAccountConfirmation": {
-      "title": "Bankkonto - alle Daten löschen",
-      "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
-      "success": {
-        "add": "Konto wurde entfernt"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'"
-      },
-      "message": "Es gibt noch kein Konto."
+      "title": "Bankkonto - alle Daten löschen"
     },
     "addBookingType": {
       "title": "Buchungstyp hinzufügen",
       "bookingTypeLabel": "Buchungstyp",
-      "placeholder": "Name eingeben",
-      "success": {
-        "add": "Buchungstyp wurde hinzugefügt"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'",
-        "add": "Die Buchungstyp existiert bereits"
-      }
+      "placeholder": "Name eingeben"
     },
     "updateBookingType": {
       "title": "Buchungstyp aktualisieren",
-      "bookingTypeLabel": "Buchungstyp",
-      "success": {
-        "update": "Buchungstyp wurde aktualisiert"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'",
-        "update": "Der Buchungstyp konnte nicht aktualisiert werden"
-      }
+      "bookingTypeLabel": "Buchungstyp"
     },
     "deleteBookingType": {
       "title": "Buchungstyp löschen",
       "bookingTypeLabel": "Buchungstyp",
-      "placeholder": "Buchungstyp zum Löschen auswählen",
-      "success": {
-        "add": "Buchungstyp wurde entfernt"
-      },
-      "errors": {
-        "onClickOk": "Fehler in 'onClickOk'",
-        "add": "Es existiert eine Buchung"
-      }
+      "placeholder": "Buchungstyp zum Löschen auswählen"
     },
     "showAccounting": {
       "title": "Buchungsergebnisse",

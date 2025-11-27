@@ -26,15 +26,13 @@ const {CONS, haveSameStrings, log} = useApp()
 onBeforeMount(async () => {
   const {notice} = useBrowser()
   const {t} = useI18n()
-  const STRINGS = Object.freeze({
-    ON_BEFORE_MOUNT: t('homePage.errors.onBeforeMount')
+  const MESSAGES = Object.freeze({
+    INFO_TITLE: t('messages.infoTitle'),
+    RESTRICTED_IMPORT: t('messages.restrictedImport'),
+    CORRUPT_STORAGE: t('messages.corruptStorage'),
+    ERROR_ON_BEFORE_MOUNT: t('messages.onBeforeMount')
   })
   try {
-    const MESSAGES = Object.freeze({
-      INFO_TITLE: t('homePage.messages.infoTitle'),
-      RESTRICTED_IMPORT: t('homePage.messages.restrictedImport'),
-      CORRUPT_STORAGE: t('homePage.messages.corruptStorage')
-    })
     const theme = useTheme()
     const records = useRecordsStore()
     const settings = useSettingsStore()
@@ -139,10 +137,10 @@ onBeforeMount(async () => {
     window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ON_BEFORE_MOUNT, {error: e.message})
-      await notice([STRINGS.ON_BEFORE_MOUNT, e.message])
+      log(MESSAGES.ERROR_ON_BEFORE_MOUNT, {error: e.message})
+      await notice([MESSAGES.ERROR_ON_BEFORE_MOUNT, e.message])
     } else {
-      throw new Error(`${STRINGS.ON_BEFORE_MOUNT}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ON_BEFORE_MOUNT}: unknown`)
     }
   }
 })

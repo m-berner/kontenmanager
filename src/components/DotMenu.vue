@@ -34,8 +34,8 @@ const records = useRecordsStore()
 const {info} = useAlertStore()
 
 const MESSAGES = Object.freeze({
-  INFO_TITLE: t('homePage.messages.infoTitle'),
-  NO_DELETE: t('homePage.messages.noDelete')
+  INFO_TITLE: t('messages.infoTitle'),
+  NO_DELETE: t('messages.noDelete')
 })
 
 const onButtonClick = async (): Promise<void> => {

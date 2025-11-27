@@ -29,13 +29,12 @@ const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
 
 const MESSAGES = Object.freeze({
-  INFO_TITLE: t('homePage.messages.infoTitle'),
-  RESTRICTED_IMPORT: t('homePage.messages.restrictedImport')
+  INFO_TITLE: t('messages.infoTitle'),
+  RESTRICTED_IMPORT: t('messages.restrictedImport'),
+  ERROR_ONUPDATE_TITLE_BAR: t('messages.onUpdateTitleBar')
 })
-// TODO aus Depotkonto wechseln zu ing, klappt nicht direkt? DONE, Kontenwechsel Korrektur
-// TODO add/remove marketplace, exchanges immediate update!
+
 const STRINGS = Object.freeze({
-  ERROR_ONUPDATE_TITLE_BAR: t('titleBar.errors.onUpdateTitleBar'),
   TITLE: t('titleBar.title'),
   LOGO_ALT: t('titleBar.iconsAlt.logo'),
   DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
@@ -69,10 +68,10 @@ const onUpdateTitleBar = async (): Promise<void> => {
     await router.push('/')
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ERROR_ONUPDATE_TITLE_BAR, {error: e.message})
-      await notice([STRINGS.ERROR_ONUPDATE_TITLE_BAR, e.message])
+      log(MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: e.message})
+      await notice([MESSAGES.ERROR_ONUPDATE_TITLE_BAR, e.message])
     } else {
-      throw new Error(`${STRINGS.ERROR_ONUPDATE_TITLE_BAR}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ONUPDATE_TITLE_BAR}: unknown`)
     }
   }
 }

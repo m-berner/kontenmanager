@@ -33,8 +33,10 @@ const {activeId} = storeToRefs(runtime)
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
+const MESSAGES = Object.freeze({
+  ERROR_ONUPDATE_ISIN: t('messages.onUpdateIsin')
+})
 const STRINGS = Object.freeze({
-  ERROR_ONUPDATE_ISIN: t('dialogs.stockFormular.errors.onUpdateIsin'),
   COMPANY_LABEL: t('dialogs.stockFormular.companyLabel'),
   SYMBOL_LABEL: t('dialogs.stockFormular.symbolLabel'),
   MEETING_DAY_LABEL: t('dialogs.stockFormular.meetingDayLabel'),
@@ -65,10 +67,10 @@ const onUpdateIsin = async () => {
     stockFormularData.company = ''
     stockFormularData.symbol = ''
     if (e instanceof Error) {
-      log(STRINGS.ERROR_ONUPDATE_ISIN, {error: e.message})
-      await notice([STRINGS.ERROR_ONUPDATE_ISIN, e.message])
+      log(MESSAGES.ERROR_ONUPDATE_ISIN, {error: e.message})
+      await notice([MESSAGES.ERROR_ONUPDATE_ISIN, e.message])
     } else {
-      throw new Error(`${STRINGS.ERROR_ONUPDATE_ISIN}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ONUPDATE_ISIN}: unknown`)
     }
   }
 }

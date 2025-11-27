@@ -88,8 +88,8 @@ const settings = useSettingsStore()
 const {info} = useAlertStore()
 
 const MESSAGES = Object.freeze({
-  INFO_TITLE: t('homePage.messages.infoTitle'),
-  RESTRICTED_IMPORT: t('homePage.messages.restrictedImport')
+  INFO_TITLE: t('messages.infoTitle'),
+  RESTRICTED_IMPORT: t('messages.restrictedImport')
 })
 const STRINGS = Object.freeze({
   TITLE: t('dialogs.importDatabase.title'),

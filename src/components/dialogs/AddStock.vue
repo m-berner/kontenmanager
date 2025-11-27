@@ -31,10 +31,12 @@ const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {stockFormularData, formRef} = useStockFormular()
 
+const MESSAGES = Object.freeze({
+  SUCCESS_ADD: t('messages.addStock.success'),
+  ERROR_ONCLICK_OK: t('messages.onClickOk')
+})
 const STRINGS = Object.freeze({
-  TITLE: t('dialogs.addStock.title'),
-  SUCCESS_ADD: t('dialogs.addStock.success.add'),
-  ERROR_ONCLICK_OK: t('dialogs.addStock.errors.onClickOk')
+  TITLE: t('dialogs.addStock.title')
 })
 
 const formDisabled = ref(false)
@@ -69,14 +71,14 @@ const onClickOk = async (): Promise<void> => {
       const dbStock: IStock_DB = {cID: addStockID, ...stock}
       records.stocks.add(dbStock)
       resetTeleport()
-      await notice([STRINGS.SUCCESS_ADD])
+      await notice([MESSAGES.SUCCESS_ADD])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(STRINGS.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([STRINGS.ERROR_ONCLICK_OK, e.message])
+      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${STRINGS.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }

@@ -27,13 +27,13 @@ const router = useRouter()
 const {info} = useAlertStore()
 
 const MESSAGES = Object.freeze({
-  INFO_TITLE: t('headerBar.messages.infoTitle'),
-  SHOW_ACCOUNTING: t('headerBar.messages.noBookings'),
-  NOTHING_TO_EXPORT: t('headerBar.messages.nothingToExport'),
-  NO_BOOKING_TYPES: t('headerBar.messages.noBookingTypes'),
-  CREATE_ACCOUNT: t('headerBar.messages.createAccount'),
-  NO_ACCOUNT: t('headerBar.messages.noAccount'),
-  ALL_STOCKS_VISIBLE: t('headerBar.messages.allStocksVisible')
+  INFO_TITLE: t('messages.infoTitle'),
+  SHOW_ACCOUNTING: t('messages.noBookings'),
+  NOTHING_TO_EXPORT: t('messages.nothingToExport'),
+  NO_BOOKING_TYPES: t('messages.noBookingTypes'),
+  CREATE_ACCOUNT: t('messages.createAccount'),
+  NO_ACCOUNT: t('messages.noAccount'),
+  ALL_STOCKS_VISIBLE: t('messages.allStocksVisible')
 })
 const STRINGS = Object.freeze({
   HOME: t('headerBar.home'),
