@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IAccount_Store} from '@/types.d'
-import {computed, defineExpose, onMounted} from 'vue'
+import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -20,6 +20,11 @@ import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
@@ -30,12 +35,14 @@ const {accountFormularData, formRef} = useAccountFormular()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
-const MESSAGES = Object.freeze({
-  SUCCESS_ADD: t('messages.addAccount.success'),
-  ERROR_ONCLICK_OK: t('messages.onClickOk')
-})
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.addAccount.title')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    SUCCESS_ADD: t('messages.addAccount.success'),
+    ERROR_ONCLICK_OK: t('messages.onClickOk')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.addAccount.title')
+  }
 })
 
 const reset = (): void => {
@@ -67,18 +74,18 @@ const onClickOk = async (): Promise<void> => {
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
       records.clean(false)
       resetTeleport()
-      await notice([MESSAGES.SUCCESS_ADD])
+      await notice([T.MESSAGES.SUCCESS_ADD])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
+      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = computed(() => STRINGS.TITLE)
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {

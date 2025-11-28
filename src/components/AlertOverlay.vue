@@ -5,13 +5,17 @@
   -
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
-<script setup>
+<script lang="ts" setup>
 import {computed, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
-import {useAlertStore} from '@/stores/alerts.ts'
-import {useApp} from '@/composables/useApp.ts'
-import {useBrowser} from '@/composables/useBrowser.ts'
+import {useAlertStore} from '@/stores/alerts'
+import {useApp} from '@/composables/useApp'
+import {useBrowser} from '@/composables/useBrowser'
+
+interface IT {
+  MESSAGES: Record<string, string>
+}
 
 const {CONS, log, haveSameStrings} = useApp()
 const {t} = useI18n()
@@ -19,9 +23,11 @@ const alertStore = useAlertStore()
 const {currentAlert} = storeToRefs(alertStore)
 const {dismissAlert, info, pendingCount} = alertStore
 
-const MESSAGES = Object.freeze({
-  INFO_TITLE: t('messages.infoTitle'),
-  CORRUPT_STORAGE: t('messages.corruptStorage')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    INFO_TITLE: t('messages.infoTitle'),
+    CORRUPT_STORAGE: t('messages.corruptStorage')
+  }
 })
 
 const showOverlay = computed(() => currentAlert.value.id > -1)
@@ -34,7 +40,7 @@ onMounted(async () => {
   const {getStorage} = useBrowser()
   const storage = await getStorage()
   if (!haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
-    info(MESSAGES.INFO_TITLE, MESSAGES.CORRUPT_STORAGE, null)
+    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CORRUPT_STORAGE, null)
   }
 })
 

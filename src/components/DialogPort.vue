@@ -10,13 +10,19 @@ import {ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
 
+interface IT {
+  STRINGS: Record<string, string>
+}
+
 const {t} = useI18n()
 const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
 const runtime = useRuntimeStore()
 
-const STRINGS = Object.freeze({
-  OK: t('dialogs.ok'),
-  CANCEL: t('dialogs.cancel')
+const T = Object.freeze<IT>({
+  STRINGS: {
+    OK: t('dialogs.ok'),
+    CANCEL: t('dialogs.cancel')
+  }
 })
 </script>
 
@@ -31,7 +37,7 @@ const STRINGS = Object.freeze({
           <component :is="runtime.dialogName" ref="dialogRef"/>
         </v-card-text>
         <v-card-actions class="pa-5">
-          <v-tooltip :text="STRINGS.OK" location="bottom">
+          <v-tooltip :text="T.STRINGS.OK" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
                   v-if="runtime.dialogOk"
@@ -45,7 +51,7 @@ const STRINGS = Object.freeze({
             </template>
           </v-tooltip>
           <v-spacer/>
-          <v-tooltip :text="STRINGS.CANCEL" location="bottom">
+          <v-tooltip :text="T.STRINGS.CANCEL" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
                   class="ml-auto"

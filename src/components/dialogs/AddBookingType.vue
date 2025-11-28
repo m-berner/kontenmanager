@@ -17,6 +17,12 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+  NAME_RULES: string[]
+}
+
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
@@ -29,15 +35,17 @@ const {activeAccountId} = storeToRefs(settings)
 const formName = ref<string>('')
 const formRef = ref<HTMLFormElement | null>(null)
 
-const MESSAGES = Object.freeze({
-  SUCCESS_ADD: t('messages.addBookingType.success'),
-  ERROR_ADD: t('messages.addBookingType.error'),
-  ERROR_ONCLICK_OK: t('messages.onClickOk')
-})
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.addBookingType.title'),
-  BOOKING_TYPE_LABEL: t('dialogs.addBookingType.bookingTypeLabel'),
-  PLACEHOLDER: t('dialogs.addBookingType.placeholder'),
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    SUCCESS_ADD: t('messages.addBookingType.success'),
+    ERROR_ADD: t('messages.addBookingType.error'),
+    ERROR_ONCLICK_OK: t('messages.onClickOk')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.addBookingType.title'),
+    BOOKING_TYPE_LABEL: t('dialogs.addBookingType.bookingTypeLabel'),
+    PLACEHOLDER: t('dialogs.addBookingType.placeholder')
+  },
   NAME_RULES: [
     t('dialogs.validators.nameRules.required'),
     t('dialogs.validators.nameRules.length'),
@@ -64,21 +72,21 @@ const onClickOk = async (): Promise<void> => {
         const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
         records.bookingTypes.add(completeBookingType)
         reset()
-        await notice([MESSAGES.SUCCESS_ADD])
+        await notice([T.MESSAGES.SUCCESS_ADD])
       }
     } else {
-      await notice([MESSAGES.ERROR_ADD])
+      await notice([T.MESSAGES.ERROR_ADD])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
+      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -98,9 +106,9 @@ log('--- AddBookingType.vue setup ---')
         v-model="formName"
         :counter="32"
         :disabled="activeAccountId === -1"
-        :label="STRINGS.BOOKING_TYPE_LABEL"
-        :placeholder="STRINGS.PLACEHOLDER"
-        :rules="nameRules(STRINGS.NAME_RULES)"
+        :label="T.STRINGS.BOOKING_TYPE_LABEL"
+        :placeholder="T.STRINGS.PLACEHOLDER"
+        :rules="nameRules(T.NAME_RULES)"
         autofocus
         density="compact"
         variant="outlined"

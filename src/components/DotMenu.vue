@@ -22,6 +22,10 @@ interface OptionMenuProps {
   menuItems: readonly IMenuItem[]
 }
 
+interface IT {
+  MESSAGES: Record<string, string>
+}
+
 const optionMenuProps = defineProps<OptionMenuProps>()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
@@ -33,9 +37,11 @@ const {optionMenuColors} = storeToRefs(runtime)
 const records = useRecordsStore()
 const {info} = useAlertStore()
 
-const MESSAGES = Object.freeze({
-  INFO_TITLE: t('messages.infoTitle'),
-  NO_DELETE: t('messages.noDelete')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    INFO_TITLE: t('messages.infoTitle'),
+    NO_DELETE: t('messages.noDelete')
+  }
 })
 
 const onButtonClick = async (): Promise<void> => {
@@ -85,7 +91,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
           await removeStock(optionMenuProps.recordID)
           await notice([t('dialogs.deleteStock.success')])
         } else {
-          info(MESSAGES.INFO_TITLE, MESSAGES.NO_DELETE, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_DELETE, null)
         }
         for (const m of optionMenuColors.value.keys()) {
           optionMenuColors.value.set(m, '')

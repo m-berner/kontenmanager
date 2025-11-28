@@ -14,6 +14,10 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 
+interface IT {
+  STRINGS: Record<string, string>
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {manifest, writeBufferToFile} = useBrowser()
@@ -25,9 +29,11 @@ const {getAll: getAllStocks} = useStocksDB()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}.json`
 
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.exportDatabase.title'),
-  TEXT: t('dialogs.exportDatabase.text', {filename: fn})
+const T = Object.freeze<IT>({
+  STRINGS: {
+    TITLE: t('dialogs.exportDatabase.title'),
+    TEXT: t('dialogs.exportDatabase.text', {filename: fn})
+  }
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -88,7 +94,7 @@ const onClickOk = async (): Promise<void> => {
   await writeBufferToFile(buffer, fn)
   resetTeleport()
 }
-const title = t('dialogs.exportToFile.title')
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 log('--- ExportDatabase.vue setup ---')
@@ -102,7 +108,7 @@ log('--- ExportDatabase.vue setup ---')
       <v-card-text class="pa-5">
         <v-textarea
             :disabled="true"
-            :model-value="STRINGS.TEXT"
+            :model-value="T.STRINGS.TEXT"
             variant="outlined"/>
       </v-card-text>
     </v-card>

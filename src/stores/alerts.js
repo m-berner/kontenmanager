@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useApp } from '@/composables/useApp';
-const defaultAlert = { id: -1, type: '', title: '', message: '' };
+const defaultAlert = { id: -1, type: undefined, title: '', message: '' };
 const { log } = useApp();
 export const useAlertStore = defineStore('alert', () => {
     const alerts = ref([]);

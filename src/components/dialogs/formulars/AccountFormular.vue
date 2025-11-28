@@ -15,18 +15,26 @@ import {useDomain} from '@/composables/useDomain'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import {useDebounce} from '@/composables/useDebounce'
 
+interface IT {
+  STRINGS: Record<string, string>
+  SWIFT_RULES: string[]
+  IBAN_RULES: string[]
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {accountFormularData, formRef} = useAccountFormular()
 const {ibanRules, swiftRules} = useValidation()
 
-const STRINGS = Object.freeze({
-  WITH_DEPOT_LABEL: t('dialogs.accountFormular.withDepotLabel'),
-  SWIFT_LABEL: t('dialogs.accountFormular.swiftLabel'),
-  IBAN_LABEL: t('dialogs.accountFormular.ibanLabel'),
-  IBAN_PLACEHOLDER: t('dialogs.accountFormular.ibanPlaceholder'),
-  SEARCH_LABEL: t('dialogs.accountFormular.searchLabel'),
-  MISSING_LOGO_LABEL: t('dialogs.accountFormular.missingLogo'),
+const T = Object.freeze<IT>({
+  STRINGS: {
+    WITH_DEPOT_LABEL: t('dialogs.accountFormular.withDepotLabel'),
+    SWIFT_LABEL: t('dialogs.accountFormular.swiftLabel'),
+    IBAN_LABEL: t('dialogs.accountFormular.ibanLabel'),
+    IBAN_PLACEHOLDER: t('dialogs.accountFormular.ibanPlaceholder'),
+    SEARCH_LABEL: t('dialogs.accountFormular.searchLabel'),
+    MISSING_LOGO_LABEL: t('dialogs.accountFormular.missingLogo')
+  },
   SWIFT_RULES: [
     t('validators.swiftRules.required'),
     t('validators.swiftRules.length'),
@@ -79,29 +87,29 @@ log('--- AccountFormular.vue setup ---')
 <template>
   <v-switch
       v-model="accountFormularData.withDepot"
-      :label="STRINGS.WITH_DEPOT_LABEL"
+      :label="T.STRINGS.WITH_DEPOT_LABEL"
       color="red"
       variant="outlined"/>
   <v-text-field
       v-model="accountFormularData.swift"
       :counter="11"
-      :label="`${STRINGS.SWIFT_LABEL}${formattedSwift}`"
-      :rules="swiftRules(STRINGS.SWIFT_RULES)"
+      :label="`${T.STRINGS.SWIFT_LABEL}${formattedSwift}`"
+      :rules="swiftRules(T.SWIFT_RULES)"
       autofocus
       variant="outlined"
       @focus="formRef?.resetValidation()"
       @update:model-value="onUpdateSwift"/>
   <v-text-field
       v-model="accountFormularData.iban"
-      :label="`${STRINGS.IBAN_LABEL}${formattedIban}`"
-      :placeholder="STRINGS.IBAN_PLACEHOLDER"
-      :rules="ibanRules(STRINGS.IBAN_RULES)"
+      :label="`${T.STRINGS.IBAN_LABEL}${formattedIban}`"
+      :placeholder="T.STRINGS.IBAN_PLACEHOLDER"
+      :rules="ibanRules(T.IBAN_RULES)"
       variant="outlined"
       @focus="formRef?.resetValidation()"
       @update:model-value="onUpdateIban"/>
   <v-text-field
       v-model="formSearch"
-      :label="STRINGS.SEARCH_LABEL"
+      :label="T.STRINGS.SEARCH_LABEL"
       :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
       variant="outlined"
       @update:model-value="debouncedSearch"/>
@@ -109,7 +117,7 @@ log('--- AccountFormular.vue setup ---')
   <div class="mb-4">
     <v-avatar class="me-3" color="white" size="48">
       <v-img
-          :alt="STRINGS.MISSING_LOGO_LABEL"
+          :alt="T.STRINGS.MISSING_LOGO_LABEL"
           :src="accountFormularData.logoUrl"/>
     </v-avatar>
   </div>

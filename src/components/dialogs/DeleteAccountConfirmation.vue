@@ -16,6 +16,11 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
@@ -25,17 +30,18 @@ const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 
-const MESSAGES = Object.freeze({
-  INFO_TITLE: t('messages.infoTitle'),
-  RESTRICTED_IMPORT: t('messages.restrictedImport'),
-  SUCCESS_ADD: t('messages.deleteAccountConfirmation.success'),
-  ERROR_ONCLICK_OK: t('messages.onClickOk'),
-  NO_ACCOUNT: t('messages.noAccount'),
-  CONFIRM: t('messages.deleteAccountConfirmation.confirm')
-})
-
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.deleteAccountConfirmation.title')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    INFO_TITLE: t('messages.infoTitle'),
+    RESTRICTED_IMPORT: t('messages.restrictedImport'),
+    SUCCESS_ADD: t('messages.deleteAccountConfirmation.success'),
+    ERROR_ONCLICK_OK: t('messages.onClickOk'),
+    NO_ACCOUNT: t('messages.noAccount'),
+    CONFIRM: t('messages.deleteAccountConfirmation.confirm')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.deleteAccountConfirmation.title')
+  }
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -48,28 +54,28 @@ const onClickOk = async (): Promise<void> => {
       activeAccountId.value = accountItems.value[0].cID
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
       const storesDB = await getDatabaseStores(activeAccountId.value)
-      await records.init(storesDB, MESSAGES)
+      await records.init(storesDB, T.MESSAGES)
     } else {
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
     }
     resetTeleport()
-    await notice([MESSAGES.SUCCESS_ADD])
+    await notice([T.MESSAGES.SUCCESS_ADD])
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
+      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 log('--- DeleteAccountConfirmation.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="records.accounts.items.length === 0">{{ MESSAGES.NO_ACCOUNT }}</v-alert>
-  <v-alert v-else type="warning">{{ MESSAGES.CONFIRM }}</v-alert>
+  <v-alert v-if="records.accounts.items.length === 0">{{ T.MESSAGES.NO_ACCOUNT }}</v-alert>
+  <v-alert v-else type="warning">{{ T.MESSAGES.CONFIRM }}</v-alert>
 </template>

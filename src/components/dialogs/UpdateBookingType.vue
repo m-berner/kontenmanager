@@ -17,6 +17,12 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+  NAME_RULES: string[]
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
@@ -25,14 +31,16 @@ const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const MESSAGES = Object.freeze({
-  SUCCESS_UPDATE: t('messages.updateBookingType.success'),
-  ERROR_UPDATE: t('messages.updateBookingType.error'),
-  ERROR_ONCLICK_OK: t('messages.onClickOk')
-})
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.updateBookingType.title'),
-  BOOKING_TYPE_LABEL: t('dialogs.updateBookingType.bookingTypeLabel'),
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    SUCCESS_UPDATE: t('messages.updateBookingType.success'),
+    ERROR_UPDATE: t('messages.updateBookingType.error'),
+    ERROR_ONCLICK_OK: t('messages.onClickOk')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.updateBookingType.title'),
+    BOOKING_TYPE_LABEL: t('dialogs.updateBookingType.bookingTypeLabel')
+  },
   NAME_RULES: [
     t('dialogs.validators.nameRules.required'),
     t('dialogs.validators.nameRules.length'),
@@ -66,20 +74,20 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType)
       await update(bookingType)
       runtime.resetTeleport()
-      await notice([MESSAGES.SUCCESS_UPDATE])
+      await notice([T.MESSAGES.SUCCESS_UPDATE])
     } else {
-      await notice([MESSAGES.ERROR_UPDATE])
+      await notice([T.MESSAGES.ERROR_UPDATE])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
+      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 log('--- UpdateBookingType.vue setup ---')
@@ -93,8 +101,8 @@ log('--- UpdateBookingType.vue setup ---')
     <v-text-field
         v-if="!formVisible"
         v-model="formName"
-        :label="STRINGS.BOOKING_TYPE_LABEL"
-        :rules="nameRules(STRINGS.NAME_RULES)"
+        :label="T.STRINGS.BOOKING_TYPE_LABEL"
+        :rules="nameRules(T.NAME_RULES)"
         density="compact"
         variant="outlined"
         @focus="formRef?.resetValidation()"
@@ -106,7 +114,7 @@ log('--- UpdateBookingType.vue setup ---')
         :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
         :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
         :items="records.bookingTypes.items"
-        :label="STRINGS.BOOKING_TYPE_LABEL"
+        :label="T.STRINGS.BOOKING_TYPE_LABEL"
         :menu="true"
         :menu-props="{ maxHeight: '200px' }"
         density="compact"

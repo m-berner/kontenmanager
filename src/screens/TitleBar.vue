@@ -17,6 +17,11 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
 import {useApp} from '@/composables/useApp'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {n, t} = useI18n()
 const router = useRouter()
 const records = useRecordsStore()
@@ -28,18 +33,19 @@ const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
 
-const MESSAGES = Object.freeze({
-  INFO_TITLE: t('messages.infoTitle'),
-  RESTRICTED_IMPORT: t('messages.restrictedImport'),
-  ERROR_ONUPDATE_TITLE_BAR: t('messages.onUpdateTitleBar')
-})
-
-const STRINGS = Object.freeze({
-  TITLE: t('titleBar.title'),
-  LOGO_ALT: t('titleBar.iconsAlt.logo'),
-  DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
-  BOOKING_SUM_LABEL: t('titleBar.bookingsSumLabel'),
-  SELECT_ACCOUNT_LABEL: t('titleBar.selectAccountLabel')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    INFO_TITLE: t('messages.infoTitle'),
+    RESTRICTED_IMPORT: t('messages.restrictedImport'),
+    ERROR_ONUPDATE_TITLE_BAR: t('messages.onUpdateTitleBar')
+  },
+  STRINGS: {
+    TITLE: t('titleBar.title'),
+    LOGO_ALT: t('titleBar.iconsAlt.logo'),
+    DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
+    BOOKING_SUM_LABEL: t('titleBar.bookingsSumLabel'),
+    SELECT_ACCOUNT_LABEL: t('titleBar.selectAccountLabel')
+  }
 })
 
 const logoUrl = computed((): string => {
@@ -63,15 +69,15 @@ const onUpdateTitleBar = async (): Promise<void> => {
   try {
     const storesDB = await getDatabaseStores(activeAccountId.value)
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-    await records.init(storesDB, MESSAGES)
+    await records.init(storesDB, T.MESSAGES)
     isCompanyPage.value = false
     await router.push('/')
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: e.message})
-      await notice([MESSAGES.ERROR_ONUPDATE_TITLE_BAR, e.message])
+      log(T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONUPDATE_TITLE_BAR}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR}: unknown`)
     }
   }
 }
@@ -82,20 +88,20 @@ log('--- TitleBar.vue setup ---')
 <template>
   <v-app-bar app color="secondary" flat>
     <template #prepend>
-      <img :alt="STRINGS.LOGO_ALT" :src="CONS.COMPONENTS.TITLE_BAR.LOGO"/>
+      <img :alt="T.STRINGS.LOGO_ALT" :src="CONS.COMPONENTS.TITLE_BAR.LOGO"/>
     </template>
-    <v-app-bar-title>{{ STRINGS.TITLE }}</v-app-bar-title>
+    <v-app-bar-title>{{ T.STRINGS.TITLE }}</v-app-bar-title>
     <v-text-field
         v-if="isCompanyPage && !isDownloading"
         :disabled="true"
-        :label="STRINGS.DEPOT_SUM_LABEL"
+        :label="T.STRINGS.DEPOT_SUM_LABEL"
         :model-value="depot"
         hide-details
         max-width="150"/>
     <v-text-field
         v-if="!isCompanyPage"
         :disabled="true"
-        :label="STRINGS.BOOKING_SUM_LABEL"
+        :label="T.STRINGS.BOOKING_SUM_LABEL"
         :model-value="balance"
         hide-details
         max-width="150"/>
@@ -106,7 +112,7 @@ log('--- TitleBar.vue setup ---')
         :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
         :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
         :items="records.accounts.items"
-        :label="STRINGS.SELECT_ACCOUNT_LABEL"
+        :label="T.STRINGS.SELECT_ACCOUNT_LABEL"
         density="compact"
         hide-details
         max-width="350"
@@ -114,7 +120,7 @@ log('--- TitleBar.vue setup ---')
         variant="outlined"
         @update:model-value="onUpdateTitleBar">
       <template #prepend>
-        <img :alt="STRINGS.LOGO_ALT" :src="logoUrl"/>
+        <img :alt="T.STRINGS.LOGO_ALT" :src="logoUrl"/>
       </template>
     </v-select>
   </v-app-bar>

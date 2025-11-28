@@ -17,6 +17,11 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import DotMenu from '@/components/DotMenu.vue'
 
+interface IT {
+  HEADERS: DataTableHeader[]
+  MENU_ITEMS: IMenuItem[]
+}
+
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const records = useRecordsStore()
@@ -26,92 +31,92 @@ const {stocksPerPage} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
-const stocksHeaders: readonly DataTableHeader[] = Object.freeze([
-  {
-    title: t('homePage.stocksTable.headers.action'),
-    align: 'start',
-    sortable: false,
-    key: 'mAction'
-  },
-  {
-    title: t('homePage.stocksTable.headers.company'),
-    align: 'start',
-    sortable: true,
-    key: 'cCompany'
-  },
-  {
-    title: t('homePage.stocksTable.headers.isin'),
-    align: 'start',
-    sortable: false,
-    key: 'cISIN'
-  },
-  {
-    title: t('homePage.stocksTable.headers.qf'),
-    align: 'start',
-    sortable: false,
-    key: 'cQuarterDay'
-  },
-  {
-    title: t('homePage.stocksTable.headers.gm'),
-    align: 'start',
-    sortable: false,
-    key: 'cMeetingDay'
-  },
-  {
-    title: t('homePage.stocksTable.headers.portfolio'),
-    align: 'start',
-    sortable: true,
-    key: 'mPortfolio'
-  },
-  {
-    title: t('homePage.stocksTable.headers.winLoss'),
-    align: 'start',
-    sortable: false,
-    key: 'mEuroChange'
-  },
-  {
-    title: t('homePage.stocksTable.headers.52low'),
-    align: 'start',
-    sortable: false,
-    key: 'mMin'
-  },
-  {
-    title: t('homePage.stocksTable.headers.rate'),
-    align: 'start',
-    sortable: false,
-    key: 'mValue'
-  },
-  {
-    title: t('homePage.stocksTable.headers.52high'),
-    align: 'start',
-    sortable: false,
-    key: 'mMax'
-  }
-])
-const stocksMenuItems: readonly IMenuItem[] = Object.freeze([
-  {
-    id: 'DeleteStock',
-    title: t('homePage.stocksTable.menuItems.delete'),
-    icon: '$deleteCompany'
-  },
-  {
-    id: 'UpdateStock',
-    title: t('homePage.stocksTable.menuItems.update'),
-    icon: '$showCompany'
-  },
-  {
-    id: 'ShowDividend',
-    title: t('homePage.stocksTable.menuItems.dividend'),
-    icon: '$showDividend'
-  },
-  {
-    id: 'ExternalLink',
-    title: t('homePage.stocksTable.menuItems.link'),
-    icon: '$link'
-  }
-])
-
-//const loading = ref(false)
+const T = Object.freeze<IT>({
+  HEADERS: [
+    {
+      title: t('homePage.stocksTable.headers.action'),
+      align: 'start',
+      sortable: false,
+      key: 'mAction'
+    },
+    {
+      title: t('homePage.stocksTable.headers.company'),
+      align: 'start',
+      sortable: true,
+      key: 'cCompany'
+    },
+    {
+      title: t('homePage.stocksTable.headers.isin'),
+      align: 'start',
+      sortable: false,
+      key: 'cISIN'
+    },
+    {
+      title: t('homePage.stocksTable.headers.qf'),
+      align: 'start',
+      sortable: false,
+      key: 'cQuarterDay'
+    },
+    {
+      title: t('homePage.stocksTable.headers.gm'),
+      align: 'start',
+      sortable: false,
+      key: 'cMeetingDay'
+    },
+    {
+      title: t('homePage.stocksTable.headers.portfolio'),
+      align: 'start',
+      sortable: true,
+      key: 'mPortfolio'
+    },
+    {
+      title: t('homePage.stocksTable.headers.winLoss'),
+      align: 'start',
+      sortable: false,
+      key: 'mEuroChange'
+    },
+    {
+      title: t('homePage.stocksTable.headers.52low'),
+      align: 'start',
+      sortable: false,
+      key: 'mMin'
+    },
+    {
+      title: t('homePage.stocksTable.headers.rate'),
+      align: 'start',
+      sortable: false,
+      key: 'mValue'
+    },
+    {
+      title: t('homePage.stocksTable.headers.52high'),
+      align: 'start',
+      sortable: false,
+      key: 'mMax'
+    }
+  ],
+  MENU_ITEMS: [
+    {
+      id: 'DeleteStock',
+      title: t('homePage.stocksTable.menuItems.delete'),
+      icon: '$deleteCompany'
+    },
+    {
+      id: 'UpdateStock',
+      title: t('homePage.stocksTable.menuItems.update'),
+      icon: '$showCompany'
+    },
+    {
+      id: 'ShowDividend',
+      title: t('homePage.stocksTable.menuItems.dividend'),
+      icon: '$showDividend'
+    },
+    {
+      id: 'ExternalLink',
+      title: t('homePage.stocksTable.menuItems.link'),
+      icon: '$link'
+    }
+  ]
+})
 
 const winLossClass = computed(() => {
   return (value: number): Record<string, boolean> => ({
@@ -174,7 +179,7 @@ log('--- StocksTable.vue setup ---')
 
 <template>
   <v-data-table
-      :headers="stocksHeaders"
+      :headers="T.HEADERS"
       :hide-no-data="false"
       :hover="true"
       :items="activeStockItems"
@@ -192,7 +197,7 @@ log('--- StocksTable.vue setup ---')
         <td class="d-none">{{ item.cID }}</td>
         <td>
           <DotMenu
-              :menuItems="stocksMenuItems"
+              :menuItems="T.MENU_ITEMS"
               :recordID="item.cID ?? -1"
               menuType="stocks"/>
         </td>

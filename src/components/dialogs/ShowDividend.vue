@@ -14,36 +14,40 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 
+interface IT {
+  STRINGS: Record<string, string>
+  HEADERS: DataTableHeader[]
+}
+
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
 const {dividendsPerPage} = useSettingsStore()
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
 
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.showDividend.title'),
-  YEAR_LABEL: t('dialogs.showDividend.yearLabel'),
-  SUM_LABEL: t('dialogs.showDividend.sumLabel'),
-  ITEMS_PER_PAGE_TEXT: t('dialogs.showDividend.itemsPerPageText'),
-  NO_DATA_TEXT: t('dialogs.showDividend.noDataText')
+const T = Object.freeze<IT>({
+  STRINGS: {
+    TITLE: t('dialogs.showDividend.title'),
+    ITEMS_PER_PAGE_TEXT: t('dialogs.showDividend.itemsPerPageText'),
+    NO_DATA_TEXT: t('dialogs.showDividend.noDataText')
+  },
+  HEADERS:[
+    {
+      title: t('dialogs.showDividend.yearLabel'),
+      align: 'start',
+      sortable: false,
+      key: 'year'
+    },
+    {
+      title: t('dialogs.showDividend.sumLabel'),
+      align: 'start',
+      sortable: false,
+      key: 'sum'
+    }
+  ]
 })
 
-const dividendsHeaders: readonly DataTableHeader[] = Object.freeze([
-  {
-    title: STRINGS.YEAR_LABEL,
-    align: 'start',
-    sortable: false,
-    key: 'year'
-  },
-  {
-    title: STRINGS.SUM_LABEL,
-    align: 'start',
-    sortable: false,
-    key: 'sum'
-  }
-])
-
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({title})
 
 log('--- ShowDividend.vue setup ---')
@@ -56,14 +60,14 @@ log('--- ShowDividend.vue setup ---')
     <v-card>
       <v-card-text class="pa-5">
         <v-data-table
-            :headers="dividendsHeaders"
+            :headers="T.HEADERS"
             :hide-no-data="false"
             :hover="false"
             :items="records.bookings.dividendsByStockId(activeId)"
             :items-per-page="dividendsPerPage"
             :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-            :items-per-page-text="STRINGS.ITEMS_PER_PAGE_TEXT"
-            :no-data-text="STRINGS.NO_DATA_TEXT"
+            :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
+            :no-data-text="T.STRINGS.NO_DATA_TEXT"
             density="compact"
             item-key="id">
           <template v-slot:[`item`]="{ item }">

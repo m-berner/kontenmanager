@@ -20,6 +20,11 @@ import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
@@ -31,12 +36,14 @@ const runtime = useRuntimeStore()
 const {accountFormularData, formRef} = useAccountFormular()
 const records = useRecordsStore()
 
-const MESSAGES = Object.freeze({
-  SUCCESS_UPDATE: t('messages.updateAccount.success'),
-  ERROR_ONCLICK_OK: t('messages.onClickOk')
-})
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.updateAccount.title')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    SUCCESS_UPDATE: t('messages.updateAccount.success'),
+    ERROR_ONCLICK_OK: t('messages.onClickOk')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.updateAccount.title')
+  }
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -53,17 +60,17 @@ const onClickOk = async (): Promise<void> => {
     records.accounts.update(account)
     await update(account)
     runtime.resetTeleport()
-    await notice([MESSAGES.SUCCESS_UPDATE])
+    await notice([T.MESSAGES.SUCCESS_UPDATE])
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
+      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {

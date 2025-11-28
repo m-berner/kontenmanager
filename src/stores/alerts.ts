@@ -11,12 +11,12 @@ import {useApp} from '@/composables/useApp'
 
 interface IVisibleAlert {
     id: number
-    type: string
+    type: 'error' | 'success' | 'warning' | 'info' | undefined
     title: string
     message: string
 }
 
-const defaultAlert: IVisibleAlert = {id: -1, type: '', title: '', message: ''}
+const defaultAlert: IVisibleAlert = {id: -1, type: undefined, title: '', message: ''}
 const {log} = useApp()
 
 export const useAlertStore = defineStore('alert', () => {
@@ -25,7 +25,7 @@ export const useAlertStore = defineStore('alert', () => {
 
     const pendingCount = computed(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1)
 
-    function showAlert(type: string, title: string, message: string, duration: number | null = null) {
+    function showAlert(type: 'error' | 'success' | 'warning' | 'info' | undefined, title: string, message: string, duration: number | null = null) {
         const id = Date.now() + Math.random()
         const alert: IVisibleAlert = {id, type, title, message}
 

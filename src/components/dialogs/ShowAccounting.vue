@@ -22,36 +22,40 @@ interface IAccountEntry {
   sumClass: string
 }
 
+interface IT {
+  STRINGS: Record<string, string>
+  HEADERS: DataTableHeader[]
+}
+
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const {sumsPerPage} = useSettingsStore()
 const {CONS, log} = useApp()
 
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.showAccounting.title'),
-  ITEMS_PER_PAGE_TEXT: t('dialogs.showAccounting.itemsPerPageText'),
-  NO_DATA_TEXT: t('dialogs.showAccounting.noDataText'),
-  FEES: t('dialogs.showAccounting.fees'),
-  TAXES: t('dialogs.showAccounting.taxes'),
-  SUM: t('dialogs.showAccounting.sum'),
-  NAME_LABEL: t('dialogs.showAccounting.nameLabel'),
-  SUM_LABEL: t('dialogs.showAccounting.sumLabel')
-})
-
-const sumsHeaders: readonly DataTableHeader[] = Object.freeze([
-  {
-    title: STRINGS.NAME_LABEL,
-    align: 'start',
-    sortable: false,
-    key: 'name'
+const T = Object.freeze<IT>({
+  STRINGS: {
+    TITLE: t('dialogs.showAccounting.title'),
+    ITEMS_PER_PAGE_TEXT: t('dialogs.showAccounting.itemsPerPageText'),
+    NO_DATA_TEXT: t('dialogs.showAccounting.noDataText'),
+    FEES: t('dialogs.showAccounting.fees'),
+    TAXES: t('dialogs.showAccounting.taxes'),
+    SUM: t('dialogs.showAccounting.sum')
   },
-  {
-    title: STRINGS.SUM_LABEL,
-    align: 'start',
-    sortable: false,
-    key: 'sum'
-  }
-])
+  HEADERS: [
+    {
+      title: t('dialogs.showAccounting.nameLabel'),
+      align: 'start',
+      sortable: false,
+      key: 'name'
+    },
+    {
+      title: t('dialogs.showAccounting.sumLabel'),
+      align: 'start',
+      sortable: false,
+      key: 'sum'
+    }
+  ]
+})
 
 const accountEntries = computed(() => {
   const result: IAccountEntry[] = []
@@ -72,7 +76,7 @@ const accountEntries = computed(() => {
   }
   result.push({
     id: categories.length,
-    name: STRINGS.SUM,
+    name: T.STRINGS.SUM,
     sum: records.bookings.sumBookingTypes.reduce((acc: number, cur: number) => acc + cur, 0) + records.bookings.sumTaxes + records.bookings.sumFees,
     nameClass: 'font-weight-bold',
     sumClass: 'font-weight-bold'
@@ -80,14 +84,14 @@ const accountEntries = computed(() => {
   if (records.accounts.isDepot) {
     result.unshift({
       id: categories.length + 1,
-      name: STRINGS.TAXES,
+      name: T.STRINGS.TAXES,
       sum: records.bookings.sumTaxes,
       nameClass: '',
       sumClass: 'color-red'
     })
     result.unshift({
       id: categories.length + 2,
-      name: STRINGS.FEES,
+      name: T.STRINGS.FEES,
       sum: records.bookings.sumFees,
       nameClass: '',
       sumClass: 'color-red'
@@ -96,7 +100,7 @@ const accountEntries = computed(() => {
   return result
 })
 
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({title})
 
 log('--- ShowAccounting.vue setup ---')
@@ -109,14 +113,14 @@ log('--- ShowAccounting.vue setup ---')
     <v-card>
       <v-card-text class="pa-5">
         <v-data-table
-            :headers="sumsHeaders"
+            :headers="T.HEADERS"
             :hide-no-data="false"
             :hover="false"
             :items="accountEntries"
             :items-per-page="sumsPerPage"
             :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-            :items-per-page-text="STRINGS.ITEMS_PER_PAGE_TEXT"
-            :no-data-text="STRINGS.NO_DATA_TEXT"
+            :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
+            :no-data-text="T.STRINGS.NO_DATA_TEXT"
             density="compact"
             item-key="id">
           <template v-slot:[`item`]="{ item }">

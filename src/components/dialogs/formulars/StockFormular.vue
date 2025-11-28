@@ -17,6 +17,12 @@ import {useStockFormular} from '@/composables/useStockFormular'
 import {useFetch} from '@/composables/useFetch'
 import {useBrowser} from '@/composables/useBrowser'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+  ISIN_RULES: string[]
+}
+
 interface IStockFormularProps {
   isUpdate: boolean
 }
@@ -33,18 +39,20 @@ const {activeId} = storeToRefs(runtime)
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
-const MESSAGES = Object.freeze({
-  ERROR_ONUPDATE_ISIN: t('messages.onUpdateIsin')
-})
-const STRINGS = Object.freeze({
-  COMPANY_LABEL: t('dialogs.stockFormular.companyLabel'),
-  SYMBOL_LABEL: t('dialogs.stockFormular.symbolLabel'),
-  MEETING_DAY_LABEL: t('dialogs.stockFormular.meetingDayLabel'),
-  QUARTER_DAY_LABEL: t('dialogs.stockFormular.quarterDayLabel'),
-  FADEOUT_LABEL: t('dialogs.stockFormular.fadeOutLabel'),
-  FIRST_PAGE_LABEL: t('dialogs.stockFormular.firstPageLabel'),
-  URL_LABEL: t('dialogs.stockFormular.urlLabel'),
-  ISIN_LABEL: t('dialogs.stockFormular.isinLabel'),
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    ERROR_ONUPDATE_ISIN: t('messages.onUpdateIsin')
+  },
+  STRINGS: {
+    COMPANY_LABEL: t('dialogs.stockFormular.companyLabel'),
+    SYMBOL_LABEL: t('dialogs.stockFormular.symbolLabel'),
+    MEETING_DAY_LABEL: t('dialogs.stockFormular.meetingDayLabel'),
+    QUARTER_DAY_LABEL: t('dialogs.stockFormular.quarterDayLabel'),
+    FADEOUT_LABEL: t('dialogs.stockFormular.fadeOutLabel'),
+    FIRST_PAGE_LABEL: t('dialogs.stockFormular.firstPageLabel'),
+    URL_LABEL: t('dialogs.stockFormular.urlLabel'),
+    ISIN_LABEL: t('dialogs.stockFormular.isinLabel')
+  },
   ISIN_RULES: [
     t('validators.isinRules.required'),
     t('validators.isinRules.length'),
@@ -67,10 +75,10 @@ const onUpdateIsin = async () => {
     stockFormularData.company = ''
     stockFormularData.symbol = ''
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONUPDATE_ISIN, {error: e.message})
-      await notice([MESSAGES.ERROR_ONUPDATE_ISIN, e.message])
+      log(T.MESSAGES.ERROR_ONUPDATE_ISIN, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONUPDATE_ISIN, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONUPDATE_ISIN}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONUPDATE_ISIN}: unknown`)
     }
   }
 }
@@ -100,8 +108,8 @@ log('--- StockFormular.vue setup ---')
       <v-text-field
           v-model="stockFormularData.isin"
           :counter="12"
-          :label="STRINGS.ISIN_LABEL"
-          :rules="isinRules(STRINGS.ISIN_RULES)"
+          :label="T.STRINGS.ISIN_LABEL"
+          :rules="isinRules(T.ISIN_RULES)"
           autofocus
           variant="outlined"
           @focus="formRef?.resetValidation()"
@@ -110,7 +118,7 @@ log('--- StockFormular.vue setup ---')
     <v-row>
       <v-text-field
           v-model="stockFormularData.company"
-          :label="STRINGS.COMPANY_LABEL"
+          :label="T.STRINGS.COMPANY_LABEL"
           required
           variant="outlined"
       />
@@ -120,7 +128,7 @@ log('--- StockFormular.vue setup ---')
       <v-col>
         <v-text-field
             v-model="stockFormularData.symbol"
-            :label="STRINGS.SYMBOL_LABEL"
+            :label="T.STRINGS.SYMBOL_LABEL"
             required
             variant="outlined"
         />
@@ -132,7 +140,7 @@ log('--- StockFormular.vue setup ---')
       <v-col>
         <v-text-field
             v-model="stockFormularData.meetingDay"
-            :label="STRINGS.MEETING_DAY_LABEL"
+            :label="T.STRINGS.MEETING_DAY_LABEL"
             type="date"
             variant="outlined"
         />
@@ -140,7 +148,7 @@ log('--- StockFormular.vue setup ---')
       <v-col>
         <v-text-field
             v-model="stockFormularData.quarterDay"
-            :label="STRINGS.QUARTER_DAY_LABEL"
+            :label="T.STRINGS.QUARTER_DAY_LABEL"
             type="date"
             variant="outlined"
         />
@@ -150,14 +158,14 @@ log('--- StockFormular.vue setup ---')
       <v-col>
         <v-checkbox
             v-model="stockFormularData.fadeOut"
-            :label="STRINGS.FADEOUT_LABEL"
+            :label="T.STRINGS.FADEOUT_LABEL"
             variant="outlined"
         />
       </v-col>
       <v-col>
         <v-checkbox
             v-model="stockFormularData.firstPage"
-            :label="STRINGS.FIRST_PAGE_LABEL"
+            :label="T.STRINGS.FIRST_PAGE_LABEL"
             variant="outlined"
         />
       </v-col>
@@ -165,7 +173,7 @@ log('--- StockFormular.vue setup ---')
     <v-row>
       <v-text-field
           v-model="stockFormularData.url"
-          :label="STRINGS.URL_LABEL"
+          :label="T.STRINGS.URL_LABEL"
           variant="outlined"
       />
     </v-row>

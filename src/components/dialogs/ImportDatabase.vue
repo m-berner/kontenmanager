@@ -76,6 +76,11 @@ interface IEventTarget extends HTMLInputElement {
   target: { files: UnwrapRef<Blob>[] }
 }
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {t} = useI18n()
 const {CONS, log, isoDate} = useApp()
 const {notice, setStorage} = useBrowser()
@@ -87,27 +92,29 @@ const {resetTeleport} = useRuntimeStore()
 const settings = useSettingsStore()
 const {info} = useAlertStore()
 
-const MESSAGES = Object.freeze({
-  INFO_TITLE: t('messages.infoTitle'),
-  RESTRICTED_IMPORT: t('messages.restrictedImport')
-})
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.importDatabase.title'),
-  VERSION: t('dialogs.importDatabase.version'),
-  NOT_EMPTY: t('dialogs.importDatabase.notEmpty'),
-  INVALID: t('dialogs.importDatabase.invalid'),
-  MESSAGE_DELETE: t('dialogs.importDatabase.messageDelete'),
-  FILE_LABEL: t('dialogs.importDatabase.fileLabel'),
-  TAX: t('dialogs.importDatabase.tax'),
-  CAPITAL_TAX: t('dialogs.importDatabase.capitalTax'),
-  FEE: t('dialogs.importDatabase.fee'),
-  SOLI: t('dialogs.importDatabase.soli'),
-  SOURCE_TAX: t('dialogs.importDatabase.sourceTax'),
-  TRANSACTION_TAX: t('dialogs.importDatabase.transactionTax'),
-  OTHERS: t('dialogs.importDatabase.others'),
-  SHARE_BUY: t('dialogs.importDatabase.shareBuy'),
-  SHARE_SELL: t('dialogs.importDatabase.shareSell'),
-  DIVIDEND: t('dialogs.importDatabase.dividend')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    INFO_TITLE: t('messages.infoTitle'),
+    RESTRICTED_IMPORT: t('messages.restrictedImport')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.importDatabase.title'),
+    VERSION: t('dialogs.importDatabase.version'),
+    NOT_EMPTY: t('dialogs.importDatabase.notEmpty'),
+    INVALID: t('dialogs.importDatabase.invalid'),
+    MESSAGE_DELETE: t('dialogs.importDatabase.messageDelete'),
+    FILE_LABEL: t('dialogs.importDatabase.fileLabel'),
+    TAX: t('dialogs.importDatabase.tax'),
+    CAPITAL_TAX: t('dialogs.importDatabase.capitalTax'),
+    FEE: t('dialogs.importDatabase.fee'),
+    SOLI: t('dialogs.importDatabase.soli'),
+    SOURCE_TAX: t('dialogs.importDatabase.sourceTax'),
+    TRANSACTION_TAX: t('dialogs.importDatabase.transactionTax'),
+    OTHERS: t('dialogs.importDatabase.others'),
+    SHARE_BUY: t('dialogs.importDatabase.shareBuy'),
+    SHARE_SELL: t('dialogs.importDatabase.shareSell'),
+    DIVIDEND: t('dialogs.importDatabase.dividend')
+  }
 })
 
 const fileBlob = ref<Blob>(new Blob())
@@ -171,13 +178,13 @@ const onClickOk = async (): Promise<void> => {
       }
 
       if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
-        info(STRINGS.TITLE, STRINGS.INVALID, null)
+        info(T.STRINGS.TITLE, T.STRINGS.INVALID, null)
         return
       } else if (backupObject.sm.cDBVersion < CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
-        info(STRINGS.TITLE, STRINGS.VERSION, null)
+        info(T.STRINGS.TITLE, T.STRINGS.VERSION, null)
         return
       } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length > 0) {
-        info(STRINGS.TITLE, STRINGS.NOT_EMPTY, null)
+        info(T.STRINGS.TITLE, T.STRINGS.NOT_EMPTY, null)
         return
       }
       await clearAllAccounts()
@@ -193,13 +200,13 @@ const onClickOk = async (): Promise<void> => {
           cWithDepot: true
         }]
         const bookingTypeRecords = [
-          {cID: 1, cName: STRINGS.SHARE_BUY, cAccountNumberID: activeId},
-          {cID: 2, cName: STRINGS.SHARE_SELL, cAccountNumberID: activeId},
-          {cID: 3, cName: STRINGS.DIVIDEND, cAccountNumberID: activeId},
-          {cID: 4, cName: STRINGS.OTHERS, cAccountNumberID: activeId},
-          {cID: 5, cName: STRINGS.FEE, cAccountNumberID: activeId},
-          {cID: 6, cName: STRINGS.TAX, cAccountNumberID: activeId},
-          {cID: 7, cName: STRINGS.SOLI, cAccountNumberID: activeId}
+          {cID: 1, cName: T.STRINGS.SHARE_BUY, cAccountNumberID: activeId},
+          {cID: 2, cName: T.STRINGS.SHARE_SELL, cAccountNumberID: activeId},
+          {cID: 3, cName: T.STRINGS.DIVIDEND, cAccountNumberID: activeId},
+          {cID: 4, cName: T.STRINGS.OTHERS, cAccountNumberID: activeId},
+          {cID: 5, cName: T.STRINGS.FEE, cAccountNumberID: activeId},
+          {cID: 6, cName: T.STRINGS.TAX, cAccountNumberID: activeId},
+          {cID: 7, cName: T.STRINGS.SOLI, cAccountNumberID: activeId}
         ]
         for (const rec of accountRecords) {
           accountsStoreData.push(rec)
@@ -313,7 +320,7 @@ const onClickOk = async (): Promise<void> => {
         bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeId),
         bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeId),
         stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeId)
-      }, MESSAGES)
+      }, T.MESSAGES)
       await importAccounts(accountsImportData)
       await importBookingTypes(bookingTypesImportData)
       await importBookings(bookingsImportData)
@@ -329,7 +336,7 @@ const onClickOk = async (): Promise<void> => {
     fr.readAsText(fileBlob.value, 'UTF-8')
   }
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 log('--- ImportDatabase.vue setup ---')
@@ -341,12 +348,12 @@ log('--- ImportDatabase.vue setup ---')
       @submit.prevent>
     <v-card-text class="pa-5">
       <v-text-field
-          :label="STRINGS.MESSAGE_DELETE"
+          :label="T.STRINGS.MESSAGE_DELETE"
           variant="plain"
       />
       <v-file-input
           :clearable="true"
-          :label="STRINGS.FILE_LABEL"
+          :label="T.STRINGS.FILE_LABEL"
           accept=".json"
           variant="outlined"
           @change="onChange"/>

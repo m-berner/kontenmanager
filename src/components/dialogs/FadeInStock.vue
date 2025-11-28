@@ -14,15 +14,21 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import {useStocksDB} from '@/composables/useIndexedDB'
 
+interface IT {
+  STRINGS: Record<string, string>
+}
+
 const {t} = useI18n()
 const {log} = useApp()
 const {update} = useStocksDB()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
 
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.fadeInStock.title'),
-  SELECT_LABEL: t('dialogs.fadeInStock.selectLabel')
+const T = Object.freeze<IT>({
+  STRINGS: {
+    TITLE: t('dialogs.fadeInStock.title'),
+    SELECT_LABEL: t('dialogs.fadeInStock.selectLabel')
+  }
 })
 
 const _selected = ref<IStock_Store | null>(null)
@@ -36,7 +42,7 @@ const onClickOk = async (): Promise<void> => {
   }
   runtime.resetTeleport()
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {
@@ -60,7 +66,7 @@ log('--- FadeInStock.vue setup ---')
           item-title="cCompany"
           v-bind:clearable="true"
           v-bind:items="records.stocks.passive"
-          v-bind:label="STRINGS.SELECT_LABEL"
+          v-bind:label="T.STRINGS.SELECT_LABEL"
           v-bind:return-object="true"
           variant="outlined"/>
     </v-card-text>

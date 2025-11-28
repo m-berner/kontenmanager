@@ -17,6 +17,11 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import DialogPort from '@/components/DialogPort.vue'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {openOptionsPage} = useBrowser()
@@ -26,32 +31,34 @@ const records = useRecordsStore()
 const router = useRouter()
 const {info} = useAlertStore()
 
-const MESSAGES = Object.freeze({
-  INFO_TITLE: t('messages.infoTitle'),
-  SHOW_ACCOUNTING: t('messages.noBookings'),
-  NOTHING_TO_EXPORT: t('messages.nothingToExport'),
-  NO_BOOKING_TYPES: t('messages.noBookingTypes'),
-  CREATE_ACCOUNT: t('messages.createAccount'),
-  NO_ACCOUNT: t('messages.noAccount'),
-  ALL_STOCKS_VISIBLE: t('messages.allStocksVisible')
-})
-const STRINGS = Object.freeze({
-  HOME: t('headerBar.home'),
-  COMPANY: t('headerBar.company'),
-  UPDATE_QUOTE: t('headerBar.updateQuote'),
-  ADD_STOCK: t('headerBar.addStock'),
-  SHOW: t('headerBar.fadeInStock'),
-  ADD_ACCOUNT: t('headerBar.addAccount'),
-  UPDATE_ACCOUNT: t('headerBar.updateAccount'),
-  DELETE_ACCOUNT: t('headerBar.deleteAccount'),
-  ADD_BOOKING: t('headerBar.addBooking'),
-  ADD_BOOKING_TYPE: t('headerBar.addBookingType'),
-  UPDATE_BOOKING_TYPE: t('headerBar.updateBookingType'),
-  DELETE_BOOKING_TYPE: t('headerBar.deleteBookingType'),
-  EXPORT_TO_FILE: t('headerBar.exportToFile'),
-  IMPORT_DATABASE: t('headerBar.importDatabase'),
-  SHOW_ACCOUNTING: t('headerBar.showAccounting'),
-  SETTINGS: t('headerBar.settings')
+const T = Object.freeze<IT>({
+  MESSAGES:{
+    INFO_TITLE: t('messages.infoTitle'),
+    SHOW_ACCOUNTING: t('messages.noBookings'),
+    NOTHING_TO_EXPORT: t('messages.nothingToExport'),
+    NO_BOOKING_TYPES: t('messages.noBookingTypes'),
+    CREATE_ACCOUNT: t('messages.createAccount'),
+    NO_ACCOUNT: t('messages.noAccount'),
+    ALL_STOCKS_VISIBLE: t('messages.allStocksVisible')
+  },
+  STRINGS:{
+    HOME: t('headerBar.home'),
+    COMPANY: t('headerBar.company'),
+    UPDATE_QUOTE: t('headerBar.updateQuote'),
+    ADD_STOCK: t('headerBar.addStock'),
+    SHOW: t('headerBar.fadeInStock'),
+    ADD_ACCOUNT: t('headerBar.addAccount'),
+    UPDATE_ACCOUNT: t('headerBar.updateAccount'),
+    DELETE_ACCOUNT: t('headerBar.deleteAccount'),
+    ADD_BOOKING: t('headerBar.addBooking'),
+    ADD_BOOKING_TYPE: t('headerBar.addBookingType'),
+    UPDATE_BOOKING_TYPE: t('headerBar.updateBookingType'),
+    DELETE_BOOKING_TYPE: t('headerBar.deleteBookingType'),
+    EXPORT_TO_FILE: t('headerBar.exportToFile'),
+    IMPORT_DATABASE: t('headerBar.importDatabase'),
+    SHOW_ACCOUNTING: t('headerBar.showAccounting'),
+    SETTINGS: t('headerBar.settings')
+  }
 })
 
 const onIconClick = async (ev: Event): Promise<void> => {
@@ -69,7 +76,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK:
         if (records.stocks.passive.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.ALL_STOCKS_VISIBLE, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.ALL_STOCKS_VISIBLE, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK,
@@ -108,7 +115,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT:
         if (accountItems.value.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
@@ -119,7 +126,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION:
         if (accountItems.value.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.NO_ACCOUNT, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
@@ -130,7 +137,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE:
         if (accountItems.value.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
@@ -141,7 +148,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE:
         if (bookingTypeItems.value.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE,
@@ -152,7 +159,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
         if (bookingTypeItems.value.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.NO_BOOKING_TYPES, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
@@ -163,7 +170,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.ADD_BOOKING:
         if (accountItems.value.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.CREATE_ACCOUNT, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
@@ -174,7 +181,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE:
         if (accountItems.value.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.NOTHING_TO_EXPORT, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NOTHING_TO_EXPORT, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
@@ -192,7 +199,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         break
       case CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING:
         if (bookingItems.value.length === 0) {
-          info(MESSAGES.INFO_TITLE, MESSAGES.SHOW_ACCOUNTING, null)
+          info(T.MESSAGES.INFO_TITLE, T.MESSAGES.SHOW_ACCOUNTING, null)
         } else {
           runtime.setTeleport({
             dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING,
@@ -225,7 +232,7 @@ log('--- HeaderBar.vue setup ---')
   <v-app-bar app flat height="75">
     <v-spacer/>
     <RouterLink class="router-link-active" to="/">
-      <v-tooltip :text="STRINGS.HOME" location="top">
+      <v-tooltip :text="T.STRINGS.HOME" location="top">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
               color="grey"
@@ -241,7 +248,7 @@ log('--- HeaderBar.vue setup ---')
         v-if="records.accounts.isDepot"
         class="router-link-active"
         to="/company">
-      <v-tooltip :text="STRINGS.COMPANY" location="top">
+      <v-tooltip :text="T.STRINGS.COMPANY" location="top">
         <template v-slot:activator="{ props }">
           <v-app-bar-nav-icon
               color="grey"
@@ -256,7 +263,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="isCompanyPage"
-        :text="STRINGS.UPDATE_QUOTE"
+        :text="T.STRINGS.UPDATE_QUOTE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -271,7 +278,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="isCompanyPage"
-        :text="STRINGS.ADD_STOCK"
+        :text="T.STRINGS.ADD_STOCK"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -285,7 +292,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="isCompanyPage"
-        :text="STRINGS.SHOW"
+        :text="T.STRINGS.SHOW"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -300,7 +307,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.ADD_ACCOUNT"
+        :text="T.STRINGS.ADD_ACCOUNT"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -314,7 +321,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.UPDATE_ACCOUNT"
+        :text="T.STRINGS.UPDATE_ACCOUNT"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -328,7 +335,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.DELETE_ACCOUNT"
+        :text="T.STRINGS.DELETE_ACCOUNT"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -343,7 +350,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.ADD_BOOKING"
+        :text="T.STRINGS.ADD_BOOKING"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -358,7 +365,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.ADD_BOOKING_TYPE"
+        :text="T.STRINGS.ADD_BOOKING_TYPE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -372,7 +379,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.UPDATE_BOOKING_TYPE"
+        :text="T.STRINGS.UPDATE_BOOKING_TYPE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -386,7 +393,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.DELETE_BOOKING_TYPE"
+        :text="T.STRINGS.DELETE_BOOKING_TYPE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -401,7 +408,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.EXPORT_TO_FILE"
+        :text="T.STRINGS.EXPORT_TO_FILE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -415,7 +422,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.IMPORT_DATABASE"
+        :text="T.STRINGS.IMPORT_DATABASE"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -430,7 +437,7 @@ log('--- HeaderBar.vue setup ---')
     <v-spacer/>
     <v-tooltip
         v-if="!isCompanyPage"
-        :text="STRINGS.SHOW_ACCOUNTING"
+        :text="T.STRINGS.SHOW_ACCOUNTING"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon
@@ -444,7 +451,7 @@ log('--- HeaderBar.vue setup ---')
     </v-tooltip>
     <v-spacer/>
     <v-tooltip
-        :text="STRINGS.SETTINGS"
+        :text="T.STRINGS.SETTINGS"
         location="top">
       <template v-slot:activator="{ props }">
         <v-app-bar-nav-icon

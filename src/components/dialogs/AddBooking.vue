@@ -19,6 +19,11 @@ import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
@@ -29,13 +34,15 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 
-const MESSAGES = Object.freeze({
-  ERROR_ONCLICK_OK: t('messages.onClickOk'),
-  SUCCESS_ADD: t('messages.addBooking.success'),
-  ERROR_ADD: t('messages.addBooking.error')
-})
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.addBooking.title')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    ERROR_ONCLICK_OK: t('messages.onClickOk'),
+    SUCCESS_ADD: t('messages.addBooking.success'),
+    ERROR_ADD: t('messages.addBooking.error')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.addBooking.title')
+  }
 })
 
 const reset = (): void => {
@@ -170,21 +177,21 @@ const onClickOk = async (): Promise<void> => {
       const completeBooking: IBooking_Store = {cID: addBookingID, ...booking}
       records.bookings.add(completeBooking)
       reset()
-      await notice([MESSAGES.SUCCESS_ADD])
+      await notice([T.MESSAGES.SUCCESS_ADD])
     } else {
-      log('ADD_BOOKING: onClickOk', {error: MESSAGES.ERROR_ADD})
-      await notice([MESSAGES.ERROR_ADD])
+      log('ADD_BOOKING: onClickOk', {error: T.MESSAGES.ERROR_ADD})
+      await notice([T.MESSAGES.ERROR_ADD])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
+      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {

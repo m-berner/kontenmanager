@@ -20,6 +20,11 @@ import {useValidation} from '@/composables/useValidation'
 import {useStockFormular} from '@/composables/useStockFormular'
 import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
@@ -31,12 +36,14 @@ const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {stockFormularData, formRef} = useStockFormular()
 
-const MESSAGES = Object.freeze({
-  SUCCESS_ADD: t('messages.addStock.success'),
-  ERROR_ONCLICK_OK: t('messages.onClickOk')
-})
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.addStock.title')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    SUCCESS_ADD: t('messages.addStock.success'),
+    ERROR_ONCLICK_OK: t('messages.onClickOk')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.addStock.title')
+  }
 })
 
 const formDisabled = ref(false)
@@ -71,18 +78,18 @@ const onClickOk = async (): Promise<void> => {
       const dbStock: IStock_DB = {cID: addStockID, ...stock}
       records.stocks.add(dbStock)
       resetTeleport()
-      await notice([MESSAGES.SUCCESS_ADD])
+      await notice([T.MESSAGES.SUCCESS_ADD])
     }
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
+      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {

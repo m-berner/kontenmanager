@@ -20,6 +20,11 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
 
+interface IT {
+  STRINGS: Record<string, string>
+  MESSAGES: Record<string, string>
+}
+
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
@@ -33,12 +38,14 @@ const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 
-const MESSAGES = Object.freeze({
-  ERROR_ONCLICK_OK: t('messages.onClickOk'),
-  SUCCESS_UPDATE: t('messages.updateBooking.success')
-})
-const STRINGS = Object.freeze({
-  TITLE: t('dialogs.updateBooking.title')
+const T = Object.freeze<IT>({
+  MESSAGES: {
+    ERROR_ONCLICK_OK: t('messages.onClickOk'),
+    SUCCESS_UPDATE: t('messages.updateBooking.success')
+  },
+  STRINGS: {
+    TITLE: t('dialogs.updateBooking.title')
+  }
 })
 
 const onClickOk = async (): Promise<void> => {
@@ -70,19 +77,19 @@ const onClickOk = async (): Promise<void> => {
     }
     records.bookings.update(booking)
     await update(booking)
-    await notice([MESSAGES.SUCCESS_UPDATE])
+    await notice([T.MESSAGES.SUCCESS_UPDATE])
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([MESSAGES.ERROR_ONCLICK_OK, e.message])
+      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
     }
   }
 }
-const title = STRINGS.TITLE
+const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {
