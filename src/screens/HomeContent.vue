@@ -32,7 +32,8 @@ const {bookingsPerPage} = storeToRefs(settings)
 const T = Object.freeze<IT>({
   STRINGS: {
     ITEMS_PER_PAGE_TEXT: t('homePage.bookingsTable.itemsPerPageText'),
-    NO_DATA_TEXT: t('homePage.bookingsTable.noDataText')
+    NO_DATA_TEXT: t('homePage.bookingsTable.noDataText'),
+    SEARCH_LABEL: t('homePage.search')
   },
   HEADERS: [
     {
@@ -92,9 +93,6 @@ const onUpdateItemsPerPage = (count: number): void => {
   log('HOME_CONTENT: onUpdateItemsPerPage')
   bookingsPerPage.value = count
 }
-const onUpdatePage = (page: number): void => {
-  log('HOME_CONTENT: onUpdatePage', {info: page})
-}
 
 log('--- HomeContent.vue setup ---')
 </script>
@@ -102,7 +100,7 @@ log('--- HomeContent.vue setup ---')
 <template>
   <v-text-field
       v-model="search"
-      :label="t('homePage.search')"
+      :label="T.STRINGS.SEARCH_LABEL"
       density="compact"
       hide-details
       prepend-inner-icon="$magnify"
@@ -120,8 +118,7 @@ log('--- HomeContent.vue setup ---')
       :search="search"
       density="compact"
       item-key="cID"
-      @update:items-per-page="onUpdateItemsPerPage"
-      @update:page="onUpdatePage">
+      @update:items-per-page="onUpdateItemsPerPage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>
