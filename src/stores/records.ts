@@ -306,6 +306,9 @@ const useBookingsStore = defineStore('bookings', function () {
     })
     const sumFees = computed(() => {
         return items.value.map((entry: IBooking_Store) => {
+            // if (entry.cBookingTypeID === 5) {
+            //     return entry.cCredit - entry.cDebit
+            // }
             return entry.cFeeCredit - entry.cFeeDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })

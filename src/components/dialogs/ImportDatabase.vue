@@ -148,31 +148,38 @@ const onClickOk = async (): Promise<void> => {
       const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : STOCKMANAGER_RESTORE_ACCOUNT_ID
       activeAccountId.value = activeId
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
-      const getCreditDebit = (rec: IBooking_SM): number => {
-        let result: number
+      const getCreditDebit = (rec: IBooking_SM): {value: number, type: number} => {
+        let result: {value: number, type: number} = {value: 0, type: -1}
+        if (rec.cAmount !== 0) {
+          result.type = 4
+        } else if (rec.cFees !== 0) {
+          result.type = 5
+        } else if (rec.cTax !== 0 || rec.cSoli !== 0 || rec.cSTax !== 0 || rec.cFTax !== 0) {
+          result.type = 6
+        }
         switch (rec.cType) {
           case 1:
             // Buy
-            result = rec.cUnitQuotation * rec.cCount
+            result = {value: rec.cUnitQuotation * rec.cCount, type: 1}
             break
           case 2:
             // Sell
-            result = rec.cUnitQuotation * -rec.cCount
+            result = {value: rec.cUnitQuotation * -rec.cCount, type: 2}
             break
           case 3:
             // Dividend
-            result = rec.cUnitQuotation * rec.cCount
+            result = {value: rec.cUnitQuotation * rec.cCount, type: 3}
             break
           case 4:
             // Credit
-            result = rec.cAmount
+            result.value = rec.cAmount + rec.cFees + rec.cSTax + rec.cFTax + rec.cTax + rec.cSoli
             break
           case 5:
             // Debit
-            result = -rec.cAmount
+            result.value = -rec.cAmount - rec.cFees - rec.cSTax - rec.cFTax - rec.cTax - rec.cSoli
             break
           default:
-            result = 0
+            throw new Error('IMPORT_DATABASE: undefined type')
         }
         return result
       }
@@ -205,8 +212,7 @@ const onClickOk = async (): Promise<void> => {
           {cID: 3, cName: T.STRINGS.DIVIDEND, cAccountNumberID: activeId},
           {cID: 4, cName: T.STRINGS.OTHERS, cAccountNumberID: activeId},
           {cID: 5, cName: T.STRINGS.FEE, cAccountNumberID: activeId},
-          {cID: 6, cName: T.STRINGS.TAX, cAccountNumberID: activeId},
-          {cID: 7, cName: T.STRINGS.SOLI, cAccountNumberID: activeId}
+          {cID: 6, cName: T.STRINGS.TAX, cAccountNumberID: activeId}
         ]
         for (const rec of accountRecords) {
           accountsStoreData.push(rec)
@@ -255,42 +261,45 @@ const onClickOk = async (): Promise<void> => {
           booking.cTaxDebit = smTransfer.cTax < 0 ? -smTransfer.cTax : 0
           booking.cSoliCredit = smTransfer.cSoli > 0 ? smTransfer.cSoli : 0
           booking.cSoliDebit = smTransfer.cSoli < 0 ? -smTransfer.cSoli : 0
-          booking.cDebit = smTransfer.cType === 1 || smTransfer.cType === 5 ? getCreditDebit(smTransfer) : 0
-          booking.cCredit = smTransfer.cType === 2 || smTransfer.cType === 3 || smTransfer.cType === 4 ? getCreditDebit(smTransfer) : 0
-          if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cFees !== 0) {
-            booking.cBookingTypeID = 5
-            booking.cDebit = smTransfer.cFees < 0 ? -smTransfer.cFees : 0
-            booking.cCredit = smTransfer.cFees > 0 ? smTransfer.cFees : 0
+          booking.cCredit = smTransfer.cAmount > 0 ? smTransfer.cAmount : 0
+          booking.cDebit = smTransfer.cAmount < 0 ? -smTransfer.cAmount : 0
+          if (smTransfer.cType === 1) {
+            booking.cDebit = getCreditDebit(smTransfer).value
+            booking.cCredit = 0
+          } else if (smTransfer.cType === 2) {
+            booking.cCredit = getCreditDebit(smTransfer).value
+            booking.cDebit = 0
+          } else if (smTransfer.cType === 3) {
+            booking.cCredit = getCreditDebit(smTransfer).value
+            booking.cDebit = 0
+          } else if (smTransfer.cType === 4) {
+            booking.cBookingTypeID = getCreditDebit(smTransfer).type
+            booking.cCredit = getCreditDebit(smTransfer).value
+            booking.cDebit = 0
             booking.cFeeCredit = 0
             booking.cFeeDebit = 0
-          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cSoli !== 0) {
-            booking.cBookingTypeID = 7
-            booking.cDebit = smTransfer.cSoli < 0 ? -smTransfer.cSoli : 0
-            booking.cCredit = smTransfer.cSoli > 0 ? smTransfer.cSoli : 0
-            booking.cSoliCredit = 0
-            booking.cSoliDebit = 0
-          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cAmount !== 0) {
-            booking.cBookingTypeID = 4
-            booking.cDebit = smTransfer.cAmount < 0 ? getCreditDebit(smTransfer) : 0
-            booking.cCredit = smTransfer.cAmount > 0 ? getCreditDebit(smTransfer) : 0
-          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cSTax !== 0) {
-            booking.cBookingTypeID = 6
-            booking.cDebit = smTransfer.cSTax < 0 ? -smTransfer.cSTax : 0
-            booking.cCredit = smTransfer.cSTax > 0 ? smTransfer.cSTax : 0
-            booking.cSourceTaxCredit = 0
-            booking.cSourceTaxDebit = 0
-          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cFTax !== 0) {
-            booking.cBookingTypeID = 6
-            booking.cDebit = smTransfer.cFTax < 0 ? -smTransfer.cFTax : 0
-            booking.cCredit = smTransfer.cFTax > 0 ? smTransfer.cFTax : 0
             booking.cTransactionTaxCredit = 0
             booking.cTransactionTaxDebit = 0
-          } else if ((smTransfer.cType === 4 || smTransfer.cType === 5) && smTransfer.cTax !== 0) {
-            booking.cBookingTypeID = 6
-            booking.cDebit = smTransfer.cTax < 0 ? -smTransfer.cTax : 0
-            booking.cCredit = smTransfer.cTax > 0 ? smTransfer.cTax : 0
+            booking.cSourceTaxCredit = 0
+            booking.cSourceTaxDebit = 0
             booking.cTaxCredit = 0
             booking.cTaxDebit = 0
+            booking.cSoliCredit = 0
+            booking.cSoliDebit = 0
+          } else if (smTransfer.cType === 5) {
+            booking.cBookingTypeID = getCreditDebit(smTransfer).type
+            booking.cCredit = 0
+            booking.cDebit = getCreditDebit(smTransfer).value
+            booking.cFeeCredit = 0
+            booking.cFeeDebit = 0
+            booking.cTransactionTaxCredit = 0
+            booking.cTransactionTaxDebit = 0
+            booking.cSourceTaxCredit = 0
+            booking.cSourceTaxDebit = 0
+            booking.cTaxCredit = 0
+            booking.cTaxDebit = 0
+            booking.cSoliCredit = 0
+            booking.cSoliDebit = 0
           }
           bookingsStoreData.push(booking)
           bookingsImportData.push({type: 'add', data: booking, key: -1})
