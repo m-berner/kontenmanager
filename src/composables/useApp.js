@@ -171,74 +171,7 @@ const CONS = Object.freeze({
         SESSION_STORAGE: {
             EXTENSION_TAB_ID: 'sExtensionTabId',
             HIDE_IMPORT_ALERT: 'sHideImportAlert'
-        },
-        DRAWER_KEYS: [
-            'winloss',
-            'earnings',
-            'deposits',
-            'dividends',
-            'withdrawals',
-            'fees',
-            'taxes',
-            'account',
-            'depot'
-        ],
-        DRAWER_CONTROLS: [
-            {
-                id: 0,
-                title: '',
-                value: '0',
-                class: ''
-            },
-            {
-                id: 1,
-                title: '',
-                value: '0',
-                class: ''
-            },
-            {
-                id: 2,
-                title: '',
-                value: '0',
-                class: ''
-            },
-            {
-                id: 3,
-                title: '',
-                value: '0',
-                class: ''
-            },
-            {
-                id: 4,
-                title: '',
-                value: '0',
-                class: ''
-            },
-            {
-                id: 5,
-                title: '',
-                value: '0',
-                class: ''
-            },
-            {
-                id: 6,
-                title: '',
-                value: '0',
-                class: ''
-            },
-            {
-                id: 7,
-                title: '',
-                value: '0',
-                class: ''
-            },
-            {
-                id: 8,
-                title: '',
-                value: '0',
-                class: ''
-            }
-        ]
+        }
     },
     EVENTS: {
         ABORT: 'abort',

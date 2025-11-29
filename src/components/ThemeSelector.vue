@@ -22,13 +22,14 @@ const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
 const T = Object.freeze<IT>({
+  // NOTE: lowercase properties required due to vuetify plugin object
   STRINGS: {
-    EARTH: t('optionsPage.themeNames.earth'),
-    OCEAN: t('optionsPage.themeNames.ocean'),
-    SKY: t('optionsPage.themeNames.sky'),
-    MEADOW: t('optionsPage.themeNames.meadow'),
-    DARK: t('optionsPage.themeNames.dark'),
-    LIGHT: t('optionsPage.themeNames.light')
+    earth: t('optionsPage.themeNames.earth'),
+    ocean: t('optionsPage.themeNames.ocean'),
+    sky: t('optionsPage.themeNames.sky'),
+    meadow: t('optionsPage.themeNames.meadow'),
+    dark: t('optionsPage.themeNames.dark'),
+    light: t('optionsPage.themeNames.light')
   }
 })
 
