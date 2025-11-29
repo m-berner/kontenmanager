@@ -47,7 +47,15 @@
     },
     "deleteBookingType": {
       "success": "Buchungstyp wurde entfernt",
-      "error": "Es existiert eine Buchung"
+      "error": "Es existiert bereits eine Buchungskategorie"
+    },
+    "deleteBooking": {
+      "success": "Buchung wurde entfernt",
+      "error": "Es existiert bereits eine Buchung"
+    },
+    "deleteStock": {
+      "success": "Unternehmen wurde entfernt",
+      "error": "Diese ISIN existiert bereits"
     }
   },
   "titleBar": {

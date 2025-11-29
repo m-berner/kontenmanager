@@ -18,6 +18,7 @@ import {useApp} from '@/composables/useApp'
 import DotMenu from '@/components/DotMenu.vue'
 
 interface IT {
+  STRINGS: Record<string, string>
   HEADERS: DataTableHeader[]
   MENU_ITEMS: IMenuItem[]
 }
@@ -32,6 +33,10 @@ const runtime = useRuntimeStore()
 const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
 const T = Object.freeze<IT>({
+  STRINGS: {
+    ITEMS_PER_PAGE_TEXT: t('homePage.stocksTable.itemsPerPageText'),
+    NO_DATA_TEXT: t('homePage.stocksTable.noDataText')
+  },
   HEADERS: [
     {
       title: t('homePage.stocksTable.headers.action'),
@@ -185,9 +190,9 @@ log('--- StocksTable.vue setup ---')
       :items="activeStockItems"
       :items-per-page="stocksPerPage"
       :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-      :items-per-page-text="t('homePage.stocksTable.itemsPerPageText')"
+      :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
       :loading="isStockLoading"
-      :no-data-text="t('homePage.stocksTable.noDataText')"
+      :no-data-text="T.STRINGS.NO_DATA_TEXT"
       density="compact"
       item-key="cID"
       @update:items-per-page="onUpdateItemsPerPage"

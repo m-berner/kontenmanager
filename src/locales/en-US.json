@@ -47,7 +47,15 @@
     },
     "deleteBookingType": {
       "success": "Booking type has been removed",
-      "error": "A booking exists"
+      "error": "Booking type exists already"
+    },
+    "deleteBooking": {
+      "success": "Booking has been removed",
+      "error": "A booking exists already"
+    },
+    "deleteStock": {
+      "success": "Company has been removed",
+      "error": "ISIN exists already"
     }
   },
   "titleBar": {

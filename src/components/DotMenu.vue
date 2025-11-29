@@ -40,7 +40,9 @@ const {info} = useAlertStore()
 const T = Object.freeze<IT>({
   MESSAGES: {
     INFO_TITLE: t('messages.infoTitle'),
-    NO_DELETE: t('messages.noDelete')
+    NO_DELETE: t('messages.noDelete'),
+    SUCCESS_DELETE_BOOKING: t('messages.deleteBooking.success'),
+    SUCCESS_DELETE_COMPANY: t('messages.deleteStock.success')
   }
 })
 
@@ -70,7 +72,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
       case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
         records.bookings.remove(optionMenuProps.recordID)
         await removeBooking(optionMenuProps.recordID)
-        await notice([t('dialogs.deleteBooking.success')])
+        await notice([T.MESSAGES.SUCCESS_DELETE_BOOKING])
         for (const m of optionMenuColors.value.keys()) {
           optionMenuColors.value.set(m, '')
         }
@@ -89,7 +91,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (deleteAble.length === 0) {
           records.stocks.remove(optionMenuProps.recordID)
           await removeStock(optionMenuProps.recordID)
-          await notice([t('dialogs.deleteStock.success')])
+          await notice([T.MESSAGES.SUCCESS_DELETE_COMPANY])
         } else {
           info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_DELETE, null)
         }

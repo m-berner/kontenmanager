@@ -15,6 +15,10 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useFetch} from '@/composables/useFetch'
 
+interface IT {
+  STRINGS: Record<string, string>
+}
+
 interface DynamicListProps {
   type: symbol
   hint?: string
@@ -27,6 +31,15 @@ const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
+const T = Object.freeze<IT>({
+  STRINGS: {
+    EXCHANGES_LABEL: t('optionsPage.exchanges.label'),
+    MARKETS_LABEL: t('optionsPage.markets.label'),
+    EXCHANGES_TITLE: t('optionsPage.exchanges.title'),
+    MARKETS_TITLE: t('optionsPage.markets.title')
+  }
+})
+
 const newItem = ref<string>('')
 const list = ref<string[]>([])
 
@@ -34,10 +47,10 @@ const label = computed<string>(() => {
   let resultLabel = 'Error'
   switch (dynamicListProps.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-      resultLabel = t('optionsPage.exchanges.label')
+      resultLabel = T.STRINGS.EXCHANGES_LABEL
       break
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-      resultLabel = t('optionsPage.markets.label')
+      resultLabel = T.STRINGS.MARKETS_LABEL
       break
     default:
   }
@@ -47,10 +60,10 @@ const title = computed<string>(() => {
   let resultTitle = 'Error'
   switch (dynamicListProps.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-      resultTitle = t('optionsPage.exchanges.title')
+      resultTitle = T.STRINGS.EXCHANGES_TITLE
       break
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-      resultTitle = t('optionsPage.markets.title')
+      resultTitle = T.STRINGS.MARKETS_TITLE
       break
     default:
   }

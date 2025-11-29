@@ -10,8 +10,20 @@ import {useI18n} from 'vue-i18n'
 import {RouterLink} from 'vue-router'
 import {useApp} from '@/composables/useApp'
 
+interface IT {
+  STRINGS: Record<string, string>
+}
+
 const {t} = useI18n()
 const {CONS, log} = useApp()
+
+const T = Object.freeze<IT>({
+  STRINGS: {
+    HELP: t('footer.help'),
+    PRIVACY: t('footer.privacy'),
+    MAIL: t('footer.mail')
+  }
+})
 
 log('--- FooterBar.vue setup ---')
 </script>
@@ -24,19 +36,19 @@ log('--- FooterBar.vue setup ---')
          rel="noopener noreferrer"
          target="_blank">
         <v-icon icon="$help"/>
-        <div>{{ t('footer.help') }}</div>
+        <div>{{ T.STRINGS.HELP }}</div>
       </a>
     </v-btn>
     <v-btn color="white">
       <RouterLink :to="CONS.ROUTES.PRIVACY" class="router-link-active">
         <v-icon icon="
         $privacy"/>
-        <div>{{ t('footer.privacy') }}</div>
+        <div>{{ T.STRINGS.PRIVACY }}</div>
       </RouterLink>
     </v-btn>
     <v-btn :href="CONS.SYSTEM.MAILTO" color="white">
       <v-icon icon="$mail"/>
-      <div>{{ t('footer.mail') }}</div>
+      <div>{{ T.STRINGS.MAIL }}</div>
     </v-btn>
     <v-btn :disabled="true" color="white">
       <v-icon icon="$mdiCopyright"/>

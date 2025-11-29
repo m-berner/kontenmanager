@@ -12,18 +12,24 @@ import {useTheme} from 'vuetify/framework'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
+interface IT {
+  STRINGS: Record<string, string>
+}
+
 const {t} = useI18n()
 const theme = useTheme()
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const themeNames: { [p: string]: string } = Object.freeze({
-  earth: t('optionsPage.themeNames.earth'),
-  ocean: t('optionsPage.themeNames.ocean'),
-  sky: t('optionsPage.themeNames.sky'),
-  meadow: t('optionsPage.themeNames.meadow'),
-  dark: t('optionsPage.themeNames.dark'),
-  light: t('optionsPage.themeNames.light')
+const T = Object.freeze<IT>({
+  STRINGS: {
+    EARTH: t('optionsPage.themeNames.earth'),
+    OCEAN: t('optionsPage.themeNames.ocean'),
+    SKY: t('optionsPage.themeNames.sky'),
+    MEADOW: t('optionsPage.themeNames.meadow'),
+    DARK: t('optionsPage.themeNames.dark'),
+    LIGHT: t('optionsPage.themeNames.light')
+  }
 })
 
 const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
@@ -49,7 +55,7 @@ onBeforeMount(async () => {
     <v-radio
         v-for="item in Object.keys(theme.themes.value)"
         :key="item"
-        :label="themeNames[item]"
+        :label="T.STRINGS[item]"
         :value="item"
     />
   </v-radio-group>
