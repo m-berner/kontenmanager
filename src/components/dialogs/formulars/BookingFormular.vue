@@ -129,8 +129,9 @@ const feeModel = computed({
             :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
             :items="bookingTypes.items.sort((a: IBookingType_Store, b: IBookingType_Store): number => { return a.cName.localeCompare(b.cName) })"
             :label="T.STRINGS.BOOKING_TYPE_LABEL"
-            :menu=false
-            :menu-props="{ maxHeight: 250 }"
+            placeholder=""
+            autocomplete
+            clearable
             density="compact"
             max-width="300"
             variant="outlined"

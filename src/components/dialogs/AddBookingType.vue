@@ -47,9 +47,9 @@ const T = Object.freeze<IT>({
     PLACEHOLDER: t('dialogs.addBookingType.placeholder')
   },
   NAME_RULES: [
-    t('dialogs.validators.nameRules.required'),
-    t('dialogs.validators.nameRules.length'),
-    t('dialogs.validators.nameRules.begin')
+    t('validators.nameRules.required'),
+    t('validators.nameRules.length'),
+    t('validators.nameRules.begin')
   ]
 })
 

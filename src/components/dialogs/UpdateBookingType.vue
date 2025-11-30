@@ -42,9 +42,9 @@ const T = Object.freeze<IT>({
     BOOKING_TYPE_LABEL: t('dialogs.updateBookingType.bookingTypeLabel')
   },
   NAME_RULES: [
-    t('dialogs.validators.nameRules.required'),
-    t('dialogs.validators.nameRules.length'),
-    t('dialogs.validators.nameRules.begin')
+    t('validators.nameRules.required'),
+    t('validators.nameRules.length'),
+    t('validators.nameRules.begin')
   ]
 })
 

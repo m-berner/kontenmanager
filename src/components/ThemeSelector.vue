@@ -32,7 +32,6 @@ const T = Object.freeze<IT>({
     light: t('optionsPage.themeNames.light')
   }
 })
-
 const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const setSkin = async (skin: string | null): Promise<void> => {

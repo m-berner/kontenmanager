@@ -56,7 +56,6 @@ const T = Object.freeze<IT>({
     }
   ]
 })
-
 const accountEntries = computed(() => {
   const result: IAccountEntry[] = []
   const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
