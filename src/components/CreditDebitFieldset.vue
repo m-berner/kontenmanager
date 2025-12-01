@@ -17,18 +17,13 @@ interface CreditDebitFieldsetProps {
   legend: string
 }
 
-interface IT {
-  STRINGS: Record<string, string>
-  RULES: string[]
-}
-
 const props = defineProps<CreditDebitFieldsetProps>()
 // eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['update:modelValue'])
 const {t} = useI18n()
 const {isValidCredit, isValidDebit} = useValidation()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   STRINGS: {
     CREDIT_LABEL: t('components.creditDebitFieldset.creditLabel'),
     DEBIT_LABEL: t('components.creditDebitFieldset.debitLabel')

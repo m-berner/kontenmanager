@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBookingType_Store} from '@/types.d'
+import type {IBookingType_Store} from '@/types'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -17,12 +17,6 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-  NAME_RULES: string[]
-}
-
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
@@ -31,7 +25,7 @@ const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     SUCCESS_UPDATE: t('messages.updateBookingType.success'),
     ERROR_UPDATE: t('messages.updateBookingType.error'),

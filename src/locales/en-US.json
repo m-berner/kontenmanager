@@ -137,21 +137,21 @@
       "title": "AccountManager Privacy Policy",
       "general": {
         "title": "General",
-        "data": {
-          "subTitle": {
-            "0": "Local Data",
-            "1": "Public Data",
-            "2": "Internet Connections"
+        "paragraphs": {
+          "local": {
+            "subTitle": "Local Data",
+            "content": "No data is sent to a server. Data is stored in an IndexedDB database. Only this add-on has access to the database. AccountManager does not personalize any data. Settings are stored in the browser's extension storage.",
+            "icon": ""
           },
-          "content": {
-            "0": "No data is sent to a server. Data is stored in an IndexedDB database. Only this add-on has access to the database. AccountManager does not personalize any data. Settings are stored in the browser's extension storage.",
-            "1": "AccountManager does not guarantee the accuracy of the data. When retrieving data, URIs including ISINs are sent over the internet. Other data is not shared.",
-            "2": "Connections are established to download bank logo, exchange rate, stock quote, min/max, index, and commodity data."
+          "public": {
+            "subTitle": "Public Data",
+            "content": "AccountManager does not guarantee the accuracy of the data. When retrieving data, URIs including ISINs are sent over the internet. Other data is not shared.",
+            "icon": ""
           },
-          "icon": {
-            "0": "",
-            "1": "",
-            "2": ""
+          "connection": {
+            "subTitle": "Internet Connections",
+            "content": "Connections are established to download bank logo, exchange rate, stock quote, min/max, index, and commodity data.",
+            "icon": ""
           }
         }
       }

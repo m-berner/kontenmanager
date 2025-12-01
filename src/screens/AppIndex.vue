@@ -21,17 +21,23 @@ import {useFetch} from '@/composables/useFetch'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import AlertOverlay from '@/components/AlertOverlay.vue'
 
-const {CONS, haveSameStrings, log} = useApp()
+const {log} = useApp()
 
 onBeforeMount(async () => {
+  const {CONS, haveSameStrings} = useApp()
   const {notice} = useBrowser()
   const {t} = useI18n()
-  const MESSAGES = Object.freeze({
-    INFO_TITLE: t('messages.infoTitle'),
-    RESTRICTED_IMPORT: t('messages.restrictedImport'),
-    CORRUPT_STORAGE: t('messages.corruptStorage'),
-    ERROR_ON_BEFORE_MOUNT: t('messages.onBeforeMount')
+
+  const T = Object.freeze({
+    STRINGS: {},
+    MESSAGES: {
+      INFO_TITLE: t('messages.infoTitle'),
+      RESTRICTED_IMPORT: t('messages.restrictedImport'),
+      CORRUPT_STORAGE: t('messages.corruptStorage'),
+      ERROR_ON_BEFORE_MOUNT: t('messages.onBeforeMount')
+    }
   })
+
   try {
     const theme = useTheme()
     const records = useRecordsStore()
@@ -52,7 +58,7 @@ onBeforeMount(async () => {
       await notice(['corrupt Storage!'])
     }
     const storesDB = await getDatabaseStores(settings.activeAccountId)
-    await records.init(storesDB, MESSAGES)
+    await records.init(storesDB, T.MESSAGES)
     const exchangesBaseData: IExchangeData[] = await fetchExchangesData([CURUSD, CUREUR])
     for (let i = 0; i < exchangesBaseData.length; i++) {
       if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
@@ -137,10 +143,10 @@ onBeforeMount(async () => {
     window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
   } catch (e) {
     if (e instanceof Error) {
-      log(MESSAGES.ERROR_ON_BEFORE_MOUNT, {error: e.message})
-      await notice([MESSAGES.ERROR_ON_BEFORE_MOUNT, e.message])
+      log(T.MESSAGES.ERROR_ON_BEFORE_MOUNT, {error: e.message})
+      await notice([T.MESSAGES.ERROR_ON_BEFORE_MOUNT, e.message])
     } else {
-      throw new Error(`${MESSAGES.ERROR_ON_BEFORE_MOUNT}: unknown`)
+      throw new Error(`${T.MESSAGES.ERROR_ON_BEFORE_MOUNT}: unknown`)
     }
   }
 })

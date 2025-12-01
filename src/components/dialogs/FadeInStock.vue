@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock_Store} from '@/types.d'
+import type {IStock_Store} from '@/types'
 import {onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
@@ -14,17 +14,13 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import {useStocksDB} from '@/composables/useIndexedDB'
 
-interface IT {
-  STRINGS: Record<string, string>
-}
-
 const {t} = useI18n()
 const {log} = useApp()
 const {update} = useStocksDB()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   STRINGS: {
     TITLE: t('dialogs.fadeInStock.title'),
     SELECT_LABEL: t('dialogs.fadeInStock.selectLabel')

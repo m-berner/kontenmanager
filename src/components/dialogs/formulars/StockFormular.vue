@@ -17,12 +17,6 @@ import {useStockFormular} from '@/composables/useStockFormular'
 import {useFetch} from '@/composables/useFetch'
 import {useBrowser} from '@/composables/useBrowser'
 
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-  ISIN_RULES: string[]
-}
-
 interface IStockFormularProps {
   isUpdate: boolean
 }
@@ -39,7 +33,7 @@ const {activeId} = storeToRefs(runtime)
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     ERROR_ONUPDATE_ISIN: t('messages.onUpdateIsin')
   },

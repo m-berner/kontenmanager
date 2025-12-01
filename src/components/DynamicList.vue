@@ -15,10 +15,6 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useFetch} from '@/composables/useFetch'
 
-interface IT {
-  STRINGS: Record<string, string>
-}
-
 interface DynamicListProps {
   type: symbol
   hint?: string
@@ -31,7 +27,7 @@ const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   STRINGS: {
     EXCHANGES_LABEL: t('optionsPage.exchanges.label'),
     MARKETS_LABEL: t('optionsPage.markets.label'),

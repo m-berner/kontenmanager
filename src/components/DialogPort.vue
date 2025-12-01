@@ -10,15 +10,11 @@ import {ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
 
-interface IT {
-  STRINGS: Record<string, string>
-}
-
 const {t} = useI18n()
 const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
 const runtime = useRuntimeStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   STRINGS: {
     OK: t('dialogs.ok'),
     CANCEL: t('dialogs.cancel')

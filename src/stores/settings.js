@@ -9,7 +9,6 @@ export const useSettingsStore = defineStore('settings', function () {
     const dividendsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE);
     const sumsPerPage = ref(CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE);
     const activeAccountId = ref(-1);
-    const partner = ref(false);
     const service = ref(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE);
     const materials = ref(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS);
     const markets = ref(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS);
@@ -23,7 +22,6 @@ export const useSettingsStore = defineStore('settings', function () {
         dividendsPerPage.value = storage.sDividendsPerPage;
         sumsPerPage.value = storage.sSumsPerPage;
         activeAccountId.value = storage.sActiveAccountId;
-        partner.value = storage.sPartner;
         service.value = storage.sService;
         materials.value = [...storage.sMaterials];
         markets.value = [...storage.sMarkets];
@@ -37,7 +35,6 @@ export const useSettingsStore = defineStore('settings', function () {
         dividendsPerPage,
         sumsPerPage,
         activeAccountId,
-        partner,
         service,
         materials,
         markets,

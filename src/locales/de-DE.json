@@ -137,21 +137,21 @@
       "title": "KontenManager Datenschutz Richtlinien",
       "general": {
         "title": "Allgemein",
-        "data": {
-          "subTitle": {
-            "0": "Lokale Daten",
-            "1": "Öffentliche Daten",
-            "2": "Internetverbindungen"
+        "paragraphs": {
+          "local": {
+            "subTitle": "Lokale Daten",
+            "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
+            "icon": ""
           },
-          "content": {
-            "0": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
-            "1": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
-            "2": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen."
+          "public": {
+            "subTitle": "Öffentliche Daten",
+            "content": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
+            "icon": ""
           },
-          "icon": {
-            "0": "",
-            "1": "",
-            "2": ""
+          "connection": {
+            "subTitle": "Internetverbindungen",
+            "content": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen.",
+            "icon": ""
           }
         }
       }

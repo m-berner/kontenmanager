@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBookingType_Store, IStock_Store} from '@/types.d'
+import type {IBookingType_Store, IStock_Store} from '@/types'
 import {useI18n} from 'vue-i18n'
 import {computed} from 'vue'
 import {useRecordsStore} from '@/stores/records'
@@ -16,11 +16,6 @@ import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import CreditDebitFieldset from '@/components/CreditDebitFieldset.vue'
 
-interface IT {
-  STRINGS: Record<string, string>
-  DATE_RULES: string[]
-}
-
 const {t} = useI18n()
 const {CONS} = useApp()
 const {dateRules} = useValidation()
@@ -28,7 +23,7 @@ const {bookingFormularData} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
 const {markets} = useSettingsStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   STRINGS: {
     DATE_LABEL: t('dialogs.bookingFormular.dateLabel'),
     STOCK_LABEL: t('dialogs.bookingFormular.stockLabel'),
@@ -129,11 +124,11 @@ const feeModel = computed({
             :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
             :items="bookingTypes.items.sort((a: IBookingType_Store, b: IBookingType_Store): number => { return a.cName.localeCompare(b.cName) })"
             :label="T.STRINGS.BOOKING_TYPE_LABEL"
-            placeholder=""
             autocomplete
             clearable
             density="compact"
             max-width="300"
+            placeholder=""
             variant="outlined"
         />
       </v-col>

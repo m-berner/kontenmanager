@@ -7,32 +7,53 @@
   -->
 <script lang="ts" setup>
 import type {IContent} from '@/types'
-import {computed, ref} from 'vue'
+import type {ComputedRef} from 'vue'
+import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRouter} from 'vue-router'
 import {useApp} from '@/composables/useApp'
 import ContentCard from '@/components/ContentCard.vue'
 
-const {t, tm} = useI18n()
+const {t} = useI18n()
 const {CONS, log} = useApp()
 const router = useRouter()
 
-const stringsArray = ref<{ title: string, data: string }[]>([])
-
-const formatData = computed(() => (dataStr: string): IContent[] => {
-  const data = []
-  for (let i = 0; i < Object.keys(tm(`${dataStr}.subTitle`)).length; i++) {
-    data.push({
-      subTitle: t(`${dataStr}.subTitle.${i.toString()}`),
-      content: t(`${dataStr}.content.${i.toString()}`),
-      icon: t(`${dataStr}.icon.${i.toString()}`)
-    })
+const T = Object.freeze({
+  GENERAL: {
+    TITLE: t('homePage.privacyContent.general.title'),
+    PARAGRAPHS: [
+      {
+        SUBTITLE: t('homePage.privacyContent.general.paragraphs.local.subTitle'),
+        CONTENT: t('homePage.privacyContent.general.paragraphs.local.content'),
+        ICON: t('homePage.privacyContent.general.paragraphs.local.icon')
+      },
+      {
+        SUBTITLE: t('homePage.privacyContent.general.paragraphs.public.subTitle'),
+        CONTENT: t('homePage.privacyContent.general.paragraphs.public.content'),
+        ICON: t('homePage.privacyContent.general.paragraphs.public.icon')
+      },
+      {
+        SUBTITLE: t('homePage.privacyContent.general.paragraphs.connection.subTitle'),
+        CONTENT: t('homePage.privacyContent.general.paragraphs.connection.content'),
+        ICON: t('homePage.privacyContent.general.paragraphs.connection.icon')
+      }
+    ]
   }
-  return data
 })
 
+let formatData: ComputedRef
 if (router.currentRoute.value.path === CONS.ROUTES.PRIVACY) {
-  stringsArray.value[0] = {title: 'homePage.privacyContent.general.title', data: 'homePage.privacyContent.general.data'}
+  formatData = computed((): IContent[] => {
+    const data = []
+    for (let i = 0; i < T.GENERAL.PARAGRAPHS.length; i++) {
+      data.push({
+        subTitle: T.GENERAL.PARAGRAPHS[i].SUBTITLE,
+        content: T.GENERAL.PARAGRAPHS[i].CONTENT,
+        icon: T.GENERAL.PARAGRAPHS[i].ICON
+      })
+    }
+    return data
+  })
 }
 
 log('--- SheetContent.vue setup ---')
@@ -42,10 +63,8 @@ log('--- SheetContent.vue setup ---')
   <v-sheet class="sheet" color="surface-light">
     <v-container>
       <ContentCard
-          v-for="item in stringsArray"
-          :key="item.title"
-          :data="formatData(item.data)"
-          :title="t(item.title)"/>
+          :data="formatData"
+          :title="T.GENERAL.TITLE"/>
     </v-container>
   </v-sheet>
 </template>

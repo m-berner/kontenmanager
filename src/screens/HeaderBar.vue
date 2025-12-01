@@ -17,11 +17,6 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import DialogPort from '@/components/DialogPort.vue'
 
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-}
-
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {openOptionsPage} = useBrowser()
@@ -31,8 +26,8 @@ const records = useRecordsStore()
 const router = useRouter()
 const {info} = useAlertStore()
 
-const T = Object.freeze<IT>({
-  MESSAGES:{
+const T = Object.freeze({
+  MESSAGES: {
     INFO_TITLE: t('messages.infoTitle'),
     SHOW_ACCOUNTING: t('messages.noBookings'),
     NOTHING_TO_EXPORT: t('messages.nothingToExport'),
@@ -41,7 +36,7 @@ const T = Object.freeze<IT>({
     NO_ACCOUNT: t('messages.noAccount'),
     ALL_STOCKS_VISIBLE: t('messages.allStocksVisible')
   },
-  STRINGS:{
+  STRINGS: {
     HOME: t('headerBar.home'),
     COMPANY: t('headerBar.company'),
     UPDATE_QUOTE: t('headerBar.updateQuote'),

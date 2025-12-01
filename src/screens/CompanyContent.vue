@@ -6,8 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IMenuItem, IStock_Store} from '@/types'
-import type {DataTableHeader} from 'vuetify'
+import type {IHeader, IMenuItem, IStock_Store} from '@/types'
 import {computed, onBeforeUpdate, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -16,12 +15,6 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import DotMenu from '@/components/DotMenu.vue'
-
-interface IT {
-  STRINGS: Record<string, string>
-  HEADERS: DataTableHeader[]
-  MENU_ITEMS: IMenuItem[]
-}
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
@@ -32,7 +25,7 @@ const {stocksPerPage} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
-const T = Object.freeze<IT>({
+const T = Object.freeze<{STRINGS: Record<string, string>, HEADERS: IHeader[], MENU_ITEMS: IMenuItem[]}>({
   STRINGS: {
     ITEMS_PER_PAGE_TEXT: t('homePage.stocksTable.itemsPerPageText'),
     NO_DATA_TEXT: t('homePage.stocksTable.noDataText')

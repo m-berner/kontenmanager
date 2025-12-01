@@ -15,18 +15,12 @@ import {useDomain} from '@/composables/useDomain'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import {useDebounce} from '@/composables/useDebounce'
 
-interface IT {
-  STRINGS: Record<string, string>
-  SWIFT_RULES: string[]
-  IBAN_RULES: string[]
-}
-
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {accountFormularData, formRef} = useAccountFormular()
 const {ibanRules, swiftRules} = useValidation()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   STRINGS: {
     WITH_DEPOT_LABEL: t('dialogs.accountFormular.withDepotLabel'),
     SWIFT_LABEL: t('dialogs.accountFormular.swiftLabel'),

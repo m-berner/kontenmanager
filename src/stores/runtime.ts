@@ -5,15 +5,10 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {ITeleport} from '@/types'
 import {ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
-
-interface ITeleport {
-    dialogName: string
-    dialogOk: boolean
-    dialogVisibility: boolean
-}
 
 const {log} = useApp()
 
@@ -34,7 +29,7 @@ export const useRuntimeStore = defineStore('runtime', function () {
     const isStockLoading = ref(false)
     const loadedStocksPages = new Set()
 
-    function clearStocksPages() {
+    function clearStocksPages(): void {
         loadedStocksPages.clear()
     }
 

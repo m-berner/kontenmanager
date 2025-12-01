@@ -7,15 +7,7 @@
  */
 
 /* eslint-disable no-unused-vars */
-import type {
-    IAccount_DB,
-    IBooking_DB,
-    IBookingType_DB,
-    IRecords_DB,
-    IStock_DB,
-    IStock_Store,
-    IStores_DB
-} from '@/types.d'
+import type {IAccount_DB, IBooking_DB, IBookingType_DB, IRecords_DB, IStock_DB, IStock_Store, IStores_DB} from '@/types'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 

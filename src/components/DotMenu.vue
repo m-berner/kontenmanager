@@ -22,10 +22,6 @@ interface OptionMenuProps {
   menuItems: readonly IMenuItem[]
 }
 
-interface IT {
-  MESSAGES: Record<string, string>
-}
-
 const optionMenuProps = defineProps<OptionMenuProps>()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
@@ -37,7 +33,7 @@ const {optionMenuColors} = storeToRefs(runtime)
 const records = useRecordsStore()
 const {info} = useAlertStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     INFO_TITLE: t('messages.infoTitle'),
     NO_DELETE: t('messages.noDelete'),

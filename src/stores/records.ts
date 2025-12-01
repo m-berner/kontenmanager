@@ -14,7 +14,7 @@ import type {
     IStock_Store,
     IStores_DB,
     IStores_Store
-} from '@/types.d'
+} from '@/types'
 import {defineStore, storeToRefs} from 'pinia'
 import {computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'

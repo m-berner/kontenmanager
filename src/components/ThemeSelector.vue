@@ -12,16 +12,12 @@ import {useTheme} from 'vuetify/framework'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
-interface IT {
-  STRINGS: Record<string, string>
-}
-
 const {t} = useI18n()
 const theme = useTheme()
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze<Record<string, Record<string, string>>>({
   // NOTE: lowercase properties required due to vuetify plugin object
   STRINGS: {
     earth: t('optionsPage.themeNames.earth'),

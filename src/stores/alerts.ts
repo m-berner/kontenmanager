@@ -5,16 +5,10 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {IVisibleAlert} from '@/types'
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
-
-interface IVisibleAlert {
-    id: number
-    type: 'error' | 'success' | 'warning' | 'info' | undefined
-    title: string
-    message: string
-}
 
 const defaultAlert: IVisibleAlert = {id: -1, type: undefined, title: '', message: ''}
 const {log} = useApp()

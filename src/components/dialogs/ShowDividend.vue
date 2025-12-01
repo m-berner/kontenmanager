@@ -6,18 +6,13 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {DataTableHeader} from 'vuetify'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
-
-interface IT {
-  STRINGS: Record<string, string>
-  HEADERS: DataTableHeader[]
-}
+import type {IHeader} from '@/types'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
@@ -25,13 +20,13 @@ const {dividendsPerPage} = useSettingsStore()
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze<{STRINGS: Record<string, string>, HEADERS: IHeader[]}>({
   STRINGS: {
     TITLE: t('dialogs.showDividend.title'),
     ITEMS_PER_PAGE_TEXT: t('dialogs.showDividend.itemsPerPageText'),
     NO_DATA_TEXT: t('dialogs.showDividend.noDataText')
   },
-  HEADERS:[
+  HEADERS: [
     {
       title: t('dialogs.showDividend.yearLabel'),
       align: 'start',

@@ -13,17 +13,13 @@ import {useAlertStore} from '@/stores/alerts'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
-interface IT {
-  MESSAGES: Record<string, string>
-}
-
 const {CONS, log, haveSameStrings} = useApp()
 const {t} = useI18n()
 const alertStore = useAlertStore()
 const {currentAlert} = storeToRefs(alertStore)
 const {dismissAlert, info, pendingCount} = alertStore
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     INFO_TITLE: t('messages.infoTitle'),
     CORRUPT_STORAGE: t('messages.corruptStorage')

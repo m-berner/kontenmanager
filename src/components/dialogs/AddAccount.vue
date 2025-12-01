@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount_Store, IBookingType_Store} from '@/types.d'
+import type {IAccount_Store, IBookingType_Store} from '@/types'
 import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -20,11 +20,6 @@ import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
 
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-}
-
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
@@ -36,7 +31,7 @@ const {accountFormularData, formRef} = useAccountFormular()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     SUCCESS_ADD: t('messages.addAccount.success'),
     ERROR_ONCLICK_OK: t('messages.onClickOk')

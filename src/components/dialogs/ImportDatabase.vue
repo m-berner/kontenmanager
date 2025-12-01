@@ -16,7 +16,7 @@ import type {
   IRecords_DB,
   IStock_DB,
   IStock_Store
-} from '@/types.d'
+} from '@/types'
 import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -76,11 +76,6 @@ interface IEventTarget extends HTMLInputElement {
   target: { files: UnwrapRef<Blob>[] }
 }
 
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-}
-
 const {t} = useI18n()
 const {CONS, log, isoDate} = useApp()
 const {notice, setStorage} = useBrowser()
@@ -92,7 +87,7 @@ const {resetTeleport} = useRuntimeStore()
 const settings = useSettingsStore()
 const {info} = useAlertStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     INFO_TITLE: t('messages.infoTitle'),
     RESTRICTED_IMPORT: t('messages.restrictedImport')
@@ -148,8 +143,8 @@ const onClickOk = async (): Promise<void> => {
       const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : STOCKMANAGER_RESTORE_ACCOUNT_ID
       activeAccountId.value = activeId
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
-      const getCreditDebit = (rec: IBooking_SM): {value: number, type: number} => {
-        let result: {value: number, type: number} = {value: 0, type: -1}
+      const getCreditDebit = (rec: IBooking_SM): { value: number, type: number } => {
+        let result: { value: number, type: number } = {value: 0, type: -1}
         if (rec.cAmount !== 0) {
           result.type = 4
         } else if (rec.cFees !== 0) {

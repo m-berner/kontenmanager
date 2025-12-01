@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock_DB} from '@/types.d'
+import type {IStock_DB} from '@/types'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -20,11 +20,6 @@ import {useValidation} from '@/composables/useValidation'
 import {useApp} from '@/composables/useApp'
 import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
 
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-}
-
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
@@ -36,7 +31,7 @@ const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {stockFormularData, formRef} = useStockFormular()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     SUCCESS_UPDATE: t('messages.updateStock.success'),
     ERROR_ONCLICK_OK: t('messages.onClickOk')

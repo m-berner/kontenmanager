@@ -1,5 +1,6 @@
 import { useApp } from '@/composables/useApp';
 import { computed } from 'vue';
+import { useRecordsStore } from '@/stores/records';
 const { CONS } = useApp();
 export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(CONS.PAGES.INDEX));
@@ -68,12 +69,18 @@ export function useBrowser() {
         return () => browser.storage.local.onChanged.removeListener(callback);
     }
     async function installStorageLocal() {
+        const records = useRecordsStore();
         const storageLocal = await browser.storage.local.get();
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
             await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN });
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
-            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID });
+            if (records.accounts.items.length > 0) {
+                await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: records.accounts.items[0].cID });
+            }
+            else {
+                await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID });
+            }
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
             await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE });
@@ -89,9 +96,6 @@ export function useBrowser() {
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUM_PER_PAGE] === undefined) {
             await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUM_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE });
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.PARTNER] === undefined) {
-            await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.PARTNER]: CONS.DEFAULTS.BROWSER_STORAGE.PARTNER });
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] === undefined) {
             await browser.storage.local.set({ [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE });

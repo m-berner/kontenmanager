@@ -10,14 +10,10 @@ import {useI18n} from 'vue-i18n'
 import {RouterLink} from 'vue-router'
 import {useApp} from '@/composables/useApp'
 
-interface IT {
-  STRINGS: Record<string, string>
-}
-
 const {t} = useI18n()
 const {CONS, log} = useApp()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   STRINGS: {
     HELP: t('footer.help'),
     PRIVACY: t('footer.privacy'),

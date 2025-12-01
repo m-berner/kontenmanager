@@ -5,9 +5,10 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {TStorageChange} from '@/types.d'
+import type {TStorage, TStorageChange} from '@/types'
 import {useApp} from '@/composables/useApp'
 import {computed} from 'vue'
+import {useRecordsStore} from '@/stores/records'
 
 const {CONS} = useApp()
 
@@ -71,9 +72,7 @@ export function useBrowser() {
         }
     }
 
-    async function getStorage(keys: string[] | null = null): Promise<{
-        [p: string]: string | boolean | number | string[]
-    }> {
+    async function getStorage(keys: string[] | null = null): Promise<TStorage> {
         try {
             return await browser.storage.local.get(keys)
         } catch (error) {
@@ -88,12 +87,17 @@ export function useBrowser() {
     }
 
     async function installStorageLocal() {
+        const records = useRecordsStore()
         const storageLocal = await browser.storage.local.get()
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN})
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID})
+            if (records.accounts.items.length > 0) {
+                await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: records.accounts.items[0].cID})
+            } else {
+                await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID})
+            }
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE})
@@ -109,9 +113,6 @@ export function useBrowser() {
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUM_PER_PAGE] === undefined) {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUM_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.PARTNER] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.PARTNER]: CONS.DEFAULTS.BROWSER_STORAGE.PARTNER})
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] === undefined) {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE})

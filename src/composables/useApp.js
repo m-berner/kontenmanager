@@ -146,7 +146,6 @@ const CONS = Object.freeze({
             EXCHANGES: ['EURUSD'],
             MARKETS: ['Frankfurt', 'XETRA'],
             SERVICE: 'wstreet',
-            PARTNER: false,
             PROPS: {
                 SKIN: 'sSkin',
                 SERVICE: 'sService',
@@ -154,7 +153,6 @@ const CONS = Object.freeze({
                 MARKETS: 'sMarkets',
                 MATERIALS: 'sMaterials',
                 EXCHANGES: 'sExchanges',
-                PARTNER: 'sPartner',
                 ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
                 BOOKINGS_PER_PAGE: 'sBookingsPerPage',
                 STOCKS_PER_PAGE: 'sStocksPerPage',

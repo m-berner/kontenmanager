@@ -6,13 +6,13 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {DataTableHeader} from 'vuetify'
 import {computed, defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
+import type {IHeader} from '@/types'
 
 interface IAccountEntry {
   id: number
@@ -22,17 +22,12 @@ interface IAccountEntry {
   sumClass: string
 }
 
-interface IT {
-  STRINGS: Record<string, string>
-  HEADERS: DataTableHeader[]
-}
-
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const {sumsPerPage} = useSettingsStore()
 const {CONS, log} = useApp()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze<{STRINGS: Record<string, string>, HEADERS: IHeader[]}>({
   STRINGS: {
     TITLE: t('dialogs.showAccounting.title'),
     ITEMS_PER_PAGE_TEXT: t('dialogs.showAccounting.itemsPerPageText'),
@@ -56,6 +51,7 @@ const T = Object.freeze<IT>({
     }
   ]
 })
+
 const accountEntries = computed(() => {
   const result: IAccountEntry[] = []
   const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)

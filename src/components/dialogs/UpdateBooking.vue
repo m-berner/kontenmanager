@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking_DB, IBooking_Store} from '@/types.d'
+import type {IBooking_DB, IBooking_Store} from '@/types'
 import {defineExpose, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -19,11 +19,6 @@ import {useValidation} from '@/composables/useValidation'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
-
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-}
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -38,7 +33,7 @@ const {bookingFormularData, formRef} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     ERROR_ONCLICK_OK: t('messages.onClickOk'),
     SUCCESS_UPDATE: t('messages.updateBooking.success')

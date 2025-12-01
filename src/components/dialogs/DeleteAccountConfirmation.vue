@@ -16,11 +16,6 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-}
-
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
@@ -30,7 +25,7 @@ const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     INFO_TITLE: t('messages.infoTitle'),
     RESTRICTED_IMPORT: t('messages.restrictedImport'),

@@ -5,6 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import type {TStorage} from '@/types'
 import {ref} from 'vue'
 import type {ThemeInstance} from 'vuetify'
 import {useApp} from '@/composables/useApp'
@@ -19,14 +20,13 @@ export const useSettingsStore = defineStore('settings', function () {
     const dividendsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
     const sumsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE)
     const activeAccountId = ref<number>(-1)
-    const partner = ref<boolean>(false)
     const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
     const materials = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS)
     const markets = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS)
     const indexes = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
     const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
 
-    function init(theme: ThemeInstance, storage: { [p: string]: string | number | boolean | string[] }): void {
+    function init(theme: ThemeInstance, storage: TStorage): void {
         theme.global.name.value = storage.sSkin as string
         skin.value = storage.sSkin as string
         bookingsPerPage.value = storage.sBookingsPerPage as number
@@ -34,7 +34,6 @@ export const useSettingsStore = defineStore('settings', function () {
         dividendsPerPage.value = storage.sDividendsPerPage as number
         sumsPerPage.value = storage.sSumsPerPage as number
         activeAccountId.value = storage.sActiveAccountId as number
-        partner.value = storage.sPartner as boolean
         service.value = storage.sService as string
         materials.value = [...storage.sMaterials as string[]]
         markets.value = [...storage.sMarkets as string[]]
@@ -49,7 +48,6 @@ export const useSettingsStore = defineStore('settings', function () {
         dividendsPerPage,
         sumsPerPage,
         activeAccountId,
-        partner,
         service,
         materials,
         markets,

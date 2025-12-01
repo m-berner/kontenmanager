@@ -14,14 +14,10 @@ import ThemeSelector from '@/components/ThemeSelector.vue'
 import ServiceSelector from '@/components/ServiceSelector.vue'
 import CheckboxGrid from '@/components/CheckboxGrid.vue'
 
-interface IT {
-  TABS: {title: string, id: string}[]
-}
-
 const {rt, t} = useI18n()
 const {CONS, log} = useApp()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   TABS: [
     {
       title: t('optionsPage.tabs.ge'),

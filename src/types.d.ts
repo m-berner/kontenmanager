@@ -9,6 +9,30 @@ export type TStorageChange = {
     [key: string]: browser.storage.StorageChange
 }
 
+export type TStorage = {
+    [p: string]: string | number | string[]
+}
+
+export interface ITeleport {
+    dialogName: string
+    dialogOk: boolean
+    dialogVisibility: boolean
+}
+
+export interface IVisibleAlert {
+    id: number
+    type: 'error' | 'success' | 'warning' | 'info' | undefined
+    title: string
+    message: string
+}
+
+export interface IHeader {
+    title: string
+    align: 'start'
+    sortable: boolean
+    key: string
+}
+
 export interface IBookingType_DB {
     cID: number
     cName: string
@@ -113,7 +137,6 @@ export interface IExchangeData {
 
 export interface ICompanyData {
     company: string
-    //wkn: string
     symbol: string
 }
 

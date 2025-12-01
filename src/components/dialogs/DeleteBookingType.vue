@@ -15,11 +15,6 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useValidation} from '@/composables/useValidation'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 
-interface IT {
-  STRINGS: Record<string, string>
-  MESSAGES: Record<string, string>
-}
-
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
@@ -28,7 +23,7 @@ const {validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   MESSAGES: {
     SUCCESS_ADD: t('messages.deleteBookingType.success'),
     ERROR_ADD: t('messages.deleteBookingType.error'),

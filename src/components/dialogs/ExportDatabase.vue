@@ -6,17 +6,13 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount_DB, IBooking_DB, IBookingType_DB, IStock_DB} from '@/types.d'
+import type {IAccount_DB, IBooking_DB, IBookingType_DB, IStock_DB} from '@/types'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
-
-interface IT {
-  STRINGS: Record<string, string>
-}
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -29,7 +25,7 @@ const {getAll: getAllStocks} = useStocksDB()
 const prefix = new Date().toISOString().substring(0, 10)
 const fn = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}.json`
 
-const T = Object.freeze<IT>({
+const T = Object.freeze({
   STRINGS: {
     TITLE: t('dialogs.exportDatabase.title'),
     TEXT: t('dialogs.exportDatabase.text', {filename: fn})
