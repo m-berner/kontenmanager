@@ -15,7 +15,7 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useFetch} from '@/composables/useFetch'
 
-const dynamicListProps = defineProps<IDynamicListProps>()
+const props = defineProps<IDynamicListProps>()
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
@@ -35,7 +35,7 @@ const list = ref<string[]>([])
 
 const label = computed<string>(() => {
   let resultLabel = 'Error'
-  switch (dynamicListProps.type) {
+  switch (props.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
       resultLabel = T.STRINGS.EXCHANGES_LABEL
       break
@@ -48,7 +48,7 @@ const label = computed<string>(() => {
 })
 const title = computed<string>(() => {
   let resultTitle = 'Error'
-  switch (dynamicListProps.type) {
+  switch (props.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
       resultTitle = T.STRINGS.EXCHANGES_TITLE
       break
@@ -65,7 +65,7 @@ const addItem = async (item: string): Promise<void> => {
   const {infoExchanges} = useRuntimeStore()
   const {exchanges, markets} = useSettingsStore()
   if (!list.value?.includes(item)) {
-    switch (dynamicListProps.type) {
+    switch (props.type) {
       case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
         list.value.push(item)
         markets.push(item)
@@ -88,7 +88,7 @@ const removeItem = async (n: number): Promise<void> => {
   if (n > 0) {
     list.value.splice(n, 1)
     newItem.value = ''
-    switch (dynamicListProps.type) {
+    switch (props.type) {
       case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
         await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
         break
@@ -102,7 +102,7 @@ const removeItem = async (n: number): Promise<void> => {
 
 onBeforeMount(async () => {
   const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES])
-  switch (dynamicListProps.type) {
+  switch (props.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
       list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] as string[]
       break
@@ -135,7 +135,7 @@ onBeforeMount(async () => {
           :autofocus="true"
           :clearable="true"
           :label="label"
-          :placeholder="dynamicListProps.placeholder"
+          :placeholder="props.placeholder"
           type="text">
         <template v-slot:append>
           <v-btn

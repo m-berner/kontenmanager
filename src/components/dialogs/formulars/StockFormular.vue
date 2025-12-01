@@ -18,7 +18,7 @@ import {useFetch} from '@/composables/useFetch'
 import {useBrowser} from '@/composables/useBrowser'
 import type {IStockFormularProps} from '@/types'
 
-const stockFormularProps = defineProps<IStockFormularProps>()
+const props = defineProps<IStockFormularProps>()
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -56,7 +56,7 @@ const T = Object.freeze({
 const onUpdateIsin = async () => {
   log('STOCK_FORMULAR: onUpdateISIN')
   try {
-    if (!stockFormularProps.isUpdate && stockFormularData.isin.length === 12) {
+    if (!props.isUpdate && stockFormularData.isin.length === 12) {
       stockFormularData.isin = stockFormularData.isin.toUpperCase().replace(/\s/g, '')
       const companyData = await fetchCompanyData(stockFormularData.isin)
       stockFormularData.company = companyData.company
@@ -76,7 +76,7 @@ const onUpdateIsin = async () => {
 
 onMounted(() => {
   log('STOCK_FORMULAR: onMounted')
-  if (stockFormularProps.isUpdate) {
+  if (props.isUpdate) {
     const currentStock = records.stocks.getItemById(activeId.value)
     stockFormularData.id = activeId.value
     stockFormularData.isin = currentStock.cISIN.toUpperCase().replace(/\s/g, '')
@@ -126,7 +126,7 @@ log('--- StockFormular.vue setup ---')
       </v-col>
     </v-row>
   </v-container>
-  <v-container v-if="stockFormularProps.isUpdate">
+  <v-container v-if="props.isUpdate">
     <v-row cols="2" sm="2">
       <v-col>
         <v-text-field

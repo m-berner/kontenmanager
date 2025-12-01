@@ -12,10 +12,26 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import type {ICheckboxGridProps} from '@/types'
 
-const checkboxGridProps = defineProps<ICheckboxGridProps>()
+const props = defineProps<ICheckboxGridProps>()
 const {t} = useI18n()
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()
+
+const T = Object.freeze<{STRINGS: Record<string, string>}>({
+  STRINGS: {
+    au: t('optionsPage.materials.au'),
+    ag: t('optionsPage.materials.ag'),
+    brent: t('optionsPage.materials.brent'),
+    wti: t('optionsPage.materials.wti'),
+    cu: t('optionsPage.materials.cu'),
+    pt: t('optionsPage.materials.pt'),
+    al: t('optionsPage.materials.al'),
+    ni: t('optionsPage.materials.ni'),
+    sn: t('optionsPage.materials.sn'),
+    pb: t('optionsPage.materials.pb'),
+    pd: t('optionsPage.materials.pd')
+  }
+})
 
 const checked = ref<string[]>([])
 
@@ -23,7 +39,7 @@ const boxes = computed((): { A: string[], B: string[] } => {
   const indexesKeys: string[] = Array.from(CONS.SETTINGS.INDEXES.keys())
   const materialsKeys: string[] = Array.from(CONS.SETTINGS.MATERIALS.keys())
   let resultBoxes: { A: string[], B: string[] } = {A: [], B: []}
-  switch (checkboxGridProps.type) {
+  switch (props.type) {
     case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
       resultBoxes = {
         A: indexesKeys.filter((_key: string, index: number) => index < CONS.SETTINGS.INDEXES.size / 2),
@@ -40,14 +56,14 @@ const boxes = computed((): { A: string[], B: string[] } => {
   return resultBoxes
 })
 
-const setLabel = (item: string): string | undefined => {
+const setLabel = (item: string, labels: Record<string, string>): string | undefined => {
   let resultLabel: string | undefined = ''
-  switch (checkboxGridProps.type) {
+  switch (props.type) {
     case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
       resultLabel = CONS.SETTINGS.INDEXES.get(item)
       break
     case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
-      resultLabel = t(`optionsPage.materials.${item}`)
+      resultLabel = labels[item]
       break
   }
   return resultLabel
@@ -55,7 +71,7 @@ const setLabel = (item: string): string | undefined => {
 
 const setChecked = async (): Promise<void> => {
   const checkedBoxes = checked.value
-  switch (checkboxGridProps.type) {
+  switch (props.type) {
     case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, [...checkedBoxes])
       break
@@ -67,7 +83,7 @@ const setChecked = async (): Promise<void> => {
 
 onBeforeMount(async () => {
   const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS])
-  switch (checkboxGridProps.type) {
+  switch (props.type) {
     case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
       checked.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES] as string[]
       break
@@ -84,7 +100,7 @@ onBeforeMount(async () => {
         v-for="item in boxes.A"
         :key="item"
         v-model="checked"
-        :label="setLabel(item)"
+        :label="setLabel(item, T.STRINGS)"
         :value="item"
         hide-details
         @change="setChecked"
@@ -95,7 +111,7 @@ onBeforeMount(async () => {
         v-for="item in boxes.B"
         :key="item"
         v-model="checked"
-        :label="setLabel(item)"
+        :label="setLabel(item, T.STRINGS)"
         :value="item"
         hide-details
         @change="setChecked"

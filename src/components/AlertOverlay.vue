@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, onMounted} from 'vue'
+import {onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useAlertStore} from '@/stores/alerts'
@@ -17,7 +17,7 @@ const {CONS, log, haveSameStrings} = useApp()
 const {t} = useI18n()
 const alertStore = useAlertStore()
 const {currentAlert} = storeToRefs(alertStore)
-const {dismissAlert, info, pendingCount} = alertStore
+const {alertMessage, alertTitle, alertType, dismissAlert, info, pendingCount, showOverlay} = alertStore
 
 const T = Object.freeze({
   MESSAGES: {
@@ -25,11 +25,6 @@ const T = Object.freeze({
     CORRUPT_STORAGE: t('messages.corruptStorage')
   }
 })
-
-const showOverlay = computed(() => currentAlert.value.id > -1)
-const alertType = computed(() => currentAlert.value?.type || 'info')
-const alertTitle = computed(() => currentAlert.value?.title || '')
-const alertMessage = computed(() => currentAlert.value?.message || '')
 
 onMounted(async () => {
   log('ALERT_OVERLAY: onMounted')

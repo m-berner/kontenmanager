@@ -18,6 +18,10 @@ export const useAlertStore = defineStore('alert', () => {
     const currentAlert = ref<IVisibleAlert>(defaultAlert)
 
     const pendingCount = computed(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1)
+    const showOverlay = computed(() => currentAlert.value.id > -1)
+    const alertType = computed(() => currentAlert.value?.type || 'info')
+    const alertTitle = computed(() => currentAlert.value?.title || '')
+    const alertMessage = computed(() => currentAlert.value?.message || '')
 
     function showAlert(type: 'error' | 'success' | 'warning' | 'info' | undefined, title: string, message: string, duration: number | null = null) {
         const id = Date.now() + Math.random()
@@ -78,6 +82,10 @@ export const useAlertStore = defineStore('alert', () => {
     return {
         currentAlert,
         pendingCount,
+        showOverlay,
+        alertType,
+        alertTitle,
+        alertMessage,
         showAlert,
         showNext,
         dismissAlert,

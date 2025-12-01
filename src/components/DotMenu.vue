@@ -22,7 +22,7 @@ const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {remove: removeBooking} = useBookingsDB()
 const {remove: removeStock} = useStocksDB()
-const {rt, t} = useI18n()
+const {t} = useI18n()
 const runtime = useRuntimeStore()
 const {optionMenuColors} = storeToRefs(runtime)
 const records = useRecordsStore()
@@ -126,16 +126,15 @@ onMounted(() => {
       />
     </template>
     <v-list>
-      <v-hover v-slot:default="{ props, isHovering }">
+      <v-hover v-slot:default="{ isHovering }">
         <v-list-item
             v-for="item in optionMenuProps.menuItems"
-            :id="rt(item.id)"
-            :key="rt(item.title)"
+            :id="item.id"
+            :key="item.title"
             :base-color="isHovering ? 'orange' : ''"
-            :prepend-icon="rt(item.icon)"
-            :title="rt(item.title)"
+            :prepend-icon="item.icon"
+            :title="item.title"
             class="pointer"
-            v-bind="props"
             @click="onIconClick"
         />
       </v-hover>

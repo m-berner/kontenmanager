@@ -232,7 +232,7 @@ export interface IMinRateMaxData {
 
 export interface IOptionMenuProps {
     recordID: number
-    menuItems: readonly IMenuItem[]
+    menuItems: IMenuItem[]
 }
 
 export interface IPinia {

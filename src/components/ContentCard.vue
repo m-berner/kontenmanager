@@ -9,7 +9,7 @@
 import type {IContentCardProps} from '@/types'
 import {defineProps} from 'vue'
 
-const contentCardProps = defineProps<IContentCardProps>()
+const props = defineProps<IContentCardProps>()
 </script>
 
 <template>
@@ -17,11 +17,11 @@ const contentCardProps = defineProps<IContentCardProps>()
     <v-col cols="12">
       <v-card color="secondary">
         <v-card-title>
-          {{ contentCardProps.title }}
+          {{ props.title }}
         </v-card-title>
       </v-card>
     </v-col>
-    <v-col v-for="item in contentCardProps.data" :key="item.subTitle" cols="12">
+    <v-col v-for="item in props.data" :key="item.subTitle" cols="12">
       <v-card>
         <v-card-title class="d-flex">
       <span v-if="item.icon !== ''">
