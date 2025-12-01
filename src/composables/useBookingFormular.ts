@@ -6,30 +6,7 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {reactive, ref} from 'vue'
-
-interface IBooking_Formular {
-    id: number
-    bookDate: string
-    exDate: string
-    credit: number
-    debit: number
-    description: string
-    count: number
-    bookingTypeId: number
-    accountTypeId: number
-    stockId: number
-    soliCredit: number
-    soliDebit: number
-    taxCredit: number
-    taxDebit: number
-    feeCredit: number
-    feeDebit: number
-    sourceTaxCredit: number
-    sourceTaxDebit: number
-    transactionTaxCredit: number
-    transactionTaxDebit: number
-    marketPlace: string
-}
+import type {IBooking_Formular} from '@/types'
 
 const bookingFormularData = reactive<IBooking_Formular>({
     id: 0,

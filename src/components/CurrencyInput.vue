@@ -9,13 +9,7 @@
 import {computed, defineProps, onMounted, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useBookingFormular} from '@/composables/useBookingFormular'
-
-interface CurrencyInputProps {
-  modelValue: number
-  disabled?: boolean
-  label: string
-  rules?: Array<(_v: number) => boolean | string>  // Number validator!
-}
+import type {CurrencyInputProps} from '@/types'
 
 const props = defineProps<CurrencyInputProps>()
 // eslint-disable-next-line vue/define-emits-declaration

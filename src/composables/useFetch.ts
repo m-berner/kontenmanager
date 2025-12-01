@@ -5,61 +5,17 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {ICompanyData, IExchangeData} from '@/types'
+import type {
+    ICompanyData,
+    IDailyChangesData, IDateData,
+    IExchangeData,
+    IIdIsin,
+    IIndexData,
+    IMaterialData,
+    IMinRateMaxData, IService, IUrlWithId
+} from '@/types'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-
-interface IIdIsin {
-    id: number
-    isin: string
-}
-
-interface IMinRateMaxData {
-    id: number,
-    isin: string,
-    rate: string,
-    min: string,
-    max: string,
-    cur: string
-}
-
-interface IDailyChangesData {
-    key: string
-    value: {
-        percentChange: string,
-        change: number,
-        stringChange: string
-    }
-}
-
-interface IMaterialData {
-    key: string,
-    value: number
-}
-
-interface IIndexData {
-    key: string,
-    value: number
-}
-
-interface IDateData {
-    key: number | undefined
-    value: {
-        qf: number
-        gm: number
-    }
-}
-
-interface IService {
-    NAME: string
-    HOME: string
-    QUOTE: string
-}
-
-interface IUrlWithId {
-    url: string
-    id: number
-}
 
 const {CONS, log, mean, toNumber} = useApp()
 const {notice, getStorage} = useBrowser()

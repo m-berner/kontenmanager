@@ -5,13 +5,9 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Pinia} from 'pinia'
 import {createPinia} from 'pinia'
 import {useApp} from '@/composables/useApp'
-
-interface IPinia {
-    pinia: Pinia
-}
+import type {IPinia} from '@/types'
 
 const {log} = useApp()
 

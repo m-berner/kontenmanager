@@ -12,15 +12,7 @@ import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
-import type {IHeader} from '@/types'
-
-interface IAccountEntry {
-  id: number
-  name: string
-  sum: number
-  nameClass: string
-  sumClass: string
-}
+import type {IAccountEntry, IHeader} from '@/types'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()

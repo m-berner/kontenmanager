@@ -7,19 +7,7 @@
  */
 import {reactive, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
-
-interface IStock_Formular {
-    id: number
-    isin: string
-    company: string
-    symbol: string
-    meetingDay: string
-    quarterDay: string
-    fadeOut: boolean
-    firstPage: boolean
-    url: string
-    askDates: string
-}
+import type {IStock_Formular} from '@/types'
 
 const {CONS} = useApp()
 const stockFormularData = reactive<IStock_Formular>({

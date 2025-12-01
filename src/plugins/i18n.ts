@@ -5,18 +5,12 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {I18n} from 'vue-i18n'
 import {createI18n} from 'vue-i18n'
 import deDE from '@/locales/de-DE.json'
 import enUS from '@/locales/en-US.json'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-
-type MessageSchema = typeof deDE
-
-interface II18n {
-    i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
-}
+import type {II18n, MessageSchema} from '@/types'
 
 const {log} = useApp()
 const {locale5} = useBrowser()

@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IExchangeData} from '@/types'
+import type {DynamicListProps, IExchangeData} from '@/types'
 import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -14,12 +14,6 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useFetch} from '@/composables/useFetch'
-
-interface DynamicListProps {
-  type: symbol
-  hint?: string
-  placeholder?: string
-}
 
 const dynamicListProps = defineProps<DynamicListProps>()
 const {t} = useI18n()

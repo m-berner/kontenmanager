@@ -16,10 +16,7 @@ import {useApp} from '@/composables/useApp'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useFetch} from '@/composables/useFetch'
 import {useBrowser} from '@/composables/useBrowser'
-
-interface IStockFormularProps {
-  isUpdate: boolean
-}
+import type {IStockFormularProps} from '@/types'
 
 const stockFormularProps = defineProps<IStockFormularProps>()
 

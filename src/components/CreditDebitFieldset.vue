@@ -10,12 +10,7 @@ import {useI18n} from 'vue-i18n'
 import {computed, defineEmits, defineProps} from 'vue'
 import {useValidation} from '@/composables/useValidation'
 import CurrencyInput from '@/components/CurrencyInput.vue'
-
-interface CreditDebitFieldsetProps {
-  modelValue: { credit: number, debit: number }
-  disabled?: boolean,
-  legend: string
-}
+import type {CreditDebitFieldsetProps} from '@/types'
 
 const props = defineProps<CreditDebitFieldsetProps>()
 // eslint-disable-next-line vue/define-emits-declaration

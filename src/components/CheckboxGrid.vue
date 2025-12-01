@@ -10,10 +10,7 @@ import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-
-interface CheckboxGridProps {
-  type: symbol
-}
+import type {CheckboxGridProps} from '@/types'
 
 const checkboxGridProps = defineProps<CheckboxGridProps>()
 const {t} = useI18n()

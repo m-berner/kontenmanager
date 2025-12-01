@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {TStorage, TStorageChange} from '@/types'
+import type {TStorage} from '@/types'
 import {useApp} from '@/composables/useApp'
 import {computed} from 'vue'
 import {useRecordsStore} from '@/stores/records'
@@ -80,7 +80,7 @@ export function useBrowser() {
         }
     }
 
-    async function addStorageChangedListener(callback: (_changes: TStorageChange) => void) {
+    async function addStorageChangedListener(callback: (_changes: Record<string, browser.storage.StorageChange>) => void) {
         browser.storage.local.onChanged.addListener(callback)
         // Return cleanup function
         return () => browser.storage.local.onChanged.removeListener(callback)

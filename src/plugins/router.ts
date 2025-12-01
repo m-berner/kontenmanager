@@ -5,13 +5,9 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Router} from 'vue-router'
 import {createRouter, createWebHashHistory} from 'vue-router'
 import {useApp} from '@/composables/useApp'
-
-interface IRouter {
-    router: Router
-}
+import type {IRouter} from '@/types'
 
 const {CONS, log} = useApp()
 

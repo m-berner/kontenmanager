@@ -6,14 +6,7 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {reactive, ref} from 'vue'
-
-interface IAccount_Formular {
-    id: number
-    swift: string
-    iban: string
-    logoUrl: string
-    withDepot: boolean
-}
+import type {IAccount_Formular} from '@/types'
 
 const accountFormularData = reactive<IAccount_Formular>({
     id: 0,

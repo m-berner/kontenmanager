@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IExchangeData, TStorageChange} from '@/types'
+import type {IExchangeData} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {RouterView} from 'vue-router'
@@ -79,7 +79,7 @@ onBeforeMount(async () => {
     for (let i = 0; i < materialsInfoData.length; i++) {
       runtime.infoMaterials.set(materialsInfoData[i].key, materialsInfoData[i].value)
     }
-    const changeHandler = (changes: TStorageChange): void => {
+    const changeHandler = (changes: Record<string, browser.storage.StorageChange>): void => {
       log('APP_INDEX: changeHandler')
       const changesKey = Object.keys(changes)
       const {service, skin, indexes, markets, materials, exchanges} = storeToRefs(settings)

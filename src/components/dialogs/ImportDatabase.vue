@@ -7,17 +7,14 @@
   -->
 <script lang="ts" setup>
 import type {
-  IAccount_DB,
-  IAccount_Store,
-  IBooking_DB,
+  IAccount_DB, IBackup,
+  IBooking_DB, IBooking_SM,
   IBooking_Store,
-  IBookingType_DB,
-  IBookingType_Store,
+  IBookingType_DB, IEventTarget,
   IRecords_DB,
   IStock_DB,
   IStock_Store
 } from '@/types'
-import type {UnwrapRef} from 'vue'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -28,53 +25,6 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
-
-interface IStock_SM {
-  cID: number
-  cCompany: string
-  cISIN: string
-  cWKN: string
-  cSym: string
-  cMeetingDay: number
-  cQuarterDay: number
-  cFadeOut: number
-  cFirstPage: number
-  cURL: string
-}
-
-interface IBooking_SM {
-  cDate: number
-  cExDay: number
-  cUnitQuotation: number
-  cAmount: number
-  cDescription: string
-  cCount: number
-  cType: number
-  cStockID: number
-  cSoli: number
-  cTax: number
-  cFees: number
-  cSTax: number
-  cFTax: number
-  cMarketPlace: string
-}
-
-interface IBackup {
-  sm: {
-    cVersion: number
-    cDBVersion: number
-    cEngine: string
-  }
-  accounts: IAccount_Store[]
-  bookings: IBooking_DB[]
-  bookingTypes: IBookingType_Store[]
-  stocks: IStock_Store[] & IStock_SM[]
-  transfers?: IBooking_SM[]
-}
-
-interface IEventTarget extends HTMLInputElement {
-  target: { files: UnwrapRef<Blob>[] }
-}
 
 const {t} = useI18n()
 const {CONS, log, isoDate} = useApp()

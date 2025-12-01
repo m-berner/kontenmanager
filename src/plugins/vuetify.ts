@@ -5,7 +5,6 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Plugin} from 'vue'
 import {createVuetify} from 'vuetify'
 import 'vuetify/styles'
 import {aliases, mdi} from 'vuetify/iconsets/mdi-svg'
@@ -49,10 +48,7 @@ import {
     mdiStoreEdit
 } from '@mdi/js'
 import {useApp} from '@/composables/useApp'
-
-interface IVuetify {
-    vuetify: Plugin
-}
+import type {IVuetify} from '@/types'
 
 const {log} = useApp()
 
