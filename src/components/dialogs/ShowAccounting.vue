@@ -19,7 +19,7 @@ const records = useRecordsStore()
 const {sumsPerPage} = useSettingsStore()
 const {CONS, log} = useApp()
 
-const T = Object.freeze<{STRINGS: Record<string, string>, HEADERS: IHeader[]}>({
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>({
   STRINGS: {
     TITLE: t('dialogs.showAccounting.title'),
     ITEMS_PER_PAGE_TEXT: t('dialogs.showAccounting.itemsPerPageText'),

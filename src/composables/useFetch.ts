@@ -7,12 +7,15 @@
  */
 import type {
     ICompanyData,
-    IDailyChangesData, IDateData,
+    IDailyChangesData,
+    IDateData,
     IExchangeData,
     IIdIsin,
     IIndexData,
     IMaterialData,
-    IMinRateMaxData, IService, IUrlWithId
+    IMinRateMaxData,
+    IService,
+    IUrlWithId
 } from '@/types'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'

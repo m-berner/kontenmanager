@@ -10,9 +10,9 @@ import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import type {CheckboxGridProps} from '@/types'
+import type {ICheckboxGridProps} from '@/types'
 
-const checkboxGridProps = defineProps<CheckboxGridProps>()
+const checkboxGridProps = defineProps<ICheckboxGridProps>()
 const {t} = useI18n()
 const {CONS} = useApp()
 const {getStorage, setStorage} = useBrowser()

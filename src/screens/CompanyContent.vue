@@ -25,7 +25,7 @@ const {stocksPerPage} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
-const T = Object.freeze<{STRINGS: Record<string, string>, HEADERS: IHeader[], MENU_ITEMS: IMenuItem[]}>({
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[], MENU_ITEMS: IMenuItem[] }>({
   STRINGS: {
     ITEMS_PER_PAGE_TEXT: t('homePage.stocksTable.itemsPerPageText'),
     NO_DATA_TEXT: t('homePage.stocksTable.noDataText')

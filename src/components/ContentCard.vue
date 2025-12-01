@@ -6,10 +6,10 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {ContentCardProps} from '@/types'
+import type {IContentCardProps} from '@/types'
 import {defineProps} from 'vue'
 
-const contentCardProps = defineProps<ContentCardProps>()
+const contentCardProps = defineProps<IContentCardProps>()
 </script>
 
 <template>

@@ -124,7 +124,7 @@ export interface IBooking_SM {
 export interface IBooking_Store extends IBooking_DB {
 }
 
-export interface CheckboxGridProps {
+export interface ICheckboxGridProps {
     type: symbol
 }
 
@@ -139,18 +139,18 @@ export interface IContent {
     readonly icon: string
 }
 
-export interface ContentCardProps {
+export interface IContentCardProps {
     title: string
     data: IContent[]
 }
 
-export interface CreditDebitFieldsetProps {
+export interface ICreditDebitFieldsetProps {
     modelValue: { credit: number, debit: number }
     disabled?: boolean,
     legend: string
 }
 
-export interface CurrencyInputProps {
+export interface ICurrencyInputProps {
     modelValue: number
     disabled?: boolean
     label: string
@@ -174,7 +174,7 @@ export interface IDateData {
     }
 }
 
-export interface DynamicListProps {
+export interface IDynamicListProps {
     type: symbol
     hint?: string
     placeholder?: string
@@ -197,7 +197,7 @@ export interface IHeader {
 }
 
 export interface II18n {
-    i18n: I18n<{ 'de-DE': MessageSchema, 'en-US': MessageSchema }>
+    i18n: I18n<{ 'de-DE': TMessageSchema, 'en-US': TMessageSchema }>
 }
 
 export interface IIdIsin {
@@ -230,7 +230,7 @@ export interface IMinRateMaxData {
     cur: string
 }
 
-export interface OptionMenuProps {
+export interface IOptionMenuProps {
     recordID: number
     menuItems: readonly IMenuItem[]
 }
@@ -357,7 +357,7 @@ export interface IVuetify {
     vuetify: ReturnType<typeof createVuetify>
 }
 
-export type MessageSchema = typeof deDE
+export type TMessageSchema = typeof deDE
 
 export type TStorage = {
     [p: string]: string | number | string[]

@@ -9,9 +9,9 @@
 import {computed, defineProps, onMounted, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useBookingFormular} from '@/composables/useBookingFormular'
-import type {CurrencyInputProps} from '@/types'
+import type {ICurrencyInputProps} from '@/types'
 
-const props = defineProps<CurrencyInputProps>()
+const props = defineProps<ICurrencyInputProps>()
 // eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['update:modelValue'])
 const {n} = useI18n()

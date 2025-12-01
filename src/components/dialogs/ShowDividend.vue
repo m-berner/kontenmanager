@@ -20,7 +20,7 @@ const {dividendsPerPage} = useSettingsStore()
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
 
-const T = Object.freeze<{STRINGS: Record<string, string>, HEADERS: IHeader[]}>({
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>({
   STRINGS: {
     TITLE: t('dialogs.showDividend.title'),
     ITEMS_PER_PAGE_TEXT: t('dialogs.showDividend.itemsPerPageText'),

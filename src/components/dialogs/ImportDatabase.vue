@@ -7,10 +7,13 @@
   -->
 <script lang="ts" setup>
 import type {
-  IAccount_DB, IBackup,
-  IBooking_DB, IBooking_SM,
+  IAccount_DB,
+  IBackup,
+  IBooking_DB,
+  IBooking_SM,
   IBooking_Store,
-  IBookingType_DB, IEventTarget,
+  IBookingType_DB,
+  IEventTarget,
   IRecords_DB,
   IStock_DB,
   IStock_Store

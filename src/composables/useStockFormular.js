@@ -1,6 +1,7 @@
-import { reactive, ref } from 'vue';
-import { useApp } from '@/composables/useApp';
-const { CONS } = useApp();
+import {reactive, ref} from 'vue';
+import {useApp} from '@/composables/useApp';
+
+const {CONS} = useApp();
 const stockFormularData = reactive({
     id: -1,
     isin: '',
@@ -14,6 +15,7 @@ const stockFormularData = reactive({
     askDates: CONS.DATE.DEFAULT_ISO
 });
 const formRef = ref(null);
+
 export function useStockFormular() {
     return {
         formRef,

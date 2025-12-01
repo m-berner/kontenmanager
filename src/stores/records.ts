@@ -198,6 +198,7 @@ const useStocksStore = defineStore('stocks', function () {
 const useAccountsStore = defineStore('accounts', function () {
     const settings = useSettingsStore()
     const {activeAccountId} = storeToRefs(settings)
+
     const items = ref<IAccount_Store[]>([])
 
     const getIndexById = computed(() => (id: number): number => {
@@ -263,7 +264,6 @@ const useAccountsStore = defineStore('accounts', function () {
 })
 
 const useBookingsStore = defineStore('bookings', function () {
-
     const items = ref<IBooking_Store[]>([])
 
     const getById = computed(() => (id: number): IBooking_Store | undefined => {
@@ -419,7 +419,6 @@ const useBookingsStore = defineStore('bookings', function () {
 })
 
 const useBookingTypesStore = defineStore('bookingTypes', function () {
-
     const items = ref<IBookingType_Store[]>([])
 
     const getNameById = computed(() => (ident: number): string => {

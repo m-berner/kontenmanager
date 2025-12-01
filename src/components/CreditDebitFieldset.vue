@@ -10,9 +10,9 @@ import {useI18n} from 'vue-i18n'
 import {computed, defineEmits, defineProps} from 'vue'
 import {useValidation} from '@/composables/useValidation'
 import CurrencyInput from '@/components/CurrencyInput.vue'
-import type {CreditDebitFieldsetProps} from '@/types'
+import type {ICreditDebitFieldsetProps} from '@/types'
 
-const props = defineProps<CreditDebitFieldsetProps>()
+const props = defineProps<ICreditDebitFieldsetProps>()
 // eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['update:modelValue'])
 const {t} = useI18n()
