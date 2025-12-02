@@ -52,6 +52,7 @@ const onSelect = () => {
   formName.value = records.bookingTypes.items[ind].cName
   formVisible.value = false
 }
+
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING_TYPE: onClickOk')
   const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
@@ -81,6 +82,7 @@ const onClickOk = async (): Promise<void> => {
     }
   }
 }
+
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 

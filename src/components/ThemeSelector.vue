@@ -14,7 +14,7 @@ import {useBrowser} from '@/composables/useBrowser'
 
 const {t} = useI18n()
 const theme = useTheme()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
 const T = Object.freeze<Record<string, Record<string, string>>>({
@@ -38,9 +38,12 @@ const setSkin = async (skin: string | null): Promise<void> => {
 }
 
 onBeforeMount(async () => {
+  log('THEME_SELECTOR: onBeforeMount')
   const storageSkin = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN])
   skin.value = storageSkin[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
 })
+
+log('--- ThemeSelector.vue setup ---')
 </script>
 
 <template>

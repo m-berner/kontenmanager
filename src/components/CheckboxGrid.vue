@@ -14,10 +14,10 @@ import type {ICheckboxGridProps} from '@/types'
 
 const props = defineProps<ICheckboxGridProps>()
 const {t} = useI18n()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const T = Object.freeze<{STRINGS: Record<string, string>}>({
+const T = Object.freeze<{ STRINGS: Record<string, string> }>({
   STRINGS: {
     au: t('optionsPage.materials.au'),
     ag: t('optionsPage.materials.ag'),
@@ -82,6 +82,7 @@ const setChecked = async (): Promise<void> => {
 }
 
 onBeforeMount(async () => {
+  log('CHECKBOX_GRID: onBeforeMount')
   const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS])
   switch (props.type) {
     case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
@@ -92,6 +93,8 @@ onBeforeMount(async () => {
       break
   }
 })
+
+log('--- CheckboxGrid.vue setup ---')
 </script>
 
 <template>

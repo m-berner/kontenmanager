@@ -83,6 +83,7 @@ const addItem = async (item: string): Promise<void> => {
     newItem.value = ''
   }
 }
+
 const removeItem = async (n: number): Promise<void> => {
   log('DYNAMIC_LIST: removeItem')
   if (n > 0) {
@@ -101,6 +102,7 @@ const removeItem = async (n: number): Promise<void> => {
 }
 
 onBeforeMount(async () => {
+  log('DYNAMIC_LIST: onBeforeMounted')
   const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES])
   switch (props.type) {
     case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
@@ -111,6 +113,8 @@ onBeforeMount(async () => {
       break
   }
 })
+
+log('--- DynamicList.vue setup ---')
 </script>
 
 <template>

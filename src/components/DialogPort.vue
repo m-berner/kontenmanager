@@ -9,10 +9,12 @@
 import {ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useApp} from '@/composables/useApp'
 
 const {t} = useI18n()
 const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
 const runtime = useRuntimeStore()
+const {log} = useApp()
 
 const T = Object.freeze({
   STRINGS: {
@@ -20,6 +22,8 @@ const T = Object.freeze({
     CANCEL: t('dialogs.cancel')
   }
 })
+
+log('--- DialogPort.vue setup ---')
 </script>
 
 <template>

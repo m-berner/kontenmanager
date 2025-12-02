@@ -38,6 +38,7 @@ const onClickOk = async (): Promise<void> => {
   }
   runtime.resetTeleport()
 }
+
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 

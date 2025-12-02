@@ -90,6 +90,7 @@ const onClickOk = async (): Promise<void> => {
   await writeBufferToFile(buffer, fn)
   resetTeleport()
 }
+
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 

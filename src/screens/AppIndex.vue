@@ -24,6 +24,7 @@ import AlertOverlay from '@/components/AlertOverlay.vue'
 const {log} = useApp()
 
 onBeforeMount(async () => {
+  log('APP_INDEX: onBeforeMount')
   const {CONS, haveSameStrings} = useApp()
   const {notice} = useBrowser()
   const {t} = useI18n()

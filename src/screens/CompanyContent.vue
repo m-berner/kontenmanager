@@ -127,6 +127,7 @@ const onUpdateItemsPerPage = (count: number): void => {
   const {stocksPerPage} = storeToRefs(settings)
   stocksPerPage.value = count
 }
+
 const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
   stocksPage.value = page
@@ -138,6 +139,7 @@ const onUpdatePage = async (page: number): Promise<void> => {
 }
 
 onBeforeUpdate(() => {
+  log('COMPANY_CONTENT: onBeforeUpdate')
   records.stocks.active.sort((a: IStock_Store, b: IStock_Store) => {
     return b.cFirstPage - a.cFirstPage
   }).sort((a: IStock_Store, b: IStock_Store) => {
@@ -172,7 +174,7 @@ onMounted(async () => {
   }
 })
 
-log('--- StocksTable.vue setup ---')
+log('--- CompanyContent.vue setup ---')
 </script>
 
 <template>

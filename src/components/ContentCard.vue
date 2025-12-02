@@ -8,8 +8,12 @@
 <script lang="ts" setup>
 import type {IContentCardProps} from '@/types'
 import {defineProps} from 'vue'
+import {useApp} from '@/composables/useApp'
 
 const props = defineProps<IContentCardProps>()
+const {log} = useApp()
+
+log('--- ContentCard.vue setup ---')
 </script>
 
 <template>

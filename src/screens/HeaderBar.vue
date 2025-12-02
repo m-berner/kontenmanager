@@ -217,6 +217,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
 }
 
 onUpdated(() => {
+  log('HEADER_BAR: onUpdated')
   isCompanyPage.value = router.currentRoute.value.path.includes('company')
 })
 

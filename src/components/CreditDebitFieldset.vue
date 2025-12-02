@@ -11,12 +11,14 @@ import {computed, defineEmits, defineProps} from 'vue'
 import {useValidation} from '@/composables/useValidation'
 import CurrencyInput from '@/components/CurrencyInput.vue'
 import type {ICreditDebitFieldsetProps} from '@/types'
+import {useApp} from '@/composables/useApp'
 
 const props = defineProps<ICreditDebitFieldsetProps>()
 // eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['update:modelValue'])
 const {t} = useI18n()
 const {isValidCredit, isValidDebit} = useValidation()
+const {log} = useApp()
 
 const T = Object.freeze({
   STRINGS: {
@@ -49,6 +51,8 @@ const debitValue = computed({
 })
 const creditRules = computed(() => isValidCredit(T.RULES, props.modelValue.debit))
 const debitRules = computed(() => isValidDebit(T.RULES, props.modelValue.credit))
+
+log('--- CreditDebitFieldset.vue ---')
 </script>
 
 <template>

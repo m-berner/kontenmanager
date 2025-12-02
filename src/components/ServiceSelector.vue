@@ -11,7 +11,7 @@ import {useTheme} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 const theme = useTheme()
 
@@ -23,6 +23,7 @@ const setService = async (service: string | null): Promise<void> => {
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service)
   }
 }
+
 const serviceLabels = (item: string): string => {
   const service = CONS.SERVICES.MAP.get(item)
   if (service !== undefined && service?.NAME !== undefined) {
@@ -33,9 +34,12 @@ const serviceLabels = (item: string): string => {
 }
 
 onBeforeMount(async () => {
+  log('SERVICE_SELECTOR: onBeforeMounted')
   const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
   service.value = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
 })
+
+log('--- ServiceSelector.vue setup ---')
 </script>
 
 <template>

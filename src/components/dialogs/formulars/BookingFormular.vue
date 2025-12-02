@@ -17,7 +17,7 @@ import {useBookingFormular} from '@/composables/useBookingFormular'
 import CreditDebitFieldset from '@/components/CreditDebitFieldset.vue'
 
 const {t} = useI18n()
-const {CONS} = useApp()
+const {CONS, log} = useApp()
 const {dateRules} = useValidation()
 const {bookingFormularData} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
@@ -84,6 +84,8 @@ const feeModel = computed({
     bookingFormularData.feeDebit = val.debit
   }
 })
+
+log('--- BookingFormular.vue setup ---')
 </script>
 
 <template>
