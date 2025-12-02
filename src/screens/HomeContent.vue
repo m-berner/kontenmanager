@@ -21,6 +21,7 @@ const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 const settings = useSettingsStore()
 const {bookingsPerPage} = storeToRefs(settings)
+const {setBookingsPerPage} = settings
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[], MENU_ITEMS: IMenuItem[] }>({
   STRINGS: {
@@ -82,11 +83,6 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[], M
 
 const search = ref<string>('')
 
-const onUpdateItemsPerPage = (count: number): void => {
-  log('HOME_CONTENT: onUpdateItemsPerPage')
-  bookingsPerPage.value = count
-}
-
 log('--- HomeContent.vue setup ---')
 </script>
 
@@ -111,7 +107,7 @@ log('--- HomeContent.vue setup ---')
       :search="search"
       density="compact"
       item-key="cID"
-      @update:items-per-page="onUpdateItemsPerPage">
+      @update:items-per-page="setBookingsPerPage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>

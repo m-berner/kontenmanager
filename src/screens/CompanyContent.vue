@@ -22,6 +22,7 @@ const records = useRecordsStore()
 const {active: activeStockItems} = storeToRefs(records.stocks)
 const settings = useSettingsStore()
 const {stocksPerPage} = storeToRefs(settings)
+const {setStocksPerPage} = settings
 const runtime = useRuntimeStore()
 const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
@@ -123,11 +124,6 @@ const winLossClass = computed(() => {
   })
 })
 
-const onUpdateItemsPerPage = (count: number): void => {
-  const {stocksPerPage} = storeToRefs(settings)
-  stocksPerPage.value = count
-}
-
 const onUpdatePage = async (page: number): Promise<void> => {
   log('COMPANY_CONTENT: onUpdatePage', {info: page})
   stocksPage.value = page
@@ -190,7 +186,7 @@ log('--- CompanyContent.vue setup ---')
       :no-data-text="T.STRINGS.NO_DATA_TEXT"
       density="compact"
       item-key="cID"
-      @update:items-per-page="onUpdateItemsPerPage"
+      @update:items-per-page="setStocksPerPage"
       @update:page="onUpdatePage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">

@@ -108,11 +108,8 @@ export function useBrowser() {
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE] === undefined) {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE})
         }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.CATEGORIES_PER_PAGE] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.CATEGORIES_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUM_PER_PAGE] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUM_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE})
+        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE] === undefined) {
+            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE})
         }
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] === undefined) {
             await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE})

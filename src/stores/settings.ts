@@ -10,15 +10,17 @@ import {ref} from 'vue'
 import type {ThemeInstance} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {defineStore} from 'pinia'
+import {useBrowser} from '@/composables/useBrowser'
 
 const {CONS, log} = useApp()
+const {setStorage} = useBrowser()
 
 export const useSettingsStore = defineStore('settings', function () {
     const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
     const bookingsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
     const stocksPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
     const dividendsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
-    const sumsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.CATEGORIES_PER_PAGE)
+    const sumsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE)
     const activeAccountId = ref<number>(-1)
     const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
     const materials = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS)
@@ -27,18 +29,38 @@ export const useSettingsStore = defineStore('settings', function () {
     const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
 
     function init(theme: ThemeInstance, storage: TStorage): void {
-        theme.global.name.value = storage.sSkin as string
-        skin.value = storage.sSkin as string
-        bookingsPerPage.value = storage.sBookingsPerPage as number
-        stocksPerPage.value = storage.sStocksPerPage as number
-        dividendsPerPage.value = storage.sDividendsPerPage as number
-        sumsPerPage.value = storage.sSumsPerPage as number
-        activeAccountId.value = storage.sActiveAccountId as number
-        service.value = storage.sService as string
-        materials.value = [...storage.sMaterials as string[]]
-        markets.value = [...storage.sMarkets as string[]]
-        indexes.value = [...storage.sIndexes as string[]]
-        exchanges.value = [...storage.sExchanges as string[]]
+        theme.global.name.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
+        skin.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
+        bookingsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] as number
+        stocksPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE] as number
+        dividendsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE]as number
+        sumsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE] as number
+        activeAccountId.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID] as number
+        service.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
+        materials.value = [...storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS] as string[]]
+        markets.value = [...storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS] as string[]]
+        indexes.value = [...storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES] as string[]]
+        exchanges.value = [...storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] as string[]]
+    }
+
+    async function setSumsPerPage(v: number) {
+        sumsPerPage.value = v
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE, v)
+    }
+
+    async function setBookingsPerPage(v: number) {
+        bookingsPerPage.value = v
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE, v)
+    }
+
+    async function setStocksPerPage(v: number) {
+        stocksPerPage.value = v
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE, v)
+    }
+
+    async function setDividendsPerPage(v: number) {
+        dividendsPerPage.value = v
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE, v)
     }
 
     return {
@@ -53,7 +75,11 @@ export const useSettingsStore = defineStore('settings', function () {
         markets,
         indexes,
         exchanges,
-        init
+        init,
+        setSumsPerPage,
+        setBookingsPerPage,
+        setDividendsPerPage,
+        setStocksPerPage
     }
 })
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "KontenManager",
-  "version": "2025.1.1.8",
+  "version": "2025.1.2.0",
   "author": "Martin Berner",
   "icons": {
     "64": "assets/icon64.png"

@@ -8,6 +8,7 @@
 <script lang="ts" setup>
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
+import {storeToRefs} from 'pinia'
 import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -16,7 +17,9 @@ import type {IHeader} from '@/types'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
-const {dividendsPerPage} = useSettingsStore()
+const settings = useSettingsStore()
+const {dividendsPerPage} = storeToRefs(settings)
+const {setDividendsPerPage} = settings
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
 
@@ -64,7 +67,8 @@ log('--- ShowDividend.vue setup ---')
             :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
             :no-data-text="T.STRINGS.NO_DATA_TEXT"
             density="compact"
-            item-key="id">
+            item-key="id"
+            @update:items-per-page="setDividendsPerPage">
           <template v-slot:[`item`]="{ item }">
             <tr class="table-row">
               <td class="d-none">{{ item.id }}</td>

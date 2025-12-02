@@ -26,9 +26,8 @@ const {log} = useApp()
 onBeforeMount(async () => {
   log('APP_INDEX: onBeforeMount')
   const {CONS, haveSameStrings} = useApp()
-  const {notice} = useBrowser()
   const {t} = useI18n()
-
+  const {notice} = useBrowser()
   const T = Object.freeze({
     STRINGS: {},
     MESSAGES: {
@@ -53,11 +52,10 @@ onBeforeMount(async () => {
     const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
     const CUREUR = `${cur}${CONS.CURRENCIES.EUR}`
     const CURUSD = `${cur}${CONS.CURRENCIES.USD}`
-    if (haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
-      settings.init(theme, storage)
-    } else {
-      await notice(['corrupt Storage!'])
+    if (!haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
+      await installStorageLocal()
     }
+    settings.init(theme, storage)
     const storesDB = await getDatabaseStores(settings.activeAccountId)
     await records.init(storesDB, T.MESSAGES)
     const exchangesBaseData: IExchangeData[] = await fetchExchangesData([CURUSD, CUREUR])

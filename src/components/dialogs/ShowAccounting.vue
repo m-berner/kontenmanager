@@ -16,7 +16,9 @@ import type {IAccountEntry, IHeader} from '@/types'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
-const {sumsPerPage} = useSettingsStore()
+const settings = useSettingsStore()
+const {sumsPerPage} = storeToRefs(settings)
+const {setSumsPerPage} = settings
 const {CONS, log} = useApp()
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>({
@@ -109,7 +111,8 @@ log('--- ShowAccounting.vue setup ---')
             :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
             :no-data-text="T.STRINGS.NO_DATA_TEXT"
             density="compact"
-            item-key="id">
+            item-key="id"
+            @update:items-per-page="setSumsPerPage">
           <template v-slot:[`item`]="{ item }">
             <tr class="table-row">
               <td class="d-none">{{ item.id }}</td>

@@ -139,7 +139,7 @@ const CONS = Object.freeze({
             BOOKINGS_PER_PAGE: 9,
             STOCKS_PER_PAGE: 9,
             DIVIDENDS_PER_PAGE: 9,
-            CATEGORIES_PER_PAGE: 9,
+            SUMS_PER_PAGE: 11,
             SKIN: 'ocean',
             MATERIALS: ['au', 'brent'],
             INDEXES: ['dax', 'dow'],
@@ -157,8 +157,7 @@ const CONS = Object.freeze({
                 BOOKINGS_PER_PAGE: 'sBookingsPerPage',
                 STOCKS_PER_PAGE: 'sStocksPerPage',
                 DIVIDENDS_PER_PAGE: 'sDividendsPerPage',
-                CATEGORIES_PER_PAGE: 'sCategoriesPerPage',
-                SUM_PER_PAGE: 'sSumPerPage'
+                SUMS_PER_PAGE: 'sSumsPerPage'
             }
         },
         LOCAL_STORAGE: {
