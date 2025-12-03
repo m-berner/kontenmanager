@@ -9,7 +9,7 @@ export function useDebounce<T extends (..._args: any[]) => any>(
     func: T,
     delay: number
 ) {
-    let timeoutId: NodeJS.Timeout | number
+    let timeoutId: ReturnType<typeof setTimeout>
 
     const debouncedFunction = (...args: Parameters<T>) => {
         clearTimeout(timeoutId)

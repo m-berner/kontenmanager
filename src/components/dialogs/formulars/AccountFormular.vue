@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {ref} from 'vue'
+import {onUnmounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useValidation} from '@/composables/useValidation'
@@ -73,7 +73,12 @@ const onSearch = () => {
   const {faviconUrl} = useFavicon(domain.value ?? '')
   accountFormularData.logoUrl = faviconUrl.value
 }
-const {debouncedFunction: debouncedSearch} = useDebounce(onSearch, 400)
+const {debouncedFunction, cancel} = useDebounce(onSearch, 400)
+
+// Clean up on unmount
+onUnmounted(() => {
+  cancel()
+})
 
 log('--- AccountFormular.vue setup ---')
 </script>
@@ -106,7 +111,7 @@ log('--- AccountFormular.vue setup ---')
       :label="T.STRINGS.SEARCH_LABEL"
       :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
       variant="outlined"
-      @update:model-value="debouncedSearch"/>
+      @update:model-value="debouncedFunction"/>
   <!-- Logo Preview -->
   <div class="mb-4">
     <v-avatar class="me-3" color="white" size="48">
