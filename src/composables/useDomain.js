@@ -2,7 +2,7 @@ import { computed } from 'vue';
 export function useDomain(url) {
     const domain = computed(() => {
         if (!url.value)
-            return null;
+            return '';
         try {
             let processedUrl = url.value;
             if (!processedUrl.startsWith('http')) {
@@ -12,7 +12,7 @@ export function useDomain(url) {
             return urlObj.hostname.replace(/^www\./, '');
         }
         catch (e) {
-            return null;
+            return '';
         }
     });
     const subdomain = computed(() => {

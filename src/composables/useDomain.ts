@@ -8,9 +8,9 @@
 import type {Ref} from 'vue'
 import {computed} from 'vue'
 
-export function useDomain(url: Ref<string | null>) {
+export function useDomain(url: Ref<string>) {
     const domain = computed(() => {
-        if (!url.value) return null
+        if (!url.value) return ''
         try {
             let processedUrl = url.value
             if (!processedUrl.startsWith('http')) {
@@ -20,7 +20,7 @@ export function useDomain(url: Ref<string | null>) {
             return urlObj.hostname.replace(/^www\./, '')
             // eslint-disable-next-line no-unused-vars
         } catch (e) {
-            return null
+            return ''
         }
     })
     const subdomain = computed(() => {

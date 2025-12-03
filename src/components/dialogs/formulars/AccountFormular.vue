@@ -6,14 +6,13 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onUnmounted, ref} from 'vue'
+import {ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useValidation} from '@/composables/useValidation'
 import {useFavicon} from '@/composables/useFavicon'
 import {useDomain} from '@/composables/useDomain'
 import {useAccountFormular} from '@/composables/useAccountFormular'
-import {useDebounce} from '@/composables/useDebounce'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -68,16 +67,17 @@ const onUpdateIban = (iban: string): void => {
   formattedIban.value = accountFormularData.iban.length > 1 ? ` / ${clean.replace(/(.{4})/g, '$1 ')}` : ''
 }
 
-const onSearch = () => {
-  const {domain} = useDomain(formSearch)
-  const {faviconUrl} = useFavicon(domain.value ?? '')
-  accountFormularData.logoUrl = faviconUrl.value
-}
-const {debouncedFunction, cancel} = useDebounce(onSearch, 400)
+const {domain} = useDomain(formSearch)
+const {faviconUrl} = useFavicon(domain)
 
-// Clean up on unmount
-onUnmounted(() => {
-  cancel()
+let timeoutId: ReturnType<typeof setTimeout>
+watch(faviconUrl, (newUrl) => {
+  clearTimeout(timeoutId)
+  timeoutId = setTimeout(() => {
+    if (newUrl) {
+      accountFormularData.logoUrl = newUrl
+    }
+  }, 400)
 })
 
 log('--- AccountFormular.vue setup ---')
@@ -111,7 +111,7 @@ log('--- AccountFormular.vue setup ---')
       :label="T.STRINGS.SEARCH_LABEL"
       :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
       variant="outlined"
-      @update:model-value="debouncedFunction"/>
+      />
   <!-- Logo Preview -->
   <div class="mb-4">
     <v-avatar class="me-3" color="white" size="48">
