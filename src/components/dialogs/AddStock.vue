@@ -30,7 +30,6 @@ const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {stockFormularData, formRef} = useStockFormular()
-
 const T = Object.freeze({
   MESSAGES: {
     SUCCESS_ADD: t('messages.addStock.success'),

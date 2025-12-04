@@ -76,28 +76,27 @@ const onClickOk = async (): Promise<void> => {
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
       records.clean(false)
       resetTeleport()
+      const bookingTypes = []
       if (accountFormularData.withDepot) {
-        const bookingTypes = [
-          {
-            cName: T.STRINGS.BUY,
-            cAccountNumberID: addAccountID
-          },
-          {
-            cName: T.STRINGS.SELL,
-            cAccountNumberID: addAccountID
-          },
-          {
-            cName: T.STRINGS.DIVIDEND,
-            cAccountNumberID: addAccountID
-          }
-        ]
-        for (let i = 0; i < 3; i++) {
-          const addBookingTypeID: number = await addBookingType(bookingTypes[i])
-          if (addBookingTypeID > -1) {
-            const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingTypes[i]}
-            records.bookingTypes.add(completeBookingType)
-            reset()
-          }
+        bookingTypes.push({
+          cName: T.STRINGS.BUY,
+          cAccountNumberID: addAccountID
+        })
+        bookingTypes.push({
+          cName: T.STRINGS.SELL,
+          cAccountNumberID: addAccountID
+        })
+        bookingTypes.push({
+          cName: T.STRINGS.DIVIDEND,
+          cAccountNumberID: addAccountID
+        })
+      }
+      for (let i = 0; i < bookingTypes.length; i++) {
+        const addBookingTypeID: number = await addBookingType(bookingTypes[i])
+        if (addBookingTypeID > -1) {
+          const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingTypes[i]}
+          records.bookingTypes.add(completeBookingType)
+          reset()
         }
       }
       await notice([T.MESSAGES.SUCCESS_ADD])

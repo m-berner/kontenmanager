@@ -7,32 +7,31 @@
   -->
 <script lang="ts" setup>
 import {onMounted} from 'vue'
-import {useI18n} from 'vue-i18n'
+// import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useAlertStore} from '@/stores/alerts'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
 
-const {CONS, log, haveSameStrings} = useApp()
-const {t} = useI18n()
+const {log} = useApp()
+// const {t} = useI18n()
 const alertStore = useAlertStore()
-const {currentAlert} = storeToRefs(alertStore)
-const {alertMessage, alertTitle, alertType, dismissAlert, info, pendingCount, showOverlay} = alertStore
+const {currentAlert, showOverlay, alertMessage, alertTitle, alertType, pendingCount} = storeToRefs(alertStore)
+const {dismissAlert} = alertStore
 
-const T = Object.freeze({
-  MESSAGES: {
-    INFO_TITLE: t('messages.infoTitle'),
-    CORRUPT_STORAGE: t('messages.corruptStorage')
-  }
-})
+// const T = Object.freeze({
+//   MESSAGES: {
+//     INFO_TITLE: t('messages.infoTitle'),
+//     CORRUPT_STORAGE: t('messages.corruptStorage')
+//   }
+// })
 
 onMounted(async () => {
   log('ALERT_OVERLAY: onMounted')
-  const {getStorage} = useBrowser()
-  const storage = await getStorage()
-  if (!haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
-    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CORRUPT_STORAGE, null)
-  }
+  // const {getStorage} = useBrowser()
+  // const storage = await getStorage()
+  // if (!haveSameStrings(Object.keys(storage), Object.values(CONS.DEFAULTS.BROWSER_STORAGE.PROPS))) {
+  //   info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CORRUPT_STORAGE, null)
+  // }
 })
 
 log('--- AlertOverlay.vue setup ---')
@@ -40,7 +39,7 @@ log('--- AlertOverlay.vue setup ---')
 
 <template>
   <v-overlay
-      v-model="showOverlay"
+      :model-value="showOverlay"
       class="align-center justify-center"
       persistent>
     <v-card

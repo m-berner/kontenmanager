@@ -23,6 +23,8 @@ const settings = useSettingsStore()
 const {bookingsPerPage} = storeToRefs(settings)
 const {setBookingsPerPage} = settings
 
+console.error(records.bookingTypes.items)
+
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[], MENU_ITEMS: IMenuItem[] }>({
   STRINGS: {
     ITEMS_PER_PAGE_TEXT: t('homePage.bookingsTable.itemsPerPageText'),

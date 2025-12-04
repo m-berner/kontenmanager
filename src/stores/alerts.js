@@ -2,10 +2,10 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useApp } from '@/composables/useApp';
 const defaultAlert = { id: -1, type: undefined, title: '', message: '' };
+const alerts = ref([]);
+const currentAlert = ref(defaultAlert);
 const { log } = useApp();
 export const useAlertStore = defineStore('alert', () => {
-    const alerts = ref([]);
-    const currentAlert = ref(defaultAlert);
     const pendingCount = computed(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1);
     const showOverlay = computed(() => currentAlert.value.id > -1);
     const alertType = computed(() => currentAlert.value?.type || 'info');
@@ -17,6 +17,7 @@ export const useAlertStore = defineStore('alert', () => {
         alerts.value.push(alert);
         if (currentAlert.value.id === -1) {
             showNext();
+            console.error(alertMessage.value, message, currentAlert.value.message);
         }
         if (duration) {
             setTimeout(() => {

@@ -175,11 +175,10 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const db = await _openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
-        operations.forEach((op, index) => {
-            let request;
-            return new Promise((resolve, reject) => {
-                const results = [];
-                let completed = 0;
+        return new Promise((resolve, reject) => {
+            let completed = 0;
+            operations.forEach(op => {
+                let request;
                 switch (op.type) {
                     case 'add':
                         request = store.add(op.data);
@@ -199,15 +198,17 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                         return;
                 }
                 request.onsuccess = () => {
-                    results[index] = request.result;
                     completed++;
                     if (completed === operations.length) {
-                        resolve(results);
+                        resolve();
                     }
                 };
-                tx.onerror = () => reject(tx.error);
-                tx.onabort = () => reject(new Error('Transaction aborted'));
+                request.onerror = () => {
+                    reject(request.error);
+                };
             });
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
         });
     }
     async function getAllByIndex(storeName, indexName, value) {
