@@ -20,7 +20,7 @@ import {useValidation} from '@/composables/useValidation'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {add} = useBookingTypesDB()
+const {add, isConnected} = useBookingTypesDB()
 const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -54,7 +54,10 @@ const reset = () => {
 const onClickOk = async (): Promise<void> => {
   log('ADD_BOOKING_TYPE: onClickOk')
   if (!await validateForm(formRef)) return
-
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   try {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const bookingType = {
@@ -62,7 +65,7 @@ const onClickOk = async (): Promise<void> => {
         cAccountNumberID: activeAccountId.value
       }
       const addBookingTypeID: number = await add(bookingType)
-      if (addBookingTypeID > 1) {
+      if (addBookingTypeID > -1) {
         const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
         records.bookingTypes.add(completeBookingType)
         reset()

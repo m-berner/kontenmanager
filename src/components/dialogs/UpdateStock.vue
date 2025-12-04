@@ -23,7 +23,7 @@ import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {update} = useStocksDB()
+const {update, isConnected} = useStocksDB()
 const {validateForm} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -44,6 +44,10 @@ const T = Object.freeze({
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_STOCK : onClickOk')
   if (!await validateForm(formRef)) return
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   try {
     const stock: IStock_DB = {
       cID: stockFormularData.id,

@@ -23,7 +23,7 @@ import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
-const {add} = useAccountsDB()
+const {add, isConnected} = useAccountsDB()
 const {add: addBookingType} = useBookingTypesDB()
 const {validateForm} = useValidation()
 const {resetTeleport} = useRuntimeStore()
@@ -56,7 +56,10 @@ const reset = (): void => {
 const onClickOk = async (): Promise<void> => {
   log('ADD_ACCOUNT: onClickOk')
   if (!await validateForm(formRef)) return
-
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   try {
     const {activeAccountId} = storeToRefs(settings)
     const account = {
@@ -91,7 +94,7 @@ const onClickOk = async (): Promise<void> => {
         for (let i = 0; i < 3; i++) {
           const addBookingTypeID: number = await addBookingType(bookingTypes[i])
           if (addBookingTypeID > -1) {
-            const completeBookingType: IBookingType_Store = {cID: i + 1, ...bookingTypes[i]}
+            const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingTypes[i]}
             records.bookingTypes.add(completeBookingType)
             reset()
           }

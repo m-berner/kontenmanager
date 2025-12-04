@@ -19,11 +19,12 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
-const {deleteDatabaseWithAccount, getDatabaseStores} = useIndexedDB()
+const {deleteDatabaseWithAccount, getDatabaseStores, isConnected} = useIndexedDB()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
+const {items: accountItems} = storeToRefs(records.accounts)
 
 const T = Object.freeze({
   MESSAGES: {
@@ -41,7 +42,10 @@ const T = Object.freeze({
 
 const onClickOk = async (): Promise<void> => {
   log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
-  const {items: accountItems} = storeToRefs(records.accounts)
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   try {
     await deleteDatabaseWithAccount(activeAccountId.value)
     records.accounts.remove(activeAccountId.value)

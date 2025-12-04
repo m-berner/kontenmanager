@@ -23,7 +23,7 @@ import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {update} = useBookingsDB()
+const {update, isConnected} = useBookingsDB()
 const {validateForm} = useValidation()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
@@ -46,6 +46,10 @@ const T = Object.freeze({
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING : onClickOk')
   if (!await validateForm(formRef)) return
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   try {
     const booking: IBooking_Store & IBooking_DB = {
       cID: bookingFormularData.id,

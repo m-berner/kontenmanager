@@ -1,11 +1,25 @@
 import { ref } from 'vue';
 import { useApp } from '@/composables/useApp';
 const { CONS, log } = useApp();
-let dbPromise = null;
+const dbInstance = ref(null);
+const isConnected = ref(false);
+const error = ref(null);
+const isLoading = ref(false);
+function useDBStore(storeName) {
+    const dbi = useIndexedDB();
+    return {
+        isConnected: dbi.isConnected,
+        error: dbi.error,
+        isLoading: dbi.isLoading,
+        add: (data) => dbi.add(storeName, data),
+        getAll: () => dbi.getAll(storeName),
+        update: (data) => dbi.update(storeName, data),
+        remove: (id) => dbi.remove(storeName, id),
+        clear: () => dbi.clear(storeName),
+        batchImport: (batch) => dbi.batchOperations(storeName, batch)
+    };
+}
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
-    const isConnected = ref(false);
-    const error = ref(null);
-    const isLoading = ref(false);
     function _setupDatabase(db) {
         const stores = CONS.INDEXED_DB.STORES;
         if (!db.objectStoreNames.contains(stores.ACCOUNTS.NAME)) {
@@ -44,22 +58,21 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             store.createIndex(`${stores.STOCKS.NAME}_k3`, stores.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
         }
     }
-    function closeDB() {
-        log('USE_INDEXED_DB: closeDB', { info: dbPromise });
-        if (dbPromise) {
-            dbPromise.then(db => {
-                db.close();
-                dbPromise = null;
-                isConnected.value = false;
-            });
+    async function closeDB() {
+        if (dbInstance.value) {
+            const db = await dbInstance.value;
+            db.close();
+            console.error(db);
+            dbInstance.value = null;
+            isConnected.value = false;
+            log('USE_INDEXED_DB: closeDB');
         }
     }
-    async function openDB() {
-        log('USE_INDEXED_DB: openDB', { info: dbPromise });
-        if (!dbPromise) {
+    async function _openDB() {
+        if (!dbInstance.value) {
             isLoading.value = true;
             error.value = null;
-            dbPromise = new Promise((resolve, reject) => {
+            dbInstance.value = new Promise((resolve, reject) => {
                 const request = indexedDB.open(dbName, version);
                 request.onerror = () => {
                     error.value = request.error;
@@ -71,13 +84,13 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                     db.onversionchange = () => {
                         log('Database version changed, closing connection');
                         db.close();
-                        dbPromise = null;
+                        dbInstance.value = null;
                         isConnected.value = false;
                     };
                     db.onclose = () => {
                         log('Database connection closed');
                         isConnected.value = false;
-                        dbPromise = null;
+                        dbInstance.value = null;
                     };
                     isConnected.value = true;
                     isLoading.value = false;
@@ -90,82 +103,77 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 };
             });
         }
-        return dbPromise;
+        log('USE_INDEXED_DB: _openDB', { info: dbInstance.value });
+        return dbInstance.value;
     }
     async function add(storeName, data) {
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.add(data);
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result);
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(new Error('Transaction aborted'));
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
         });
     }
     async function get(storeName, key) {
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const request = store.get(key);
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result);
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(new Error('Transaction aborted'));
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
         });
     }
     async function getAll(storeName) {
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const request = store.getAll();
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result);
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(new Error('Transaction aborted'));
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
         });
     }
     async function update(storeName, data) {
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.put(data);
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result);
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(new Error('Transaction aborted'));
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
         });
     }
     async function remove(storeName, key) {
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.delete(key);
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result);
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(new Error('Transaction aborted'));
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(request.error);
         });
     }
     async function clear(storeName) {
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const request = store.clear();
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result);
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(new Error('Transaction aborted'));
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(request.error);
         });
     }
     async function batchOperations(storeName, operations) {
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readwrite');
         const store = tx.objectStore(storeName);
         const promises = operations.map(op => {
@@ -189,38 +197,37 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                         reject(new Error(`Unknown operation type: ${op.type}`));
                         return;
                 }
+                tx.oncomplete = () => resolve(request.result);
                 tx.onerror = () => reject(tx.error);
                 tx.onabort = () => reject(new Error('Transaction aborted'));
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
             });
         });
         return Promise.all(promises);
     }
-    async function getAllByIndex(storeName, indexName, value) {
-        const db = await openDB();
+    async function _getAllByIndex(storeName, indexName, value) {
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const index = store.index(indexName);
         const request = index.getAll(value);
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result);
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(new Error('Transaction aborted'));
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
         });
     }
     async function _getAllInTransaction(tx, storeName) {
         const store = tx.objectStore(storeName);
         const request = store.getAll();
         return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+            tx.oncomplete = () => resolve(request.result);
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
         });
     }
     async function deleteDatabaseWithAccount(accountId) {
         log('INDEXED_DB: deleteDatabaseWithAccount');
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction([
             CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
             CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
@@ -237,15 +244,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         bookings.filter((b) => b.cAccountNumberID === accountId).forEach((b) => bookingsStore.delete(b.cID));
         bookingTypes.filter((bt) => bt.cAccountNumberID === accountId).forEach((bt) => bookingTypesStore.delete(bt.cID));
         stocks.filter((s) => s.cAccountNumberID === accountId).forEach((s) => stocksStore.delete(s.cID));
-        accountsStore.delete(accountId);
+        const request = accountsStore.delete(accountId);
         return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve();
+            tx.oncomplete = () => resolve(request.result);
             tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
         });
     }
     async function getDatabaseStores(accountId) {
         log('USE_INDEXED_DB: getDatabaseStores');
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction([
             CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
             CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
@@ -288,44 +296,50 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 });
             };
             tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
         });
     }
     async function countByIndex(storeName, indexName, value) {
-        const db = await openDB();
+        const db = await _openDB();
         const tx = db.transaction(storeName, 'readonly');
         const store = tx.objectStore(storeName);
         const index = store.index(indexName);
         const request = index.count(value);
         return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+            tx.oncomplete = () => resolve(request.result);
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(new Error('Transaction aborted'));
         });
     }
-    async function processWithCursor(storeName, callback, indexName, range) {
-        const db = await openDB();
-        const tx = db.transaction(storeName, 'readonly');
-        const store = tx.objectStore(storeName);
-        const source = indexName ? store.index(indexName) : store;
-        const request = source.openCursor(range);
-        return new Promise((resolve, reject) => {
-            request.onsuccess = async (event) => {
-                const cursor = event.target.result;
-                if (cursor) {
-                    await callback(cursor.value);
-                    cursor.continue();
-                }
-                else {
-                    resolve();
-                }
-            };
-            request.onerror = () => reject(request.error);
-        });
+    async function _processWithCursor(storeName, callback, indexName, range) {
+        const db = await _openDB();
+        if (db !== null) {
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            const source = indexName ? store.index(indexName) : store;
+            const request = source.openCursor(range);
+            return new Promise((resolve, reject) => {
+                request.onsuccess = async (event) => {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        await callback(cursor.value);
+                        cursor.continue();
+                    }
+                    else {
+                        resolve();
+                    }
+                };
+                tx.onerror = () => reject(request.error);
+                tx.onabort = () => reject(new Error('Transaction aborted'));
+            });
+        }
+        return null;
     }
     return {
         isConnected,
         error,
         isLoading,
-        openDB,
+        _openDB,
         closeDB,
         countByIndex,
         add,
@@ -335,24 +349,10 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         remove,
         clear,
         batchOperations,
-        getAllByIndex,
+        _getAllByIndex,
         deleteDatabaseWithAccount,
         getDatabaseStores,
-        processWithCursor
-    };
-}
-function useDBStore(storeName) {
-    const dbi = useIndexedDB();
-    return {
-        isConnected: dbi.isConnected,
-        error: dbi.error,
-        isLoading: dbi.isLoading,
-        add: (data) => dbi.add(storeName, data),
-        getAll: () => dbi.getAll(storeName),
-        update: (data) => dbi.update(storeName, data),
-        remove: (id) => dbi.remove(storeName, id),
-        clear: () => dbi.clear(storeName),
-        batchImport: (batch) => dbi.batchOperations(storeName, batch)
+        _processWithCursor
     };
 }
 export function useAccountsDB() {

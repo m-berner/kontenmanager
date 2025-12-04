@@ -13,13 +13,28 @@ import {useApp} from '@/composables/useApp'
 
 const {CONS, log} = useApp()
 // Single global database promise
-let dbPromise: Promise<IDBDatabase> | null = null
+const dbInstance = ref<Promise<IDBDatabase> | null>(null)
+const isConnected = ref<boolean>(false)
+const error = ref<unknown | null>(null)
+const isLoading = ref<boolean>(false)
+
+function useDBStore<T>(storeName: string) {
+    const dbi = useIndexedDB()
+    return {
+        isConnected: dbi.isConnected,
+        error: dbi.error,
+        isLoading: dbi.isLoading,
+
+        add: (data: Omit<T, 'cID'>) => dbi.add(storeName, data),
+        getAll: () => dbi.getAll<T>(storeName),
+        update: (data: T) => dbi.update(storeName, data),
+        remove: (id: number) => dbi.remove(storeName, id),
+        clear: () => dbi.clear(storeName),
+        batchImport: (batch: IRecords_DB[]) => dbi.batchOperations(storeName, batch)
+    }
+}
 
 export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
-    const isConnected = ref<boolean>(false)
-    const error = ref<unknown | null>(null)
-    const isLoading = ref<boolean>(false)
-
     // Database schema setup
     function _setupDatabase(db: IDBDatabase): void {
         const stores = CONS.INDEXED_DB.STORES
@@ -68,24 +83,22 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         }
     }
 
-    function closeDB(): void {
-        log('USE_INDEXED_DB: closeDB', {info: dbPromise})
-        if (dbPromise) {
-            dbPromise.then(db => {
-                db.close()
-                dbPromise = null
-                isConnected.value = false
-            })
+    async function closeDB(): Promise<void> {
+        if (dbInstance.value) {
+            const db = await dbInstance.value
+            db.close()
+            dbInstance.value = null
+            isConnected.value = false
+            log('USE_INDEXED_DB: closeDB')
         }
     }
 
-    async function openDB(): Promise<IDBDatabase> {
-        log('USE_INDEXED_DB: openDB', {info: dbPromise})
-        if (!dbPromise) {
+    async function _openDB(): Promise<IDBDatabase> {
+        if (!dbInstance.value) {
             isLoading.value = true
             error.value = null
 
-            dbPromise = new Promise((resolve, reject) => {
+            dbInstance.value = new Promise((resolve, reject) => {
                 const request = indexedDB.open(dbName, version)
 
                 request.onerror = () => {
@@ -100,14 +113,14 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                     db.onversionchange = () => {
                         log('Database version changed, closing connection')
                         db.close()
-                        dbPromise = null
+                        dbInstance.value = null
                         isConnected.value = false
                     }
 
                     db.onclose = () => {
                         log('Database connection closed')
                         isConnected.value = false
-                        dbPromise = null
+                        dbInstance.value = null
                     }
 
                     isConnected.value = true
@@ -122,96 +135,90 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 }
             })
         }
-
-        return dbPromise
+        log('USE_INDEXED_DB: _openDB', {info: dbInstance.value})
+        return dbInstance.value
     }
 
     async function add<T>(storeName: string, data: T): Promise<number> {
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.add(data)
 
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result as number)
             tx.onerror = () => reject(tx.error)
             tx.onabort = () => reject(new Error('Transaction aborted'))
-            request.onsuccess = () => resolve(request.result as number)
-            request.onerror = () => reject(request.error)
         })
     }
 
     async function get<T>(storeName: string, key: number): Promise<T> {
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const request = store.get(key)
 
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result)
             tx.onerror = () => reject(tx.error)
             tx.onabort = () => reject(new Error('Transaction aborted'))
-            request.onsuccess = () => resolve(request.result)
-            request.onerror = () => reject(request.error)
         })
     }
 
     async function getAll<T>(storeName: string): Promise<T[]> {
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const request = store.getAll()
 
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result)
             tx.onerror = () => reject(tx.error)
             tx.onabort = () => reject(new Error('Transaction aborted'))
-            request.onsuccess = () => resolve(request.result)
-            request.onerror = () => reject(request.error)
         })
     }
 
     async function update<T>(storeName: string, data: T): Promise<IDBValidKey> {
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.put(data)
 
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result as number)
             tx.onerror = () => reject(tx.error)
             tx.onabort = () => reject(new Error('Transaction aborted'))
-            request.onsuccess = () => resolve(request.result)
-            request.onerror = () => reject(request.error)
         })
     }
 
     async function remove(storeName: string, key: number): Promise<void> {
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.delete(key)
 
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result)
             tx.onerror = () => reject(tx.error)
             tx.onabort = () => reject(new Error('Transaction aborted'))
-            request.onsuccess = () => resolve()
-            request.onerror = () => reject(request.error)
         })
     }
 
     async function clear(storeName: string): Promise<void> {
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
         const request = store.clear()
 
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result)
             tx.onerror = () => reject(tx.error)
             tx.onabort = () => reject(new Error('Transaction aborted'))
-            request.onsuccess = () => resolve()
-            request.onerror = () => reject(request.error)
         })
     }
 
     async function batchOperations(storeName: string, operations: IRecords_DB[]): Promise<unknown[]> {
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
 
@@ -236,29 +243,25 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                         reject(new Error(`Unknown operation type: ${(op as any).type}`))
                         return
                 }
-
+                tx.oncomplete = () => resolve(request.result as unknown)
                 tx.onerror = () => reject(tx.error)
                 tx.onabort = () => reject(new Error('Transaction aborted'))
-                request.onsuccess = () => resolve(request.result)
-                request.onerror = () => reject(request.error)
             })
         })
-
         return Promise.all(promises)
     }
 
-    async function getAllByIndex<T>(storeName: string, indexName: string, value: number | string): Promise<T[]> {
-        const db = await openDB()
+    async function _getAllByIndex<T>(storeName: string, indexName: string, value: number | string): Promise<T[]> {
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const index = store.index(indexName)
         const request = index.getAll(value)
 
         return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve(request.result)
             tx.onerror = () => reject(tx.error)
             tx.onabort = () => reject(new Error('Transaction aborted'))
-            request.onsuccess = () => resolve(request.result)
-            request.onerror = () => reject(request.error)
         })
     }
 
@@ -267,15 +270,19 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = store.getAll()
 
         return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result)
-            request.onerror = () => reject(request.error)
+            tx.oncomplete = () => resolve(request.result)
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
         })
+        // return new Promise((resolve, reject) => {
+        //     request.onsuccess = () => resolve(request.result)
+        //     request.onerror = () => reject(request.error)
+        // })
     }
 
     async function deleteDatabaseWithAccount(accountId: number): Promise<void> {
         log('INDEXED_DB: deleteDatabaseWithAccount')
-
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction([
             CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
             CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
@@ -297,17 +304,22 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         bookings.filter((b: IBooking_DB) => b.cAccountNumberID === accountId).forEach((b: IBooking_DB) => bookingsStore.delete(b.cID))
         bookingTypes.filter((bt: IBookingType_DB) => bt.cAccountNumberID === accountId).forEach((bt: IBookingType_DB) => bookingTypesStore.delete(bt.cID))
         stocks.filter((s: IStock_DB) => s.cAccountNumberID === accountId).forEach((s: IStock_DB) => stocksStore.delete(s.cID))
-        accountsStore.delete(accountId)
+        const request = accountsStore.delete(accountId)
 
         return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve()
+            tx.oncomplete = () => resolve(request.result)
             tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
         })
+        // return new Promise((resolve, reject) => {
+        //     tx.oncomplete = () => resolve()
+        //     tx.onerror = () => reject(tx.error)
+        // })
     }
 
     async function getDatabaseStores(accountId: number): Promise<IStores_DB> {
         log('USE_INDEXED_DB: getDatabaseStores')
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction([
             CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
             CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
@@ -353,53 +365,60 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                 })
             }
             tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
         })
     }
 
     async function countByIndex(storeName: string, indexName: string, value: number | string): Promise<number> {
-        const db = await openDB()
+        const db = await _openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
         const index = store.index(indexName)
         const request = index.count(value)
 
         return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result)
-            request.onerror = () => reject(request.error)
+            tx.oncomplete = () => resolve(request.result)
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
         })
     }
 
-    async function processWithCursor<T>(
+    async function _processWithCursor<T>(
         storeName: string,
         callback: (item: T) => void | Promise<void>,
         indexName?: string,
         range?: IDBKeyRange
-    ): Promise<void> {
-        const db = await openDB()
-        const tx = db.transaction(storeName, 'readonly')
-        const store = tx.objectStore(storeName)
-        const source = indexName ? store.index(indexName) : store
-        const request = source.openCursor(range)
+    ): Promise<void | null> {
+        const db = await _openDB()
+        if (db !== null) {
+            const tx = db.transaction(storeName, 'readonly')
+            const store = tx.objectStore(storeName)
+            const source = indexName ? store.index(indexName) : store
+            const request = source.openCursor(range)
 
-        return new Promise((resolve, reject) => {
-            request.onsuccess = async (event) => {
-                const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result
-                if (cursor) {
-                    await callback(cursor.value)
-                    cursor.continue()
-                } else {
-                    resolve()
+            return new Promise((resolve, reject) => {
+                request.onsuccess = async (event) => {
+                    const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result
+                    if (cursor) {
+                        await callback(cursor.value)
+                        cursor.continue()
+                    } else {
+                        resolve()
+                    }
                 }
-            }
-            request.onerror = () => reject(request.error)
-        })
+                //tx.oncomplete = () => resolve(request.result)
+                tx.onerror = () => reject(request.error)
+                tx.onabort = () => reject(new Error('Transaction aborted'))
+            })
+        }
+        return null
     }
 
     return {
         isConnected,
         error,
         isLoading,
-        openDB,
+        _openDB,
         closeDB,
         countByIndex,
         add,
@@ -409,27 +428,10 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         remove,
         clear,
         batchOperations,
-        getAllByIndex,
+        _getAllByIndex,
         deleteDatabaseWithAccount,
         getDatabaseStores,
-        processWithCursor
-    }
-}
-
-function useDBStore<T>(storeName: string) {
-    const dbi = useIndexedDB()
-
-    return {
-        isConnected: dbi.isConnected,
-        error: dbi.error,
-        isLoading: dbi.isLoading,
-
-        add: (data: Omit<T, 'cID'>) => dbi.add(storeName, data),
-        getAll: () => dbi.getAll<T>(storeName),
-        update: (data: T) => dbi.update(storeName, data),
-        remove: (id: number) => dbi.remove(storeName, id),
-        clear: () => dbi.clear(storeName),
-        batchImport: (batch: IRecords_DB[]) => dbi.batchOperations(storeName, batch)
+        _processWithCursor
     }
 }
 

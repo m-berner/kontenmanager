@@ -23,7 +23,7 @@ import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
-const {update} = useAccountsDB()
+const {update, isConnected} = useAccountsDB()
 const {validateForm} = useValidation()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
@@ -44,6 +44,10 @@ const T = Object.freeze({
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_ACCOUNT : onClickOk')
   if (!await validateForm(formRef)) return
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   try {
     const account: IAccount_Store = {
       cID: activeAccountId.value,

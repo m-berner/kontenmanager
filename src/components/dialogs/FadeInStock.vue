@@ -13,10 +13,12 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import {useStocksDB} from '@/composables/useIndexedDB'
+import {useBrowser} from '@/composables/useBrowser'
 
 const {t} = useI18n()
 const {log} = useApp()
-const {update} = useStocksDB()
+const {notice} = useBrowser()
+const {update, isConnected} = useStocksDB()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
 
@@ -32,6 +34,10 @@ const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
   log('FADE_IN_STOCK: onClickOk')
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   if (_selected.value !== null) {
     _selected.value.cFadeOut = 0
     await update(_selected.value)

@@ -20,10 +20,11 @@ import {useValidation} from '@/composables/useValidation'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
-const {update} = useBookingTypesDB()
+const {update, isConnected} = useBookingTypesDB()
 const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
+const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
 
 const T = Object.freeze({
   MESSAGES: {
@@ -55,9 +56,11 @@ const onSelect = () => {
 
 const onClickOk = async (): Promise<void> => {
   log('UPDATE_BOOKING_TYPE: onClickOk')
-  const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
   if (!await validateForm(formRef)) return
-
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   try {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const ind = records.bookingTypes.getIndexById(formSelectedIndex.value)

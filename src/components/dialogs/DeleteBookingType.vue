@@ -18,7 +18,7 @@ import {useBookingTypesDB} from '@/composables/useIndexedDB'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
-const {remove} = useBookingTypesDB()
+const {remove, isConnected} = useBookingTypesDB()
 const {validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
@@ -42,7 +42,10 @@ const formRef = ref<HTMLFormElement | null>(null)
 const onClickOk = async (): Promise<void> => {
   log('DELETE_BOOKING_TYPE : onClickOk')
   if (!await validateForm(formRef)) return
-
+  if (!isConnected.value) {
+    await notice(['Database not connected'])
+    return
+  }
   try {
     if (!records.bookings.hasBookingType(selected.value)) {
       records.bookingTypes.remove(selected.value)
