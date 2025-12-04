@@ -217,14 +217,15 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    async function batchOperations(storeName: string, operations: IRecords_DB[]): Promise<unknown[]> {
+    async function batchOperations(storeName: string, operations: IRecords_DB[]): Promise<void> {
         const db = await _openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
 
-        const promises = operations.map(op => {
-            let request: IDBRequest
-            return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+            let completed = 0
+            operations.forEach(op => {
+                let request: IDBRequest
                 switch (op.type) {
                     case 'add':
                         request = store.add(op.data)
@@ -243,15 +244,22 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                         reject(new Error(`Unknown operation type: ${(op as any).type}`))
                         return
                 }
-                tx.oncomplete = () => resolve(request.result as unknown)
-                tx.onerror = () => reject(tx.error)
-                tx.onabort = () => reject(new Error('Transaction aborted'))
+                request.onsuccess = () => {
+                    completed++
+                    if (completed === operations.length) {
+                        resolve()
+                    }
+                }
+                request.onerror = () => {
+                    reject(request.error)
+                }
             })
+            tx.onerror = () => reject(tx.error)
+            tx.onabort = () => reject(new Error('Transaction aborted'))
         })
-        return Promise.all(promises)
     }
 
-    async function _getAllByIndex<T>(storeName: string, indexName: string, value: number | string): Promise<T[]> {
+    async function getAllByIndex<T>(storeName: string, indexName: string, value: number | string): Promise<T[]> {
         const db = await _openDB()
         const tx = db.transaction(storeName, 'readonly')
         const store = tx.objectStore(storeName)
@@ -268,16 +276,10 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     async function _getAllInTransaction<T>(tx: IDBTransaction, storeName: string): Promise<T[]> {
         const store = tx.objectStore(storeName)
         const request = store.getAll()
-
         return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
+            request.onsuccess = () => resolve(request.result)
+            request.onerror = () => reject(request.error)
         })
-        // return new Promise((resolve, reject) => {
-        //     request.onsuccess = () => resolve(request.result)
-        //     request.onerror = () => reject(request.error)
-        // })
     }
 
     async function deleteDatabaseWithAccount(accountId: number): Promise<void> {
@@ -304,17 +306,11 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         bookings.filter((b: IBooking_DB) => b.cAccountNumberID === accountId).forEach((b: IBooking_DB) => bookingsStore.delete(b.cID))
         bookingTypes.filter((bt: IBookingType_DB) => bt.cAccountNumberID === accountId).forEach((bt: IBookingType_DB) => bookingTypesStore.delete(bt.cID))
         stocks.filter((s: IStock_DB) => s.cAccountNumberID === accountId).forEach((s: IStock_DB) => stocksStore.delete(s.cID))
-        const request = accountsStore.delete(accountId)
-
+        accountsStore.delete(accountId)
         return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result)
+            tx.oncomplete = () => resolve()
             tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
         })
-        // return new Promise((resolve, reject) => {
-        //     tx.oncomplete = () => resolve()
-        //     tx.onerror = () => reject(tx.error)
-        // })
     }
 
     async function getDatabaseStores(accountId: number): Promise<IStores_DB> {
@@ -383,7 +379,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    async function _processWithCursor<T>(
+    async function processWithCursor<T>(
         storeName: string,
         callback: (item: T) => void | Promise<void>,
         indexName?: string,
@@ -418,7 +414,6 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         isConnected,
         error,
         isLoading,
-        _openDB,
         closeDB,
         countByIndex,
         add,
@@ -428,10 +423,10 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         remove,
         clear,
         batchOperations,
-        _getAllByIndex,
+        getAllByIndex,
         deleteDatabaseWithAccount,
         getDatabaseStores,
-        _processWithCursor
+        processWithCursor
     }
 }
 
