@@ -267,7 +267,8 @@
       "fees": "Trade fees",
       "taxes": "Trade taxes",
       "itemsPerPageText": "Entries per page",
-      "noDataText": "No dividend received yet"
+      "noDataText": "No dividend received yet",
+      "year": "Year"
     },
     "showDividend": {
       "title": "Dividend Overview",

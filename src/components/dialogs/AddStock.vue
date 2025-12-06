@@ -40,7 +40,6 @@ const T = Object.freeze({
   }
 })
 // TODO show accounting: per year view, entries correct wrong calculations
-// TODO export per year
 const formDisabled = ref(false)
 
 const reset = (): void => {

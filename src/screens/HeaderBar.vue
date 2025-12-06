@@ -142,7 +142,6 @@ const onIconClick = async (ev: Event): Promise<void> => {
         }
         break
       case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE:
-        console.error(bookingTypeItems.value)
         if (bookingTypeItems.value.length === 0) {
           info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
         } else {

@@ -200,19 +200,19 @@ export interface II18n {
     i18n: I18n<{ 'de-DE': TMessageSchema, 'en-US': TMessageSchema }>
 }
 
-export interface IIdIsin {
-    id: number
-    isin: string
-}
-
-export interface IIndexData {
-    key: string,
+export interface IStringNumber {
+    key: string
     value: number
 }
 
-export interface IMaterialData {
-    key: string,
-    value: number
+export interface INumberString {
+    key: number
+    value: string
+}
+
+export interface IOptionMenuProps {
+    recordID: number
+    menuItems: IMenuItem[]
 }
 
 export interface IMenuItem {
@@ -228,11 +228,6 @@ export interface IMinRateMaxData {
     min: string,
     max: string,
     cur: string
-}
-
-export interface IOptionMenuProps {
-    recordID: number
-    menuItems: IMenuItem[]
 }
 
 export interface IPinia {
@@ -335,15 +330,19 @@ export interface IStores_Store {
     stocks: IStock_Store[]
 }
 
+export interface IStorageOnline {
+                  id: number,
+                  isin: string,
+                  min: string,
+                  rate: string,
+                  max: string,
+                  cur: string
+}
+
 export interface ITeleport {
     dialogName: string
     dialogOk: boolean
     dialogVisibility: boolean
-}
-
-export interface IUrlWithId {
-    url: string
-    id: number
 }
 
 export interface IVisibleAlert {

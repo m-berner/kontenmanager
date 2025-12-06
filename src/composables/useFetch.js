@@ -69,7 +69,7 @@ export function useFetch() {
             const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE];
             const _fnet = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.url);
+                    const firstResponse = await fetch(urlObj.value);
                     const secondResponse = await fetch(firstResponse.url);
                     const secondResponseText = await secondResponse.text();
                     const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
@@ -96,7 +96,7 @@ export function useFetch() {
                         onlineRate = onlineNodes[0].textContent ?? '';
                     }
                     return {
-                        id: urlObj.id,
+                        id: urlObj.key,
                         isin: '',
                         rate: onlineRate,
                         min: onlineMin,
@@ -107,7 +107,7 @@ export function useFetch() {
             };
             const _ard = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.url);
+                    const firstResponse = await fetch(urlObj.value);
                     const firstResponseText = await firstResponse.text();
                     const firstResponseDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
                     const firstResponseRows = firstResponseDocument.querySelectorAll('#desktopSearchResult > table > tbody > tr');
@@ -122,7 +122,7 @@ export function useFetch() {
                         const onlineMin = (ardRows[6].cells[1].textContent ?? '0').replace('€', '');
                         const onlineMax = (ardRows[7].cells[1].textContent ?? '0').replace('€', '');
                         return {
-                            id: urlObj.id,
+                            id: urlObj.key,
                             isin: '',
                             rate: onlineRate,
                             min: onlineMin,
@@ -132,7 +132,7 @@ export function useFetch() {
                     }
                     else {
                         return {
-                            id: urlObj.id,
+                            id: urlObj.key,
                             isin: '',
                             rate: '0',
                             min: '0',
@@ -144,7 +144,7 @@ export function useFetch() {
             };
             const _wstreet = async (urls, homeUrl) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.url);
+                    const firstResponse = await fetch(urlObj.value);
                     const firstResponseJson = await firstResponse.json();
                     const url2 = homeUrl + firstResponseJson.result[0].link;
                     const secondResponse = await fetch(url2);
@@ -165,7 +165,7 @@ export function useFetch() {
                         onlineCurrency = 'EUR';
                     }
                     return {
-                        id: urlObj.id ?? 0,
+                        id: urlObj.key ?? 0,
                         isin: '',
                         rate: onlineRate,
                         min: onlineMin ?? '',
@@ -176,7 +176,7 @@ export function useFetch() {
             };
             const _goyax = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.url);
+                    const firstResponse = await fetch(urlObj.value);
                     const secondResponse = await fetch(firstResponse.url);
                     const secondResponseText = await secondResponse.text();
                     const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
@@ -193,7 +193,7 @@ export function useFetch() {
                         '0';
                     const onlineCurrency = 'EUR';
                     return {
-                        id: urlObj.id,
+                        id: urlObj.key,
                         isin: '',
                         rate: onlineRate,
                         min: onlineMin,
@@ -204,7 +204,7 @@ export function useFetch() {
             };
             const _acheck = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.url);
+                    const firstResponse = await fetch(urlObj.value);
                     let onlineCurrency = '';
                     const secondResponse = await fetch(firstResponse.url);
                     const secondResponseText = await secondResponse.text();
@@ -230,7 +230,7 @@ export function useFetch() {
                             onlineCurrency = 'EUR';
                         }
                         return {
-                            id: urlObj.id,
+                            id: urlObj.key,
                             isin: '',
                             rate: onlineRate,
                             min: onlineMin,
@@ -252,7 +252,7 @@ export function useFetch() {
             };
             const _tgate = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.url);
+                    const firstResponse = await fetch(urlObj.value);
                     const onlineCurrency = 'EUR';
                     const onlineMax = '0';
                     const onlineMin = '0';
@@ -266,7 +266,7 @@ export function useFetch() {
                     const quote = mean([toNumber(resultbid), toNumber(resultask)]);
                     const onlineRate = quote.toString();
                     return {
-                        id: urlObj.id,
+                        id: urlObj.key,
                         isin: '',
                         rate: onlineRate,
                         min: onlineMin,
@@ -314,8 +314,8 @@ export function useFetch() {
                     const isin = storageOnline[i].isin;
                     if (isin !== undefined && service !== undefined && service !== null) {
                         urls.push({
-                            url: service.QUOTE + isin,
-                            id: storageOnline[i].id ?? -1
+                            value: service.QUOTE + isin,
+                            key: storageOnline[i].id ?? -1
                         });
                     }
                 }
@@ -506,7 +506,7 @@ export function useFetch() {
             return new Date(`${year}-${month}-${day}`).getTime();
         };
         return obj.map(async (entry) => {
-            const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${entry.isin}`);
+            const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${entry.value}`);
             if (firstResponse.url.length === 0 ||
                 !firstResponse.ok ||
                 firstResponse.status >= CONS.STATES.SRV ||
@@ -560,7 +560,7 @@ export function useFetch() {
                             : 0;
                 }
             }
-            return { key: entry.id, value: gmqf };
+            return { key: entry.key, value: gmqf };
         });
     }
     return {

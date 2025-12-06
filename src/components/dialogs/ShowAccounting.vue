@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed, defineExpose} from 'vue'
+import {computed, defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -28,7 +28,8 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>
     NO_DATA_TEXT: t('dialogs.showAccounting.noDataText'),
     FEES: t('dialogs.showAccounting.fees'),
     TAXES: t('dialogs.showAccounting.taxes'),
-    SUM: t('dialogs.showAccounting.sum')
+    SUM: t('dialogs.showAccounting.sum'),
+    YEAR: t('dialogs.showAccounting.year')
   },
   HEADERS: [
     {
@@ -46,43 +47,53 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>
   ]
 })
 
+const currentYear = new Date().getFullYear()
+const selected = ref(currentYear)
+
+const yearEntries = computed(() => {
+  const years = Array.from(records.bookings.bookedYears)
+  return years.map((entry) => {
+    return {id: entry, title: entry.toString()}
+  })
+})
 const accountEntries = computed(() => {
+  const y = selected.value
   const result: IAccountEntry[] = []
-  const {items} = storeToRefs(records.bookingTypes)
-  const categories = items.value
-  for (let i = 0; i < categories.length; i++) {
+  const sums = records.bookings.sumBookingsPerTypeAndYear(y)
+  let finalSum = 0
+  for (let i = 0; i < sums.length; i++) {
     let sc = ''
-    const sum = records.bookings.sumBookingsPerType[i]
-    if (sum < 0) {
+    if (sums[i].key < 0) {
       sc = 'color-red'
     }
     result.push({
       id: i,
-      name: categories[i].cName,
-      sum,
+      name: sums[i].value,
+      sum: sums[i].key,
       nameClass: '',
       sumClass: sc
     })
+    finalSum += sums[i].key
   }
   result.push({
-    id: categories.length,
+    id: sums.length,
     name: T.STRINGS.SUM,
-    sum: records.bookings.sumBookingsPerType.reduce((acc: number, cur: number) => acc + cur, 0) + records.bookings.sumTaxes + records.bookings.sumFees,
+    sum: finalSum + records.bookings.sumTaxes(y) + records.bookings.sumFees(y),
     nameClass: 'font-weight-bold',
     sumClass: 'font-weight-bold'
   })
   if (records.accounts.isDepot) {
     result.unshift({
-      id: categories.length + 1,
+      id: sums.length + 1,
       name: T.STRINGS.TAXES,
-      sum: records.bookings.sumTaxes,
+      sum: records.bookings.sumTaxes(y),
       nameClass: '',
       sumClass: 'color-red'
     })
     result.unshift({
-      id: categories.length + 2,
+      id: sums.length + 2,
       name: T.STRINGS.FEES,
-      sum: records.bookings.sumFees,
+      sum: records.bookings.sumFees(y),
       nameClass: '',
       sumClass: 'color-red'
     })
@@ -100,6 +111,17 @@ log('--- ShowAccounting.vue setup ---')
   <v-form
       validate-on="submit"
       @submit.prevent>
+    <v-select
+        v-model="selected"
+        item-title="title"
+        item-value="id"
+        :items="yearEntries"
+        :label="T.STRINGS.YEAR"
+        clearable
+        density="compact"
+        max-width="300"
+        variant="outlined"
+    />
     <v-card>
       <v-card-text class="pa-5">
         <v-data-table

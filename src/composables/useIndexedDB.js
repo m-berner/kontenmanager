@@ -177,36 +177,41 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const store = tx.objectStore(storeName);
         return new Promise((resolve, reject) => {
             let completed = 0;
-            operations.forEach(op => {
-                let request;
-                switch (op.type) {
-                    case 'add':
-                        request = store.add(op.data);
-                        break;
-                    case 'put':
-                        request = store.put(op.data);
-                        break;
-                    case 'delete':
-                        if (!op.key) {
-                            reject(new Error('Delete operation requires a key'));
+            try {
+                operations.forEach(op => {
+                    let request;
+                    switch (op.type) {
+                        case 'add':
+                            request = store.add(op.data);
+                            break;
+                        case 'put':
+                            request = store.put(op.data);
+                            break;
+                        case 'delete':
+                            if (!op.key) {
+                                reject(new Error('Delete operation requires a key'));
+                                return;
+                            }
+                            request = store.delete(op.key);
+                            break;
+                        default:
+                            reject(new Error(`Unknown operation type: ${op.type}`));
                             return;
-                        }
-                        request = store.delete(op.key);
-                        break;
-                    default:
-                        reject(new Error(`Unknown operation type: ${op.type}`));
-                        return;
-                }
-                request.onsuccess = () => {
-                    completed++;
-                    if (completed === operations.length) {
-                        resolve();
                     }
-                };
-                request.onerror = () => {
-                    reject(request.error);
-                };
-            });
+                    request.onsuccess = () => {
+                        completed++;
+                        if (completed === operations.length) {
+                            resolve();
+                        }
+                    };
+                    request.onerror = () => {
+                        reject(request.error);
+                    };
+                });
+            }
+            catch (e) {
+                log('USE_INDEXED_DB', { error: e });
+            }
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(new Error('Transaction aborted'));
         });

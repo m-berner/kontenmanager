@@ -125,8 +125,8 @@ const useStocksStore = defineStore('stocks', function () {
                 });
                 if ((utcDate(pageStocks[i].cMeetingDay).getTime() < Date.now() || utcDate(pageStocks[i].cQuarterDay).getTime() < Date.now()) && utcDate(pageStocks[i].cAskDates).getTime() < Date.now()) {
                     isinDates.push({
-                        id: pageStocks[i].cID,
-                        isin: pageStocks[i].cISIN
+                        key: pageStocks[i].cID,
+                        value: pageStocks[i].cISIN
                     });
                 }
             }
@@ -138,7 +138,7 @@ const useStocksStore = defineStore('stocks', function () {
             pageStocks[i].mValue = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].rate) / curUsd.value : toNumber(minRateMaxResponse[i].rate) / curEur.value;
             pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd.value : toNumber(minRateMaxResponse[i].max) / curEur.value;
             pageStocks[i].mEuroChange = (pageStocks[i].mValue ?? 0) * (pageStocks[i].mPortfolio ?? 0) - (pageStocks[i].mInvest ?? 0);
-            for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].id; j++) {
+            for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].key; j++) {
                 pageStocks[i].cMeetingDay = (await dateResponse[j]).value.gm > 0 ? isoDate((await dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO;
                 pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO;
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000);
@@ -263,25 +263,30 @@ const useBookingsStore = defineStore('bookings', function () {
         const findings = items.value.filter((entry) => entry.cBookingTypeID === ident);
         return findings.length > 0;
     });
-    const sumFees = computed(() => {
-        return items.value.map((entry) => {
+    const sumFees = computed(() => (y) => {
+        return items.value.filter((entry) => {
+            return new Date(entry.cBookDate).getFullYear() === y;
+        }).map((entry) => {
             return entry.cFeeCredit - entry.cFeeDebit;
         }).reduce((acc, cur) => acc + cur, 0);
     });
-    const sumTaxes = computed(() => {
-        return items.value.map((entry) => {
+    const sumTaxes = computed(() => (y) => {
+        return items.value.filter((entry) => {
+            return new Date(entry.cBookDate).getFullYear() === y;
+        }).map((entry) => {
             return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit;
         }).reduce((acc, cur) => acc + cur, 0);
     });
-    const sumBookingsPerType = computed(() => {
+    const sumBookingsPerTypeAndYear = computed(() => (y) => {
         const bt = useBookingTypesStore();
         const sums = [];
         for (let i = 0; i < bt.items.length; i++) {
-            sums[i] = items.value.filter((entry) => {
-                return entry.cBookingTypeID === bt.items[i].cID;
+            const t = items.value.filter((entry) => {
+                return entry.cBookingTypeID === bt.items[i].cID && new Date(entry.cBookDate).getFullYear() === y;
             }).map((entry) => {
                 return entry.cCredit - entry.cDebit;
             }).reduce((acc, cur) => acc + cur, 0);
+            sums.push({ key: t, value: bt.items[i].cName });
         }
         return sums;
     });
@@ -319,6 +324,10 @@ const useBookingsStore = defineStore('bookings', function () {
             return { id: ident, year: entry.cExDate, sum: entry.cCredit };
         });
     });
+    const bookedYears = computed(() => {
+        const years = items.value.map((entry) => (new Date(entry.cBookDate).getFullYear()));
+        return new Set(years);
+    });
     function add(booking, prepend = false) {
         log('BOOKINGS_STORE: add');
         if (prepend) {
@@ -351,13 +360,14 @@ const useBookingsStore = defineStore('bookings', function () {
     }
     return {
         items,
+        bookedYears,
         getById,
         getIndexById,
         getTextById,
         sumBookings,
         sumFees,
         sumTaxes,
-        sumBookingsPerType,
+        sumBookingsPerTypeAndYear,
         hasBookingType,
         portfolioByStockId,
         investByStockId,

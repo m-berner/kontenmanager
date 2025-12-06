@@ -267,7 +267,8 @@
       "fees": "Aktienhandel Gebühren",
       "taxes": "Aktienhandel Steuern",
       "itemsPerPageText": "Einträge pro Seite",
-      "noDataText": "Bisher keine Dividende erhalten"
+      "noDataText": "Bisher keine Dividende erhalten",
+      "year": "Jahr"
     },
     "showDividend": {
       "title": "Dividenden Übersicht",

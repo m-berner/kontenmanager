@@ -31,7 +31,6 @@ export const useAlertStore = defineStore('alert', () => {
 
         if (currentAlert.value.id === -1) {
             showNext()
-            console.error(alertMessage.value, message, currentAlert.value.message)
         }
 
         if (duration) {

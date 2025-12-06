@@ -9,6 +9,7 @@ import type {
     IAccount_Store,
     IBooking_Store,
     IBookingType_Store,
+    INumberString,
     IStock_DB,
     IStock_Memory,
     IStock_Store,
@@ -145,7 +146,6 @@ const useStocksStore = defineStore('stocks', function () {
                 )
             }
             for (let i = 0; i < pageStocks.length; i++) {
-                //if (pageStocks[i].mValue === 0) {
                 isin.push({
                     id: pageStocks[i].cID,
                     isin: pageStocks[i].cISIN,
@@ -154,11 +154,10 @@ const useStocksStore = defineStore('stocks', function () {
                     max: '0',
                     cur: ''
                 })
-                //}
                 if ((utcDate(pageStocks[i].cMeetingDay).getTime() < Date.now() || utcDate(pageStocks[i].cQuarterDay).getTime() < Date.now()) && utcDate(pageStocks[i].cAskDates).getTime() < Date.now()) {
                     isinDates.push({
-                        id: pageStocks[i].cID,
-                        isin: pageStocks[i].cISIN
+                        key: pageStocks[i].cID,
+                        value: pageStocks[i].cISIN
                     })
                 }
             }
@@ -170,7 +169,7 @@ const useStocksStore = defineStore('stocks', function () {
             pageStocks[i].mValue = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].rate) / curUsd.value : toNumber(minRateMaxResponse[i].rate) / curEur.value
             pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd.value : toNumber(minRateMaxResponse[i].max) / curEur.value
             pageStocks[i].mEuroChange = (pageStocks[i].mValue ?? 0) * (pageStocks[i].mPortfolio ?? 0) - (pageStocks[i].mInvest ?? 0)
-            for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].id; j++) {
+            for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].key; j++) {
                 pageStocks[i].cMeetingDay = (await dateResponse[j]).value.gm > 0 ? isoDate((await dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO
                 pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000)
@@ -304,28 +303,33 @@ const useBookingsStore = defineStore('bookings', function () {
         const findings = items.value.filter((entry: IBooking_Store) => entry.cBookingTypeID === ident)
         return findings.length > 0
     })
-    const sumFees = computed(() => {
-        return items.value.map((entry: IBooking_Store) => {
+    const sumFees = computed(() => (y: number) => {
+        return items.value.filter((entry: IBooking_Store) => {
+            return new Date(entry.cBookDate).getFullYear() === y
+        }).map((entry: IBooking_Store) => {
             // if (entry.cBookingTypeID === 5) {
             //     return entry.cCredit - entry.cDebit
             // }
             return entry.cFeeCredit - entry.cFeeDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
-    const sumTaxes = computed(() => {
-        return items.value.map((entry: IBooking_Store) => {
+    const sumTaxes = computed(() => (y: number) => {
+        return items.value.filter((entry: IBooking_Store) => {
+            return new Date(entry.cBookDate).getFullYear() === y
+        }).map((entry: IBooking_Store) => {
             return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
-    const sumBookingsPerType = computed(() => {
+    const sumBookingsPerTypeAndYear = computed(() => (y: number) => {
         const bt = useBookingTypesStore()
-        const sums: number[] = []
+        const sums: INumberString[] = []
         for (let i = 0; i < bt.items.length; i++) {
-            sums[i] = items.value.filter((entry: IBooking_Store) => {
-                return entry.cBookingTypeID === bt.items[i].cID
+            const t = items.value.filter((entry: IBooking_Store) => {
+                return entry.cBookingTypeID === bt.items[i].cID && new Date(entry.cBookDate).getFullYear() === y
             }).map((entry: IBooking_Store) => {
                 return entry.cCredit - entry.cDebit
             }).reduce((acc: number, cur: number) => acc + cur, 0)
+            sums.push({key: t, value: bt.items[i].cName})
         }
         return sums
     })
@@ -361,6 +365,10 @@ const useBookingsStore = defineStore('bookings', function () {
         }).map((entry: IBooking_Store) => {
             return {id: ident, year: entry.cExDate, sum: entry.cCredit}
         })
+    })
+    const bookedYears = computed(() => {
+        const years = items.value.map((entry: IBooking_Store) => (new Date(entry.cBookDate).getFullYear()))
+        return new Set(years)
     })
 
     function add(booking: IBooking_Store, prepend: boolean = false): void {
@@ -399,13 +407,14 @@ const useBookingsStore = defineStore('bookings', function () {
 
     return {
         items,
+        bookedYears,
         getById,
         getIndexById,
         getTextById,
         sumBookings,
         sumFees,
         sumTaxes,
-        sumBookingsPerType,
+        sumBookingsPerTypeAndYear,
         hasBookingType,
         portfolioByStockId,
         investByStockId,
@@ -576,8 +585,6 @@ export const useRecordsStore = defineStore('records', function () {
             cAccountNumberID: activeAccountId.value,
             cAskDates: CONS.DATE.DEFAULT_ISO
         }, true)
-        //bookingTypesStore.add({cID: 0, cName: '', cAccountNumberID: activeAccountId.value}, true)
-        //
         if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
             info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null)
             sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true')
