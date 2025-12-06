@@ -48,17 +48,18 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>
 
 const accountEntries = computed(() => {
   const result: IAccountEntry[] = []
-  const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
-  const categories = bookingTypeItems.value.filter((rec) => rec.cID > 0)
+  const {items} = storeToRefs(records.bookingTypes)
+  const categories = items.value
   for (let i = 0; i < categories.length; i++) {
     let sc = ''
-    if (records.bookings.sumBookingTypes[i] < 0) {
+    const sum = records.bookings.sumBookingsPerType[i]
+    if (sum < 0) {
       sc = 'color-red'
     }
     result.push({
       id: i,
       name: categories[i].cName,
-      sum: records.bookings.sumBookingTypes[i],
+      sum,
       nameClass: '',
       sumClass: sc
     })
@@ -66,7 +67,7 @@ const accountEntries = computed(() => {
   result.push({
     id: categories.length,
     name: T.STRINGS.SUM,
-    sum: records.bookings.sumBookingTypes.reduce((acc: number, cur: number) => acc + cur, 0) + records.bookings.sumTaxes + records.bookings.sumFees,
+    sum: records.bookings.sumBookingsPerType.reduce((acc: number, cur: number) => acc + cur, 0) + records.bookings.sumTaxes + records.bookings.sumFees,
     nameClass: 'font-weight-bold',
     sumClass: 'font-weight-bold'
   })

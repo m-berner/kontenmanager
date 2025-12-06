@@ -317,11 +317,11 @@ const useBookingsStore = defineStore('bookings', function () {
             return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
-    const sumBookingTypes = computed(() => {
+    const sumBookingsPerType = computed(() => {
         const bt = useBookingTypesStore()
         const sums: number[] = []
-        for (let i = 1; i < bt.items.length; i++) {
-            sums[i - 1] = items.value.filter((entry: IBooking_Store) => {
+        for (let i = 0; i < bt.items.length; i++) {
+            sums[i] = items.value.filter((entry: IBooking_Store) => {
                 return entry.cBookingTypeID === bt.items[i].cID
             }).map((entry: IBooking_Store) => {
                 return entry.cCredit - entry.cDebit
@@ -405,7 +405,7 @@ const useBookingsStore = defineStore('bookings', function () {
         sumBookings,
         sumFees,
         sumTaxes,
-        sumBookingTypes,
+        sumBookingsPerType,
         hasBookingType,
         portfolioByStockId,
         investByStockId,
