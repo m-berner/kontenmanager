@@ -24,9 +24,26 @@ const stockFormularData = reactive<IStock_Formular>({
 })
 const formRef = ref<HTMLFormElement | null>(null)
 
+const reset = (): void => {
+    Object.assign(stockFormularData, {
+        id: -1,
+        isin: '',
+        company: '',
+        symbol: '',
+        meetingDay: '',
+        quarterDay: '',
+        fadeOut: false,
+        firstPage: false,
+        url: '',
+        askDates: CONS.DATE.DEFAULT_ISO
+    })
+    formRef.value = null
+}
+
 export function useStockFormular() {
     return {
         formRef,
-        stockFormularData
+        stockFormularData,
+        reset
     }
 }

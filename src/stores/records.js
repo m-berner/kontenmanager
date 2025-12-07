@@ -277,12 +277,35 @@ const useBookingsStore = defineStore('bookings', function () {
             return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit;
         }).reduce((acc, cur) => acc + cur, 0);
     });
+    const sumAllFees = computed(() => {
+        return items.value.map((entry) => {
+            return entry.cFeeCredit - entry.cFeeDebit;
+        }).reduce((acc, cur) => acc + cur, 0);
+    });
+    const sumAllTaxes = computed(() => {
+        return items.value.map((entry) => {
+            return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit;
+        }).reduce((acc, cur) => acc + cur, 0);
+    });
     const sumBookingsPerTypeAndYear = computed(() => (y) => {
         const bt = useBookingTypesStore();
         const sums = [];
         for (let i = 0; i < bt.items.length; i++) {
             const t = items.value.filter((entry) => {
                 return entry.cBookingTypeID === bt.items[i].cID && new Date(entry.cBookDate).getFullYear() === y;
+            }).map((entry) => {
+                return entry.cCredit - entry.cDebit;
+            }).reduce((acc, cur) => acc + cur, 0);
+            sums.push({ key: t, value: bt.items[i].cName });
+        }
+        return sums;
+    });
+    const sumBookingsPerType = computed(() => {
+        const bt = useBookingTypesStore();
+        const sums = [];
+        for (let i = 0; i < bt.items.length; i++) {
+            const t = items.value.filter((entry) => {
+                return entry.cBookingTypeID === bt.items[i].cID;
             }).map((entry) => {
                 return entry.cCredit - entry.cDebit;
             }).reduce((acc, cur) => acc + cur, 0);
@@ -367,7 +390,10 @@ const useBookingsStore = defineStore('bookings', function () {
         sumBookings,
         sumFees,
         sumTaxes,
+        sumAllFees,
+        sumAllTaxes,
         sumBookingsPerTypeAndYear,
+        sumBookingsPerType,
         hasBookingType,
         portfolioByStockId,
         investByStockId,

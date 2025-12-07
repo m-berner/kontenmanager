@@ -6,16 +6,18 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {computed} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRouter} from 'vue-router'
+import connectionIcon from '@/assets/connection48.png'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
 import {useApp} from '@/composables/useApp'
+import {useFetch} from '@/composables/useFetch'
 
 const {n, t} = useI18n()
 const router = useRouter()
@@ -24,6 +26,7 @@ const settings = useSettingsStore()
 const runtime = useRuntimeStore()
 const {isCompanyPage, isDownloading} = storeToRefs(runtime)
 const {notice, setStorage} = useBrowser()
+const {fetchIsOk} = useFetch()
 const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
@@ -43,14 +46,19 @@ const T = Object.freeze({
   }
 })
 
+const isOnline = ref(false)
+const isCheckingConnection = ref(true)
+
 const logoUrl = computed((): string => {
   const ind = records.accounts.getIndexById(activeAccountId.value)
   const {items: accountItems} = storeToRefs(records.accounts)
+  if (isCheckingConnection.value || !isOnline.value) {
+    return connectionIcon
+  }
   if (ind > -1) {
     return accountItems.value[ind].cLogoUrl
-  } else {
-    return ''
   }
+  return connectionIcon
 })
 const balance = computed((): string => {
   return n(records.bookings.sumBookings(), 'currency')
@@ -68,14 +76,16 @@ const onUpdateTitleBar = async (): Promise<void> => {
     isCompanyPage.value = false
     await router.push('/')
   } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, errorMessage])
   }
 }
+
+onMounted(async () => {
+  isOnline.value = await fetchIsOk()
+  isCheckingConnection.value = false
+})
 
 log('--- TitleBar.vue setup ---')
 </script>
@@ -115,7 +125,7 @@ log('--- TitleBar.vue setup ---')
         variant="outlined"
         @update:model-value="onUpdateTitleBar">
       <template #prepend>
-        <img :alt="T.STRINGS.LOGO_ALT" :src="logoUrl"/>
+          <img :alt="T.STRINGS.LOGO_ALT" :src="logoUrl"/>
       </template>
     </v-select>
   </v-app-bar>

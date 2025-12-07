@@ -9,7 +9,7 @@ import {reactive, ref} from 'vue'
 import type {IAccount_Formular} from '@/types'
 
 const accountFormularData = reactive<IAccount_Formular>({
-    id: 0,
+    id: -1,
     swift: '',
     iban: '',
     logoUrl: '',
@@ -17,9 +17,21 @@ const accountFormularData = reactive<IAccount_Formular>({
 })
 const formRef = ref<HTMLFormElement | null>(null)
 
+const reset = (): void => {
+    Object.assign(accountFormularData, {
+        id: -1,
+        swift: '',
+        iban: '',
+        logoUrl: '',
+        withDepot: false
+    })
+    formRef.value = null
+}
+
 export function useAccountFormular() {
     return {
         formRef,
-        accountFormularData
+        accountFormularData,
+        reset
     }
 }

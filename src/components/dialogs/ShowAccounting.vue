@@ -47,19 +47,34 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>
   ]
 })
 
-const currentYear = new Date().getFullYear()
-const selected = ref(currentYear)
+const selected = ref(1000)
 
 const yearEntries = computed(() => {
-  const years = Array.from(records.bookings.bookedYears)
+  const years = [1000, ...Array.from(records.bookings.bookedYears)]
   return years.map((entry) => {
-    return {id: entry, title: entry.toString()}
+    let entryString = entry.toString()
+    if (entry === 1000) {
+      entryString = 'Gesamt'
+    }
+    return {id: entry, title: entryString}
   })
 })
+// TODO replace magic number 1000 by const
 const accountEntries = computed(() => {
   const y = selected.value
   const result: IAccountEntry[] = []
-  const sums = records.bookings.sumBookingsPerTypeAndYear(y)
+  let sums
+  let sumsFees = 0
+  let sumsTaxes = 0
+  if (selected.value === 1000) {
+    sums = records.bookings.sumBookingsPerType
+    sumsTaxes = records.bookings.sumAllTaxes
+    sumsFees = records.bookings.sumAllFees
+  } else {
+    sums = records.bookings.sumBookingsPerTypeAndYear(y)
+    sumsTaxes = records.bookings.sumTaxes(y)
+    sumsFees = records.bookings.sumFees(y)
+  }
   let finalSum = 0
   for (let i = 0; i < sums.length; i++) {
     let sc = ''
@@ -78,7 +93,7 @@ const accountEntries = computed(() => {
   result.push({
     id: sums.length,
     name: T.STRINGS.SUM,
-    sum: finalSum + records.bookings.sumTaxes(y) + records.bookings.sumFees(y),
+    sum: finalSum + sumsTaxes + sumsFees,
     nameClass: 'font-weight-bold',
     sumClass: 'font-weight-bold'
   })
@@ -86,14 +101,14 @@ const accountEntries = computed(() => {
     result.unshift({
       id: sums.length + 1,
       name: T.STRINGS.TAXES,
-      sum: records.bookings.sumTaxes(y),
+      sum: sumsTaxes,
       nameClass: '',
       sumClass: 'color-red'
     })
     result.unshift({
       id: sums.length + 2,
       name: T.STRINGS.FEES,
-      sum: records.bookings.sumFees(y),
+      sum: sumsFees,
       nameClass: '',
       sumClass: 'color-red'
     })

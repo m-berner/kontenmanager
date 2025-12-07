@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IStock_Store} from '@/types'
-import {onMounted, ref} from 'vue'
+import {onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -29,7 +29,7 @@ const T = Object.freeze({
   }
 })
 
-const _selected = ref<IStock_Store | null>(null)
+const selected = ref<IStock_Store | null>(null)
 const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
@@ -38,9 +38,9 @@ const onClickOk = async (): Promise<void> => {
     await notice(['Database not connected'])
     return
   }
-  if (_selected.value !== null) {
-    _selected.value.cFadeOut = 0
-    await update(_selected.value)
+  if (selected.value !== null) {
+    selected.value.cFadeOut = 0
+    await update(selected.value)
   }
   runtime.resetTeleport()
 }
@@ -48,9 +48,9 @@ const onClickOk = async (): Promise<void> => {
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
-onMounted(() => {
-  log('FADE_IN_STOCK: onMounted')
-  _selected.value = null
+onBeforeMount(() => {
+  log('FADE_IN_STOCK: onBeforeMount')
+  selected.value = null
 })
 
 log('--- FadeInStock.vue setup ---')
@@ -63,7 +63,7 @@ log('--- FadeInStock.vue setup ---')
       v-on:submit.prevent>
     <v-card-text class="pa-5">
       <v-select
-          v-model="_selected"
+          v-model="selected"
           density="compact"
           item-key="cID"
           item-title="cCompany"

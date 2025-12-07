@@ -3,6 +3,21 @@ import { useBrowser } from '@/composables/useBrowser';
 const { CONS, log, mean, toNumber } = useApp();
 const { notice, getStorage } = useBrowser();
 export function useFetch() {
+    async function fetchIsOk() {
+        log('USE_FETCH: fetchIsOk');
+        return new Promise(async (resolve) => {
+            const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.ONLINE_TEST ?? '');
+            if (!firstResponse.ok ||
+                firstResponse.status >= CONS.STATES.SRV ||
+                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
+                await notice(['fetchIsOk: No response']);
+                resolve(false);
+            }
+            else {
+                resolve(true);
+            }
+        });
+    }
     async function fetchCompanyData(isin) {
         return new Promise(async (resolve, reject) => {
             let sDocument;
@@ -570,6 +585,7 @@ export function useFetch() {
         fetchExchangesData,
         fetchMaterialData,
         fetchIndexData,
-        fetchDateData
+        fetchDateData,
+        fetchIsOk
     };
 }

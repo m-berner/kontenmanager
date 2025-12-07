@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IAccount_Store, IBookingType_Store} from '@/types'
-import {defineExpose, onMounted} from 'vue'
+import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -27,13 +27,14 @@ const {add, isConnected} = useAccountsDB()
 const {add: addBookingType} = useBookingTypesDB()
 const {validateForm} = useValidation()
 const {resetTeleport} = useRuntimeStore()
-const {accountFormularData, formRef} = useAccountFormular()
+const {accountFormularData, formRef, reset} = useAccountFormular()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
 const T = Object.freeze({
   MESSAGES: {
     SUCCESS_ADD: t('messages.addAccount.success'),
+    ERROR_ADD: t('messages.addAccount.error'),
     ERROR_ONCLICK_OK: t('messages.onClickOk')
   },
   STRINGS: {
@@ -43,15 +44,6 @@ const T = Object.freeze({
     DIVIDEND: t('dialogs.importDatabase.dividend')
   }
 })
-
-const reset = (): void => {
-  Object.assign(accountFormularData, {
-    swift: '',
-    iban: '',
-    logoUrl: '',
-    withDepot: false
-  })
-}
 
 const onClickOk = async (): Promise<void> => {
   log('ADD_ACCOUNT: onClickOk')
@@ -69,53 +61,52 @@ const onClickOk = async (): Promise<void> => {
       cWithDepot: accountFormularData.withDepot
     }
     const addAccountID = await add(account)
-    if (addAccountID > -1) {
-      const completeAccount: IAccount_Store = {cID: addAccountID, ...account}
-      records.accounts.add(completeAccount)
-      activeAccountId.value = addAccountID
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
-      records.clean(false)
-      resetTeleport()
-      const bookingTypes = []
-      if (accountFormularData.withDepot) {
-        bookingTypes.push({
-          cName: T.STRINGS.BUY,
-          cAccountNumberID: addAccountID
-        })
-        bookingTypes.push({
-          cName: T.STRINGS.SELL,
-          cAccountNumberID: addAccountID
-        })
-        bookingTypes.push({
-          cName: T.STRINGS.DIVIDEND,
-          cAccountNumberID: addAccountID
-        })
-      }
-      for (let i = 0; i < bookingTypes.length; i++) {
-        const addBookingTypeID: number = await addBookingType(bookingTypes[i])
-        if (addBookingTypeID > -1) {
-          const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingTypes[i]}
-          records.bookingTypes.add(completeBookingType)
-          reset()
-        }
-      }
-      await notice([T.MESSAGES.SUCCESS_ADD])
+    if (addAccountID === -1) {
+      log('ADD_ACCOUNT: onClickOk', {error: T.MESSAGES.ERROR_ADD})
+      await notice([T.MESSAGES.ERROR_ADD])
     }
+    const completeAccount: IAccount_Store = {cID: addAccountID, ...account}
+    records.accounts.add(completeAccount)
+    activeAccountId.value = addAccountID
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
+    records.clean(false)
+    resetTeleport()
+    const bookingTypes = []
+    if (accountFormularData.withDepot) {
+      bookingTypes.push({
+        cName: T.STRINGS.BUY,
+        cAccountNumberID: addAccountID
+      })
+      bookingTypes.push({
+        cName: T.STRINGS.SELL,
+        cAccountNumberID: addAccountID
+      })
+      bookingTypes.push({
+        cName: T.STRINGS.DIVIDEND,
+        cAccountNumberID: addAccountID
+      })
+    }
+    for (let i = 0; i < bookingTypes.length; i++) {
+      const addBookingTypeID: number = await addBookingType(bookingTypes[i])
+      if (addBookingTypeID > -1) {
+        const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingTypes[i]}
+        records.bookingTypes.add(completeBookingType)
+        reset()
+      }
+    }
+    await notice([T.MESSAGES.SUCCESS_ADD])
   } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
   }
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
-onMounted(() => {
-  log('ADD_ACCOUNT: onMounted')
+onBeforeMount(() => {
+  log('ADD_ACCOUNT: onBeforeMount')
   reset()
 })
 

@@ -65,22 +65,21 @@ const onClickOk = async (): Promise<void> => {
         cAccountNumberID: activeAccountId.value
       }
       const addBookingTypeID: number = await add(bookingType)
-      if (addBookingTypeID > -1) {
-        const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
-        records.bookingTypes.add(completeBookingType)
-        reset()
-        await notice([T.MESSAGES.SUCCESS_ADD])
+      if (addBookingTypeID === -1) {
+        log('ADD_BOOKING_TYPE: onClickOk', {error: T.MESSAGES.ERROR_ADD})
+        await notice([T.MESSAGES.ERROR_ADD])
       }
+      const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
+      records.bookingTypes.add(completeBookingType)
+      reset()
+      await notice([T.MESSAGES.SUCCESS_ADD])
     } else {
       await notice([T.MESSAGES.ERROR_ADD])
     }
   } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
   }
 }
 

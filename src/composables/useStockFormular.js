@@ -14,9 +14,25 @@ const stockFormularData = reactive({
     askDates: CONS.DATE.DEFAULT_ISO
 });
 const formRef = ref(null);
+const reset = () => {
+    Object.assign(stockFormularData, {
+        id: -1,
+        isin: '',
+        company: '',
+        symbol: '',
+        meetingDay: '',
+        quarterDay: '',
+        fadeOut: false,
+        firstPage: false,
+        url: '',
+        askDates: CONS.DATE.DEFAULT_ISO
+    });
+    formRef.value = null;
+};
 export function useStockFormular() {
     return {
         formRef,
-        stockFormularData
+        stockFormularData,
+        reset
     };
 }

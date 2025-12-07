@@ -22,7 +22,8 @@
       "success": "Booking has been updated"
     },
     "addAccount": {
-      "success": "Account has been added"
+      "success": "Account has been added",
+      "error": "Add account failed"
     },
     "addStock": {
       "success": "Company has been added"
@@ -376,6 +377,7 @@
     },
     "requiredRules": "Is required",
     "notNegative": "Only positive values",
-    "onlyOnePositive": "One value must be 0"
+    "onlyOnePositive": "One value must be 0",
+    "bookingTypeRules": "Booking type is required"
   }
 }

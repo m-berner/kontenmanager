@@ -25,6 +25,11 @@ export default defineConfig({
                     overwrite: true
                 },
                 {
+                    src: 'assets/connection48.png',
+                    dest: '../kontenmanager@gmx.de/assets/',
+                    overwrite: true
+                },
+                {
                     src: '../kontenmanager@gmx.de',
                     dest: 'C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions/',
                     overwrite: true
@@ -37,6 +42,7 @@ export default defineConfig({
             outFileName: 'kontenmanager@gmx.de.xpi'
         })
     ],
+    assetsInclude: ['**/*.svg', '**/*.png'],
     root: './src',
     base: './',
     resolve: {

@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBookingType_Store, IStock_Store} from '@/types'
 import {useI18n} from 'vue-i18n'
 import {computed} from 'vue'
 import {useRecordsStore} from '@/stores/records'
@@ -18,8 +17,8 @@ import CreditDebitFieldset from '@/components/CreditDebitFieldset.vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
-const {dateRules} = useValidation()
-const {bookingFormularData} = useBookingFormular()
+const {dateRules, positiveBookingType} = useValidation()
+const {bookingFormularData, selected} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
 const {markets} = useSettingsStore()
 
@@ -39,7 +38,8 @@ const T = Object.freeze({
     TRANSACTION_TAX_LABEL: t('dialogs.bookingFormular.transactionTaxLabel'),
     DESCRIPTION_LABEL: t('dialogs.bookingFormular.descriptionLabel')
   },
-  DATE_RULES: [t('validators.dateRules.required')]
+  DATE_RULES: [t('validators.dateRules.required')],
+  BOOKING_TYPE_RULES: [t('validators.bookingTypeRules')]
 })
 
 const creditDebitModel = computed({
@@ -84,6 +84,14 @@ const feeModel = computed({
     bookingFormularData.feeDebit = val.debit
   }
 })
+const isStockBookingType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.BUY || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.SELL || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.DIVIDEND)
+const isDividendType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.DIVIDEND)
+const isBuySellType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.BUY || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.SELL)
+const isBuyType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.BUY)
+const isDividendSellType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.SELL || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.DIVIDEND)
+const sortedStocks = computed(() => [...stocks.items].sort((a, b) => a.cCompany.localeCompare(b.cCompany)))
+const sortedBookingTypes = computed(() => [{cID: CONS.INDEXED_DB.STORES.BOOKING_TYPES.NONE, cName: '', cAccountNumberID: null}, ...bookingTypes.items].sort((a, b) => a.cName.localeCompare(b.cName)))
+const sortedMarkets = computed(() => [...markets].sort((a, b) => a.localeCompare(b)))
 
 log('--- BookingFormular.vue setup ---')
 </script>
@@ -104,14 +112,13 @@ log('--- BookingFormular.vue setup ---')
       </v-col>
       <v-col>
         <v-select
-            v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 0"
+            v-if="isStockBookingType"
             v-model="bookingFormularData.stockId"
             :item-title="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.COMPANY"
             :item-value="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ID"
-            :items="stocks.items.sort((a: IStock_Store, b: IStock_Store): number => { return a.cCompany.localeCompare(b.cCompany) })"
+            :items="sortedStocks"
             :label="T.STRINGS.STOCK_LABEL"
-            :menu=false
-            :menu-props="{ maxHeight: 250 }"
+            clearable
             density="compact"
             max-width="300"
             variant="outlined"
@@ -121,22 +128,21 @@ log('--- BookingFormular.vue setup ---')
     <v-row justify="center">
       <v-col cols="6">
         <v-select
-            v-model="bookingFormularData.bookingTypeId"
+            v-model="selected"
             :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
             :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
-            :items="bookingTypes.items.sort((a: IBookingType_Store, b: IBookingType_Store): number => { return a.cName.localeCompare(b.cName) })"
+            :items="sortedBookingTypes"
             :label="T.STRINGS.BOOKING_TYPE_LABEL"
-            autocomplete
             clearable
+            :rules="positiveBookingType(T.BOOKING_TYPE_RULES)"
             density="compact"
             max-width="300"
-            placeholder=""
             variant="outlined"
         />
       </v-col>
       <v-col>
         <v-text-field
-            v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 0"
+            v-if="isStockBookingType"
             v-model="bookingFormularData.count"
             :label="T.STRINGS.COUNT_LABEL"
             class="withoutSpinner"
@@ -149,7 +155,7 @@ log('--- BookingFormular.vue setup ---')
     <v-row justify="center">
       <v-col cols="6">
         <v-text-field
-            v-if="bookingFormularData.bookingTypeId === 3"
+            v-if="isDividendType"
             ref="date-input"
             v-model="bookingFormularData.exDate"
             :label="T.STRINGS.EX_DATE_LABEL"
@@ -163,12 +169,10 @@ log('--- BookingFormular.vue setup ---')
       </v-col>
       <v-col>
         <v-select
-            v-if="bookingFormularData.bookingTypeId < 3 && bookingFormularData.bookingTypeId > 0"
+            v-if="isBuySellType"
             v-model="bookingFormularData.marketPlace"
-            :items="markets.sort((a: string, b: string): number => { return a.localeCompare(b) })"
+            :items="sortedMarkets"
             :label="T.STRINGS.MARKET_PLACE_LABEL"
-            :menu=false
-            :menuProps="{ maxHeight: 250 }"
             density="compact"
             max-width="350"
             variant="outlined"
@@ -180,27 +184,27 @@ log('--- BookingFormular.vue setup ---')
           v-model="creditDebitModel"
           :legend="T.STRINGS.BOOKING_LABEL"/>
     </v-row>
-    <v-row v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1" justify="center">
+    <v-row v-if="isDividendSellType" justify="center">
       <CreditDebitFieldset
           v-model="taxModel"
           :legend="T.STRINGS.TAX_LABEL"/>
     </v-row>
-    <v-row v-if="bookingFormularData.bookingTypeId < 4 && bookingFormularData.bookingTypeId > 1" justify="center">
+    <v-row v-if="isDividendSellType" justify="center">
       <CreditDebitFieldset
           v-model="soliModel"
           :legend="T.STRINGS.SOLI_LABEL"/>
     </v-row>
-    <v-row v-if="bookingFormularData.bookingTypeId === 2 || bookingFormularData.bookingTypeId === 3" justify="center">
+    <v-row v-if="isDividendSellType" justify="center">
       <CreditDebitFieldset
           v-model="sourceTaxModel"
           :legend="T.STRINGS.SOURCE_TAX_LABEL"/>
     </v-row>
-    <v-row v-if="bookingFormularData.bookingTypeId < 3 && bookingFormularData.bookingTypeId > 0" justify="center">
+    <v-row v-if="isBuySellType" justify="center">
       <CreditDebitFieldset
           v-model="feeModel"
           :legend="T.STRINGS.FEE_LABEL"/>
     </v-row>
-    <v-row v-if="bookingFormularData.bookingTypeId === 1" justify="center">
+    <v-row v-if="isBuyType" justify="center">
       <CreditDebitFieldset
           v-model="transactionTaxModel"
           :legend="T.STRINGS.TRANSACTION_TAX_LABEL"/>

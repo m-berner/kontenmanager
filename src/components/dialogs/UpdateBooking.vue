@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IBooking_DB, IBooking_Store} from '@/types'
-import {defineExpose, onMounted} from 'vue'
+import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -29,7 +29,7 @@ const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {activeId} = storeToRefs(runtime)
-const {bookingFormularData, formRef} = useBookingFormular()
+const {bookingFormularData, formRef, selected} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 
@@ -55,7 +55,7 @@ const onClickOk = async (): Promise<void> => {
       cID: bookingFormularData.id,
       cAccountNumberID: activeAccountId.value,
       cStockID: bookingFormularData.stockId,
-      cBookingTypeID: bookingFormularData.bookingTypeId,
+      cBookingTypeID: selected.value,
       cBookDate: bookingFormularData.bookDate,
       cExDate: bookingFormularData.exDate,
       cCount: bookingFormularData.count,
@@ -80,23 +80,21 @@ const onClickOk = async (): Promise<void> => {
     runtime.resetOptionsMenuColors()
     runtime.resetTeleport()
   } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
   }
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
-onMounted(() => {
+onBeforeMount(() => {
   log('UPDATE_BOOKING: onMounted')
   const bookingIndex = records.bookings.getIndexById(activeId.value)
   if (bookingIndex > -1) {
     const currentBooking = bookingItems.value[bookingIndex]
+    selected.value = currentBooking.cBookingTypeID
     Object.assign(bookingFormularData, {
       id: currentBooking.cID,
       bookingTypeId: currentBooking.cBookingTypeID,

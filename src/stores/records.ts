@@ -320,12 +320,38 @@ const useBookingsStore = defineStore('bookings', function () {
             return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
+    const sumAllFees = computed(() => {
+        return items.value.map((entry: IBooking_Store) => {
+            // if (entry.cBookingTypeID === 5) {
+            //     return entry.cCredit - entry.cDebit
+            // }
+            return entry.cFeeCredit - entry.cFeeDebit
+        }).reduce((acc: number, cur: number) => acc + cur, 0)
+    })
+    const sumAllTaxes = computed(() => {
+        return items.value.map((entry: IBooking_Store) => {
+            return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit
+        }).reduce((acc: number, cur: number) => acc + cur, 0)
+    })
     const sumBookingsPerTypeAndYear = computed(() => (y: number) => {
         const bt = useBookingTypesStore()
         const sums: INumberString[] = []
         for (let i = 0; i < bt.items.length; i++) {
             const t = items.value.filter((entry: IBooking_Store) => {
                 return entry.cBookingTypeID === bt.items[i].cID && new Date(entry.cBookDate).getFullYear() === y
+            }).map((entry: IBooking_Store) => {
+                return entry.cCredit - entry.cDebit
+            }).reduce((acc: number, cur: number) => acc + cur, 0)
+            sums.push({key: t, value: bt.items[i].cName})
+        }
+        return sums
+    })
+    const sumBookingsPerType = computed(() => {
+        const bt = useBookingTypesStore()
+        const sums: INumberString[] = []
+        for (let i = 0; i < bt.items.length; i++) {
+            const t = items.value.filter((entry: IBooking_Store) => {
+                return entry.cBookingTypeID === bt.items[i].cID
             }).map((entry: IBooking_Store) => {
                 return entry.cCredit - entry.cDebit
             }).reduce((acc: number, cur: number) => acc + cur, 0)
@@ -414,7 +440,10 @@ const useBookingsStore = defineStore('bookings', function () {
         sumBookings,
         sumFees,
         sumTaxes,
+        sumAllFees,
+        sumAllTaxes,
         sumBookingsPerTypeAndYear,
+        sumBookingsPerType,
         hasBookingType,
         portfolioByStockId,
         investByStockId,

@@ -49,6 +49,11 @@ export function useValidation() {
             (v) => v.match(/^[a-zA-ZäöüÄÖÜ].*/g) !== null || msgArray[2]
         ];
     }
+    function positiveBookingType(msgArray) {
+        return [
+            (v) => v > 0 || msgArray[0]
+        ];
+    }
     function swiftRules(msgArray) {
         return [
             (v) => v !== null || msgArray[0],
@@ -205,6 +210,7 @@ export function useValidation() {
         valCurrencyCodeRules,
         requiredRules,
         requiredSelect,
-        validateForm
+        validateForm,
+        positiveBookingType
     };
 }

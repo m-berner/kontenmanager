@@ -16,13 +16,14 @@
     "allStocksVisible": "Es sind keine Unternehmen ausgeblendet.",
     "addBooking": {
       "success": "Buchung wurde hinzugefügt",
-      "error": "Add booking failed"
+      "error": "Buchung konnte nicht hinzugefügt werden"
     },
     "updateBooking": {
       "success": "Die Buchung wurde aktualisiert"
     },
     "addAccount": {
-      "success": "Konto wurde hinzugefügt"
+      "success": "Konto wurde hinzugefügt",
+      "error": "Das Konto konnte nicht hinzugfügt werden"
     },
     "addStock": {
       "success": "Unternehmen wurde hinzugefügt"
@@ -376,6 +377,7 @@
     },
     "requiredRules": "Ist erforderlich",
     "notNegative": "Nur positive Werte",
-    "onlyOnePositive": "Ein Wert muss 0 sein"
+    "onlyOnePositive": "Ein Wert muss 0 sein",
+    "bookingTypeRules": "Buchungstyp ist erforderlich"
   }
 }

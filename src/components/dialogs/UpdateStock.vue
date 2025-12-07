@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IStock_DB} from '@/types'
-import {defineExpose} from 'vue'
+import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -29,6 +29,7 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
+const {activeId} = storeToRefs(runtime)
 const {stockFormularData, formRef} = useStockFormular()
 
 const T = Object.freeze({
@@ -67,17 +68,28 @@ const onClickOk = async (): Promise<void> => {
     await notice([T.MESSAGES.SUCCESS_UPDATE])
     runtime.resetTeleport()
   } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
   }
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
+
+onBeforeMount(() => {
+  log('UPDATE_STOCK_FORMULAR: onBeforeMount')
+  const currentStock = records.stocks.getItemById(activeId.value)
+  stockFormularData.id = activeId.value
+  stockFormularData.isin = currentStock.cISIN.toUpperCase().replace(/\s/g, '')
+  stockFormularData.company = currentStock.cCompany
+  stockFormularData.symbol = currentStock.cSymbol
+  stockFormularData.meetingDay = currentStock.cMeetingDay
+  stockFormularData.quarterDay = currentStock.cQuarterDay
+  stockFormularData.fadeOut = currentStock.cFadeOut === 1
+  stockFormularData.firstPage = currentStock.cFirstPage === 1
+  stockFormularData.url = currentStock.cURL
+})
 
 log('--- UpdateStock.vue setup ---')
 </script>

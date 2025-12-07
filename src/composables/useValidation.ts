@@ -65,6 +65,12 @@ export function useValidation() {
         ]
     }
 
+    function positiveBookingType(msgArray: string[]): TNumberValidator[] {
+        return [
+            (v: number) => v > 0 || msgArray[0]
+        ]
+    }
+
     function swiftRules(msgArray: string[]): TStringValidator[] {
         return [
             (v: string) => v !== null || msgArray[0],
@@ -234,6 +240,7 @@ export function useValidation() {
         valCurrencyCodeRules,
         requiredRules,
         requiredSelect,
-        validateForm
+        validateForm,
+        positiveBookingType
     }
 }

@@ -141,12 +141,9 @@ onBeforeMount(async () => {
     window.addEventListener('keyup', onKeyUp, false)
     window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
   } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ON_BEFORE_MOUNT, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ON_BEFORE_MOUNT, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ON_BEFORE_MOUNT}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ON_BEFORE_MOUNT, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ON_BEFORE_MOUNT, errorMessage])
   }
 })
 

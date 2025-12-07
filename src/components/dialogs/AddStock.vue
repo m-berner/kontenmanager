@@ -39,7 +39,6 @@ const T = Object.freeze({
     TITLE: t('dialogs.addStock.title')
   }
 })
-// TODO show accounting: per year view, entries correct wrong calculations
 const formDisabled = ref(false)
 
 const reset = (): void => {
@@ -79,12 +78,9 @@ const onClickOk = async (): Promise<void> => {
       await notice([T.MESSAGES.SUCCESS_ADD])
     }
   } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
   }
 }
 

@@ -6,11 +6,8 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineProps, onMounted} from 'vue'
+import {defineProps} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {storeToRefs} from 'pinia'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useRecordsStore} from '@/stores/records'
 import {useValidation} from '@/composables/useValidation'
 import {useApp} from '@/composables/useApp'
 import {useStockFormular} from '@/composables/useStockFormular'
@@ -24,9 +21,6 @@ const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {isinRules} = useValidation()
-const records = useRecordsStore()
-const runtime = useRuntimeStore()
-const {activeId} = storeToRefs(runtime)
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
@@ -65,30 +59,11 @@ const onUpdateIsin = async () => {
   } catch (e) {
     stockFormularData.company = ''
     stockFormularData.symbol = ''
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONUPDATE_ISIN, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONUPDATE_ISIN, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONUPDATE_ISIN}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ONUPDATE_ISIN, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ONUPDATE_ISIN, errorMessage])
   }
 }
-
-onMounted(() => {
-  log('STOCK_FORMULAR: onMounted')
-  if (props.isUpdate) {
-    const currentStock = records.stocks.getItemById(activeId.value)
-    stockFormularData.id = activeId.value
-    stockFormularData.isin = currentStock.cISIN.toUpperCase().replace(/\s/g, '')
-    stockFormularData.company = currentStock.cCompany
-    stockFormularData.symbol = currentStock.cSymbol
-    stockFormularData.meetingDay = currentStock.cMeetingDay
-    stockFormularData.quarterDay = currentStock.cQuarterDay
-    stockFormularData.fadeOut = currentStock.cFadeOut === 1
-    stockFormularData.firstPage = currentStock.cFirstPage === 1
-    stockFormularData.url = currentStock.cURL
-  }
-})
 
 log('--- StockFormular.vue setup ---')
 </script>

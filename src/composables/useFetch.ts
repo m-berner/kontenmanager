@@ -23,6 +23,23 @@ const {CONS, log, mean, toNumber} = useApp()
 const {notice, getStorage} = useBrowser()
 
 export function useFetch() {
+    async function fetchIsOk(): Promise<boolean> {
+        log('USE_FETCH: fetchIsOk')
+        return new Promise(async (resolve): Promise<void> => {
+            const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.ONLINE_TEST ?? '')
+            if (
+                !firstResponse.ok ||
+                firstResponse.status >= CONS.STATES.SRV ||
+                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
+            ) {
+                await notice(['fetchIsOk: No response'])
+                resolve(false)
+            } else {
+                resolve(true)
+            }
+        })
+    }
+
     async function fetchCompanyData(isin: string): Promise<ICompanyData> {
         return new Promise(async (resolve, reject) => {
             let sDocument: Document
@@ -698,6 +715,7 @@ export function useFetch() {
         fetchExchangesData,
         fetchMaterialData,
         fetchIndexData,
-        fetchDateData
+        fetchDateData,
+        fetchIsOk
     }
 }

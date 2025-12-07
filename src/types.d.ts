@@ -104,6 +104,13 @@ export interface IBooking_DB {
     cMarketPlace: string
 }
 
+export interface IBookingFormularReturn {
+    formRef: Ref<HTMLFormElement | null>
+    bookingFormularData: IBooking_Formular
+    selected: Ref<number>
+    reset: () => void
+}
+
 export interface IBooking_SM {
     cDate: number
     cExDay: number

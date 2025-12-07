@@ -233,7 +233,11 @@ const CONS = Object.freeze({
                     ID: 'cID',
                     NAME: 'cName',
                     ACCOUNT_NUMBER_ID: 'cAccountNumberID'
-                }
+                },
+                NONE: -1,
+                BUY: 1,
+                SELL: 2,
+                DIVIDEND: 3
             },
             STOCKS: {
                 NAME: 'stocks',
@@ -266,27 +270,6 @@ const CONS = Object.freeze({
         PRIVACY: '/privacy',
         COMPANY: '/company'
     },
-    RECORDS: {
-        CONTROLLER: {
-            TOTAL: {
-                efficiency: 0,
-                returnRate: 0,
-                buy: 0,
-                sell: 0,
-                dividends: 0,
-                deposits: 0,
-                withdrawals: 0,
-                taxes: 0,
-                fees: 0,
-                earnings: 0,
-                account: 0,
-                depot: 0,
-                winLoss: 0,
-                winLossPercent: 0,
-                depotBuyValue: 0
-            }
-        }
-    },
     SERVICES: {
         MAP: new Map<string, Record<string, string>>([
             ['goyax', {
@@ -301,6 +284,7 @@ const CONS = Object.freeze({
                 INDEXES: 'https://www.finanzen.net/indizes/',
                 DATES: 'https://www.finanzen.net/termine/',
                 MATERIALS: 'https://www.finanzen.net/rohstoffe/',
+                ONLINE_TEST: 'https://www.finanzen.net',
                 GM: 'Hauptversammlung',
                 QF: 'Quartalszahlen'
             }],
@@ -440,12 +424,8 @@ const CONS = Object.freeze({
         ])
     },
     STATES: {
-        DONE: 'complete',
         SRV: 500,
-        SUCCESS: 200,
-        PAUSE: 'resting',
-        MUTATE: 'mutation',
-        NO_RENDER: 'no_render'
+        SUCCESS: 200
     },
     SYSTEM: {
         COPYRIGHT: `2025-${new Date().getFullYear()} Martin Berner`,

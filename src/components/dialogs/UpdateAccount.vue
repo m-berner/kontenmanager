@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {IAccount_Store} from '@/types'
-import {defineExpose, onMounted} from 'vue'
+import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -30,6 +30,7 @@ const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {accountFormularData, formRef} = useAccountFormular()
 const records = useRecordsStore()
+const {items: accountItems} = storeToRefs(records.accounts)
 
 const T = Object.freeze({
   MESSAGES: {
@@ -61,21 +62,17 @@ const onClickOk = async (): Promise<void> => {
     runtime.resetTeleport()
     await notice([T.MESSAGES.SUCCESS_UPDATE])
   } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
-    }
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
   }
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
-onMounted(() => {
-  log('UPDATE_ACCOUNT: onMounted')
-  const {items: accountItems} = storeToRefs(records.accounts)
+onBeforeMount(() => {
+  log('UPDATE_ACCOUNT: onBeforeMount')
   const accountIndex = records.accounts.getIndexById(activeAccountId.value)
   if (accountIndex !== -1) {
     const currentAccount = accountItems.value[accountIndex]
