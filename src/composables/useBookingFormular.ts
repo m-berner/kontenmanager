@@ -6,9 +6,9 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {reactive, ref} from 'vue'
-import type {IBooking_Formular, IBookingFormularReturn} from '@/types'
+import type {I_Booking_Formular, I_Booking_Formular_Return} from '@/types'
 
-const bookingFormularData = reactive<IBooking_Formular>({
+const bookingFormularData = reactive<I_Booking_Formular>({
     id: -1,
     bookDate: '',
     exDate: '',
@@ -62,7 +62,7 @@ const reset = (): void => {
     formRef.value = null
 }
 
-export function useBookingFormular(): IBookingFormularReturn {
+export function useBookingFormular(): I_Booking_Formular_Return {
     return {
         formRef,
         bookingFormularData,

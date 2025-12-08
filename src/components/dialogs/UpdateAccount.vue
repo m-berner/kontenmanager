@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount_Store} from '@/types'
+import type {I_Account_Store} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -50,7 +50,7 @@ const onClickOk = async (): Promise<void> => {
     return
   }
   try {
-    const account: IAccount_Store = {
+    const account: I_Account_Store = {
       cID: activeAccountId.value,
       cSwift: accountFormularData.swift.trim().toUpperCase(),
       cIban: accountFormularData.iban.replace(/\s/g, ''),

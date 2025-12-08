@@ -6,11 +6,11 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IContentCardProps} from '@/types'
+import type {I_Content_Card_Props} from '@/types'
 import {defineProps} from 'vue'
 import {useApp} from '@/composables/useApp'
 
-const props = defineProps<IContentCardProps>()
+const props = defineProps<I_Content_Card_Props>()
 const {log} = useApp()
 
 log('--- ContentCard.vue setup ---')

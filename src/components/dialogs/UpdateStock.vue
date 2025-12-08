@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock_DB} from '@/types'
+import type {I_Stock_DB} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -50,7 +50,7 @@ const onClickOk = async (): Promise<void> => {
     return
   }
   try {
-    const stock: IStock_DB = {
+    const stock: I_Stock_DB = {
       cID: stockFormularData.id,
       cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
       cCompany: stockFormularData.company,

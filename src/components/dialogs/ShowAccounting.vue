@@ -12,7 +12,7 @@ import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
-import type {IAccountEntry, IHeader} from '@/types'
+import type {I_Account_Entry, I_Header} from '@/types'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
@@ -21,7 +21,7 @@ const {sumsPerPage} = storeToRefs(settings)
 const {setSumsPerPage} = settings
 const {CONS, log} = useApp()
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>({
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>({
   STRINGS: {
     TITLE: t('dialogs.showAccounting.title'),
     ITEMS_PER_PAGE_TEXT: t('dialogs.showAccounting.itemsPerPageText'),
@@ -62,7 +62,7 @@ const yearEntries = computed(() => {
 // TODO replace magic number 1000 by const
 const accountEntries = computed(() => {
   const y = selected.value
-  const result: IAccountEntry[] = []
+  const result: I_Account_Entry[] = []
   let sums
   let sumsFees = 0
   let sumsTaxes = 0

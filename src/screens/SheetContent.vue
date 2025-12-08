@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IContent} from '@/types'
+import type {I_Content} from '@/types'
 import type {ComputedRef} from 'vue'
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -43,7 +43,7 @@ const T = Object.freeze({
 
 let formatData: ComputedRef
 if (router.currentRoute.value.path === CONS.ROUTES.PRIVACY) {
-  formatData = computed((): IContent[] => {
+  formatData = computed((): I_Content[] => {
     const data = []
     for (let i = 0; i < T.GENERAL.PARAGRAPHS.length; i++) {
       data.push({

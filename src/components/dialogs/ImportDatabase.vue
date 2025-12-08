@@ -7,16 +7,15 @@
   -->
 <script lang="ts" setup>
 import type {
-  IAccount_DB,
-  IBackup,
-  IBooking_DB,
-  IBooking_SM,
-  IBooking_Store,
-  IBookingType_DB,
-  IEventTarget,
-  IRecords_DB,
-  IStock_DB,
-  IStock_Store
+  I_Account_DB,
+  I_Backup,
+  I_Booking_DB,
+  I_Booking_SM,
+  I_Booking_Store,
+  I_Booking_Type_DB,
+  I_Event_Target, I_Records,
+  I_Stock_DB,
+  I_Stock_Store
 } from '@/types'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
@@ -67,7 +66,7 @@ const T = Object.freeze({
 
 const fileBlob = ref<Blob>(new Blob())
 
-const onChange = (ev: IEventTarget) => {
+const onChange = (ev: I_Event_Target) => {
   fileBlob.value = ev.target.files[0]
 }
 
@@ -83,20 +82,20 @@ const onClickOk = async (): Promise<void> => {
     const STOCKMANAGER_RESTORE_ACCOUNT_ID = 1
     const {activeAccountId} = storeToRefs(settings)
     const {items: accountItems} = storeToRefs(records.accounts)
-    const accountsImportData: IRecords_DB[] = []
-    const bookingsImportData: IRecords_DB[] = []
-    const bookingTypesImportData: IRecords_DB[] = []
-    const stocksImportData: IRecords_DB[] = []
-    const accountsStoreData: IAccount_DB[] = []
-    const bookingsStoreData: IBooking_DB[] = []
-    const bookingTypesStoreData: IBookingType_DB[] = []
-    const stocksStoreData: IStock_DB[] = []
+    const accountsImportData: I_Records[] = []
+    const bookingsImportData: I_Records[] = []
+    const bookingTypesImportData: I_Records[] = []
+    const stocksImportData: I_Records[] = []
+    const accountsStoreData: I_Account_DB[] = []
+    const bookingsStoreData: I_Booking_DB[] = []
+    const bookingTypesStoreData: I_Booking_Type_DB[] = []
+    const stocksStoreData: I_Stock_DB[] = []
     if (typeof fr.result === 'string') {
-      const backupObject: IBackup = JSON.parse(fr.result)
+      const backupObject: I_Backup = JSON.parse(fr.result)
       const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : STOCKMANAGER_RESTORE_ACCOUNT_ID
       activeAccountId.value = activeId
       await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
-      const getCreditDebit = (rec: IBooking_SM): { value: number, type: number } => {
+      const getCreditDebit = (rec: I_Booking_SM): { value: number, type: number } => {
         let result: { value: number, type: number } = {value: 0, type: -1}
         if (rec.cAmount !== 0) {
           result.type = 4
@@ -171,7 +170,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypesImportData.push({type: 'add', data: rec, key: -1})
         }
         for (const rec of backupObject.stocks) {
-          const stockClone: IStock_Store = {} as IStock_Store
+          const stockClone: I_Stock_Store = {} as I_Stock_Store
           stockClone.cID = rec.cID
           stockClone.cAccountNumberID = activeId
           stockClone.cSymbol = rec.cSym
@@ -188,8 +187,8 @@ const onClickOk = async (): Promise<void> => {
           stocksStoreData.push(stockClone)
         }
         for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
-          const booking: IBooking_Store = {} as IBooking_Store
-          const smTransfer: IBooking_SM = backupObject.transfers[i]
+          const booking: I_Booking_Store = {} as I_Booking_Store
+          const smTransfer: I_Booking_SM = backupObject.transfers[i]
           booking.cID = i + 1
           booking.cAccountNumberID = activeId
           booking.cStockID = smTransfer.cStockID

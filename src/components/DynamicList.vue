@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IDynamicListProps, IExchangeData} from '@/types'
+import type {I_Dynamic_List_Props, I_Exchange_Data} from '@/types'
 import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -15,7 +15,7 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useFetch} from '@/composables/useFetch'
 
-const props = defineProps<IDynamicListProps>()
+const props = defineProps<I_Dynamic_List_Props>()
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
@@ -75,7 +75,7 @@ const addItem = async (item: string): Promise<void> => {
         list.value.push(item.toUpperCase())
         exchanges.push(item)
         await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
-        const exchangesInfoData: IExchangeData[] = await fetchExchangesData([...newItem.value])
+        const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData([...newItem.value])
         infoExchanges.set(exchanges[exchanges.length], exchangesInfoData[0].value)
         break
       default:

@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {TStorage} from '@/types'
+import type {T_Storage} from '@/types'
 import {useApp} from '@/composables/useApp'
 import {computed} from 'vue'
 import {useRecordsStore} from '@/stores/records'
@@ -72,7 +72,7 @@ export function useBrowser() {
         }
     }
 
-    async function getStorage(keys: string[] | null = null): Promise<TStorage> {
+    async function getStorage(keys: string[] | null = null): Promise<T_Storage> {
         try {
             return await browser.storage.local.get(keys)
         } catch (error) {

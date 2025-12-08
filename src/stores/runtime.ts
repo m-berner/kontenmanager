@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {ITeleport} from '@/types'
+import type {I_Teleport} from '@/types'
 import {ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
@@ -33,7 +33,7 @@ export const useRuntimeStore = defineStore('runtime', function () {
         loadedStocksPages.clear()
     }
 
-    function setTeleport(entry: ITeleport): void {
+    function setTeleport(entry: I_Teleport): void {
         dialogName.value = entry.dialogName
         dialogOk.value = entry.dialogOk
         dialogVisibility.value = entry.dialogVisibility

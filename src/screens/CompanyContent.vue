@@ -6,8 +6,8 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IHeader, IMenuItem, IStock_Store} from '@/types'
-import {computed, onBeforeUpdate, onMounted} from 'vue'
+import type {I_Header, I_Menu_Item, I_Stock_Store} from '@/types'
+import {computed, onBeforeMount, onBeforeUpdate} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useSettingsStore} from '@/stores/settings'
@@ -26,7 +26,7 @@ const {setStocksPerPage} = settings
 const runtime = useRuntimeStore()
 const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[], MENU_ITEMS: IMenuItem[] }>({
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>({
   STRINGS: {
     ITEMS_PER_PAGE_TEXT: t('homePage.stocksTable.itemsPerPageText'),
     NO_DATA_TEXT: t('homePage.stocksTable.noDataText')
@@ -136,15 +136,15 @@ const onUpdatePage = async (page: number): Promise<void> => {
 
 onBeforeUpdate(() => {
   log('COMPANY_CONTENT: onBeforeUpdate')
-  records.stocks.active.sort((a: IStock_Store, b: IStock_Store) => {
+  records.stocks.active.sort((a: I_Stock_Store, b: I_Stock_Store) => {
     return b.cFirstPage - a.cFirstPage
-  }).sort((a: IStock_Store, b: IStock_Store) => {
+  }).sort((a: I_Stock_Store, b: I_Stock_Store) => {
     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
   })
 })
 
-onMounted(async () => {
-  log('COMPANY_CONTENT: onMounted')
+onBeforeMount(async () => {
+  log('COMPANY_CONTENT: onBeforeMount')
   const requiredOnlineData = async (page: number = 1) => {
     if ((records.stocks.active[stocksPerPage.value * page].mPortfolio ?? 0) >= 1) {
       await records.stocks.loadOnlineData(Math.ceil(stocksPerPage.value * page / stocksPerPage.value) + 1)
@@ -155,9 +155,9 @@ onMounted(async () => {
     records.stocks.active[i].mPortfolio = records.bookings.portfolioByStockId(records.stocks.active[i].cID)
     records.stocks.active[i].mInvest = records.bookings.investByStockId(records.stocks.active[i].cID)
   }
-  records.stocks.active.sort((a: IStock_Store, b: IStock_Store) => {
+  records.stocks.active.sort((a: I_Stock_Store, b: I_Stock_Store) => {
     return b.cFirstPage - a.cFirstPage
-  }).sort((a: IStock_Store, b: IStock_Store) => {
+  }).sort((a: I_Stock_Store, b: I_Stock_Store) => {
     return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
   })
   if (!runtime.loadedStocksPages.has(stocksPage)) {

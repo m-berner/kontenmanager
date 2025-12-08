@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking_DB, IBooking_Store} from '@/types'
+import type {I_Booking_DB, I_Booking_Store} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -51,7 +51,7 @@ const onClickOk = async (): Promise<void> => {
     return
   }
   try {
-    const booking: IBooking_Store & IBooking_DB = {
+    const booking: I_Booking_Store & I_Booking_DB = {
       cID: bookingFormularData.id,
       cAccountNumberID: activeAccountId.value,
       cStockID: bookingFormularData.stockId,

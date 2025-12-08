@@ -49,7 +49,7 @@ import {
     mdiStoreEdit
 } from '@mdi/js'
 import {useApp} from '@/composables/useApp'
-import type {IVuetify} from '@/types'
+import type {I_Vuetify} from '@/types'
 
 const {log} = useApp()
 
@@ -187,7 +187,7 @@ const vuetifyInstance = createVuetify({
     }
 })
 
-const vuetifyConfig: IVuetify = {
+const vuetifyConfig: I_Vuetify = {
     vuetify: vuetifyInstance
 }
 

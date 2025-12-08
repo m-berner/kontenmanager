@@ -7,10 +7,10 @@
  */
 import {reactive, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
-import type {IStock_Formular} from '@/types'
+import type {I_Stock_Formular} from '@/types'
 
 const {CONS} = useApp()
-const stockFormularData = reactive<IStock_Formular>({
+const stockFormularData = reactive<I_Stock_Formular>({
     id: -1,
     isin: '',
     company: '',

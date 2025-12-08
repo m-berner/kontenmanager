@@ -10,12 +10,12 @@ import deDE from '@/locales/de-DE.json'
 import enUS from '@/locales/en-US.json'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import type {II18n, TMessageSchema} from '@/types'
+import type {I_I18n, T_Message_Schema} from '@/types'
 
 const {log} = useApp()
 const {locale5} = useBrowser()
 
-const i18nInstance = createI18n<[TMessageSchema], 'de-DE' | 'en-US'>({
+const i18nInstance = createI18n<[T_Message_Schema], 'de-DE' | 'en-US'>({
     locale: locale5.value,
     fallbackLocale: 'en-US',
     messages: {
@@ -135,7 +135,7 @@ const i18nInstance = createI18n<[TMessageSchema], 'de-DE' | 'en-US'>({
     }
 })
 
-const i18nConfig: II18n = {
+const i18nConfig: I_I18n = {
     i18n: i18nInstance
 }
 

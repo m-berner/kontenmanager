@@ -6,15 +6,15 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {
-    ICompanyData,
-    IDailyChangesData,
-    IDateData,
-    IExchangeData,
-    IMinRateMaxData,
-    INumberString,
-    IService,
-    IStorageOnline,
-    IStringNumber
+    I_Company_Data,
+    I_Daily_Changes_Data,
+    I_Date_Data,
+    I_Exchange_Data,
+    I_Min_Rate_Max_Data,
+    I_Number_String,
+    I_Service,
+    I_Storage_Online,
+    I_String_Number
 } from '@/types'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
@@ -40,16 +40,16 @@ export function useFetch() {
         })
     }
 
-    async function fetchCompanyData(isin: string): Promise<ICompanyData> {
+    async function fetchCompanyData(isin: string): Promise<I_Company_Data> {
         return new Promise(async (resolve, reject) => {
             let sDocument: Document
             let company = ''
             let child: ChildNode | undefined
             let symbol: string
-            const service: IService | undefined = CONS.SERVICES.TGATE
+            const service: I_Service | undefined = CONS.SERVICES.TGATE
             let tables: NodeListOf<HTMLTableRowElement>
             let firstResponse: Response
-            let result: ICompanyData = {
+            let result: I_Company_Data = {
                 company: '',
                 symbol: ''
             }
@@ -106,14 +106,14 @@ export function useFetch() {
         })
     }
 
-    async function fetchMinRateMaxData(storageOnline: IStorageOnline[]): Promise<IMinRateMaxData[]> {
+    async function fetchMinRateMaxData(storageOnline: I_Storage_Online[]): Promise<I_Min_Rate_Max_Data[]> {
         log('USE_FETCH: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
             const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
             const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
-            const _fnet = async (urls: INumberString[]): Promise<IMinRateMaxData[]> => {
+            const _fnet = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: INumberString): Promise<IMinRateMaxData> => {
+                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
                         const firstResponse = await fetch(urlObj.value)
                         const secondResponse = await fetch(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
@@ -159,9 +159,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _ard = async (urls: INumberString[]): Promise<IMinRateMaxData[]> => {
+            const _ard = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: INumberString): Promise<IMinRateMaxData> => {
+                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
                         const firstResponse = await fetch(urlObj.value)
                         const firstResponseText = await firstResponse.text()
                         const firstResponseDocument = new DOMParser().parseFromString(
@@ -216,9 +216,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _wstreet = async (urls: INumberString[], homeUrl: string): Promise<IMinRateMaxData[]> => {
+            const _wstreet = async (urls: I_Number_String[], homeUrl: string): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: INumberString): Promise<IMinRateMaxData> => {
+                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
                         const firstResponse = await fetch(urlObj.value)
                         const firstResponseJson = await firstResponse.json()
                         const url2 = homeUrl + firstResponseJson.result[0].link
@@ -253,9 +253,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _goyax = async (urls: INumberString[]): Promise<IMinRateMaxData[]> => {
+            const _goyax = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: INumberString): Promise<IMinRateMaxData> => {
+                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
                         const firstResponse = await fetch(urlObj.value)
                         const secondResponse = await fetch(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
@@ -292,9 +292,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _acheck = async (urls: INumberString[]): Promise<IMinRateMaxData[]> => {
+            const _acheck = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: INumberString): Promise<IMinRateMaxData> => {
+                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
                         const firstResponse = await fetch(urlObj.value)
                         let onlineCurrency = ''
                         const secondResponse = await fetch(firstResponse.url)
@@ -348,9 +348,9 @@ export function useFetch() {
                     })
                 )
             }
-            const _tgate = async (urls: INumberString[]): Promise<IMinRateMaxData[]> => {
+            const _tgate = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
-                    urls.map(async (urlObj: INumberString): Promise<IMinRateMaxData> => {
+                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
                         const firstResponse = await fetch(urlObj.value)
                         const onlineCurrency = 'EUR'
                         const onlineMax = '0'
@@ -380,7 +380,7 @@ export function useFetch() {
                     })
                 )
             }
-            const _select = async (urls: INumberString[]): Promise<IMinRateMaxData[]> => {
+            const _select = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return new Promise(async (resolve, reject) => {
                     const service = CONS.SERVICES.MAP.get(serviceName)
                     switch (serviceName) {
@@ -412,7 +412,7 @@ export function useFetch() {
                 })
             }
 
-            const urls: INumberString[] = []
+            const urls: I_Number_String[] = []
             if (storageOnline.length > 0) {
                 for (let i = 0; i < storageOnline.length; i++) {
                     const service = CONS.SERVICES.MAP.get(serviceName)
@@ -431,7 +431,7 @@ export function useFetch() {
         })
     }
 
-    async function fetchDailyChangeData(table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<IDailyChangesData[]> {
+    async function fetchDailyChangeData(table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<I_Daily_Changes_Data[]> {
         log('USE_FETCH: fetchDailyChangesData')
         let valuestr: string
         let company: string
@@ -472,7 +472,7 @@ export function useFetch() {
             }
             return result
         }
-        const entry: IDailyChangesData = {
+        const entry: I_Daily_Changes_Data = {
             key: '',
             value: {
                 percentChange: '',
@@ -481,7 +481,7 @@ export function useFetch() {
             }
         }
         const firstResponse = await fetch(url)
-        const _changes: IDailyChangesData[] = []
+        const _changes: I_Daily_Changes_Data[] = []
         if (
             firstResponse.url.length === 0 ||
             !firstResponse.ok ||
@@ -513,7 +513,7 @@ export function useFetch() {
         return _changes
     }
 
-    async function fetchExchangesData(exchangeCodes: string[]): Promise<IExchangeData[]> {
+    async function fetchExchangesData(exchangeCodes: string[]): Promise<I_Exchange_Data[]> {
         log('USE_FETCH: fetchExchangesData')
         const service = CONS.SERVICES.FX
         const fExUrl = (code: string): string => {
@@ -523,8 +523,8 @@ export function useFetch() {
                 throw new Error('Undefined service constant!')
             }
         }
-        return new Promise(async (resolve, reject): Promise<IExchangeData[]> => {
-            const result: IExchangeData[] = []
+        return new Promise(async (resolve, reject): Promise<I_Exchange_Data[]> => {
+            const result: I_Exchange_Data[] = []
             for (let i = 0; i < exchangeCodes.length; i++) {
                 const firstResponse = await fetch(fExUrl(exchangeCodes[i]))
                 if (
@@ -557,10 +557,10 @@ export function useFetch() {
         })
     }
 
-    async function fetchMaterialData(): Promise<IStringNumber[]> {
+    async function fetchMaterialData(): Promise<I_String_Number[]> {
         log('USE_FETCH: fetchMaterialData')
         return new Promise(async (resolve, reject) => {
-            const materials: IStringNumber[] = []
+            const materials: I_String_Number[] = []
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '')
             if (
                 !firstResponse.ok ||
@@ -595,10 +595,10 @@ export function useFetch() {
         })
     }
 
-    async function fetchIndexData(): Promise<IStringNumber[]> {
+    async function fetchIndexData(): Promise<I_String_Number[]> {
         log('USE_FETCH: fetchIndexData')
         return new Promise(async (resolve, reject) => {
-            const indexes: IStringNumber[] = []
+            const indexes: I_String_Number[] = []
             const indexesKeys = CONS.SETTINGS.INDEXES.keys()
             //const indexesValues = CONS.SETTINGS.INDEXES.values()
             const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.INDEXES ?? '')
@@ -633,7 +633,7 @@ export function useFetch() {
         })
     }
 
-    async function fetchDateData(obj: INumberString[]): Promise<Promise<IDateData>[]> {
+    async function fetchDateData(obj: I_Number_String[]): Promise<Promise<I_Date_Data>[]> {
         log('USE_FETCH: fetchDatesData')
         //if (obj.length === 0) return Promise.resolve([])
         const gmqf = {gm: 0, qf: 0}
@@ -645,7 +645,7 @@ export function useFetch() {
             const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01'
             return new Date(`${year}-${month}-${day}`).getTime()
         }
-        return obj.map(async (entry: INumberString): Promise<IDateData> => {
+        return obj.map(async (entry: I_Number_String): Promise<I_Date_Data> => {
             const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${entry.value}`)
             if (
                 firstResponse.url.length === 0 ||

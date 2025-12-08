@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBookingType_Store} from '@/types'
+import type {I_Booking_Type_Store} from '@/types'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -64,7 +64,7 @@ const onClickOk = async (): Promise<void> => {
   try {
     if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
       const ind = records.bookingTypes.getIndexById(formSelectedIndex.value)
-      const bookingType: IBookingType_Store = {
+      const bookingType: I_Booking_Type_Store = {
         cID: bookingTypeItems.value[ind].cID,
         cName: formName.value.trim(),
         cAccountNumberID: bookingTypeItems.value[ind].cAccountNumberID

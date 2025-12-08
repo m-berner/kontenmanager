@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock_DB} from '@/types'
+import type {I_Stock_DB} from '@/types'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -58,7 +58,7 @@ const onClickOk = async (): Promise<void> => {
     return
   }
   try {
-    const stock: Omit<IStock_DB, 'cID'> = {
+    const stock: Omit<I_Stock_DB, 'cID'> = {
       cCompany: stockFormularData.company.trim(),
       cISIN: stockFormularData.isin,
       cSymbol: stockFormularData.symbol,
@@ -72,7 +72,7 @@ const onClickOk = async (): Promise<void> => {
     }
     const addStockID = await add(stock)
     if (addStockID > 0) {
-      const dbStock: IStock_DB = {cID: addStockID, ...stock}
+      const dbStock: I_Stock_DB = {cID: addStockID, ...stock}
       records.stocks.add(dbStock)
       resetTeleport()
       await notice([T.MESSAGES.SUCCESS_ADD])

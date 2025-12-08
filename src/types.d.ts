@@ -7,15 +7,7 @@
  */
 import deDE from '@/locales/de-DE.json'
 
-export interface IAccountEntry {
-    id: number
-    name: string
-    sum: number
-    nameClass: string
-    sumClass: string
-}
-
-export interface IAccount_DB {
+export interface I_Account_DB {
     cID: number
     cSwift: string
     cIban: string
@@ -23,7 +15,15 @@ export interface IAccount_DB {
     cWithDepot: boolean
 }
 
-export interface IAccount_Formular {
+export interface I_Account_Entry {
+    id: number
+    name: string
+    sum: number
+    nameClass: string
+    sumClass: string
+}
+
+export interface I_Account_Formular {
     id: number
     swift: string
     iban: string
@@ -31,56 +31,23 @@ export interface IAccount_Formular {
     withDepot: boolean
 }
 
-export interface IAccount_Store extends IAccount_DB {
+export interface I_Account_Store extends I_Account_DB {
 }
 
-export interface IBackup {
+export interface I_Backup {
     sm: {
         cVersion: number
         cDBVersion: number
         cEngine: string
     }
-    accounts: IAccount_Store[]
-    bookings: IBooking_DB[]
-    bookingTypes: IBookingType_Store[]
-    stocks: IStock_Store[] & IStock_SM[]
-    transfers?: IBooking_SM[]
+    accounts: I_Account_Store[]
+    bookings: I_Booking_DB[]
+    bookingTypes: I_Booking_Type_Store[]
+    stocks: I_Stock_Store[] & I_Stock_SM[]
+    transfers?: I_Booking_SM[]
 }
 
-export interface IBooking_Formular {
-    id: number
-    bookDate: string
-    exDate: string
-    credit: number
-    debit: number
-    description: string
-    count: number
-    bookingTypeId: number
-    accountTypeId: number
-    stockId: number
-    soliCredit: number
-    soliDebit: number
-    taxCredit: number
-    taxDebit: number
-    feeCredit: number
-    feeDebit: number
-    sourceTaxCredit: number
-    sourceTaxDebit: number
-    transactionTaxCredit: number
-    transactionTaxDebit: number
-    marketPlace: string
-}
-
-export interface IBookingType_DB {
-    cID: number
-    cName: string
-    cAccountNumberID: number
-}
-
-export interface IBookingType_Store extends IBookingType_DB {
-}
-
-export interface IBooking_DB {
+export interface I_Booking_DB {
     cID: number
     cBookDate: string
     cExDate: string
@@ -104,14 +71,14 @@ export interface IBooking_DB {
     cMarketPlace: string
 }
 
-export interface IBookingFormularReturn {
+export interface I_Booking_Formular_Return {
     formRef: Ref<HTMLFormElement | null>
-    bookingFormularData: IBooking_Formular
+    bookingFormularData: I_Booking_Formular
     selected: Ref<number>
     reset: () => void
 }
 
-export interface IBooking_SM {
+export interface I_Booking_SM {
     cDate: number
     cExDay: number
     cUnitQuotation: number
@@ -128,43 +95,76 @@ export interface IBooking_SM {
     cMarketPlace: string
 }
 
-export interface IBooking_Store extends IBooking_DB {
+export interface I_Booking_Store extends I_Booking_DB {
 }
 
-export interface ICheckboxGridProps {
+export interface I_Booking_Type_DB {
+    cID: number
+    cName: string
+    cAccountNumberID: number
+}
+
+export interface I_Booking_Formular {
+    id: number
+    bookDate: string
+    exDate: string
+    credit: number
+    debit: number
+    description: string
+    count: number
+    bookingTypeId: number
+    accountTypeId: number
+    stockId: number
+    soliCredit: number
+    soliDebit: number
+    taxCredit: number
+    taxDebit: number
+    feeCredit: number
+    feeDebit: number
+    sourceTaxCredit: number
+    sourceTaxDebit: number
+    transactionTaxCredit: number
+    transactionTaxDebit: number
+    marketPlace: string
+}
+
+export interface I_Booking_Type_Store extends I_Booking_Type_DB {
+}
+
+export interface I_Checkbox_Grid_Props {
     type: symbol
 }
 
-export interface ICompanyData {
+export interface I_Company_Data {
     company: string
     symbol: string
 }
 
-export interface IContent {
+export interface I_Content {
     readonly subTitle: string
     readonly content: string
     readonly icon: string
 }
 
-export interface IContentCardProps {
+export interface I_Content_Card_Props {
     title: string
-    data: IContent[]
+    data: I_Content[]
 }
 
-export interface ICreditDebitFieldsetProps {
+export interface I_Credit_Debit_Fieldset_Props {
     modelValue: { credit: number, debit: number }
     disabled?: boolean,
     legend: string
 }
 
-export interface ICurrencyInputProps {
+export interface I_Currency_Input_Props {
     modelValue: number
     disabled?: boolean
     label: string
-    rules?: Array<(_v: number) => boolean | string>  // Number validator!
+    rules?: Array<(_v: number) => boolean | string>
 }
 
-export interface IDailyChangesData {
+export interface I_Daily_Changes_Data {
     key: string
     value: {
         percentChange: string,
@@ -173,7 +173,7 @@ export interface IDailyChangesData {
     }
 }
 
-export interface IDateData {
+export interface I_Date_Data {
     key: number | undefined
     value: {
         qf: number
@@ -181,54 +181,54 @@ export interface IDateData {
     }
 }
 
-export interface IDynamicListProps {
+export interface I_Dynamic_List_Props {
     type: symbol
     hint?: string
     placeholder?: string
 }
 
-export interface IEventTarget extends HTMLInputElement {
+export interface I_Event_Target extends HTMLInputElement {
     target: { files: UnwrapRef<Blob>[] }
 }
 
-export interface IExchangeData {
+export interface I_Exchange_Data {
     key: string,
     value: number
 }
 
-export interface IHeader {
+export interface I_Header {
     title: string
     align: 'start'
     sortable: boolean
     key: string
 }
 
-export interface II18n {
-    i18n: I18n<{ 'de-DE': TMessageSchema, 'en-US': TMessageSchema }>
+export interface I_I18n {
+    i18n: I18n<{ 'de-DE': T_Message_Schema, 'en-US': T_Message_Schema }>
 }
 
-export interface IStringNumber {
+export interface I_String_Number {
     key: string
     value: number
 }
 
-export interface INumberString {
+export interface I_Number_String {
     key: number
     value: string
 }
 
-export interface IOptionMenuProps {
+export interface I_Options_Menu_Propss {
     recordID: number
-    menuItems: IMenuItem[]
+    menuItems: I_Menu_Item[]
 }
 
-export interface IMenuItem {
+export interface I_Menu_Item {
     readonly title: string
     readonly id: string
     readonly icon: string
 }
 
-export interface IMinRateMaxData {
+export interface I_Min_Rate_Max_Data {
     id: number,
     isin: string,
     rate: string,
@@ -237,27 +237,27 @@ export interface IMinRateMaxData {
     cur: string
 }
 
-export interface IPinia {
+export interface I_Pinia {
     pinia: Pinia
 }
 
-export interface IRecords_DB {
+export interface I_Records {
     type: string
     data?: unknown
     key?: number
 }
 
-export interface IRouter {
+export interface I_Router {
     router: Router
 }
 
-export interface IService {
+export interface I_Service {
     NAME: string
     HOME: string
     QUOTE: string
 }
 
-export interface IStock_DB {
+export interface I_Stock_DB {
     cID: number
     cCompany: string
     cISIN: string
@@ -271,7 +271,7 @@ export interface IStock_DB {
     cAskDates: string
 }
 
-export interface IStock_Formular {
+export interface I_Stock_Formular {
     id: number
     isin: string
     company: string
@@ -284,11 +284,11 @@ export interface IStock_Formular {
     askDates: string
 }
 
-export interface IStockFormularProps {
+export interface I_Stock_Formular_Props {
     isUpdate: boolean
 }
 
-export interface IStock_Memory {
+export interface I_Stock_Memory {
     mPortfolio?: number
     mInvest?: number
     mChange?: number
@@ -306,11 +306,11 @@ export interface IStock_Memory {
     mDeleteable?: boolean
 }
 
-export interface IStock_Store extends IStock_Memory, IStock_DB {
+export interface I_Stock_Store extends I_Stock_Memory, I_Stock_DB {
     //
 }
 
-export interface IStock_SM {
+export interface I_Stock_SM {
     cID: number
     cCompany: string
     cISIN: string
@@ -323,48 +323,48 @@ export interface IStock_SM {
     cURL: string
 }
 
-export interface IStores_DB {
-    accountsDB: IAccount_DB[],
-    bookingsDB: IBooking_DB[],
-    bookingTypesDB: IBookingType_DB[],
-    stocksDB: IStock_DB[]
+export interface I_Storage_Online {
+    id: number,
+    isin: string,
+    min: string,
+    rate: string,
+    max: string,
+    cur: string
 }
 
-export interface IStores_Store {
-    accounts: IAccount_Store[],
-    bookings: IBooking_Store[],
-    bookingTypes: IBookingType_Store[],
-    stocks: IStock_Store[]
+export interface I_Records_DB {
+    accountsDB: I_Account_DB[],
+    bookingsDB: I_Booking_DB[],
+    bookingTypesDB: I_Booking_Type_DB[],
+    stocksDB: I_Stock_DB[]
 }
 
-export interface IStorageOnline {
-                  id: number,
-                  isin: string,
-                  min: string,
-                  rate: string,
-                  max: string,
-                  cur: string
+export interface I_Records_Store {
+    accounts: I_Account_Store[],
+    bookings: I_Booking_Store[],
+    bookingTypes: I_Booking_Type_Store[],
+    stocks: I_Stock_Store[]
 }
 
-export interface ITeleport {
+export interface I_Teleport {
     dialogName: string
     dialogOk: boolean
     dialogVisibility: boolean
 }
 
-export interface IVisibleAlert {
+export interface I_Visible_Alert {
     id: number
     type: 'error' | 'success' | 'warning' | 'info' | undefined
     title: string
     message: string
 }
 
-export interface IVuetify {
+export interface I_Vuetify {
     vuetify: ReturnType<typeof createVuetify>
 }
 
-export type TMessageSchema = typeof deDE
+export type T_Message_Schema = typeof deDE
 
-export type TStorage = {
+export type T_Storage = {
     [p: string]: string | number | string[]
 }

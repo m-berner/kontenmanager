@@ -13,7 +13,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 import DotMenu from '@/components/DotMenu.vue'
-import type {IHeader, IMenuItem} from '@/types'
+import type {I_Header, I_Menu_Item} from '@/types'
 
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
@@ -23,7 +23,7 @@ const settings = useSettingsStore()
 const {bookingsPerPage} = storeToRefs(settings)
 const {setBookingsPerPage} = settings
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[], MENU_ITEMS: IMenuItem[] }>({
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>({
   STRINGS: {
     ITEMS_PER_PAGE_TEXT: t('homePage.bookingsTable.itemsPerPageText'),
     NO_DATA_TEXT: t('homePage.bookingsTable.noDataText'),

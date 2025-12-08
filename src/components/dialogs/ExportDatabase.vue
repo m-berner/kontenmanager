@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount_DB, IBooking_DB, IBookingType_DB, IStock_DB} from '@/types'
+import type {I_Account_DB, I_Booking_DB, I_Booking_Type_DB, I_Stock_DB} from '@/types'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -35,10 +35,10 @@ const T = Object.freeze({
 const onClickOk = async (): Promise<void> => {
   log('EXPORT_DATABASE : onClickOk')
   const {resetTeleport} = useRuntimeStore()
-  const accounts: IAccount_DB[] = await getAllAccounts()
-  const bookings: IBooking_DB[] = await getAllBookings()
-  const stocks: IStock_DB[] = await getAllStocks()
-  const bookingTypes: IBookingType_DB[] = await getAllBookingTypes()
+  const accounts: I_Account_DB[] = await getAllAccounts()
+  const bookings: I_Booking_DB[] = await getAllBookings()
+  const stocks: I_Stock_DB[] = await getAllStocks()
+  const bookingTypes: I_Booking_Type_DB[] = await getAllBookingTypes()
   const stringifyDB = (): string => {
     let buffer: string
     let i: number

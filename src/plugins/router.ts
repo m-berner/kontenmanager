@@ -7,7 +7,7 @@
  */
 import {createRouter, createWebHashHistory} from 'vue-router'
 import {useApp} from '@/composables/useApp'
-import type {IRouter} from '@/types'
+import type {I_Router} from '@/types'
 
 const {CONS, log} = useApp()
 
@@ -48,7 +48,7 @@ const routerInstance = createRouter({
     ]
 })
 
-const routerConfig: IRouter = {
+const routerConfig: I_Router = {
     router: routerInstance
 }
 

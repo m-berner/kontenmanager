@@ -68,6 +68,7 @@ const onUpdateIban = (iban: string): void => {
 }
 
 const {domain} = useDomain(formSearch)
+
 const {faviconUrl} = useFavicon(domain)
 
 let timeoutId: ReturnType<typeof setTimeout>

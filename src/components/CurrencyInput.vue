@@ -9,10 +9,10 @@
 import {computed, defineProps, onMounted, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useBookingFormular} from '@/composables/useBookingFormular'
-import type {ICurrencyInputProps} from '@/types'
+import type {I_Currency_Input_Props} from '@/types'
 import {useApp} from '@/composables/useApp'
 
-const props = defineProps<ICurrencyInputProps>()
+const props = defineProps<I_Currency_Input_Props>()
 // eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['update:modelValue'])
 const {n} = useI18n()
@@ -20,10 +20,9 @@ const {formRef} = useBookingFormular()
 const {log} = useApp()
 
 const unformattedValue = ref<number>(props.modelValue)
-const formattedValue = ref('7') //ref<string>(formatCurrency(props.modelValue))
+const formattedValue = ref<string>('')
 const isFocused = ref<boolean>(false)
 
-// Wrapper für Rules: String-Input → Number für Validation
 const wrappedRules = computed(() => {
   if (!props.rules) return undefined
   return props.rules.map(rule => {

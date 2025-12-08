@@ -7,11 +7,11 @@
  */
 import {createPinia} from 'pinia'
 import {useApp} from '@/composables/useApp'
-import type {IPinia} from '@/types'
+import type {I_Pinia} from '@/types'
 
 const {log} = useApp()
 
-const piniaConfig: IPinia = {
+const piniaConfig: I_Pinia = {
     pinia: createPinia()
 }
 

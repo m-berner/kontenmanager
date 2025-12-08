@@ -6,15 +6,13 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {
-    IAccount_Store,
-    IBooking_Store,
-    IBookingType_Store,
-    INumberString,
-    IStock_DB,
-    IStock_Memory,
-    IStock_Store,
-    IStores_DB,
-    IStores_Store
+    I_Account_Store,
+    I_Booking_Store,
+    I_Booking_Type_Store,
+    I_Number_String, I_Records_DB, I_Records_Store,
+    I_Stock_DB,
+    I_Stock_Memory,
+    I_Stock_Store
 } from '@/types'
 import {defineStore, storeToRefs} from 'pinia'
 import {computed, ref} from 'vue'
@@ -27,12 +25,12 @@ import {useRuntimeStore} from '@/stores/runtime'
 const {CONS, isoDate, toNumber, utcDate, log} = useApp()
 
 const useStocksStore = defineStore('stocks', function () {
-    const items = ref<IStock_Store[]>([])
+    const items = ref<I_Stock_Store[]>([])
 
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(stock => stock.cID === id)
     })
-    const getItemById = computed(() => (id: number): IStock_Store => items.value[getIndexById.value(id)])
+    const getItemById = computed(() => (id: number): I_Stock_Store => items.value[getIndexById.value(id)])
     const passive = computed(() => {
         return items.value.filter(rec => {
             return rec.cFadeOut === 1 && rec.cID > 0
@@ -49,9 +47,9 @@ const useStocksStore = defineStore('stocks', function () {
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
 
-    function add(stock: IStock_DB, prepend: boolean = false): void {
+    function add(stock: I_Stock_DB, prepend: boolean = false): void {
         log('STOCKS_STORE: add')
-        const stocksOnlyMemory: IStock_Memory = {
+        const stocksOnlyMemory: I_Stock_Memory = {
             mPortfolio: 0,
             mInvest: 0,
             mChange: 0,
@@ -79,7 +77,7 @@ const useStocksStore = defineStore('stocks', function () {
         }
     }
 
-    function update(stock: IStock_DB): void {
+    function update(stock: I_Stock_DB): void {
         log('STOCKS_STORE: updateStock', {info: stock})
         const index = getIndexById.value(stock?.cID ?? -1)
         if (index !== -1) {
@@ -132,7 +130,7 @@ const useStocksStore = defineStore('stocks', function () {
         const rest = itemsLength % stocksPerPage.value
         const lastPage = Math.ceil(itemsLength / stocksPerPage.value)
 
-        let pageStocks: IStock_Store[] = []
+        let pageStocks: I_Stock_Store[] = []
         if (itemsLength > 0) {
             if (page < lastPage || rest === 0) {
                 pageStocks = active.value.slice(
@@ -198,16 +196,16 @@ const useAccountsStore = defineStore('accounts', function () {
     const settings = useSettingsStore()
     const {activeAccountId} = storeToRefs(settings)
 
-    const items = ref<IAccount_Store[]>([])
+    const items = ref<I_Account_Store[]>([])
 
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(account => account.cID === id)
     })
-    const getById = computed(() => (id: number): IAccount_Store | undefined => {
+    const getById = computed(() => (id: number): I_Account_Store | undefined => {
         return items.value.find(account => account.cID === id)
     })
     const isDuplicate = computed(() => (name: string): boolean => {
-        const duplicates = items.value.filter((entry: IAccount_Store) => entry.cIban === name)
+        const duplicates = items.value.filter((entry: I_Account_Store) => entry.cIban === name)
         return duplicates.length > 0
     })
     const isDepot = computed((): boolean => {
@@ -219,7 +217,7 @@ const useAccountsStore = defineStore('accounts', function () {
         }
     })
 
-    function add(account: IAccount_Store, prepend: boolean = false): void {
+    function add(account: I_Account_Store, prepend: boolean = false): void {
         log('ACCOUNTS_STORE: add')
         if (prepend) {
             items.value.unshift(account)
@@ -228,7 +226,7 @@ const useAccountsStore = defineStore('accounts', function () {
         }
     }
 
-    function update(account: IAccount_Store): void {
+    function update(account: I_Account_Store): void {
         log('ACCOUNTS_STORE: update')
         const index = getIndexById.value(account.cID)
         if (index !== -1) {
@@ -263,16 +261,16 @@ const useAccountsStore = defineStore('accounts', function () {
 })
 
 const useBookingsStore = defineStore('bookings', function () {
-    const items = ref<IBooking_Store[]>([])
+    const items = ref<I_Booking_Store[]>([])
 
-    const getById = computed(() => (id: number): IBooking_Store | undefined => {
+    const getById = computed(() => (id: number): I_Booking_Store | undefined => {
         return items.value.find(account => account.cID === id)
     })
     const getIndexById = computed(() => (ident: number): number => {
-        return items.value.findIndex((entry: IBooking_Store) => entry.cID === ident)
+        return items.value.findIndex((entry: I_Booking_Store) => entry.cID === ident)
     })
     const getTextById = computed(() => (ident: number): string => {
-        const booking = items.value.find((entry: IBooking_Store) => entry.cID === ident)
+        const booking = items.value.find((entry: I_Booking_Store) => entry.cID === ident)
         if (booking) {
             return `${booking.cBookDate} : ${booking.cDebit} : ${booking.cCredit}`
         } else {
@@ -289,7 +287,7 @@ const useBookingsStore = defineStore('bookings', function () {
 
         if (items.value.length > 0) {
             return items.value
-                .map((entry: IBooking_Store) => {
+                .map((entry: I_Booking_Store) => {
                     const fees = entry.cTaxDebit - entry.cTaxCredit + entry.cSourceTaxDebit - entry.cSourceTaxCredit + entry.cTransactionTaxDebit - entry.cTransactionTaxCredit + entry.cSoliDebit - entry.cSoliCredit + entry.cFeeDebit - entry.cFeeCredit
                     const balance = entry.cCredit - entry.cDebit
                     return balance - fees
@@ -300,13 +298,13 @@ const useBookingsStore = defineStore('bookings', function () {
         }
     })
     const hasBookingType = computed(() => (ident: number): boolean => {
-        const findings = items.value.filter((entry: IBooking_Store) => entry.cBookingTypeID === ident)
+        const findings = items.value.filter((entry: I_Booking_Store) => entry.cBookingTypeID === ident)
         return findings.length > 0
     })
     const sumFees = computed(() => (y: number) => {
-        return items.value.filter((entry: IBooking_Store) => {
+        return items.value.filter((entry: I_Booking_Store) => {
             return new Date(entry.cBookDate).getFullYear() === y
-        }).map((entry: IBooking_Store) => {
+        }).map((entry: I_Booking_Store) => {
             // if (entry.cBookingTypeID === 5) {
             //     return entry.cCredit - entry.cDebit
             // }
@@ -314,14 +312,14 @@ const useBookingsStore = defineStore('bookings', function () {
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
     const sumTaxes = computed(() => (y: number) => {
-        return items.value.filter((entry: IBooking_Store) => {
+        return items.value.filter((entry: I_Booking_Store) => {
             return new Date(entry.cBookDate).getFullYear() === y
-        }).map((entry: IBooking_Store) => {
+        }).map((entry: I_Booking_Store) => {
             return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
     const sumAllFees = computed(() => {
-        return items.value.map((entry: IBooking_Store) => {
+        return items.value.map((entry: I_Booking_Store) => {
             // if (entry.cBookingTypeID === 5) {
             //     return entry.cCredit - entry.cDebit
             // }
@@ -329,17 +327,17 @@ const useBookingsStore = defineStore('bookings', function () {
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
     const sumAllTaxes = computed(() => {
-        return items.value.map((entry: IBooking_Store) => {
+        return items.value.map((entry: I_Booking_Store) => {
             return entry.cTaxCredit - entry.cTaxDebit + entry.cSoliCredit - entry.cSoliDebit + entry.cSourceTaxCredit - entry.cSourceTaxDebit + entry.cTransactionTaxCredit - entry.cTransactionTaxDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
     const sumBookingsPerTypeAndYear = computed(() => (y: number) => {
         const bt = useBookingTypesStore()
-        const sums: INumberString[] = []
+        const sums: I_Number_String[] = []
         for (let i = 0; i < bt.items.length; i++) {
-            const t = items.value.filter((entry: IBooking_Store) => {
+            const t = items.value.filter((entry: I_Booking_Store) => {
                 return entry.cBookingTypeID === bt.items[i].cID && new Date(entry.cBookDate).getFullYear() === y
-            }).map((entry: IBooking_Store) => {
+            }).map((entry: I_Booking_Store) => {
                 return entry.cCredit - entry.cDebit
             }).reduce((acc: number, cur: number) => acc + cur, 0)
             sums.push({key: t, value: bt.items[i].cName})
@@ -348,11 +346,11 @@ const useBookingsStore = defineStore('bookings', function () {
     })
     const sumBookingsPerType = computed(() => {
         const bt = useBookingTypesStore()
-        const sums: INumberString[] = []
+        const sums: I_Number_String[] = []
         for (let i = 0; i < bt.items.length; i++) {
-            const t = items.value.filter((entry: IBooking_Store) => {
+            const t = items.value.filter((entry: I_Booking_Store) => {
                 return entry.cBookingTypeID === bt.items[i].cID
-            }).map((entry: IBooking_Store) => {
+            }).map((entry: I_Booking_Store) => {
                 return entry.cCredit - entry.cDebit
             }).reduce((acc: number, cur: number) => acc + cur, 0)
             sums.push({key: t, value: bt.items[i].cName})
@@ -360,23 +358,23 @@ const useBookingsStore = defineStore('bookings', function () {
         return sums
     })
     const portfolioByStockId = computed(() => (ident: number) => {
-        const bought = items.value.filter((entry: IBooking_Store) => {
+        const bought = items.value.filter((entry: I_Booking_Store) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 1
-        }).map((entry: IBooking_Store) => {
+        }).map((entry: I_Booking_Store) => {
             return entry.cCount
         }).reduce((acc: number, cur: number) => acc + cur, 0)
-        const sold = items.value.filter((entry: IBooking_Store) => {
+        const sold = items.value.filter((entry: I_Booking_Store) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 2
-        }).map((entry: IBooking_Store) => {
+        }).map((entry: I_Booking_Store) => {
             return entry.cCount
         }).reduce((acc: number, cur: number) => acc + cur, 0)
         return bought - sold
     })
     const investByStockId = computed(() => (ident: number) => {
         let portfolio = 0
-        return items.value.filter((entry: IBooking_Store) => {
+        return items.value.filter((entry: I_Booking_Store) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 1
-        }).map((entry: IBooking_Store) => {
+        }).map((entry: I_Booking_Store) => {
             portfolio += entry.cCount
             if (portfolio <= portfolioByStockId.value(ident)) {
                 return entry.cDebit
@@ -386,18 +384,18 @@ const useBookingsStore = defineStore('bookings', function () {
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
     const dividendsByStockId = computed(() => (ident: number) => {
-        return items.value.filter((entry: IBooking_Store) => {
+        return items.value.filter((entry: I_Booking_Store) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 3
-        }).map((entry: IBooking_Store) => {
+        }).map((entry: I_Booking_Store) => {
             return {id: ident, year: entry.cExDate, sum: entry.cCredit}
         })
     })
     const bookedYears = computed(() => {
-        const years = items.value.map((entry: IBooking_Store) => (new Date(entry.cBookDate).getFullYear()))
+        const years = items.value.map((entry: I_Booking_Store) => (new Date(entry.cBookDate).getFullYear()))
         return new Set(years)
     })
 
-    function add(booking: IBooking_Store, prepend: boolean = false): void {
+    function add(booking: I_Booking_Store, prepend: boolean = false): void {
         log('BOOKINGS_STORE: add')
         if (prepend) {
             items.value.unshift(booking)
@@ -406,7 +404,7 @@ const useBookingsStore = defineStore('bookings', function () {
         }
     }
 
-    function update(booking: IBooking_Store): void {
+    function update(booking: I_Booking_Store): void {
         log('BOOKINGS_STORE: update')
         const index = getIndexById.value(booking?.cID ?? -1)
         if (index !== -1) {
@@ -427,7 +425,7 @@ const useBookingsStore = defineStore('bookings', function () {
         items.value.length = 0
     }
 
-    function set(bookings: IBooking_Store[]): void {
+    function set(bookings: I_Booking_Store[]): void {
         items.value = bookings
     }
 
@@ -457,21 +455,21 @@ const useBookingsStore = defineStore('bookings', function () {
 })
 
 const useBookingTypesStore = defineStore('bookingTypes', function () {
-    const items = ref<IBookingType_Store[]>([])
+    const items = ref<I_Booking_Type_Store[]>([])
 
     const getNameById = computed(() => (ident: number): string => {
-        const bookingType = items.value.find((entry: IBookingType_Store) => entry.cID === ident)
+        const bookingType = items.value.find((entry: I_Booking_Type_Store) => entry.cID === ident)
         return bookingType ? bookingType.cName : ''
     })
-    const getById = computed(() => (ident: number): IBookingType_Store | null => {
-        const bookingType = items.value.find((entry: IBookingType_Store) => entry.cID === ident)
+    const getById = computed(() => (ident: number): I_Booking_Type_Store | null => {
+        const bookingType = items.value.find((entry: I_Booking_Type_Store) => entry.cID === ident)
         return bookingType ? bookingType : null
     })
     const getIndexById = computed(() => (id: number): number => {
         return items.value.findIndex(bookingType => bookingType.cID === id)
     })
     const isDuplicate = computed(() => (name: string): boolean => {
-        const duplicates = items.value.filter((entry: IBookingType_Store) => entry.cName === name)
+        const duplicates = items.value.filter((entry: I_Booking_Type_Store) => entry.cName === name)
         return duplicates.length > 0
     })
     const getNames = computed(() => items.value.map(item => item.cName))
@@ -480,7 +478,7 @@ const useBookingTypesStore = defineStore('bookingTypes', function () {
         index
     })))
 
-    function add(bookingType: IBookingType_Store, prepend: boolean = false): void {
+    function add(bookingType: I_Booking_Type_Store, prepend: boolean = false): void {
         log('BOOKING_TYPES_STORE: add')
         if (prepend) {
             items.value.unshift(bookingType)
@@ -489,7 +487,7 @@ const useBookingTypesStore = defineStore('bookingTypes', function () {
         }
     }
 
-    function update(bookingType: IBookingType_Store): void {
+    function update(bookingType: I_Booking_Type_Store): void {
         log('BOOKING_TYPES_STORE: update')
         const index = getIndexById.value(bookingType.cID)
         if (index !== -1) {
@@ -541,12 +539,12 @@ export const useRecordsStore = defineStore('records', function () {
         stocksStore.clean()
     }
 
-    async function init(storesDB: IStores_DB, messages: Record<string, string>, removeAccounts = true): Promise<void> {
+    async function init(storesDB: I_Records_DB, messages: Record<string, string>, removeAccounts = true): Promise<void> {
         log('RECORDS: init', {info: storesDB})
         const settings = useSettingsStore()
         const {activeAccountId} = storeToRefs(settings)
         const {info} = useAlertStore()
-        const stocksOnlyMemory: IStock_Memory = {
+        const stocksOnlyMemory: I_Stock_Memory = {
             mPortfolio: 0,
             mInvest: 0,
             mChange: 0,
@@ -563,7 +561,7 @@ export const useRecordsStore = defineStore('records', function () {
             mRealBuyValue: 0,
             mDeleteable: false
         }
-        const stores: IStores_Store = {
+        const stores: I_Records_Store = {
             accounts: storesDB.accountsDB,
             bookings: storesDB.bookingsDB,
             bookingTypes: storesDB.bookingTypesDB,
@@ -571,12 +569,11 @@ export const useRecordsStore = defineStore('records', function () {
                 return {...stock, ...stocksOnlyMemory}
             })
         }
-        const load = (stores: IStores_Store) => {
+        const load = (stores: I_Records_Store) => {
             log('RECORDS: load', {info: stores})
             for (const entry of stores.accounts) {
                 accountsStore.add(entry)
             }
-            //accountsStore.add({cID: 0, cSwift: '', cIban: '', cLogoUrl: '', cWithDepot: false}, true)
 
             for (const entry of stores.bookings) {
                 bookingsStore.add(entry)
@@ -590,10 +587,10 @@ export const useRecordsStore = defineStore('records', function () {
                 stocksStore.add(entry)
             }
 
-            stocksStore.items.sort((a: IStock_Store, b: IStock_Store) => {
+            stocksStore.items.sort((a: I_Stock_Store, b: I_Stock_Store) => {
                 return b.cFirstPage - a.cFirstPage
             })
-            bookingsStore.items.sort((a: IBooking_Store, b: IBooking_Store) => {
+            bookingsStore.items.sort((a: I_Booking_Store, b: I_Booking_Store) => {
                 const dateA = new Date(a.cBookDate).getTime()
                 const dateB = new Date(b.cBookDate).getTime()
                 return dateB - dateA

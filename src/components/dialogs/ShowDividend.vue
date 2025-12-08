@@ -13,7 +13,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
-import type {IHeader} from '@/types'
+import type {I_Header} from '@/types'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
@@ -23,7 +23,7 @@ const {setDividendsPerPage} = settings
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: IHeader[] }>({
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>({
   STRINGS: {
     TITLE: t('dialogs.showDividend.title'),
     ITEMS_PER_PAGE_TEXT: t('dialogs.showDividend.itemsPerPageText'),

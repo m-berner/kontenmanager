@@ -5,14 +5,14 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {IVisibleAlert} from '@/types'
+import type {I_Visible_Alert} from '@/types'
 import {defineStore} from 'pinia'
 import {computed, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 
-const defaultAlert: IVisibleAlert = {id: -1, type: undefined, title: '', message: ''}
-const alerts = ref<IVisibleAlert[]>([])
-const currentAlert = ref<IVisibleAlert>(defaultAlert)
+const defaultAlert: I_Visible_Alert = {id: -1, type: undefined, title: '', message: ''}
+const alerts = ref<I_Visible_Alert[]>([])
+const currentAlert = ref<I_Visible_Alert>(defaultAlert)
 
 const {log} = useApp()
 
@@ -25,7 +25,7 @@ export const useAlertStore = defineStore('alert', () => {
 
     function showAlert(type: 'error' | 'success' | 'warning' | 'info' | undefined, title: string, message: string, duration: number | null = null) {
         const id = Date.now() + Math.random()
-        const alert: IVisibleAlert = {id, type, title, message}
+        const alert: I_Visible_Alert = {id, type, title, message}
 
         alerts.value.push(alert)
 

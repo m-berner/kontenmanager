@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IOptionMenuProps} from '@/types'
+import type {I_Options_Menu_Propss} from '@/types'
 import {defineProps, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -17,7 +17,7 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 
-const optionMenuProps = defineProps<IOptionMenuProps>()
+const optionMenuProps = defineProps<I_Options_Menu_Propss>()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {remove: removeBooking} = useBookingsDB()

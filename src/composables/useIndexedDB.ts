@@ -7,7 +7,15 @@
  */
 
 /* eslint-disable no-unused-vars */
-import type {IAccount_DB, IBooking_DB, IBookingType_DB, IRecords_DB, IStock_DB, IStock_Store, IStores_DB} from '@/types'
+import type {
+    I_Account_DB,
+    I_Booking_DB,
+    I_Booking_Type_DB,
+    I_Records,
+    I_Records_DB,
+    I_Stock_DB,
+    I_Stock_Store
+} from '@/types'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 
@@ -30,7 +38,7 @@ function useDBStore<T>(storeName: string) {
         update: (data: T) => dbi.update(storeName, data),
         remove: (id: number) => dbi.remove(storeName, id),
         clear: () => dbi.clear(storeName),
-        batchImport: (batch: IRecords_DB[]) => dbi.batchOperations(storeName, batch)
+        batchImport: (batch: I_Records[]) => dbi.batchOperations(storeName, batch)
     }
 }
 
@@ -217,7 +225,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    async function batchOperations(storeName: string, operations: IRecords_DB[]): Promise<void> {
+    async function batchOperations(storeName: string, operations: I_Records[]): Promise<void> {
         const db = await _openDB()
         const tx = db.transaction(storeName, 'readwrite')
         const store = tx.objectStore(storeName)
@@ -297,9 +305,9 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         ], 'readwrite')
 
         // Get all records first
-        const bookings = await _getAllInTransaction<IBooking_DB>(tx, CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
-        const bookingTypes = await _getAllInTransaction<IBookingType_DB>(tx, CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
-        const stocks = await _getAllInTransaction<IStock_DB>(tx, CONS.INDEXED_DB.STORES.STOCKS.NAME)
+        const bookings = await _getAllInTransaction<I_Booking_DB>(tx, CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
+        const bookingTypes = await _getAllInTransaction<I_Booking_Type_DB>(tx, CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
+        const stocks = await _getAllInTransaction<I_Stock_DB>(tx, CONS.INDEXED_DB.STORES.STOCKS.NAME)
 
         // Delete in one transaction
         const bookingsStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
@@ -307,9 +315,9 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const stocksStore = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME)
         const accountsStore = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
 
-        bookings.filter((b: IBooking_DB) => b.cAccountNumberID === accountId).forEach((b: IBooking_DB) => bookingsStore.delete(b.cID))
-        bookingTypes.filter((bt: IBookingType_DB) => bt.cAccountNumberID === accountId).forEach((bt: IBookingType_DB) => bookingTypesStore.delete(bt.cID))
-        stocks.filter((s: IStock_DB) => s.cAccountNumberID === accountId).forEach((s: IStock_DB) => stocksStore.delete(s.cID))
+        bookings.filter((b: I_Booking_DB) => b.cAccountNumberID === accountId).forEach((b: I_Booking_DB) => bookingsStore.delete(b.cID))
+        bookingTypes.filter((bt: I_Booking_Type_DB) => bt.cAccountNumberID === accountId).forEach((bt: I_Booking_Type_DB) => bookingTypesStore.delete(bt.cID))
+        stocks.filter((s: I_Stock_DB) => s.cAccountNumberID === accountId).forEach((s: I_Stock_DB) => stocksStore.delete(s.cID))
         accountsStore.delete(accountId)
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => resolve()
@@ -317,7 +325,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         })
     }
 
-    async function getDatabaseStores(accountId: number): Promise<IStores_DB> {
+    async function getDatabaseStores(accountId: number): Promise<I_Records_DB> {
         log('USE_INDEXED_DB: getDatabaseStores')
         const db = await _openDB()
         const tx = db.transaction([
@@ -337,7 +345,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const requestBookingTypes = bookingTypesStoreDB.getAll()
         const requestStocks = stocksStoreDB.getAll()
 
-        const results: IStores_DB = {
+        const results: I_Records_DB = {
             accountsDB: [],
             bookingsDB: [],
             bookingTypesDB: [],
@@ -435,31 +443,31 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 }
 
 export function useAccountsDB() {
-    return useDBStore<IAccount_DB>(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
+    return useDBStore<I_Account_DB>(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
 }
 
 export function useBookingsDB() {
-    return useDBStore<IBooking_DB>(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
+    return useDBStore<I_Booking_DB>(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
 }
 
 export function useBookingTypesDB() {
-    return useDBStore<IBookingType_DB>(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
+    return useDBStore<I_Booking_Type_DB>(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
 }
 
 // Stocks need special handling for computed properties
 export function useStocksDB() {
-    const store = useDBStore<IStock_DB>(CONS.INDEXED_DB.STORES.STOCKS.NAME)
+    const store = useDBStore<I_Stock_DB>(CONS.INDEXED_DB.STORES.STOCKS.NAME)
 
     return {
         ...store,
-        update: (stockData: IStock_Store) => {
+        update: (stockData: I_Stock_Store) => {
             // Remove computed properties before saving
             const {
                 mPortfolio, mInvest, mChange, mBuyValue, mEuroChange, mMin,
                 mValue, mMax, mDividendYielda, mDividendYeara, mDividendYieldb,
                 mDividendYearb, mRealDividend, mRealBuyValue, mDeleteable, ...cleanData
             } = stockData
-            return store.update(cleanData as IStock_DB)
+            return store.update(cleanData as I_Stock_DB)
         }
     }
 }

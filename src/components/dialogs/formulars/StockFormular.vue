@@ -13,9 +13,9 @@ import {useApp} from '@/composables/useApp'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useFetch} from '@/composables/useFetch'
 import {useBrowser} from '@/composables/useBrowser'
-import type {IStockFormularProps} from '@/types'
+import type {I_Stock_Formular_Props} from '@/types'
 
-const props = defineProps<IStockFormularProps>()
+const props = defineProps<I_Stock_Formular_Props>()
 
 const {t} = useI18n()
 const {log} = useApp()

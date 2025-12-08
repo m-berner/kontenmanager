@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IStock_Store} from '@/types'
+import type {I_Stock_Store} from '@/types'
 import {onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
@@ -29,7 +29,7 @@ const T = Object.freeze({
   }
 })
 
-const selected = ref<IStock_Store | null>(null)
+const selected = ref<I_Stock_Store | null>(null)
 const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {

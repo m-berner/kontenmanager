@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBookingType_Store} from '@/types'
+import type {I_Booking_Type_Store} from '@/types'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -69,7 +69,7 @@ const onClickOk = async (): Promise<void> => {
         log('ADD_BOOKING_TYPE: onClickOk', {error: T.MESSAGES.ERROR_ADD})
         await notice([T.MESSAGES.ERROR_ADD])
       }
-      const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingType}
+      const completeBookingType: I_Booking_Type_Store = {cID: addBookingTypeID, ...bookingType}
       records.bookingTypes.add(completeBookingType)
       reset()
       await notice([T.MESSAGES.SUCCESS_ADD])

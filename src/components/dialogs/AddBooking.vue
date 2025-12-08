@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IBooking_DB, IBooking_Store} from '@/types'
+import type {I_Booking_DB, I_Booking_Store} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -47,7 +47,7 @@ const onClickOk = async (): Promise<void> => {
     await notice(['Database not connected'])
     return
   }
-  const createBooking = (baseData: typeof bookingFormularData, accountId: number, defaultISODate: string): Omit<IBooking_DB, 'cID'> => {
+  const createBooking = (baseData: typeof bookingFormularData, accountId: number, defaultISODate: string): Omit<I_Booking_DB, 'cID'> => {
     const base = {
       cBookDate: baseData.bookDate,
       cCredit: baseData.credit,
@@ -67,7 +67,6 @@ const onClickOk = async (): Promise<void> => {
       cTransactionTaxDebit: baseData.transactionTaxDebit
     }
 
-    // Type-specific fields
     const isStockRelated = baseData.bookingTypeId >= 1 && baseData.bookingTypeId <= 3
     const isDividend = baseData.bookingTypeId === 3
     const hasMarketplace = baseData.bookingTypeId >= 1 && baseData.bookingTypeId <= 2
@@ -81,114 +80,26 @@ const onClickOk = async (): Promise<void> => {
     }
   }
   try {
-    let booking: Omit<IBooking_DB, 'cID'>
+    let booking: Omit<I_Booking_DB, 'cID'>
     switch (bookingFormularData.bookingTypeId) {
       case 1:
         booking = createBooking(bookingFormularData, activeAccountId.value, CONS.DATE.DEFAULT_ISO)
-        // booking = {
-        //   cBookDate: bookingFormularData.bookDate,
-        //   cCredit: bookingFormularData.credit,
-        //   cDebit: bookingFormularData.debit,
-        //   cDescription: bookingFormularData.description,
-        //   cBookingTypeID: bookingFormularData.bookingTypeId,
-        //   cStockID: bookingFormularData.stockId,
-        //   cAccountNumberID: activeAccountId.value,
-        //   cExDate: CONS.DATE.DEFAULT_ISO,
-        //   cCount: bookingFormularData.count,
-        //   cSoliCredit: bookingFormularData.soliCredit,
-        //   cSoliDebit: bookingFormularData.soliDebit,
-        //   cTaxCredit: bookingFormularData.taxCredit,
-        //   cTaxDebit: bookingFormularData.taxDebit,
-        //   cFeeCredit: bookingFormularData.feeCredit,
-        //   cFeeDebit: bookingFormularData.feeDebit,
-        //   cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
-        //   cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
-        //   cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
-        //   cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
-        //   cMarketPlace: bookingFormularData.marketPlace
-        // }
         break
       case 2:
         booking = createBooking(bookingFormularData, activeAccountId.value, CONS.DATE.DEFAULT_ISO)
-        // {
-        //     cBookDate: bookingFormularData.bookDate,
-        //     cCredit: bookingFormularData.credit,
-        //     cDebit: bookingFormularData.debit,
-        //     cDescription: bookingFormularData.description,
-        //     cBookingTypeID: bookingFormularData.bookingTypeId,
-        //     cStockID: bookingFormularData.stockId,
-        //     cAccountNumberID: activeAccountId.value,
-        //     cExDate: CONS.DATE.DEFAULT_ISO,
-        //     cCount: bookingFormularData.count,
-        //     cSoliCredit: bookingFormularData.soliCredit,
-        //     cSoliDebit: bookingFormularData.soliDebit,
-        //     cTaxCredit: bookingFormularData.taxCredit,
-        //     cTaxDebit: bookingFormularData.taxDebit,
-        //     cFeeCredit: bookingFormularData.feeCredit,
-        //     cFeeDebit: bookingFormularData.feeDebit,
-        //     cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
-        //     cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
-        //     cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
-        //     cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
-        //     cMarketPlace: bookingFormularData.marketPlace
-        //   }
         break
       case 3:
         booking = createBooking(bookingFormularData, activeAccountId.value, CONS.DATE.DEFAULT_ISO)
-        // booking = {
-        //   cBookDate: bookingFormularData.bookDate,
-        //   cCredit: bookingFormularData.credit,
-        //   cDebit: bookingFormularData.debit,
-        //   cDescription: bookingFormularData.description,
-        //   cBookingTypeID: bookingFormularData.bookingTypeId,
-        //   cStockID: bookingFormularData.stockId,
-        //   cAccountNumberID: activeAccountId.value,
-        //   cExDate: bookingFormularData.exDate,
-        //   cCount: bookingFormularData.count,
-        //   cSoliCredit: bookingFormularData.soliCredit,
-        //   cSoliDebit: bookingFormularData.soliDebit,
-        //   cTaxCredit: bookingFormularData.taxCredit,
-        //   cTaxDebit: bookingFormularData.taxDebit,
-        //   cFeeCredit: bookingFormularData.feeCredit,
-        //   cFeeDebit: bookingFormularData.feeDebit,
-        //   cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
-        //   cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
-        //   cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
-        //   cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
-        //   cMarketPlace: ''
-        // }
         break
       default:
         booking = createBooking(bookingFormularData, activeAccountId.value, CONS.DATE.DEFAULT_ISO)
-        // booking = {
-        //   cBookDate: bookingFormularData.bookDate,
-        //   cCredit: bookingFormularData.credit,
-        //   cDebit: bookingFormularData.debit,
-        //   cDescription: bookingFormularData.description,
-        //   cBookingTypeID: bookingFormularData.bookingTypeId,
-        //   cStockID: 0,
-        //   cAccountNumberID: activeAccountId.value,
-        //   cExDate: CONS.DATE.DEFAULT_ISO,
-        //   cCount: 0,
-        //   cSoliCredit: bookingFormularData.soliCredit,
-        //   cSoliDebit: bookingFormularData.soliDebit,
-        //   cTaxCredit: bookingFormularData.taxCredit,
-        //   cTaxDebit: bookingFormularData.taxDebit,
-        //   cFeeCredit: bookingFormularData.feeCredit,
-        //   cFeeDebit: bookingFormularData.feeDebit,
-        //   cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
-        //   cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
-        //   cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
-        //   cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
-        //   cMarketPlace: ''
-        // }
     }
     const addBookingID = await add(booking)
     if (addBookingID === -1) {
       log('ADD_BOOKING: onClickOk', {error: T.MESSAGES.ERROR_ADD})
       await notice([T.MESSAGES.ERROR_ADD])
     }
-    const completeBooking: IBooking_Store = {cID: addBookingID, ...booking}
+    const completeBooking: I_Booking_Store = {cID: addBookingID, ...booking}
     records.bookings.add(completeBooking, true)
     reset()
     await notice([T.MESSAGES.SUCCESS_ADD])

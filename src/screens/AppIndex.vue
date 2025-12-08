@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IExchangeData} from '@/types'
+import type {I_Exchange_Data} from '@/types'
 import {onBeforeMount} from 'vue'
 import {useTheme} from 'vuetify'
 import {RouterView} from 'vue-router'
@@ -58,7 +58,7 @@ onBeforeMount(async () => {
     settings.init(theme, storage)
     const storesDB = await getDatabaseStores(settings.activeAccountId)
     await records.init(storesDB, T.MESSAGES)
-    const exchangesBaseData: IExchangeData[] = await fetchExchangesData([CURUSD, CUREUR])
+    const exchangesBaseData: I_Exchange_Data[] = await fetchExchangesData([CURUSD, CUREUR])
     for (let i = 0; i < exchangesBaseData.length; i++) {
       if (exchangesBaseData[i].key.includes(CONS.CURRENCIES.USD)) {
         curUsd.value = exchangesBaseData[i].value
@@ -66,15 +66,15 @@ onBeforeMount(async () => {
         curEur.value = exchangesBaseData[i].value
       }
     }
-    const exchangesInfoData: IExchangeData[] = await fetchExchangesData(exchanges.value)
+    const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData(exchanges.value)
     for (let i = 0; i < exchanges.value.length; i++) {
       runtime.infoExchanges.set(exchanges.value[i], exchangesInfoData[i].value)
     }
-    const indexesInfoData: IExchangeData[] = await fetchIndexData()
+    const indexesInfoData: I_Exchange_Data[] = await fetchIndexData()
     for (let i = 0; i < indexesInfoData.length; i++) {
       runtime.infoIndexes.set(indexesInfoData[i].key, indexesInfoData[i].value)
     }
-    const materialsInfoData: IExchangeData[] = await fetchMaterialData()
+    const materialsInfoData: I_Exchange_Data[] = await fetchMaterialData()
     for (let i = 0; i < materialsInfoData.length; i++) {
       runtime.infoMaterials.set(materialsInfoData[i].key, materialsInfoData[i].value)
     }

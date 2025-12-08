@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {IAccount_Store, IBookingType_Store} from '@/types'
+import type {I_Account_Store, I_Booking_Type_Store} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -65,7 +65,7 @@ const onClickOk = async (): Promise<void> => {
       log('ADD_ACCOUNT: onClickOk', {error: T.MESSAGES.ERROR_ADD})
       await notice([T.MESSAGES.ERROR_ADD])
     }
-    const completeAccount: IAccount_Store = {cID: addAccountID, ...account}
+    const completeAccount: I_Account_Store = {cID: addAccountID, ...account}
     records.accounts.add(completeAccount)
     activeAccountId.value = addAccountID
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
@@ -89,7 +89,7 @@ const onClickOk = async (): Promise<void> => {
     for (let i = 0; i < bookingTypes.length; i++) {
       const addBookingTypeID: number = await addBookingType(bookingTypes[i])
       if (addBookingTypeID > -1) {
-        const completeBookingType: IBookingType_Store = {cID: addBookingTypeID, ...bookingTypes[i]}
+        const completeBookingType: I_Booking_Type_Store = {cID: addBookingTypeID, ...bookingTypes[i]}
         records.bookingTypes.add(completeBookingType)
         reset()
       }
