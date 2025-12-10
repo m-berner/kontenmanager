@@ -28,66 +28,66 @@ const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>({
   STRINGS: {
-    ITEMS_PER_PAGE_TEXT: t('homePage.stocksTable.itemsPerPageText'),
-    NO_DATA_TEXT: t('homePage.stocksTable.noDataText')
+    ITEMS_PER_PAGE_TEXT: t('companyContent.stocksTable.itemsPerPageText'),
+    NO_DATA_TEXT: t('companyContent.stocksTable.noDataText')
   },
   HEADERS: [
     {
-      title: t('homePage.stocksTable.headers.action'),
+      title: t('companyContent.stocksTable.headers.action'),
       align: 'start',
       sortable: false,
       key: 'mAction'
     },
     {
-      title: t('homePage.stocksTable.headers.company'),
+      title: t('companyContent.stocksTable.headers.company'),
       align: 'start',
       sortable: true,
       key: 'cCompany'
     },
     {
-      title: t('homePage.stocksTable.headers.isin'),
+      title: t('companyContent.stocksTable.headers.isin'),
       align: 'start',
       sortable: false,
       key: 'cISIN'
     },
     {
-      title: t('homePage.stocksTable.headers.qf'),
+      title: t('companyContent.stocksTable.headers.qf'),
       align: 'start',
       sortable: false,
       key: 'cQuarterDay'
     },
     {
-      title: t('homePage.stocksTable.headers.gm'),
+      title: t('companyContent.stocksTable.headers.gm'),
       align: 'start',
       sortable: false,
       key: 'cMeetingDay'
     },
     {
-      title: t('homePage.stocksTable.headers.portfolio'),
+      title: t('companyContent.stocksTable.headers.portfolio'),
       align: 'start',
       sortable: true,
       key: 'mPortfolio'
     },
     {
-      title: t('homePage.stocksTable.headers.winLoss'),
+      title: t('companyContent.stocksTable.headers.winLoss'),
       align: 'start',
       sortable: false,
       key: 'mEuroChange'
     },
     {
-      title: t('homePage.stocksTable.headers.52low'),
+      title: t('companyContent.stocksTable.headers.52low'),
       align: 'start',
       sortable: false,
       key: 'mMin'
     },
     {
-      title: t('homePage.stocksTable.headers.rate'),
+      title: t('companyContent.stocksTable.headers.rate'),
       align: 'start',
       sortable: false,
       key: 'mValue'
     },
     {
-      title: t('homePage.stocksTable.headers.52high'),
+      title: t('companyContent.stocksTable.headers.52high'),
       align: 'start',
       sortable: false,
       key: 'mMax'
@@ -96,22 +96,22 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], 
   MENU_ITEMS: [
     {
       id: 'DeleteStock',
-      title: t('homePage.stocksTable.menuItems.delete'),
+      title: t('companyContent.stocksTable.menuItems.delete'),
       icon: '$deleteCompany'
     },
     {
       id: 'UpdateStock',
-      title: t('homePage.stocksTable.menuItems.update'),
+      title: t('companyContent.stocksTable.menuItems.update'),
       icon: '$showCompany'
     },
     {
       id: 'ShowDividend',
-      title: t('homePage.stocksTable.menuItems.dividend'),
+      title: t('companyContent.stocksTable.menuItems.dividend'),
       icon: '$showDividend'
     },
     {
       id: 'ExternalLink',
-      title: t('homePage.stocksTable.menuItems.link'),
+      title: t('companyContent.stocksTable.menuItems.link'),
       icon: '$link'
     }
   ]

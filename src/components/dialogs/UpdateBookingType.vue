@@ -33,8 +33,8 @@ const T = Object.freeze({
     ERROR_ONCLICK_OK: t('messages.onClickOk')
   },
   STRINGS: {
-    TITLE: t('dialogs.updateBookingType.title'),
-    BOOKING_TYPE_LABEL: t('dialogs.updateBookingType.bookingTypeLabel')
+    TITLE: t('components.dialogs.updateBookingType.title'),
+    BOOKING_TYPE_LABEL: t('components.dialogs.updateBookingType.bookingTypeLabel')
   },
   NAME_RULES: [
     t('validators.nameRules.required'),

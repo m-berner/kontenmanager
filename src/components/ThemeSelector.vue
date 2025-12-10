@@ -20,12 +20,12 @@ const {getStorage, setStorage} = useBrowser()
 const T = Object.freeze<Record<string, Record<string, string>>>({
   // NOTE: lowercase properties required due to vuetify plugin object
   STRINGS: {
-    earth: t('optionsPage.themeNames.earth'),
-    ocean: t('optionsPage.themeNames.ocean'),
-    sky: t('optionsPage.themeNames.sky'),
-    meadow: t('optionsPage.themeNames.meadow'),
-    dark: t('optionsPage.themeNames.dark'),
-    light: t('optionsPage.themeNames.light')
+    earth: t('optionsIndex.themeNames.earth'),
+    ocean: t('optionsIndex.themeNames.ocean'),
+    sky: t('optionsIndex.themeNames.sky'),
+    meadow: t('optionsIndex.themeNames.meadow'),
+    dark: t('optionsIndex.themeNames.dark'),
+    light: t('optionsIndex.themeNames.light')
   }
 })
 const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)

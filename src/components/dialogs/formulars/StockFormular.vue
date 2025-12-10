@@ -29,14 +29,14 @@ const T = Object.freeze({
     ERROR_ONUPDATE_ISIN: t('messages.onUpdateIsin')
   },
   STRINGS: {
-    COMPANY_LABEL: t('dialogs.stockFormular.companyLabel'),
-    SYMBOL_LABEL: t('dialogs.stockFormular.symbolLabel'),
-    MEETING_DAY_LABEL: t('dialogs.stockFormular.meetingDayLabel'),
-    QUARTER_DAY_LABEL: t('dialogs.stockFormular.quarterDayLabel'),
-    FADEOUT_LABEL: t('dialogs.stockFormular.fadeOutLabel'),
-    FIRST_PAGE_LABEL: t('dialogs.stockFormular.firstPageLabel'),
-    URL_LABEL: t('dialogs.stockFormular.urlLabel'),
-    ISIN_LABEL: t('dialogs.stockFormular.isinLabel')
+    COMPANY_LABEL: t('components.dialogs.formulars.stockFormular.companyLabel'),
+    SYMBOL_LABEL: t('components.dialogs.formulars.stockFormular.symbolLabel'),
+    MEETING_DAY_LABEL: t('components.dialogs.formulars.stockFormular.meetingDayLabel'),
+    QUARTER_DAY_LABEL: t('components.dialogs.formulars.stockFormular.quarterDayLabel'),
+    FADEOUT_LABEL: t('components.dialogs.formulars.stockFormular.fadeOutLabel'),
+    FIRST_PAGE_LABEL: t('components.dialogs.formulars.stockFormular.firstPageLabel'),
+    URL_LABEL: t('components.dialogs.formulars.stockFormular.urlLabel'),
+    ISIN_LABEL: t('components.dialogs.formulars.stockFormular.isinLabel')
   },
   ISIN_RULES: [
     t('validators.isinRules.required'),

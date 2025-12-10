@@ -20,22 +20,22 @@ const router = useRouter()
 
 const T = Object.freeze({
   GENERAL: {
-    TITLE: t('homePage.privacyContent.general.title'),
+    TITLE: t('sheetContent.privacyContent.general.title'),
     PARAGRAPHS: [
       {
-        SUBTITLE: t('homePage.privacyContent.general.paragraphs.local.subTitle'),
-        CONTENT: t('homePage.privacyContent.general.paragraphs.local.content'),
-        ICON: t('homePage.privacyContent.general.paragraphs.local.icon')
+        SUBTITLE: t('sheetContent.privacyContent.general.paragraphs.local.subTitle'),
+        CONTENT: t('sheetContent.privacyContent.general.paragraphs.local.content'),
+        ICON: t('sheetContent.privacyContent.general.paragraphs.local.icon')
       },
       {
-        SUBTITLE: t('homePage.privacyContent.general.paragraphs.public.subTitle'),
-        CONTENT: t('homePage.privacyContent.general.paragraphs.public.content'),
-        ICON: t('homePage.privacyContent.general.paragraphs.public.icon')
+        SUBTITLE: t('sheetContent.privacyContent.general.paragraphs.public.subTitle'),
+        CONTENT: t('sheetContent.privacyContent.general.paragraphs.public.content'),
+        ICON: t('sheetContent.privacyContent.general.paragraphs.public.icon')
       },
       {
-        SUBTITLE: t('homePage.privacyContent.general.paragraphs.connection.subTitle'),
-        CONTENT: t('homePage.privacyContent.general.paragraphs.connection.content'),
-        ICON: t('homePage.privacyContent.general.paragraphs.connection.icon')
+        SUBTITLE: t('sheetContent.privacyContent.general.paragraphs.connection.subTitle'),
+        CONTENT: t('sheetContent.privacyContent.general.paragraphs.connection.content'),
+        ICON: t('sheetContent.privacyContent.general.paragraphs.connection.icon')
       }
     ]
   }

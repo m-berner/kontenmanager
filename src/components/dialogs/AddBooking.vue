@@ -36,7 +36,7 @@ const T = Object.freeze({
     ERROR_ADD: t('messages.addBooking.error')
   },
   STRINGS: {
-    TITLE: t('dialogs.addBooking.title')
+    TITLE: t('components.dialogs.addBooking.title')
   }
 })
 

@@ -20,23 +20,23 @@ const {CONS, log} = useApp()
 const T = Object.freeze({
   TABS: [
     {
-      title: t('optionsPage.tabs.ge'),
+      title: t('optionsIndex.tabs.ge'),
       id: 'register_ge'
     },
     {
-      title: t('optionsPage.tabs.mp'),
+      title: t('optionsIndex.tabs.mp'),
       id: 'register_mp'
     },
     {
-      title: t('optionsPage.tabs.ind'),
+      title: t('optionsIndex.tabs.ind'),
       id: 'register_ind'
     },
     {
-      title: t('optionsPage.tabs.mat'),
+      title: t('optionsIndex.tabs.mat'),
       id: 'register_mat'
     },
     {
-      title: t('optionsPage.tabs.ex'),
+      title: t('optionsIndex.tabs.ex'),
       id: 'register_ex'
     }
   ]

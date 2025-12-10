@@ -18,8 +18,8 @@ const {log} = useApp()
 
 const T = Object.freeze({
   STRINGS: {
-    OK: t('dialogs.ok'),
-    CANCEL: t('dialogs.cancel')
+    OK: t('components.dialogs.ok'),
+    CANCEL: t('components.dialogs.cancel')
   }
 })
 

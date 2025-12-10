@@ -45,22 +45,22 @@ const T = Object.freeze({
     RESTRICTED_IMPORT: t('messages.restrictedImport')
   },
   STRINGS: {
-    TITLE: t('dialogs.importDatabase.title'),
-    VERSION: t('dialogs.importDatabase.version'),
-    NOT_EMPTY: t('dialogs.importDatabase.notEmpty'),
-    INVALID: t('dialogs.importDatabase.invalid'),
-    MESSAGE_DELETE: t('dialogs.importDatabase.messageDelete'),
-    FILE_LABEL: t('dialogs.importDatabase.fileLabel'),
-    TAX: t('dialogs.importDatabase.tax'),
-    CAPITAL_TAX: t('dialogs.importDatabase.capitalTax'),
-    FEE: t('dialogs.importDatabase.fee'),
-    SOLI: t('dialogs.importDatabase.soli'),
-    SOURCE_TAX: t('dialogs.importDatabase.sourceTax'),
-    TRANSACTION_TAX: t('dialogs.importDatabase.transactionTax'),
-    OTHERS: t('dialogs.importDatabase.others'),
-    SHARE_BUY: t('dialogs.importDatabase.shareBuy'),
-    SHARE_SELL: t('dialogs.importDatabase.shareSell'),
-    DIVIDEND: t('dialogs.importDatabase.dividend')
+    TITLE: t('components.dialogs.importDatabase.title'),
+    VERSION: t('components.dialogs.importDatabase.version'),
+    NOT_EMPTY: t('components.dialogs.importDatabase.notEmpty'),
+    INVALID: t('components.dialogs.importDatabase.invalid'),
+    MESSAGE_DELETE: t('components.dialogs.importDatabase.messageDelete'),
+    FILE_LABEL: t('components.dialogs.importDatabase.fileLabel'),
+    TAX: t('components.dialogs.importDatabase.tax'),
+    CAPITAL_TAX: t('components.dialogs.importDatabase.capitalTax'),
+    FEE: t('components.dialogs.importDatabase.fee'),
+    SOLI: t('components.dialogs.importDatabase.soli'),
+    SOURCE_TAX: t('components.dialogs.importDatabase.sourceTax'),
+    TRANSACTION_TAX: t('components.dialogs.importDatabase.transactionTax'),
+    OTHERS: t('components.dialogs.importDatabase.others'),
+    SHARE_BUY: t('components.dialogs.importDatabase.shareBuy'),
+    SHARE_SELL: t('components.dialogs.importDatabase.shareSell'),
+    DIVIDEND: t('components.dialogs.importDatabase.dividend')
   }
 })
 

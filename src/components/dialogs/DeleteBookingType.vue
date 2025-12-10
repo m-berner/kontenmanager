@@ -30,9 +30,9 @@ const T = Object.freeze({
     ERROR_ONCLICK_OK: t('messages.onClickOk')
   },
   STRINGS: {
-    TITLE: t('dialogs.deleteBookingType.title'),
-    BOOKING_TYPE_LABEL: t('dialogs.deleteBookingType.bookingTypeLabel'),
-    PLACEHOLDER: t('dialogs.deleteBookingType.placeholder')
+    TITLE: t('components.dialogs.deleteBookingType.title'),
+    BOOKING_TYPE_LABEL: t('components.dialogs.deleteBookingType.bookingTypeLabel'),
+    PLACEHOLDER: t('components.dialogs.deleteBookingType.placeholder')
   }
 })
 

@@ -25,6 +25,7 @@ if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
         log('BACKGROUND: onInstall')
         await installStorageLocal()
     }
+
     const onClick = async (): Promise<void> => {
         log('BACKGROUND: onClick')
         const foundTabs = await tabsQuery()

@@ -90,7 +90,7 @@
   },
   "infoBar": {
   },
-  "homePage": {
+  "homeContent": {
     "search": "Suchen",
     "bookingsTable": {
       "headers": {
@@ -109,7 +109,9 @@
       },
       "noDataText": "Keine Einträge gefunden.",
       "itemsPerPageText": "Einträge pro Seite:"
-    },
+    }
+  },
+  "companyContent": {
     "stocksTable": {
       "headers": {
         "id": "ID",
@@ -133,37 +135,146 @@
       },
       "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
       "itemsPerPageText": "Einträge pro Seite:"
-    },
-    "privacyContent": {
-      "title": "KontenManager Datenschutz Richtlinien",
-      "general": {
-        "title": "Allgemein",
-        "paragraphs": {
-          "local": {
-            "subTitle": "Lokale Daten",
-            "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
-            "icon": ""
-          },
-          "public": {
-            "subTitle": "Öffentliche Daten",
-            "content": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
-            "icon": ""
-          },
-          "connection": {
-            "subTitle": "Internetverbindungen",
-            "content": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen.",
-            "icon": ""
-          }
-        }
-      }
     }
   },
-  "footer": {
+  "footerBar": {
     "help": "Hilfe",
     "privacy": "Datenschutz",
     "mail": "Email"
   },
   "components": {
+    "dialogs": {
+      "formulars": {
+        "accountFormular": {
+          "swiftLabel": "BIC / SWIFT",
+          "searchLabel": "Logo Suche",
+          "withDepotLabel": "Depot Verrechnungskonto",
+          "withNoDepotLabel": "Konto",
+          "ibanLabel": "IBAN / Kontonummer",
+          "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+          "missingLogo": "Kein Logo gefunden"
+        },
+        "bookingFormular": {
+          "bookingLabel": "Buchung",
+          "dateLabel": "Buchungstag",
+          "exDateLabel": "Ex-Tag",
+          "descriptionLabel": "Bemerkung",
+          "countLabel": "Anzahl",
+          "bookingTypeLabel": "Buchungstyp",
+          "feeLabel": "Gebühr",
+          "taxLabel": "Steuer",
+          "soliLabel": "Soli",
+          "stockLabel": "Unternehmen",
+          "marketPlaceLabel": "Handelsplatz",
+          "transactionTaxLabel": "Transaktionssteuer",
+          "sourceTaxLabel": "Quellensteuer",
+          "creditLabel": "Haben",
+          "debitLabel": "Soll"
+        },
+        "stockFormular": {
+          "isinLabel": "ISIN",
+          "symbolLabel": "Kürzel",
+          "companyLabel": "Unternehmen",
+          "fadeOutLabel": "Ausblenden",
+          "firstPageLabel": "Erste Seite",
+          "meetingDayLabel": "Hauptversammlung",
+          "quarterDayLabel": "Quartalszahlen",
+          "urlLabel": "URL"
+        }
+      },
+      "cancel": "Abbrechen",
+      "ok": "OK",
+      "addBooking": {
+        "title": "Buchung hinzufügen"
+      },
+      "updateBooking": {
+        "title": "Buchung bearbeiten"
+      },
+      "deleteBooking": {
+        "title": "Buchung",
+        "ask": "jetzt löschen?",
+        "success": "Buchung wurde entfernt",
+        "error": "Eingabe Fehler?"
+      },
+      "addAccount": {
+        "title": "Bankkonto hinzufügen"
+      },
+      "addStock": {
+        "title": "Unternehmen hinzufügen"
+      },
+      "deleteStock": {
+        "title": "Unternehmen entfernen",
+        "success": "Unternehmen wurde entfernt",
+        "error": "Unternehmen existiert bereits"
+      },
+      "updateStock": {
+        "title": "Unternehmen bearbeiten"
+      },
+      "fadeInStock": {
+        "title": "Unternehmen einblenden",
+        "selectLabel": "Unternehmen"
+      },
+      "updateAccount": {
+        "title": "Bankkonto aktualisieren"
+      },
+      "deleteAccountConfirmation": {
+        "title": "Bankkonto - alle Daten löschen"
+      },
+      "addBookingType": {
+        "title": "Buchungstyp hinzufügen",
+        "bookingTypeLabel": "Buchungstyp",
+        "placeholder": "Name eingeben"
+      },
+      "updateBookingType": {
+        "title": "Buchungstyp aktualisieren",
+        "bookingTypeLabel": "Buchungstyp"
+      },
+      "deleteBookingType": {
+        "title": "Buchungstyp löschen",
+        "bookingTypeLabel": "Buchungstyp",
+        "placeholder": "Buchungstyp zum Löschen auswählen"
+      },
+      "showAccounting": {
+        "title": "Buchungsergebnisse",
+        "nameLabel": "Buchungskategorie",
+        "sumLabel": "Betrag",
+        "sum": "Summe",
+        "fees": "Aktienhandel Gebühren",
+        "taxes": "Aktienhandel Steuern",
+        "itemsPerPageText": "Einträge pro Seite",
+        "noDataText": "Bisher keine Dividende erhalten",
+        "year": "Jahr"
+      },
+      "showDividend": {
+        "title": "Dividenden Übersicht",
+        "yearLabel": "Ex-Tag",
+        "sumLabel": "Dividendenauszahlung",
+        "itemsPerPageText": "Einträge pro Seite",
+        "noDataText": "Bisher keine Dividende erhalten"
+      },
+      "exportDatabase": {
+        "title": "Datenbank exportieren",
+        "text": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
+      },
+      "importDatabase": {
+        "title": "Datenbank importieren",
+        "invalid": "Die Datendatei ist ungültig!",
+        "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
+        "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
+        "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
+        "fileLabel": "aus Datei",
+        "tax": "Steuer",
+        "capitalTax": "Ertragssteuer",
+        "fee": "Gebühr",
+        "sourceTax": "Quellensteuer",
+        "transactionTax": "Transaktionssteuer",
+        "others": "Sonstiges",
+        "soli": "Soli",
+        "shareBuy": "Aktienkauf",
+        "shareSell": "Aktienverkauf",
+        "dividend": "Dividende"
+      }
+    },
     "creditDebitFieldset": {
       "creditLabel": "Haben",
       "debitLabel": "Soll",
@@ -171,137 +282,7 @@
       "onlyOnePositive": "Ein Wert muss 0 sein"
     }
   },
-  "dialogs": {
-    "accountFormular": {
-      "swiftLabel": "BIC / SWIFT",
-      "searchLabel": "Logo Suche",
-      "withDepotLabel": "Depot Verrechnungskonto",
-      "withNoDepotLabel": "Konto",
-      "ibanLabel": "IBAN / Kontonummer",
-      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "missingLogo": "Kein Logo gefunden"
-    },
-    "bookingFormular": {
-      "bookingLabel": "Buchung",
-      "dateLabel": "Buchungstag",
-      "exDateLabel": "Ex-Tag",
-      "descriptionLabel": "Bemerkung",
-      "countLabel": "Anzahl",
-      "bookingTypeLabel": "Buchungstyp",
-      "feeLabel": "Gebühr",
-      "taxLabel": "Steuer",
-      "soliLabel": "Soli",
-      "stockLabel": "Unternehmen",
-      "marketPlaceLabel": "Handelsplatz",
-      "transactionTaxLabel": "Transaktionssteuer",
-      "sourceTaxLabel": "Quellensteuer",
-      "creditLabel": "Haben",
-      "debitLabel": "Soll"
-    },
-    "cancel": "Abbrechen",
-    "ok": "OK",
-    "stockFormular": {
-      "isinLabel": "ISIN",
-      "symbolLabel": "Kürzel",
-      "companyLabel": "Unternehmen",
-      "fadeOutLabel": "Ausblenden",
-      "firstPageLabel": "Erste Seite",
-      "meetingDayLabel": "Hauptversammlung",
-      "quarterDayLabel": "Quartalszahlen",
-      "urlLabel": "URL"
-    },
-    "addBooking": {
-      "title": "Buchung hinzufügen"
-    },
-    "updateBooking": {
-      "title": "Buchung bearbeiten"
-    },
-    "deleteBooking": {
-      "title": "Buchung",
-      "ask": "jetzt löschen?",
-      "success": "Buchung wurde entfernt",
-      "error": "Eingabe Fehler?"
-    },
-    "addAccount": {
-      "title": "Bankkonto hinzufügen"
-    },
-    "addStock": {
-      "title": "Unternehmen hinzufügen"
-    },
-    "deleteStock": {
-      "title": "Unternehmen entfernen",
-      "success": "Unternehmen wurde entfernt",
-      "error": "Unternehmen existiert bereits"
-    },
-    "updateStock": {
-      "title": "Unternehmen bearbeiten"
-    },
-    "fadeInStock": {
-      "title": "Unternehmen einblenden",
-      "selectLabel": "Unternehmen"
-    },
-    "updateAccount": {
-      "title": "Bankkonto aktualisieren"
-    },
-    "deleteAccountConfirmation": {
-      "title": "Bankkonto - alle Daten löschen"
-    },
-    "addBookingType": {
-      "title": "Buchungstyp hinzufügen",
-      "bookingTypeLabel": "Buchungstyp",
-      "placeholder": "Name eingeben"
-    },
-    "updateBookingType": {
-      "title": "Buchungstyp aktualisieren",
-      "bookingTypeLabel": "Buchungstyp"
-    },
-    "deleteBookingType": {
-      "title": "Buchungstyp löschen",
-      "bookingTypeLabel": "Buchungstyp",
-      "placeholder": "Buchungstyp zum Löschen auswählen"
-    },
-    "showAccounting": {
-      "title": "Buchungsergebnisse",
-      "nameLabel": "Buchungskategorie",
-      "sumLabel": "Betrag",
-      "sum": "Summe",
-      "fees": "Aktienhandel Gebühren",
-      "taxes": "Aktienhandel Steuern",
-      "itemsPerPageText": "Einträge pro Seite",
-      "noDataText": "Bisher keine Dividende erhalten",
-      "year": "Jahr"
-    },
-    "showDividend": {
-      "title": "Dividenden Übersicht",
-      "yearLabel": "Ex-Tag",
-      "sumLabel": "Dividendenauszahlung",
-      "itemsPerPageText": "Einträge pro Seite",
-      "noDataText": "Bisher keine Dividende erhalten"
-    },
-    "exportDatabase": {
-      "title": "Datenbank exportieren",
-      "text": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden)."
-    },
-    "importDatabase": {
-      "title": "Datenbank importieren",
-      "invalid": "Die Datendatei ist ungültig!",
-      "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
-      "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
-      "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
-      "fileLabel": "aus Datei",
-      "tax": "Steuer",
-      "capitalTax": "Ertragssteuer",
-      "fee": "Gebühr",
-      "sourceTax": "Quellensteuer",
-      "transactionTax": "Transaktionssteuer",
-      "others": "Sonstiges",
-      "soli": "Soli",
-      "shareBuy": "Aktienkauf",
-      "shareSell": "Aktienverkauf",
-      "dividend": "Dividende"
-    }
-  },
-  "optionsPage": {
+  "optionsIndex": {
     "tabs": {
       "ge": "Themen & Dienste",
       "mp": "Marktplätze",
@@ -337,6 +318,31 @@
       "sn": "Zinn",
       "pb": "Blei",
       "pd": "Palladium"
+    }
+  },
+  "sheetContent": {
+    "privacyContent": {
+      "title": "KontenManager Datenschutz Richtlinien",
+      "general": {
+        "title": "Allgemein",
+        "paragraphs": {
+          "local": {
+            "subTitle": "Lokale Daten",
+            "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
+            "icon": ""
+          },
+          "public": {
+            "subTitle": "Öffentliche Daten",
+            "content": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
+            "icon": ""
+          },
+          "connection": {
+            "subTitle": "Internetverbindungen",
+            "content": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen.",
+            "icon": ""
+          }
+        }
+      }
     }
   },
   "validators": {

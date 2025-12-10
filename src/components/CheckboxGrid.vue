@@ -19,17 +19,17 @@ const {getStorage, setStorage} = useBrowser()
 
 const T = Object.freeze<{ STRINGS: Record<string, string> }>({
   STRINGS: {
-    au: t('optionsPage.materials.au'),
-    ag: t('optionsPage.materials.ag'),
-    brent: t('optionsPage.materials.brent'),
-    wti: t('optionsPage.materials.wti'),
-    cu: t('optionsPage.materials.cu'),
-    pt: t('optionsPage.materials.pt'),
-    al: t('optionsPage.materials.al'),
-    ni: t('optionsPage.materials.ni'),
-    sn: t('optionsPage.materials.sn'),
-    pb: t('optionsPage.materials.pb'),
-    pd: t('optionsPage.materials.pd')
+    au: t('optionsIndex.materials.au'),
+    ag: t('optionsIndex.materials.ag'),
+    brent: t('optionsIndex.materials.brent'),
+    wti: t('optionsIndex.materials.wti'),
+    cu: t('optionsIndex.materials.cu'),
+    pt: t('optionsIndex.materials.pt'),
+    al: t('optionsIndex.materials.al'),
+    ni: t('optionsIndex.materials.ni'),
+    sn: t('optionsIndex.materials.sn'),
+    pb: t('optionsIndex.materials.pb'),
+    pd: t('optionsIndex.materials.pd')
   }
 })
 

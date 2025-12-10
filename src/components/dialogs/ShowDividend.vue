@@ -25,19 +25,19 @@ const records = useRecordsStore()
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>({
   STRINGS: {
-    TITLE: t('dialogs.showDividend.title'),
-    ITEMS_PER_PAGE_TEXT: t('dialogs.showDividend.itemsPerPageText'),
-    NO_DATA_TEXT: t('dialogs.showDividend.noDataText')
+    TITLE: t('components.dialogs.showDividend.title'),
+    ITEMS_PER_PAGE_TEXT: t('components.dialogs.showDividend.itemsPerPageText'),
+    NO_DATA_TEXT: t('components.dialogs.showDividend.noDataText')
   },
   HEADERS: [
     {
-      title: t('dialogs.showDividend.yearLabel'),
+      title: t('components.dialogs.showDividend.yearLabel'),
       align: 'start',
       sortable: false,
       key: 'year'
     },
     {
-      title: t('dialogs.showDividend.sumLabel'),
+      title: t('components.dialogs.showDividend.sumLabel'),
       align: 'start',
       sortable: false,
       key: 'sum'

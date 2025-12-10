@@ -23,23 +23,23 @@ const {CONS, log} = useApp()
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>({
   STRINGS: {
-    TITLE: t('dialogs.showAccounting.title'),
-    ITEMS_PER_PAGE_TEXT: t('dialogs.showAccounting.itemsPerPageText'),
-    NO_DATA_TEXT: t('dialogs.showAccounting.noDataText'),
-    FEES: t('dialogs.showAccounting.fees'),
-    TAXES: t('dialogs.showAccounting.taxes'),
-    SUM: t('dialogs.showAccounting.sum'),
-    YEAR: t('dialogs.showAccounting.year')
+    TITLE: t('components.dialogs.showAccounting.title'),
+    ITEMS_PER_PAGE_TEXT: t('components.dialogs.showAccounting.itemsPerPageText'),
+    NO_DATA_TEXT: t('components.dialogs.showAccounting.noDataText'),
+    FEES: t('components.dialogs.showAccounting.fees'),
+    TAXES: t('components.dialogs.showAccounting.taxes'),
+    SUM: t('components.dialogs.showAccounting.sum'),
+    YEAR: t('components.dialogs.showAccounting.year')
   },
   HEADERS: [
     {
-      title: t('dialogs.showAccounting.nameLabel'),
+      title: t('components.dialogs.showAccounting.nameLabel'),
       align: 'start',
       sortable: false,
       key: 'name'
     },
     {
-      title: t('dialogs.showAccounting.sumLabel'),
+      title: t('components.dialogs.showAccounting.sumLabel'),
       align: 'start',
       sortable: false,
       key: 'sum'

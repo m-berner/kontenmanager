@@ -23,10 +23,10 @@ const {fetchExchangesData} = useFetch()
 
 const T = Object.freeze({
   STRINGS: {
-    EXCHANGES_LABEL: t('optionsPage.exchanges.label'),
-    MARKETS_LABEL: t('optionsPage.markets.label'),
-    EXCHANGES_TITLE: t('optionsPage.exchanges.title'),
-    MARKETS_TITLE: t('optionsPage.markets.title')
+    EXCHANGES_LABEL: t('optionsIndex.exchanges.label'),
+    MARKETS_LABEL: t('optionsIndex.markets.label'),
+    EXCHANGES_TITLE: t('optionsIndex.exchanges.title'),
+    MARKETS_TITLE: t('optionsIndex.markets.title')
   }
 })
 

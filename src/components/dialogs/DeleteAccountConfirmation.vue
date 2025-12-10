@@ -36,7 +36,7 @@ const T = Object.freeze({
     CONFIRM: t('messages.deleteAccountConfirmation.confirm')
   },
   STRINGS: {
-    TITLE: t('dialogs.deleteAccountConfirmation.title')
+    TITLE: t('components.dialogs.deleteAccountConfirmation.title')
   }
 })
 

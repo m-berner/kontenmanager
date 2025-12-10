@@ -38,7 +38,7 @@ const T = Object.freeze({
     ERROR_ONCLICK_OK: t('messages.onClickOk')
   },
   STRINGS: {
-    TITLE: t('dialogs.updateStock.title')
+    TITLE: t('components.dialogs.updateStock.title')
   }
 })
 

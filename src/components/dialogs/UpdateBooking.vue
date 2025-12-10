@@ -39,7 +39,7 @@ const T = Object.freeze({
     SUCCESS_UPDATE: t('messages.updateBooking.success')
   },
   STRINGS: {
-    TITLE: t('dialogs.updateBooking.title')
+    TITLE: t('components.dialogs.updateBooking.title')
   }
 })
 

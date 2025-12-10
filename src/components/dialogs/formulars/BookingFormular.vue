@@ -24,19 +24,19 @@ const {markets} = useSettingsStore()
 
 const T = Object.freeze({
   STRINGS: {
-    DATE_LABEL: t('dialogs.bookingFormular.dateLabel'),
-    STOCK_LABEL: t('dialogs.bookingFormular.stockLabel'),
-    BOOKING_TYPE_LABEL: t('dialogs.bookingFormular.bookingTypeLabel'),
-    COUNT_LABEL: t('dialogs.bookingFormular.countLabel'),
-    EX_DATE_LABEL: t('dialogs.bookingFormular.exDateLabel'),
-    MARKET_PLACE_LABEL: t('dialogs.bookingFormular.marketPlaceLabel'),
-    BOOKING_LABEL: t('dialogs.bookingFormular.bookingLabel'),
-    TAX_LABEL: t('dialogs.bookingFormular.taxLabel'),
-    SOLI_LABEL: t('dialogs.bookingFormular.soliLabel'),
-    SOURCE_TAX_LABEL: t('dialogs.bookingFormular.sourceTaxLabel'),
-    FEE_LABEL: t('dialogs.bookingFormular.feeLabel'),
-    TRANSACTION_TAX_LABEL: t('dialogs.bookingFormular.transactionTaxLabel'),
-    DESCRIPTION_LABEL: t('dialogs.bookingFormular.descriptionLabel')
+    DATE_LABEL: t('components.dialogs.formulars.bookingFormular.dateLabel'),
+    STOCK_LABEL: t('components.dialogs.formulars.bookingFormular.stockLabel'),
+    BOOKING_TYPE_LABEL: t('components.dialogs.formulars.bookingFormular.bookingTypeLabel'),
+    COUNT_LABEL: t('components.dialogs.formulars.bookingFormular.countLabel'),
+    EX_DATE_LABEL: t('components.dialogs.formulars.bookingFormular.exDateLabel'),
+    MARKET_PLACE_LABEL: t('components.dialogs.formulars.bookingFormular.marketPlaceLabel'),
+    BOOKING_LABEL: t('components.dialogs.formulars.bookingFormular.bookingLabel'),
+    TAX_LABEL: t('components.dialogs.formulars.bookingFormular.taxLabel'),
+    SOLI_LABEL: t('components.dialogs.formulars.bookingFormular.soliLabel'),
+    SOURCE_TAX_LABEL: t('components.dialogs.formulars.bookingFormular.sourceTaxLabel'),
+    FEE_LABEL: t('components.dialogs.formulars.bookingFormular.feeLabel'),
+    TRANSACTION_TAX_LABEL: t('components.dialogs.formulars.bookingFormular.transactionTaxLabel'),
+    DESCRIPTION_LABEL: t('components.dialogs.formulars.bookingFormular.descriptionLabel')
   },
   DATE_RULES: [t('validators.dateRules.required')],
   BOOKING_TYPE_RULES: [t('validators.bookingTypeRules')]

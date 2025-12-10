@@ -90,7 +90,7 @@
   },
   "infoBar": {
   },
-  "homePage": {
+  "homeContent": {
     "search": "Search",
     "bookingsTable": {
       "headers": {
@@ -109,7 +109,9 @@
       },
       "noDataText": "No entries found.",
       "itemsPerPageText": "Entries per page:"
-    },
+    }
+  },
+  "companyContent": {
     "stocksTable": {
       "headers": {
         "id": "ID",
@@ -133,37 +135,146 @@
       },
       "noDataText": "No entries found. Import a database or create new entries manually.",
       "itemsPerPageText": "Entries per page:"
-    },
-    "privacyContent": {
-      "title": "AccountManager Privacy Policy",
-      "general": {
-        "title": "General",
-        "paragraphs": {
-          "local": {
-            "subTitle": "Local Data",
-            "content": "No data is sent to a server. Data is stored in an IndexedDB database. Only this add-on has access to the database. AccountManager does not personalize any data. Settings are stored in the browser's extension storage.",
-            "icon": ""
-          },
-          "public": {
-            "subTitle": "Public Data",
-            "content": "AccountManager does not guarantee the accuracy of the data. When retrieving data, URIs including ISINs are sent over the internet. Other data is not shared.",
-            "icon": ""
-          },
-          "connection": {
-            "subTitle": "Internet Connections",
-            "content": "Connections are established to download bank logo, exchange rate, stock quote, min/max, index, and commodity data.",
-            "icon": ""
-          }
-        }
-      }
     }
   },
-  "footer": {
+  "footerBar": {
     "help": "Help",
     "privacy": "Privacy",
     "mail": "Email"
   },
   "components": {
+    "dialogs": {
+      "formulars": {
+        "accountFormular": {
+          "swiftLabel": "BIC / SWIFT",
+          "searchLabel": "Logo Suche",
+          "withDepotLabel": "Depot Verrechnungskonto",
+          "withNoDepotLabel": "Konto",
+          "ibanLabel": "IBAN / Kontonummer",
+          "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+          "missingLogo": "Kein Logo gefunden"
+        },
+        "bookingFormular": {
+          "bookingLabel": "Booking",
+          "dateLabel": "Booking Date",
+          "exDateLabel": "Ex-Day",
+          "descriptionLabel": "Note",
+          "countLabel": "Quantity",
+          "bookingTypeLabel": "Booking Type",
+          "feeLabel": "Fee",
+          "taxLabel": "Tax",
+          "soliLabel": "Solidarity Surcharge",
+          "stockLabel": "Company",
+          "marketPlaceLabel": "Trading Place",
+          "transactionTaxLabel": "Transaction Tax",
+          "sourceTaxLabel": "Withholding Tax",
+          "creditLabel": "Credit",
+          "debitLabel": "Debit"
+        },
+        "stockFormular": {
+          "isinLabel": "ISIN",
+          "symbolLabel": "Symbol",
+          "companyLabel": "Company",
+          "fadeOutLabel": "Hide",
+          "firstPageLabel": "First Page",
+          "meetingDayLabel": "General Meeting",
+          "quarterDayLabel": "Quarterly Results",
+          "urlLabel": "URL"
+        }
+      },
+      "cancel": "Cancel",
+      "ok": "OK",
+      "addBooking": {
+        "title": "Add Booking"
+      },
+      "updateBooking": {
+        "title": "Edit Booking"
+      },
+      "deleteBooking": {
+        "title": "Booking",
+        "ask": "delete now?",
+        "success": "Booking has been removed",
+        "error": "Input error?"
+      },
+      "addAccount": {
+        "title": "Add Bank Account"
+      },
+      "addStock": {
+        "title": "Add Company"
+      },
+      "deleteStock": {
+        "title": "Remove Company",
+        "success": "Company has been removed",
+        "error": "Company already exists"
+      },
+      "updateStock": {
+        "title": "Edit Company"
+      },
+      "fadeInStock": {
+        "title": "Show Company",
+        "selectLabel": "Comapny"
+      },
+      "updateAccount": {
+        "title": "Update Bank Account"
+      },
+      "deleteAccountConfirmation": {
+        "title": "Bank Account - Delete All Data"
+      },
+      "addBookingType": {
+        "title": "Add Booking Type",
+        "bookingTypeLabel": "Booking Type",
+        "placeholder": "Enter name"
+      },
+      "updateBookingType": {
+        "title": "Update Booking Type",
+        "bookingTypeLabel": "Booking Type"
+      },
+      "deleteBookingType": {
+        "title": "Delete Booking Type",
+        "bookingTypeLabel": "Booking Type",
+        "placeholder": "Select booking type to delete"
+      },
+      "showAccounting": {
+        "title": "Booking Results",
+        "nameLabel": "Booking Category",
+        "sumLabel": "Amount",
+        "sum": "Total",
+        "fees": "Trade fees",
+        "taxes": "Trade taxes",
+        "itemsPerPageText": "Entries per page",
+        "noDataText": "No dividend received yet",
+        "year": "Year"
+      },
+      "showDividend": {
+        "title": "Dividend Overview",
+        "yearLabel": "Ex-Date",
+        "sumLabel": "Dividend Payment",
+        "itemsPerPageText": "Entries per page",
+        "noDataText": "No dividend received yet"
+      },
+      "exportDatabase": {
+        "title": "Export Database",
+        "text": "When saving, the file {filename} will be created and saved in the user's downloads folder. (This file can be used for database restoration)."
+      },
+      "importDatabase": {
+        "title": "Import Database",
+        "invalid": "The data file is invalid!",
+        "version": "The data file is too old and cannot be restored!",
+        "notEmpty": "AccountManager objects already exist. Therefore a StockManager backup file cannot be restored!",
+        "messageDelete": "All existing data will be deleted!",
+        "fileLabel": "from file",
+        "tax": "Tax",
+        "capitalTax": "CGT",
+        "fee": "Fee",
+        "sourceTax": "Withholding Tax",
+        "transactionTax": "Transaction Tax",
+        "others": "Others",
+        "soli": "Solidarity Surcharge",
+        "shareBuy": "Buy Share",
+        "shareSell": "Sell Share",
+        "dividend": "Dividend"
+      }
+    },
     "creditDebitFieldset": {
       "creditLabel": "Credit",
       "debitLabel": "Debit",
@@ -171,137 +282,7 @@
       "onlyOnePositive": "One value must be 0"
     }
   },
-  "dialogs": {
-    "accountFormular": {
-      "swiftLabel": "BIC / SWIFT",
-      "searchLabel": "Logo Suche",
-      "withDepotLabel": "Depot Verrechnungskonto",
-      "withNoDepotLabel": "Konto",
-      "ibanLabel": "IBAN / Kontonummer",
-      "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-      "missingLogo": "Kein Logo gefunden"
-    },
-    "bookingFormular": {
-      "bookingLabel": "Booking",
-      "dateLabel": "Booking Date",
-      "exDateLabel": "Ex-Day",
-      "descriptionLabel": "Note",
-      "countLabel": "Quantity",
-      "bookingTypeLabel": "Booking Type",
-      "feeLabel": "Fee",
-      "taxLabel": "Tax",
-      "soliLabel": "Solidarity Surcharge",
-      "stockLabel": "Company",
-      "marketPlaceLabel": "Trading Place",
-      "transactionTaxLabel": "Transaction Tax",
-      "sourceTaxLabel": "Withholding Tax",
-      "creditLabel": "Credit",
-      "debitLabel": "Debit"
-    },
-    "cancel": "Cancel",
-    "ok": "OK",
-    "stockFormular": {
-      "isinLabel": "ISIN",
-      "symbolLabel": "Symbol",
-      "companyLabel": "Company",
-      "fadeOutLabel": "Hide",
-      "firstPageLabel": "First Page",
-      "meetingDayLabel": "General Meeting",
-      "quarterDayLabel": "Quarterly Results",
-      "urlLabel": "URL"
-    },
-    "addBooking": {
-      "title": "Add Booking"
-    },
-    "updateBooking": {
-      "title": "Edit Booking"
-    },
-    "deleteBooking": {
-      "title": "Booking",
-      "ask": "delete now?",
-      "success": "Booking has been removed",
-      "error": "Input error?"
-    },
-    "addAccount": {
-      "title": "Add Bank Account"
-    },
-    "addStock": {
-      "title": "Add Company"
-    },
-    "deleteStock": {
-      "title": "Remove Company",
-      "success": "Company has been removed",
-      "error": "Company already exists"
-    },
-    "updateStock": {
-      "title": "Edit Company"
-    },
-    "fadeInStock": {
-      "title": "Show Company",
-      "selectLabel": "Comapny"
-    },
-    "updateAccount": {
-      "title": "Update Bank Account"
-    },
-    "deleteAccountConfirmation": {
-      "title": "Bank Account - Delete All Data"
-    },
-    "addBookingType": {
-      "title": "Add Booking Type",
-      "bookingTypeLabel": "Booking Type",
-      "placeholder": "Enter name"
-    },
-    "updateBookingType": {
-      "title": "Update Booking Type",
-      "bookingTypeLabel": "Booking Type"
-    },
-    "deleteBookingType": {
-      "title": "Delete Booking Type",
-      "bookingTypeLabel": "Booking Type",
-      "placeholder": "Select booking type to delete"
-    },
-    "showAccounting": {
-      "title": "Booking Results",
-      "nameLabel": "Booking Category",
-      "sumLabel": "Amount",
-      "sum": "Total",
-      "fees": "Trade fees",
-      "taxes": "Trade taxes",
-      "itemsPerPageText": "Entries per page",
-      "noDataText": "No dividend received yet",
-      "year": "Year"
-    },
-    "showDividend": {
-      "title": "Dividend Overview",
-      "yearLabel": "Ex-Date",
-      "sumLabel": "Dividend Payment",
-      "itemsPerPageText": "Entries per page",
-      "noDataText": "No dividend received yet"
-    },
-    "exportDatabase": {
-      "title": "Export Database",
-      "text": "When saving, the file {filename} will be created and saved in the user's downloads folder. (This file can be used for database restoration)."
-    },
-    "importDatabase": {
-      "title": "Import Database",
-      "invalid": "The data file is invalid!",
-      "version": "The data file is too old and cannot be restored!",
-      "notEmpty": "AccountManager objects already exist. Therefore a StockManager backup file cannot be restored!",
-      "messageDelete": "All existing data will be deleted!",
-      "fileLabel": "from file",
-      "tax": "Tax",
-      "capitalTax": "CGT",
-      "fee": "Fee",
-      "sourceTax": "Withholding Tax",
-      "transactionTax": "Transaction Tax",
-      "others": "Others",
-      "soli": "Solidarity Surcharge",
-      "shareBuy": "Buy Share",
-      "shareSell": "Sell Share",
-      "dividend": "Dividend"
-    }
-  },
-  "optionsPage": {
+  "optionsIndex": {
     "tabs": {
       "ge": "Themes & Services",
       "mp": "Marketplaces",
@@ -337,6 +318,31 @@
       "sn": "Tin",
       "pb": "Lead",
       "pd": "Palladium"
+    }
+  },
+  "sheetContent": {
+    "privacyContent": {
+      "title": "AccountManager Privacy Policy",
+      "general": {
+        "title": "General",
+        "paragraphs": {
+          "local": {
+            "subTitle": "Local Data",
+            "content": "No data is sent to a server. Data is stored in an IndexedDB database. Only this add-on has access to the database. AccountManager does not personalize any data. Settings are stored in the browser's extension storage.",
+            "icon": ""
+          },
+          "public": {
+            "subTitle": "Public Data",
+            "content": "AccountManager does not guarantee the accuracy of the data. When retrieving data, URIs including ISINs are sent over the internet. Other data is not shared.",
+            "icon": ""
+          },
+          "connection": {
+            "subTitle": "Internet Connections",
+            "content": "Connections are established to download bank logo, exchange rate, stock quote, min/max, index, and commodity data.",
+            "icon": ""
+          }
+        }
+      }
     }
   },
   "validators": {

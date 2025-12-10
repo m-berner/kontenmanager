@@ -27,8 +27,8 @@ const fn = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}
 
 const T = Object.freeze({
   STRINGS: {
-    TITLE: t('dialogs.exportDatabase.title'),
-    TEXT: t('dialogs.exportDatabase.text', {filename: fn})
+    TITLE: t('components.dialogs.exportDatabase.title'),
+    TEXT: t('components.dialogs.exportDatabase.text', {filename: fn})
   }
 })
 

@@ -15,9 +15,9 @@ const {CONS, log} = useApp()
 
 const T = Object.freeze({
   STRINGS: {
-    HELP: t('footer.help'),
-    PRIVACY: t('footer.privacy'),
-    MAIL: t('footer.mail')
+    HELP: t('footerBar.help'),
+    PRIVACY: t('footerBar.privacy'),
+    MAIL: t('footerBar.mail')
   }
 })
 

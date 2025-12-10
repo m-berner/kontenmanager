@@ -38,10 +38,10 @@ const T = Object.freeze({
     ERROR_ONCLICK_OK: t('messages.onClickOk')
   },
   STRINGS: {
-    TITLE: t('dialogs.addAccount.title'),
-    BUY: t('dialogs.importDatabase.shareBuy'),
-    SELL: t('dialogs.importDatabase.shareSell'),
-    DIVIDEND: t('dialogs.importDatabase.dividend')
+    TITLE: t('components.dialogs.addAccount.title'),
+    BUY: t('components.dialogs.importDatabase.shareBuy'),
+    SELL: t('components.dialogs.importDatabase.shareSell'),
+    DIVIDEND: t('components.dialogs.importDatabase.dividend')
   }
 })
 

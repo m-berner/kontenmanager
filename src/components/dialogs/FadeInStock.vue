@@ -24,8 +24,8 @@ const records = useRecordsStore()
 
 const T = Object.freeze({
   STRINGS: {
-    TITLE: t('dialogs.fadeInStock.title'),
-    SELECT_LABEL: t('dialogs.fadeInStock.selectLabel')
+    TITLE: t('components.dialogs.fadeInStock.title'),
+    SELECT_LABEL: t('components.dialogs.fadeInStock.selectLabel')
   }
 })
 

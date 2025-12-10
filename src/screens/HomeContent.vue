@@ -25,43 +25,43 @@ const {setBookingsPerPage} = settings
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>({
   STRINGS: {
-    ITEMS_PER_PAGE_TEXT: t('homePage.bookingsTable.itemsPerPageText'),
-    NO_DATA_TEXT: t('homePage.bookingsTable.noDataText'),
-    SEARCH_LABEL: t('homePage.search')
+    ITEMS_PER_PAGE_TEXT: t('homeContent.bookingsTable.itemsPerPageText'),
+    NO_DATA_TEXT: t('homeContent.bookingsTable.noDataText'),
+    SEARCH_LABEL: t('homeContent.search')
   },
   HEADERS: [
     {
-      title: t('homePage.bookingsTable.headers.action'),
+      title: t('homeContent.bookingsTable.headers.action'),
       align: 'start',
       sortable: false,
       key: 'mAction'
     },
     {
-      title: t('homePage.bookingsTable.headers.date'),
+      title: t('homeContent.bookingsTable.headers.date'),
       align: 'start',
       sortable: false,
       key: 'cDate'
     },
     {
-      title: t('homePage.bookingsTable.headers.debit'),
+      title: t('homeContent.bookingsTable.headers.debit'),
       align: 'start',
       sortable: false,
       key: 'cDebit'
     },
     {
-      title: t('homePage.bookingsTable.headers.credit'),
+      title: t('homeContent.bookingsTable.headers.credit'),
       align: 'start',
       sortable: false,
       key: 'cCredit'
     },
     {
-      title: t('homePage.bookingsTable.headers.description'),
+      title: t('homeContent.bookingsTable.headers.description'),
       align: 'start',
       sortable: false,
       key: 'cDescription'
     },
     {
-      title: t('homePage.bookingsTable.headers.bookingType'),
+      title: t('homeContent.bookingsTable.headers.bookingType'),
       align: 'start',
       sortable: false,
       key: 'cBookingType'
@@ -70,12 +70,12 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], 
   MENU_ITEMS: [
     {
       id: 'DeleteBooking',
-      title: t('homePage.bookingsTable.menuItems.delete'),
+      title: t('homeContent.bookingsTable.menuItems.delete'),
       icon: '$deleteBooking'
     },
     {
       id: 'UpdateBooking',
-      title: t('homePage.bookingsTable.menuItems.update'),
+      title: t('homeContent.bookingsTable.menuItems.update'),
       icon: '$updateBooking'
     }
   ]

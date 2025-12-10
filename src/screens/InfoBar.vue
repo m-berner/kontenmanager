@@ -45,7 +45,7 @@ log('--- InfoBar.vue setup ---')
       </v-list-item>
 
       <v-list-item v-for="item in settings.materials" :key="item">
-        <v-list-item-title>{{ t('optionsPage.materials.' + item) }}</v-list-item-title>
+        <v-list-item-title>{{ t('optionsIndex.materials.' + item) }}</v-list-item-title>
         <v-list-item-subtitle>
           {{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}
         </v-list-item-subtitle>

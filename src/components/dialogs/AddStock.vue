@@ -36,7 +36,7 @@ const T = Object.freeze({
     ERROR_ONCLICK_OK: t('messages.onClickOk')
   },
   STRINGS: {
-    TITLE: t('dialogs.addStock.title')
+    TITLE: t('components.dialogs.addStock.title')
   }
 })
 const formDisabled = ref(false)
