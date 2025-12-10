@@ -9,7 +9,9 @@ import type {
     I_Account_Store,
     I_Booking_Store,
     I_Booking_Type_Store,
-    I_Number_String, I_Records_DB, I_Records_Store,
+    I_Number_String,
+    I_Records_DB,
+    I_Records_Store,
     I_Stock_DB,
     I_Stock_Memory,
     I_Stock_Store
@@ -42,8 +44,19 @@ const useStocksStore = defineStore('stocks', function () {
         })
     })
     const sumDepot = computed(() => (): number => {
+        const settings = useSettingsStore()
+        const {activeAccountId} = storeToRefs(settings)
+
+        if (activeAccountId.value === -1) {
+            return 0
+        }
+
         return active.value.map(rec => {
-            return (rec.mPortfolio ?? 0) * (rec.mValue ?? 0)
+            if (rec.mPortfolio !== undefined && rec.mPortfolio >= 1) {
+                return (rec.mPortfolio ?? 0) * (rec.mValue ?? 0)
+            } else {
+                return 0
+            }
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
 
@@ -305,9 +318,6 @@ const useBookingsStore = defineStore('bookings', function () {
         return items.value.filter((entry: I_Booking_Store) => {
             return new Date(entry.cBookDate).getFullYear() === y
         }).map((entry: I_Booking_Store) => {
-            // if (entry.cBookingTypeID === 5) {
-            //     return entry.cCredit - entry.cDebit
-            // }
             return entry.cFeeCredit - entry.cFeeDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
@@ -320,9 +330,6 @@ const useBookingsStore = defineStore('bookings', function () {
     })
     const sumAllFees = computed(() => {
         return items.value.map((entry: I_Booking_Store) => {
-            // if (entry.cBookingTypeID === 5) {
-            //     return entry.cCredit - entry.cDebit
-            // }
             return entry.cFeeCredit - entry.cFeeDebit
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })

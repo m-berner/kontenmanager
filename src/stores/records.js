@@ -23,8 +23,18 @@ const useStocksStore = defineStore('stocks', function () {
         });
     });
     const sumDepot = computed(() => () => {
+        const settings = useSettingsStore();
+        const { activeAccountId } = storeToRefs(settings);
+        if (activeAccountId.value === -1) {
+            return 0;
+        }
         return active.value.map(rec => {
-            return (rec.mPortfolio ?? 0) * (rec.mValue ?? 0);
+            if (rec.mPortfolio !== undefined && rec.mPortfolio >= 1) {
+                return (rec.mPortfolio ?? 0) * (rec.mValue ?? 0);
+            }
+            else {
+                return 0;
+            }
         }).reduce((acc, cur) => acc + cur, 0);
     });
     function add(stock, prepend = false) {
