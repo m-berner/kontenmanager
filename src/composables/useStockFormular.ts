@@ -11,17 +11,17 @@ import type {I_Stock_Formular} from '@/types'
 
 const {CONS} = useApp()
 const stockFormularData = reactive<I_Stock_Formular>({
-    id: -1,
-    isin: '',
-    company: '',
-    symbol: '',
-    meetingDay: '',
-    quarterDay: '',
-    fadeOut: false,
-    firstPage: false,
-    url: '',
-    askDates: CONS.DATE.DEFAULT_ISO
-})
+                                                         id: -1,
+                                                         isin: '',
+                                                         company: '',
+                                                         symbol: '',
+                                                         meetingDay: '',
+                                                         quarterDay: '',
+                                                         fadeOut: false,
+                                                         firstPage: false,
+                                                         url: '',
+                                                         askDates: CONS.DATE.DEFAULT_ISO
+                                                     })
 const formRef = ref<HTMLFormElement | null>(null)
 
 const reset = (): void => {

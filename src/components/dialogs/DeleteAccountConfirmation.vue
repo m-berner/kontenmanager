@@ -27,46 +27,46 @@ const records = useRecordsStore()
 const {items: accountItems} = storeToRefs(records.accounts)
 
 const T = Object.freeze({
-  MESSAGES: {
-    INFO_TITLE: t('messages.infoTitle'),
-    RESTRICTED_IMPORT: t('messages.restrictedImport'),
-    SUCCESS_ADD: t('messages.deleteAccountConfirmation.success'),
-    ERROR_ONCLICK_OK: t('messages.onClickOk'),
-    NO_ACCOUNT: t('messages.noAccount'),
-    CONFIRM: t('messages.deleteAccountConfirmation.confirm')
-  },
-  STRINGS: {
-    TITLE: t('components.dialogs.deleteAccountConfirmation.title')
-  }
-})
+                            MESSAGES: {
+                                INFO_TITLE: t('messages.infoTitle'),
+                                RESTRICTED_IMPORT: t('messages.restrictedImport'),
+                                SUCCESS_ADD: t('messages.deleteAccountConfirmation.success'),
+                                ERROR_ONCLICK_OK: t('messages.onClickOk'),
+                                NO_ACCOUNT: t('messages.noAccount'),
+                                CONFIRM: t('messages.deleteAccountConfirmation.confirm')
+                            },
+                            STRINGS: {
+                                TITLE: t('components.dialogs.deleteAccountConfirmation.title')
+                            }
+                        })
 
 const onClickOk = async (): Promise<void> => {
-  log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
-  if (!isConnected.value) {
-    await notice(['Database not connected'])
-    return
-  }
-  try {
-    await deleteDatabaseWithAccount(activeAccountId.value)
-    records.accounts.remove(activeAccountId.value)
-    if (accountItems.value.length > 0) {
-      activeAccountId.value = accountItems.value[0].cID
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-      const storesDB = await getDatabaseStores(activeAccountId.value)
-      await records.init(storesDB, T.MESSAGES)
-    } else {
-      await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
+    log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
+    if (!isConnected.value) {
+        await notice(['Database not connected'])
+        return
     }
-    resetTeleport()
-    await notice([T.MESSAGES.SUCCESS_ADD])
-  } catch (e) {
-    if (e instanceof Error) {
-      log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-      await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
-    } else {
-      throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+    try {
+        await deleteDatabaseWithAccount(activeAccountId.value)
+        records.accounts.remove(activeAccountId.value)
+        if (accountItems.value.length > 0) {
+            activeAccountId.value = accountItems.value[0].cID
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+            const storesDB = await getDatabaseStores(activeAccountId.value)
+            await records.init(storesDB, T.MESSAGES)
+        } else {
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
+        }
+        resetTeleport()
+        await notice([T.MESSAGES.SUCCESS_ADD])
+    } catch (e) {
+        if (e instanceof Error) {
+            log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
+            await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
+        } else {
+            throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
+        }
     }
-  }
 }
 
 const title = T.STRINGS.TITLE
@@ -76,6 +76,6 @@ log('--- DeleteAccountConfirmation.vue setup ---')
 </script>
 
 <template>
-  <v-alert v-if="records.accounts.items.length === 0">{{ T.MESSAGES.NO_ACCOUNT }}</v-alert>
-  <v-alert v-else type="warning">{{ T.MESSAGES.CONFIRM }}</v-alert>
+    <v-alert v-if="records.accounts.items.length === 0">{{ T.MESSAGES.NO_ACCOUNT }}</v-alert>
+    <v-alert v-else type="warning">{{ T.MESSAGES.CONFIRM }}</v-alert>
 </template>

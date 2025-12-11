@@ -22,133 +22,204 @@ const {getStorage, setStorage} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
 const T = Object.freeze({
-  STRINGS: {
-    EXCHANGES_LABEL: t('optionsIndex.exchanges.label'),
-    MARKETS_LABEL: t('optionsIndex.markets.label'),
-    EXCHANGES_TITLE: t('optionsIndex.exchanges.title'),
-    MARKETS_TITLE: t('optionsIndex.markets.title')
-  }
-})
+                            STRINGS: {
+                                EXCHANGES_LABEL: t('optionsIndex.exchanges.label'),
+                                MARKETS_LABEL: t('optionsIndex.markets.label'),
+                                EXCHANGES_TITLE: t('optionsIndex.exchanges.title'),
+                                MARKETS_TITLE: t('optionsIndex.markets.title')
+                            }
+                        })
 
 const newItem = ref<string>('')
 const list = ref<string[]>([])
 
+const isLoading = ref<boolean>(false)
+const isAdding = ref<boolean>(false)
+const error = ref<string | null>(null)
+
 const label = computed<string>(() => {
-  let resultLabel = 'Error'
-  switch (props.type) {
-    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-      resultLabel = T.STRINGS.EXCHANGES_LABEL
-      break
-    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-      resultLabel = T.STRINGS.MARKETS_LABEL
-      break
-    default:
-  }
-  return resultLabel
+    let resultLabel = 'Error'
+    switch (props.type) {
+        case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+            resultLabel = T.STRINGS.EXCHANGES_LABEL
+            break
+        case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+            resultLabel = T.STRINGS.MARKETS_LABEL
+            break
+        default:
+    }
+    return resultLabel
 })
 const title = computed<string>(() => {
-  let resultTitle = 'Error'
-  switch (props.type) {
-    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-      resultTitle = T.STRINGS.EXCHANGES_TITLE
-      break
-    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-      resultTitle = T.STRINGS.MARKETS_TITLE
-      break
-    default:
-  }
-  return resultTitle
+    let resultTitle = 'Error'
+    switch (props.type) {
+        case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+            resultTitle = T.STRINGS.EXCHANGES_TITLE
+            break
+        case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+            resultTitle = T.STRINGS.MARKETS_TITLE
+            break
+        default:
+    }
+    return resultTitle
 })
 
 const addItem = async (item: string): Promise<void> => {
-  log('DYNAMIC_LIST: addItem')
-  const {infoExchanges} = useRuntimeStore()
-  const {exchanges, markets} = useSettingsStore()
-  if (!list.value?.includes(item)) {
-    switch (props.type) {
-      case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-        list.value.push(item)
-        markets.push(item)
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
-        break
-      case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        list.value.push(item.toUpperCase())
-        exchanges.push(item)
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
-        const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData([...newItem.value])
-        infoExchanges.set(exchanges[exchanges.length], exchangesInfoData[0].value)
-        break
-      default:
+    log('DYNAMIC_LIST: addItem')
+    if (!item.trim()) return  // Validate input
+
+    isAdding.value = true  // Start loading
+    error.value = null  // Clear previous errors
+    try {
+        const {infoExchanges} = useRuntimeStore()
+        const {exchanges, markets} = useSettingsStore()
+        if (!list.value?.includes(item)) {
+            switch (props.type) {
+                case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+                    list.value.push(item)
+                    markets.push(item)
+                    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
+                    break
+                case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+                    list.value.push(item.toUpperCase())
+                    exchanges.push(item)
+                    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
+                    const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData([...newItem.value])
+                    infoExchanges.set(exchanges[exchanges.length], exchangesInfoData[0].value)
+                    break
+                default:
+            }
+            newItem.value = ''
+        }
+    } catch (err) {
+        error.value = err instanceof Error ? err.message : 'Failed to add item'
+        log('DYNAMIC_LIST: addItem error', {error: err})
+    } finally {
+        isAdding.value = false  // Stop loading
     }
-    newItem.value = ''
-  }
 }
 
 const removeItem = async (n: number): Promise<void> => {
-  log('DYNAMIC_LIST: removeItem')
-  if (n > 0) {
-    list.value.splice(n, 1)
-    newItem.value = ''
-    switch (props.type) {
-      case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
-        break
-      case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
-        break
-      default:
+    log('DYNAMIC_LIST: removeItem')
+    if (n < 0) return
+
+    error.value = null
+
+    try {
+        list.value.splice(n, 1)
+        newItem.value = ''
+        switch (props.type) {
+            case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+                await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
+                break
+            case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+                await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
+                break
+            default:
+        }
+    } catch (err) {
+        error.value = err instanceof Error ? err.message : 'Failed to remove item'
+        log('DYNAMIC_LIST: removeItem error', {error: err})
     }
-  }
 }
 
 onBeforeMount(async () => {
-  log('DYNAMIC_LIST: onBeforeMounted')
-  const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES])
-  switch (props.type) {
-    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-      list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] as string[]
-      break
-    case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-      list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS] as string[]
-      break
-  }
+    log('DYNAMIC_LIST: onBeforeMounted')
+    isLoading.value = true
+    error.value = null
+
+    try {
+        const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES])
+        switch (props.type) {
+            case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+                list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] as string[]
+                break
+            case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+                list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS] as string[]
+                break
+        }
+    } catch (err) {
+        error.value = err instanceof Error ? err.message : 'Failed to load data'
+        log('DYNAMIC_LIST: onBeforeMounted error', {error: err})
+    } finally {
+        isLoading.value = false
+    }
 })
 
 log('--- DynamicList.vue setup ---')
 </script>
 
 <template>
-  <v-card :title="title" color="secondary">
-    <v-list bg-color="secondary">
-      <v-list-item
-          v-for="(item, i) in list"
-          :key="item"
-          :title="item"
-          hide-details>
-        <template v-slot:prepend>
-          <v-btn
-              class="mr-3"
-              icon="$close"
-              @click="removeItem(i)"/>
+    <v-card :title="title" color="secondary">
+        <!-- Loading State -->
+        <v-card-text v-if="isLoading" class="text-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+            />
+            <p class="mt-3">Loading...</p>
+        </v-card-text>
+
+        <!-- Error State -->
+        <v-alert
+            v-if="error && !isLoading"
+            class="ma-4"
+            dismissible
+            type="error"
+            @click:close="error = null"
+        >
+            {{ error }}
+        </v-alert>
+
+        <!-- Content State -->
+        <template v-if="!isLoading">
+            <v-list bg-color="secondary">
+                <v-list-item
+                    v-for="(item, i) in list"
+                    :key="item"
+                    :title="item"
+                    hide-details
+                >
+                    <template v-slot:prepend>
+                        <v-btn
+                            :disabled="isAdding"
+                            class="mr-3"
+                            icon="$close"
+                            @click="removeItem(i)"
+                        />
+                    </template>
+                </v-list-item>
+
+                <!-- Empty State -->
+                <v-list-item v-if="list.length === 0">
+                    <v-list-item-title class="text-center text-grey">
+                        No items yet. Add one below.
+                    </v-list-item-title>
+                </v-list-item>
+            </v-list>
+
+            <v-card-actions>
+                <v-text-field
+                    v-model="newItem"
+                    :autofocus="true"
+                    :clearable="true"
+                    :disabled="isAdding"
+                    :label="label"
+                    :placeholder="props.placeholder"
+                    type="text"
+                >
+                    <template v-slot:append>
+                        <v-btn
+                            :disabled="!newItem.trim() || isAdding"
+                            :loading="isAdding"
+                            class="ml-3"
+                            color="primary"
+                            icon="$add"
+                            @click="addItem(newItem)"
+                        />
+                    </template>
+                </v-text-field>
+            </v-card-actions>
         </template>
-      </v-list-item>
-    </v-list>
-    <v-card-actions>
-      <v-text-field
-          v-model="newItem"
-          :autofocus="true"
-          :clearable="true"
-          :label="label"
-          :placeholder="props.placeholder"
-          type="text">
-        <template v-slot:append>
-          <v-btn
-              class="ml-3"
-              color="primary"
-              icon="$add"
-              @click="addItem(newItem)"/>
-        </template>
-      </v-text-field>
-    </v-card-actions>
-  </v-card>
+    </v-card>
 </template>

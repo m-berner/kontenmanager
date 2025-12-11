@@ -6,7 +6,6 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-/* eslint-disable no-unused-vars */
 import type {
     I_Account_DB,
     I_Booking_DB,
@@ -297,12 +296,14 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     async function deleteDatabaseWithAccount(accountId: number): Promise<void> {
         log('INDEXED_DB: deleteDatabaseWithAccount')
         const db = await _openDB()
-        const tx = db.transaction([
-            CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
-            CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
-            CONS.INDEXED_DB.STORES.STOCKS.NAME,
-            CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
-        ], 'readwrite')
+        const tx = db.transaction(
+            [
+                CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
+                CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
+                CONS.INDEXED_DB.STORES.STOCKS.NAME,
+                CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+            ], 'readwrite'
+        )
 
         // Get all records first
         const bookings = await _getAllInTransaction<I_Booking_DB>(tx, CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
@@ -328,12 +329,14 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     async function getDatabaseStores(accountId: number): Promise<I_Records_DB> {
         log('USE_INDEXED_DB: getDatabaseStores')
         const db = await _openDB()
-        const tx = db.transaction([
-            CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
-            CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
-            CONS.INDEXED_DB.STORES.STOCKS.NAME,
-            CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
-        ], 'readonly')
+        const tx = db.transaction(
+            [
+                CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
+                CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
+                CONS.INDEXED_DB.STORES.STOCKS.NAME,
+                CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+            ], 'readonly'
+        )
 
         const accountsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
         const bookingsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
@@ -365,12 +368,14 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         }
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => {
-                resolve({
-                    accountsDB: results.accountsDB,
-                    bookingsDB: results.bookingsDB,
-                    bookingTypesDB: results.bookingTypesDB,
-                    stocksDB: results.stocksDB
-                })
+                resolve(
+                    {
+                        accountsDB: results.accountsDB,
+                        bookingsDB: results.bookingsDB,
+                        bookingTypesDB: results.bookingTypesDB,
+                        stocksDB: results.stocksDB
+                    }
+                )
             }
             tx.onerror = () => reject(tx.error)
             tx.onabort = () => reject(new Error('Transaction aborted'))
@@ -393,7 +398,7 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 
     async function processWithCursor<T>(
         storeName: string,
-        callback: (item: T) => void | Promise<void>,
+        callback: (_item: T) => void | Promise<void>,
         indexName?: string,
         range?: IDBKeyRange
     ): Promise<void | null> {
@@ -461,7 +466,8 @@ export function useStocksDB() {
     return {
         ...store,
         update: (stockData: I_Stock_Store) => {
-            // Remove computed properties before saving
+            // Isolate temporary properties before saving
+            /* eslint-disable no-unused-vars */
             const {
                 mPortfolio, mInvest, mChange, mBuyValue, mEuroChange, mMin,
                 mValue, mMax, mDividendYielda, mDividendYeara, mDividendYieldb,

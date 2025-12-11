@@ -31,75 +31,75 @@ const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {stockFormularData, formRef} = useStockFormular()
 const T = Object.freeze({
-  MESSAGES: {
-    SUCCESS_ADD: t('messages.addStock.success'),
-    ERROR_ONCLICK_OK: t('messages.onClickOk')
-  },
-  STRINGS: {
-    TITLE: t('components.dialogs.addStock.title')
-  }
-})
+                            MESSAGES: {
+                                SUCCESS_ADD: t('messages.addStock.success'),
+                                ERROR_ONCLICK_OK: t('messages.onClickOk')
+                            },
+                            STRINGS: {
+                                TITLE: t('components.dialogs.addStock.title')
+                            }
+                        })
 const formDisabled = ref(false)
 
 const reset = (): void => {
-  Object.assign(stockFormularData, {
-    isin: '',
-    company: '',
-    symbol: ''
-  })
-  formDisabled.value = false
+    Object.assign(stockFormularData, {
+        isin: '',
+        company: '',
+        symbol: ''
+    })
+    formDisabled.value = false
 }
 
 const onClickOk = async (): Promise<void> => {
-  log('ADD_STOCK : onClickOk')
-  if (!await validateForm(formRef)) return
-  if (!isConnected.value) {
-    await notice(['Database not connected'])
-    return
-  }
-  try {
-    const stock: Omit<I_Stock_DB, 'cID'> = {
-      cCompany: stockFormularData.company.trim(),
-      cISIN: stockFormularData.isin,
-      cSymbol: stockFormularData.symbol,
-      cMeetingDay: '',
-      cQuarterDay: '',
-      cFadeOut: 0,
-      cFirstPage: 0,
-      cURL: '',
-      cAccountNumberID: activeAccountId.value,
-      cAskDates: CONS.DATE.DEFAULT_ISO
+    log('ADD_STOCK : onClickOk')
+    if (!await validateForm(formRef)) return
+    if (!isConnected.value) {
+        await notice(['Database not connected'])
+        return
     }
-    const addStockID = await add(stock)
-    if (addStockID > 0) {
-      const dbStock: I_Stock_DB = {cID: addStockID, ...stock}
-      records.stocks.add(dbStock)
-      resetTeleport()
-      await notice([T.MESSAGES.SUCCESS_ADD])
+    try {
+        const stock: Omit<I_Stock_DB, 'cID'> = {
+            cCompany: stockFormularData.company.trim(),
+            cISIN: stockFormularData.isin,
+            cSymbol: stockFormularData.symbol,
+            cMeetingDay: '',
+            cQuarterDay: '',
+            cFadeOut: 0,
+            cFirstPage: 0,
+            cURL: '',
+            cAccountNumberID: activeAccountId.value,
+            cAskDates: CONS.DATE.DEFAULT_ISO
+        }
+        const addStockID = await add(stock)
+        if (addStockID > 0) {
+            const dbStock: I_Stock_DB = {cID: addStockID, ...stock}
+            records.stocks.add(dbStock)
+            resetTeleport()
+            await notice([T.MESSAGES.SUCCESS_ADD])
+        }
+    } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
     }
-  } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-  }
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onMounted(() => {
-  log('ADD_STOCK: onMounted')
-  reset()
+    log('ADD_STOCK: onMounted')
+    reset()
 })
 
 log('--- AddStock.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
-    <StockFormular :isUpdate="false"/>
-  </v-form>
+    <v-form
+        ref="formRef"
+        validate-on="submit"
+        @submit.prevent>
+        <StockFormular :isUpdate="false"/>
+    </v-form>
 </template>

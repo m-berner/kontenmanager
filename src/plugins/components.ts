@@ -40,7 +40,7 @@ const ComponentsPlugin: Plugin = {
         app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING, UpdateBooking)
         app.component(CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
         app.component(CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
-        app.component(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING, ShowAccounting)
+        app.component(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME, ShowAccounting)
         app.component(CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION, DeleteAccountConfirmation)
     }
 }

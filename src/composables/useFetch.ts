@@ -12,7 +12,6 @@ import type {
     I_Exchange_Data,
     I_Min_Rate_Max_Data,
     I_Number_String,
-    I_Service,
     I_Storage_Online,
     I_String_Number
 } from '@/types'
@@ -23,30 +22,44 @@ const {CONS, log, mean, toNumber} = useApp()
 const {notice, getStorage} = useBrowser()
 
 export function useFetch() {
+    async function _fetchWithRetry(url: string): Promise<Response> {
+        const response = await fetch(url)
+        if (!response.ok || response.status >= CONS.STATES.SRV) {
+            throw new Error(`Fetch failed: ${response.statusText}`)
+        }
+        return response
+    }
+
+    async function _parseHTML(text: string): Promise<Document> {
+        return new DOMParser().parseFromString(text, 'text/html')
+    }
+
+    /**
+     * Tests the internet connectivity
+     * @returns response.ok - true/false
+     * @throws Error if the request fails
+     */
     async function fetchIsOk(): Promise<boolean> {
         log('USE_FETCH: fetchIsOk')
         return new Promise(async (resolve): Promise<void> => {
-            const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.ONLINE_TEST ?? '')
-            if (
-                !firstResponse.ok ||
-                firstResponse.status >= CONS.STATES.SRV ||
-                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
-            ) {
-                await notice(['fetchIsOk: No response'])
-                resolve(false)
-            } else {
-                resolve(true)
-            }
+            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.ONLINE_TEST)
+            resolve(firstResponse.ok)
         })
     }
 
+    /**
+     * Fetches company data for a given ISIN
+     * @param isin - The International Securities Identification Number
+     * @returns Company name and trading symbol
+     * @throws Error if the request fails or data cannot be parsed
+     */
     async function fetchCompanyData(isin: string): Promise<I_Company_Data> {
         return new Promise(async (resolve, reject) => {
             let sDocument: Document
             let company = ''
             let child: ChildNode | undefined
             let symbol: string
-            const service: I_Service | undefined = CONS.SERVICES.TGATE
+            const service = CONS.SERVICES.MAP.get('tgate')
             let tables: NodeListOf<HTMLTableRowElement>
             let firstResponse: Response
             let result: I_Company_Data = {
@@ -54,32 +67,12 @@ export function useFetch() {
                 symbol: ''
             }
             if (service !== undefined) {
-                firstResponse = await fetch(service.QUOTE + isin)
-                if (
-                    firstResponse.url.length === 0 ||
-                    !firstResponse.ok ||
-                    firstResponse.status >= CONS.STATES.SRV ||
-                    (firstResponse.status > 0 &&
-                        firstResponse.status < CONS.STATES.SUCCESS)
-                ) {
-                    await notice(['First request failed'])
-                    reject('First request failed')
-                } else {
-                    const secondResponse = await fetch(firstResponse.url)
-                    if (
-                        !secondResponse.ok ||
-                        secondResponse.status >= CONS.STATES.SRV ||
-                        (secondResponse.status > 0 &&
-                            secondResponse.status < CONS.STATES.SUCCESS)
-                    ) {
-                        await notice(['Second request failed'])
-                        reject('Second request failed')
-                    } else {
+                firstResponse = await _fetchWithRetry(service.QUOTE + isin)
+                if (firstResponse.ok) {
+                    const secondResponse = await _fetchWithRetry(firstResponse.url)
+                    if (secondResponse.ok) {
                         const secondResponseText = await secondResponse.text()
-                        sDocument = new DOMParser().parseFromString(
-                            secondResponseText,
-                            'text/html'
-                        )
+                        sDocument = await _parseHTML(secondResponseText)
                         tables = sDocument.querySelectorAll('table > tbody tr')
                         child = sDocument?.querySelector('#col1_content')?.childNodes[1]
                         company =
@@ -98,7 +91,9 @@ export function useFetch() {
                             }
                             resolve(result)
                         } else {
-                            reject('Unexpected error occurred')
+                            const error = new Error(`Request failed: ${secondResponse.statusText}`)
+                            await notice([error.message])
+                            reject(error)
                         }
                     }
                 }
@@ -106,6 +101,12 @@ export function useFetch() {
         })
     }
 
+    /**
+     * Fetch online values for active companies
+     * @param storageOnline - An array of ISINs (active companies)
+     * @returns An array with min, rate, max values
+     * @throws Error if the request fails or data cannot be parsed
+     */
     async function fetchMinRateMaxData(storageOnline: I_Storage_Online[]): Promise<I_Min_Rate_Max_Data[]> {
         log('USE_FETCH: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
@@ -114,19 +115,12 @@ export function useFetch() {
             const _fnet = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await fetch(urlObj.value)
-                        const secondResponse = await fetch(firstResponse.url)
+                        const firstResponse = await _fetchWithRetry(urlObj.value)
+                        const secondResponse = await _fetchWithRetry(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
-                        const onlineDocument = new DOMParser().parseFromString(
-                            secondResponseText,
-                            'text/html'
-                        )
-                        const onlineNodes = onlineDocument.querySelectorAll(
-                            '#snapshot-value-fst-current-0 > span'
-                        )
-                        const onlineArticleNodes = onlineDocument.querySelectorAll(
-                            'main div[class=accordion__content]'
-                        )
+                        const onlineDocument = await _parseHTML(secondResponseText)
+                        const onlineNodes = onlineDocument.querySelectorAll('#snapshot-value-fst-current-0 > span')
+                        const onlineArticleNodes = onlineDocument.querySelectorAll('main div[class=accordion__content]')
                         let onlineMin = '0'
                         let onlineMax = '0'
                         let onlineCurrency = 'EUR'
@@ -162,12 +156,9 @@ export function useFetch() {
             const _ard = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await fetch(urlObj.value)
+                        const firstResponse = await _fetchWithRetry(urlObj.value)
                         const firstResponseText = await firstResponse.text()
-                        const firstResponseDocument = new DOMParser().parseFromString(
-                            firstResponseText,
-                            'text/html'
-                        )
+                        const firstResponseDocument = await _parseHTML(firstResponseText)
                         const firstResponseRows = firstResponseDocument.querySelectorAll(
                             '#desktopSearchResult > table > tbody > tr'
                         )
@@ -219,15 +210,12 @@ export function useFetch() {
             const _wstreet = async (urls: I_Number_String[], homeUrl: string): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await fetch(urlObj.value)
+                        const firstResponse = await _fetchWithRetry(urlObj.value)
                         const firstResponseJson = await firstResponse.json()
                         const url2 = homeUrl + firstResponseJson.result[0].link
                         const secondResponse = await fetch(url2)
                         const secondResponseText = await secondResponse.text()
-                        const onlineDocument = new DOMParser().parseFromString(
-                            secondResponseText,
-                            'text/html'
-                        )
+                        const onlineDocument = await _parseHTML(secondResponseText)
                         const onlineRates = onlineDocument.querySelectorAll('div.c2 table')
                         const onlineMinMax = onlineDocument.querySelectorAll('div.fundamental > div > div.float-start')
                         let onlineCurrency = ''
@@ -256,13 +244,10 @@ export function useFetch() {
             const _goyax = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await fetch(urlObj.value)
-                        const secondResponse = await fetch(firstResponse.url)
+                        const firstResponse = await _fetchWithRetry(urlObj.value)
+                        const secondResponse = await _fetchWithRetry(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
-                        const onlineDocument = new DOMParser().parseFromString(
-                            secondResponseText,
-                            'text/html'
-                        )
+                        const onlineDocument = await _parseHTML(secondResponseText)
                         const onlineNodes = onlineDocument.querySelectorAll(
                             'div#instrument-ueberblick > div'
                         )
@@ -295,14 +280,11 @@ export function useFetch() {
             const _acheck = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await fetch(urlObj.value)
                         let onlineCurrency = ''
-                        const secondResponse = await fetch(firstResponse.url)
+                        const firstResponse = await _fetchWithRetry(urlObj.value)
+                        const secondResponse = await _fetchWithRetry(firstResponse.url)
                         const secondResponseText = await secondResponse.text()
-                        const onlineDocument = new DOMParser().parseFromString(
-                            secondResponseText,
-                            'text/html'
-                        )
+                        const onlineDocument = await _parseHTML(secondResponseText)
                         const onlineTables =
                             onlineDocument.querySelectorAll('#content table')
                         if (onlineTables.length > 1) {
@@ -351,14 +333,11 @@ export function useFetch() {
             const _tgate = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await fetch(urlObj.value)
+                        const firstResponse = await _fetchWithRetry(urlObj.value)
                         const onlineCurrency = 'EUR'
                         const onlineMax = '0'
                         const onlineMin = '0'
-                        const onlineDocument = new DOMParser().parseFromString(
-                            await firstResponse.text(),
-                            'text/html'
-                        )
+                        const onlineDocument = await _parseHTML(await firstResponse.text())
                         const resultask =
                             onlineDocument.querySelector('#ask') !== null
                                 ? onlineDocument.querySelector('#ask')?.textContent
@@ -394,7 +373,7 @@ export function useFetch() {
                             if (service !== undefined) {
                                 resolve(await _wstreet(urls, service.HOME))
                             } else {
-                                reject('Undefined service constant!')
+                                reject(new Error('Unexpected error occurred'))
                             }
                             break
                         case 'goyax':
@@ -419,48 +398,53 @@ export function useFetch() {
                     const isin = storageOnline[i].isin
                     if (isin !== undefined && service !== undefined && service !== null) {
                         urls.push({
-                            value: service.QUOTE + isin,
-                            key: storageOnline[i].id ?? -1
-                        })
+                                      value: service.QUOTE + isin,
+                                      key: storageOnline[i].id ?? -1
+                                  })
                     }
                 }
             } else {
-                reject('System Error')
+                reject(new Error('System Error'))
             }
             resolve(await _select(urls))
         })
     }
 
+    /**
+     * Fetch changes values for the asked list
+     * @param table - List identifier
+     * @param mode - List selector
+     * @returns An array with changes values
+     * @throws Error if the request fails or data cannot be parsed
+     */
     async function fetchDailyChangeData(table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<I_Daily_Changes_Data[]> {
         log('USE_FETCH: fetchDailyChangesData')
         let valuestr: string
         let company: string
-        let sDocument: Document
-        let trCollection: NodeListOf<HTMLTableRowElement>
-        let url = `${CONS.SERVICES.TGATE.CHB_URL} ?? ''${table}`
+        let url = `${CONS.SERVICES.TGATE.CHB_URL}${table}`
         let selector = '#kursliste_abc > tr'
         if (mode === CONS.SERVICES.TGATE.CHANGES.SMALL) {
-            url = `${CONS.SERVICES.TGATE.CHS_URL} ?? ''${table}`
+            url = `${CONS.SERVICES.TGATE.CHS_URL}${table}`
             selector = '#kursliste_daten > tr'
         }
         const convertHTMLEntities = (str: string | null): string => {
             const entities = new Map([
-                ['aum', 'ä'],
-                ['Aum', 'Ä'],
-                ['oum', 'ö'],
-                ['Oum', 'Ö'],
-                ['uum', 'ü'],
-                ['Uum', 'Ü'],
-                ['amp', '&'],
-                ['eac', 'é'],
-                ['Eac', 'É'],
-                ['eci', 'ê'],
-                ['Eci', 'Ê'],
-                ['oac', 'ó'],
-                ['Oac', 'Ó'],
-                ['ael', 'æ'],
-                ['Ael', 'Æ']
-            ])
+                                         ['aum', 'ä'],
+                                         ['Aum', 'Ä'],
+                                         ['oum', 'ö'],
+                                         ['Oum', 'Ö'],
+                                         ['uum', 'ü'],
+                                         ['Uum', 'Ü'],
+                                         ['amp', '&'],
+                                         ['eac', 'é'],
+                                         ['Eac', 'É'],
+                                         ['eci', 'ê'],
+                                         ['Eci', 'Ê'],
+                                         ['oac', 'ó'],
+                                         ['Oac', 'Ó'],
+                                         ['ael', 'æ'],
+                                         ['Ael', 'Æ']
+                                     ])
             const fMatch = (match: string): string => {
                 return entities.get(match.substring(1, 4)) ?? ''
             }
@@ -480,39 +464,33 @@ export function useFetch() {
                 stringChange: ''
             }
         }
-        const firstResponse = await fetch(url)
+        const firstResponse = await _fetchWithRetry(url)
         const _changes: I_Daily_Changes_Data[] = []
-        if (
-            firstResponse.url.length === 0 ||
-            !firstResponse.ok ||
-            firstResponse.status >= CONS.STATES.SRV ||
-            (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
-        ) {
-            await notice(['Request failed'])
-        } else {
-            const firstResponseText = await firstResponse.text()
-            sDocument = new DOMParser().parseFromString(
-                firstResponseText,
-                'text/html'
-            )
-            trCollection = sDocument.querySelectorAll(selector)
-            for (let i = 0; i < trCollection.length; i++) {
-                valuestr = trCollection[i].childNodes[11].textContent ?? ''
-                company = convertHTMLEntities(
-                    trCollection[i].childNodes[1].textContent ?? ''
-                ).replace('<wbr>', '')
-                entry.key = company.toUpperCase()
-                entry.value = {
-                    percentChange: valuestr.replace(/\t/g, ''),
-                    change: toNumber(valuestr),
-                    stringChange: toNumber(valuestr).toString()
-                }
-                _changes.push({...entry})
+        const firstResponseText = await firstResponse.text()
+        const sDocument = await _parseHTML(firstResponseText)
+        const trCollection = sDocument.querySelectorAll(selector)
+        for (let i = 0; i < trCollection.length; i++) {
+            valuestr = trCollection[i].childNodes[11].textContent ?? ''
+            company = convertHTMLEntities(
+                trCollection[i].childNodes[1].textContent ?? ''
+            ).replace('<wbr>', '')
+            entry.key = company.toUpperCase()
+            entry.value = {
+                percentChange: valuestr.replace(/\t/g, ''),
+                change: toNumber(valuestr),
+                stringChange: toNumber(valuestr).toString()
             }
+            _changes.push({...entry})
         }
         return _changes
     }
 
+    /**
+     * Fetch exchanges data
+     * @param exchangeCodes - An array of exchange codes to be queried
+     * @returns An array exchange values
+     * @throws Error if the request fails or data cannot be parsed
+     */
     async function fetchExchangesData(exchangeCodes: string[]): Promise<I_Exchange_Data[]> {
         log('USE_FETCH: fetchExchangesData')
         const service = CONS.SERVICES.FX
@@ -523,24 +501,12 @@ export function useFetch() {
                 throw new Error('Undefined service constant!')
             }
         }
-        return new Promise(async (resolve, reject): Promise<I_Exchange_Data[]> => {
+        return new Promise(async (resolve): Promise<I_Exchange_Data[]> => {
             const result: I_Exchange_Data[] = []
             for (let i = 0; i < exchangeCodes.length; i++) {
-                const firstResponse = await fetch(fExUrl(exchangeCodes[i]))
-                if (
-                    !firstResponse.ok ||
-                    firstResponse.status >= CONS.STATES.SRV ||
-                    (firstResponse.status > 0 &&
-                        firstResponse.status < CONS.STATES.SUCCESS)
-                ) {
-                    await notice(['fetchExhangesData: firstResponse failed'])
-                    reject('System Error')
-                }
+                const firstResponse = await _fetchWithRetry(fExUrl(exchangeCodes[i]))
                 const firstResponseText = await firstResponse.text()
-                const resultDocument: Document = new DOMParser().parseFromString(
-                    firstResponseText,
-                    'text/html'
-                )
+                const resultDocument: Document = await _parseHTML(firstResponseText)
                 const resultTr = resultDocument.querySelector(
                     'form#formcalculator.formcalculator > div'
                 )
@@ -548,7 +514,6 @@ export function useFetch() {
                     const resultString = resultTr.getAttribute('data-rate') //?.textContent ?? ''
                     const resultMatchArray = resultString?.match(/[0-9]*\.?[0-9]+/g) ?? ['1']
                     const exchangeRate = Number.parseFloat(resultMatchArray[0])
-                    // noinspection JSUnresolvedReference
                     result.push({key: exchangeCodes[i], value: exchangeRate})
                 }
             }
@@ -557,24 +522,18 @@ export function useFetch() {
         })
     }
 
+    /**
+     * Fetch material data
+     * @returns An array with material data
+     * @throws Error if the request fails or data cannot be parsed
+     */
     async function fetchMaterialData(): Promise<I_String_Number[]> {
         log('USE_FETCH: fetchMaterialData')
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const materials: I_String_Number[] = []
-            const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '')
-            if (
-                !firstResponse.ok ||
-                firstResponse.status >= CONS.STATES.SRV ||
-                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
-            ) {
-                await notice(['fetchMaterialData: firstResponse failed'])
-                reject('System error')
-            }
+            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.MATERIALS)
             const firstResponseText = await firstResponse.text()
-            const resultDocument: Document = new DOMParser().parseFromString(
-                firstResponseText,
-                'text/html'
-            )
+            const resultDocument: Document = await _parseHTML(firstResponseText)
             const resultTr = resultDocument.querySelectorAll(
                 '#commodity_prices > table > tbody tr'
             )
@@ -585,9 +544,9 @@ export function useFetch() {
                     material !== undefined
                 ) {
                     materials.push({
-                        key: material,
-                        value: toNumber(resultTr[i].children[1].textContent)
-                    })
+                                       key: material,
+                                       value: toNumber(resultTr[i].children[1].textContent)
+                                   })
                 }
             }
             resolve(materials)
@@ -595,35 +554,28 @@ export function useFetch() {
         })
     }
 
+    /**
+     * Fetch index data
+     * @returns An array with index data
+     * @throws Error if the request fails or data cannot be parsed
+     */
     async function fetchIndexData(): Promise<I_String_Number[]> {
         log('USE_FETCH: fetchIndexData')
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const indexes: I_String_Number[] = []
             const indexesKeys = CONS.SETTINGS.INDEXES.keys()
-            //const indexesValues = CONS.SETTINGS.INDEXES.values()
-            const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.INDEXES ?? '')
-            if (
-                !firstResponse.ok ||
-                firstResponse.status >= CONS.STATES.SRV ||
-                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
-            ) {
-                await notice(['fetchIndexData: firstResponse failed'])
-                reject(firstResponse.statusText)
-            }
+            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.INDEXES)
             const firstResponseText = await firstResponse.text()
-            const resultDocument: Document = new DOMParser().parseFromString(
-                firstResponseText,
-                'text/html'
-            )
+            const resultDocument: Document = await _parseHTML(firstResponseText)
             const resultTr = resultDocument.querySelectorAll('.index-world-map a')
             indexesKeys.forEach((property) => {
                 const indexValue = CONS.SETTINGS.INDEXES.get(property)
                 for (let j = 0; j < resultTr.length; j++) {
                     if (indexValue?.includes(resultTr[j].getAttribute('title') ?? '') && resultTr[j].children[0].textContent !== undefined) {
                         indexes.push({
-                            key: property,
-                            value: toNumber(resultTr[j].children[0].textContent)
-                        })
+                                         key: property,
+                                         value: toNumber(resultTr[j].children[0].textContent)
+                                     })
                     }
                 }
 
@@ -633,7 +585,13 @@ export function useFetch() {
         })
     }
 
-    async function fetchDateData(obj: I_Number_String[]): Promise<Promise<I_Date_Data>[]> {
+    /**
+     * Fetch company dates
+     * @param obj - An array of company dates data
+     * @returns An array company dates data
+     * @throws Error if the request fails or data cannot be parsed
+     */
+    async function fetchDateData(obj: I_Number_String[]): Promise<I_Date_Data[]> {
         log('USE_FETCH: fetchDatesData')
         //if (obj.length === 0) return Promise.resolve([])
         const gmqf = {gm: 0, qf: 0}
@@ -645,29 +603,15 @@ export function useFetch() {
             const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01'
             return new Date(`${year}-${month}-${day}`).getTime()
         }
-        return obj.map(async (entry: I_Number_String): Promise<I_Date_Data> => {
-            const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${entry.value}`)
-            if (
-                firstResponse.url.length === 0 ||
-                !firstResponse.ok ||
-                firstResponse.status >= CONS.STATES.SRV ||
-                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)
-            ) {
-                log('USE_FETCH: fetchDatesData: First request failed', {error: 'System'})
-            } else {
+        const promises = obj.map(async (entry: I_Number_String): Promise<I_Date_Data> => {
+            const firstResponse = await _fetchWithRetry(`${CONS.SERVICES.FNET.SEARCH}${entry.value}`)
+            if (firstResponse.ok) {
                 const atoms = firstResponse.url.split('/')
                 const stockName = atoms[atoms.length - 1].replace('-aktie', '')
-                const secondResponse = await fetch(`https://www.finanzen.net/termine/${stockName}`)
-                if (
-                    !secondResponse.ok ||
-                    secondResponse.status >= CONS.STATES.SRV ||
-                    (secondResponse.status > 0 &&
-                        secondResponse.status < CONS.STATES.SUCCESS)
-                ) {
-                    log('USE_FETCH: fetchDatesData: Second request failed')
-                } else {
+                const secondResponse = await _fetchWithRetry(`${CONS.SERVICES.FNET.DATES}${stockName}`)
+                if (secondResponse.ok) {
                     const secondResponseText = await secondResponse.text()
-                    const qfgmDocument = new DOMParser().parseFromString(secondResponseText, 'text/html')
+                    const qfgmDocument = await _parseHTML(secondResponseText)
                     const tables = qfgmDocument.querySelectorAll('.table')
                     const rows = tables[1].querySelectorAll('tr')
                     let stopGm = false
@@ -706,6 +650,7 @@ export function useFetch() {
             }
             return {key: entry.key, value: gmqf}
         })
+        return Promise.all(promises)
     }
 
     return {

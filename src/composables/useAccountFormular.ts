@@ -9,12 +9,12 @@ import {reactive, ref} from 'vue'
 import type {I_Account_Formular} from '@/types'
 
 const accountFormularData = reactive<I_Account_Formular>({
-    id: -1,
-    swift: '',
-    iban: '',
-    logoUrl: '',
-    withDepot: false
-})
+                                                             id: -1,
+                                                             swift: '',
+                                                             iban: '',
+                                                             logoUrl: '',
+                                                             withDepot: false
+                                                         })
 const formRef = ref<HTMLFormElement | null>(null)
 
 const reset = (): void => {

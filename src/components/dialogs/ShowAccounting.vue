@@ -21,100 +21,120 @@ const {sumsPerPage} = storeToRefs(settings)
 const {setSumsPerPage} = settings
 const {CONS, log} = useApp()
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>({
-  STRINGS: {
-    TITLE: t('components.dialogs.showAccounting.title'),
-    ITEMS_PER_PAGE_TEXT: t('components.dialogs.showAccounting.itemsPerPageText'),
-    NO_DATA_TEXT: t('components.dialogs.showAccounting.noDataText'),
-    FEES: t('components.dialogs.showAccounting.fees'),
-    TAXES: t('components.dialogs.showAccounting.taxes'),
-    SUM: t('components.dialogs.showAccounting.sum'),
-    YEAR: t('components.dialogs.showAccounting.year')
-  },
-  HEADERS: [
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>(
     {
-      title: t('components.dialogs.showAccounting.nameLabel'),
-      align: 'start',
-      sortable: false,
-      key: 'name'
-    },
-    {
-      title: t('components.dialogs.showAccounting.sumLabel'),
-      align: 'start',
-      sortable: false,
-      key: 'sum'
+        STRINGS: {
+            TITLE: t('components.dialogs.showAccounting.title'),
+            ITEMS_PER_PAGE_TEXT: t('components.dialogs.showAccounting.itemsPerPageText'),
+            NO_DATA_TEXT: t('components.dialogs.showAccounting.noDataText'),
+            FEES: t('components.dialogs.showAccounting.fees'),
+            TAXES: t('components.dialogs.showAccounting.taxes'),
+            SUM: t('components.dialogs.showAccounting.sum'),
+            YEAR: t('components.dialogs.showAccounting.year'),
+            ALL_YEARS: t('components.dialogs.showAccounting.allYears')
+        },
+        HEADERS: [
+            {
+                title: t('components.dialogs.showAccounting.nameLabel'),
+                align: 'start',
+                sortable: false,
+                key: 'name'
+            },
+            {
+                title: t('components.dialogs.showAccounting.sumLabel'),
+                align: 'start',
+                sortable: false,
+                key: 'sum'
+            }
+        ]
     }
-  ]
-})
+)
 
-const selected = ref(1000)
+const selected = ref(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID)
 
 const yearEntries = computed(() => {
-  const years = [1000, ...Array.from(records.bookings.bookedYears)]
-  return years.map((entry) => {
-    let entryString = entry.toString()
-    if (entry === 1000) {
-      entryString = 'Gesamt'
-    }
-    return {id: entry, title: entryString}
-  })
+    const years = [CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID, ...Array.from(records.bookings.bookedYears)]
+    return years.map((entry) => {
+        return {
+            id: entry,
+            title: entry === CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID ? T.STRINGS.ALL_YEARS : entry.toString()
+        }
+    })
 })
-// TODO replace magic number 1000 by const
+
 const accountEntries = computed(() => {
-  const y = selected.value
-  const result: I_Account_Entry[] = []
-  let sums
-  let sumsFees = 0
-  let sumsTaxes = 0
-  if (selected.value === 1000) {
-    sums = records.bookings.sumBookingsPerType
-    sumsTaxes = records.bookings.sumAllTaxes
-    sumsFees = records.bookings.sumAllFees
-  } else {
-    sums = records.bookings.sumBookingsPerTypeAndYear(y)
-    sumsTaxes = records.bookings.sumTaxes(y)
-    sumsFees = records.bookings.sumFees(y)
-  }
-  let finalSum = 0
-  for (let i = 0; i < sums.length; i++) {
-    let sc = ''
-    if (sums[i].key < 0) {
-      sc = 'color-red'
+    const result: I_Account_Entry[] = []
+    const {sums, taxes, fees} = getAccountData(selected.value)
+
+    let finalSum = 0
+
+    // Add individual booking type sums
+    for (let i = 0; i < sums.length; i++) {
+        const sumClass = sums[i].key < 0 ? 'color-red' : ''
+
+        result.push(
+            {
+                id: i,
+                name: sums[i].value,
+                sum: sums[i].key,
+                nameClass: '',
+                sumClass
+            }
+        )
+        finalSum += sums[i].key
     }
-    result.push({
-      id: i,
-      name: sums[i].value,
-      sum: sums[i].key,
-      nameClass: '',
-      sumClass: sc
-    })
-    finalSum += sums[i].key
-  }
-  result.push({
-    id: sums.length,
-    name: T.STRINGS.SUM,
-    sum: finalSum + sumsTaxes + sumsFees,
-    nameClass: 'font-weight-bold',
-    sumClass: 'font-weight-bold'
-  })
-  if (records.accounts.isDepot) {
-    result.unshift({
-      id: sums.length + 1,
-      name: T.STRINGS.TAXES,
-      sum: sumsTaxes,
-      nameClass: '',
-      sumClass: 'color-red'
-    })
-    result.unshift({
-      id: sums.length + 2,
-      name: T.STRINGS.FEES,
-      sum: sumsFees,
-      nameClass: '',
-      sumClass: 'color-red'
-    })
-  }
-  return result
+
+    // Add fees and taxes for depot accounts
+    if (records.accounts.isDepot) {
+        result.unshift(
+            {
+                id: sums.length + 2,
+                name: T.STRINGS.FEES,
+                sum: fees,
+                nameClass: '',
+                sumClass: 'color-red'
+            }
+        )
+        result.unshift(
+            {
+                id: sums.length + 1,
+                name: T.STRINGS.TAXES,
+                sum: taxes,
+                nameClass: '',
+                sumClass: 'color-red'
+            }
+        )
+    }
+
+    // Add total sum
+    result.push(
+        {
+            id: sums.length,
+            name: T.STRINGS.SUM,
+            sum: finalSum + taxes + fees,
+            nameClass: 'font-weight-bold',
+            sumClass: 'font-weight-bold'
+        }
+    )
+
+    return result
 })
+
+const getAccountData = (year: number) => {
+    if (year === CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID) {
+        return {
+            sums: records.bookings.sumBookingsPerType,
+            taxes: records.bookings.sumAllTaxes,
+            fees: records.bookings.sumAllFees
+        }
+    }
+
+    return {
+        sums: records.bookings.sumBookingsPerTypeAndYear(year),
+        taxes: records.bookings.sumTaxes(year),
+        fees: records.bookings.sumFees(year)
+    }
+}
 
 const title = T.STRINGS.TITLE
 defineExpose({title})
@@ -123,43 +143,43 @@ log('--- ShowAccounting.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      validate-on="submit"
-      @submit.prevent>
-    <v-select
-        v-model="selected"
-        item-title="title"
-        item-value="id"
-        :items="yearEntries"
-        :label="T.STRINGS.YEAR"
-        clearable
-        density="compact"
-        max-width="300"
-        variant="outlined"
-    />
-    <v-card>
-      <v-card-text class="pa-5">
-        <v-data-table
-            :headers="T.HEADERS"
-            :hide-no-data="false"
-            :hover="false"
-            :items="accountEntries"
-            :items-per-page="sumsPerPage"
-            :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-            :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
-            :no-data-text="T.STRINGS.NO_DATA_TEXT"
+    <v-form
+        validate-on="submit"
+        @submit.prevent>
+        <v-select
+            v-model="selected"
+            :items="yearEntries"
+            :label="T.STRINGS.YEAR"
+            clearable
             density="compact"
-            item-key="id"
-            @update:items-per-page="setSumsPerPage">
-          <template v-slot:[`item`]="{ item }">
-            <tr class="table-row">
-              <td class="d-none">{{ item.id }}</td>
-              <td :class="item.nameClass">{{ item.name }}</td>
-              <td :class="item.sumClass">{{ n(item.sum, 'currency') }}</td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </v-card>
-  </v-form>
+            item-title="title"
+            item-value="id"
+            max-width="300"
+            variant="outlined"
+        />
+        <v-card>
+            <v-card-text class="pa-5">
+                <v-data-table
+                    :headers="T.HEADERS"
+                    :hide-no-data="false"
+                    :hover="false"
+                    :items="accountEntries"
+                    :items-per-page="sumsPerPage"
+                    :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+                    :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
+                    :no-data-text="T.STRINGS.NO_DATA_TEXT"
+                    density="compact"
+                    item-key="id"
+                    @update:items-per-page="setSumsPerPage">
+                    <template v-slot:[`item`]="{ item }">
+                        <tr class="table-row">
+                            <td class="d-none">{{ item.id }}</td>
+                            <td :class="item.nameClass">{{ item.name }}</td>
+                            <td :class="item.sumClass">{{ n(item.sum, 'currency') }}</td>
+                        </tr>
+                    </template>
+                </v-data-table>
+            </v-card-text>
+        </v-card>
+    </v-form>
 </template>

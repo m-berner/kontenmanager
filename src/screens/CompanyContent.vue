@@ -27,200 +27,201 @@ const runtime = useRuntimeStore()
 const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>({
-  STRINGS: {
-    ITEMS_PER_PAGE_TEXT: t('companyContent.stocksTable.itemsPerPageText'),
-    NO_DATA_TEXT: t('companyContent.stocksTable.noDataText')
-  },
-  HEADERS: [
-    {
-      title: t('companyContent.stocksTable.headers.action'),
-      align: 'start',
-      sortable: false,
-      key: 'mAction'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.company'),
-      align: 'start',
-      sortable: true,
-      key: 'cCompany'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.isin'),
-      align: 'start',
-      sortable: false,
-      key: 'cISIN'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.qf'),
-      align: 'start',
-      sortable: false,
-      key: 'cQuarterDay'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.gm'),
-      align: 'start',
-      sortable: false,
-      key: 'cMeetingDay'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.portfolio'),
-      align: 'start',
-      sortable: true,
-      key: 'mPortfolio'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.winLoss'),
-      align: 'start',
-      sortable: false,
-      key: 'mEuroChange'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.52low'),
-      align: 'start',
-      sortable: false,
-      key: 'mMin'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.rate'),
-      align: 'start',
-      sortable: false,
-      key: 'mValue'
-    },
-    {
-      title: t('companyContent.stocksTable.headers.52high'),
-      align: 'start',
-      sortable: false,
-      key: 'mMax'
-    }
-  ],
-  MENU_ITEMS: [
-    {
-      id: 'DeleteStock',
-      title: t('companyContent.stocksTable.menuItems.delete'),
-      icon: '$deleteCompany'
-    },
-    {
-      id: 'UpdateStock',
-      title: t('companyContent.stocksTable.menuItems.update'),
-      icon: '$showCompany'
-    },
-    {
-      id: 'ShowDividend',
-      title: t('companyContent.stocksTable.menuItems.dividend'),
-      icon: '$showDividend'
-    },
-    {
-      id: 'ExternalLink',
-      title: t('companyContent.stocksTable.menuItems.link'),
-      icon: '$link'
-    }
-  ]
-})
+                                                                                                                 STRINGS: {
+                                                                                                                     ITEMS_PER_PAGE_TEXT: t('companyContent.stocksTable.itemsPerPageText'),
+                                                                                                                     NO_DATA_TEXT: t('companyContent.stocksTable.noDataText')
+                                                                                                                 },
+                                                                                                                 HEADERS: [
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.action'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: false,
+                                                                                                                         key: 'mAction'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.company'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: true,
+                                                                                                                         key: 'cCompany'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.isin'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: false,
+                                                                                                                         key: 'cISIN'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.qf'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: false,
+                                                                                                                         key: 'cQuarterDay'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.gm'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: false,
+                                                                                                                         key: 'cMeetingDay'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.portfolio'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: true,
+                                                                                                                         key: 'mPortfolio'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.winLoss'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: false,
+                                                                                                                         key: 'mEuroChange'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.52low'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: false,
+                                                                                                                         key: 'mMin'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.rate'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: false,
+                                                                                                                         key: 'mValue'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         title: t('companyContent.stocksTable.headers.52high'),
+                                                                                                                         align: 'start',
+                                                                                                                         sortable: false,
+                                                                                                                         key: 'mMax'
+                                                                                                                     }
+                                                                                                                 ],
+                                                                                                                 MENU_ITEMS: [
+                                                                                                                     {
+                                                                                                                         id: 'DeleteStock',
+                                                                                                                         title: t('companyContent.stocksTable.menuItems.delete'),
+                                                                                                                         icon: '$deleteCompany'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         id: 'UpdateStock',
+                                                                                                                         title: t('companyContent.stocksTable.menuItems.update'),
+                                                                                                                         icon: '$showCompany'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         id: 'ShowDividend',
+                                                                                                                         title: t('companyContent.stocksTable.menuItems.dividend'),
+                                                                                                                         icon: '$showDividend'
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         id: 'ExternalLink',
+                                                                                                                         title: t('companyContent.stocksTable.menuItems.link'),
+                                                                                                                         icon: '$link'
+                                                                                                                     }
+                                                                                                                 ]
+                                                                                                             })
 
 const winLossClass = computed(() => {
-  return (value: number): Record<string, boolean> => ({
-    'color-red font-weight-bold': value < 0,
-    'color-black font-weight-bold': value >= 0
-  })
+    return (value: number): Record<string, boolean> => ({
+        'color-red font-weight-bold': value < 0,
+        'color-black font-weight-bold': value >= 0
+    })
 })
 
 const onUpdatePage = async (page: number): Promise<void> => {
-  log('COMPANY_CONTENT: onUpdatePage', {info: page})
-  stocksPage.value = page
-  if (!runtime.loadedStocksPages.has(page)) {
-    isStockLoading.value = true
-    await records.stocks.loadOnlineData(page)
-    isStockLoading.value = false
-  }
+    log('COMPANY_CONTENT: onUpdatePage', {info: page})
+    stocksPage.value = page
+    if (!runtime.loadedStocksPages.has(page)) {
+        isStockLoading.value = true
+        await records.stocks.loadOnlineData(page)
+        isStockLoading.value = false
+    }
 }
 
 onBeforeUpdate(() => {
-  log('COMPANY_CONTENT: onBeforeUpdate')
-  records.stocks.active.sort((a: I_Stock_Store, b: I_Stock_Store) => {
-    return b.cFirstPage - a.cFirstPage
-  }).sort((a: I_Stock_Store, b: I_Stock_Store) => {
-    return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
-  })
+    log('COMPANY_CONTENT: onBeforeUpdate')
+    records.stocks.active.sort((a: I_Stock_Store, b: I_Stock_Store) => {
+        return b.cFirstPage - a.cFirstPage
+    }).sort((a: I_Stock_Store, b: I_Stock_Store) => {
+        return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
+    })
 })
 
 onBeforeMount(async () => {
-  log('COMPANY_CONTENT: onBeforeMount')
-  const requiredOnlineData = async (page: number = 1) => {
-    if ((records.stocks.active[stocksPerPage.value * page].mPortfolio ?? 0) >= 1) {
-      await records.stocks.loadOnlineData(Math.ceil(stocksPerPage.value * page / stocksPerPage.value) + 1)
-      await requiredOnlineData(page + 1)
+    log('COMPANY_CONTENT: onBeforeMount')
+    const requiredOnlineData = async (page: number = 1) => {
+        if ((records.stocks.active[stocksPerPage.value * page].mPortfolio ?? 0) >= 1) {
+            await records.stocks.loadOnlineData(Math.ceil(stocksPerPage.value * page / stocksPerPage.value) + 1)
+            await requiredOnlineData(page + 1)
+        }
     }
-  }
-  for (let i = 0; i < records.stocks.active.length; i++) {
-    records.stocks.active[i].mPortfolio = records.bookings.portfolioByStockId(records.stocks.active[i].cID)
-    records.stocks.active[i].mInvest = records.bookings.investByStockId(records.stocks.active[i].cID)
-  }
-  records.stocks.active.sort((a: I_Stock_Store, b: I_Stock_Store) => {
-    return b.cFirstPage - a.cFirstPage
-  }).sort((a: I_Stock_Store, b: I_Stock_Store) => {
-    return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
-  })
-  if (!runtime.loadedStocksPages.has(stocksPage)) {
-    isDownloading.value = true
-    isStockLoading.value = true
-    await records.stocks.loadOnlineData(stocksPage.value)
-    await requiredOnlineData()
-    isStockLoading.value = false
-    isDownloading.value = false
-  }
+    for (let i = 0; i < records.stocks.active.length; i++) {
+        records.stocks.active[i].mPortfolio = records.bookings.portfolioByStockId(records.stocks.active[i].cID)
+        records.stocks.active[i].mInvest = records.bookings.investByStockId(records.stocks.active[i].cID)
+    }
+    records.stocks.active.sort((a: I_Stock_Store, b: I_Stock_Store) => {
+        return b.cFirstPage - a.cFirstPage
+    }).sort((a: I_Stock_Store, b: I_Stock_Store) => {
+        return (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0)
+    })
+    if (!runtime.loadedStocksPages.has(stocksPage)) {
+        isDownloading.value = true
+        isStockLoading.value = true
+        await records.stocks.loadOnlineData(stocksPage.value)
+        await requiredOnlineData()
+        isStockLoading.value = false
+        isDownloading.value = false
+    }
 })
 
 log('--- CompanyContent.vue setup ---')
 </script>
 
 <template>
-  <v-data-table
-      :headers="T.HEADERS"
-      :hide-no-data="false"
-      :hover="true"
-      :items="activeStockItems"
-      :items-per-page="stocksPerPage"
-      :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-      :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
-      :loading="isStockLoading"
-      :no-data-text="T.STRINGS.NO_DATA_TEXT"
-      density="compact"
-      item-key="cID"
-      @update:items-per-page="setStocksPerPage"
-      @update:page="onUpdatePage">
-    <template v-slot:[`item`]="{ item }">
-      <tr class="table-row">
-        <td class="d-none">{{ item.cID }}</td>
-        <td>
-          <DotMenu
-              :menuItems="T.MENU_ITEMS"
-              :recordID="item.cID ?? -1"
-              menuType="stocks"/>
-        </td>
-        <td>{{ item.cCompany }}</td>
-        <td>{{ item.cISIN }}</td>
-        <td v-if="new Date(item.cQuarterDay).getTime() > 0">{{ d(new Date(item.cQuarterDay), 'short') }}</td>
-        <td v-else/>
-        <td v-if="new Date(item.cMeetingDay).getTime() > 0">{{ d(new Date(item.cMeetingDay), 'short') }}</td>
-        <td v-else/>
-        <td v-if="(item.mPortfolio ?? 0) >= 1">{{ item.mPortfolio }}</td>
-        <td v-else/>
-        <v-tooltip
-            :text="n((item.mInvest !== 0 && item.mInvest !== undefined )? (item.mEuroChange ?? 0) / item.mInvest : 1, 'percent')"
-            location="left">
-          <template v-slot:activator="{ props }">
-            <td v-if="(item.mPortfolio ?? 0) >= 1" :class="winLossClass((item.mEuroChange ?? 0))" v-bind="props">
-              {{ n(item.mEuroChange ?? 0, 'currency') }}
-            </td>
-            <td v-else/>
-          </template>
-        </v-tooltip>
-        <td>{{ n(item.mMin ?? 0, 'currency') }}</td>
-        <td class="font-weight-bold color-black">
-          {{ n(item.mValue ?? 0, 'currency3') }}
-        </td>
-        <td>{{ n(item.mMax ?? 0, 'currency') }}</td>
-      </tr>
-    </template>
-  </v-data-table>
+    <v-data-table
+        :headers="T.HEADERS"
+        :hide-no-data="false"
+        :hover="true"
+        :items="activeStockItems"
+        :items-per-page="stocksPerPage"
+        :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+        :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
+        :loading="isStockLoading"
+        :no-data-text="T.STRINGS.NO_DATA_TEXT"
+        density="compact"
+        item-key="cID"
+        @update:items-per-page="setStocksPerPage"
+        @update:page="onUpdatePage">
+        <template v-slot:[`item`]="{ item }">
+            <tr class="table-row">
+                <td class="d-none">{{ item.cID }}</td>
+                <td>
+                    <DotMenu
+                        :menuItems="T.MENU_ITEMS"
+                        :recordID="item.cID ?? -1"
+                        menuType="stocks"/>
+                </td>
+                <td>{{ item.cCompany }}</td>
+                <td>{{ item.cISIN }}</td>
+                <td v-if="new Date(item.cQuarterDay).getTime() > 0">{{ d(new Date(item.cQuarterDay), 'short') }}</td>
+                <td v-else/>
+                <td v-if="new Date(item.cMeetingDay).getTime() > 0">{{ d(new Date(item.cMeetingDay), 'short') }}</td>
+                <td v-else/>
+                <td v-if="(item.mPortfolio ?? 0) >= 1">{{ item.mPortfolio }}</td>
+                <td v-else/>
+                <v-tooltip
+                    :text="n((item.mInvest !== 0 && item.mInvest !== undefined )? (item.mEuroChange ?? 0) / item.mInvest : 1, 'percent')"
+                    location="left">
+                    <template v-slot:activator="{ props }">
+                        <td v-if="(item.mPortfolio ?? 0) >= 1" :class="winLossClass((item.mEuroChange ?? 0))"
+                            v-bind="props">
+                            {{ n(item.mEuroChange ?? 0, 'currency') }}
+                        </td>
+                        <td v-else/>
+                    </template>
+                </v-tooltip>
+                <td>{{ n(item.mMin ?? 0, 'currency') }}</td>
+                <td class="font-weight-bold color-black">
+                    {{ n(item.mValue ?? 0, 'currency3') }}
+                </td>
+                <td>{{ n(item.mMax ?? 0, 'currency') }}</td>
+            </tr>
+        </template>
+    </v-data-table>
 </template>

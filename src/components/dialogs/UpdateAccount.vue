@@ -33,67 +33,67 @@ const records = useRecordsStore()
 const {items: accountItems} = storeToRefs(records.accounts)
 
 const T = Object.freeze({
-  MESSAGES: {
-    SUCCESS_UPDATE: t('messages.updateAccount.success'),
-    ERROR_ONCLICK_OK: t('messages.onClickOk')
-  },
-  STRINGS: {
-    TITLE: t('components.dialogs.updateAccount.title')
-  }
-})
+                            MESSAGES: {
+                                SUCCESS_UPDATE: t('messages.updateAccount.success'),
+                                ERROR_ONCLICK_OK: t('messages.onClickOk')
+                            },
+                            STRINGS: {
+                                TITLE: t('components.dialogs.updateAccount.title')
+                            }
+                        })
 
 const onClickOk = async (): Promise<void> => {
-  log('UPDATE_ACCOUNT : onClickOk')
-  if (!await validateForm(formRef)) return
-  if (!isConnected.value) {
-    await notice(['Database not connected'])
-    return
-  }
-  try {
-    const account: I_Account_Store = {
-      cID: activeAccountId.value,
-      cSwift: accountFormularData.swift.trim().toUpperCase(),
-      cIban: accountFormularData.iban.replace(/\s/g, ''),
-      cLogoUrl: accountFormularData.logoUrl,
-      cWithDepot: accountFormularData.withDepot
+    log('UPDATE_ACCOUNT : onClickOk')
+    if (!await validateForm(formRef)) return
+    if (!isConnected.value) {
+        await notice(['Database not connected'])
+        return
     }
-    records.accounts.update(account)
-    await update(account)
-    runtime.resetTeleport()
-    await notice([T.MESSAGES.SUCCESS_UPDATE])
-  } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-  }
+    try {
+        const account: I_Account_Store = {
+            cID: activeAccountId.value,
+            cSwift: accountFormularData.swift.trim().toUpperCase(),
+            cIban: accountFormularData.iban.replace(/\s/g, ''),
+            cLogoUrl: accountFormularData.logoUrl,
+            cWithDepot: accountFormularData.withDepot
+        }
+        records.accounts.update(account)
+        await update(account)
+        runtime.resetTeleport()
+        await notice([T.MESSAGES.SUCCESS_UPDATE])
+    } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
+    }
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onBeforeMount(() => {
-  log('UPDATE_ACCOUNT: onBeforeMount')
-  const accountIndex = records.accounts.getIndexById(activeAccountId.value)
-  if (accountIndex !== -1) {
-    const currentAccount = accountItems.value[accountIndex]
-    Object.assign(accountFormularData, {
-      id: currentAccount.cID,
-      swift: currentAccount.cSwift,
-      iban: currentAccount.cIban,
-      logoUrl: currentAccount.cLogoUrl,
-      withDepot: currentAccount.cWithDepot
-    })
-  }
+    log('UPDATE_ACCOUNT: onBeforeMount')
+    const accountIndex = records.accounts.getIndexById(activeAccountId.value)
+    if (accountIndex !== -1) {
+        const currentAccount = accountItems.value[accountIndex]
+        Object.assign(accountFormularData, {
+            id: currentAccount.cID,
+            swift: currentAccount.cSwift,
+            iban: currentAccount.cIban,
+            logoUrl: currentAccount.cLogoUrl,
+            withDepot: currentAccount.cWithDepot
+        })
+    }
 })
 
 log('--- UpdateAccount.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
-    <AccountFormular/>
-  </v-form>
+    <v-form
+        ref="formRef"
+        validate-on="submit"
+        @submit.prevent>
+        <AccountFormular/>
+    </v-form>
 </template>

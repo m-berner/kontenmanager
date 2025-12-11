@@ -5,8 +5,8 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import {computed, ref} from 'vue'
 import type {ComputedRef} from 'vue'
+import {computed, ref} from 'vue'
 
 export function useFavicon(domain: ComputedRef<string>, size = 48) {
     const error = ref(false)

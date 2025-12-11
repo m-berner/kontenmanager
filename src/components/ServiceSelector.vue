@@ -18,40 +18,40 @@ const theme = useTheme()
 const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
 
 const setService = async (service: string | null): Promise<void> => {
-  if (service !== null) {
-    theme.global.name.value = service
-    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service)
-  }
+    if (service !== null) {
+        theme.global.name.value = service
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service)
+    }
 }
 
 const serviceLabels = (item: string): string => {
-  const service = CONS.SERVICES.MAP.get(item)
-  if (service !== undefined && service?.NAME !== undefined) {
-    return service.NAME
-  } else {
-    return 'Label not found'
-  }
+    const service = CONS.SERVICES.MAP.get(item)
+    if (service !== undefined && service?.NAME !== undefined) {
+        return service.NAME
+    } else {
+        return 'Label not found'
+    }
 }
 
 onBeforeMount(async () => {
-  log('SERVICE_SELECTOR: onBeforeMounted')
-  const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
-  service.value = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
+    log('SERVICE_SELECTOR: onBeforeMounted')
+    const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
+    service.value = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
 })
 
 log('--- ServiceSelector.vue setup ---')
 </script>
 
 <template>
-  <v-radio-group
-      v-model="service"
-      column
-      @update:modelValue="setService">
-    <v-radio
-        v-for="item in [...CONS.SERVICES.MAP.keys()]"
-        :key="item"
-        :label="serviceLabels(item)"
-        :value="item"
-    />
-  </v-radio-group>
+    <v-radio-group
+        v-model="service"
+        column
+        @update:modelValue="setService">
+        <v-radio
+            v-for="item in [...CONS.SERVICES.MAP.keys()]"
+            :key="item"
+            :label="serviceLabels(item)"
+            :value="item"
+        />
+    </v-radio-group>
 </template>

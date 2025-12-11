@@ -1,6 +1,7 @@
 {
   "messages": {
     "infoTitle": "INFO",
+    "dbNotConnected": "No database connectivity!",
     "noDelete": "This company cannot be deleted. Bookings exist.",
     "restrictedImport": "AccountManager is a further development of the former StockManager. Importing StockManager data is only possible directly after installation, before any AccountManager object has been manually created.",
     "corruptStorage": "Local browser storage is corrupt. Reset to default with <CTRL + ALT + r>.",
@@ -57,6 +58,16 @@
     "deleteStock": {
       "success": "Company has been removed",
       "error": "ISIN exists already"
+    }
+  },
+  "names": {
+    "bookingTypes": {
+      "buy": "Buy stock",
+      "sell": "Sell stock",
+      "dividend": "Dividend",
+      "other": "Other",
+      "fee": "Fees",
+      "tax": "Taxes"
     }
   },
   "titleBar": {
@@ -243,7 +254,8 @@
         "taxes": "Trade taxes",
         "itemsPerPageText": "Entries per page",
         "noDataText": "No dividend received yet",
-        "year": "Year"
+        "year": "Year",
+        "allYears": "All"
       },
       "showDividend": {
         "title": "Dividend Overview",
@@ -263,16 +275,10 @@
         "notEmpty": "AccountManager objects already exist. Therefore a StockManager backup file cannot be restored!",
         "messageDelete": "All existing data will be deleted!",
         "fileLabel": "from file",
-        "tax": "Tax",
         "capitalTax": "CGT",
-        "fee": "Fee",
         "sourceTax": "Withholding Tax",
         "transactionTax": "Transaction Tax",
-        "others": "Others",
-        "soli": "Solidarity Surcharge",
-        "shareBuy": "Buy Share",
-        "shareSell": "Sell Share",
-        "dividend": "Dividend"
+        "soli": "Solidarity Surcharge"
       }
     },
     "creditDebitFieldset": {

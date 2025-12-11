@@ -33,72 +33,72 @@ const {activeId} = storeToRefs(runtime)
 const {stockFormularData, formRef} = useStockFormular()
 
 const T = Object.freeze({
-  MESSAGES: {
-    SUCCESS_UPDATE: t('messages.updateStock.success'),
-    ERROR_ONCLICK_OK: t('messages.onClickOk')
-  },
-  STRINGS: {
-    TITLE: t('components.dialogs.updateStock.title')
-  }
-})
+                            MESSAGES: {
+                                SUCCESS_UPDATE: t('messages.updateStock.success'),
+                                ERROR_ONCLICK_OK: t('messages.onClickOk')
+                            },
+                            STRINGS: {
+                                TITLE: t('components.dialogs.updateStock.title')
+                            }
+                        })
 
 const onClickOk = async (): Promise<void> => {
-  log('UPDATE_STOCK : onClickOk')
-  if (!await validateForm(formRef)) return
-  if (!isConnected.value) {
-    await notice(['Database not connected'])
-    return
-  }
-  try {
-    const stock: I_Stock_DB = {
-      cID: stockFormularData.id,
-      cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
-      cCompany: stockFormularData.company,
-      cSymbol: stockFormularData.symbol,
-      cMeetingDay: stockFormularData.meetingDay,
-      cQuarterDay: stockFormularData.quarterDay,
-      cFadeOut: stockFormularData.fadeOut ? 1 : 0,
-      cFirstPage: stockFormularData.firstPage ? 1 : 0,
-      cURL: stockFormularData.url,
-      cAccountNumberID: activeAccountId.value,
-      cAskDates: stockFormularData.askDates
+    log('UPDATE_STOCK : onClickOk')
+    if (!await validateForm(formRef)) return
+    if (!isConnected.value) {
+        await notice(['Database not connected'])
+        return
     }
-    records.stocks.update(stock)
-    await update(stock)
-    await notice([T.MESSAGES.SUCCESS_UPDATE])
-    runtime.resetTeleport()
-  } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-  }
+    try {
+        const stock: I_Stock_DB = {
+            cID: stockFormularData.id,
+            cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
+            cCompany: stockFormularData.company,
+            cSymbol: stockFormularData.symbol,
+            cMeetingDay: stockFormularData.meetingDay,
+            cQuarterDay: stockFormularData.quarterDay,
+            cFadeOut: stockFormularData.fadeOut ? 1 : 0,
+            cFirstPage: stockFormularData.firstPage ? 1 : 0,
+            cURL: stockFormularData.url,
+            cAccountNumberID: activeAccountId.value,
+            cAskDates: stockFormularData.askDates
+        }
+        records.stocks.update(stock)
+        await update(stock)
+        await notice([T.MESSAGES.SUCCESS_UPDATE])
+        runtime.resetTeleport()
+    } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
+    }
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onBeforeMount(() => {
-  log('UPDATE_STOCK_FORMULAR: onBeforeMount')
-  const currentStock = records.stocks.getItemById(activeId.value)
-  stockFormularData.id = activeId.value
-  stockFormularData.isin = currentStock.cISIN.toUpperCase().replace(/\s/g, '')
-  stockFormularData.company = currentStock.cCompany
-  stockFormularData.symbol = currentStock.cSymbol
-  stockFormularData.meetingDay = currentStock.cMeetingDay
-  stockFormularData.quarterDay = currentStock.cQuarterDay
-  stockFormularData.fadeOut = currentStock.cFadeOut === 1
-  stockFormularData.firstPage = currentStock.cFirstPage === 1
-  stockFormularData.url = currentStock.cURL
+    log('UPDATE_STOCK_FORMULAR: onBeforeMount')
+    const currentStock = records.stocks.getItemById(activeId.value)
+    stockFormularData.id = activeId.value
+    stockFormularData.isin = currentStock.cISIN.toUpperCase().replace(/\s/g, '')
+    stockFormularData.company = currentStock.cCompany
+    stockFormularData.symbol = currentStock.cSymbol
+    stockFormularData.meetingDay = currentStock.cMeetingDay
+    stockFormularData.quarterDay = currentStock.cQuarterDay
+    stockFormularData.fadeOut = currentStock.cFadeOut === 1
+    stockFormularData.firstPage = currentStock.cFirstPage === 1
+    stockFormularData.url = currentStock.cURL
 })
 
 log('--- UpdateStock.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
-    <StockFormular :isUpdate="true"/>
-  </v-form>
+    <v-form
+        ref="formRef"
+        validate-on="submit"
+        @submit.prevent>
+        <StockFormular :isUpdate="true"/>
+    </v-form>
 </template>

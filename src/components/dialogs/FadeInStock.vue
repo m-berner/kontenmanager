@@ -23,55 +23,55 @@ const runtime = useRuntimeStore()
 const records = useRecordsStore()
 
 const T = Object.freeze({
-  STRINGS: {
-    TITLE: t('components.dialogs.fadeInStock.title'),
-    SELECT_LABEL: t('components.dialogs.fadeInStock.selectLabel')
-  }
-})
+                            STRINGS: {
+                                TITLE: t('components.dialogs.fadeInStock.title'),
+                                SELECT_LABEL: t('components.dialogs.fadeInStock.selectLabel')
+                            }
+                        })
 
 const selected = ref<I_Stock_Store | null>(null)
 const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
-  log('FADE_IN_STOCK: onClickOk')
-  if (!isConnected.value) {
-    await notice(['Database not connected'])
-    return
-  }
-  if (selected.value !== null) {
-    selected.value.cFadeOut = 0
-    await update(selected.value)
-  }
-  runtime.resetTeleport()
+    log('FADE_IN_STOCK: onClickOk')
+    if (!isConnected.value) {
+        await notice(['Database not connected'])
+        return
+    }
+    if (selected.value !== null) {
+        selected.value.cFadeOut = 0
+        await update(selected.value)
+    }
+    runtime.resetTeleport()
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
 onBeforeMount(() => {
-  log('FADE_IN_STOCK: onBeforeMount')
-  selected.value = null
+    log('FADE_IN_STOCK: onBeforeMount')
+    selected.value = null
 })
 
 log('--- FadeInStock.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      v-on:submit.prevent>
-    <v-card-text class="pa-5">
-      <v-select
-          v-model="selected"
-          density="compact"
-          item-key="cID"
-          item-title="cCompany"
-          v-bind:clearable="true"
-          v-bind:items="records.stocks.passive"
-          v-bind:label="T.STRINGS.SELECT_LABEL"
-          v-bind:return-object="true"
-          variant="outlined"/>
-    </v-card-text>
-  </v-form>
+    <v-form
+        ref="formRef"
+        validate-on="submit"
+        v-on:submit.prevent>
+        <v-card-text class="pa-5">
+            <v-select
+                v-model="selected"
+                density="compact"
+                item-key="cID"
+                item-title="cCompany"
+                v-bind:clearable="true"
+                v-bind:items="records.stocks.passive"
+                v-bind:label="T.STRINGS.SELECT_LABEL"
+                v-bind:return-object="true"
+                variant="outlined"/>
+        </v-card-text>
+    </v-form>
 </template>

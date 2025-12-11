@@ -1,6 +1,7 @@
 {
   "messages": {
     "infoTitle": "INFO",
+    "dbNotConnected": "Keine Datenbank Verbindung!",
     "noDelete": "Dieses Unternehmen kann nicht gelöscht werden. Es existieren Buchungen.",
     "restrictedImport": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde.",
     "corruptStorage": "Der lokale Browser Speicher ist korrupt. Zurücksetzen zum Standard mit <STRG + ALT + r>.",
@@ -57,6 +58,16 @@
     "deleteStock": {
       "success": "Unternehmen wurde entfernt",
       "error": "Diese ISIN existiert bereits"
+    }
+  },
+  "names": {
+    "bookingTypes": {
+      "buy": "Aktienkauf",
+      "sell": "Aktienverkauf",
+      "dividend": "Dividende",
+      "other": "Sonstiges",
+      "fee": "Gebühr",
+      "tax": "Steuer"
     }
   },
   "titleBar": {
@@ -243,7 +254,8 @@
         "taxes": "Aktienhandel Steuern",
         "itemsPerPageText": "Einträge pro Seite",
         "noDataText": "Bisher keine Dividende erhalten",
-        "year": "Jahr"
+        "year": "Jahr",
+        "allYears": "Gesamt"
       },
       "showDividend": {
         "title": "Dividenden Übersicht",
@@ -263,16 +275,10 @@
         "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
         "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
         "fileLabel": "aus Datei",
-        "tax": "Steuer",
         "capitalTax": "Ertragssteuer",
-        "fee": "Gebühr",
         "sourceTax": "Quellensteuer",
         "transactionTax": "Transaktionssteuer",
-        "others": "Sonstiges",
-        "soli": "Soli",
-        "shareBuy": "Aktienkauf",
-        "shareSell": "Aktienverkauf",
-        "dividend": "Dividende"
+        "soli": "Soli"
       }
     },
     "creditDebitFieldset": {

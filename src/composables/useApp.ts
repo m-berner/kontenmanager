@@ -5,456 +5,474 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-const CONS = Object.freeze({
-    CURRENCIES: {
-        EUR: 'EUR',
-        USD: 'USD',
-        CODE: new Map([
-            ['ar', 'ARS'],
-            ['at', 'EUR'],
-            ['au', 'AUD'],
-            ['be', 'EUR'],
-            ['bg', 'BGN'],
-            ['bo', 'BOB'],
-            ['br', 'BRL'],
-            ['bz', 'BZD'],
-            ['ca', 'CAD'],
-            ['ch', 'CHF'],
-            ['cl', 'CLP'],
-            ['chs', 'CNY'],
-            ['cht', 'CNY'],
-            ['co', 'COU'],
-            ['cr', 'CRC'],
-            ['cs', 'CZK'],
-            ['cy', 'EUR'],
-            ['da', 'DKK'],
-            ['de', 'EUR'],
-            ['do', 'DOP'],
-            ['ec', 'USD'],
-            ['ee', 'EUR'],
-            ['el', 'EUR'],
-            ['es', 'EUR'],
-            ['et', 'EUR'],
-            ['fi', 'EUR'],
-            ['fr', 'EUR'],
-            ['gb', 'GBP'],
-            ['gr', 'EUR'],
-            ['gt', 'GTQ'],
-            ['hk', 'HKD'],
-            ['hn', 'HNL'],
-            ['hu', 'HUF'],
-            ['ie', 'EUR'],
-            ['in', 'INR'],
-            ['is', 'ISK'],
-            ['it', 'EUR'],
-            ['ja', 'JPY'],
-            ['jm', 'JMD'],
-            ['ko', 'KRW'],
-            ['li', 'EUR'],
-            ['lt', 'EUR'],
-            ['lu', 'EUR'],
-            ['mc', 'EUR'],
-            ['mo', 'MOP'],
-            ['mt', 'EUR'],
-            ['mx', 'MXN'],
-            ['ni', 'NIO'],
-            ['nl', 'EUR'],
-            ['no', 'NOK'],
-            ['nz', 'NZD'],
-            ['pa', 'PAB'],
-            ['pe', 'PEN'],
-            ['ph', 'PHP'],
-            ['pl', 'PLN'],
-            ['pr', 'USD'],
-            ['pt', 'EUR'],
-            ['py', 'PYG'],
-            ['ro', 'RON'],
-            ['ru', 'RUB'],
-            ['se', 'SEK'],
-            ['sg', 'SGD'],
-            ['sk', 'EUR'],
-            ['sl', 'EUR'],
-            ['sp', 'RSD'],
-            ['sv', 'USD'],
-            ['tr', 'TRY'],
-            ['tt', 'TTD'],
-            ['tw', 'TWD'],
-            ['uy', 'UYU'],
-            ['ve', 'VES'],
-            ['za', 'ZAR'],
-            ['zw', 'ZWD']
-        ])
-    },
-    COMPONENTS: {
-        TITLE_BAR: {
-            LOGO: '../assets/icon64.png'
+const CONS = Object.freeze(
+    {
+        CURRENCIES: {
+            EUR: 'EUR',
+            USD: 'USD',
+            CODE: new Map(
+                [
+                    ['ar', 'ARS'],
+                    ['at', 'EUR'],
+                    ['au', 'AUD'],
+                    ['be', 'EUR'],
+                    ['bg', 'BGN'],
+                    ['bo', 'BOB'],
+                    ['br', 'BRL'],
+                    ['bz', 'BZD'],
+                    ['ca', 'CAD'],
+                    ['ch', 'CHF'],
+                    ['cl', 'CLP'],
+                    ['chs', 'CNY'],
+                    ['cht', 'CNY'],
+                    ['co', 'COU'],
+                    ['cr', 'CRC'],
+                    ['cs', 'CZK'],
+                    ['cy', 'EUR'],
+                    ['da', 'DKK'],
+                    ['de', 'EUR'],
+                    ['do', 'DOP'],
+                    ['ec', 'USD'],
+                    ['ee', 'EUR'],
+                    ['el', 'EUR'],
+                    ['es', 'EUR'],
+                    ['et', 'EUR'],
+                    ['fi', 'EUR'],
+                    ['fr', 'EUR'],
+                    ['gb', 'GBP'],
+                    ['gr', 'EUR'],
+                    ['gt', 'GTQ'],
+                    ['hk', 'HKD'],
+                    ['hn', 'HNL'],
+                    ['hu', 'HUF'],
+                    ['ie', 'EUR'],
+                    ['in', 'INR'],
+                    ['is', 'ISK'],
+                    ['it', 'EUR'],
+                    ['ja', 'JPY'],
+                    ['jm', 'JMD'],
+                    ['ko', 'KRW'],
+                    ['li', 'EUR'],
+                    ['lt', 'EUR'],
+                    ['lu', 'EUR'],
+                    ['mc', 'EUR'],
+                    ['mo', 'MOP'],
+                    ['mt', 'EUR'],
+                    ['mx', 'MXN'],
+                    ['ni', 'NIO'],
+                    ['nl', 'EUR'],
+                    ['no', 'NOK'],
+                    ['nz', 'NZD'],
+                    ['pa', 'PAB'],
+                    ['pe', 'PEN'],
+                    ['ph', 'PHP'],
+                    ['pl', 'PLN'],
+                    ['pr', 'USD'],
+                    ['pt', 'EUR'],
+                    ['py', 'PYG'],
+                    ['ro', 'RON'],
+                    ['ru', 'RUB'],
+                    ['se', 'SEK'],
+                    ['sg', 'SGD'],
+                    ['sk', 'EUR'],
+                    ['sl', 'EUR'],
+                    ['sp', 'RSD'],
+                    ['sv', 'USD'],
+                    ['tr', 'TRY'],
+                    ['tt', 'TTD'],
+                    ['tw', 'TWD'],
+                    ['uy', 'UYU'],
+                    ['ve', 'VES'],
+                    ['za', 'ZAR'],
+                    ['zw', 'ZWD']
+                ]
+            )
         },
-        DYNAMIC_LIST: {
-            TYPES: {
-                MARKETS: Symbol.for('markets'),
-                EXCHANGES: Symbol.for('exchanges')
-            }
-        },
-        CHECKBOX_GRID: {
-            TYPES: {
-                INDEXES: Symbol.for('indexes'),
-                MATERIALS: Symbol.for('materials')
-            }
-        },
-        DIALOGS: {
-            FADE_IN_STOCK: 'FadeInStock',
-            ADD_ACCOUNT: 'AddAccount',
-            UPDATE_ACCOUNT: 'UpdateAccount',
-            DELETE_ACCOUNT: 'DeleteAccount',
-            ADD_STOCK: 'AddStock',
-            UPDATE_STOCK: 'UpdateStock',
-            DELETE_STOCK: 'DeleteStock',
-            ADD_BOOKING_TYPE: 'AddBookingType',
-            DELETE_BOOKING_TYPE: 'DeleteBookingType',
-            UPDATE_BOOKING_TYPE: 'UpdateBookingType',
-            ADD_BOOKING: 'AddBooking',
-            UPDATE_BOOKING: 'UpdateBooking',
-            DELETE_BOOKING: 'DeleteBooking',
-            EXPORT_DATABASE: 'ExportDatabase',
-            IMPORT_DATABASE: 'ImportDatabase',
-            SHOW_ACCOUNTING: 'ShowAccounting',
-            SHOW_STOCK_DIVIDEND: 'ShowDividend',
-            UPDATE_QUOTE: 'UpdateQuote',
-            DELETE_ACCOUNT_CONFIRMATION: 'DeleteAccountConfirmation',
-            SETTING: 'setting',
-            OPEN_LINK: 'ExternalLink',
-            PLACEHOLDER: {
-                ACCOUNT_LOGO_URL: 'z. B. https://www.ing.de'
-            }
-        }
-    },
-    DATE: {
-        DEFAULT: 0,
-        DEFAULT_ISO: '1970-01-01',
-        DEFAULT_YEAR: 1970,
-        MILLI_PER_DAY: 86400000,
-        MILLI_PER_MIN: 60000
-    },
-    DEFAULTS: {
-        CURRENCY: 'EUR',
-        LANG: 'de',
-        LOCALE: 'de-DE',
-        YEAR: 9999,
-        ASK_DATE_INTERVAL: 7, // days
-        BROWSER_STORAGE: {
-            ACTIVE_ACCOUNT_ID: -1,
-            BOOKINGS_PER_PAGE: 9,
-            STOCKS_PER_PAGE: 9,
-            DIVIDENDS_PER_PAGE: 9,
-            SUMS_PER_PAGE: 11,
-            SKIN: 'ocean',
-            MATERIALS: ['au', 'brent'],
-            INDEXES: ['dax', 'dow'],
-            EXCHANGES: ['EURUSD'],
-            MARKETS: ['Frankfurt', 'XETRA'],
-            SERVICE: 'wstreet',
-            PROPS: {
-                SKIN: 'sSkin',
-                SERVICE: 'sService',
-                INDEXES: 'sIndexes',
-                MARKETS: 'sMarkets',
-                MATERIALS: 'sMaterials',
-                EXCHANGES: 'sExchanges',
-                ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
-                BOOKINGS_PER_PAGE: 'sBookingsPerPage',
-                STOCKS_PER_PAGE: 'sStocksPerPage',
-                DIVIDENDS_PER_PAGE: 'sDividendsPerPage',
-                SUMS_PER_PAGE: 'sSumsPerPage'
-            }
-        },
-        LOCAL_STORAGE: {
-            PROPS: {
-                DEBUG: 'sDebug'
-            }
-        },
-        SESSION_STORAGE: {
-            EXTENSION_TAB_ID: 'sExtensionTabId',
-            HIDE_IMPORT_ALERT: 'sHideImportAlert'
-        }
-    },
-    EVENTS: {
-        ABORT: 'abort',
-        BEFOREUNLOAD: 'beforeunload',
-        CHANGE: 'change',
-        CLICK: 'click',
-        COMPLETE: 'complete',
-        DOM: 'DOMContentLoaded',
-        ERROR: 'error',
-        INPUT: 'input',
-        KEYDOWN: 'keydown',
-        LOAD: 'load',
-        FOCUS: 'focus',
-        BLUR: 'blur',
-        SUCCESS: 'success',
-        UPGRADE: 'upgradeneeded'
-    },
-    INDEXED_DB: {
-        NAME: 'kontenmanager.db',
-        STORES: {
-            ACCOUNTS: {
-                NAME: 'accounts',
-                FIELDS: {
-                    ID: 'cID',
-                    SWIFT: 'cSwift',
-                    LOGO_URL: 'cLogoUrl',
-                    IBAN: 'cIban',
-                    WITH_DEPOT: 'cWithDepot'
+        COMPONENTS: {
+            TITLE_BAR: {
+                LOGO: '../assets/icon64.png'
+            },
+            DYNAMIC_LIST: {
+                TYPES: {
+                    MARKETS: Symbol.for('markets'),
+                    EXCHANGES: Symbol.for('exchanges')
                 }
             },
-            BOOKINGS: {
-                NAME: 'bookings',
-                FIELDS: {
-                    ID: 'cID',
-                    DATE: 'cDate',
-                    EX_DATE: 'cExDate',
-                    COUNT: 'cCount',
-                    CREDIT: 'cCredit',
-                    DEBIT: 'cDebit',
-                    DESCRIPTION: 'cDescription',
-                    BOOKING_TYPE_ID: 'cBookingTypeID',
-                    ACCOUNT_NUMBER_ID: 'cAccountNumberID',
-                    STOCK_ID: 'cStockID',
-                    SOLI: 'cSoli',
-                    MARKET_PLACE: 'cMarketPlace',
-                    TAX: 'cTax',
-                    FEE: 'cFee',
-                    SOURCE_TAX: 'cSourceTax',
-                    TRANSACTION_TAX: 'cTransactionTax'
+            CHECKBOX_GRID: {
+                TYPES: {
+                    INDEXES: Symbol.for('indexes'),
+                    MATERIALS: Symbol.for('materials')
                 }
             },
-            BOOKING_TYPES: {
-                NAME: 'bookingTypes',
-                FIELDS: {
-                    ID: 'cID',
-                    NAME: 'cName',
-                    ACCOUNT_NUMBER_ID: 'cAccountNumberID'
+            DIALOGS: {
+                FADE_IN_STOCK: 'FadeInStock',
+                ADD_ACCOUNT: 'AddAccount',
+                UPDATE_ACCOUNT: 'UpdateAccount',
+                DELETE_ACCOUNT: 'DeleteAccount',
+                ADD_STOCK: 'AddStock',
+                UPDATE_STOCK: 'UpdateStock',
+                DELETE_STOCK: 'DeleteStock',
+                ADD_BOOKING_TYPE: 'AddBookingType',
+                DELETE_BOOKING_TYPE: 'DeleteBookingType',
+                UPDATE_BOOKING_TYPE: 'UpdateBookingType',
+                ADD_BOOKING: 'AddBooking',
+                UPDATE_BOOKING: 'UpdateBooking',
+                DELETE_BOOKING: 'DeleteBooking',
+                EXPORT_DATABASE: 'ExportDatabase',
+                IMPORT_DATABASE: 'ImportDatabase',
+                SHOW_ACCOUNTING: {
+                    NAME: 'ShowAccounting',
+                    ALL_YEARS_ID: 1000
                 },
-                NONE: -1,
-                BUY: 1,
-                SELL: 2,
-                DIVIDEND: 3
-            },
-            STOCKS: {
-                NAME: 'stocks',
-                FIELDS: {
-                    ID: 'cID',
-                    ISIN: 'cISIN',
-                    SYMBOL: 'cSymbol',
-                    FADE_OUT: 'cFadeOut',
-                    FIRST_PAGE: 'cFirstPage',
-                    URL: 'cURL',
-                    MEETING_DAY: 'cMeetingDay',
-                    QUARTER_DAY: 'cQuarterDay',
-                    COMPANY: 'cCompany',
-                    ACCOUNT_NUMBER_ID: 'cAccountNumberID'
+                SHOW_STOCK_DIVIDEND: 'ShowDividend',
+                UPDATE_QUOTE: 'UpdateQuote',
+                DELETE_ACCOUNT_CONFIRMATION: 'DeleteAccountConfirmation',
+                SETTING: 'setting',
+                OPEN_LINK: 'ExternalLink',
+                PLACEHOLDER: {
+                    ACCOUNT_LOGO_URL: 'z. B. https://www.ing.de'
                 }
             }
         },
-        IMPORT_MIN_VERSION: 25,
-        CURRENT_VERSION: 26
-    },
-    PAGES: {
-        BACKGROUND: 'background.html',
-        APP: 'app.html',
-        OPTIONS: 'options.html',
-        INDEX: 'pages/app.html'
-    },
-    ROUTES: {
-        HOME: '/',
-        HELP: '/help',
-        PRIVACY: '/privacy',
-        COMPANY: '/company'
-    },
-    SERVICES: {
-        MAP: new Map<string, Record<string, string>>([
-            ['goyax', {
-                NAME: 'Goyax',
-                HOME: 'https://www.goyax.de/',
-                QUOTE: 'https://www.goyax.de/aktien/'
-            }],
-            ['fnet', {
-                NAME: 'Finanzen.Net',
-                HOME: 'https://www.finanzen.net/aktienkurse/',
-                QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search=',
+        DATE: {
+            DEFAULT: 0,
+            DEFAULT_ISO: '1970-01-01',
+            DEFAULT_YEAR: 1970,
+            MILLI_PER_DAY: 86400000,
+            MILLI_PER_MIN: 60000
+        },
+        DEFAULTS: {
+            CURRENCY: 'EUR',
+            LANG: 'de',
+            LOCALE: 'de-DE',
+            YEAR: 9999,
+            ASK_DATE_INTERVAL: 7, // days
+            BROWSER_STORAGE: {
+                ACTIVE_ACCOUNT_ID: -1,
+                BOOKINGS_PER_PAGE: 9,
+                STOCKS_PER_PAGE: 9,
+                DIVIDENDS_PER_PAGE: 9,
+                SUMS_PER_PAGE: 11,
+                SKIN: 'ocean',
+                MATERIALS: ['au', 'brent'],
+                INDEXES: ['dax', 'dow'],
+                EXCHANGES: ['EURUSD'],
+                MARKETS: ['Frankfurt', 'XETRA'],
+                SERVICE: 'wstreet',
+                PROPS: {
+                    SKIN: 'sSkin',
+                    SERVICE: 'sService',
+                    INDEXES: 'sIndexes',
+                    MARKETS: 'sMarkets',
+                    MATERIALS: 'sMaterials',
+                    EXCHANGES: 'sExchanges',
+                    ACTIVE_ACCOUNT_ID: 'sActiveAccountId',
+                    BOOKINGS_PER_PAGE: 'sBookingsPerPage',
+                    STOCKS_PER_PAGE: 'sStocksPerPage',
+                    DIVIDENDS_PER_PAGE: 'sDividendsPerPage',
+                    SUMS_PER_PAGE: 'sSumsPerPage'
+                }
+            },
+            LOCAL_STORAGE: {
+                PROPS: {
+                    DEBUG: 'sDebug'
+                }
+            },
+            SESSION_STORAGE: {
+                EXTENSION_TAB_ID: 'sExtensionTabId',
+                HIDE_IMPORT_ALERT: 'sHideImportAlert'
+            }
+        },
+        EVENTS: {
+            ABORT: 'abort',
+            BEFOREUNLOAD: 'beforeunload',
+            CHANGE: 'change',
+            CLICK: 'click',
+            COMPLETE: 'complete',
+            DOM: 'DOMContentLoaded',
+            ERROR: 'error',
+            INPUT: 'input',
+            KEYDOWN: 'keydown',
+            LOAD: 'load',
+            FOCUS: 'focus',
+            BLUR: 'blur',
+            SUCCESS: 'success',
+            UPGRADE: 'upgradeneeded'
+        },
+        INDEXED_DB: {
+            NAME: 'kontenmanager.db',
+            STORES: {
+                ACCOUNTS: {
+                    NAME: 'accounts',
+                    FIELDS: {
+                        ID: 'cID',
+                        SWIFT: 'cSwift',
+                        LOGO_URL: 'cLogoUrl',
+                        IBAN: 'cIban',
+                        WITH_DEPOT: 'cWithDepot'
+                    }
+                },
+                BOOKINGS: {
+                    NAME: 'bookings',
+                    FIELDS: {
+                        ID: 'cID',
+                        DATE: 'cDate',
+                        EX_DATE: 'cExDate',
+                        COUNT: 'cCount',
+                        CREDIT: 'cCredit',
+                        DEBIT: 'cDebit',
+                        DESCRIPTION: 'cDescription',
+                        BOOKING_TYPE_ID: 'cBookingTypeID',
+                        ACCOUNT_NUMBER_ID: 'cAccountNumberID',
+                        STOCK_ID: 'cStockID',
+                        SOLI: 'cSoli',
+                        MARKET_PLACE: 'cMarketPlace',
+                        TAX: 'cTax',
+                        FEE: 'cFee',
+                        SOURCE_TAX: 'cSourceTax',
+                        TRANSACTION_TAX: 'cTransactionTax'
+                    }
+                },
+                BOOKING_TYPES: {
+                    NAME: 'bookingTypes',
+                    FIELDS: {
+                        ID: 'cID',
+                        NAME: 'cName',
+                        ACCOUNT_NUMBER_ID: 'cAccountNumberID'
+                    },
+                    NONE: -1,
+                    BUY: 1,
+                    SELL: 2,
+                    DIVIDEND: 3,
+                    CREDIT: 4,
+                    DEBIT: 5,
+                    OTHER: 4,
+                    FEE: 5,
+                    TAX: 6
+                },
+                STOCKS: {
+                    NAME: 'stocks',
+                    FIELDS: {
+                        ID: 'cID',
+                        ISIN: 'cISIN',
+                        SYMBOL: 'cSymbol',
+                        FADE_OUT: 'cFadeOut',
+                        FIRST_PAGE: 'cFirstPage',
+                        URL: 'cURL',
+                        MEETING_DAY: 'cMeetingDay',
+                        QUARTER_DAY: 'cQuarterDay',
+                        COMPANY: 'cCompany',
+                        ACCOUNT_NUMBER_ID: 'cAccountNumberID'
+                    }
+                }
+            },
+            IMPORT_MIN_VERSION: 25,
+            CURRENT_VERSION: 26,
+            STOCKMANAGER_RESTORE_ACCOUNT_ID: 1
+        },
+        PAGES: {
+            BACKGROUND: 'background.html',
+            APP: 'app.html',
+            OPTIONS: 'options.html',
+            INDEX: 'pages/app.html'
+        },
+        ROUTES: {
+            HOME: '/',
+            HELP: '/help',
+            PRIVACY: '/privacy',
+            COMPANY: '/company'
+        },
+        SERVICES: {
+            MAP: new Map<string, { [p: string]: string }>(
+                [
+                    ['goyax', {
+                        NAME: 'Goyax',
+                        HOME: 'https://www.goyax.de/',
+                        QUOTE: 'https://www.goyax.de/aktien/'
+                    }],
+                    ['fnet', {
+                        NAME: 'Finanzen.Net',
+                        HOME: 'https://www.finanzen.net/aktienkurse/',
+                        QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search='
+                    }],
+                    ['wstreet', {
+                        NAME: 'Wallstreet-Online',
+                        HOME: 'https://www.wallstreet-online.de',
+                        QUOTE:
+                            'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/'
+                    }],
+                    ['acheck', {
+                        NAME: 'Aktien Check',
+                        HOME: 'https://m.aktiencheck.de/',
+                        QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search='
+                    }],
+                    ['ard', {
+                        NAME: 'ARD',
+                        HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
+                        QUOTE:
+                            'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff='
+                    }],
+                    ['tgate', {
+                        NAME: 'Tradegate',
+                        HOME: 'https://www.tradegate.de/',
+                        QUOTE: 'https://www.tradegate.de/orderbuch.php?isin='
+                    }]
+                ]
+            ),
+            FNET: {
                 INDEXES: 'https://www.finanzen.net/indizes/',
                 DATES: 'https://www.finanzen.net/termine/',
                 MATERIALS: 'https://www.finanzen.net/rohstoffe/',
                 ONLINE_TEST: 'https://www.finanzen.net',
-                GM: 'Hauptversammlung',
-                QF: 'Quartalszahlen'
-            }],
-            ['wstreet', {
-                NAME: 'Wallstreet-Online',
-                HOME: 'https://www.wallstreet-online.de',
-                QUOTE:
-                    'https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/'
-            }],
-            ['acheck', {
-                NAME: 'Aktien Check',
-                HOME: 'https://m.aktiencheck.de/',
-                QUOTE: 'https://m.aktiencheck.de/quotes/suche/?search='
-            }],
-            ['ard', {
-                NAME: 'ARD',
-                HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
-                QUOTE:
-                    'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff='
-            }]
-        ]),
-        TGATE: {
-            NAME: 'Tradegate', // changes list, new stock
-            HOME: 'https://www.tradegate.de/',
-            QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
-            CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
-            CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
-            CHS: [
-                'DE000A1EXRV0',
-                'DE000A1EXRY4',
-                'DE000A1EXRW8',
-                'DE000A1EXRX6',
-                'EU0009658145',
-                'DE000A0SNK21',
-                'US0000000002'
-            ],
-            CHB: [
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '7',
-                '8',
-                '9',
-                'A',
-                'B',
-                'C',
-                'D',
-                'E',
-                'F',
-                'G',
-                'H',
-                'I',
-                'J',
-                'K',
-                'L',
-                'M',
-                'N',
-                'O',
-                'P',
-                'Q',
-                'R',
-                'S',
-                'T',
-                'U',
-                'V',
-                'W',
-                'X',
-                'Y',
-                'Z',
-                'Ö'
-            ],
-            CHANGES: {SMALL: 34, BIG: 41}
-        },
-        FX: {
-            NAME: 'fx-rate',
-            HOME: 'https://fx-rate.net/qwsaq',
-            QUOTE: 'https://fx-rate.net/calculator/?c_input='
-        }
-    },
-    SETTINGS: {
-        ITEMS_PER_PAGE_OPTIONS: [
-            {
-                value: 5,
-                title: '5'
+                SEARCH: 'https://www.finanzen.net/suchergebnis.asp?_search='
             },
-            {
-                value: 7,
-                title: '7'
+            TGATE: {
+                CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
+                CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
+                CHS: [
+                    'DE000A1EXRV0',
+                    'DE000A1EXRY4',
+                    'DE000A1EXRW8',
+                    'DE000A1EXRX6',
+                    'EU0009658145',
+                    'DE000A0SNK21',
+                    'US0000000002'
+                ],
+                CHB: [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '7',
+                    '8',
+                    '9',
+                    'A',
+                    'B',
+                    'C',
+                    'D',
+                    'E',
+                    'F',
+                    'G',
+                    'H',
+                    'I',
+                    'J',
+                    'K',
+                    'L',
+                    'M',
+                    'N',
+                    'O',
+                    'P',
+                    'Q',
+                    'R',
+                    'S',
+                    'T',
+                    'U',
+                    'V',
+                    'W',
+                    'X',
+                    'Y',
+                    'Z',
+                    'Ö'
+                ],
+                CHANGES: {SMALL: 34, BIG: 41}
             },
-            {
-                value: 9,
-                title: '9'
-            },
-            {
-                value: 11,
-                title: '11'
+            FX: {
+                NAME: 'fx-rate',
+                HOME: 'https://fx-rate.net/qwsaq',
+                QUOTE: 'https://fx-rate.net/calculator/?c_input='
             }
-            // {
-            //   value: 1,
-            //   title: 'Alle'
-            // }
-        ],
-        INDEXES: new Map<string, string>([
-            ['dax', 'DAX'],
-            ['dow', 'Dow Jones'],
-            ['nasdaq', 'NASDAQ Comp.'],
-            ['nikkei', 'NIKKEI 225'],
-            ['hang', 'Hang Seng'],
-            ['ibex', 'IBEX 35'],
-            ['straits', 'Straits Times'],
-            ['asx', 'Australia All Ordinaries'],
-            ['rts', 'RTS'],
-            ['bovespa', 'BOVESPA'],
-            ['sensex', 'SENSEX'],
-            ['sci', 'Shanghai Composite'],
-            ['ftse', 'FTSE 100'],
-            ['smi', 'SMI'],
-            ['cac', 'CAC 40'],
-            ['stoxx', 'Euro Stoxx 50'],
-            ['tsx', 'S&P/TSX'],
-            ['sp', 'S&P 500']
-        ]),
-        MATERIALS: new Map<string, string>([
-            ['au', 'Goldpreis'],
-            ['ag', 'Silberpreis'],
-            ['brent', 'Ölpreis (Brent)'],
-            ['wti', 'Ölpreis (WTI)'],
-            ['cu', 'Kupferpreis'],
-            ['pt', 'Platinpreis'],
-            ['al', 'Aluminiumpreis'],
-            ['ni', 'Nickelpreis'],
-            ['sn', 'Zinnpreis'],
-            ['pb', 'Bleipreis'],
-            ['pd', 'Palladiumpreis']
-        ])
-    },
-    STATES: {
-        SRV: 500,
-        SUCCESS: 200
-    },
-    SYSTEM: {
-        COPYRIGHT: `2025-${new Date().getFullYear()} Martin Berner`,
-        MAILTO: 'mailto:kontenmanager@gmx.de',
-        HELP_URL: 'https://kontenmanager8.wixsite.com/kontenmanager',
-        HTML_ENTITY:
-            '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
-        KEYS: {
-            ENTER: 'Enter',
-            TAB: 'Tab',
-            T: 'T',
-            V: 'V',
-            Z: 'Z'
         },
-        ERRORS: {
-            CURR: 'Missing current record!',
-            ERR: 'System error!',
-            INVALID: 'Invalid Range!',
-            NO_CASE: 'Missing case!',
-            NO_DEL: 'Deletion off memory failed!',
-            REQ: 'Request failed!',
-            SRV: 'Remote Server error!',
-            WRONG_PARAM: 'Wrong parameter!',
-            SEND: 'Send message failed!',
-            PORT: 'Message port is missing!'
+        SETTINGS: {
+            ITEMS_PER_PAGE_OPTIONS: [
+                {
+                    value: 5,
+                    title: '5'
+                },
+                {
+                    value: 7,
+                    title: '7'
+                },
+                {
+                    value: 9,
+                    title: '9'
+                },
+                {
+                    value: 11,
+                    title: '11'
+                }
+            ],
+            INDEXES: new Map<string, string>(
+                [
+                    ['dax', 'DAX'],
+                    ['dow', 'Dow Jones'],
+                    ['nasdaq', 'NASDAQ Comp.'],
+                    ['nikkei', 'NIKKEI 225'],
+                    ['hang', 'Hang Seng'],
+                    ['ibex', 'IBEX 35'],
+                    ['straits', 'Straits Times'],
+                    ['asx', 'Australia All Ordinaries'],
+                    ['rts', 'RTS'],
+                    ['bovespa', 'BOVESPA'],
+                    ['sensex', 'SENSEX'],
+                    ['sci', 'Shanghai Composite'],
+                    ['ftse', 'FTSE 100'],
+                    ['smi', 'SMI'],
+                    ['cac', 'CAC 40'],
+                    ['stoxx', 'Euro Stoxx 50'],
+                    ['tsx', 'S&P/TSX'],
+                    ['sp', 'S&P 500']
+                ]
+            ),
+            MATERIALS: new Map<string, string>(
+                [
+                    ['au', 'Goldpreis'],
+                    ['ag', 'Silberpreis'],
+                    ['brent', 'Ölpreis (Brent)'],
+                    ['wti', 'Ölpreis (WTI)'],
+                    ['cu', 'Kupferpreis'],
+                    ['pt', 'Platinpreis'],
+                    ['al', 'Aluminiumpreis'],
+                    ['ni', 'Nickelpreis'],
+                    ['sn', 'Zinnpreis'],
+                    ['pb', 'Bleipreis'],
+                    ['pd', 'Palladiumpreis']
+                ]
+            )
         },
-        ONCE: {once: true}
+        STATES: {
+            SRV: 500,
+            SUCCESS: 200
+        },
+        SYSTEM: {
+            COPYRIGHT: `2025-${new Date().getFullYear()} Martin Berner`,
+            MAILTO: 'mailto:kontenmanager@gmx.de',
+            HELP_URL: 'https://kontenmanager8.wixsite.com/kontenmanager',
+            HTML_ENTITY:
+                '(&auml|&Auml;|&ouml;|&Ouml;|&uuml;|&Uuml;|&amp;|&eacute;|&Eacute;|&ecirc;|&Ecirc;|&oacute;|&Oacute;|&aelig;|&Aelig;)',
+            KEYS: {
+                ENTER: 'Enter',
+                TAB: 'Tab',
+                T: 'T',
+                V: 'V',
+                Z: 'Z'
+            },
+            ERRORS: {
+                CURR: 'Missing current record!',
+                ERR: 'System error!',
+                INVALID: 'Invalid Range!',
+                NO_CASE: 'Missing case!',
+                NO_DEL: 'Deletion off memory failed!',
+                REQ: 'Request failed!',
+                SRV: 'Remote Server error!',
+                WRONG_PARAM: 'Wrong parameter!',
+                SEND: 'Send message failed!',
+                PORT: 'Message port is missing!'
+            },
+            ONCE: {once: true}
+        }
     }
-})
+)
 
 export function useApp() {
     function utcDate(iso: string): Date {

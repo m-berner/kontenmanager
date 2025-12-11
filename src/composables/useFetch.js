@@ -3,19 +3,21 @@ import { useBrowser } from '@/composables/useBrowser';
 const { CONS, log, mean, toNumber } = useApp();
 const { notice, getStorage } = useBrowser();
 export function useFetch() {
+    async function _fetchWithRetry(url) {
+        const response = await fetch(url);
+        if (!response.ok || response.status >= CONS.STATES.SRV) {
+            throw new Error(`Fetch failed: ${response.statusText}`);
+        }
+        return response;
+    }
+    async function _parseHTML(text) {
+        return new DOMParser().parseFromString(text, 'text/html');
+    }
     async function fetchIsOk() {
         log('USE_FETCH: fetchIsOk');
         return new Promise(async (resolve) => {
-            const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.ONLINE_TEST ?? '');
-            if (!firstResponse.ok ||
-                firstResponse.status >= CONS.STATES.SRV ||
-                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-                await notice(['fetchIsOk: No response']);
-                resolve(false);
-            }
-            else {
-                resolve(true);
-            }
+            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.ONLINE_TEST);
+            resolve(firstResponse.ok);
         });
     }
     async function fetchCompanyData(isin) {
@@ -24,7 +26,7 @@ export function useFetch() {
             let company = '';
             let child;
             let symbol;
-            const service = CONS.SERVICES.TGATE;
+            const service = CONS.SERVICES.MAP.get('tgate');
             let tables;
             let firstResponse;
             let result = {
@@ -32,27 +34,12 @@ export function useFetch() {
                 symbol: ''
             };
             if (service !== undefined) {
-                firstResponse = await fetch(service.QUOTE + isin);
-                if (firstResponse.url.length === 0 ||
-                    !firstResponse.ok ||
-                    firstResponse.status >= CONS.STATES.SRV ||
-                    (firstResponse.status > 0 &&
-                        firstResponse.status < CONS.STATES.SUCCESS)) {
-                    await notice(['First request failed']);
-                    reject('First request failed');
-                }
-                else {
-                    const secondResponse = await fetch(firstResponse.url);
-                    if (!secondResponse.ok ||
-                        secondResponse.status >= CONS.STATES.SRV ||
-                        (secondResponse.status > 0 &&
-                            secondResponse.status < CONS.STATES.SUCCESS)) {
-                        await notice(['Second request failed']);
-                        reject('Second request failed');
-                    }
-                    else {
+                firstResponse = await _fetchWithRetry(service.QUOTE + isin);
+                if (firstResponse.ok) {
+                    const secondResponse = await _fetchWithRetry(firstResponse.url);
+                    if (secondResponse.ok) {
                         const secondResponseText = await secondResponse.text();
-                        sDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                        sDocument = await _parseHTML(secondResponseText);
                         tables = sDocument.querySelectorAll('table > tbody tr');
                         child = sDocument?.querySelector('#col1_content')?.childNodes[1];
                         company =
@@ -70,7 +57,9 @@ export function useFetch() {
                             resolve(result);
                         }
                         else {
-                            reject('Unexpected error occurred');
+                            const error = new Error(`Request failed: ${secondResponse.statusText}`);
+                            await notice([error.message]);
+                            reject(error);
                         }
                     }
                 }
@@ -84,10 +73,10 @@ export function useFetch() {
             const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE];
             const _fnet = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.value);
-                    const secondResponse = await fetch(firstResponse.url);
+                    const firstResponse = await _fetchWithRetry(urlObj.value);
+                    const secondResponse = await _fetchWithRetry(firstResponse.url);
                     const secondResponseText = await secondResponse.text();
-                    const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                    const onlineDocument = await _parseHTML(secondResponseText);
                     const onlineNodes = onlineDocument.querySelectorAll('#snapshot-value-fst-current-0 > span');
                     const onlineArticleNodes = onlineDocument.querySelectorAll('main div[class=accordion__content]');
                     let onlineMin = '0';
@@ -122,9 +111,9 @@ export function useFetch() {
             };
             const _ard = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.value);
+                    const firstResponse = await _fetchWithRetry(urlObj.value);
                     const firstResponseText = await firstResponse.text();
-                    const firstResponseDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+                    const firstResponseDocument = await _parseHTML(firstResponseText);
                     const firstResponseRows = firstResponseDocument.querySelectorAll('#desktopSearchResult > table > tbody > tr');
                     if (firstResponseRows.length > 0) {
                         const url = firstResponseRows[0].getAttribute('onclick') ?? '';
@@ -159,12 +148,12 @@ export function useFetch() {
             };
             const _wstreet = async (urls, homeUrl) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.value);
+                    const firstResponse = await _fetchWithRetry(urlObj.value);
                     const firstResponseJson = await firstResponse.json();
                     const url2 = homeUrl + firstResponseJson.result[0].link;
                     const secondResponse = await fetch(url2);
                     const secondResponseText = await secondResponse.text();
-                    const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                    const onlineDocument = await _parseHTML(secondResponseText);
                     const onlineRates = onlineDocument.querySelectorAll('div.c2 table');
                     const onlineMinMax = onlineDocument.querySelectorAll('div.fundamental > div > div.float-start');
                     let onlineCurrency = '';
@@ -191,10 +180,10 @@ export function useFetch() {
             };
             const _goyax = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.value);
-                    const secondResponse = await fetch(firstResponse.url);
+                    const firstResponse = await _fetchWithRetry(urlObj.value);
+                    const secondResponse = await _fetchWithRetry(firstResponse.url);
                     const secondResponseText = await secondResponse.text();
-                    const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                    const onlineDocument = await _parseHTML(secondResponseText);
                     const onlineNodes = onlineDocument.querySelectorAll('div#instrument-ueberblick > div');
                     const onlineRateNodes = onlineNodes[1].querySelectorAll('ul.list-rows');
                     const onlineRateAll = onlineRateNodes[1].querySelectorAll('li')[3].textContent ?? '0';
@@ -219,11 +208,11 @@ export function useFetch() {
             };
             const _acheck = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.value);
                     let onlineCurrency = '';
-                    const secondResponse = await fetch(firstResponse.url);
+                    const firstResponse = await _fetchWithRetry(urlObj.value);
+                    const secondResponse = await _fetchWithRetry(firstResponse.url);
                     const secondResponseText = await secondResponse.text();
-                    const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                    const onlineDocument = await _parseHTML(secondResponseText);
                     const onlineTables = onlineDocument.querySelectorAll('#content table');
                     if (onlineTables.length > 1) {
                         const onlineRate = onlineTables[0]
@@ -267,11 +256,11 @@ export function useFetch() {
             };
             const _tgate = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await fetch(urlObj.value);
+                    const firstResponse = await _fetchWithRetry(urlObj.value);
                     const onlineCurrency = 'EUR';
                     const onlineMax = '0';
                     const onlineMin = '0';
-                    const onlineDocument = new DOMParser().parseFromString(await firstResponse.text(), 'text/html');
+                    const onlineDocument = await _parseHTML(await firstResponse.text());
                     const resultask = onlineDocument.querySelector('#ask') !== null
                         ? onlineDocument.querySelector('#ask')?.textContent
                         : '0';
@@ -305,7 +294,7 @@ export function useFetch() {
                                 resolve(await _wstreet(urls, service.HOME));
                             }
                             else {
-                                reject('Undefined service constant!');
+                                reject(new Error('Unexpected error occurred'));
                             }
                             break;
                         case 'goyax':
@@ -336,7 +325,7 @@ export function useFetch() {
                 }
             }
             else {
-                reject('System Error');
+                reject(new Error('System Error'));
             }
             resolve(await _select(urls));
         });
@@ -345,12 +334,10 @@ export function useFetch() {
         log('USE_FETCH: fetchDailyChangesData');
         let valuestr;
         let company;
-        let sDocument;
-        let trCollection;
-        let url = `${CONS.SERVICES.TGATE.CHB_URL} ?? ''${table}`;
+        let url = `${CONS.SERVICES.TGATE.CHB_URL}${table}`;
         let selector = '#kursliste_abc > tr';
         if (mode === CONS.SERVICES.TGATE.CHANGES.SMALL) {
-            url = `${CONS.SERVICES.TGATE.CHS_URL} ?? ''${table}`;
+            url = `${CONS.SERVICES.TGATE.CHS_URL}${table}`;
             selector = '#kursliste_daten > tr';
         }
         const convertHTMLEntities = (str) => {
@@ -390,29 +377,21 @@ export function useFetch() {
                 stringChange: ''
             }
         };
-        const firstResponse = await fetch(url);
+        const firstResponse = await _fetchWithRetry(url);
         const _changes = [];
-        if (firstResponse.url.length === 0 ||
-            !firstResponse.ok ||
-            firstResponse.status >= CONS.STATES.SRV ||
-            (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-            await notice(['Request failed']);
-        }
-        else {
-            const firstResponseText = await firstResponse.text();
-            sDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
-            trCollection = sDocument.querySelectorAll(selector);
-            for (let i = 0; i < trCollection.length; i++) {
-                valuestr = trCollection[i].childNodes[11].textContent ?? '';
-                company = convertHTMLEntities(trCollection[i].childNodes[1].textContent ?? '').replace('<wbr>', '');
-                entry.key = company.toUpperCase();
-                entry.value = {
-                    percentChange: valuestr.replace(/\t/g, ''),
-                    change: toNumber(valuestr),
-                    stringChange: toNumber(valuestr).toString()
-                };
-                _changes.push({ ...entry });
-            }
+        const firstResponseText = await firstResponse.text();
+        const sDocument = await _parseHTML(firstResponseText);
+        const trCollection = sDocument.querySelectorAll(selector);
+        for (let i = 0; i < trCollection.length; i++) {
+            valuestr = trCollection[i].childNodes[11].textContent ?? '';
+            company = convertHTMLEntities(trCollection[i].childNodes[1].textContent ?? '').replace('<wbr>', '');
+            entry.key = company.toUpperCase();
+            entry.value = {
+                percentChange: valuestr.replace(/\t/g, ''),
+                change: toNumber(valuestr),
+                stringChange: toNumber(valuestr).toString()
+            };
+            _changes.push({ ...entry });
         }
         return _changes;
     }
@@ -427,19 +406,12 @@ export function useFetch() {
                 throw new Error('Undefined service constant!');
             }
         };
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const result = [];
             for (let i = 0; i < exchangeCodes.length; i++) {
-                const firstResponse = await fetch(fExUrl(exchangeCodes[i]));
-                if (!firstResponse.ok ||
-                    firstResponse.status >= CONS.STATES.SRV ||
-                    (firstResponse.status > 0 &&
-                        firstResponse.status < CONS.STATES.SUCCESS)) {
-                    await notice(['fetchExhangesData: firstResponse failed']);
-                    reject('System Error');
-                }
+                const firstResponse = await _fetchWithRetry(fExUrl(exchangeCodes[i]));
                 const firstResponseText = await firstResponse.text();
-                const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+                const resultDocument = await _parseHTML(firstResponseText);
                 const resultTr = resultDocument.querySelector('form#formcalculator.formcalculator > div');
                 if (resultTr !== undefined && resultTr !== null) {
                     const resultString = resultTr.getAttribute('data-rate');
@@ -454,17 +426,11 @@ export function useFetch() {
     }
     async function fetchMaterialData() {
         log('USE_FETCH: fetchMaterialData');
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const materials = [];
-            const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.MATERIALS ?? '');
-            if (!firstResponse.ok ||
-                firstResponse.status >= CONS.STATES.SRV ||
-                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-                await notice(['fetchMaterialData: firstResponse failed']);
-                reject('System error');
-            }
+            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.MATERIALS);
             const firstResponseText = await firstResponse.text();
-            const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+            const resultDocument = await _parseHTML(firstResponseText);
             const resultTr = resultDocument.querySelectorAll('#commodity_prices > table > tbody tr');
             for (let i = 0; i < resultTr.length; i++) {
                 const material = resultTr[i].children[0].textContent ?? '';
@@ -482,18 +448,12 @@ export function useFetch() {
     }
     async function fetchIndexData() {
         log('USE_FETCH: fetchIndexData');
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const indexes = [];
             const indexesKeys = CONS.SETTINGS.INDEXES.keys();
-            const firstResponse = await fetch(CONS.SERVICES.MAP.get('fnet')?.INDEXES ?? '');
-            if (!firstResponse.ok ||
-                firstResponse.status >= CONS.STATES.SRV ||
-                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-                await notice(['fetchIndexData: firstResponse failed']);
-                reject(firstResponse.statusText);
-            }
+            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.INDEXES);
             const firstResponseText = await firstResponse.text();
-            const resultDocument = new DOMParser().parseFromString(firstResponseText, 'text/html');
+            const resultDocument = await _parseHTML(firstResponseText);
             const resultTr = resultDocument.querySelectorAll('.index-world-map a');
             indexesKeys.forEach((property) => {
                 const indexValue = CONS.SETTINGS.INDEXES.get(property);
@@ -520,27 +480,15 @@ export function useFetch() {
             const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01';
             return new Date(`${year}-${month}-${day}`).getTime();
         };
-        return obj.map(async (entry) => {
-            const firstResponse = await fetch(`https://www.finanzen.net/suchergebnis.asp?_search=${entry.value}`);
-            if (firstResponse.url.length === 0 ||
-                !firstResponse.ok ||
-                firstResponse.status >= CONS.STATES.SRV ||
-                (firstResponse.status > 0 && firstResponse.status < CONS.STATES.SUCCESS)) {
-                log('USE_FETCH: fetchDatesData: First request failed', { error: 'System' });
-            }
-            else {
+        const promises = obj.map(async (entry) => {
+            const firstResponse = await _fetchWithRetry(`${CONS.SERVICES.FNET.SEARCH}${entry.value}`);
+            if (firstResponse.ok) {
                 const atoms = firstResponse.url.split('/');
                 const stockName = atoms[atoms.length - 1].replace('-aktie', '');
-                const secondResponse = await fetch(`https://www.finanzen.net/termine/${stockName}`);
-                if (!secondResponse.ok ||
-                    secondResponse.status >= CONS.STATES.SRV ||
-                    (secondResponse.status > 0 &&
-                        secondResponse.status < CONS.STATES.SUCCESS)) {
-                    log('USE_FETCH: fetchDatesData: Second request failed');
-                }
-                else {
+                const secondResponse = await _fetchWithRetry(`${CONS.SERVICES.FNET.DATES}${stockName}`);
+                if (secondResponse.ok) {
                     const secondResponseText = await secondResponse.text();
-                    const qfgmDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
+                    const qfgmDocument = await _parseHTML(secondResponseText);
                     const tables = qfgmDocument.querySelectorAll('.table');
                     const rows = tables[1].querySelectorAll('tr');
                     let stopGm = false;
@@ -577,6 +525,7 @@ export function useFetch() {
             }
             return { key: entry.key, value: gmqf };
         });
+        return Promise.all(promises);
     }
     return {
         fetchCompanyData,

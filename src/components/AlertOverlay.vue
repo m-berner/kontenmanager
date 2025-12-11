@@ -17,33 +17,33 @@ const {currentAlert, showOverlay, alertMessage, alertTitle, alertType, pendingCo
 const {dismissAlert} = alertStore
 
 onMounted(async () => {
-  log('ALERT_OVERLAY: onMounted')
+    log('ALERT_OVERLAY: onMounted')
 })
 
 log('--- AlertOverlay.vue setup ---')
 </script>
 
 <template>
-  <v-overlay
-      :model-value="showOverlay"
-      class="align-center justify-center"
-      persistent>
-    <v-card
-        class="mx-auto"
-        max-width="500">
-      <v-card-text class="pa-6">
-        <v-alert
-            :title="alertTitle"
-            :type="alertType"
-            closable
-            variant="tonal"
-            @click:close="dismissAlert(currentAlert?.id)">
-          {{ alertMessage }}
-        </v-alert>
-      </v-card-text>
-      <v-card-text v-if="pendingCount > 0" class="text-center text-caption pb-4">
-        {{ pendingCount }} more alert{{ pendingCount !== 1 ? 's' : '' }} pending
-      </v-card-text>
-    </v-card>
-  </v-overlay>
+    <v-overlay
+        :model-value="showOverlay"
+        class="align-center justify-center"
+        persistent>
+        <v-card
+            class="mx-auto"
+            max-width="500">
+            <v-card-text class="pa-6">
+                <v-alert
+                    :title="alertTitle"
+                    :type="alertType"
+                    closable
+                    variant="tonal"
+                    @click:close="dismissAlert(currentAlert?.id)">
+                    {{ alertMessage }}
+                </v-alert>
+            </v-card-text>
+            <v-card-text v-if="pendingCount > 0" class="text-center text-caption pb-4">
+                {{ pendingCount }} more alert{{ pendingCount !== 1 ? 's' : '' }} pending
+            </v-card-text>
+        </v-card>
+    </v-overlay>
 </template>

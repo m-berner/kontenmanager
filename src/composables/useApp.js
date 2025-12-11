@@ -110,7 +110,10 @@ const CONS = Object.freeze({
             DELETE_BOOKING: 'DeleteBooking',
             EXPORT_DATABASE: 'ExportDatabase',
             IMPORT_DATABASE: 'ImportDatabase',
-            SHOW_ACCOUNTING: 'ShowAccounting',
+            SHOW_ACCOUNTING: {
+                NAME: 'ShowAccounting',
+                ALL_YEARS_ID: 1000
+            },
             SHOW_STOCK_DIVIDEND: 'ShowDividend',
             UPDATE_QUOTE: 'UpdateQuote',
             DELETE_ACCOUNT_CONFIRMATION: 'DeleteAccountConfirmation',
@@ -230,7 +233,12 @@ const CONS = Object.freeze({
                 NONE: -1,
                 BUY: 1,
                 SELL: 2,
-                DIVIDEND: 3
+                DIVIDEND: 3,
+                CREDIT: 4,
+                DEBIT: 5,
+                OTHER: 4,
+                FEE: 5,
+                TAX: 6
             },
             STOCKS: {
                 NAME: 'stocks',
@@ -249,7 +257,8 @@ const CONS = Object.freeze({
             }
         },
         IMPORT_MIN_VERSION: 25,
-        CURRENT_VERSION: 26
+        CURRENT_VERSION: 26,
+        STOCKMANAGER_RESTORE_ACCOUNT_ID: 1
     },
     PAGES: {
         BACKGROUND: 'background.html',
@@ -273,13 +282,7 @@ const CONS = Object.freeze({
             ['fnet', {
                     NAME: 'Finanzen.Net',
                     HOME: 'https://www.finanzen.net/aktienkurse/',
-                    QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search=',
-                    INDEXES: 'https://www.finanzen.net/indizes/',
-                    DATES: 'https://www.finanzen.net/termine/',
-                    MATERIALS: 'https://www.finanzen.net/rohstoffe/',
-                    ONLINE_TEST: 'https://www.finanzen.net',
-                    GM: 'Hauptversammlung',
-                    QF: 'Quartalszahlen'
+                    QUOTE: 'https://www.finanzen.net/suchergebnis.asp?_search='
                 }],
             ['wstreet', {
                     NAME: 'Wallstreet-Online',
@@ -295,12 +298,21 @@ const CONS = Object.freeze({
                     NAME: 'ARD',
                     HOME: 'https://www.tagesschau.de/wirtschaft/boersenkurse/',
                     QUOTE: 'https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff='
+                }],
+            ['tgate', {
+                    NAME: 'Tradegate',
+                    HOME: 'https://www.tradegate.de/',
+                    QUOTE: 'https://www.tradegate.de/orderbuch.php?isin='
                 }]
         ]),
+        FNET: {
+            INDEXES: 'https://www.finanzen.net/indizes/',
+            DATES: 'https://www.finanzen.net/termine/',
+            MATERIALS: 'https://www.finanzen.net/rohstoffe/',
+            ONLINE_TEST: 'https://www.finanzen.net',
+            SEARCH: 'https://www.finanzen.net/suchergebnis.asp?_search='
+        },
         TGATE: {
-            NAME: 'Tradegate',
-            HOME: 'https://www.tradegate.de/',
-            QUOTE: 'https://www.tradegate.de/orderbuch.php?isin=',
             CHS_URL: 'https://www.tradegate.de/indizes.php?index=',
             CHB_URL: 'https://www.tradegate.de/indizes.php?buchstabe=',
             CHS: [

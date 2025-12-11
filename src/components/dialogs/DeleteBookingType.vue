@@ -24,42 +24,42 @@ const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
 const T = Object.freeze({
-  MESSAGES: {
-    SUCCESS_ADD: t('messages.deleteBookingType.success'),
-    ERROR_ADD: t('messages.deleteBookingType.error'),
-    ERROR_ONCLICK_OK: t('messages.onClickOk')
-  },
-  STRINGS: {
-    TITLE: t('components.dialogs.deleteBookingType.title'),
-    BOOKING_TYPE_LABEL: t('components.dialogs.deleteBookingType.bookingTypeLabel'),
-    PLACEHOLDER: t('components.dialogs.deleteBookingType.placeholder')
-  }
-})
+                            MESSAGES: {
+                                SUCCESS_ADD: t('messages.deleteBookingType.success'),
+                                ERROR_ADD: t('messages.deleteBookingType.error'),
+                                ERROR_ONCLICK_OK: t('messages.onClickOk')
+                            },
+                            STRINGS: {
+                                TITLE: t('components.dialogs.deleteBookingType.title'),
+                                BOOKING_TYPE_LABEL: t('components.dialogs.deleteBookingType.bookingTypeLabel'),
+                                PLACEHOLDER: t('components.dialogs.deleteBookingType.placeholder')
+                            }
+                        })
 
 const selected = ref()
 const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
-  log('DELETE_BOOKING_TYPE : onClickOk')
-  if (!await validateForm(formRef)) return
-  if (!isConnected.value) {
-    await notice(['Database not connected'])
-    return
-  }
-  try {
-    if (!records.bookings.hasBookingType(selected.value)) {
-      records.bookingTypes.remove(selected.value)
-      await remove(selected.value)
-      await notice([T.MESSAGES.SUCCESS_ADD])
-    } else {
-      await notice([T.MESSAGES.ERROR_ADD])
+    log('DELETE_BOOKING_TYPE : onClickOk')
+    if (!await validateForm(formRef)) return
+    if (!isConnected.value) {
+        await notice(['Database not connected'])
+        return
     }
-    runtime.resetTeleport()
-  } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-    log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-    await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-  }
+    try {
+        if (!records.bookings.hasBookingType(selected.value)) {
+            records.bookingTypes.remove(selected.value)
+            await remove(selected.value)
+            await notice([T.MESSAGES.SUCCESS_ADD])
+        } else {
+            await notice([T.MESSAGES.ERROR_ADD])
+        }
+        runtime.resetTeleport()
+    } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
+        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
+    }
 }
 
 const title = T.STRINGS.TITLE
@@ -69,22 +69,22 @@ log('--- DeleteBookingType.vue setup ---')
 </script>
 
 <template>
-  <v-form
-      ref="formRef"
-      validate-on="submit"
-      @submit.prevent>
-    <v-select
-        v-model="selected"
-        :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-        :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
-        :items="records.bookingTypes.items"
-        :label="T.STRINGS.BOOKING_TYPE_LABEL"
-        :placeholder="T.STRINGS.PLACEHOLDER"
-        autocomplete
-        autofocus
-        clearable
-        density="compact"
-        variant="outlined"
-        @focus="formRef?.resetValidation()"/>
-  </v-form>
+    <v-form
+        ref="formRef"
+        validate-on="submit"
+        @submit.prevent>
+        <v-select
+            v-model="selected"
+            :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
+            :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
+            :items="records.bookingTypes.items"
+            :label="T.STRINGS.BOOKING_TYPE_LABEL"
+            :placeholder="T.STRINGS.PLACEHOLDER"
+            autocomplete
+            autofocus
+            clearable
+            density="compact"
+            variant="outlined"
+            @focus="formRef?.resetValidation()"/>
+    </v-form>
 </template>

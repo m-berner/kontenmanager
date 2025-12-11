@@ -113,7 +113,7 @@ export default [
             vue: pluginVue
         },
         rules: {
-            'vue/script-indent': ['error', 2, {
+            'vue/script-indent': ['error', 4, {
                 'switchCase': 1
             }],
             'vue/multi-word-component-names': 'error',
@@ -147,14 +147,14 @@ export default [
         }
     },
     {
-        // Specific configuration for Vue files
+        // Specific configuration for .js files
         files: ['**/*.js'],
         rules: {
             'indent': ['error', 4]
         }
     },
     {
-        // Specific configuration for Vue files
+        // Specific configuration for .ts files
         files: ['**/*.ts'],
         rules: {
             'indent': ['error', 4, {'SwitchCase': 1}],

@@ -21,34 +21,34 @@ const {isValidCredit, isValidDebit} = useValidation()
 const {log} = useApp()
 
 const T = Object.freeze({
-  STRINGS: {
-    CREDIT_LABEL: t('components.creditDebitFieldset.creditLabel'),
-    DEBIT_LABEL: t('components.creditDebitFieldset.debitLabel')
-  },
-  RULES: [
-    t('components.creditDebitFieldset.onlyOnePositive'),
-    t('components.creditDebitFieldset.notNegative')
-  ]
-})
+                            STRINGS: {
+                                CREDIT_LABEL: t('components.creditDebitFieldset.creditLabel'),
+                                DEBIT_LABEL: t('components.creditDebitFieldset.debitLabel')
+                            },
+                            RULES: [
+                                t('components.creditDebitFieldset.onlyOnePositive'),
+                                t('components.creditDebitFieldset.notNegative')
+                            ]
+                        })
 
 const creditValue = computed({
-  get: () => props.modelValue.credit,
-  set: (val: number) => {
-    emit('update:modelValue', {
-      credit: val,
-      debit: props.modelValue.debit
-    })
-  }
-})
+                                 get: () => props.modelValue.credit,
+                                 set: (val: number) => {
+                                     emit('update:modelValue', {
+                                         credit: val,
+                                         debit: props.modelValue.debit
+                                     })
+                                 }
+                             })
 const debitValue = computed({
-  get: () => props.modelValue.debit,
-  set: (val: number) => {
-    emit('update:modelValue', {
-      credit: props.modelValue.credit,
-      debit: val
-    })
-  }
-})
+                                get: () => props.modelValue.debit,
+                                set: (val: number) => {
+                                    emit('update:modelValue', {
+                                        credit: props.modelValue.credit,
+                                        debit: val
+                                    })
+                                }
+                            })
 const creditRules = computed(() => isValidCredit(T.RULES, props.modelValue.debit))
 const debitRules = computed(() => isValidDebit(T.RULES, props.modelValue.credit))
 
@@ -56,43 +56,43 @@ log('--- CreditDebitFieldset.vue ---')
 </script>
 
 <template>
-  <fieldset class="horizontal-fieldset">
-    <legend>{{ props.legend }}</legend>
-    <div class="fields-container">
-      <CurrencyInput
-          v-model="creditValue"
-          :disabled="props.disabled"
-          :label="T.STRINGS.CREDIT_LABEL"
-          :rules="creditRules"/>
-      <CurrencyInput
-          v-model="debitValue"
-          :disabled="props.disabled"
-          :label="T.STRINGS.DEBIT_LABEL"
-          :rules="debitRules"/>
-    </div>
-  </fieldset>
+    <fieldset class="horizontal-fieldset">
+        <legend>{{ props.legend }}</legend>
+        <div class="fields-container">
+            <CurrencyInput
+                v-model="creditValue"
+                :disabled="props.disabled"
+                :label="T.STRINGS.CREDIT_LABEL"
+                :rules="creditRules"/>
+            <CurrencyInput
+                v-model="debitValue"
+                :disabled="props.disabled"
+                :label="T.STRINGS.DEBIT_LABEL"
+                :rules="debitRules"/>
+        </div>
+    </fieldset>
 </template>
 
 <style scoped>
 .horizontal-fieldset {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 9px 6px 0 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 9px 6px 0 6px;
 }
 
 .horizontal-fieldset legend {
-  padding: 0 9px;
-  font-weight: 500;
+    padding: 0 9px;
+    font-weight: 500;
 }
 
 .fields-container {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
 .fields-container > * {
-  flex: 1;
-  min-width: 200px;
+    flex: 1;
+    min-width: 200px;
 }
 </style>

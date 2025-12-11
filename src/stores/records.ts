@@ -158,18 +158,18 @@ const useStocksStore = defineStore('stocks', function () {
             }
             for (let i = 0; i < pageStocks.length; i++) {
                 isin.push({
-                    id: pageStocks[i].cID,
-                    isin: pageStocks[i].cISIN,
-                    min: '0',
-                    rate: '0',
-                    max: '0',
-                    cur: ''
-                })
+                              id: pageStocks[i].cID,
+                              isin: pageStocks[i].cISIN,
+                              min: '0',
+                              rate: '0',
+                              max: '0',
+                              cur: ''
+                          })
                 if ((utcDate(pageStocks[i].cMeetingDay).getTime() < Date.now() || utcDate(pageStocks[i].cQuarterDay).getTime() < Date.now()) && utcDate(pageStocks[i].cAskDates).getTime() < Date.now()) {
                     isinDates.push({
-                        key: pageStocks[i].cID,
-                        value: pageStocks[i].cISIN
-                    })
+                                       key: pageStocks[i].cID,
+                                       value: pageStocks[i].cISIN
+                                   })
                 }
             }
         }
@@ -606,18 +606,18 @@ export const useRecordsStore = defineStore('records', function () {
         clean(removeAccounts)
         load(stores)
         stocksStore.add({
-            cID: 0,
-            cISIN: 'XX0000000000',
-            cSymbol: 'XXXOO0',
-            cFadeOut: 0,
-            cFirstPage: 0,
-            cURL: '',
-            cCompany: '',
-            cMeetingDay: '',
-            cQuarterDay: '',
-            cAccountNumberID: activeAccountId.value,
-            cAskDates: CONS.DATE.DEFAULT_ISO
-        }, true)
+                            cID: 0,
+                            cISIN: 'XX0000000000',
+                            cSymbol: 'XXXOO0',
+                            cFadeOut: 0,
+                            cFirstPage: 0,
+                            cURL: '',
+                            cCompany: '',
+                            cMeetingDay: '',
+                            cQuarterDay: '',
+                            cAccountNumberID: activeAccountId.value,
+                            cAskDates: CONS.DATE.DEFAULT_ISO
+                        }, true)
         if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
             info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null)
             sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true')

@@ -32,101 +32,101 @@ const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
 
 const T = Object.freeze({
-  MESSAGES: {
-    INFO_TITLE: t('messages.infoTitle'),
-    RESTRICTED_IMPORT: t('messages.restrictedImport'),
-    ERROR_ONUPDATE_TITLE_BAR: t('messages.onUpdateTitleBar')
-  },
-  STRINGS: {
-    TITLE: t('titleBar.title'),
-    LOGO_ALT: t('titleBar.iconsAlt.logo'),
-    DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
-    BOOKING_SUM_LABEL: t('titleBar.bookingsSumLabel'),
-    SELECT_ACCOUNT_LABEL: t('titleBar.selectAccountLabel')
-  }
-})
+                            MESSAGES: {
+                                INFO_TITLE: t('messages.infoTitle'),
+                                RESTRICTED_IMPORT: t('messages.restrictedImport'),
+                                ERROR_ONUPDATE_TITLE_BAR: t('messages.onUpdateTitleBar')
+                            },
+                            STRINGS: {
+                                TITLE: t('titleBar.title'),
+                                LOGO_ALT: t('titleBar.iconsAlt.logo'),
+                                DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
+                                BOOKING_SUM_LABEL: t('titleBar.bookingsSumLabel'),
+                                SELECT_ACCOUNT_LABEL: t('titleBar.selectAccountLabel')
+                            }
+                        })
 
 const isOnline = ref(false)
 const isCheckingConnection = ref(true)
 
 const logoUrl = computed((): string => {
-  const ind = records.accounts.getIndexById(activeAccountId.value)
-  const {items: accountItems} = storeToRefs(records.accounts)
-  if (isCheckingConnection.value || !isOnline.value) {
+    const ind = records.accounts.getIndexById(activeAccountId.value)
+    const {items: accountItems} = storeToRefs(records.accounts)
+    if (isCheckingConnection.value || !isOnline.value) {
+        return connectionIcon
+    }
+    if (ind > -1) {
+        return accountItems.value[ind].cLogoUrl
+    }
     return connectionIcon
-  }
-  if (ind > -1) {
-    return accountItems.value[ind].cLogoUrl
-  }
-  return connectionIcon
 })
 const balance = computed((): string => {
-  return n(records.bookings.sumBookings(), 'currency')
+    return n(records.bookings.sumBookings(), 'currency')
 })
 const depot = computed((): string => {
-  return n(records.stocks.sumDepot(), 'currency')
+    return n(records.stocks.sumDepot(), 'currency')
 })
 
 const onUpdateTitleBar = async (): Promise<void> => {
-  log('TITLE_BAR onUpdateTitleBar')
-  try {
-    const storesDB = await getDatabaseStores(activeAccountId.value)
-    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-    await records.init(storesDB, T.MESSAGES)
-    isCompanyPage.value = false
-    await router.push('/')
-  } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-    log(T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: errorMessage})
-    await notice([T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, errorMessage])
-  }
+    log('TITLE_BAR onUpdateTitleBar')
+    try {
+        const storesDB = await getDatabaseStores(activeAccountId.value)
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+        await records.init(storesDB, T.MESSAGES)
+        isCompanyPage.value = false
+        await router.push('/')
+    } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+        log(T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: errorMessage})
+        await notice([T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, errorMessage])
+    }
 }
 
 onMounted(async () => {
-  isOnline.value = await fetchIsOk()
-  isCheckingConnection.value = false
+    isOnline.value = await fetchIsOk()
+    isCheckingConnection.value = false
 })
 
 log('--- TitleBar.vue setup ---')
 </script>
 
 <template>
-  <v-app-bar app color="secondary" flat>
-    <template #prepend>
-      <img :alt="T.STRINGS.LOGO_ALT" :src="CONS.COMPONENTS.TITLE_BAR.LOGO"/>
-    </template>
-    <v-app-bar-title>{{ T.STRINGS.TITLE }}</v-app-bar-title>
-    <v-text-field
-        v-if="isCompanyPage && !isDownloading"
-        :disabled="true"
-        :label="T.STRINGS.DEPOT_SUM_LABEL"
-        :model-value="depot"
-        hide-details
-        max-width="150"/>
-    <v-text-field
-        v-if="!isCompanyPage"
-        :disabled="true"
-        :label="T.STRINGS.BOOKING_SUM_LABEL"
-        :model-value="balance"
-        hide-details
-        max-width="150"/>
-    <v-spacer/>
-    <v-select
-        v-if="activeAccountId > 0"
-        v-model="activeAccountId"
-        :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
-        :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
-        :items="records.accounts.items"
-        :label="T.STRINGS.SELECT_ACCOUNT_LABEL"
-        density="compact"
-        hide-details
-        max-width="350"
-        placeholder="WWW"
-        variant="outlined"
-        @update:model-value="onUpdateTitleBar">
-      <template #prepend>
-          <img :alt="T.STRINGS.LOGO_ALT" :src="logoUrl"/>
-      </template>
-    </v-select>
-  </v-app-bar>
+    <v-app-bar app color="secondary" flat>
+        <template #prepend>
+            <img :alt="T.STRINGS.LOGO_ALT" :src="CONS.COMPONENTS.TITLE_BAR.LOGO"/>
+        </template>
+        <v-app-bar-title>{{ T.STRINGS.TITLE }}</v-app-bar-title>
+        <v-text-field
+            v-if="isCompanyPage && !isDownloading"
+            :disabled="true"
+            :label="T.STRINGS.DEPOT_SUM_LABEL"
+            :model-value="depot"
+            hide-details
+            max-width="150"/>
+        <v-text-field
+            v-if="!isCompanyPage"
+            :disabled="true"
+            :label="T.STRINGS.BOOKING_SUM_LABEL"
+            :model-value="balance"
+            hide-details
+            max-width="150"/>
+        <v-spacer/>
+        <v-select
+            v-if="activeAccountId > 0"
+            v-model="activeAccountId"
+            :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
+            :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
+            :items="records.accounts.items"
+            :label="T.STRINGS.SELECT_ACCOUNT_LABEL"
+            density="compact"
+            hide-details
+            max-width="350"
+            placeholder="WWW"
+            variant="outlined"
+            @update:model-value="onUpdateTitleBar">
+            <template #prepend>
+                <img :alt="T.STRINGS.LOGO_ALT" :src="logoUrl"/>
+            </template>
+        </v-select>
+    </v-app-bar>
 </template>

@@ -43,9 +43,9 @@ export function useBrowser() {
 
     async function tabsCreate() {
         return await browser.tabs.create({
-            url: indexUrl.value,
-            active: true
-        })
+                                             url: indexUrl.value,
+                                             active: true
+                                         })
     }
 
     async function tabsQuery() {
@@ -89,42 +89,29 @@ export function useBrowser() {
     async function installStorageLocal() {
         const records = useRecordsStore()
         const storageLocal = await browser.storage.local.get()
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN})
-        }
+
         if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
-            if (records.accounts.items.length > 0) {
-                await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: records.accounts.items[0].cID})
-            } else {
-                await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID})
+            const activeId = records.accounts.items.length > 0
+                ? records.accounts.items[0].cID
+                : CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID
+            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: activeId})
+        }
+        const defaults = {
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.BROWSER_STORAGE.INDEXES,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.BROWSER_STORAGE.MARKETS,
+            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS
+        }
+        for (const [key, value] of Object.entries(defaults)) {
+            if (storageLocal[key] === undefined) {
+                await browser.storage.local.set({[key]: value})
             }
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.BROWSER_STORAGE.INDEXES})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.BROWSER_STORAGE.MARKETS})
-        }
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS] === undefined) {
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS})
         }
     }
 
