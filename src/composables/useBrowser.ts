@@ -30,10 +30,12 @@ export function useBrowser() {
     })
 
     function actionOnClicked(listener: (() => Promise<void>)): void {
+        // noinspection JSDeprecatedSymbols
         browser.action.onClicked.addListener(listener)
     }
 
     function runtimeOnInstalled(listener: (() => Promise<void>)): void {
+        // noinspection JSDeprecatedSymbols
         browser.runtime.onInstalled.addListener(listener)
     }
 
@@ -42,10 +44,12 @@ export function useBrowser() {
     }
 
     async function tabsCreate() {
-        return await browser.tabs.create({
-                                             url: indexUrl.value,
-                                             active: true
-                                         })
+        return await browser.tabs.create(
+            {
+                url: indexUrl.value,
+                active: true
+            }
+        )
     }
 
     async function tabsQuery() {
@@ -80,9 +84,11 @@ export function useBrowser() {
         }
     }
 
-    async function addStorageChangedListener(callback: (_changes: Record<string, browser.storage.StorageChange>) => void) {
+    function addStorageChangedListener(callback: (_changes: Record<string, browser.storage.StorageChange>) => void) {
+        // noinspection JSDeprecatedSymbols
         browser.storage.local.onChanged.addListener(callback)
         // Return cleanup function
+        // noinspection JSDeprecatedSymbols
         return () => browser.storage.local.onChanged.removeListener(callback)
     }
 
@@ -147,9 +153,11 @@ export function useBrowser() {
         const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
             if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMPLETE)) {
                 URL.revokeObjectURL(blobUrl) // release blob object
+                // noinspection JSDeprecatedSymbols
                 browser.downloads.onChanged.removeListener(onDownloadChange)
             }
         }
+        // noinspection JSDeprecatedSymbols
         browser.downloads.onChanged.addListener(onDownloadChange) // listener to clean up the blob object after the download.
     }
 

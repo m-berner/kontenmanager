@@ -43,9 +43,9 @@ const T = Object.freeze(
         },
         STRINGS: {
             TITLE: t('components.dialogs.addAccount.title'),
-            BUY: t('components.names.bookingTypes.buy'),
-            SELL: t('components.names.bookingTypes.sell'),
-            DIVIDEND: t('components.names.bookingTypes.dividend')
+            BUY: t('names.bookingTypes.buy'),
+            SELL: t('names.bookingTypes.sell'),
+            DIVIDEND: t('names.bookingTypes.dividend')
         }
     }
 )

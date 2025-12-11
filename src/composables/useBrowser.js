@@ -64,7 +64,7 @@ export function useBrowser() {
             throw error;
         }
     }
-    async function addStorageChangedListener(callback) {
+    function addStorageChangedListener(callback) {
         browser.storage.local.onChanged.addListener(callback);
         return () => browser.storage.local.onChanged.removeListener(callback);
     }

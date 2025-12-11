@@ -16,8 +16,7 @@ export const useSettingsStore = defineStore('settings', function () {
     const markets = ref(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS);
     const indexes = ref(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES);
     const exchanges = ref(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES);
-    function init(theme, storage) {
-        theme.global.name.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN];
+    function init(storage) {
         skin.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN];
         bookingsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE];
         stocksPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE];

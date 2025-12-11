@@ -494,9 +494,9 @@ const T = Object.freeze({
                                 TAX: t('components.dialogs.importDatabase.tax'),
                                 FEE: t('components.dialogs.importDatabase.fee'),
                                 OTHERS: t('components.dialogs.importDatabase.others'),
-                                SHARE_BUY: t('components.names.bookingTypes.buy'),
-                                SHARE_SELL: t('components.names.bookingTypes.sell'),
-                                DIVIDEND: t('components.names.bookingTypes.dividend')
+                                SHARE_BUY: t('names.bookingTypes.buy'),
+                                SHARE_SELL: t('names.bookingTypes.sell'),
+                                DIVIDEND: t('names.bookingTypes.dividend')
                             }
                         })
 

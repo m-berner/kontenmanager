@@ -14,74 +14,148 @@ import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 import DotMenu from '@/components/DotMenu.vue'
 import type {I_Header, I_Menu_Item} from '@/types'
+import {useTheme} from 'vuetify'
+import {useBrowser} from '@/composables/useBrowser'
+import {useIndexedDB} from '@/composables/useIndexedDB'
 
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
+const {closeDB} = useIndexedDB()
+const {addStorageChangedListener, clearStorage, installStorageLocal} = useBrowser()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 const settings = useSettingsStore()
-const {bookingsPerPage} = storeToRefs(settings)
+const {bookingsPerPage, skin} = storeToRefs(settings)
 const {setBookingsPerPage} = settings
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>({
-                                                                                                                 STRINGS: {
-                                                                                                                     ITEMS_PER_PAGE_TEXT: t('homeContent.bookingsTable.itemsPerPageText'),
-                                                                                                                     NO_DATA_TEXT: t('homeContent.bookingsTable.noDataText'),
-                                                                                                                     SEARCH_LABEL: t('homeContent.search')
-                                                                                                                 },
-                                                                                                                 HEADERS: [
-                                                                                                                     {
-                                                                                                                         title: t('homeContent.bookingsTable.headers.action'),
-                                                                                                                         align: 'start',
-                                                                                                                         sortable: false,
-                                                                                                                         key: 'mAction'
-                                                                                                                     },
-                                                                                                                     {
-                                                                                                                         title: t('homeContent.bookingsTable.headers.date'),
-                                                                                                                         align: 'start',
-                                                                                                                         sortable: false,
-                                                                                                                         key: 'cDate'
-                                                                                                                     },
-                                                                                                                     {
-                                                                                                                         title: t('homeContent.bookingsTable.headers.debit'),
-                                                                                                                         align: 'start',
-                                                                                                                         sortable: false,
-                                                                                                                         key: 'cDebit'
-                                                                                                                     },
-                                                                                                                     {
-                                                                                                                         title: t('homeContent.bookingsTable.headers.credit'),
-                                                                                                                         align: 'start',
-                                                                                                                         sortable: false,
-                                                                                                                         key: 'cCredit'
-                                                                                                                     },
-                                                                                                                     {
-                                                                                                                         title: t('homeContent.bookingsTable.headers.description'),
-                                                                                                                         align: 'start',
-                                                                                                                         sortable: false,
-                                                                                                                         key: 'cDescription'
-                                                                                                                     },
-                                                                                                                     {
-                                                                                                                         title: t('homeContent.bookingsTable.headers.bookingType'),
-                                                                                                                         align: 'start',
-                                                                                                                         sortable: false,
-                                                                                                                         key: 'cBookingType'
-                                                                                                                     }
-                                                                                                                 ],
-                                                                                                                 MENU_ITEMS: [
-                                                                                                                     {
-                                                                                                                         id: 'DeleteBooking',
-                                                                                                                         title: t('homeContent.bookingsTable.menuItems.delete'),
-                                                                                                                         icon: '$deleteBooking'
-                                                                                                                     },
-                                                                                                                     {
-                                                                                                                         id: 'UpdateBooking',
-                                                                                                                         title: t('homeContent.bookingsTable.menuItems.update'),
-                                                                                                                         icon: '$updateBooking'
-                                                                                                                     }
-                                                                                                                 ]
-                                                                                                             })
+const theme = useTheme()
+
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>(
+    {
+        STRINGS: {
+            ITEMS_PER_PAGE_TEXT: t('homeContent.bookingsTable.itemsPerPageText'),
+            NO_DATA_TEXT: t('homeContent.bookingsTable.noDataText'),
+            SEARCH_LABEL: t('homeContent.search')
+        },
+        HEADERS: [
+            {
+                title: t('homeContent.bookingsTable.headers.action'),
+                align: 'start',
+                sortable: false,
+                key: 'mAction'
+            },
+            {
+                title: t('homeContent.bookingsTable.headers.date'),
+                align: 'start',
+                sortable: false,
+                key: 'cDate'
+            },
+            {
+                title: t('homeContent.bookingsTable.headers.debit'),
+                align: 'start',
+                sortable: false,
+                key: 'cDebit'
+            },
+            {
+                title: t('homeContent.bookingsTable.headers.credit'),
+                align: 'start',
+                sortable: false,
+                key: 'cCredit'
+            },
+            {
+                title: t('homeContent.bookingsTable.headers.description'),
+                align: 'start',
+                sortable: false,
+                key: 'cDescription'
+            },
+            {
+                title: t('homeContent.bookingsTable.headers.bookingType'),
+                align: 'start',
+                sortable: false,
+                key: 'cBookingType'
+            }
+        ],
+        MENU_ITEMS: [
+            {
+                id: 'DeleteBooking',
+                title: t('homeContent.bookingsTable.menuItems.delete'),
+                icon: '$deleteBooking'
+            },
+            {
+                id: 'UpdateBooking',
+                title: t('homeContent.bookingsTable.menuItems.update'),
+                icon: '$updateBooking'
+            }
+        ]
+    }
+)
 
 const search = ref<string>('')
+
+theme.global.name.value = skin.value
+
+const changeHandler = (changes: Record<string, browser.storage.StorageChange>): void => {
+    log('APP_INDEX: changeHandler')
+    const changesKey = Object.keys(changes)
+    const {service, indexes, markets, materials, exchanges} = storeToRefs(settings)
+    switch (changesKey[0]) {
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN:
+            if (theme?.global?.name) {
+                theme.global.name.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue
+            }
+            skin.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue
+            break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
+            service.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue
+            break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
+            indexes.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue
+            break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
+            markets.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue
+            break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
+            materials.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue
+            break
+        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
+            exchanges.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue
+            break
+        default:
+    }
+}
+const removeStorageChangedListener = addStorageChangedListener(changeHandler)
+const keyStrokeController: string[] = []
+const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
+    if (!keyStrokeController.includes(ev.key)) {
+        keyStrokeController.push(ev.key)
+    }
+    if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'r') {
+        await clearStorage()
+        await installStorageLocal()
+    }
+    if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd') {
+        const debugValue = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
+        if (debugValue !== '1') {
+            localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
+        } else {
+            localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
+        }
+    }
+}
+const onKeyUp = (ev: KeyboardEvent): void => {
+    const index = keyStrokeController.indexOf(ev.key)
+    if (index > -1) {
+        keyStrokeController.splice(index, 1)
+    }
+}
+const onBeforeUnload = (): void => {
+    log('APP_INDEX: onBeforeUnload')
+    removeStorageChangedListener()
+    closeDB()
+}
+window.addEventListener('keydown', onKeyDown, false)
+window.addEventListener('keyup', onKeyUp, false)
+window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
 
 log('--- HomeContent.vue setup ---')
 </script>

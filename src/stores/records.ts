@@ -466,7 +466,7 @@ const useBookingTypesStore = defineStore('bookingTypes', function () {
 
     const getNameById = computed(() => (ident: number): string => {
         const bookingType = items.value.find((entry: I_Booking_Type_Store) => entry.cID === ident)
-        return bookingType ? bookingType.cName : ''
+        return bookingType !== undefined ? bookingType.cName : ''
     })
     const getById = computed(() => (ident: number): I_Booking_Type_Store | null => {
         const bookingType = items.value.find((entry: I_Booking_Type_Store) => entry.cID === ident)

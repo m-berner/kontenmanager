@@ -14,8 +14,8 @@ app.config.errorHandler = (err) => {
 app.config.warnHandler = (msg) => {
     log('APP: warnHandler', { warn: msg });
 };
-app.use(componentsPlugin);
 app.use(vuetifyPlugin.vuetify);
+app.use(componentsPlugin);
 app.use(i18nPlugin.i18n);
 app.use(piniaPlugin.pinia);
 app.use(routerPlugin.router);

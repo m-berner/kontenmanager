@@ -23,8 +23,8 @@ app.config.errorHandler = (err: unknown) => {
 app.config.warnHandler = (msg: string) => {
     log('APP: warnHandler', {warn: msg})
 }
-app.use(componentsPlugin)
 app.use(vuetifyPlugin.vuetify)
+app.use(componentsPlugin)
 app.use(i18nPlugin.i18n)
 app.use(piniaPlugin.pinia)
 app.use(routerPlugin.router)

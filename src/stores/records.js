@@ -419,7 +419,7 @@ const useBookingTypesStore = defineStore('bookingTypes', function () {
     const items = ref([]);
     const getNameById = computed(() => (ident) => {
         const bookingType = items.value.find((entry) => entry.cID === ident);
-        return bookingType ? bookingType.cName : '';
+        return bookingType !== undefined ? bookingType.cName : '';
     });
     const getById = computed(() => (ident) => {
         const bookingType = items.value.find((entry) => entry.cID === ident);

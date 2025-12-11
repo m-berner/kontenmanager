@@ -7,7 +7,7 @@
  */
 import type {T_Storage} from '@/types'
 import {ref} from 'vue'
-import type {ThemeInstance} from 'vuetify'
+//import type {ThemeInstance} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {defineStore} from 'pinia'
 import {useBrowser} from '@/composables/useBrowser'
@@ -28,8 +28,7 @@ export const useSettingsStore = defineStore('settings', function () {
     const indexes = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
     const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
 
-    function init(theme: ThemeInstance, storage: T_Storage): void {
-        theme.global.name.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
+    function init(storage: T_Storage): void {
         skin.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
         bookingsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] as number
         stocksPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE] as number

@@ -54,16 +54,16 @@ const T = Object.freeze(
             INVALID: t('components.dialogs.importDatabase.invalid'),
             MESSAGE_DELETE: t('components.dialogs.importDatabase.messageDelete'),
             FILE_LABEL: t('components.dialogs.importDatabase.fileLabel'),
-            TAX: t('components.names.bookingTypes.tax'),
+            TAX: t('names.bookingTypes.tax'),
             CAPITAL_TAX: t('components.dialogs.importDatabase.capitalTax'),
-            FEE: t('components.names.bookingTypes.fee'),
+            FEE: t('names.bookingTypes.fee'),
             SOLI: t('components.dialogs.importDatabase.soli'),
             SOURCE_TAX: t('components.dialogs.importDatabase.sourceTax'),
             TRANSACTION_TAX: t('components.dialogs.importDatabase.transactionTax'),
-            OTHERS: t('components.names.bookingTypes.other'),
-            SHARE_BUY: t('components.names.bookingTypes.buy'),
-            SHARE_SELL: t('components.names.bookingTypes.sell'),
-            DIVIDEND: t('components.names.bookingTypes.dividend')
+            OTHERS: t('names.bookingTypes.other'),
+            SHARE_BUY: t('names.bookingTypes.buy'),
+            SHARE_SELL: t('names.bookingTypes.sell'),
+            DIVIDEND: t('names.bookingTypes.dividend')
         }
     }
 )
