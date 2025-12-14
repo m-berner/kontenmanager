@@ -17,30 +17,32 @@ import CheckboxGrid from '@/components/CheckboxGrid.vue'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 
-const T = Object.freeze({
-                            TABS: [
-                                {
-                                    title: t('optionsIndex.tabs.ge'),
-                                    id: 'register_ge'
-                                },
-                                {
-                                    title: t('optionsIndex.tabs.mp'),
-                                    id: 'register_mp'
-                                },
-                                {
-                                    title: t('optionsIndex.tabs.ind'),
-                                    id: 'register_ind'
-                                },
-                                {
-                                    title: t('optionsIndex.tabs.mat'),
-                                    id: 'register_mat'
-                                },
-                                {
-                                    title: t('optionsIndex.tabs.ex'),
-                                    id: 'register_ex'
-                                }
-                            ]
-                        })
+const T = Object.freeze(
+    {
+        TABS: [
+            {
+                title: t('optionsIndex.tabs.ge'),
+                id: 'register_ge'
+            },
+            {
+                title: t('optionsIndex.tabs.mp'),
+                id: 'register_mp'
+            },
+            {
+                title: t('optionsIndex.tabs.ind'),
+                id: 'register_ind'
+            },
+            {
+                title: t('optionsIndex.tabs.mat'),
+                id: 'register_mat'
+            },
+            {
+                title: t('optionsIndex.tabs.ex'),
+                id: 'register_ex'
+            }
+        ]
+    }
+)
 
 const tab = ref<number>(0)
 

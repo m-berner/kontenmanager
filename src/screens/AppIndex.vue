@@ -53,6 +53,7 @@ onBeforeMount(async () => {
         await installStorageLocal()
         const storage = await getStorage()
         settings.init(storage)
+
         const storesDB = await getDatabaseStores(settings.activeAccountId)
         await records.init(storesDB, T.MESSAGES)
         const exchangesBaseData: I_Exchange_Data[] = await fetchExchangesData([CUR_USD, CUR_EUR])

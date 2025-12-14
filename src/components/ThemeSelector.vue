@@ -17,30 +17,33 @@ const theme = useTheme()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const T = Object.freeze<Record<string, Record<string, string>>>({
-                                                                    // NOTE: lowercase properties required due to vuetify plugin object
-                                                                    STRINGS: {
-                                                                        earth: t('optionsIndex.themeNames.earth'),
-                                                                        ocean: t('optionsIndex.themeNames.ocean'),
-                                                                        sky: t('optionsIndex.themeNames.sky'),
-                                                                        meadow: t('optionsIndex.themeNames.meadow'),
-                                                                        dark: t('optionsIndex.themeNames.dark'),
-                                                                        light: t('optionsIndex.themeNames.light')
-                                                                    }
-                                                                })
-const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
-
-const setSkin = async (skin: string | null): Promise<void> => {
-    if (skin !== null) {
-        theme.global.name.value = skin
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN, skin)
+const T = Object.freeze<Record<string, Record<string, string>>>(
+    {
+        // NOTE: lowercase properties required due to vuetify plugin object
+        STRINGS: {
+            earth: t('optionsIndex.themeNames.earth'),
+            ocean: t('optionsIndex.themeNames.ocean'),
+            sky: t('optionsIndex.themeNames.sky'),
+            meadow: t('optionsIndex.themeNames.meadow'),
+            dark: t('optionsIndex.themeNames.dark'),
+            light: t('optionsIndex.themeNames.light')
+        }
     }
+)
+const skin = ref<string>('')
+
+const setSkin = async (): Promise<void> => {
+    console.error(skin.value)
+    //if (skin !== null) {
+    //theme.global.name.value = skin.value
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN, skin.value)
+    //}
 }
 
 onBeforeMount(async () => {
     log('THEME_SELECTOR: onBeforeMount')
     const storageSkin = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN])
-    skin.value = storageSkin[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
+    skin.value = storageSkin[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string || CONS.DEFAULTS.BROWSER_STORAGE.SKIN
 })
 
 log('--- ThemeSelector.vue setup ---')
@@ -50,7 +53,7 @@ log('--- ThemeSelector.vue setup ---')
     <v-radio-group
         v-model="skin"
         column
-        @update:modelValue="setSkin">
+        @update:model-value="async () => {await setSkin()}">
         <v-radio
             v-for="item in Object.keys(theme.themes.value)"
             :key="item"

@@ -29,6 +29,7 @@ export const useSettingsStore = defineStore('settings', function () {
     const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
 
     function init(storage: T_Storage): void {
+        log('SETTINGS: init')
         skin.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
         bookingsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] as number
         stocksPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE] as number
