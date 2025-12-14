@@ -28,7 +28,7 @@ const {add, isConnected} = useAccountsDB()
 const {add: addBookingType} = useBookingTypesDB()
 const {validateForm} = useValidation()
 const {accountFormularData, formRef, reset} = useAccountFormular()
-const {ensureConnected, handleError, withLoading} = useDialogGuards()
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 const {resetTeleport} = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
@@ -73,12 +73,12 @@ const addBookingTypesForAccount = async (accountId: number): Promise<boolean> =>
                 return false
             }
 
-            const completeBookingType: I_Booking_Type_Store = {
+            const dbBookingType: I_Booking_Type_Store = {
                 cID: addBookingTypeID,
                 ...bookingType
             }
-            records.bookingTypes.add(completeBookingType)
-            addedTypes.push(completeBookingType)
+            records.bookingTypes.add(dbBookingType)
+            addedTypes.push(dbBookingType)
         }
         return true
     } catch (error) {
@@ -164,5 +164,15 @@ log('--- AddAccount.vue setup ---')
         validate-on="submit"
         @submit.prevent>
         <AccountFormular/>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

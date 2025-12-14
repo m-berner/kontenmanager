@@ -10,18 +10,22 @@ import {ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
 const runtime = useRuntimeStore()
 const {log} = useApp()
+const {isLoading} = useDialogGuards()
 
-const T = Object.freeze({
-                            STRINGS: {
-                                OK: t('components.dialogs.ok'),
-                                CANCEL: t('components.dialogs.cancel')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        STRINGS: {
+            OK: t('components.dialogs.ok'),
+            CANCEL: t('components.dialogs.cancel')
+        }
+    }
+)
 
 log('--- DialogPort.vue setup ---')
 </script>
@@ -41,6 +45,8 @@ log('--- DialogPort.vue setup ---')
                         <template v-slot:activator="{ props }">
                             <v-btn
                                 v-if="runtime.dialogOk"
+                                :disabled="isLoading"
+                                :loading="isLoading"
                                 class="ml-auto"
                                 icon="$check"
                                 type="submit"

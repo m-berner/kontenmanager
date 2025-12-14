@@ -14,35 +14,64 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {update, isConnected} = useStocksDB()
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
 
-const T = Object.freeze({
-                            STRINGS: {
-                                TITLE: t('components.dialogs.fadeInStock.title'),
-                                SELECT_LABEL: t('components.dialogs.fadeInStock.selectLabel')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            SUCCESS_FADE_IN: t('messages.fadeInStock.success'),
+            ERROR_ONCLICK_OK: t('messages.onClickOk'),
+            DB_NOT_CONNECTED: t('messages.dbNotConnected'),
+            NO_STOCK_SELECTED: t('messages.noStockSelected')
+        },
+        STRINGS: {
+            TITLE: t('components.dialogs.fadeInStock.title'),
+            SELECT_LABEL: t('components.dialogs.fadeInStock.selectLabel')
+        }
+    }
+)
 
 const selected = ref<I_Stock_Store | null>(null)
 const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
     log('FADE_IN_STOCK: onClickOk')
-    if (!isConnected.value) {
-        await notice(['Database not connected'])
+
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
+    if (!selected.value) {
+        await notice([T.MESSAGES.NO_STOCK_SELECTED])
         return
     }
-    if (selected.value !== null) {
-        selected.value.cFadeOut = 0
-        await update(selected.value)
-    }
-    runtime.resetTeleport()
+
+    await withLoading(async () => {
+        try {
+            const stock = selected.value!
+            stock.cFadeOut = 0
+
+            await update(stock)
+            records.stocks.update(stock)
+            await notice([T.MESSAGES.SUCCESS_FADE_IN])
+            runtime.resetTeleport()
+
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                notice,
+                'FADE_IN_STOCK',
+                T.MESSAGES.ERROR_ONCLICK_OK
+            )
+        }
+    })
 }
 
 const title = T.STRINGS.TITLE
@@ -73,5 +102,15 @@ log('--- FadeInStock.vue setup ---')
                 v-bind:return-object="true"
                 variant="outlined"/>
         </v-card-text>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

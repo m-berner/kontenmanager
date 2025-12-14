@@ -6,14 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {
-    I_Account_DB,
-    I_Backup,
-    I_Booking_DB,
-    I_Event_Target,
-    I_Records,
-    I_Stock_DB
-} from '@/types'
+import type {I_Account_DB, I_Backup, I_Booking_DB, I_Event_Target, I_Records, I_Stock_DB} from '@/types'
 import {defineExpose, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -26,7 +19,6 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {useImportExport} from '@/composables/useImportExport'
-//import {STOCKMANAGER_RESTORE_ACCOUNT_ID} from '@/components/dialogs/test'
 
 const {t} = useI18n()
 const {CONS, log, isoDate} = useApp()
@@ -35,7 +27,7 @@ const {clear: clearAllAccounts, batchImport: importAccounts} = useAccountsDB()
 const {clear: clearAllBookings, batchImport: importBookings} = useBookingsDB()
 const {clear: clearAllBookingTypes, batchImport: importBookingTypes} = useBookingTypesDB()
 const {clear: clearAllStocks, batchImport: importStocks} = useStocksDB()
-const {handleError, withLoading} = useDialogGuards()
+const {isLoading, handleError, withLoading} = useDialogGuards()
 const {resetTeleport} = useRuntimeStore()
 const settings = useSettingsStore()
 const {info} = useAlertStore()
@@ -68,9 +60,8 @@ const T = Object.freeze(
     }
 )
 
-const importService = new ImportExportService(CONS, isoDate)
-
 const fileBlob = ref<Blob>(new Blob())
+const importService = new ImportExportService(CONS, isoDate)
 
 const onChange = (ev: I_Event_Target) => {
     fileBlob.value = ev.target.files[0]
@@ -203,7 +194,7 @@ const processBackupFile = async (fileContent: string): Promise<void> => {
     await clearAllBookings()
     await clearAllBookingTypes()
     await clearAllStocks()
-//TODO just once direct after install: onBeforeMount storage props materials???, theme is undefined
+    // TODO just once direct after install: onBeforeMount storage props materials???, theme is undefined
     // Import based on version
     if (backup.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
         await importLegacyData(backup, activeId)
@@ -241,231 +232,6 @@ const onClickOk = async (): Promise<void> => {
     })
 }
 
-// const onmClickOk = async (): Promise<void> => {
-//     log('IMPORT_DATABASE: onClickOk')
-//     const records = useRecordsStore()
-//
-//     const onReaderError = async (): Promise<void> => {
-//         await notice(['IMPORT_DATABASE: onError: FileReader'])
-//     }
-//     const onReaderLoaded = async (): Promise<void> => {
-//         log('IMPORT_DATABASE: onFileLoaded')
-//         const STOCKMANAGER_RESTORE_ACCOUNT_ID = 1
-//         const {activeAccountId} = storeToRefs(settings)
-//         const {items: accountItems} = storeToRefs(records.accounts)
-//         const accountsImportData: I_Records[] = []
-//         const bookingsImportData: I_Records[] = []
-//         const bookingTypesImportData: I_Records[] = []
-//         const stocksImportData: I_Records[] = []
-//         const accountsStoreData: I_Account_DB[] = []
-//         const bookingsStoreData: I_Booking_DB[] = []
-//         const bookingTypesStoreData: I_Booking_Type_DB[] = []
-//         const stocksStoreData: I_Stock_DB[] = []
-//         if (typeof fr.result === 'string') {
-//             const backupObject: I_Backup = JSON.parse(fr.result)
-//             const activeId = backupObject.accounts !== undefined ? backupObject.accounts[0].cID : STOCKMANAGER_RESTORE_ACCOUNT_ID
-//             activeAccountId.value = activeId
-//             await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
-//             const getCreditDebit = (rec: I_Booking_SM): { value: number, type: number } => {
-//                 let result: { value: number, type: number } = {value: 0, type: -1}
-//                 if (rec.cAmount !== 0) {
-//                     result.type = 4
-//                 } else if (rec.cFees !== 0) {
-//                     result.type = 5
-//                 } else if (rec.cTax !== 0 || rec.cSoli !== 0 || rec.cSTax !== 0 || rec.cFTax !== 0) {
-//                     result.type = 6
-//                 }
-//                 switch (rec.cType) {
-//                     case 1:
-//                         // Buy
-//                         result = {value: rec.cUnitQuotation * rec.cCount, type: 1}
-//                         break
-//                     case 2:
-//                         // Sell
-//                         result = {value: rec.cUnitQuotation * -rec.cCount, type: 2}
-//                         break
-//                     case 3:
-//                         // Dividend
-//                         result = {value: rec.cUnitQuotation * rec.cCount, type: 3}
-//                         break
-//                     case 4:
-//                         // Credit
-//                         result.value = rec.cAmount + rec.cFees + rec.cSTax + rec.cFTax + rec.cTax + rec.cSoli
-//                         break
-//                     case 5:
-//                         // Debit
-//                         result.value = -rec.cAmount - rec.cFees - rec.cSTax - rec.cFTax - rec.cTax - rec.cSoli
-//                         break
-//                     default:
-//                         throw new Error('IMPORT_DATABASE: undefined type')
-//                 }
-//                 return result
-//             }
-//
-//             if (!Object.keys(backupObject.sm).includes('cDBVersion')) {
-//                 info(T.STRINGS.TITLE, T.STRINGS.INVALID, null)
-//                 return
-//             } else if (backupObject.sm.cDBVersion < CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
-//                 info(T.STRINGS.TITLE, T.STRINGS.VERSION, null)
-//                 return
-//             } else if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length > 0) {
-//                 info(T.STRINGS.TITLE, T.STRINGS.NOT_EMPTY, null)
-//                 return
-//             }
-//             await clearAllAccounts()
-//             await clearAllBookings()
-//             await clearAllBookingTypes()
-//             await clearAllStocks()
-//             if (backupObject.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.value.length === 0) {
-//                 const accountRecords = [{
-//                     cID: activeId,
-//                     cSwift: 'KMKLPJJ9',
-//                     cIban: 'XX13120300001064506999',
-//                     cLogoUrl: '',
-//                     cWithDepot: true
-//                 }]
-//                 const bookingTypeRecords = [
-//                     {cID: 1, cName: T.STRINGS.SHARE_BUY, cAccountNumberID: activeId},
-//                     {cID: 2, cName: T.STRINGS.SHARE_SELL, cAccountNumberID: activeId},
-//                     {cID: 3, cName: T.STRINGS.DIVIDEND, cAccountNumberID: activeId},
-//                     {cID: 4, cName: T.STRINGS.OTHERS, cAccountNumberID: activeId},
-//                     {cID: 5, cName: T.STRINGS.FEE, cAccountNumberID: activeId},
-//                     {cID: 6, cName: T.STRINGS.TAX, cAccountNumberID: activeId}
-//                 ]
-//                 for (const rec of accountRecords) {
-//                     accountsStoreData.push(rec)
-//                     accountsImportData.push({type: 'add', data: rec, key: -1})
-//                 }
-//                 for (const rec of bookingTypeRecords) {
-//                     bookingTypesStoreData.push(rec)
-//                     bookingTypesImportData.push({type: 'add', data: rec, key: -1})
-//                 }
-//                 for (const rec of backupObject.stocks) {
-//                     const stockClone: I_Stock_Store = {} as I_Stock_Store
-//                     stockClone.cID = rec.cID
-//                     stockClone.cAccountNumberID = activeId
-//                     stockClone.cSymbol = rec.cSym
-//                     stockClone.cMeetingDay = isoDate(rec.cMeetingDay)
-//                     stockClone.cQuarterDay = isoDate(rec.cQuarterDay)
-//                     stockClone.cCompany = rec.cCompany
-//                     stockClone.cISIN = rec.cISIN
-//                     stockClone.cFadeOut = rec.cFadeOut
-//                     stockClone.cFirstPage = rec.cFirstPage
-//                     stockClone.cFirstPage = rec.cFirstPage
-//                     stockClone.cURL = rec.cURL
-//                     stockClone.cAskDates = CONS.DATE.DEFAULT_ISO
-//                     stocksImportData.push({type: 'add', data: stockClone, key: -1})
-//                     stocksStoreData.push(stockClone)
-//                 }
-//                 for (let i = 0; backupObject.transfers && i < backupObject.transfers.length; i++) {
-//                     const booking: I_Booking_Store = {} as I_Booking_Store
-//                     const smTransfer: I_Booking_SM = backupObject.transfers[i]
-//                     booking.cID = i + 1
-//                     booking.cAccountNumberID = activeId
-//                     booking.cStockID = smTransfer.cStockID
-//                     booking.cBookDate = isoDate(smTransfer.cDate)
-//                     booking.cBookingTypeID = smTransfer.cType
-//                     booking.cExDate = isoDate(smTransfer.cExDay)
-//                     booking.cCount = smTransfer.cCount < 0 ? -smTransfer.cCount : smTransfer.cCount
-//                     booking.cDescription = smTransfer.cDescription
-//                     booking.cMarketPlace = smTransfer.cMarketPlace
-//                     booking.cTransactionTaxCredit = smTransfer.cFTax > 0 ? smTransfer.cFTax : 0
-//                     booking.cTransactionTaxDebit = smTransfer.cFTax < 0 ? -smTransfer.cFTax : 0
-//                     booking.cSourceTaxCredit = smTransfer.cSTax > 0 ? smTransfer.cSTax : 0
-//                     booking.cSourceTaxDebit = smTransfer.cSTax < 0 ? -smTransfer.cSTax : 0
-//                     booking.cFeeCredit = smTransfer.cFees > 0 ? smTransfer.cFees : 0
-//                     booking.cFeeDebit = smTransfer.cFees < 0 ? -smTransfer.cFees : 0
-//                     booking.cTaxCredit = smTransfer.cTax > 0 ? smTransfer.cTax : 0
-//                     booking.cTaxDebit = smTransfer.cTax < 0 ? -smTransfer.cTax : 0
-//                     booking.cSoliCredit = smTransfer.cSoli > 0 ? smTransfer.cSoli : 0
-//                     booking.cSoliDebit = smTransfer.cSoli < 0 ? -smTransfer.cSoli : 0
-//                     booking.cCredit = smTransfer.cAmount > 0 ? smTransfer.cAmount : 0
-//                     booking.cDebit = smTransfer.cAmount < 0 ? -smTransfer.cAmount : 0
-//                     if (smTransfer.cType === 1) {
-//                         booking.cDebit = getCreditDebit(smTransfer).value
-//                         booking.cCredit = 0
-//                     } else if (smTransfer.cType === 2) {
-//                         booking.cCredit = getCreditDebit(smTransfer).value
-//                         booking.cDebit = 0
-//                     } else if (smTransfer.cType === 3) {
-//                         booking.cCredit = getCreditDebit(smTransfer).value
-//                         booking.cDebit = 0
-//                     } else if (smTransfer.cType === 4) {
-//                         booking.cBookingTypeID = getCreditDebit(smTransfer).type
-//                         booking.cCredit = getCreditDebit(smTransfer).value
-//                         booking.cDebit = 0
-//                         booking.cFeeCredit = 0
-//                         booking.cFeeDebit = 0
-//                         booking.cTransactionTaxCredit = 0
-//                         booking.cTransactionTaxDebit = 0
-//                         booking.cSourceTaxCredit = 0
-//                         booking.cSourceTaxDebit = 0
-//                         booking.cTaxCredit = 0
-//                         booking.cTaxDebit = 0
-//                         booking.cSoliCredit = 0
-//                         booking.cSoliDebit = 0
-//                     } else if (smTransfer.cType === 5) {
-//                         booking.cBookingTypeID = getCreditDebit(smTransfer).type
-//                         booking.cCredit = 0
-//                         booking.cDebit = getCreditDebit(smTransfer).value
-//                         booking.cFeeCredit = 0
-//                         booking.cFeeDebit = 0
-//                         booking.cTransactionTaxCredit = 0
-//                         booking.cTransactionTaxDebit = 0
-//                         booking.cSourceTaxCredit = 0
-//                         booking.cSourceTaxDebit = 0
-//                         booking.cTaxCredit = 0
-//                         booking.cTaxDebit = 0
-//                         booking.cSoliCredit = 0
-//                         booking.cSoliDebit = 0
-//                     }
-//                     bookingsStoreData.push(booking)
-//                     bookingsImportData.push({type: 'add', data: booking, key: -1})
-//                 }
-//             } else if (backupObject.sm.cDBVersion > CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
-//                 for (const rec of backupObject.accounts) {
-//                     accountsStoreData.push(rec)
-//                     accountsImportData.push({type: 'add', data: rec, key: -1})
-//                 }
-//                 for (const rec of backupObject.stocks) {
-//                     stocksStoreData.push(rec)
-//                     stocksImportData.push({type: 'add', data: rec, key: -1})
-//                 }
-//                 for (const rec of backupObject.bookingTypes) {
-//                     bookingTypesStoreData.push(rec)
-//                     bookingTypesImportData.push({type: 'add', data: rec, key: -1})
-//                 }
-//                 for (const rec of backupObject.bookings) {
-//                     bookingsStoreData.push(rec)
-//                     bookingsImportData.push({type: 'add', data: rec, key: -1})
-//                 }
-//             } else {
-//                 await notice(['IMPORT_DATABASE: system error'])
-//             }
-//             records.init(
-//                 {
-//                     accountsDB: accountsStoreData,
-//                     bookingsDB: bookingsStoreData.filter(rec => rec.cAccountNumberID === activeId),
-//                     bookingTypesDB: bookingTypesStoreData.filter(rec => rec.cAccountNumberID === activeId),
-//                     stocksDB: stocksStoreData.filter(rec => rec.cAccountNumberID === activeId)
-//                 }, T.MESSAGES
-//             )
-//             await importAccounts(accountsImportData)
-//             await importBookingTypes(bookingTypesImportData)
-//             await importBookings(bookingsImportData)
-//             await importStocks(stocksImportData)
-//             resetTeleport()
-//         }
-//     }
-//
-//     const fr: FileReader = new FileReader()
-//     fr.addEventListener(CONS.EVENTS.LOAD, onReaderLoaded, CONS.SYSTEM.ONCE)
-//     fr.addEventListener(CONS.EVENTS.ERROR, onReaderError, CONS.SYSTEM.ONCE)
-//     if (fileBlob.value.size > 0) {
-//         fr.readAsText(fileBlob.value, 'UTF-8')
-//     }
-// }
-
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
 
@@ -488,5 +254,15 @@ log('--- ImportDatabase.vue setup ---')
                 variant="outlined"
                 @change="onChange"/>
         </v-card-text>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

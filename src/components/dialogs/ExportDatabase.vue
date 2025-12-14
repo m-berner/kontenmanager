@@ -6,91 +6,84 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Account_DB, I_Booking_DB, I_Booking_Type_DB, I_Stock_DB} from '@/types'
 import {defineExpose} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
+import {useDialogGuards} from '@/composables/useDialogGuards'
+import {useImportExport} from '@/composables/useImportExport'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {CONS, isoDate, log} = useApp()
 const {manifest, writeBufferToFile} = useBrowser()
 const {getAll: getAllAccounts} = useAccountsDB()
 const {getAll: getAllBookings} = useBookingsDB()
 const {getAll: getAllBookingTypes} = useBookingTypesDB()
 const {getAll: getAllStocks} = useStocksDB()
+const {isLoading, handleError, withLoading} = useDialogGuards()
+const {resetTeleport} = useRuntimeStore()
+const {ImportExportService} = useImportExport()
+
+const exportService = new ImportExportService(CONS, isoDate)
 
 const prefix = new Date().toISOString().substring(0, 10)
-const fn = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}.json`
+const filename = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}.json`
 
 const T = Object.freeze(
     {
+        MESSAGES: {
+            ERROR_EXPORT: t('messages.exportDatabase.error')
+        },
         STRINGS: {
             TITLE: t('components.dialogs.exportDatabase.title'),
-            TEXT: t('components.dialogs.exportDatabase.text', {filename: fn})
+            TEXT: t('components.dialogs.exportDatabase.text', {filename})
         }
     }
 )
 
-const onClickOk = async (): Promise<void> => {
-    log('EXPORT_DATABASE : onClickOk')
-    const {resetTeleport} = useRuntimeStore()
-    const accounts: I_Account_DB[] = await getAllAccounts()
-    const bookings: I_Booking_DB[] = await getAllBookings()
-    const stocks: I_Stock_DB[] = await getAllStocks()
-    const bookingTypes: I_Booking_Type_DB[] = await getAllBookingTypes()
-    const stringifyDB = (): string => {
-        let buffer: string
-        let i: number
-        buffer = '"accounts":[\n'
-        for (i = 0; i < accounts.length; i++) {
-            buffer += JSON.stringify(accounts[i])
-            if (i === accounts.length - 1) {
-                buffer += '\n],\n'
-            } else {
-                buffer += ',\n'
-            }
-        }
-        buffer += i === 0 ? '],\n' : ''
-
-        buffer += '"stocks":[\n'
-        for (i = 0; i < stocks.length; i++) {
-            buffer += JSON.stringify(stocks[i])
-            if (i === stocks.length - 1) {
-                buffer += '\n],\n'
-            } else {
-                buffer += ',\n'
-            }
-        }
-        buffer += i === 0 ? '],\n' : ''
-        buffer += '"bookingTypes":[\n'
-        for (i = 0; i < bookingTypes.length; i++) {
-            buffer += JSON.stringify(bookingTypes[i])
-            if (i === bookingTypes.length - 1) {
-                buffer += '\n],\n'
-            } else {
-                buffer += ',\n'
-            }
-        }
-        buffer += i === 0 ? '],\n' : ''
-        buffer += '"bookings":[\n'
-        for (i = 0; i < bookings.length; i++) {
-            buffer += JSON.stringify(bookings[i])
-            if (i === bookings.length - 1) {
-                buffer += '\n]\n'
-            } else {
-                buffer += ',\n'
-            }
-        }
-        return buffer
+const createExportData = async (): Promise<string> => {
+    const [accounts, bookings, stocks, bookingTypes] = await Promise.all(
+        [
+            getAllAccounts(),
+            getAllBookings(),
+            getAllStocks(),
+            getAllBookingTypes()
+        ]
+    )
+    const metadata = {
+        cVersion: parseInt(manifest.value.version.replace(/./g, '')),
+        cDBVersion: CONS.INDEXED_DB.CURRENT_VERSION,
+        cEngine: 'indexeddb'
     }
-    let buffer = `{\n"sm": {"cVersion":${manifest.value.version.replace(/\./g, '')}, "cDBVersion":${CONS.INDEXED_DB.CURRENT_VERSION}, "cEngine":"indexeddb"},\n`
-    buffer += stringifyDB()
-    buffer += '}'
-    await writeBufferToFile(buffer, fn)
-    resetTeleport()
+    const dataString = exportService.stringifyDatabase(
+        accounts,
+        stocks,
+        bookingTypes,
+        bookings
+    )
+    return `sm: ${JSON.stringify(metadata)},\n${dataString}`
+}
+
+const onClickOk = async (): Promise<void> => {
+    log('EXPORT_DATABASE: onClickOk')
+    await withLoading(async () => {
+        try {
+            const exportData = await createExportData()
+            await writeBufferToFile(exportData, filename)
+            resetTeleport()
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                // eslint-disable-next-line no-console
+                async (msg) => { console.error(msg) },
+                'EXPORT_DATABASE',
+                T.MESSAGES.ERROR_EXPORT
+            )
+        }
+    })
 }
 
 const title = T.STRINGS.TITLE
@@ -111,5 +104,15 @@ log('--- ExportDatabase.vue setup ---')
                     variant="outlined"/>
             </v-card-text>
         </v-card>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

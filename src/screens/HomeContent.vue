@@ -21,7 +21,7 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
 const {closeDB} = useIndexedDB()
-const {addStorageChangedListener, clearStorage, installStorageLocal} = useBrowser()
+const {addStorageChangedListener, clearStorage, installStorageLocal, setStorage} = useBrowser()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 const settings = useSettingsStore()
@@ -93,8 +93,8 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], 
 const search = ref<string>('')
 
 theme.global.name.value = skin.value
-
-const changeHandler = (changes: Record<string, browser.storage.StorageChange>): void => {
+//TODO save into storage.local as well!!!
+const changeHandler = async (changes: Record<string, browser.storage.StorageChange>): Promise<void> => {
     log('APP_INDEX: changeHandler')
     const changesKey = Object.keys(changes)
     const {service, indexes, markets, materials, exchanges} = storeToRefs(settings)
@@ -104,21 +104,27 @@ const changeHandler = (changes: Record<string, browser.storage.StorageChange>): 
                 theme.global.name.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue
             }
             skin.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN, skin.value)
             break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
             service.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service.value)
             break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
             indexes.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, indexes.value)
             break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
             markets.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, markets.value)
             break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
             materials.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS, materials.value)
             break
         case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
             exchanges.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue
+            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, exchanges.value)
             break
         default:
     }

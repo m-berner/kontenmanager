@@ -15,6 +15,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -25,48 +26,66 @@ const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {items: accountItems} = storeToRefs(records.accounts)
+const {ensureConnected, handleError, withLoading} = useDialogGuards()
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                INFO_TITLE: t('messages.infoTitle'),
-                                RESTRICTED_IMPORT: t('messages.restrictedImport'),
-                                SUCCESS_ADD: t('messages.deleteAccountConfirmation.success'),
-                                ERROR_ONCLICK_OK: t('messages.onClickOk'),
-                                NO_ACCOUNT: t('messages.noAccount'),
-                                CONFIRM: t('messages.deleteAccountConfirmation.confirm')
-                            },
-                            STRINGS: {
-                                TITLE: t('components.dialogs.deleteAccountConfirmation.title')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            INFO_TITLE: t('messages.infoTitle'),
+            RESTRICTED_IMPORT: t('messages.restrictedImport'),
+            SUCCESS_DELETE: t('messages.deleteAccountConfirmation.success'),
+            ERROR_ONCLICK_OK: t('messages.onClickOk'),
+            NO_ACCOUNT: t('messages.noAccount'),
+            CONFIRM: t('messages.deleteAccountConfirmation.confirm'),
+            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+        },
+        STRINGS: {
+            TITLE: t('components.dialogs.deleteAccountConfirmation.title')
+        }
+    }
+)
+
+const switchToNextAccount = async (): Promise<void> => {
+    if (accountItems.value.length === 0) {
+        activeAccountId.value = -1
+        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
+        return
+    }
+
+    const newActiveId = accountItems.value[0].cID
+    activeAccountId.value = newActiveId
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, newActiveId)
+
+    const storesDB = await getDatabaseStores(newActiveId)
+    await records.init(storesDB, T.MESSAGES)
+}
 
 const onClickOk = async (): Promise<void> => {
     log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
-    if (!isConnected.value) {
-        await notice(['Database not connected'])
-        return
-    }
-    try {
-        await deleteDatabaseWithAccount(activeAccountId.value)
-        records.accounts.remove(activeAccountId.value)
-        if (accountItems.value.length > 0) {
-            activeAccountId.value = accountItems.value[0].cID
-            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-            const storesDB = await getDatabaseStores(activeAccountId.value)
-            await records.init(storesDB, T.MESSAGES)
-        } else {
-            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
+
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
+    await withLoading(async () => {
+        try {
+            const accountToDelete = activeAccountId.value
+
+            await deleteDatabaseWithAccount(accountToDelete)
+            records.accounts.remove(accountToDelete)
+
+            await switchToNextAccount()
+
+            resetTeleport()
+            await notice([T.MESSAGES.SUCCESS_DELETE])
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                notice,
+                'DELETE_ACCOUNT_CONFIRMATION',
+                T.MESSAGES.ERROR_ONCLICK_OK
+            )
         }
-        resetTeleport()
-        await notice([T.MESSAGES.SUCCESS_ADD])
-    } catch (e) {
-        if (e instanceof Error) {
-            log(T.MESSAGES.ERROR_ONCLICK_OK, {error: e.message})
-            await notice([T.MESSAGES.ERROR_ONCLICK_OK, e.message])
-        } else {
-            throw new Error(`${T.MESSAGES.ERROR_ONCLICK_OK}: unknown`)
-        }
-    }
+    })
 }
 
 const title = T.STRINGS.TITLE

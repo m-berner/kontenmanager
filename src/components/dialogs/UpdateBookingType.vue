@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {I_Booking_Type_Store} from '@/types'
-import {defineExpose, ref} from 'vue'
+import {defineExpose, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -16,6 +16,7 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -25,23 +26,27 @@ const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                SUCCESS_UPDATE: t('messages.updateBookingType.success'),
-                                ERROR_UPDATE: t('messages.updateBookingType.error'),
-                                ERROR_ONCLICK_OK: t('messages.onClickOk')
-                            },
-                            STRINGS: {
-                                TITLE: t('components.dialogs.updateBookingType.title'),
-                                BOOKING_TYPE_LABEL: t('components.dialogs.updateBookingType.bookingTypeLabel')
-                            },
-                            NAME_RULES: [
-                                t('validators.nameRules.required'),
-                                t('validators.nameRules.length'),
-                                t('validators.nameRules.begin')
-                            ]
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            SUCCESS_UPDATE: t('messages.updateBookingType.success'),
+            ERROR_DUPLICATE: t('messages.updateBookingType.error'),
+            ERROR_ONCLICK_OK: t('messages.onClickOk'),
+            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+        },
+        STRINGS: {
+            TITLE: t('components.dialogs.updateBookingType.title'),
+            BOOKING_TYPE_LABEL: t('components.dialogs.updateBookingType.bookingTypeLabel')
+        },
+        NAME_RULES: [
+            t('validators.nameRules.required'),
+            t('validators.nameRules.length'),
+            t('validators.nameRules.begin')
+        ]
+    }
+)
 
 const formSelectedIndex = ref()
 const formName = ref<string>('')
@@ -49,42 +54,75 @@ const formVisible = ref<boolean>(true)
 const formRef = ref<HTMLFormElement | null>(null)
 
 const onSelect = () => {
-    const ind = records.bookingTypes.getIndexById(formSelectedIndex.value)
-    formName.value = records.bookingTypes.items[ind].cName
+    if (!formSelectedIndex.value) return
+    const index = records.bookingTypes.getIndexById(formSelectedIndex.value)
+    if (index === -1) return
+    formName.value = bookingTypeItems.value[index].cName
     formVisible.value = false
 }
+
+const isDuplicateName = (name: string, currentId: number): boolean => {
+    const trimmedName = name.trim()
+    return records.bookingTypes.items.some(
+        item => item.cName === trimmedName && item.cID !== currentId
+    )
+}
+
+const buildBookingTypeFromForm = (index: number): I_Booking_Type_Store => ({
+    cID: bookingTypeItems.value[index].cID,
+    cName: formName.value.trim(),
+    cAccountNumberID: bookingTypeItems.value[index].cAccountNumberID
+})
 
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_BOOKING_TYPE: onClickOk')
     if (!await validateForm(formRef)) return
-    if (!isConnected.value) {
-        await notice(['Database not connected'])
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!formSelectedIndex.value) {
+        await notice(['No booking type selected'])
         return
     }
-    try {
-        if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
-            const ind = records.bookingTypes.getIndexById(formSelectedIndex.value)
-            const bookingType: I_Booking_Type_Store = {
-                cID: bookingTypeItems.value[ind].cID,
-                cName: formName.value.trim(),
-                cAccountNumberID: bookingTypeItems.value[ind].cAccountNumberID
+    await withLoading(async () => {
+        try {
+            const index = records.bookingTypes.getIndexById(formSelectedIndex.value!)
+            if (index === -1) {
+                await notice(['Booking type not found'])
+                return
             }
+
+            if (isDuplicateName(formName.value, formSelectedIndex.value!)) {
+                await notice([T.MESSAGES.ERROR_DUPLICATE])
+                return
+            }
+
+            const bookingType = buildBookingTypeFromForm(index)
+
             records.bookingTypes.update(bookingType)
             await update(bookingType)
             runtime.resetTeleport()
             await notice([T.MESSAGES.SUCCESS_UPDATE])
-        } else {
-            await notice([T.MESSAGES.ERROR_UPDATE])
+
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                notice,
+                'UPDATE_BOOKING_TYPE',
+                T.MESSAGES.ERROR_ONCLICK_OK
+            )
         }
-    } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-    }
+    })
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({onClickOk, title})
+
+onBeforeMount(() => {
+    log('UPDATE_BOOKING_TYPE: onBeforeMount')
+    formSelectedIndex.value = undefined
+    formName.value = ''
+    formVisible.value = true
+})
 
 log('--- UpdateBookingType.vue setup ---')
 </script>
@@ -118,5 +156,15 @@ log('--- UpdateBookingType.vue setup ---')
             variant="outlined"
             @focus="formRef?.resetValidation()"
             @update:model-value="onSelect"/>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

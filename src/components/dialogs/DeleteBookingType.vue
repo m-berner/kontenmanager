@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {defineExpose, ref} from 'vue'
+import {defineExpose, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -14,56 +14,81 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useValidation} from '@/composables/useValidation'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {remove, isConnected} = useBookingTypesDB()
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 const {validateForm} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                SUCCESS_ADD: t('messages.deleteBookingType.success'),
-                                ERROR_ADD: t('messages.deleteBookingType.error'),
-                                ERROR_ONCLICK_OK: t('messages.onClickOk')
-                            },
-                            STRINGS: {
-                                TITLE: t('components.dialogs.deleteBookingType.title'),
-                                BOOKING_TYPE_LABEL: t('components.dialogs.deleteBookingType.bookingTypeLabel'),
-                                PLACEHOLDER: t('components.dialogs.deleteBookingType.placeholder')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            SUCCESS_DELETE: t('messages.deleteBookingType.success'),
+            ERROR_IN_USE: t('messages.deleteBookingType.error'),
+            ERROR_ONCLICK_OK: t('messages.onClickOk'),
+            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+        },
+        STRINGS: {
+            TITLE: t('components.dialogs.deleteBookingType.title'),
+            BOOKING_TYPE_LABEL: t('components.dialogs.deleteBookingType.bookingTypeLabel'),
+            PLACEHOLDER: t('components.dialogs.deleteBookingType.placeholder')
+        }
+    }
+)
 
-const selected = ref()
+const selected = ref<number | undefined>()
 const formRef = ref<HTMLFormElement | null>(null)
+
+const canDeleteBookingType = (bookingTypeId: number): boolean => {
+    return !records.bookings.hasBookingType(bookingTypeId)
+}
 
 const onClickOk = async (): Promise<void> => {
     log('DELETE_BOOKING_TYPE : onClickOk')
+
     if (!await validateForm(formRef)) return
-    if (!isConnected.value) {
-        await notice(['Database not connected'])
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
+    if (!selected.value) {
+        log('DELETE_BOOKING_TYPE: No booking type selected')
         return
     }
-    try {
-        if (!records.bookings.hasBookingType(selected.value)) {
-            records.bookingTypes.remove(selected.value)
-            await remove(selected.value)
-            await notice([T.MESSAGES.SUCCESS_ADD])
-        } else {
-            await notice([T.MESSAGES.ERROR_ADD])
+
+    await withLoading(async () => {
+        try {
+            if (!canDeleteBookingType(selected.value!)) {
+                await notice([T.MESSAGES.ERROR_IN_USE])
+                return
+            }
+
+            records.bookingTypes.remove(selected.value!)
+            await remove(selected.value!)
+            await notice([T.MESSAGES.SUCCESS_DELETE])
+            runtime.resetTeleport()
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                notice,
+                'DELETE_BOOKING_TYPE',
+                T.MESSAGES.ERROR_ONCLICK_OK
+            )
         }
-        runtime.resetTeleport()
-    } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-    }
+    })
 }
 
 const title = T.STRINGS.TITLE
 defineExpose({title, onClickOk})
+
+onBeforeMount(() => {
+    log('DELETE_BOOKING_TYPE: onBeforeMount')
+    selected.value = undefined
+})
 
 log('--- DeleteBookingType.vue setup ---')
 </script>
@@ -86,5 +111,15 @@ log('--- DeleteBookingType.vue setup ---')
             density="compact"
             variant="outlined"
             @focus="formRef?.resetValidation()"/>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

@@ -19,6 +19,7 @@ import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useStockFormular} from '@/composables/useStockFormular'
 import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
@@ -30,16 +31,23 @@ const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {stockFormularData, formRef} = useStockFormular()
-const T = Object.freeze({
-                            MESSAGES: {
-                                SUCCESS_ADD: t('messages.addStock.success'),
-                                ERROR_ONCLICK_OK: t('messages.onClickOk')
-                            },
-                            STRINGS: {
-                                TITLE: t('components.dialogs.addStock.title')
-                            }
-                        })
-const formDisabled = ref(false)
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
+
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            SUCCESS_ADD: t('messages.addStock.success'),
+            ERROR_ADD: t('messages.addStock.error'),
+            ERROR_ONCLICK_OK: t('messages.onClickOk'),
+            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+        },
+        STRINGS: {
+            TITLE: t('components.dialogs.addStock.title')
+        }
+    }
+)
+
+const formDisabled = ref<boolean>(false)
 
 const reset = (): void => {
     Object.assign(stockFormularData, {
@@ -50,38 +58,49 @@ const reset = (): void => {
     formDisabled.value = false
 }
 
+const buildStockFromFormData = (): Omit<I_Stock_DB, 'cID'> => ({
+    cCompany: stockFormularData.company.trim(),
+    cISIN: stockFormularData.isin,
+    cSymbol: stockFormularData.symbol,
+    cMeetingDay: '',
+    cQuarterDay: '',
+    cFadeOut: 0,
+    cFirstPage: 0,
+    cURL: '',
+    cAccountNumberID: activeAccountId.value,
+    cAskDates: CONS.DATE.DEFAULT_ISO
+})
+
 const onClickOk = async (): Promise<void> => {
     log('ADD_STOCK : onClickOk')
     if (!await validateForm(formRef)) return
-    if (!isConnected.value) {
-        await notice(['Database not connected'])
-        return
-    }
-    try {
-        const stock: Omit<I_Stock_DB, 'cID'> = {
-            cCompany: stockFormularData.company.trim(),
-            cISIN: stockFormularData.isin,
-            cSymbol: stockFormularData.symbol,
-            cMeetingDay: '',
-            cQuarterDay: '',
-            cFadeOut: 0,
-            cFirstPage: 0,
-            cURL: '',
-            cAccountNumberID: activeAccountId.value,
-            cAskDates: CONS.DATE.DEFAULT_ISO
-        }
-        const addStockID = await add(stock)
-        if (addStockID > 0) {
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
+    await withLoading(async () => {
+        try {
+            const stock = buildStockFromFormData()
+
+            const addStockID = await add(stock)
+
+            if (addStockID === -1) {
+                log('ADD_STOCK: onClickOk', {error: T.MESSAGES.ERROR_ADD})
+                await notice([T.MESSAGES.ERROR_ADD])
+                return
+            }
             const dbStock: I_Stock_DB = {cID: addStockID, ...stock}
             records.stocks.add(dbStock)
             resetTeleport()
             await notice([T.MESSAGES.SUCCESS_ADD])
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                notice,
+                'ADD_STOCK',
+                T.MESSAGES.ERROR_ONCLICK_OK
+            )
         }
-    } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-    }
+    })
 }
 
 const title = T.STRINGS.TITLE
@@ -101,5 +120,15 @@ log('--- AddStock.vue setup ---')
         validate-on="submit"
         @submit.prevent>
         <StockFormular :isUpdate="false"/>
+        <v-overlay
+            v-model="isLoading"
+            class="align-center justify-center"
+            contained>
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

@@ -19,6 +19,7 @@ import {useValidation} from '@/composables/useValidation'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -32,58 +33,105 @@ const {activeId} = storeToRefs(runtime)
 const {bookingFormularData, formRef, selected} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                ERROR_ONCLICK_OK: t('messages.onClickOk'),
-                                SUCCESS_UPDATE: t('messages.updateBooking.success')
-                            },
-                            STRINGS: {
-                                TITLE: t('components.dialogs.updateBooking.title')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            ERROR_ONCLICK_OK: t('messages.onClickOk'),
+            SUCCESS_UPDATE: t('messages.updateBooking.success'),
+            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+        },
+        STRINGS: {
+            TITLE: t('components.dialogs.updateBooking.title')
+        }
+    }
+)
+
+const loadCurrentBooking = (): void => {
+    const bookingIndex = records.bookings.getIndexById(activeId.value)
+
+    if (bookingIndex === -1) {
+        log('UPDATE_BOOKING: Booking not found', {error: activeId.value})
+        return
+    }
+
+    const currentBooking = bookingItems.value[bookingIndex]
+    selected.value = currentBooking.cBookingTypeID
+
+    Object.assign(bookingFormularData, {
+        id: currentBooking.cID,
+        bookingTypeId: currentBooking.cBookingTypeID,
+        bookDate: currentBooking.cBookDate,
+        debit: currentBooking.cDebit,
+        credit: currentBooking.cCredit,
+        description: currentBooking.cDescription,
+        exDate: currentBooking.cExDate,
+        count: currentBooking.cCount,
+        accountTypeId: currentBooking.cAccountNumberID,
+        stockId: currentBooking.cStockID,
+        sourceTaxCredit: currentBooking.cSourceTaxCredit,
+        sourceTaxDebit: currentBooking.cSourceTaxDebit,
+        transactionTaxCredit: currentBooking.cTransactionTaxCredit,
+        transactionTaxDebit: currentBooking.cTransactionTaxDebit,
+        taxCredit: currentBooking.cTaxCredit,
+        taxDebit: currentBooking.cTaxDebit,
+        feeCredit: currentBooking.cFeeCredit,
+        feeDebit: currentBooking.cFeeDebit,
+        soliCredit: currentBooking.cSoliCredit,
+        soliDebit: currentBooking.cSoliDebit,
+        marketPlace: currentBooking.cMarketPlace
+    })
+}
+
+const buildBookingFromFormData = (): I_Booking_Store & I_Booking_DB => ({
+    cID: bookingFormularData.id,
+    cAccountNumberID: activeAccountId.value,
+    cStockID: bookingFormularData.stockId,
+    cBookingTypeID: selected.value,
+    cBookDate: bookingFormularData.bookDate,
+    cExDate: bookingFormularData.exDate,
+    cCount: bookingFormularData.count,
+    cDescription: bookingFormularData.description,
+    cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
+    cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
+    cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
+    cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
+    cFeeCredit: bookingFormularData.feeCredit,
+    cFeeDebit: bookingFormularData.feeDebit,
+    cTaxCredit: bookingFormularData.taxCredit,
+    cTaxDebit: bookingFormularData.taxDebit,
+    cMarketPlace: bookingFormularData.marketPlace,
+    cSoliCredit: bookingFormularData.soliCredit,
+    cSoliDebit: bookingFormularData.soliDebit,
+    cDebit: bookingFormularData.debit,
+    cCredit: bookingFormularData.credit
+})
 
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_BOOKING : onClickOk')
     if (!await validateForm(formRef)) return
-    if (!isConnected.value) {
-        await notice(['Database not connected'])
-        return
-    }
-    try {
-        const booking: I_Booking_Store & I_Booking_DB = {
-            cID: bookingFormularData.id,
-            cAccountNumberID: activeAccountId.value,
-            cStockID: bookingFormularData.stockId,
-            cBookingTypeID: selected.value,
-            cBookDate: bookingFormularData.bookDate,
-            cExDate: bookingFormularData.exDate,
-            cCount: bookingFormularData.count,
-            cDescription: bookingFormularData.description,
-            cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
-            cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
-            cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
-            cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
-            cFeeCredit: bookingFormularData.feeCredit,
-            cFeeDebit: bookingFormularData.feeDebit,
-            cTaxCredit: bookingFormularData.taxCredit,
-            cTaxDebit: bookingFormularData.taxDebit,
-            cMarketPlace: bookingFormularData.marketPlace,
-            cSoliCredit: bookingFormularData.soliCredit,
-            cSoliDebit: bookingFormularData.soliDebit,
-            cDebit: bookingFormularData.debit,
-            cCredit: bookingFormularData.credit
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
+    await withLoading(async () => {
+        try {
+            const booking: I_Booking_Store & I_Booking_DB = buildBookingFromFormData()
+
+            records.bookings.update(booking)
+            await update(booking)
+            await notice([T.MESSAGES.SUCCESS_UPDATE])
+            runtime.resetOptionsMenuColors()
+            runtime.resetTeleport()
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                notice,
+                'UPDATE_BOOKING',
+                T.MESSAGES.ERROR_ONCLICK_OK
+            )
         }
-        records.bookings.update(booking)
-        await update(booking)
-        await notice([T.MESSAGES.SUCCESS_UPDATE])
-        runtime.resetOptionsMenuColors()
-        runtime.resetTeleport()
-    } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-    }
+    })
 }
 
 const title = T.STRINGS.TITLE
@@ -91,34 +139,7 @@ defineExpose({onClickOk, title})
 
 onBeforeMount(() => {
     log('UPDATE_BOOKING: onMounted')
-    const bookingIndex = records.bookings.getIndexById(activeId.value)
-    if (bookingIndex > -1) {
-        const currentBooking = bookingItems.value[bookingIndex]
-        selected.value = currentBooking.cBookingTypeID
-        Object.assign(bookingFormularData, {
-            id: currentBooking.cID,
-            bookingTypeId: currentBooking.cBookingTypeID,
-            bookDate: currentBooking.cBookDate,
-            debit: currentBooking.cDebit,
-            credit: currentBooking.cCredit,
-            description: currentBooking.cDescription,
-            exDate: currentBooking.cExDate,
-            count: currentBooking.cCount,
-            accountTypeId: currentBooking.cAccountNumberID,
-            stockId: currentBooking.cStockID,
-            sourceTaxCredit: currentBooking.cSourceTaxCredit,
-            sourceTaxDebit: currentBooking.cSourceTaxDebit,
-            transactionTaxCredit: currentBooking.cTransactionTaxCredit,
-            transactionTaxDebit: currentBooking.cTransactionTaxDebit,
-            taxCredit: currentBooking.cTaxCredit,
-            taxDebit: currentBooking.cTaxDebit,
-            feeCredit: currentBooking.cFeeCredit,
-            feeDebit: currentBooking.cFeeDebit,
-            soliCredit: currentBooking.cSoliCredit,
-            soliDebit: currentBooking.cSoliDebit,
-            marketPlace: currentBooking.cMarketPlace
-        })
-    }
+    loadCurrentBooking()
 })
 
 log('--- UpdateBooking.vue setup ---')
@@ -130,5 +151,15 @@ log('--- UpdateBooking.vue setup ---')
         validate-on="submit"
         @submit.prevent>
         <BookingFormular/>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

@@ -26,7 +26,7 @@ const {notice} = useBrowser()
 const {add, isConnected} = useBookingsDB()
 const {validateForm} = useValidation()
 const {bookingFormularData, formRef, reset, selected} = useBookingFormular()
-const {ensureConnected, handleError, withLoading} = useDialogGuards()
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
@@ -44,6 +44,7 @@ const T = Object.freeze(
         }
     }
 )
+
 const BOOKING_TYPES = CONS.INDEXED_DB.STORES.BOOKING_TYPES
 const isStockRelated = (bookingTypeId: number): boolean => {
     return bookingTypeId >= BOOKING_TYPES.BUY && bookingTypeId <= BOOKING_TYPES.DIVIDEND
@@ -116,8 +117,8 @@ const onClickOk = async (): Promise<void> => {
                 return
             }
 
-            const completeBooking: I_Booking_Store = {cID: addBookingID, ...booking}
-            records.bookings.add(completeBooking, true)
+            const dbBooking: I_Booking_Store = {cID: addBookingID, ...booking}
+            records.bookings.add(dbBooking, true)
             reset()
             await notice([T.MESSAGES.SUCCESS_ADD])
         } catch (error) {
@@ -149,5 +150,15 @@ log('--- AddBooking.vue setup ---')
         validate-on="submit"
         @submit.prevent>
         <BookingFormular/>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

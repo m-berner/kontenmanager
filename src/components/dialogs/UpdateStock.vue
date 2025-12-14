@@ -19,6 +19,7 @@ import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useApp} from '@/composables/useApp'
 import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -31,47 +32,74 @@ const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {activeId} = storeToRefs(runtime)
 const {stockFormularData, formRef} = useStockFormular()
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                SUCCESS_UPDATE: t('messages.updateStock.success'),
-                                ERROR_ONCLICK_OK: t('messages.onClickOk')
-                            },
-                            STRINGS: {
-                                TITLE: t('components.dialogs.updateStock.title')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            SUCCESS_UPDATE: t('messages.updateStock.success'),
+            ERROR_ONCLICK_OK: t('messages.onClickOk'),
+            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+        },
+        STRINGS: {
+            TITLE: t('components.dialogs.updateStock.title')
+        }
+    }
+)
+
+const loadCurrentStock = (): void => {
+    const currentStock = records.stocks.getItemById(activeId.value)
+
+    Object.assign(stockFormularData, {
+        id: activeId.value,
+        isin: currentStock.cISIN.toUpperCase().replace(/\s/g, ''),
+        company: currentStock.cCompany,
+        symbol: currentStock.cSymbol,
+        meetingDay: currentStock.cMeetingDay,
+        quarterDay: currentStock.cQuarterDay,
+        fadeOut: currentStock.cFadeOut === 1,
+        firstPage: currentStock.cFirstPage === 1,
+        url: currentStock.cURL,
+        askDates: currentStock.cAskDates
+    })
+}
+
+const buildStockFromFormData = (): I_Stock_DB => ({
+    cID: stockFormularData.id,
+    cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
+    cCompany: stockFormularData.company,
+    cSymbol: stockFormularData.symbol,
+    cMeetingDay: stockFormularData.meetingDay,
+    cQuarterDay: stockFormularData.quarterDay,
+    cFadeOut: stockFormularData.fadeOut ? 1 : 0,
+    cFirstPage: stockFormularData.firstPage ? 1 : 0,
+    cURL: stockFormularData.url,
+    cAccountNumberID: activeAccountId.value,
+    cAskDates: stockFormularData.askDates
+})
 
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_STOCK : onClickOk')
     if (!await validateForm(formRef)) return
-    if (!isConnected.value) {
-        await notice(['Database not connected'])
-        return
-    }
-    try {
-        const stock: I_Stock_DB = {
-            cID: stockFormularData.id,
-            cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
-            cCompany: stockFormularData.company,
-            cSymbol: stockFormularData.symbol,
-            cMeetingDay: stockFormularData.meetingDay,
-            cQuarterDay: stockFormularData.quarterDay,
-            cFadeOut: stockFormularData.fadeOut ? 1 : 0,
-            cFirstPage: stockFormularData.firstPage ? 1 : 0,
-            cURL: stockFormularData.url,
-            cAccountNumberID: activeAccountId.value,
-            cAskDates: stockFormularData.askDates
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
+    await withLoading(async () => {
+        try {
+            const stock: I_Stock_DB = buildStockFromFormData()
+            records.stocks.update(stock)
+            await update(stock)
+            await notice([T.MESSAGES.SUCCESS_UPDATE])
+            runtime.resetTeleport()
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                notice,
+                'UPDATE_STOCK',
+                T.MESSAGES.ERROR_ONCLICK_OK
+            )
         }
-        records.stocks.update(stock)
-        await update(stock)
-        await notice([T.MESSAGES.SUCCESS_UPDATE])
-        runtime.resetTeleport()
-    } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-    }
+    })
 }
 
 const title = T.STRINGS.TITLE
@@ -79,16 +107,7 @@ defineExpose({onClickOk, title})
 
 onBeforeMount(() => {
     log('UPDATE_STOCK_FORMULAR: onBeforeMount')
-    const currentStock = records.stocks.getItemById(activeId.value)
-    stockFormularData.id = activeId.value
-    stockFormularData.isin = currentStock.cISIN.toUpperCase().replace(/\s/g, '')
-    stockFormularData.company = currentStock.cCompany
-    stockFormularData.symbol = currentStock.cSymbol
-    stockFormularData.meetingDay = currentStock.cMeetingDay
-    stockFormularData.quarterDay = currentStock.cQuarterDay
-    stockFormularData.fadeOut = currentStock.cFadeOut === 1
-    stockFormularData.firstPage = currentStock.cFirstPage === 1
-    stockFormularData.url = currentStock.cURL
+    loadCurrentStock()
 })
 
 log('--- UpdateStock.vue setup ---')
@@ -100,5 +119,15 @@ log('--- UpdateStock.vue setup ---')
         validate-on="submit"
         @submit.prevent>
         <StockFormular :isUpdate="true"/>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

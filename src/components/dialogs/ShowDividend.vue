@@ -14,6 +14,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import type {I_Header} from '@/types'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {d, n, t} = useI18n()
 const {CONS, log} = useApp()
@@ -22,28 +23,31 @@ const {dividendsPerPage} = storeToRefs(settings)
 const {setDividendsPerPage} = settings
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
+const {isLoading} = useDialogGuards()
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>({
-                                                                                      STRINGS: {
-                                                                                          TITLE: t('components.dialogs.showDividend.title'),
-                                                                                          ITEMS_PER_PAGE_TEXT: t('components.dialogs.showDividend.itemsPerPageText'),
-                                                                                          NO_DATA_TEXT: t('components.dialogs.showDividend.noDataText')
-                                                                                      },
-                                                                                      HEADERS: [
-                                                                                          {
-                                                                                              title: t('components.dialogs.showDividend.yearLabel'),
-                                                                                              align: 'start',
-                                                                                              sortable: false,
-                                                                                              key: 'year'
-                                                                                          },
-                                                                                          {
-                                                                                              title: t('components.dialogs.showDividend.sumLabel'),
-                                                                                              align: 'start',
-                                                                                              sortable: false,
-                                                                                              key: 'sum'
-                                                                                          }
-                                                                                      ]
-                                                                                  })
+const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>(
+    {
+        STRINGS: {
+            TITLE: t('components.dialogs.showDividend.title'),
+            ITEMS_PER_PAGE_TEXT: t('components.dialogs.showDividend.itemsPerPageText'),
+            NO_DATA_TEXT: t('components.dialogs.showDividend.noDataText')
+        },
+        HEADERS: [
+            {
+                title: t('components.dialogs.showDividend.yearLabel'),
+                align: 'start',
+                sortable: false,
+                key: 'year'
+            },
+            {
+                title: t('components.dialogs.showDividend.sumLabel'),
+                align: 'start',
+                sortable: false,
+                key: 'sum'
+            }
+        ]
+    }
+)
 
 const title = T.STRINGS.TITLE
 defineExpose({title})
@@ -79,5 +83,15 @@ log('--- ShowDividend.vue setup ---')
                 </v-data-table>
             </v-card-text>
         </v-card>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

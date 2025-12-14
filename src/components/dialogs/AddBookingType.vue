@@ -7,7 +7,7 @@
   -->
 <script lang="ts" setup>
 import type {I_Booking_Type_Store} from '@/types'
-import {defineExpose, onMounted, ref} from 'vue'
+import {defineExpose, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
@@ -16,6 +16,7 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
 const {log} = useApp()
@@ -25,27 +26,31 @@ const {nameRules, validateForm} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 
 const formName = ref<string>('')
 const formRef = ref<HTMLFormElement | null>(null)
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                SUCCESS_ADD: t('messages.addBookingType.success'),
-                                ERROR_ADD: t('messages.addBookingType.error'),
-                                ERROR_ONCLICK_OK: t('messages.onClickOk')
-                            },
-                            STRINGS: {
-                                TITLE: t('components.dialogs.addBookingType.title'),
-                                BOOKING_TYPE_LABEL: t('components.dialogs.addBookingType.bookingTypeLabel'),
-                                PLACEHOLDER: t('components.dialogs.addBookingType.placeholder')
-                            },
-                            NAME_RULES: [
-                                t('validators.nameRules.required'),
-                                t('validators.nameRules.length'),
-                                t('validators.nameRules.begin')
-                            ]
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            SUCCESS_ADD: t('messages.addBookingType.success'),
+            ERROR_DUPLICATE: t('messages.addBookingType.error'),
+            ERROR_ONCLICK_OK: t('messages.onClickOk'),
+            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+        },
+        STRINGS: {
+            TITLE: t('components.dialogs.addBookingType.title'),
+            BOOKING_TYPE_LABEL: t('components.dialogs.addBookingType.bookingTypeLabel'),
+            PLACEHOLDER: t('components.dialogs.addBookingType.placeholder')
+        },
+        NAME_RULES: [
+            t('validators.nameRules.required'),
+            t('validators.nameRules.length'),
+            t('validators.nameRules.begin')
+        ]
+    }
+)
 
 const reset = () => {
     formName.value = ''
@@ -54,40 +59,54 @@ const reset = () => {
 const onClickOk = async (): Promise<void> => {
     log('ADD_BOOKING_TYPE: onClickOk')
     if (!await validateForm(formRef)) return
-    if (!isConnected.value) {
-        await notice(['Database not connected'])
-        return
-    }
-    try {
-        if (!records.bookingTypes.isDuplicate(formName.value.trim())) {
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    await withLoading(async () => {
+        try {
+            const trimmedName = formName.value.trim()
+            if (records.bookingTypes.isDuplicate(trimmedName)) {
+                await notice([T.MESSAGES.ERROR_DUPLICATE])
+                return
+            }
+
             const bookingType = {
-                cName: formName.value.trim(),
+                cName: trimmedName,
                 cAccountNumberID: activeAccountId.value
             }
-            const addBookingTypeID: number = await add(bookingType)
+
+            const addBookingTypeID = await add(bookingType)
+
             if (addBookingTypeID === -1) {
-                log('ADD_BOOKING_TYPE: onClickOk', {error: T.MESSAGES.ERROR_ADD})
-                await notice([T.MESSAGES.ERROR_ADD])
+                log('ADD_BOOKING_TYPE: Failed to create booking type')
+                await notice([T.MESSAGES.ERROR_DUPLICATE])
+                return
             }
-            const completeBookingType: I_Booking_Type_Store = {cID: addBookingTypeID, ...bookingType}
-            records.bookingTypes.add(completeBookingType)
+
+            const dbBookingType: I_Booking_Type_Store = {
+                cID: addBookingTypeID,
+                ...bookingType
+            }
+
+            records.bookingTypes.add(dbBookingType)
             reset()
             await notice([T.MESSAGES.SUCCESS_ADD])
-        } else {
-            await notice([T.MESSAGES.ERROR_ADD])
+
+        } catch (error) {
+            await handleError(
+                error,
+                log,
+                notice,
+                'ADD_BOOKING_TYPE',
+                T.MESSAGES.ERROR_ONCLICK_OK
+            )
         }
-    } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(T.MESSAGES.ERROR_ONCLICK_OK, {error: errorMessage})
-        await notice([T.MESSAGES.ERROR_ONCLICK_OK, errorMessage])
-    }
+    })
 }
 
 const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({ onClickOk, title })
 
-onMounted(() => {
-    log('ADD_BOOKING_TYPE: onMounted')
+onBeforeMount(() => {
+    log('ADD_BOOKING_TYPE: onBeforeMount')
     reset()
 })
 
@@ -110,5 +129,15 @@ log('--- AddBookingType.vue setup ---')
             density="compact"
             variant="outlined"
             @focus="formRef?.resetValidation()"/>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>

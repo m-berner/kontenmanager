@@ -13,6 +13,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import type {I_Account_Entry, I_Header} from '@/types'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
@@ -20,6 +21,7 @@ const settings = useSettingsStore()
 const {sumsPerPage} = storeToRefs(settings)
 const {setSumsPerPage} = settings
 const {CONS, log} = useApp()
+const {isLoading} = useDialogGuards()
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>(
     {
@@ -181,5 +183,15 @@ log('--- ShowAccounting.vue setup ---')
                 </v-data-table>
             </v-card-text>
         </v-card>
+        <v-overlay
+            v-model="isLoading"
+            contained
+            class="align-center justify-center">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            />
+        </v-overlay>
     </v-form>
 </template>
