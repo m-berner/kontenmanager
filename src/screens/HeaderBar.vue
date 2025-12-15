@@ -25,6 +25,9 @@ const {isCompanyPage, isStockLoading} = storeToRefs(runtime)
 const records = useRecordsStore()
 const router = useRouter()
 const {info} = useAlertStore()
+const {items: accountItems} = storeToRefs(records.accounts)
+const {items: bookingItems} = storeToRefs(records.bookings)
+const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
 
 const T = Object.freeze(
     {
@@ -58,191 +61,268 @@ const T = Object.freeze(
     }
 )
 
-const onIconClick = async (ev: Event): Promise<void> => {
-    log('HEADER_BAR: onIconClick')
-    const {items: accountItems} = storeToRefs(records.accounts)
-    const {items: bookingItems} = storeToRefs(records.bookings)
-    const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
-    const parse = async (elem: Element | null, loop = 0): Promise<void> => {
-        if (loop > 6 || elem === null) return
-        switch (elem!.id) {
-            case CONS.COMPONENTS.DIALOGS.UPDATE_QUOTE:
-                isStockLoading.value = true
-                await records.stocks.loadOnlineData(runtime.stocksPage)
-                isStockLoading.value = false
-                break
-            case CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK:
-                if (records.stocks.passive.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.ALL_STOCKS_VISIBLE, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK,
-                            dialogOk: true,
-                            dialogVisibility: true
-                        }
-                    )
+// Create a dialog action registry
+const dialogActions: Record<string, () => void | Promise<void>> = {
+    [CONS.COMPONENTS.DIALOGS.UPDATE_QUOTE]: async () => {
+        isStockLoading.value = true
+        await records.stocks.loadOnlineData(runtime.stocksPage)
+        isStockLoading.value = false
+    },
+    [CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK]: () => {
+        if (records.stocks.passive.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.ALL_STOCKS_VISIBLE, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK,
+                    dialogOk: true,
+                    dialogVisibility: true
                 }
-                break
-            case CONS.COMPONENTS.DIALOGS.ADD_STOCK:
-                runtime.setTeleport(
-                    {
-                        dialogName: CONS.COMPONENTS.DIALOGS.ADD_STOCK,
-                        dialogOk: true,
-                        dialogVisibility: true
-                    }
-                )
-                break
-            case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
-                runtime.setTeleport(
-                    {
-                        dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
-                        dialogOk: true,
-                        dialogVisibility: true
-                    }
-                )
-                break
-            case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
-                runtime.setTeleport(
-                    {
-                        dialogName: CONS.COMPONENTS.DIALOGS.DELETE_STOCK,
-                        dialogOk: true,
-                        dialogVisibility: true
-                    }
-                )
-                break
-            case CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT:
-                runtime.setTeleport(
-                    {
-                        dialogName: CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT,
-                        dialogOk: true,
-                        dialogVisibility: true
-                    }
-                )
-                break
-            case CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT:
-                if (accountItems.value.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
-                            dialogOk: true,
-                            dialogVisibility: true
-                        }
-                    )
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION:
-                if (accountItems.value.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
-                            dialogOk: true,
-                            dialogVisibility: true
-                        }
-                    )
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE:
-                if (accountItems.value.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
-                            dialogOk: true,
-                            dialogVisibility: true
-                        }
-                    )
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE:
-                if (bookingTypeItems.value.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE,
-                            dialogOk: true,
-                            dialogVisibility: true
-                        }
-                    )
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE:
-                if (bookingTypeItems.value.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
-                            dialogOk: true,
-                            dialogVisibility: true
-                        }
-                    )
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.ADD_BOOKING:
-                if (accountItems.value.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
-                            dialogOk: true,
-                            dialogVisibility: true
-                        }
-                    )
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE:
-                if (accountItems.value.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NOTHING_TO_EXPORT, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
-                            dialogOk: true,
-                            dialogVisibility: true
-                        }
-                    )
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE:
-                runtime.setTeleport(
-                    {
-                        dialogName: CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE,
-                        dialogOk: true,
-                        dialogVisibility: true
-                    }
-                )
-                break
-            case CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME:
-                if (bookingItems.value.length === 0) {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.SHOW_ACCOUNTING, null)
-                } else {
-                    runtime.setTeleport(
-                        {
-                            dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME,
-                            dialogOk: false,
-                            dialogVisibility: true
-                        }
-                    )
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.SETTING:
-                await openOptionsPage()
-                break
-            default:
-                loop += 1
-                await parse(elem!.parentElement, loop)
+            )
         }
+    },
+    [CONS.COMPONENTS.DIALOGS.ADD_STOCK]: () => {
+        runtime.setTeleport(
+            {
+                dialogName: CONS.COMPONENTS.DIALOGS.ADD_STOCK,
+                dialogOk: true,
+                dialogVisibility: true
+            }
+        )
+    },
+    [CONS.COMPONENTS.DIALOGS.UPDATE_STOCK]: () => {
+        runtime.setTeleport(
+            {
+                dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
+                dialogOk: true,
+                dialogVisibility: true
+            }
+        )
+    },
+    [CONS.COMPONENTS.DIALOGS.DELETE_STOCK]: () => {
+        runtime.setTeleport(
+            {
+                dialogName: CONS.COMPONENTS.DIALOGS.DELETE_STOCK,
+                dialogOk: true,
+                dialogVisibility: true
+            }
+        )
+    },
+    [CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT]: () => {
+        runtime.setTeleport(
+            {
+                dialogName: CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT,
+                dialogOk: true,
+                dialogVisibility: true
+            }
+        )
+    },
+    [CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
+                    dialogOk: true,
+                    dialogVisibility: true
+                }
+            )
+        }
+    },
+    [CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
+                    dialogOk: true,
+                    dialogVisibility: true
+                }
+            )
+        }
+    },
+    [CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
+                    dialogOk: true,
+                    dialogVisibility: true
+                }
+            )
+        }
+    },
+    [CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE]: () => {
+        if (bookingTypeItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE,
+                    dialogOk: true,
+                    dialogVisibility: true
+                }
+            )
+        }
+    },
+    [CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE]: () => {
+        if (bookingTypeItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
+                    dialogOk: true,
+                    dialogVisibility: true
+                }
+            )
+        }
+    },
+    [CONS.COMPONENTS.DIALOGS.ADD_BOOKING]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
+                    dialogOk: true,
+                    dialogVisibility: true
+                }
+            )
+        }
+    },
+    [CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NOTHING_TO_EXPORT, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
+                    dialogOk: true,
+                    dialogVisibility: true
+                }
+            )
+        }
+    },
+    [CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE]: () => {
+        runtime.setTeleport(
+            {
+                dialogName: CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE,
+                dialogOk: true,
+                dialogVisibility: true
+            }
+        )
+    },
+    [CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME]: () => {
+        if (bookingItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.SHOW_ACCOUNTING, null)
+        } else {
+            runtime.setTeleport(
+                {
+                    dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME,
+                    dialogOk: false,
+                    dialogVisibility: true
+                }
+            )
+        }
+    },
+    [CONS.COMPONENTS.DIALOGS.SETTING]: async () => {
+        await openOptionsPage()
     }
-    if (ev.target instanceof Element) {
-        await parse(ev.target)
+}
+
+// Validation registry
+const dialogValidations: Record<string, () => boolean> = {
+    [CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK]: () => {
+        if (records.stocks.passive.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.ALL_STOCKS_VISIBLE, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE]: () => {
+        if (bookingTypeItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE]: () => {
+        if (bookingTypeItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.ADD_BOOKING]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE]: () => {
+        if (accountItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NOTHING_TO_EXPORT, null)
+            return false
+        }
+        return true
+    },
+    [CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME]: () => {
+        if (bookingItems.value.length === 0) {
+            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.SHOW_ACCOUNTING, null)
+            return false
+        }
+        return true
+    }
+}
+
+const onIconClick = async (ev: Event): Promise<void> => {
+    const target = ev.target as Element
+    const dialogId = target.closest('[id]')?.id
+
+    if (!dialogId) return
+
+    // Check validation first
+    const validator = dialogValidations[dialogId]
+    if (validator && !validator()) return
+
+    // Execute action
+    const action = dialogActions[dialogId]
+    if (action) {
+        await action()
     }
 }
 

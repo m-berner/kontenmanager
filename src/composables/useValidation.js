@@ -121,12 +121,18 @@ export function useValidation() {
             (v) => (v === null || v.length > 0) || msgArray[0]
         ];
     }
-    async function validateForm(form) {
+    function validateForm(form) {
         if (form.value !== null) {
-            const { valid } = await form.value.validate();
+            const { valid } = form.value.validate();
             return valid;
         }
         return false;
+    }
+    function mounted(el) {
+        el.addEventListener('focus', () => {
+            const form = el.closest('form');
+            form?.resetValidation?.();
+        });
     }
     function isinRules(msgArray) {
         const validCountryCodes = [
@@ -204,6 +210,7 @@ export function useValidation() {
         isinRules,
         isValidCredit,
         isValidDebit,
+        mounted,
         nameRules,
         swiftRules,
         dateRules,

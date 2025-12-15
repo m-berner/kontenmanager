@@ -78,7 +78,9 @@ const onClickOk = async (): Promise<void> => {
                 error,
                 log,
                 // eslint-disable-next-line no-console
-                async (msg) => { console.error(msg) },
+                async (msg) => {
+                    console.error(msg)
+                },
                 'EXPORT_DATABASE',
                 T.MESSAGES.ERROR_EXPORT
             )
@@ -106,8 +108,8 @@ log('--- ExportDatabase.vue setup ---')
         </v-card>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

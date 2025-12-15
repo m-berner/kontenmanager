@@ -31,34 +31,36 @@ const {CONS, log} = useApp()
 const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                INFO_TITLE: t('messages.infoTitle'),
-                                RESTRICTED_IMPORT: t('messages.restrictedImport'),
-                                ERROR_ONUPDATE_TITLE_BAR: t('messages.onUpdateTitleBar')
-                            },
-                            STRINGS: {
-                                TITLE: t('titleBar.title'),
-                                LOGO_ALT: t('titleBar.iconsAlt.logo'),
-                                DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
-                                BOOKING_SUM_LABEL: t('titleBar.bookingsSumLabel'),
-                                SELECT_ACCOUNT_LABEL: t('titleBar.selectAccountLabel')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            INFO_TITLE: t('messages.infoTitle'),
+            RESTRICTED_IMPORT: t('messages.restrictedImport'),
+            ERROR_ONUPDATE_TITLE_BAR: t('messages.onUpdateTitleBar')
+        },
+        STRINGS: {
+            TITLE: t('titleBar.title'),
+            LOGO_ALT: t('titleBar.iconsAlt.logo'),
+            DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
+            BOOKING_SUM_LABEL: t('titleBar.bookingsSumLabel'),
+            SELECT_ACCOUNT_LABEL: t('titleBar.selectAccountLabel')
+        }
+    }
+)
 
-const isOnline = ref(false)
-const isCheckingConnection = ref(true)
+const connectionState = ref<'checking' | 'online' | 'offline'>('checking')
 
 const logoUrl = computed((): string => {
-    const ind = records.accounts.getIndexById(activeAccountId.value)
-    const {items: accountItems} = storeToRefs(records.accounts)
-    if (isCheckingConnection.value || !isOnline.value) {
+    if (connectionState.value === 'checking') {
         return connectionIcon
     }
-    if (ind > -1) {
-        return accountItems.value[ind].cLogoUrl
+
+    if (connectionState.value === 'offline') {
+        return connectionIcon
     }
-    return connectionIcon
+
+    const account = records.accounts.items.find(a => a.cID === activeAccountId.value)
+    return account?.cLogoUrl || connectionIcon
 })
 const balance = computed((): string => {
     return n(records.bookings.sumBookings(), 'currency')
@@ -83,8 +85,12 @@ const onUpdateTitleBar = async (): Promise<void> => {
 }
 
 onMounted(async () => {
-    isOnline.value = await fetchIsOk()
-    isCheckingConnection.value = false
+    try {
+        const online = await fetchIsOk()
+        connectionState.value = online ? 'online' : 'offline'
+    } catch {
+        connectionState.value = 'offline'
+    }
 })
 
 log('--- TitleBar.vue setup ---')

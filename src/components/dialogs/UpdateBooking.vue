@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Booking_DB, I_Booking_Store} from '@/types'
+import type {I_Booking_DB} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -22,7 +22,7 @@ import BookingFormular from '@/components/dialogs/formulars/BookingFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
-const {log} = useApp()
+const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {update, isConnected} = useBookingsDB()
 const {validateForm} = useValidation()
@@ -30,7 +30,7 @@ const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {activeId} = storeToRefs(runtime)
-const {bookingFormularData, formRef, selected} = useBookingFormular()
+const {bookingFormularData, formRef, mapBookingFormToDb, selected} = useBookingFormular()
 const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
@@ -84,38 +84,15 @@ const loadCurrentBooking = (): void => {
     })
 }
 
-const buildBookingFromFormData = (): I_Booking_Store & I_Booking_DB => ({
-    cID: bookingFormularData.id,
-    cAccountNumberID: activeAccountId.value,
-    cStockID: bookingFormularData.stockId,
-    cBookingTypeID: selected.value,
-    cBookDate: bookingFormularData.bookDate,
-    cExDate: bookingFormularData.exDate,
-    cCount: bookingFormularData.count,
-    cDescription: bookingFormularData.description,
-    cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
-    cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
-    cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
-    cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
-    cFeeCredit: bookingFormularData.feeCredit,
-    cFeeDebit: bookingFormularData.feeDebit,
-    cTaxCredit: bookingFormularData.taxCredit,
-    cTaxDebit: bookingFormularData.taxDebit,
-    cMarketPlace: bookingFormularData.marketPlace,
-    cSoliCredit: bookingFormularData.soliCredit,
-    cSoliDebit: bookingFormularData.soliDebit,
-    cDebit: bookingFormularData.debit,
-    cCredit: bookingFormularData.credit
-})
-
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_BOOKING : onClickOk')
+
     if (!await validateForm(formRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
 
     await withLoading(async () => {
         try {
-            const booking: I_Booking_Store & I_Booking_DB = buildBookingFromFormData()
+            const booking: I_Booking_DB = mapBookingFormToDb(activeAccountId.value, CONS.DATE.DEFAULT_ISO)
 
             records.bookings.update(booking)
             await update(booking)
@@ -153,8 +130,8 @@ log('--- UpdateBooking.vue setup ---')
         <BookingFormular/>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

@@ -48,7 +48,7 @@ const T = Object.freeze(
     }
 )
 
-const formSelectedIndex = ref()
+const formSelectedIndex = ref<number|undefined>()
 const formName = ref<string>('')
 const formVisible = ref<boolean>(true)
 const formRef = ref<HTMLFormElement | null>(null)
@@ -77,11 +77,12 @@ const buildBookingTypeFromForm = (index: number): I_Booking_Type_Store => ({
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_BOOKING_TYPE: onClickOk')
     if (!await validateForm(formRef)) return
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
     if (!formSelectedIndex.value) {
         await notice(['No booking type selected'])
         return
     }
+    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
     await withLoading(async () => {
         try {
             const index = records.bookingTypes.getIndexById(formSelectedIndex.value!)
@@ -139,7 +140,7 @@ log('--- UpdateBookingType.vue setup ---')
             :rules="nameRules(T.NAME_RULES)"
             density="compact"
             variant="outlined"
-            @focus="formRef?.resetValidation()"
+            @focus="formRef?.resetValidation?.()"
             @update:model-value="(mValue) => {if (mValue === null) { formSelectedIndex = 0 }}"
         />
         <v-select
@@ -154,12 +155,12 @@ log('--- UpdateBookingType.vue setup ---')
             density="compact"
             placeholder=""
             variant="outlined"
-            @focus="formRef?.resetValidation()"
+            @focus="formRef?.resetValidation?.()"
             @update:model-value="onSelect"/>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

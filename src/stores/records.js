@@ -18,9 +18,15 @@ const useStocksStore = defineStore('stocks', function () {
         });
     });
     const active = computed(() => {
-        return items.value.filter(rec => {
-            return rec.cFadeOut === 0 && rec.cID > 0;
-        });
+        const { investByStockId, portfolioByStockId } = useBookingsStore();
+        return items.value.filter(rec => rec.cFadeOut === 0 && rec.cID > 0)
+            .map(rec => {
+            rec.mPortfolio = portfolioByStockId(rec.cID);
+            rec.mInvest = investByStockId(rec.cID);
+            return rec;
+        })
+            .sort((a, b) => b.cFirstPage - a.cFirstPage)
+            .sort((a, b) => b.mPortfolio - a.mPortfolio);
     });
     const sumDepot = computed(() => () => {
         const settings = useSettingsStore();
@@ -149,8 +155,8 @@ const useStocksStore = defineStore('stocks', function () {
             pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd.value : toNumber(minRateMaxResponse[i].max) / curEur.value;
             pageStocks[i].mEuroChange = (pageStocks[i].mValue ?? 0) * (pageStocks[i].mPortfolio ?? 0) - (pageStocks[i].mInvest ?? 0);
             for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].key; j++) {
-                pageStocks[i].cMeetingDay = (await dateResponse[j]).value.gm > 0 ? isoDate((await dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO;
-                pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO;
+                pageStocks[i].cMeetingDay = (dateResponse[j]).value.gm > 0 ? isoDate((dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO;
+                pageStocks[i].cQuarterDay = (dateResponse[j]).value.qf > 0 ? isoDate((dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO;
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000);
             }
             update({ ...pageStocks[i] });

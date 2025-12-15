@@ -5,13 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {
-    I_Account_DB,
-    I_Booking_DB,
-    I_Booking_SM,
-    I_Booking_Type_DB,
-    I_Stock_DB
-} from '@/types'
+import type {I_Account_DB, I_Booking_DB, I_Booking_SM, I_Booking_Type_DB, I_Stock_DB} from '@/types'
 
 export function useImportExport() {
 

@@ -17,10 +17,20 @@ const reset = () => {
     });
     formRef.value = null;
 };
+const mapAccountFormToDb = (id) => {
+    return {
+        cID: id,
+        cSwift: accountFormularData.swift.trim().toUpperCase(),
+        cIban: accountFormularData.iban.replace(/\s/g, ''),
+        cLogoUrl: accountFormularData.logoUrl,
+        cWithDepot: accountFormularData.withDepot
+    };
+};
 export function useAccountFormular() {
     return {
         formRef,
         accountFormularData,
+        mapAccountFormToDb,
         reset
     };
 }

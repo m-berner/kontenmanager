@@ -19,35 +19,37 @@ const {CONS, log} = useApp()
 const {accountFormularData, formRef} = useAccountFormular()
 const {ibanRules, swiftRules} = useValidation()
 
-const T = Object.freeze({
-                            STRINGS: {
-                                WITH_DEPOT_LABEL: t('components.dialogs.formulars.accountFormular.withDepotLabel'),
-                                SWIFT_LABEL: t('components.dialogs.formulars.accountFormular.swiftLabel'),
-                                IBAN_LABEL: t('components.dialogs.formulars.accountFormular.ibanLabel'),
-                                IBAN_PLACEHOLDER: t('components.dialogs.formulars.accountFormular.ibanPlaceholder'),
-                                SEARCH_LABEL: t('components.dialogs.formulars.accountFormular.searchLabel'),
-                                MISSING_LOGO_LABEL: t('components.dialogs.formulars.accountFormular.missingLogo')
-                            },
-                            SWIFT_RULES: [
-                                t('validators.swiftRules.required'),
-                                t('validators.swiftRules.length'),
-                                t('validators.swiftRules.format'),
-                                t('validators.swiftRules.bankCode'),
-                                t('validators.swiftRules.countryCode'),
-                                t('validators.swiftRules.locationCode'),
-                                t('validators.swiftRules.branchCode'),
-                                t('validators.swiftRules.test'),
-                                t('validators.swiftRules.passive')
-                            ],
-                            IBAN_RULES: [
-                                t('validators.ibanRules.required'),
-                                t('validators.ibanRules.country'),
-                                t('validators.ibanRules.length'),
-                                t('validators.ibanRules.format'),
-                                t('validators.ibanRules.checksum'),
-                                t('validators.ibanRules.duplicate')
-                            ]
-                        })
+const T = Object.freeze(
+    {
+        STRINGS: {
+            WITH_DEPOT_LABEL: t('components.dialogs.formulars.accountFormular.withDepotLabel'),
+            SWIFT_LABEL: t('components.dialogs.formulars.accountFormular.swiftLabel'),
+            IBAN_LABEL: t('components.dialogs.formulars.accountFormular.ibanLabel'),
+            IBAN_PLACEHOLDER: t('components.dialogs.formulars.accountFormular.ibanPlaceholder'),
+            SEARCH_LABEL: t('components.dialogs.formulars.accountFormular.searchLabel'),
+            MISSING_LOGO_LABEL: t('components.dialogs.formulars.accountFormular.missingLogo')
+        },
+        SWIFT_RULES: [
+            t('validators.swiftRules.required'),
+            t('validators.swiftRules.length'),
+            t('validators.swiftRules.format'),
+            t('validators.swiftRules.bankCode'),
+            t('validators.swiftRules.countryCode'),
+            t('validators.swiftRules.locationCode'),
+            t('validators.swiftRules.branchCode'),
+            t('validators.swiftRules.test'),
+            t('validators.swiftRules.passive')
+        ],
+        IBAN_RULES: [
+            t('validators.ibanRules.required'),
+            t('validators.ibanRules.country'),
+            t('validators.ibanRules.length'),
+            t('validators.ibanRules.format'),
+            t('validators.ibanRules.checksum'),
+            t('validators.ibanRules.duplicate')
+        ]
+    }
+)
 
 const formSearch = ref<string>('')
 const formattedIban = ref<string>('')
@@ -97,7 +99,7 @@ log('--- AccountFormular.vue setup ---')
         :rules="swiftRules(T.SWIFT_RULES)"
         autofocus
         variant="outlined"
-        @focus="formRef?.resetValidation()"
+        @focus="formRef?.resetValidation?.()"
         @update:model-value="onUpdateSwift"/>
     <v-text-field
         v-model="accountFormularData.iban"
@@ -105,7 +107,7 @@ log('--- AccountFormular.vue setup ---')
         :placeholder="T.STRINGS.IBAN_PLACEHOLDER"
         :rules="ibanRules(T.IBAN_RULES)"
         variant="outlined"
-        @focus="formRef?.resetValidation()"
+        @focus="formRef?.resetValidation?.()"
         @update:model-value="onUpdateIban"/>
     <v-text-field
         v-model="formSearch"

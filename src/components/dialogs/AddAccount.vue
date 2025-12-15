@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Account_Store, I_Booking_Type_Store} from '@/types'
+import type {I_Booking_Type_Store} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -24,10 +24,10 @@ import {useDialogGuards} from '@/composables/useDialogGuards'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
-const {add, isConnected} = useAccountsDB()
+const {add, isConnected, remove} = useAccountsDB()
 const {add: addBookingType} = useBookingTypesDB()
 const {validateForm} = useValidation()
-const {accountFormularData, formRef, reset} = useAccountFormular()
+const {accountFormularData, formRef, mapAccountFormToDb, reset} = useAccountFormular()
 const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 const {resetTeleport} = useRuntimeStore()
 const settings = useSettingsStore()
@@ -100,12 +100,7 @@ const onClickOk = async (): Promise<void> => {
         try {
             const {activeAccountId} = storeToRefs(settings)
 
-            const account = {
-                cSwift: accountFormularData.swift.trim().toUpperCase(),
-                cIban: accountFormularData.iban.replace(/\s/g, ''),
-                cLogoUrl: accountFormularData.logoUrl,
-                cWithDepot: accountFormularData.withDepot
-            }
+            const account = mapAccountFormToDb()
 
             const addAccountID = await add(account)
 
@@ -115,8 +110,9 @@ const onClickOk = async (): Promise<void> => {
                 return
             }
 
-            const completeAccount: I_Account_Store = {cID: addAccountID, ...account}
-            records.accounts.add(completeAccount)
+            account.cID = addAccountID
+            //const dbAccount: I_Account_Store = {cID: addAccountID, ...account}
+            records.accounts.add(account)
 
             activeAccountId.value = addAccountID
             await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
@@ -126,6 +122,7 @@ const onClickOk = async (): Promise<void> => {
 
             if (!bookingTypesAdded) {
                 // If booking types failed, we should ideally roll back the account too
+                await remove(addAccountID)
                 records.accounts.remove(addAccountID)
                 await notice([T.MESSAGES.ERROR_ADD])
                 return
@@ -166,8 +163,8 @@ log('--- AddAccount.vue setup ---')
         <AccountFormular/>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

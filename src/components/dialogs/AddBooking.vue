@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Booking_DB, I_Booking_Store} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -25,7 +24,7 @@ const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {add, isConnected} = useBookingsDB()
 const {validateForm} = useValidation()
-const {bookingFormularData, formRef, reset, selected} = useBookingFormular()
+const {formRef, mapBookingFormToDb, reset} = useBookingFormular()
 const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 const records = useRecordsStore()
 const settings = useSettingsStore()
@@ -45,56 +44,6 @@ const T = Object.freeze(
     }
 )
 
-const BOOKING_TYPES = CONS.INDEXED_DB.STORES.BOOKING_TYPES
-const isStockRelated = (bookingTypeId: number): boolean => {
-    return bookingTypeId >= BOOKING_TYPES.BUY && bookingTypeId <= BOOKING_TYPES.DIVIDEND
-}
-
-const isDividendBooking = (bookingTypeId: number): boolean => {
-    return bookingTypeId === BOOKING_TYPES.DIVIDEND
-}
-
-const hasMarketplace = (bookingTypeId: number): boolean => {
-    return bookingTypeId >= BOOKING_TYPES.BUY && bookingTypeId <= BOOKING_TYPES.SELL
-}
-
-const createBooking = (
-    baseData: typeof bookingFormularData,
-    accountId: number,
-    defaultISODate: string
-): Omit<I_Booking_DB, 'cID'> => {
-    const base = {
-        cBookDate: baseData.bookDate,
-        cCredit: baseData.credit,
-        cDebit: baseData.debit,
-        cDescription: baseData.description,
-        cBookingTypeID: selected.value,
-        cAccountNumberID: accountId,
-        cSoliCredit: baseData.soliCredit,
-        cSoliDebit: baseData.soliDebit,
-        cTaxCredit: baseData.taxCredit,
-        cTaxDebit: baseData.taxDebit,
-        cFeeCredit: baseData.feeCredit,
-        cFeeDebit: baseData.feeDebit,
-        cSourceTaxCredit: baseData.sourceTaxCredit,
-        cSourceTaxDebit: baseData.sourceTaxDebit,
-        cTransactionTaxCredit: baseData.transactionTaxCredit,
-        cTransactionTaxDebit: baseData.transactionTaxDebit
-    }
-
-    const stockRelated = isStockRelated(baseData.bookingTypeId)
-    const isDividend = isDividendBooking(baseData.bookingTypeId)
-    const hasMP = hasMarketplace(baseData.bookingTypeId)
-
-    return {
-        ...base,
-        cStockID: stockRelated ? baseData.stockId : 0,
-        cCount: stockRelated ? baseData.count : 0,
-        cExDate: isDividend ? baseData.exDate : defaultISODate,
-        cMarketPlace: hasMP ? baseData.marketPlace : ''
-    }
-}
-
 const onClickOk = async (): Promise<void> => {
     log('ADD_BOOKING : onClickOk')
     if (!await validateForm(formRef)) return
@@ -103,8 +52,7 @@ const onClickOk = async (): Promise<void> => {
     await withLoading(async () => {
         try {
             // Simplified: no switch statement needed since all cases do the same
-            const booking = createBooking(
-                bookingFormularData,
+            const booking = mapBookingFormToDb(
                 activeAccountId.value,
                 CONS.DATE.DEFAULT_ISO
             )
@@ -116,9 +64,9 @@ const onClickOk = async (): Promise<void> => {
                 await notice([T.MESSAGES.ERROR_ADD])
                 return
             }
-
-            const dbBooking: I_Booking_Store = {cID: addBookingID, ...booking}
-            records.bookings.add(dbBooking, true)
+            booking.cID = addBookingID
+            // const dbBooking: I_Booking_Store = {cID: addBookingID, ...booking}
+            records.bookings.add(booking, true)
             reset()
             await notice([T.MESSAGES.SUCCESS_ADD])
         } catch (error) {
@@ -152,8 +100,8 @@ log('--- AddBooking.vue setup ---')
         <BookingFormular/>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

@@ -104,8 +104,8 @@ log('--- FadeInStock.vue setup ---')
         </v-card-text>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

@@ -39,10 +39,17 @@ const useStocksStore = defineStore('stocks', function () {
         })
     })
     const active = computed(() => {
-        return items.value.filter(rec => {
-            return rec.cFadeOut === 0 && rec.cID > 0
-        })
+        const {investByStockId, portfolioByStockId} = useBookingsStore()
+        return items.value.filter(rec => rec.cFadeOut === 0 && rec.cID > 0)
+            .map(rec => {
+                rec.mPortfolio = portfolioByStockId(rec.cID)
+                rec.mInvest = investByStockId(rec.cID)
+                return rec
+            })
+            .sort((a, b) => b.cFirstPage - a.cFirstPage)
+            .sort((a, b) => b.mPortfolio! - a.mPortfolio!)
     })
+
     const sumDepot = computed(() => (): number => {
         const settings = useSettingsStore()
         const {activeAccountId} = storeToRefs(settings)
@@ -157,19 +164,23 @@ const useStocksStore = defineStore('stocks', function () {
                 )
             }
             for (let i = 0; i < pageStocks.length; i++) {
-                isin.push({
-                              id: pageStocks[i].cID,
-                              isin: pageStocks[i].cISIN,
-                              min: '0',
-                              rate: '0',
-                              max: '0',
-                              cur: ''
-                          })
+                isin.push(
+                    {
+                        id: pageStocks[i].cID,
+                        isin: pageStocks[i].cISIN,
+                        min: '0',
+                        rate: '0',
+                        max: '0',
+                        cur: ''
+                    }
+                )
                 if ((utcDate(pageStocks[i].cMeetingDay).getTime() < Date.now() || utcDate(pageStocks[i].cQuarterDay).getTime() < Date.now()) && utcDate(pageStocks[i].cAskDates).getTime() < Date.now()) {
-                    isinDates.push({
-                                       key: pageStocks[i].cID,
-                                       value: pageStocks[i].cISIN
-                                   })
+                    isinDates.push(
+                        {
+                            key: pageStocks[i].cID,
+                            value: pageStocks[i].cISIN
+                        }
+                    )
                 }
             }
         }
@@ -181,8 +192,8 @@ const useStocksStore = defineStore('stocks', function () {
             pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd.value : toNumber(minRateMaxResponse[i].max) / curEur.value
             pageStocks[i].mEuroChange = (pageStocks[i].mValue ?? 0) * (pageStocks[i].mPortfolio ?? 0) - (pageStocks[i].mInvest ?? 0)
             for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].key; j++) {
-                pageStocks[i].cMeetingDay = (await dateResponse[j]).value.gm > 0 ? isoDate((await dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO
-                pageStocks[i].cQuarterDay = (await dateResponse[j]).value.qf > 0 ? isoDate((await dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO
+                pageStocks[i].cMeetingDay = (dateResponse[j]).value.gm > 0 ? isoDate((dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO
+                pageStocks[i].cQuarterDay = (dateResponse[j]).value.qf > 0 ? isoDate((dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO
                 pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000)
             }
             update({...pageStocks[i]})
@@ -241,7 +252,7 @@ const useAccountsStore = defineStore('accounts', function () {
 
     function update(account: I_Account_Store): void {
         log('ACCOUNTS_STORE: update')
-        const index = getIndexById.value(account.cID)
+        const index = getIndexById.value(account.cID!)
         if (index !== -1) {
             items.value[index] = {...account}
         }
@@ -605,19 +616,21 @@ export const useRecordsStore = defineStore('records', function () {
         }
         clean(removeAccounts)
         load(stores)
-        stocksStore.add({
-                            cID: 0,
-                            cISIN: 'XX0000000000',
-                            cSymbol: 'XXXOO0',
-                            cFadeOut: 0,
-                            cFirstPage: 0,
-                            cURL: '',
-                            cCompany: '',
-                            cMeetingDay: '',
-                            cQuarterDay: '',
-                            cAccountNumberID: activeAccountId.value,
-                            cAskDates: CONS.DATE.DEFAULT_ISO
-                        }, true)
+        stocksStore.add(
+            {
+                cID: 0,
+                cISIN: 'XX0000000000',
+                cSymbol: 'XXXOO0',
+                cFadeOut: 0,
+                cFirstPage: 0,
+                cURL: '',
+                cCompany: '',
+                cMeetingDay: '',
+                cQuarterDay: '',
+                cAccountNumberID: activeAccountId.value,
+                cAskDates: CONS.DATE.DEFAULT_ISO
+            }, true
+        )
         if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
             info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null)
             sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true')

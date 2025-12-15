@@ -94,6 +94,7 @@ export function useBrowser() {
                 await browser.storage.local.set({ [key]: value });
             }
         }
+        return storageLocal;
     }
     async function openOptionsPage() {
         try {

@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Account_Store} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -29,7 +28,7 @@ const {validateForm} = useValidation()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
-const {accountFormularData, formRef} = useAccountFormular()
+const {accountFormularData, formRef, mapAccountFormToDb} = useAccountFormular()
 const records = useRecordsStore()
 const {items: accountItems} = storeToRefs(records.accounts)
 const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
@@ -50,7 +49,7 @@ const T = Object.freeze(
 const loadCurrentAccount = (): void => {
     const accountIndex = records.accounts.getIndexById(activeAccountId.value)
     if (accountIndex === -1) {
-        log('UPDATE_ACCOUNT: Account not found', { error: activeAccountId.value })
+        log('UPDATE_ACCOUNT: Account not found', {error: activeAccountId.value})
         return
     }
     const currentAccount = accountItems.value[accountIndex]
@@ -62,20 +61,15 @@ const loadCurrentAccount = (): void => {
         withDepot: currentAccount.cWithDepot
     })
 }
-const buildAccountFromFormData = (): I_Account_Store => ({
-    cID: activeAccountId.value,
-    cSwift: accountFormularData.swift.trim().toUpperCase(),
-    cIban: accountFormularData.iban.replace(/\s/g, ''),
-    cLogoUrl: accountFormularData.logoUrl,
-    cWithDepot: accountFormularData.withDepot
-})
+
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_ACCOUNT: onClickOk')
     if (!await validateForm(formRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
     await withLoading(async () => {
         try {
-            const account = buildAccountFromFormData()
+            const account = mapAccountFormToDb(activeAccountId.value)
             records.accounts.update(account)
             await update(account)
             runtime.resetTeleport()
@@ -93,7 +87,7 @@ const onClickOk = async (): Promise<void> => {
     })
 }
 const title = T.STRINGS.TITLE
-defineExpose({ onClickOk, title })
+defineExpose({onClickOk, title})
 
 onBeforeMount(() => {
     log('UPDATE_ACCOUNT: onBeforeMount')
@@ -111,8 +105,8 @@ log('--- UpdateAccount.vue setup ---')
         <AccountFormular/>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

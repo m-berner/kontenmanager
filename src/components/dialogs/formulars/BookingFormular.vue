@@ -22,80 +22,94 @@ const {bookingFormularData, selected} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
 const {markets} = useSettingsStore()
 
-const T = Object.freeze({
-                            STRINGS: {
-                                DATE_LABEL: t('components.dialogs.formulars.bookingFormular.dateLabel'),
-                                STOCK_LABEL: t('components.dialogs.formulars.bookingFormular.stockLabel'),
-                                BOOKING_TYPE_LABEL: t('components.dialogs.formulars.bookingFormular.bookingTypeLabel'),
-                                COUNT_LABEL: t('components.dialogs.formulars.bookingFormular.countLabel'),
-                                EX_DATE_LABEL: t('components.dialogs.formulars.bookingFormular.exDateLabel'),
-                                MARKET_PLACE_LABEL: t('components.dialogs.formulars.bookingFormular.marketPlaceLabel'),
-                                BOOKING_LABEL: t('components.dialogs.formulars.bookingFormular.bookingLabel'),
-                                TAX_LABEL: t('components.dialogs.formulars.bookingFormular.taxLabel'),
-                                SOLI_LABEL: t('components.dialogs.formulars.bookingFormular.soliLabel'),
-                                SOURCE_TAX_LABEL: t('components.dialogs.formulars.bookingFormular.sourceTaxLabel'),
-                                FEE_LABEL: t('components.dialogs.formulars.bookingFormular.feeLabel'),
-                                TRANSACTION_TAX_LABEL: t('components.dialogs.formulars.bookingFormular.transactionTaxLabel'),
-                                DESCRIPTION_LABEL: t('components.dialogs.formulars.bookingFormular.descriptionLabel')
-                            },
-                            DATE_RULES: [t('validators.dateRules.required')],
-                            BOOKING_TYPE_RULES: [t('validators.bookingTypeRules')]
-                        })
+const T = Object.freeze(
+    {
+        STRINGS: {
+            DATE_LABEL: t('components.dialogs.formulars.bookingFormular.dateLabel'),
+            STOCK_LABEL: t('components.dialogs.formulars.bookingFormular.stockLabel'),
+            BOOKING_TYPE_LABEL: t('components.dialogs.formulars.bookingFormular.bookingTypeLabel'),
+            COUNT_LABEL: t('components.dialogs.formulars.bookingFormular.countLabel'),
+            EX_DATE_LABEL: t('components.dialogs.formulars.bookingFormular.exDateLabel'),
+            MARKET_PLACE_LABEL: t('components.dialogs.formulars.bookingFormular.marketPlaceLabel'),
+            BOOKING_LABEL: t('components.dialogs.formulars.bookingFormular.bookingLabel'),
+            TAX_LABEL: t('components.dialogs.formulars.bookingFormular.taxLabel'),
+            SOLI_LABEL: t('components.dialogs.formulars.bookingFormular.soliLabel'),
+            SOURCE_TAX_LABEL: t('components.dialogs.formulars.bookingFormular.sourceTaxLabel'),
+            FEE_LABEL: t('components.dialogs.formulars.bookingFormular.feeLabel'),
+            TRANSACTION_TAX_LABEL: t('components.dialogs.formulars.bookingFormular.transactionTaxLabel'),
+            DESCRIPTION_LABEL: t('components.dialogs.formulars.bookingFormular.descriptionLabel')
+        },
+        DATE_RULES: [t('validators.dateRules.required')],
+        BOOKING_TYPE_RULES: [t('validators.bookingTypeRules')]
+    }
+)
 
-const creditDebitModel = computed({
-                                      get: () => ({
-                                          credit: bookingFormularData.credit,
-                                          debit: bookingFormularData.debit
-                                      }),
-                                      set: (val: { credit: number, debit: number }) => {
-                                          bookingFormularData.credit = val.credit
-                                          bookingFormularData.debit = val.debit
-                                      }
-                                  })
-const taxModel = computed({
-                              get: () => ({credit: bookingFormularData.taxCredit, debit: bookingFormularData.taxDebit}),
-                              set: (val) => {
-                                  bookingFormularData.taxCredit = val.credit
-                                  bookingFormularData.taxDebit = val.debit
-                              }
-                          })
-const soliModel = computed({
-                               get: () => ({
-                                   credit: bookingFormularData.soliCredit,
-                                   debit: bookingFormularData.soliDebit
-                               }),
-                               set: (val) => {
-                                   bookingFormularData.soliCredit = val.credit
-                                   bookingFormularData.soliDebit = val.debit
-                               }
-                           })
-const sourceTaxModel = computed({
-                                    get: () => ({
-                                        credit: bookingFormularData.sourceTaxCredit,
-                                        debit: bookingFormularData.sourceTaxDebit
-                                    }),
-                                    set: (val) => {
-                                        bookingFormularData.sourceTaxCredit = val.credit
-                                        bookingFormularData.sourceTaxDebit = val.debit
-                                    }
-                                })
-const transactionTaxModel = computed({
-                                         get: () => ({
-                                             credit: bookingFormularData.transactionTaxCredit,
-                                             debit: bookingFormularData.transactionTaxDebit
-                                         }),
-                                         set: (val) => {
-                                             bookingFormularData.transactionTaxCredit = val.credit
-                                             bookingFormularData.transactionTaxDebit = val.debit
-                                         }
-                                     })
-const feeModel = computed({
-                              get: () => ({credit: bookingFormularData.feeCredit, debit: bookingFormularData.feeDebit}),
-                              set: (val) => {
-                                  bookingFormularData.feeCredit = val.credit
-                                  bookingFormularData.feeDebit = val.debit
-                              }
-                          })
+const creditDebitModel = computed(
+    {
+        get: () => ({
+            credit: bookingFormularData.credit,
+            debit: bookingFormularData.debit
+        }),
+        set: (val: { credit: number, debit: number }) => {
+            bookingFormularData.credit = val.credit
+            bookingFormularData.debit = val.debit
+        }
+    }
+)
+const taxModel = computed(
+    {
+        get: () => ({credit: bookingFormularData.taxCredit, debit: bookingFormularData.taxDebit}),
+        set: (val) => {
+            bookingFormularData.taxCredit = val.credit
+            bookingFormularData.taxDebit = val.debit
+        }
+    }
+)
+const soliModel = computed(
+    {
+        get: () => ({
+            credit: bookingFormularData.soliCredit,
+            debit: bookingFormularData.soliDebit
+        }),
+        set: (val) => {
+            bookingFormularData.soliCredit = val.credit
+            bookingFormularData.soliDebit = val.debit
+        }
+    }
+)
+const sourceTaxModel = computed(
+    {
+        get: () => ({
+            credit: bookingFormularData.sourceTaxCredit,
+            debit: bookingFormularData.sourceTaxDebit
+        }),
+        set: (val) => {
+            bookingFormularData.sourceTaxCredit = val.credit
+            bookingFormularData.sourceTaxDebit = val.debit
+        }
+    }
+)
+const transactionTaxModel = computed(
+    {
+        get: () => ({
+            credit: bookingFormularData.transactionTaxCredit,
+            debit: bookingFormularData.transactionTaxDebit
+        }),
+        set: (val) => {
+            bookingFormularData.transactionTaxCredit = val.credit
+            bookingFormularData.transactionTaxDebit = val.debit
+        }
+    }
+)
+const feeModel = computed(
+    {
+        get: () => ({credit: bookingFormularData.feeCredit, debit: bookingFormularData.feeDebit}),
+        set: (val) => {
+            bookingFormularData.feeCredit = val.credit
+            bookingFormularData.feeDebit = val.debit
+        }
+    }
+)
 const isStockBookingType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.BUY || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.SELL || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.DIVIDEND)
 const isDividendType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.DIVIDEND)
 const isBuySellType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.BUY || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.SELL)

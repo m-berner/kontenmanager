@@ -6,6 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
@@ -18,15 +19,20 @@ const runtime = useRuntimeStore()
 const {curUsd, infoMaterials} = storeToRefs(runtime)
 const settings = useSettingsStore()
 
-const usd = (mat: string, usd = true): number => {
-    log('INFO_BAR: usd')
-    const materialCode = CONS.SETTINGS.MATERIALS.get(mat) ?? ''
-    let result = (infoMaterials.value.get(materialCode) ?? 0) / curUsd.value
-    if (usd) {
-        result = infoMaterials.value.get(materialCode) ?? 0
+// Compute values once
+const materialValues = computed(() => {
+    const result = new Map<string, { usd: number, local: number }>()
+
+    for (const item of settings.materials) {
+        const code = CONS.SETTINGS.MATERIALS.get(item) ?? ''
+        const usdValue = infoMaterials.value.get(code) ?? 0
+        const localValue = usdValue / curUsd.value
+
+        result.set(item, { usd: usdValue, local: localValue })
     }
+
     return result
-}
+})
 
 log('--- InfoBar.vue setup ---')
 </script>
@@ -47,7 +53,7 @@ log('--- InfoBar.vue setup ---')
             <v-list-item v-for="item in settings.materials" :key="item">
                 <v-list-item-title>{{ t('optionsIndex.materials.' + item) }}</v-list-item-title>
                 <v-list-item-subtitle>
-                    {{ n(usd(item), 'currencyUSD') + ' / ' + n(usd(item, false), 'currency') }}
+                    {{ n(materialValues.get(item)!.usd, 'currencyUSD') + ' / ' + n(materialValues.get(item)!.local, 'currency') }}
                 </v-list-item-subtitle>
             </v-list-item>
         </v-list>

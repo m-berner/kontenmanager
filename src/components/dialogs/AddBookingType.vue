@@ -103,7 +103,7 @@ const onClickOk = async (): Promise<void> => {
 }
 
 const title = T.STRINGS.TITLE
-defineExpose({ onClickOk, title })
+defineExpose({onClickOk, title})
 
 onBeforeMount(() => {
     log('ADD_BOOKING_TYPE: onBeforeMount')
@@ -128,11 +128,11 @@ log('--- AddBookingType.vue setup ---')
             autofocus
             density="compact"
             variant="outlined"
-            @focus="formRef?.resetValidation()"/>
+            @focus="formRef?.resetValidation?.()"/>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

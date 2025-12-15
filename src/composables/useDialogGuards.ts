@@ -9,7 +9,7 @@ import type {Ref} from 'vue'
 import {ref} from 'vue'
 
 export function useDialogGuards() {
-    const isLoading = ref(false)
+    const isLoading = ref<boolean>(false)
 
     const ensureConnected = async (
         isConnected: Ref<boolean>,

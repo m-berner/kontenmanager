@@ -24,28 +24,30 @@ const {isinRules} = useValidation()
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                ERROR_ONUPDATE_ISIN: t('messages.onUpdateIsin')
-                            },
-                            STRINGS: {
-                                COMPANY_LABEL: t('components.dialogs.formulars.stockFormular.companyLabel'),
-                                SYMBOL_LABEL: t('components.dialogs.formulars.stockFormular.symbolLabel'),
-                                MEETING_DAY_LABEL: t('components.dialogs.formulars.stockFormular.meetingDayLabel'),
-                                QUARTER_DAY_LABEL: t('components.dialogs.formulars.stockFormular.quarterDayLabel'),
-                                FADEOUT_LABEL: t('components.dialogs.formulars.stockFormular.fadeOutLabel'),
-                                FIRST_PAGE_LABEL: t('components.dialogs.formulars.stockFormular.firstPageLabel'),
-                                URL_LABEL: t('components.dialogs.formulars.stockFormular.urlLabel'),
-                                ISIN_LABEL: t('components.dialogs.formulars.stockFormular.isinLabel')
-                            },
-                            ISIN_RULES: [
-                                t('validators.isinRules.required'),
-                                t('validators.isinRules.length'),
-                                t('validators.isinRules.format'),
-                                t('validators.isinRules.country'),
-                                t('validators.isinRules.luhn')
-                            ]
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            ERROR_ONUPDATE_ISIN: t('messages.onUpdateIsin')
+        },
+        STRINGS: {
+            COMPANY_LABEL: t('components.dialogs.formulars.stockFormular.companyLabel'),
+            SYMBOL_LABEL: t('components.dialogs.formulars.stockFormular.symbolLabel'),
+            MEETING_DAY_LABEL: t('components.dialogs.formulars.stockFormular.meetingDayLabel'),
+            QUARTER_DAY_LABEL: t('components.dialogs.formulars.stockFormular.quarterDayLabel'),
+            FADEOUT_LABEL: t('components.dialogs.formulars.stockFormular.fadeOutLabel'),
+            FIRST_PAGE_LABEL: t('components.dialogs.formulars.stockFormular.firstPageLabel'),
+            URL_LABEL: t('components.dialogs.formulars.stockFormular.urlLabel'),
+            ISIN_LABEL: t('components.dialogs.formulars.stockFormular.isinLabel')
+        },
+        ISIN_RULES: [
+            t('validators.isinRules.required'),
+            t('validators.isinRules.length'),
+            t('validators.isinRules.format'),
+            t('validators.isinRules.country'),
+            t('validators.isinRules.luhn')
+        ]
+    }
+)
 
 const onUpdateIsin = async () => {
     log('STOCK_FORMULAR: onUpdateISIN')
@@ -78,7 +80,7 @@ log('--- StockFormular.vue setup ---')
                 :rules="isinRules(T.ISIN_RULES)"
                 autofocus
                 variant="outlined"
-                @focus="formRef?.resetValidation()"
+                @focus="formRef?.resetValidation?.()"
                 @update:model-value="onUpdateIsin"/>
         </v-row>
         <v-row>

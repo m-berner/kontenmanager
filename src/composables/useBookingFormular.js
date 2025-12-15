@@ -1,4 +1,7 @@
 import { reactive, ref } from 'vue';
+import { useApp } from '@/composables/useApp';
+const { CONS } = useApp();
+const BOOKING_TYPES = CONS.INDEXED_DB.STORES.BOOKING_TYPES;
 const bookingFormularData = reactive({
     id: -1,
     bookDate: '',
@@ -51,11 +54,52 @@ const reset = () => {
     selected.value = -1;
     formRef.value = null;
 };
+const isStockRelated = (bookingTypeId) => {
+    return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND;
+};
+const isDividendBooking = (bookingTypeId) => {
+    return bookingTypeId === BOOKING_TYPES.DIVIDEND;
+};
+const hasMarketplace = (bookingTypeId) => {
+    return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND;
+};
+const mapBookingFormToDb = (accountId, defaultISODate) => {
+    const base = {
+        cID: bookingFormularData.id,
+        cAccountNumberID: accountId,
+        cBookDate: bookingFormularData.bookDate,
+        cCredit: bookingFormularData.credit,
+        cDebit: bookingFormularData.debit,
+        cDescription: bookingFormularData.description,
+        cBookingTypeID: selected.value,
+        cSoliCredit: bookingFormularData.soliCredit,
+        cSoliDebit: bookingFormularData.soliDebit,
+        cTaxCredit: bookingFormularData.taxCredit,
+        cTaxDebit: bookingFormularData.taxDebit,
+        cFeeCredit: bookingFormularData.feeCredit,
+        cFeeDebit: bookingFormularData.feeDebit,
+        cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
+        cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
+        cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
+        cTransactionTaxDebit: bookingFormularData.transactionTaxDebit
+    };
+    const stockRelated = isStockRelated(bookingFormularData.bookingTypeId);
+    const isDividend = isDividendBooking(bookingFormularData.bookingTypeId);
+    const hasMP = hasMarketplace(bookingFormularData.bookingTypeId);
+    return {
+        ...base,
+        cStockID: stockRelated ? bookingFormularData.stockId : 0,
+        cCount: stockRelated ? bookingFormularData.count : 0,
+        cExDate: isDividend ? bookingFormularData.exDate : defaultISODate,
+        cMarketPlace: hasMP ? bookingFormularData.marketPlace : ''
+    };
+};
 export function useBookingFormular() {
     return {
         formRef,
         bookingFormularData,
         selected,
+        mapBookingFormToDb,
         reset
     };
 }

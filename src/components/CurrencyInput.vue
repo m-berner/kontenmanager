@@ -90,7 +90,7 @@ log('--- CurrencyInput.vue ---')
         density="compact"
         variant="solo-filled"
         @blur="onBlur"
-        @focus="formRef?.resetValidation(); onFocus()"
+        @focus="formRef?.resetValidation?.(); onFocus()"
         @input="onInput"
     />
 </template>

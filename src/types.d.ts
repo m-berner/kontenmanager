@@ -8,7 +8,7 @@
 import deDE from '@/locales/de-DE.json'
 
 export interface I_Account_DB {
-    cID: number
+    cID: number | undefined
     cSwift: string
     cIban: string
     cLogoUrl: string
@@ -48,7 +48,7 @@ export interface I_Backup {
 }
 
 export interface I_Booking_DB {
-    cID: number
+    cID: number | undefined
     cBookDate: string
     cExDate: string
     cDebit: number

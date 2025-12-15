@@ -31,7 +31,7 @@ const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {activeId} = storeToRefs(runtime)
-const {stockFormularData, formRef} = useStockFormular()
+const {stockFormularData, formRef, mapStockFormToDb} = useStockFormular()
 const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 
 const T = Object.freeze(
@@ -64,20 +64,6 @@ const loadCurrentStock = (): void => {
     })
 }
 
-const buildStockFromFormData = (): I_Stock_DB => ({
-    cID: stockFormularData.id,
-    cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
-    cCompany: stockFormularData.company,
-    cSymbol: stockFormularData.symbol,
-    cMeetingDay: stockFormularData.meetingDay,
-    cQuarterDay: stockFormularData.quarterDay,
-    cFadeOut: stockFormularData.fadeOut ? 1 : 0,
-    cFirstPage: stockFormularData.firstPage ? 1 : 0,
-    cURL: stockFormularData.url,
-    cAccountNumberID: activeAccountId.value,
-    cAskDates: stockFormularData.askDates
-})
-
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_STOCK : onClickOk')
     if (!await validateForm(formRef)) return
@@ -85,7 +71,7 @@ const onClickOk = async (): Promise<void> => {
 
     await withLoading(async () => {
         try {
-            const stock: I_Stock_DB = buildStockFromFormData()
+            const stock: I_Stock_DB = mapStockFormToDb(activeAccountId.value)
             records.stocks.update(stock)
             await update(stock)
             await notice([T.MESSAGES.SUCCESS_UPDATE])
@@ -121,8 +107,8 @@ log('--- UpdateStock.vue setup ---')
         <StockFormular :isUpdate="true"/>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

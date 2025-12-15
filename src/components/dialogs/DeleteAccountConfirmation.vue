@@ -26,7 +26,7 @@ const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
 const {items: accountItems} = storeToRefs(records.accounts)
-const {ensureConnected, handleError, withLoading} = useDialogGuards()
+const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 
 const T = Object.freeze(
     {
@@ -53,10 +53,10 @@ const switchToNextAccount = async (): Promise<void> => {
     }
 
     const newActiveId = accountItems.value[0].cID
-    activeAccountId.value = newActiveId
-    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, newActiveId)
+    activeAccountId.value = newActiveId!
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, newActiveId!)
 
-    const storesDB = await getDatabaseStores(newActiveId)
+    const storesDB = await getDatabaseStores(newActiveId!)
     await records.init(storesDB, T.MESSAGES)
 }
 
@@ -97,4 +97,14 @@ log('--- DeleteAccountConfirmation.vue setup ---')
 <template>
     <v-alert v-if="records.accounts.items.length === 0">{{ T.MESSAGES.NO_ACCOUNT }}</v-alert>
     <v-alert v-else type="warning">{{ T.MESSAGES.CONFIRM }}</v-alert>
+    <v-overlay
+        v-model="isLoading"
+        class="align-center justify-center"
+        contained>
+        <v-progress-circular
+            color="primary"
+            indeterminate
+            size="64"
+        />
+    </v-overlay>
 </template>

@@ -146,12 +146,19 @@ export function useValidation() {
         ]
     }
 
-    async function validateForm(form: Ref<HTMLFormElement | null>): Promise<boolean> {
+    function validateForm(form: Ref<HTMLFormElement | null>): boolean {
         if (form.value !== null) {
-            const {valid} = await form.value.validate()
+            const {valid} = form.value.validate()
             return valid
         }
         return false
+    }
+
+    function mounted(el: HTMLElement) {
+        el.addEventListener('focus', () => {
+            const form = el.closest('form')
+            form?.resetValidation?.()
+        })
     }
 
     function isinRules(msgArray: string[]): TStringValidator[] {
@@ -234,6 +241,7 @@ export function useValidation() {
         isinRules,
         isValidCredit,
         isValidDebit,
+        mounted,
         nameRules,
         swiftRules,
         dateRules,

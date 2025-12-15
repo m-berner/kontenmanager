@@ -6,7 +6,6 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Stock_DB} from '@/types'
 import {defineExpose, onMounted, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -22,7 +21,7 @@ import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
 const {notice} = useBrowser()
 const {add, isConnected} = useStocksDB()
 const {validateForm} = useValidation()
@@ -30,7 +29,7 @@ const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const {resetTeleport} = useRuntimeStore()
 const records = useRecordsStore()
-const {stockFormularData, formRef} = useStockFormular()
+const {stockFormularData, formRef, mapStockFormToDb} = useStockFormular()
 const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 
 const T = Object.freeze(
@@ -58,19 +57,6 @@ const reset = (): void => {
     formDisabled.value = false
 }
 
-const buildStockFromFormData = (): Omit<I_Stock_DB, 'cID'> => ({
-    cCompany: stockFormularData.company.trim(),
-    cISIN: stockFormularData.isin,
-    cSymbol: stockFormularData.symbol,
-    cMeetingDay: '',
-    cQuarterDay: '',
-    cFadeOut: 0,
-    cFirstPage: 0,
-    cURL: '',
-    cAccountNumberID: activeAccountId.value,
-    cAskDates: CONS.DATE.DEFAULT_ISO
-})
-
 const onClickOk = async (): Promise<void> => {
     log('ADD_STOCK : onClickOk')
     if (!await validateForm(formRef)) return
@@ -78,7 +64,7 @@ const onClickOk = async (): Promise<void> => {
 
     await withLoading(async () => {
         try {
-            const stock = buildStockFromFormData()
+            const stock = mapStockFormToDb(activeAccountId.value)
 
             const addStockID = await add(stock)
 
@@ -87,8 +73,9 @@ const onClickOk = async (): Promise<void> => {
                 await notice([T.MESSAGES.ERROR_ADD])
                 return
             }
-            const dbStock: I_Stock_DB = {cID: addStockID, ...stock}
-            records.stocks.add(dbStock)
+            stock.cID = addStockID
+            //const dbStock: I_Stock_DB = {cID: addStockID, ...stock}
+            records.stocks.add(stock)
             resetTeleport()
             await notice([T.MESSAGES.SUCCESS_ADD])
         } catch (error) {

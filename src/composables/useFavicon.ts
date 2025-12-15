@@ -9,8 +9,8 @@ import type {ComputedRef} from 'vue'
 import {computed, ref} from 'vue'
 
 export function useFavicon(domain: ComputedRef<string>, size = 48) {
-    const error = ref(false)
-    const loading = ref(true)
+    const error = ref<boolean>(false)
+    const loading = ref<boolean>(true)
 
     const faviconUrl = computed(() => {
         if (domain.value.length > 4) {

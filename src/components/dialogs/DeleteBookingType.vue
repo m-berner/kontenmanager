@@ -110,11 +110,11 @@ log('--- DeleteBookingType.vue setup ---')
             clearable
             density="compact"
             variant="outlined"
-            @focus="formRef?.resetValidation()"/>
+            @focus="formRef?.resetValidation?.()"/>
         <v-overlay
             v-model="isLoading"
-            contained
-            class="align-center justify-center">
+            class="align-center justify-center"
+            contained>
             <v-progress-circular
                 color="primary"
                 indeterminate

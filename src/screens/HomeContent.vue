@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import {onBeforeMount, ref} from 'vue'
+import {ref} from 'vue'
 import {storeToRefs} from 'pinia'
 import {useI18n} from 'vue-i18n'
 import {useSettingsStore} from '@/stores/settings'
@@ -17,6 +17,7 @@ import type {I_Header, I_Menu_Item} from '@/types'
 import {useTheme} from 'vuetify'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
+import {useKeyboardShortcuts} from '@/composables/useKeyboardShortcuts'
 
 const {d, n, t} = useI18n()
 const {CONS, log, utcDate} = useApp()
@@ -123,42 +124,16 @@ const changeHandler = (changes: Record<string, browser.storage.StorageChange>): 
 }
 const removeStorageChangedListener = addStorageChangedListener(changeHandler)
 
-const keyStrokeController: string[] = []
-const onKeyDown = async (ev: KeyboardEvent): Promise<void> => {
-    if (!keyStrokeController.includes(ev.key)) {
-        keyStrokeController.push(ev.key)
-    }
-    if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'r') {
-        await clearStorage()
-        await installStorageLocal()
-    }
-    if (keyStrokeController.includes('Control') && keyStrokeController.includes('Alt') && ev.key === 'd') {
-        const debugValue = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
-        if (debugValue !== '1') {
-            localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
-        } else {
-            localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
-        }
-    }
-}
-const onKeyUp = (ev: KeyboardEvent): void => {
-    const index = keyStrokeController.indexOf(ev.key)
-    if (index > -1) {
-        keyStrokeController.splice(index, 1)
-    }
-}
+const { shortcuts } = useKeyboardShortcuts()
+//TODO check in main for toggleDebug, resetStorage
+shortcuts.value.set('Alt+Control+d', toggleDebug)
+shortcuts.value.set('Alt+Control+r', resetStorage)
 const onBeforeUnload = (): void => {
     log('APP_INDEX: onBeforeUnload')
     removeStorageChangedListener()
     closeDB()
 }
-window.addEventListener('keydown', onKeyDown, false)
-window.addEventListener('keyup', onKeyUp, false)
 window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
-
-onBeforeMount(() => {
-    theme.global.name.value = skin.value
-})
 
 log('--- HomeContent.vue setup ---')
 </script>
@@ -191,7 +166,7 @@ log('--- HomeContent.vue setup ---')
                 <td>
                     <DotMenu
                         :menuItems="T.MENU_ITEMS"
-                        :recordID="item.cID"/>
+                        :recordID="item.cID!"/>
                 </td>
                 <td>{{ d(utcDate(item.cBookDate), 'short') }}</td>
                 <td>{{ n(item.cDebit, 'currency') }}</td>

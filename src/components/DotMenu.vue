@@ -28,14 +28,16 @@ const {optionMenuColors} = storeToRefs(runtime)
 const records = useRecordsStore()
 const {info} = useAlertStore()
 
-const T = Object.freeze({
-                            MESSAGES: {
-                                INFO_TITLE: t('messages.infoTitle'),
-                                NO_DELETE: t('messages.noDelete'),
-                                SUCCESS_DELETE_BOOKING: t('messages.deleteBooking.success'),
-                                SUCCESS_DELETE_COMPANY: t('messages.deleteStock.success')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        MESSAGES: {
+            INFO_TITLE: t('messages.infoTitle'),
+            NO_DELETE: t('messages.noDelete'),
+            SUCCESS_DELETE_BOOKING: t('messages.deleteBooking.success'),
+            SUCCESS_DELETE_COMPANY: t('messages.deleteStock.success')
+        }
+    }
+)
 
 const onButtonClick = async (): Promise<void> => {
     log('OPTION_MENU: onButtonClick', {info: optionMenuProps.recordID})
@@ -54,11 +56,13 @@ const onIconClick = async (ev: Event): Promise<void> => {
         if (loop > 6 || elem === null) return
         switch (elem!.id) {
             case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING:
-                runtime.setTeleport({
-                                        dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING,
-                                        dialogOk: true,
-                                        dialogVisibility: true
-                                    })
+                runtime.setTeleport(
+                    {
+                        dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING,
+                        dialogOk: true,
+                        dialogVisibility: true
+                    }
+                )
                 break
             case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
                 records.bookings.remove(optionMenuProps.recordID)
@@ -69,11 +73,13 @@ const onIconClick = async (ev: Event): Promise<void> => {
                 }
                 break
             case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
-                runtime.setTeleport({
-                                        dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
-                                        dialogOk: true,
-                                        dialogVisibility: true
-                                    })
+                runtime.setTeleport(
+                    {
+                        dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
+                        dialogOk: true,
+                        dialogVisibility: true
+                    }
+                )
                 break
             case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
                 const deleteAble = bookingItems.value.filter((booking) => {
@@ -91,11 +97,13 @@ const onIconClick = async (ev: Event): Promise<void> => {
                 }
                 break
             case CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND:
-                runtime.setTeleport({
-                                        dialogName: CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND,
-                                        dialogOk: false,
-                                        dialogVisibility: true
-                                    })
+                runtime.setTeleport(
+                    {
+                        dialogName: CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND,
+                        dialogOk: false,
+                        dialogVisibility: true
+                    }
+                )
                 break
             case CONS.COMPONENTS.DIALOGS.OPEN_LINK:
                 window.open(stockItems.value[records.stocks.getIndexById(optionMenuProps.recordID)].cURL)
@@ -122,7 +130,7 @@ log('--- DotMenu.vue setup ---')
     <v-menu>
         <template v-slot:activator="{ props }">
             <v-btn
-                :color="runtime.optionMenuColors.get(optionMenuProps.recordID ?? -1)"
+                :color="runtime.optionMenuColors.get(optionMenuProps.recordID!)"
                 icon="$dots"
                 v-bind="props"
                 @click="onButtonClick"
