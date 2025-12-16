@@ -317,8 +317,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const accountsStore = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
 
         bookings.filter((b: I_Booking_DB) => b.cAccountNumberID === accountId).forEach((b: I_Booking_DB) => bookingsStore.delete(b.cID!))
-        bookingTypes.filter((bt: I_Booking_Type_DB) => bt.cAccountNumberID === accountId).forEach((bt: I_Booking_Type_DB) => bookingTypesStore.delete(bt.cID))
-        stocks.filter((s: I_Stock_DB) => s.cAccountNumberID === accountId).forEach((s: I_Stock_DB) => stocksStore.delete(s.cID))
+        bookingTypes.filter((bt: I_Booking_Type_DB) => bt.cAccountNumberID === accountId).forEach((bt: I_Booking_Type_DB) => bookingTypesStore.delete(bt.cID!))
+        stocks.filter((s: I_Stock_DB) => s.cAccountNumberID === accountId).forEach((s: I_Stock_DB) => stocksStore.delete(s.cID!))
         accountsStore.delete(accountId)
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => resolve()

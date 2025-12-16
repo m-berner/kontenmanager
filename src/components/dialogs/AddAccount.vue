@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Booking_Type_Store} from '@/types'
+import type {I_Booking_Type_DB} from '@/types'
 import {defineExpose, onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -53,38 +53,36 @@ const T = Object.freeze(
 const addBookingTypesForAccount = async (accountId: number): Promise<boolean> => {
     if (!accountFormularData.withDepot) return true
 
-    const bookingTypes = [
-        {cName: T.STRINGS.BUY, cAccountNumberID: accountId},
-        {cName: T.STRINGS.SELL, cAccountNumberID: accountId},
-        {cName: T.STRINGS.DIVIDEND, cAccountNumberID: accountId}
+    const bookingTypes: I_Booking_Type_DB[] = [
+        {cID: -1, cName: T.STRINGS.BUY, cAccountNumberID: accountId},
+        {cID: -1, cName: T.STRINGS.SELL, cAccountNumberID: accountId},
+        {cID: -1, cName: T.STRINGS.DIVIDEND, cAccountNumberID: accountId}
     ]
-    const addedTypes: I_Booking_Type_Store[] = []
+    const addedTypes: I_Booking_Type_DB[] = []
 
     try {
         for (const bookingType of bookingTypes) {
+            delete bookingType.cID
             const addBookingTypeID = await addBookingType(bookingType)
 
             if (addBookingTypeID === -1) {
                 log('ADD_ACCOUNT: Failed to add booking type', {error: bookingType})
                 // Rollback: remove previously added types
                 for (const added of addedTypes) {
-                    records.bookingTypes.remove(added.cID)
+                    records.bookingTypes.remove(added.cID!)
                 }
                 return false
             }
 
-            const dbBookingType: I_Booking_Type_Store = {
-                cID: addBookingTypeID,
-                ...bookingType
-            }
-            records.bookingTypes.add(dbBookingType)
-            addedTypes.push(dbBookingType)
+            bookingType.cID = addBookingTypeID
+            records.bookingTypes.add(bookingType)
+            addedTypes.push(bookingType)
         }
         return true
     } catch (error) {
         // Rollback on error
         for (const added of addedTypes) {
-            records.bookingTypes.remove(added.cID)
+            records.bookingTypes.remove(added.cID!)
         }
         throw error
     }
@@ -101,7 +99,7 @@ const onClickOk = async (): Promise<void> => {
             const {activeAccountId} = storeToRefs(settings)
 
             const account = mapAccountFormToDb()
-
+            delete account.cID
             const addAccountID = await add(account)
 
             if (addAccountID === -1) {
@@ -111,7 +109,6 @@ const onClickOk = async (): Promise<void> => {
             }
 
             account.cID = addAccountID
-            //const dbAccount: I_Account_Store = {cID: addAccountID, ...account}
             records.accounts.add(account)
 
             activeAccountId.value = addAccountID

@@ -46,17 +46,17 @@ const T = Object.freeze(
 
 const onClickOk = async (): Promise<void> => {
     log('ADD_BOOKING : onClickOk')
+
     if (!validateForm(formRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
 
     await withLoading(async () => {
         try {
-            // Simplified: no switch statement needed since all cases do the same
             const booking = mapBookingFormToDb(
                 activeAccountId.value,
                 CONS.DATE.DEFAULT_ISO
             )
-
+            delete booking.cID
             const addBookingID = await add(booking)
 
             if (addBookingID === -1) {
@@ -64,8 +64,8 @@ const onClickOk = async (): Promise<void> => {
                 await notice([T.MESSAGES.ERROR_ADD])
                 return
             }
+
             booking.cID = addBookingID
-            // const dbBooking: I_Booking_Store = {cID: addBookingID, ...booking}
             records.bookings.add(booking, true)
             reset()
             await notice([T.MESSAGES.SUCCESS_ADD])

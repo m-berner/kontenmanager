@@ -70,18 +70,18 @@ const accountEntries = computed(() => {
 
     // Add individual booking type sums
     for (let i = 0; i < sums.length; i++) {
-        const sumClass = sums[i].key < 0 ? 'color-red' : ''
+        const sumClass = sums[i].key! < 0 ? 'color-red' : ''
 
         result.push(
             {
                 id: i,
                 name: sums[i].value,
-                sum: sums[i].key,
+                sum: sums[i].key!,
                 nameClass: '',
                 sumClass
             }
         )
-        finalSum += sums[i].key
+        finalSum += sums[i].key!
     }
 
     // Add fees and taxes for depot accounts

@@ -58,6 +58,10 @@
     "deleteStock": {
       "success": "Unternehmen wurde entfernt",
       "error": "Diese ISIN existiert bereits"
+    },
+    "fadeInStock": {
+      "success": "Unternehmen ist eingeblendet",
+      "error": "Unternehmen konnte nicht eingeblendet werden"
     }
   },
   "names": {

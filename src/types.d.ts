@@ -99,7 +99,7 @@ export interface I_Booking_Store extends I_Booking_DB {
 }
 
 export interface I_Booking_Type_DB {
-    cID: number
+    cID: number | undefined
     cName: string
     cAccountNumberID: number
 }
@@ -213,7 +213,7 @@ export interface I_String_Number {
 }
 
 export interface I_Number_String {
-    key: number
+    key: number | undefined
     value: string
 }
 
@@ -258,7 +258,7 @@ export interface I_Service {
 }
 
 export interface I_Stock_DB {
-    cID: number
+    cID: number | undefined
     cCompany: string
     cISIN: string
     cSymbol: string
@@ -324,7 +324,7 @@ export interface I_Stock_SM {
 }
 
 export interface I_Storage_Online {
-    id: number,
+    id: number | undefined,
     isin: string,
     min: string,
     rate: string,

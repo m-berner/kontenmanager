@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Booking_Type_Store} from '@/types'
+import type {I_Booking_Type_DB} from '@/types'
 import {defineExpose, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -58,8 +58,10 @@ const reset = () => {
 
 const onClickOk = async (): Promise<void> => {
     log('ADD_BOOKING_TYPE: onClickOk')
+
     if (!validateForm(formRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+
     await withLoading(async () => {
         try {
             const trimmedName = formName.value.trim()
@@ -68,11 +70,12 @@ const onClickOk = async (): Promise<void> => {
                 return
             }
 
-            const bookingType = {
+            const bookingType: I_Booking_Type_DB = {
+                cID: -1,
                 cName: trimmedName,
                 cAccountNumberID: activeAccountId.value
             }
-
+            delete bookingType.cID
             const addBookingTypeID = await add(bookingType)
 
             if (addBookingTypeID === -1) {
@@ -81,12 +84,8 @@ const onClickOk = async (): Promise<void> => {
                 return
             }
 
-            const dbBookingType: I_Booking_Type_Store = {
-                cID: addBookingTypeID,
-                ...bookingType
-            }
-
-            records.bookingTypes.add(dbBookingType)
+            bookingType.cID = addBookingTypeID
+            records.bookingTypes.add(bookingType)
             reset()
             await notice([T.MESSAGES.SUCCESS_ADD])
 

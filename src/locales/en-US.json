@@ -58,6 +58,10 @@
     "deleteStock": {
       "success": "Company has been removed",
       "error": "ISIN exists already"
+    },
+    "fadeInStock": {
+      "success": "Company is visible",
+      "error": "Company visibility failed"
     }
   },
   "names": {

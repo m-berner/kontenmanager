@@ -148,8 +148,7 @@ export function useValidation() {
 
     function validateForm(form: Ref<HTMLFormElement | null>): boolean {
         if (form.value !== null) {
-            const {valid} = form.value.validate()
-            return valid
+            return form.value.validate()
         }
         return false
     }

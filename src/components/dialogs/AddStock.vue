@@ -59,13 +59,14 @@ const reset = (): void => {
 
 const onClickOk = async (): Promise<void> => {
     log('ADD_STOCK : onClickOk')
+
     if (!validateForm(formRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
 
     await withLoading(async () => {
         try {
             const stock = mapStockFormToDb(activeAccountId.value)
-
+            delete stock.cID
             const addStockID = await add(stock)
 
             if (addStockID === -1) {
@@ -73,8 +74,8 @@ const onClickOk = async (): Promise<void> => {
                 await notice([T.MESSAGES.ERROR_ADD])
                 return
             }
+
             stock.cID = addStockID
-            //const dbStock: I_Stock_DB = {cID: addStockID, ...stock}
             records.stocks.add(stock)
             resetTeleport()
             await notice([T.MESSAGES.SUCCESS_ADD])

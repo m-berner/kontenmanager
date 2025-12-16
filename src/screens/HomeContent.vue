@@ -123,7 +123,10 @@ const changeHandler = (changes: Record<string, browser.storage.StorageChange>): 
     }
 }
 const removeStorageChangedListener = addStorageChangedListener(changeHandler)
-
+// TODO ad exchange immediate update not working
+// TODO Tradegate fetch not working
+// TODO edit company, add company not working
+// TODO edit, add booking
 const {shortcuts} = useKeyboardShortcuts()
 const toggleDebug = async (): Promise<void> => {
     await clearStorage()

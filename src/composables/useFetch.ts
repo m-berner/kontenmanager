@@ -143,7 +143,7 @@ export function useFetch() {
                             onlineRate = onlineNodes[0].textContent ?? ''
                         }
                         return {
-                            id: urlObj.key,
+                            id: urlObj.key!,
                             isin: '',
                             rate: onlineRate,
                             min: onlineMin,
@@ -187,7 +187,7 @@ export function useFetch() {
                                 ardRows[7].cells[1].textContent ?? '0'
                             ).replace('€', '')
                             return {
-                                id: urlObj.key,
+                                id: urlObj.key!,
                                 isin: '',
                                 rate: onlineRate,
                                 min: onlineMin,
@@ -196,7 +196,7 @@ export function useFetch() {
                             }
                         } else {
                             return {
-                                id: urlObj.key,
+                                id: urlObj.key!,
                                 isin: '',
                                 rate: '0',
                                 min: '0',
@@ -267,7 +267,7 @@ export function useFetch() {
                             '0'
                         const onlineCurrency = 'EUR'
                         return {
-                            id: urlObj.key,
+                            id: urlObj.key!,
                             isin: '',
                             rate: onlineRate,
                             min: onlineMin,
@@ -310,7 +310,7 @@ export function useFetch() {
                                 onlineCurrency = 'EUR'
                             }
                             return {
-                                id: urlObj.key,
+                                id: urlObj.key!,
                                 isin: '',
                                 rate: onlineRate,
                                 min: onlineMin,
@@ -349,7 +349,7 @@ export function useFetch() {
                         const quote = mean([toNumber(resultbid), toNumber(resultask)])
                         const onlineRate = quote.toString()
                         return {
-                            id: urlObj.key,
+                            id: urlObj.key!,
                             isin: '',
                             rate: onlineRate,
                             min: onlineMin,

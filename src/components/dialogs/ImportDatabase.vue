@@ -194,7 +194,6 @@ const processBackupFile = async (fileContent: string): Promise<void> => {
     await clearAllBookings()
     await clearAllBookingTypes()
     await clearAllStocks()
-    // TODO just once direct after install: onBeforeMount storage props materials???, theme is undefined
     // Import based on version
     if (backup.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
         await importLegacyData(backup, activeId)

@@ -6,6 +6,23 @@ import { useAlertStore } from '@/stores/alerts';
 import { useFetch } from '@/composables/useFetch';
 import { useRuntimeStore } from '@/stores/runtime';
 const { CONS, isoDate, toNumber, utcDate, log } = useApp();
+const defaultStockMemory = {
+    mPortfolio: 0,
+    mInvest: 0,
+    mChange: 0,
+    mBuyValue: 0,
+    mEuroChange: 0,
+    mMin: 0,
+    mValue: 0,
+    mMax: 0,
+    mDividendYielda: 0,
+    mDividendYeara: 0,
+    mDividendYieldb: 0,
+    mDividendYearb: 0,
+    mRealDividend: 0,
+    mRealBuyValue: 0,
+    mDeleteable: false
+};
 const useStocksStore = defineStore('stocks', function () {
     const items = ref([]);
     const getIndexById = computed(() => (id) => {
@@ -45,26 +62,9 @@ const useStocksStore = defineStore('stocks', function () {
     });
     function add(stock, prepend = false) {
         log('STOCKS_STORE: add');
-        const stocksOnlyMemory = {
-            mPortfolio: 0,
-            mInvest: 0,
-            mChange: 0,
-            mBuyValue: 0,
-            mEuroChange: 0,
-            mMin: 0,
-            mValue: 0,
-            mMax: 0,
-            mDividendYielda: 0,
-            mDividendYeara: 0,
-            mDividendYieldb: 0,
-            mDividendYearb: 0,
-            mRealDividend: 0,
-            mRealBuyValue: 0,
-            mDeleteable: false
-        };
         const completeStock = {
             ...stock,
-            ...stocksOnlyMemory
+            ...defaultStockMemory
         };
         if (prepend) {
             items.value.unshift(completeStock);
@@ -503,29 +503,12 @@ export const useRecordsStore = defineStore('records', function () {
         const settings = useSettingsStore();
         const { activeAccountId } = storeToRefs(settings);
         const { info } = useAlertStore();
-        const stocksOnlyMemory = {
-            mPortfolio: 0,
-            mInvest: 0,
-            mChange: 0,
-            mBuyValue: 0,
-            mEuroChange: 0,
-            mMin: 0,
-            mValue: 0,
-            mMax: 0,
-            mDividendYielda: 0,
-            mDividendYeara: 0,
-            mDividendYieldb: 0,
-            mDividendYearb: 0,
-            mRealDividend: 0,
-            mRealBuyValue: 0,
-            mDeleteable: false
-        };
         const stores = {
             accounts: storesDB.accountsDB,
             bookings: storesDB.bookingsDB,
             bookingTypes: storesDB.bookingTypesDB,
             stocks: storesDB.stocksDB.map((stock) => {
-                return { ...stock, ...stocksOnlyMemory };
+                return { ...stock, ...defaultStockMemory };
             })
         };
         const load = (stores) => {

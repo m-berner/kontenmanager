@@ -26,6 +26,24 @@ import {useRuntimeStore} from '@/stores/runtime'
 
 const {CONS, isoDate, toNumber, utcDate, log} = useApp()
 
+const defaultStockMemory: I_Stock_Memory = {
+    mPortfolio: 0,
+    mInvest: 0,
+    mChange: 0,
+    mBuyValue: 0,
+    mEuroChange: 0,
+    mMin: 0,
+    mValue: 0,
+    mMax: 0,
+    mDividendYielda: 0,
+    mDividendYeara: 0,
+    mDividendYieldb: 0,
+    mDividendYearb: 0,
+    mRealDividend: 0,
+    mRealBuyValue: 0,
+    mDeleteable: false
+}
+
 const useStocksStore = defineStore('stocks', function () {
     const items = ref<I_Stock_Store[]>([])
 
@@ -35,15 +53,15 @@ const useStocksStore = defineStore('stocks', function () {
     const getItemById = computed(() => (id: number): I_Stock_Store => items.value[getIndexById.value(id)])
     const passive = computed(() => {
         return items.value.filter(rec => {
-            return rec.cFadeOut === 1 && rec.cID > 0
+            return rec.cFadeOut === 1 && rec.cID! > 0
         })
     })
     const active = computed(() => {
         const {investByStockId, portfolioByStockId} = useBookingsStore()
-        return items.value.filter(rec => rec.cFadeOut === 0 && rec.cID > 0)
+        return items.value.filter(rec => rec.cFadeOut === 0 && rec.cID! > 0)
             .map(rec => {
-                rec.mPortfolio = portfolioByStockId(rec.cID)
-                rec.mInvest = investByStockId(rec.cID)
+                rec.mPortfolio = portfolioByStockId(rec.cID!)
+                rec.mInvest = investByStockId(rec.cID!)
                 return rec
             })
             .sort((a, b) => b.cFirstPage - a.cFirstPage)
@@ -69,26 +87,9 @@ const useStocksStore = defineStore('stocks', function () {
 
     function add(stock: I_Stock_DB, prepend: boolean = false): void {
         log('STOCKS_STORE: add')
-        const stocksOnlyMemory: I_Stock_Memory = {
-            mPortfolio: 0,
-            mInvest: 0,
-            mChange: 0,
-            mBuyValue: 0,
-            mEuroChange: 0,
-            mMin: 0,
-            mValue: 0,
-            mMax: 0,
-            mDividendYielda: 0,
-            mDividendYeara: 0,
-            mDividendYieldb: 0,
-            mDividendYearb: 0,
-            mRealDividend: 0,
-            mRealBuyValue: 0,
-            mDeleteable: false
-        }
         const completeStock = {
             ...stock,
-            ...stocksOnlyMemory
+            ...defaultStockMemory
         }
         if (prepend) {
             items.value.unshift(completeStock)
@@ -507,7 +508,7 @@ const useBookingTypesStore = defineStore('bookingTypes', function () {
 
     function update(bookingType: I_Booking_Type_Store): void {
         log('BOOKING_TYPES_STORE: update')
-        const index = getIndexById.value(bookingType.cID)
+        const index = getIndexById.value(bookingType.cID!)
         if (index !== -1) {
             items.value[index] = {...bookingType}
         }
@@ -562,29 +563,13 @@ export const useRecordsStore = defineStore('records', function () {
         const settings = useSettingsStore()
         const {activeAccountId} = storeToRefs(settings)
         const {info} = useAlertStore()
-        const stocksOnlyMemory: I_Stock_Memory = {
-            mPortfolio: 0,
-            mInvest: 0,
-            mChange: 0,
-            mBuyValue: 0,
-            mEuroChange: 0,
-            mMin: 0,
-            mValue: 0,
-            mMax: 0,
-            mDividendYielda: 0,
-            mDividendYeara: 0,
-            mDividendYieldb: 0,
-            mDividendYearb: 0,
-            mRealDividend: 0,
-            mRealBuyValue: 0,
-            mDeleteable: false
-        }
+
         const stores: I_Records_Store = {
             accounts: storesDB.accountsDB,
             bookings: storesDB.bookingsDB,
             bookingTypes: storesDB.bookingTypesDB,
             stocks: storesDB.stocksDB.map((stock) => {
-                return {...stock, ...stocksOnlyMemory}
+                return {...stock, ...defaultStockMemory}
             })
         }
         const load = (stores: I_Records_Store) => {
