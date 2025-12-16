@@ -93,7 +93,6 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], 
 
 const search = ref<string>('')
 
-const {shortcuts} = useKeyboardShortcuts()
 const changeHandler = (changes: Record<string, browser.storage.StorageChange>): void => {
     log('APP_INDEX: changeHandler')
     const changesKey = Object.keys(changes)
@@ -124,6 +123,8 @@ const changeHandler = (changes: Record<string, browser.storage.StorageChange>): 
     }
 }
 const removeStorageChangedListener = addStorageChangedListener(changeHandler)
+
+const {shortcuts} = useKeyboardShortcuts()
 const toggleDebug = async (): Promise<void> => {
     await clearStorage()
     await installStorageLocal()

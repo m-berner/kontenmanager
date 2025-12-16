@@ -1,5 +1,4 @@
-import {onMounted, onUnmounted, ref} from 'vue';
-
+import { onMounted, onUnmounted, ref } from 'vue';
 export const useKeyboardShortcuts = () => {
     const shortcuts = ref(new Map());
     const activeKeys = ref(new Set());
@@ -22,5 +21,5 @@ export const useKeyboardShortcuts = () => {
         window.removeEventListener('keydown', handleKeyDown);
         window.removeEventListener('keyup', handleKeyUp);
     });
-    return {shortcuts};
+    return { shortcuts };
 };

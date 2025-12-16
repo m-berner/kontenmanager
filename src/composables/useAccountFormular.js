@@ -1,5 +1,4 @@
-import {reactive, ref} from 'vue';
-
+import { reactive, ref } from 'vue';
 const accountFormularData = reactive({
     id: -1,
     swift: '',
@@ -8,7 +7,7 @@ const accountFormularData = reactive({
     withDepot: false
 });
 const formRef = ref(null);
-const reset = () => {
+function reset() {
     Object.assign(accountFormularData, {
         id: -1,
         swift: '',
@@ -17,8 +16,8 @@ const reset = () => {
         withDepot: false
     });
     formRef.value = null;
-};
-const mapAccountFormToDb = (id) => {
+}
+function mapAccountFormToDb(id) {
     return {
         cID: id,
         cSwift: accountFormularData.swift.trim().toUpperCase(),
@@ -26,8 +25,7 @@ const mapAccountFormToDb = (id) => {
         cLogoUrl: accountFormularData.logoUrl,
         cWithDepot: accountFormularData.withDepot
     };
-};
-
+}
 export function useAccountFormular() {
     return {
         formRef,

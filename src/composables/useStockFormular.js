@@ -1,7 +1,6 @@
-import {reactive, ref} from 'vue';
-import {useApp} from '@/composables/useApp';
-
-const {CONS} = useApp();
+import { reactive, ref } from 'vue';
+import { useApp } from '@/composables/useApp';
+const { CONS } = useApp();
 const stockFormularData = reactive({
     id: -1,
     isin: '',
@@ -15,20 +14,22 @@ const stockFormularData = reactive({
     askDates: CONS.DATE.DEFAULT_ISO
 });
 const formRef = ref(null);
-const mapStockFormToDb = (aAId) => ({
-    cID: stockFormularData.id,
-    cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
-    cCompany: stockFormularData.company,
-    cSymbol: stockFormularData.symbol,
-    cMeetingDay: stockFormularData.meetingDay,
-    cQuarterDay: stockFormularData.quarterDay,
-    cFadeOut: stockFormularData.fadeOut ? 1 : 0,
-    cFirstPage: stockFormularData.firstPage ? 1 : 0,
-    cURL: stockFormularData.url,
-    cAccountNumberID: aAId,
-    cAskDates: stockFormularData.askDates
-});
-const reset = () => {
+function mapStockFormToDb(aAId) {
+    return {
+        cID: stockFormularData.id,
+        cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
+        cCompany: stockFormularData.company,
+        cSymbol: stockFormularData.symbol,
+        cMeetingDay: stockFormularData.meetingDay,
+        cQuarterDay: stockFormularData.quarterDay,
+        cFadeOut: stockFormularData.fadeOut ? 1 : 0,
+        cFirstPage: stockFormularData.firstPage ? 1 : 0,
+        cURL: stockFormularData.url,
+        cAccountNumberID: aAId,
+        cAskDates: stockFormularData.askDates
+    };
+}
+function reset() {
     Object.assign(stockFormularData, {
         id: -1,
         isin: '',
@@ -42,8 +43,7 @@ const reset = () => {
         askDates: CONS.DATE.DEFAULT_ISO
     });
     formRef.value = null;
-};
-
+}
 export function useStockFormular() {
     return {
         formRef,
