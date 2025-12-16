@@ -17,7 +17,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useStockFormular} from '@/composables/useStockFormular'
-import StockFormular from '@/components/dialogs/formulars/StockFormular.vue'
+import StockFormular from '@/components/dialogs/forms/StockFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()

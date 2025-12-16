@@ -155,7 +155,7 @@
   },
   "components": {
     "dialogs": {
-      "formulars": {
+      "forms": {
         "accountFormular": {
           "swiftLabel": "BIC / SWIFT",
           "searchLabel": "Logo Suche",

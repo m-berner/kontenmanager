@@ -18,7 +18,7 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
-import AccountFormular from '@/components/dialogs/formulars/AccountFormular.vue'
+import AccountFormular from '@/components/dialogs/forms/AccountFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()

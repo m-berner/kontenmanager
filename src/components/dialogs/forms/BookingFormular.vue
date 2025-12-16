@@ -25,19 +25,19 @@ const {markets} = useSettingsStore()
 const T = Object.freeze(
     {
         STRINGS: {
-            DATE_LABEL: t('components.dialogs.formulars.bookingFormular.dateLabel'),
-            STOCK_LABEL: t('components.dialogs.formulars.bookingFormular.stockLabel'),
-            BOOKING_TYPE_LABEL: t('components.dialogs.formulars.bookingFormular.bookingTypeLabel'),
-            COUNT_LABEL: t('components.dialogs.formulars.bookingFormular.countLabel'),
-            EX_DATE_LABEL: t('components.dialogs.formulars.bookingFormular.exDateLabel'),
-            MARKET_PLACE_LABEL: t('components.dialogs.formulars.bookingFormular.marketPlaceLabel'),
-            BOOKING_LABEL: t('components.dialogs.formulars.bookingFormular.bookingLabel'),
-            TAX_LABEL: t('components.dialogs.formulars.bookingFormular.taxLabel'),
-            SOLI_LABEL: t('components.dialogs.formulars.bookingFormular.soliLabel'),
-            SOURCE_TAX_LABEL: t('components.dialogs.formulars.bookingFormular.sourceTaxLabel'),
-            FEE_LABEL: t('components.dialogs.formulars.bookingFormular.feeLabel'),
-            TRANSACTION_TAX_LABEL: t('components.dialogs.formulars.bookingFormular.transactionTaxLabel'),
-            DESCRIPTION_LABEL: t('components.dialogs.formulars.bookingFormular.descriptionLabel')
+            DATE_LABEL: t('components.dialogs.forms.bookingFormular.dateLabel'),
+            STOCK_LABEL: t('components.dialogs.forms.bookingFormular.stockLabel'),
+            BOOKING_TYPE_LABEL: t('components.dialogs.forms.bookingFormular.bookingTypeLabel'),
+            COUNT_LABEL: t('components.dialogs.forms.bookingFormular.countLabel'),
+            EX_DATE_LABEL: t('components.dialogs.forms.bookingFormular.exDateLabel'),
+            MARKET_PLACE_LABEL: t('components.dialogs.forms.bookingFormular.marketPlaceLabel'),
+            BOOKING_LABEL: t('components.dialogs.forms.bookingFormular.bookingLabel'),
+            TAX_LABEL: t('components.dialogs.forms.bookingFormular.taxLabel'),
+            SOLI_LABEL: t('components.dialogs.forms.bookingFormular.soliLabel'),
+            SOURCE_TAX_LABEL: t('components.dialogs.forms.bookingFormular.sourceTaxLabel'),
+            FEE_LABEL: t('components.dialogs.forms.bookingFormular.feeLabel'),
+            TRANSACTION_TAX_LABEL: t('components.dialogs.forms.bookingFormular.transactionTaxLabel'),
+            DESCRIPTION_LABEL: t('components.dialogs.forms.bookingFormular.descriptionLabel')
         },
         DATE_RULES: [t('validators.dateRules.required')],
         BOOKING_TYPE_RULES: [t('validators.bookingTypeRules')]

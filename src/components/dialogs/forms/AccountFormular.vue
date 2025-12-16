@@ -22,12 +22,12 @@ const {ibanRules, swiftRules} = useValidation()
 const T = Object.freeze(
     {
         STRINGS: {
-            WITH_DEPOT_LABEL: t('components.dialogs.formulars.accountFormular.withDepotLabel'),
-            SWIFT_LABEL: t('components.dialogs.formulars.accountFormular.swiftLabel'),
-            IBAN_LABEL: t('components.dialogs.formulars.accountFormular.ibanLabel'),
-            IBAN_PLACEHOLDER: t('components.dialogs.formulars.accountFormular.ibanPlaceholder'),
-            SEARCH_LABEL: t('components.dialogs.formulars.accountFormular.searchLabel'),
-            MISSING_LOGO_LABEL: t('components.dialogs.formulars.accountFormular.missingLogo')
+            WITH_DEPOT_LABEL: t('components.dialogs.forms.accountFormular.withDepotLabel'),
+            SWIFT_LABEL: t('components.dialogs.forms.accountFormular.swiftLabel'),
+            IBAN_LABEL: t('components.dialogs.forms.accountFormular.ibanLabel'),
+            IBAN_PLACEHOLDER: t('components.dialogs.forms.accountFormular.ibanPlaceholder'),
+            SEARCH_LABEL: t('components.dialogs.forms.accountFormular.searchLabel'),
+            MISSING_LOGO_LABEL: t('components.dialogs.forms.accountFormular.missingLogo')
         },
         SWIFT_RULES: [
             t('validators.swiftRules.required'),
