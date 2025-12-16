@@ -58,7 +58,7 @@ export const useAppInitialization = () => {
     const {getDatabaseStores} = useIndexedDB()
     const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch()
 
-    const initializeApp = async (T: Record<string, Record<string, string>>) => {
+    async function initializeApp(T: Record<string, Record<string, string>>) {
         const results = {
             storage: null as any,
             database: null as any,

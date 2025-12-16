@@ -397,10 +397,12 @@ export function useFetch() {
                     const service = CONS.SERVICES.MAP.get(serviceName)
                     const isin = storageOnline[i].isin
                     if (isin !== undefined && service !== undefined && service !== null) {
-                        urls.push({
-                                      value: service.QUOTE + isin,
-                                      key: storageOnline[i].id ?? -1
-                                  })
+                        urls.push(
+                            {
+                                value: service.QUOTE + isin,
+                                key: storageOnline[i].id ?? -1
+                            }
+                        )
                     }
                 }
             } else {
@@ -428,23 +430,25 @@ export function useFetch() {
             selector = '#kursliste_daten > tr'
         }
         const convertHTMLEntities = (str: string | null): string => {
-            const entities = new Map([
-                                         ['aum', 'ä'],
-                                         ['Aum', 'Ä'],
-                                         ['oum', 'ö'],
-                                         ['Oum', 'Ö'],
-                                         ['uum', 'ü'],
-                                         ['Uum', 'Ü'],
-                                         ['amp', '&'],
-                                         ['eac', 'é'],
-                                         ['Eac', 'É'],
-                                         ['eci', 'ê'],
-                                         ['Eci', 'Ê'],
-                                         ['oac', 'ó'],
-                                         ['Oac', 'Ó'],
-                                         ['ael', 'æ'],
-                                         ['Ael', 'Æ']
-                                     ])
+            const entities = new Map(
+                [
+                    ['aum', 'ä'],
+                    ['Aum', 'Ä'],
+                    ['oum', 'ö'],
+                    ['Oum', 'Ö'],
+                    ['uum', 'ü'],
+                    ['Uum', 'Ü'],
+                    ['amp', '&'],
+                    ['eac', 'é'],
+                    ['Eac', 'É'],
+                    ['eci', 'ê'],
+                    ['Eci', 'Ê'],
+                    ['oac', 'ó'],
+                    ['Oac', 'Ó'],
+                    ['ael', 'æ'],
+                    ['Ael', 'Æ']
+                ]
+            )
             const fMatch = (match: string): string => {
                 return entities.get(match.substring(1, 4)) ?? ''
             }
@@ -543,10 +547,12 @@ export function useFetch() {
                     resultTr[i].children[0].tagName === 'TD' &&
                     material !== undefined
                 ) {
-                    materials.push({
-                                       key: material,
-                                       value: toNumber(resultTr[i].children[1].textContent)
-                                   })
+                    materials.push(
+                        {
+                            key: material,
+                            value: toNumber(resultTr[i].children[1].textContent)
+                        }
+                    )
                 }
             }
             resolve(materials)
@@ -572,10 +578,12 @@ export function useFetch() {
                 const indexValue = CONS.SETTINGS.INDEXES.get(property)
                 for (let j = 0; j < resultTr.length; j++) {
                     if (indexValue?.includes(resultTr[j].getAttribute('title') ?? '') && resultTr[j].children[0].textContent !== undefined) {
-                        indexes.push({
-                                         key: property,
-                                         value: toNumber(resultTr[j].children[0].textContent)
-                                     })
+                        indexes.push(
+                            {
+                                key: property,
+                                value: toNumber(resultTr[j].children[0].textContent)
+                            }
+                        )
                     }
                 }
 

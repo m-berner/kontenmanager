@@ -39,7 +39,7 @@ const bookingFormularData = reactive<I_Booking_Formular>(
 const selected = ref<number>(-1)
 const formRef = ref<HTMLFormElement | null>(null)
 
-const reset = (): void => {
+function reset (): void {
     Object.assign(bookingFormularData, {
         id: -1,
         bookDate: '',
@@ -79,36 +79,10 @@ const hasMarketplace = (bookingTypeId: number): boolean => {
     return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND
 }
 
-// const mapBookingFormToDb = (aAId: number): I_Booking_DB => {
-//     return {
-//         cID: bookingFormularData.id,
-//         cAccountNumberID: aAId,
-//         cStockID: bookingFormularData.stockId,
-//         cBookingTypeID: selected.value,
-//         cBookDate: bookingFormularData.bookDate,
-//         cExDate: bookingFormularData.exDate,
-//         cCount: bookingFormularData.count,
-//         cDescription: bookingFormularData.description,
-//         cTransactionTaxCredit: bookingFormularData.transactionTaxCredit,
-//         cTransactionTaxDebit: bookingFormularData.transactionTaxDebit,
-//         cSourceTaxCredit: bookingFormularData.sourceTaxCredit,
-//         cSourceTaxDebit: bookingFormularData.sourceTaxDebit,
-//         cFeeCredit: bookingFormularData.feeCredit,
-//         cFeeDebit: bookingFormularData.feeDebit,
-//         cTaxCredit: bookingFormularData.taxCredit,
-//         cTaxDebit: bookingFormularData.taxDebit,
-//         cMarketPlace: bookingFormularData.marketPlace,
-//         cSoliCredit: bookingFormularData.soliCredit,
-//         cSoliDebit: bookingFormularData.soliDebit,
-//         cDebit: bookingFormularData.debit,
-//         cCredit: bookingFormularData.credit
-//     }
-// }
-
-const mapBookingFormToDb = (
+function mapBookingFormToDb (
     accountId: number,
     defaultISODate: string
-): I_Booking_DB => {
+): I_Booking_DB {
     const base = {
         cID: bookingFormularData.id,
         cAccountNumberID: accountId,

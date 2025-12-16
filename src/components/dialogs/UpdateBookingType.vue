@@ -48,7 +48,7 @@ const T = Object.freeze(
     }
 )
 
-const formSelectedIndex = ref<number|undefined>()
+const formSelectedIndex = ref<number | undefined>()
 const formName = ref<string>('')
 const formVisible = ref<boolean>(true)
 const formRef = ref<HTMLFormElement | null>(null)
@@ -76,7 +76,7 @@ const buildBookingTypeFromForm = (index: number): I_Booking_Type_Store => ({
 
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_BOOKING_TYPE: onClickOk')
-    if (!await validateForm(formRef)) return
+    if (!validateForm(formRef)) return
     if (!formSelectedIndex.value) {
         await notice(['No booking type selected'])
         return

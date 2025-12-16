@@ -20,35 +20,41 @@ const {t} = useI18n()
 const {isValidCredit, isValidDebit} = useValidation()
 const {log} = useApp()
 
-const T = Object.freeze({
-                            STRINGS: {
-                                CREDIT_LABEL: t('components.creditDebitFieldset.creditLabel'),
-                                DEBIT_LABEL: t('components.creditDebitFieldset.debitLabel')
-                            },
-                            RULES: [
-                                t('components.creditDebitFieldset.onlyOnePositive'),
-                                t('components.creditDebitFieldset.notNegative')
-                            ]
-                        })
+const T = Object.freeze(
+    {
+        STRINGS: {
+            CREDIT_LABEL: t('components.creditDebitFieldset.creditLabel'),
+            DEBIT_LABEL: t('components.creditDebitFieldset.debitLabel')
+        },
+        RULES: [
+            t('components.creditDebitFieldset.onlyOnePositive'),
+            t('components.creditDebitFieldset.notNegative')
+        ]
+    }
+)
 
-const creditValue = computed({
-                                 get: () => props.modelValue.credit,
-                                 set: (val: number) => {
-                                     emit('update:modelValue', {
-                                         credit: val,
-                                         debit: props.modelValue.debit
-                                     })
-                                 }
-                             })
-const debitValue = computed({
-                                get: () => props.modelValue.debit,
-                                set: (val: number) => {
-                                    emit('update:modelValue', {
-                                        credit: props.modelValue.credit,
-                                        debit: val
-                                    })
-                                }
-                            })
+const creditValue = computed(
+    {
+        get: () => props.modelValue.credit,
+        set: (val: number) => {
+            emit('update:modelValue', {
+                credit: val,
+                debit: props.modelValue.debit
+            })
+        }
+    }
+)
+const debitValue = computed(
+    {
+        get: () => props.modelValue.debit,
+        set: (val: number) => {
+            emit('update:modelValue', {
+                credit: props.modelValue.credit,
+                debit: val
+            })
+        }
+    }
+)
 const creditRules = computed(() => isValidCredit(T.RULES, props.modelValue.debit))
 const debitRules = computed(() => isValidDebit(T.RULES, props.modelValue.credit))
 

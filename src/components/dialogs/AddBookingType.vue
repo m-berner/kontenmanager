@@ -58,7 +58,7 @@ const reset = () => {
 
 const onClickOk = async (): Promise<void> => {
     log('ADD_BOOKING_TYPE: onClickOk')
-    if (!await validateForm(formRef)) return
+    if (!validateForm(formRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
     await withLoading(async () => {
         try {

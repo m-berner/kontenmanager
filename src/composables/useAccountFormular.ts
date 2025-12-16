@@ -19,7 +19,7 @@ const accountFormularData = reactive<I_Account_Formular>(
 )
 const formRef = ref<HTMLFormElement | null>(null)
 
-const reset = (): void => {
+function reset (): void {
     Object.assign(accountFormularData, {
         id: -1,
         swift: '',
@@ -30,7 +30,7 @@ const reset = (): void => {
     formRef.value = null
 }
 
-const mapAccountFormToDb = (id?: number | undefined): I_Account_DB => {
+function mapAccountFormToDb (id?: number | undefined): I_Account_DB {
     return {
         cID: id,
         cSwift: accountFormularData.swift.trim().toUpperCase(),

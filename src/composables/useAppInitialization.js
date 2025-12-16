@@ -1,20 +1,20 @@
-import { useApp } from '@/composables/useApp';
-import { useBrowser } from '@/composables/useBrowser';
-import { useRecordsStore } from '@/stores/records';
-import { useSettingsStore } from '@/stores/settings';
-import { useRuntimeStore } from '@/stores/runtime';
-import { storeToRefs } from 'pinia';
-import { useIndexedDB } from '@/composables/useIndexedDB';
-import { useFetch } from '@/composables/useFetch';
-const { CONS } = useApp();
+import {useApp} from '@/composables/useApp';
+import {useBrowser} from '@/composables/useBrowser';
+import {useRecordsStore} from '@/stores/records';
+import {useSettingsStore} from '@/stores/settings';
+import {useRuntimeStore} from '@/stores/runtime';
+import {storeToRefs} from 'pinia';
+import {useIndexedDB} from '@/composables/useIndexedDB';
+import {useFetch} from '@/composables/useFetch';
+
+const {CONS} = useApp();
 const processExchangeBase = (baseData) => {
     const runtime = useRuntimeStore();
-    const { curUsd, curEur } = storeToRefs(runtime);
+    const {curUsd, curEur} = storeToRefs(runtime);
     baseData.forEach((data) => {
         if (data.key.includes(CONS.CURRENCIES.USD)) {
             curUsd.value = data.value;
-        }
-        else {
+        } else {
             curEur.value = data.value;
         }
     });
@@ -40,10 +40,10 @@ const processMaterialsInfo = (materialsData) => {
 export const useAppInitialization = () => {
     const records = useRecordsStore();
     const settings = useSettingsStore();
-    const { exchanges } = storeToRefs(settings);
-    const { installStorageLocal, uiLanguage } = useBrowser();
-    const { getDatabaseStores } = useIndexedDB();
-    const { fetchExchangesData, fetchIndexData, fetchMaterialData } = useFetch();
+    const {exchanges} = storeToRefs(settings);
+    const {installStorageLocal, uiLanguage} = useBrowser();
+    const {getDatabaseStores} = useIndexedDB();
+    const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch();
     const initializeApp = async (T) => {
         const results = {
             storage: null,
@@ -78,10 +78,9 @@ export const useAppInitialization = () => {
             if (materialsInfo.status === 'fulfilled') {
                 processMaterialsInfo(materialsInfo.value);
             }
-            return { success: true, results };
-        }
-        catch (error) {
-            return { success: false, error };
+            return {success: true, results};
+        } catch (error) {
+            return {success: false, error};
         }
     };
     return {

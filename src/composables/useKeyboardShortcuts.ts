@@ -29,5 +29,5 @@ export const useKeyboardShortcuts = () => {
         window.removeEventListener('keyup', handleKeyUp)
     })
 
-    return { shortcuts }
+    return {shortcuts}
 }

@@ -76,7 +76,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
         await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
         await records.init(storesDB, T.MESSAGES)
         isCompanyPage.value = false
-        await router.push('/')
+        router.push('/')
     } catch (e) {
         const errorMessage = e instanceof Error ? e.message : 'Unknown error'
         log(T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: errorMessage})

@@ -26,21 +26,23 @@ const stockFormularData = reactive<I_Stock_Formular>(
 )
 const formRef = ref<HTMLFormElement | null>(null)
 
-const mapStockFormToDb = (aAId: number): I_Stock_DB => ({
-    cID: stockFormularData.id,
-    cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
-    cCompany: stockFormularData.company,
-    cSymbol: stockFormularData.symbol,
-    cMeetingDay: stockFormularData.meetingDay,
-    cQuarterDay: stockFormularData.quarterDay,
-    cFadeOut: stockFormularData.fadeOut ? 1 : 0,
-    cFirstPage: stockFormularData.firstPage ? 1 : 0,
-    cURL: stockFormularData.url,
-    cAccountNumberID: aAId,
-    cAskDates: stockFormularData.askDates
-})
+function mapStockFormToDb(aAId: number): I_Stock_DB {
+    return {
+        cID: stockFormularData.id,
+        cISIN: stockFormularData.isin.replace(/\s/g, '').toUpperCase(),
+        cCompany: stockFormularData.company,
+        cSymbol: stockFormularData.symbol,
+        cMeetingDay: stockFormularData.meetingDay,
+        cQuarterDay: stockFormularData.quarterDay,
+        cFadeOut: stockFormularData.fadeOut ? 1 : 0,
+        cFirstPage: stockFormularData.firstPage ? 1 : 0,
+        cURL: stockFormularData.url,
+        cAccountNumberID: aAId,
+        cAskDates: stockFormularData.askDates
+    }
+}
 
-const reset = (): void => {
+function reset(): void {
     Object.assign(stockFormularData, {
         id: -1,
         isin: '',

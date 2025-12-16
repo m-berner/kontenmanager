@@ -1,6 +1,7 @@
-import { reactive, ref } from 'vue';
-import { useApp } from '@/composables/useApp';
-const { CONS } = useApp();
+import {reactive, ref} from 'vue';
+import {useApp} from '@/composables/useApp';
+
+const {CONS} = useApp();
 const BOOKING_TYPES = CONS.INDEXED_DB.STORES.BOOKING_TYPES;
 const bookingFormularData = reactive({
     id: -1,
@@ -94,6 +95,7 @@ const mapBookingFormToDb = (accountId, defaultISODate) => {
         cMarketPlace: hasMP ? bookingFormularData.marketPlace : ''
     };
 };
+
 export function useBookingFormular() {
     return {
         formRef,

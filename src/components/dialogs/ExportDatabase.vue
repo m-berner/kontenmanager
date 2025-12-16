@@ -77,8 +77,8 @@ const onClickOk = async (): Promise<void> => {
             await handleError(
                 error,
                 log,
-                // eslint-disable-next-line no-console
                 async (msg) => {
+                    // eslint-disable-next-line no-console
                     console.error(msg)
                 },
                 'EXPORT_DATABASE',

@@ -114,7 +114,7 @@ export function useValidation() {
         return [
             (v: number) => {
                 const debit = typeof debitValue === 'number' ? debitValue : debitValue.value
-                // Nur einer der beiden Werte darf größer als 0 sein
+                // Only one of the values could be 0
                 if (v > 0 && debit > 0) {
                     return msgArray[0]
                 } else if (v < 0) {
@@ -129,7 +129,7 @@ export function useValidation() {
         return [
             (v: number) => {
                 const credit = typeof creditValue === 'number' ? creditValue : creditValue.value
-                // Nur einer der beiden Werte darf größer als 0 sein
+                // Only one of the values could be 0
                 if (v > 0 && credit > 0) {
                     return msgArray[0]
                 } else if (v < 0) {

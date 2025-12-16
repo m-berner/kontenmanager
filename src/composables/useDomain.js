@@ -1,4 +1,5 @@
-import { computed } from 'vue';
+import {computed} from 'vue';
+
 export function useDomain(url) {
     const domain = computed(() => {
         if (!url.value)
@@ -10,8 +11,7 @@ export function useDomain(url) {
             }
             const urlObj = new URL(processedUrl);
             return urlObj.hostname.replace(/^www\./, '');
-        }
-        catch (e) {
+        } catch (e) {
             return '';
         }
     });
@@ -25,8 +25,7 @@ export function useDomain(url) {
                 return parts[0] !== 'www' ? parts[0] : null;
             }
             return null;
-        }
-        catch (e) {
+        } catch (e) {
             return null;
         }
     });

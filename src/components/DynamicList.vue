@@ -21,14 +21,16 @@ const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
-const T = Object.freeze({
-                            STRINGS: {
-                                EXCHANGES_LABEL: t('optionsIndex.exchanges.label'),
-                                MARKETS_LABEL: t('optionsIndex.markets.label'),
-                                EXCHANGES_TITLE: t('optionsIndex.exchanges.title'),
-                                MARKETS_TITLE: t('optionsIndex.markets.title')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        STRINGS: {
+            EXCHANGES_LABEL: t('optionsIndex.exchanges.label'),
+            MARKETS_LABEL: t('optionsIndex.markets.label'),
+            EXCHANGES_TITLE: t('optionsIndex.exchanges.title'),
+            MARKETS_TITLE: t('optionsIndex.markets.title')
+        }
+    }
+)
 
 const newItem = ref<string>('')
 const list = ref<string[]>([])

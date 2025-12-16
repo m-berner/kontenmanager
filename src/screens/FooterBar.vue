@@ -13,13 +13,15 @@ import {useApp} from '@/composables/useApp'
 const {t} = useI18n()
 const {CONS, log} = useApp()
 
-const T = Object.freeze({
-                            STRINGS: {
-                                HELP: t('footerBar.help'),
-                                PRIVACY: t('footerBar.privacy'),
-                                MAIL: t('footerBar.mail')
-                            }
-                        })
+const T = Object.freeze(
+    {
+        STRINGS: {
+            HELP: t('footerBar.help'),
+            PRIVACY: t('footerBar.privacy'),
+            MAIL: t('footerBar.mail')
+        }
+    }
+)
 
 log('--- FooterBar.vue setup ---')
 </script>

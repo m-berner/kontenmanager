@@ -17,21 +17,23 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
 
-const T = Object.freeze<{ STRINGS: Record<string, string> }>({
-                                                                 STRINGS: {
-                                                                     au: t('optionsIndex.materials.au'),
-                                                                     ag: t('optionsIndex.materials.ag'),
-                                                                     brent: t('optionsIndex.materials.brent'),
-                                                                     wti: t('optionsIndex.materials.wti'),
-                                                                     cu: t('optionsIndex.materials.cu'),
-                                                                     pt: t('optionsIndex.materials.pt'),
-                                                                     al: t('optionsIndex.materials.al'),
-                                                                     ni: t('optionsIndex.materials.ni'),
-                                                                     sn: t('optionsIndex.materials.sn'),
-                                                                     pb: t('optionsIndex.materials.pb'),
-                                                                     pd: t('optionsIndex.materials.pd')
-                                                                 }
-                                                             })
+const T = Object.freeze<{ STRINGS: Record<string, string> }>(
+    {
+        STRINGS: {
+            au: t('optionsIndex.materials.au'),
+            ag: t('optionsIndex.materials.ag'),
+            brent: t('optionsIndex.materials.brent'),
+            wti: t('optionsIndex.materials.wti'),
+            cu: t('optionsIndex.materials.cu'),
+            pt: t('optionsIndex.materials.pt'),
+            al: t('optionsIndex.materials.al'),
+            ni: t('optionsIndex.materials.ni'),
+            sn: t('optionsIndex.materials.sn'),
+            pb: t('optionsIndex.materials.pb'),
+            pd: t('optionsIndex.materials.pd')
+        }
+    }
+)
 
 const checked = ref<string[]>([])
 const isLoading = ref<boolean>(true)
@@ -100,10 +102,12 @@ onBeforeMount(async () => {
     error.value = null
 
     try {
-        const storage = await getStorage([
-                                             CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES,
-                                             CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS
-                                         ])
+        const storage = await getStorage(
+            [
+                CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES,
+                CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS
+            ]
+        )
 
         switch (props.type) {
             case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:

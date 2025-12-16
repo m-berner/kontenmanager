@@ -1,4 +1,5 @@
-import { reactive, ref } from 'vue';
+import {reactive, ref} from 'vue';
+
 const accountFormularData = reactive({
     id: -1,
     swift: '',
@@ -26,6 +27,7 @@ const mapAccountFormToDb = (id) => {
         cWithDepot: accountFormularData.withDepot
     };
 };
+
 export function useAccountFormular() {
     return {
         formRef,
