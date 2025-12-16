@@ -93,6 +93,7 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], 
 
 const search = ref<string>('')
 
+const {shortcuts} = useKeyboardShortcuts()
 const changeHandler = (changes: Record<string, browser.storage.StorageChange>): void => {
     log('APP_INDEX: changeHandler')
     const changesKey = Object.keys(changes)
@@ -123,11 +124,21 @@ const changeHandler = (changes: Record<string, browser.storage.StorageChange>): 
     }
 }
 const removeStorageChangedListener = addStorageChangedListener(changeHandler)
-
-const { shortcuts } = useKeyboardShortcuts()
-//TODO check in main for toggleDebug, resetStorage
+const toggleDebug = async (): Promise<void> => {
+    await clearStorage()
+    await installStorageLocal()
+}
+const resetStorage = () => {
+    const debugValue = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
+    if (debugValue !== '1') {
+        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
+    } else {
+        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
+    }
+}
 shortcuts.value.set('Alt+Control+d', toggleDebug)
 shortcuts.value.set('Alt+Control+r', resetStorage)
+
 const onBeforeUnload = (): void => {
     log('APP_INDEX: onBeforeUnload')
     removeStorageChangedListener()

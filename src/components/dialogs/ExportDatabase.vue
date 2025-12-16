@@ -63,7 +63,7 @@ const createExportData = async (): Promise<string> => {
         bookingTypes,
         bookings
     )
-    return `sm: ${JSON.stringify(metadata)},\n${dataString}`
+    return `{\n"sm": ${JSON.stringify(metadata)},\n${dataString}}`
 }
 
 const onClickOk = async (): Promise<void> => {
