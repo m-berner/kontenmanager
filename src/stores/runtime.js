@@ -5,7 +5,7 @@ const { log } = useApp();
 export const useRuntimeStore = defineStore('runtime', function () {
     const activeId = ref(-1);
     const optionMenuColors = ref(new Map());
-    const dialogName = ref('');
+    const dialogName = ref();
     const dialogOk = ref(true);
     const dialogVisibility = ref(false);
     const infoExchanges = ref(new Map());
@@ -27,7 +27,7 @@ export const useRuntimeStore = defineStore('runtime', function () {
         dialogVisibility.value = entry.dialogVisibility;
     }
     function resetTeleport() {
-        dialogName.value = '';
+        dialogName.value = undefined;
         dialogOk.value = true;
         dialogVisibility.value = false;
         for (const m of optionMenuColors.value.keys()) {

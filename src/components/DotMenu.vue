@@ -6,149 +6,66 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Options_Menu_Propss} from '@/types'
-import {defineProps, onMounted} from 'vue'
-import {useI18n} from 'vue-i18n'
-import {storeToRefs} from 'pinia'
-import {useRuntimeStore} from '@/stores/runtime'
-import {useRecordsStore} from '@/stores/records'
-import {useAlertStore} from '@/stores/alerts'
+import {computed} from 'vue'
+import {useMenuActions} from '@/composables/useMenuActions'
+import {useMenuHighlight} from '@/composables/useMenuHighlight'
+import MenuItem from '@/components/MenuItem.vue'
+import type {I_Menu_Config, I_Menu_Item} from '@/types'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
-import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
 
-const optionMenuProps = defineProps<I_Options_Menu_Propss>()
-const {CONS, log} = useApp()
-const {notice} = useBrowser()
-const {remove: removeBooking} = useBookingsDB()
-const {remove: removeStock} = useStocksDB()
-const {t} = useI18n()
-const runtime = useRuntimeStore()
-const {optionMenuColors} = storeToRefs(runtime)
-const records = useRecordsStore()
-const {info} = useAlertStore()
+const props = defineProps<I_Menu_Config>()
+const {log} = useApp()
+const {executeAction} = useMenuActions()
+const {highlightedItems, highlightTemporary, clearAllHighlights} = useMenuHighlight()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            INFO_TITLE: t('messages.infoTitle'),
-            NO_DELETE: t('messages.noDelete'),
-            SUCCESS_DELETE_BOOKING: t('messages.deleteBooking.success'),
-            SUCCESS_DELETE_COMPANY: t('messages.deleteStock.success')
-        }
-    }
-)
+const currentColor = computed(() => highlightedItems.value.get(props.recordId) || '')
 
-const onButtonClick = async (): Promise<void> => {
-    log('OPTION_MENU: onButtonClick', {info: optionMenuProps.recordID})
-    for (const m of optionMenuColors.value.keys()) {
-        optionMenuColors.value.set(m, '')
-    }
-    optionMenuColors.value.set(optionMenuProps.recordID, 'green')
+const handleMenuOpen = () => {
+    log('DOT_MENU: handleMenuOpen', {info: props.recordId})
+    highlightTemporary(props.recordId)
 }
 
-const onIconClick = async (ev: Event): Promise<void> => {
-    log('OPTION_MENU: onIconClick', {info: optionMenuProps.recordID})
-    runtime.activeId = optionMenuProps.recordID
-    const {items: bookingItems} = storeToRefs(records.bookings)
-    const {items: stockItems} = storeToRefs(records.stocks)
-    const parse = async (elem: Element | null, loop = 0): Promise<void> => {
-        if (loop > 6 || elem === null) return
-        switch (elem!.id) {
-            case CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING:
-                runtime.setTeleport(
-                    {
-                        dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING,
-                        dialogOk: true,
-                        dialogVisibility: true
-                    }
-                )
-                break
-            case CONS.COMPONENTS.DIALOGS.DELETE_BOOKING:
-                records.bookings.remove(optionMenuProps.recordID)
-                await removeBooking(optionMenuProps.recordID)
-                await notice([T.MESSAGES.SUCCESS_DELETE_BOOKING])
-                for (const m of optionMenuColors.value.keys()) {
-                    optionMenuColors.value.set(m, '')
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.UPDATE_STOCK:
-                runtime.setTeleport(
-                    {
-                        dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
-                        dialogOk: true,
-                        dialogVisibility: true
-                    }
-                )
-                break
-            case CONS.COMPONENTS.DIALOGS.DELETE_STOCK:
-                const deleteAble = bookingItems.value.filter((booking) => {
-                    return optionMenuProps.recordID === booking.cStockID
-                })
-                if (deleteAble.length === 0) {
-                    records.stocks.remove(optionMenuProps.recordID)
-                    await removeStock(optionMenuProps.recordID)
-                    await notice([T.MESSAGES.SUCCESS_DELETE_COMPANY])
-                } else {
-                    info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_DELETE, null)
-                }
-                for (const m of optionMenuColors.value.keys()) {
-                    optionMenuColors.value.set(m, '')
-                }
-                break
-            case CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND:
-                runtime.setTeleport(
-                    {
-                        dialogName: CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND,
-                        dialogOk: false,
-                        dialogVisibility: true
-                    }
-                )
-                break
-            case CONS.COMPONENTS.DIALOGS.OPEN_LINK:
-                window.open(stockItems.value[records.stocks.getIndexById(optionMenuProps.recordID)].cURL)
-                break
-            default:
-                loop += 1
-                await parse(elem!.parentElement, loop)
+const handleItemClick = async (item: I_Menu_Item) => {
+    log('DOT_MENU: handleItemClick', {info: [props.recordId, item.action]})
+
+    try {
+        // Custom callback if provided
+        if (props.onAction) {
+            props.onAction(item.action, props.recordId)
+        } else {
+            // Default action handling
+            await executeAction(item.action, props.recordId)
         }
-    }
-    if (ev.target instanceof Element) {
-        await parse(ev.target)
+
+        clearAllHighlights()
+    } catch (error) {
+        log('DOT_MENU: action failed', {error})
     }
 }
-
-onMounted(() => {
-    log('DOT_MENU: onMounted')
-    optionMenuColors.value.set(optionMenuProps.recordID, '')
-})
 
 log('--- DotMenu.vue setup ---')
 </script>
 
 <template>
     <v-menu>
-        <template v-slot:activator="{ props }">
+        <template v-slot:activator="{ props: menuProps }">
             <v-btn
-                :color="runtime.optionMenuColors.get(optionMenuProps.recordID!)"
+                :color="currentColor"
+                aria-label="Open menu"
                 icon="$dots"
-                v-bind="props"
-                @click="onButtonClick"
+                v-bind="menuProps"
+                @click="handleMenuOpen"
             />
         </template>
-        <v-list>
-            <v-hover v-slot:default="{ isHovering }">
-                <v-list-item
-                    v-for="item in optionMenuProps.menuItems"
-                    :id="item.id"
-                    :key="item.title"
-                    :base-color="isHovering ? 'orange' : ''"
-                    :prepend-icon="item.icon"
-                    :title="item.title"
-                    class="pointer"
-                    @click="onIconClick"
-                />
-            </v-hover>
+
+        <v-list role="menu">
+            <MenuItem
+                v-for="item in items"
+                :key="item.id"
+                :is-highlighted="highlightedItems.has(recordId)"
+                :item="item"
+                @click="handleItemClick"
+            />
         </v-list>
     </v-menu>
 </template>

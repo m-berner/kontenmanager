@@ -23,28 +23,28 @@ import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
 import DeleteAccountConfirmation from '@/components/dialogs/DeleteAccountConfirmation.vue'
 
-const {CONS, log} = useApp()
+const {log} = useApp()
 
 const ComponentsPlugin: Plugin = {
     install: (app: App) => {
-        app.component(CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK, FadeInStock)
-        app.component(CONS.COMPONENTS.DIALOGS.SHOW_STOCK_DIVIDEND, ShowDividend)
-        app.component(CONS.COMPONENTS.DIALOGS.ADD_STOCK, AddStock)
-        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_STOCK, UpdateStock)
-        app.component(CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT, AddAccount)
-        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT, UpdateAccount)
-        app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE, AddBookingType)
-        app.component(CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE, DeleteBookingType)
-        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE, UpdateBookingType)
-        app.component(CONS.COMPONENTS.DIALOGS.ADD_BOOKING, AddBooking)
-        app.component(CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING, UpdateBooking)
-        app.component(CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE, ExportDatabase)
-        app.component(CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE, ImportDatabase)
-        app.component(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME, ShowAccounting)
-        app.component(CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION, DeleteAccountConfirmation)
+        app.component('fadeInStock', FadeInStock)
+        app.component('showDividend', ShowDividend)
+        app.component('addStock', AddStock)
+        app.component('updateStock', UpdateStock)
+        app.component('addAccount', AddAccount)
+        app.component('updateAccount', UpdateAccount)
+        app.component('addBookingType', AddBookingType)
+        app.component('deleteBookingType', DeleteBookingType)
+        app.component('updateBookingType', UpdateBookingType)
+        app.component('addBooking', AddBooking)
+        app.component('updateBooking', UpdateBooking)
+        app.component('exportDatabase', ExportDatabase)
+        app.component('importDatabase', ImportDatabase)
+        app.component('showAccounting', ShowAccounting)
+        app.component('deleteAccountConfirmation', DeleteAccountConfirmation)
     }
 }
 
 export default ComponentsPlugin
 
-log('--- PLUGINS components.js ---')
+log('--- PLUGINS components.ts ---')

@@ -217,15 +217,18 @@ export interface I_Number_String {
     value: string
 }
 
-export interface I_Options_Menu_Propss {
-    recordID: number
-    menuItems: I_Menu_Item[]
+export interface I_Menu_Item {
+    id: string
+    title: string
+    icon: string
+    action: T_Menu_Action_Type
+    variant?: 'default' | 'danger'
 }
 
-export interface I_Menu_Item {
-    readonly title: string
-    readonly id: string
-    readonly icon: string
+export interface I_Menu_Config {
+    recordId: number
+    items: I_Menu_Item[]
+    onAction?: (_action: T_Menu_Action_Type, _recordId: number) => void
 }
 
 export interface I_Min_Rate_Max_Data {
@@ -346,8 +349,22 @@ export interface I_Records_Store {
     stocks: I_Stock_Store[]
 }
 
+export interface I_Storage_Local {
+    sActiveAccountId: number
+    sSkin: string
+    sBookingsPerPage: number
+    sStocksPerPage: number
+    sDividendsPerPage: number
+    sSumsPerPage: number
+    sService: string
+    sExchanges: string[]
+    sIndexes: string[]
+    sMarkets: string[]
+    sMaterials: string[]
+}
+
 export interface I_Teleport {
-    dialogName: string
+    dialogName: T_Menu_Action_Type
     dialogOk: boolean
     dialogVisibility: boolean
 }
@@ -368,3 +385,28 @@ export type T_Message_Schema = typeof deDE
 export type T_Storage = {
     [p: string]: string | number | string[]
 }
+
+export type T_Menu_Action_Type =
+    | 'updateBooking'
+    | 'deleteBooking'
+    | 'updateStock'
+    | 'deleteStock'
+    | 'showDividend'
+    | 'openLink'
+    | 'fadeInStock'
+    | 'addAccount'
+    | 'updateAccount'
+    | 'deleteAccount'
+    | 'addStock'
+    | 'addBookingType'
+    | 'deleteBookingType'
+    | 'updateBookingType'
+    | 'addBooking'
+    | 'exportDatabase'
+    | 'importDatabase'
+    | 'showAccounting'
+    | 'updateQuote'
+    | 'deleteAccountConfirmation'
+    | 'home'
+    | 'company'
+    | 'setting'

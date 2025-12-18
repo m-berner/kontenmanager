@@ -2,11 +2,11 @@ import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
 const { CONS, log } = useApp();
 const { actionOnClicked, installStorageLocal, runtimeOnInstalled, tabsCreate, tabsQuery, tabsUpdate, windowsUpdate } = useBrowser();
-const onInstall = async () => {
+async function onInstall() {
     log('BACKGROUND: onInstall');
     await installStorageLocal();
-};
-const onClick = async () => {
+}
+async function onClick() {
     log('BACKGROUND: onClick');
     const foundTabs = await tabsQuery();
     if (foundTabs.length === 0) {
@@ -18,7 +18,7 @@ const onClick = async () => {
         await windowsUpdate(foundTabs[0].windowId);
         await tabsUpdate(foundTabs[0].id);
     }
-};
+}
 runtimeOnInstalled(onInstall);
 actionOnClicked(onClick);
 log('--- PAGE_SCRIPT background.js ---', { info: window.document.location.href });

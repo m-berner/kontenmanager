@@ -78,14 +78,17 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], 
         ],
         MENU_ITEMS: [
             {
-                id: 'DeleteBooking',
+                id: 'delete-booking',
                 title: t('homeContent.bookingsTable.menuItems.delete'),
-                icon: '$deleteBooking'
+                icon: '$deleteBooking',
+                action: 'deleteBooking'
             },
             {
-                id: 'UpdateBooking',
+                id: 'update-booking',
                 title: t('homeContent.bookingsTable.menuItems.update'),
-                icon: '$updateBooking'
+                icon: '$updateBooking',
+                action: 'updateBooking',
+                variant: 'danger'
             }
         ]
     }
@@ -128,11 +131,11 @@ const removeStorageChangedListener = addStorageChangedListener(changeHandler)
 // TODO edit company, add company not working
 // TODO edit, add booking
 const {shortcuts} = useKeyboardShortcuts()
-const toggleDebug = async (): Promise<void> => {
+const resetStorage = async (): Promise<void> => {
     await clearStorage()
     await installStorageLocal()
 }
-const resetStorage = () => {
+const toggleDebug = () => {
     const debugValue = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
     if (debugValue !== '1') {
         localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
@@ -180,8 +183,8 @@ log('--- HomeContent.vue setup ---')
                 <td class="d-none">{{ item.cID }}</td>
                 <td>
                     <DotMenu
-                        :menuItems="T.MENU_ITEMS"
-                        :recordID="item.cID!"/>
+                        :items="T.MENU_ITEMS"
+                        :record-id="item.cID!"/>
                 </td>
                 <td>{{ d(utcDate(item.cBookDate), 'short') }}</td>
                 <td>{{ n(item.cDebit, 'currency') }}</td>

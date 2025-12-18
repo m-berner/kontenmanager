@@ -49,6 +49,7 @@ const T = Object.freeze(
 )
 
 const loadCurrentBooking = (): void => {
+    log('UPDATE_BOOKING: loadCurrentBooking')
     const bookingIndex = records.bookings.getIndexById(activeId.value)
 
     if (bookingIndex === -1) {

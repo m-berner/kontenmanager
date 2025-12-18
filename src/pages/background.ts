@@ -21,12 +21,12 @@ const {
     windowsUpdate
 } = useBrowser()
 // NOTE: onInstall runs at the installation or update of the add-on. And it runs on firefox update.
-const onInstall = async (): Promise<void> => {
+async function onInstall(): Promise<void> {
     log('BACKGROUND: onInstall')
     await installStorageLocal()
 }
 
-const onClick = async (): Promise<void> => {
+async function onClick(): Promise<void> {
     log('BACKGROUND: onClick')
     const foundTabs = await tabsQuery()
     // NOTE: An event listener called by an API reloads the background.js script.

@@ -112,7 +112,9 @@ export default [
         plugins: {
             vue: pluginVue
         },
+        processor: pluginVue.processors['.vue'],
         rules: {
+            ...pluginVue.configs['flat/recommended'].rules,
             'vue/script-indent': ['error', 4, {
                 'switchCase': 1
             }],

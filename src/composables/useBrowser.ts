@@ -5,10 +5,9 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {T_Storage} from '@/types'
+import type {I_Storage_Local, T_Storage} from '@/types'
 import {useApp} from '@/composables/useApp'
 import {computed} from 'vue'
-import {useRecordsStore} from '@/stores/records'
 
 const {CONS} = useApp()
 
@@ -29,12 +28,12 @@ export function useBrowser() {
         return result
     })
 
-    function actionOnClicked(listener: (() => Promise<void>)): void {
+    function actionOnClicked(listener: ((_tab: browser.tabs.Tab, _info?: browser.action.OnClickData | undefined) => void)): void {
         // noinspection JSDeprecatedSymbols
         browser.action.onClicked.addListener(listener)
     }
 
-    function runtimeOnInstalled(listener: (() => Promise<void>)): void {
+    function runtimeOnInstalled(listener: (_details: browser.runtime._OnInstalledDetails | undefined) => Promise<void>): void {
         // noinspection JSDeprecatedSymbols
         browser.runtime.onInstalled.addListener(listener)
     }
@@ -93,30 +92,25 @@ export function useBrowser() {
     }
 
     async function installStorageLocal() {
-        const records = useRecordsStore()
+        const defaultStorage: I_Storage_Local = Object.freeze({
+            sActiveAccountId: CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID,
+            sSkin: CONS.DEFAULTS.BROWSER_STORAGE.SKIN,
+            sBookingsPerPage: CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE,
+            sStocksPerPage: CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE,
+            sDividendsPerPage: CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE,
+            sSumsPerPage: CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE,
+            sService: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE,
+            sExchanges: CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES,
+            sIndexes: CONS.DEFAULTS.BROWSER_STORAGE.INDEXES,
+            sMarkets: CONS.DEFAULTS.BROWSER_STORAGE.MARKETS,
+            sMaterials: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS
+        })
         const storageLocal = await browser.storage.local.get()
-
-        if (storageLocal[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID] === undefined) {
-            const activeId = records.accounts.items.length > 0
-                ? records.accounts.items[0].cID
-                : CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID
-            await browser.storage.local.set({[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID]: activeId})
-        }
-        const defaults = {
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]: CONS.DEFAULTS.BROWSER_STORAGE.SKIN,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE]: CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE]: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES]: CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES]: CONS.DEFAULTS.BROWSER_STORAGE.INDEXES,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS]: CONS.DEFAULTS.BROWSER_STORAGE.MARKETS,
-            [CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS]: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS
-        }
-        for (const [key, value] of Object.entries(defaults)) {
-            if (storageLocal[key] === undefined) {
-                await browser.storage.local.set({[key]: value})
+        if (storageLocal !== undefined) {
+            for (const [key, value] of Object.entries(defaultStorage)) {
+                if (storageLocal[key] === undefined) {
+                    await browser.storage.local.set({[key]: value})
+                }
             }
         }
         return storageLocal

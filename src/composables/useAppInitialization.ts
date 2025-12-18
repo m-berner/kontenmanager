@@ -54,7 +54,7 @@ export const useAppInitialization = () => {
     const records = useRecordsStore()
     const settings = useSettingsStore()
     const {exchanges} = storeToRefs(settings)
-    const {installStorageLocal, uiLanguage} = useBrowser()
+    const {getStorage, uiLanguage} = useBrowser()
     const {getDatabaseStores} = useIndexedDB()
     const {fetchExchangesData, fetchIndexData, fetchMaterialData} = useFetch()
 
@@ -71,9 +71,12 @@ export const useAppInitialization = () => {
             const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
             const CUR_EUR = `${cur}${CONS.CURRENCIES.EUR}`
             const CUR_USD = `${cur}${CONS.CURRENCIES.USD}`
+
             // Initialize storage first (critical)
-            results.storage = await installStorageLocal()
-            settings.init(results.storage)
+            results.storage = await getStorage()
+            if (results.storage !== null) {
+                settings.init(results.storage)
+            }
 
             // Initialize database (critical)
             results.database = await getDatabaseStores(settings.activeAccountId)

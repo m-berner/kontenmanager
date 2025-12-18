@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {I_Teleport} from '@/types'
+import type {I_Teleport, T_Menu_Action_Type} from '@/types'
 import {ref} from 'vue'
 import {defineStore} from 'pinia'
 import {useApp} from '@/composables/useApp'
@@ -15,7 +15,7 @@ const {log} = useApp()
 export const useRuntimeStore = defineStore('runtime', function () {
     const activeId = ref<number>(-1)
     const optionMenuColors = ref<Map<number, string>>(new Map())
-    const dialogName = ref<string>('')
+    const dialogName = ref<T_Menu_Action_Type>()
     const dialogOk = ref<boolean>(true)
     const dialogVisibility = ref<boolean>(false)
     const infoExchanges = ref<Map<string, number>>(new Map())
@@ -40,7 +40,7 @@ export const useRuntimeStore = defineStore('runtime', function () {
     }
 
     function resetTeleport(): void {
-        dialogName.value = ''
+        dialogName.value = undefined
         dialogOk.value = true
         dialogVisibility.value = false
         for (const m of optionMenuColors.value.keys()) {

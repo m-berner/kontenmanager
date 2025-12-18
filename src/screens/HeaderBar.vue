@@ -16,9 +16,10 @@ import {useAlertStore} from '@/stores/alerts'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import DialogPort from '@/components/DialogPort.vue'
+import type {T_Menu_Action_Type} from '@/types'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
 const {openOptionsPage} = useBrowser()
 const runtime = useRuntimeStore()
 const {isCompanyPage, isStockLoading} = storeToRefs(runtime)
@@ -62,268 +63,351 @@ const T = Object.freeze(
 )
 
 // Create a dialog action registry
-const dialogActions: Record<string, () => void | Promise<void>> = {
-    [CONS.COMPONENTS.DIALOGS.UPDATE_QUOTE]: async () => {
+const dialogActions: Record<T_Menu_Action_Type, () => void | Promise<void>> = {
+    updateQuote: async () => {
         isStockLoading.value = true
         await records.stocks.loadOnlineData(runtime.stocksPage)
         isStockLoading.value = false
     },
-    [CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK]: () => {
+
+    fadeInStock: async () => {
         if (records.stocks.passive.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.ALL_STOCKS_VISIBLE, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK,
+                    dialogName: 'fadeInStock',
                     dialogOk: true,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.ADD_STOCK]: () => {
+
+    addStock: () => {
         runtime.setTeleport(
             {
-                dialogName: CONS.COMPONENTS.DIALOGS.ADD_STOCK,
+                dialogName: 'addStock',
                 dialogOk: true,
                 dialogVisibility: true
             }
         )
     },
-    [CONS.COMPONENTS.DIALOGS.UPDATE_STOCK]: () => {
+
+    updateStock: () => {
         runtime.setTeleport(
             {
-                dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_STOCK,
+                dialogName: 'updateStock',
                 dialogOk: true,
                 dialogVisibility: true
             }
         )
     },
-    [CONS.COMPONENTS.DIALOGS.DELETE_STOCK]: () => {
+
+    deleteStock: () => {
         runtime.setTeleport(
             {
-                dialogName: CONS.COMPONENTS.DIALOGS.DELETE_STOCK,
+                dialogName: 'deleteStock',
                 dialogOk: true,
                 dialogVisibility: true
             }
         )
     },
-    [CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT]: () => {
+
+    addAccount: () => {
         runtime.setTeleport(
             {
-                dialogName: CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT,
+                dialogName: 'addAccount',
                 dialogOk: true,
                 dialogVisibility: true
             }
         )
     },
-    [CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT]: () => {
+
+    updateAccount: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT,
+                    dialogName: 'updateAccount',
                     dialogOk: true,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION]: () => {
+
+    deleteAccountConfirmation: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION,
+                    dialogName: 'deleteAccountConfirmation',
                     dialogOk: true,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE]: () => {
+
+    addBookingType: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE,
+                    dialogName: 'addBookingType',
                     dialogOk: true,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE]: () => {
+
+    updateBookingType: () => {
         if (bookingTypeItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE,
+                    dialogName: 'updateBookingType',
                     dialogOk: true,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE]: () => {
+
+    deleteBookingType: () => {
         if (bookingTypeItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE,
+                    dialogName: 'deleteBookingType',
                     dialogOk: true,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.ADD_BOOKING]: () => {
+
+    addBooking: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.ADD_BOOKING,
+                    dialogName: 'addBooking',
                     dialogOk: true,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE]: () => {
+
+    exportDatabase: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NOTHING_TO_EXPORT, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE,
+                    dialogName: 'exportDatabase',
                     dialogOk: true,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE]: () => {
+
+    importDatabase: () => {
         runtime.setTeleport(
             {
-                dialogName: CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE,
+                dialogName: 'importDatabase',
                 dialogOk: true,
                 dialogVisibility: true
             }
         )
     },
-    [CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME]: () => {
+
+    showAccounting: () => {
         if (bookingItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.SHOW_ACCOUNTING, null)
         } else {
             runtime.setTeleport(
                 {
-                    dialogName: CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME,
+                    dialogName: 'showAccounting',
                     dialogOk: false,
                     dialogVisibility: true
                 }
             )
         }
     },
-    [CONS.COMPONENTS.DIALOGS.SETTING]: async () => {
+
+    deleteAccount: () => {
+    },
+
+    updateBooking: () => {
+    },
+
+    deleteBooking: () => {
+    },
+
+    showDividend: () => {
+    },
+
+    openLink: () => {
+    },
+
+    home: () => {
+    },
+
+    company: () => {
+    },
+
+    setting: async () => {
         await openOptionsPage()
     }
 }
 
 // Validation registry
-const dialogValidations: Record<string, () => boolean> = {
-    [CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT]: () => {
+const dialogValidations: Record<T_Menu_Action_Type, () => boolean> = {
+    updateAccount: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
             return false
         }
         return true
     },
-    [CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK]: () => {
+    fadeInStock: () => {
         if (records.stocks.passive.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.ALL_STOCKS_VISIBLE, null)
             return false
         }
         return true
     },
-    [CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT]: () => {
+    deleteAccountConfirmation: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
             return false
         }
         return true
     },
-    [CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION]: () => {
-        if (accountItems.value.length === 0) {
-            info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_ACCOUNT, null)
-            return false
-        }
-        return true
-    },
-    [CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE]: () => {
+    addBookingType: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
             return false
         }
         return true
     },
-    [CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE]: () => {
+    updateBookingType: () => {
         if (bookingTypeItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
             return false
         }
         return true
     },
-    [CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE]: () => {
+    deleteBookingType: () => {
         if (bookingTypeItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NO_BOOKING_TYPES, null)
             return false
         }
         return true
     },
-    [CONS.COMPONENTS.DIALOGS.ADD_BOOKING]: () => {
+    addBooking: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.CREATE_ACCOUNT, null)
             return false
         }
         return true
     },
-    [CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE]: () => {
+    exportDatabase: () => {
         if (accountItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.NOTHING_TO_EXPORT, null)
             return false
         }
         return true
     },
-    [CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME]: () => {
+    showAccounting: () => {
         if (bookingItems.value.length === 0) {
             info(T.MESSAGES.INFO_TITLE, T.MESSAGES.SHOW_ACCOUNTING, null)
             return false
         }
+        return true
+    },
+
+    addAccount: () => {
+        return true
+    },
+
+    deleteAccount: () => {
+        return true
+    },
+
+    deleteBooking: () => {
+        return true
+    },
+
+    updateBooking: () => {
+        return true
+    },
+
+    updateStock: () => {
+        return true
+    },
+
+    deleteStock: () => {
+        return true
+    },
+
+    showDividend: () => {
+        return true
+    },
+
+    addStock: () => {
+        return true
+    },
+
+    importDatabase: () => {
+        return true
+    },
+
+    updateQuote: () => {
+        return true
+    },
+
+    home: () => {
+        return true
+    },
+
+    company: () => {
+        return true
+    },
+
+    setting: () => {
+        return true
+    },
+
+    openLink: () => {
         return true
     }
 }
 
 const onIconClick = async (ev: Event): Promise<void> => {
     const target = ev.target as Element
-    const dialogId = target.closest('[id]')?.id
+    const dialogId = target.closest('[id]')?.id as keyof typeof dialogValidations
 
     if (!dialogId) return
+    if (typeof dialogValidations[dialogId] !== 'function' || typeof dialogActions[dialogId] !== 'function') return
 
-    // Check validation first
-    const validator = dialogValidations[dialogId]
-    if (validator && !validator()) return
-
+    await dialogActions[dialogId]()
     // Execute action
-    const action = dialogActions[dialogId]
-    if (action) {
-        await action()
-    }
+    // const action = dialogActions[dialogId]
+    // if (action) {
+    //     await action()
+    // }
 }
 
 onUpdated(() => {
@@ -337,7 +421,11 @@ log('--- HeaderBar.vue setup ---')
 <template>
     <v-app-bar app flat height="75">
         <v-spacer/>
-        <RouterLink class="router-link-active" to="/">
+        <RouterLink
+            id="home"
+            class="router-link-active"
+            to="/"
+            @click="onIconClick">
             <v-tooltip :text="T.STRINGS.HOME" location="top">
                 <template v-slot:activator="{ props }">
                     <v-app-bar-nav-icon
@@ -345,15 +433,16 @@ log('--- HeaderBar.vue setup ---')
                         icon="$home"
                         size="large"
                         v-bind="props"
-                        variant="tonal"
-                        @click="onIconClick"/>
+                        variant="tonal"/>
                 </template>
             </v-tooltip>
         </RouterLink>
         <RouterLink
             v-if="records.accounts.isDepot"
+            id="company"
             class="router-link-active"
-            to="/company">
+            to="/company"
+            @click="onIconClick">
             <v-tooltip :text="T.STRINGS.COMPANY" location="top">
                 <template v-slot:activator="{ props }">
                     <v-app-bar-nav-icon
@@ -362,7 +451,7 @@ log('--- HeaderBar.vue setup ---')
                         size="large"
                         v-bind="props"
                         variant="tonal"
-                        @click="onIconClick"/>
+                    />
                 </template>
             </v-tooltip>
         </RouterLink>
@@ -373,7 +462,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.UPDATE_QUOTE"
+                    id="updateQuote"
                     icon="$reload"
                     size="large"
                     v-bind="props"
@@ -388,7 +477,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.ADD_STOCK"
+                    id="addStock"
                     icon="$addCompany"
                     size="large"
                     v-bind="props"
@@ -402,7 +491,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.FADE_IN_STOCK"
+                    id="fadeInStock"
                     icon="$fadeInCompany"
                     size="large"
                     v-bind="props"
@@ -417,7 +506,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.ADD_ACCOUNT"
+                    id="addAccount"
                     icon="$addAccount"
                     size="large"
                     v-bind="props"
@@ -431,7 +520,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.UPDATE_ACCOUNT"
+                    id="updateAccount"
                     icon="$updateAccount"
                     size="large"
                     v-bind="props"
@@ -445,7 +534,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.DELETE_ACCOUNT_CONFIRMATION"
+                    id="deleteAccountConfirmation"
                     icon="$deleteAccount"
                     size="large"
                     v-bind="props"
@@ -460,7 +549,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING"
+                    id="addBooking"
                     icon="$addBooking"
                     size="large"
                     v-bind="props"
@@ -475,7 +564,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.ADD_BOOKING_TYPE"
+                    id="addBookingType"
                     icon="$addBookingType"
                     size="large"
                     v-bind="props"
@@ -489,7 +578,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.UPDATE_BOOKING_TYPE"
+                    id="updateBookingType"
                     icon="$updateBookingType"
                     size="large"
                     v-bind="props"
@@ -503,7 +592,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.DELETE_BOOKING_TYPE"
+                    id="deleteBookingType"
                     icon="$deleteBookingType"
                     size="large"
                     v-bind="props"
@@ -518,7 +607,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.EXPORT_DATABASE"
+                    id="exportDatabase"
                     icon="$exportToFile"
                     size="large"
                     v-bind="props"
@@ -532,7 +621,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.IMPORT_DATABASE"
+                    id="importDatabase"
                     icon="$importDatabase"
                     size="large"
                     v-bind="props"
@@ -547,7 +636,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.NAME"
+                    id="showAccounting"
                     icon="$showAccounting"
                     size="large"
                     v-bind="props"
@@ -561,7 +650,7 @@ log('--- HeaderBar.vue setup ---')
             location="top">
             <template v-slot:activator="{ props }">
                 <v-app-bar-nav-icon
-                    :id="CONS.COMPONENTS.DIALOGS.SETTING"
+                    id="setting"
                     color="grey"
                     icon="$settings"
                     size="large"
