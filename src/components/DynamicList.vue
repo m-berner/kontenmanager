@@ -9,6 +9,7 @@
 import type {I_Dynamic_List_Props, I_Exchange_Data} from '@/types'
 import {computed, defineProps, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
+import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
@@ -73,21 +74,23 @@ const addItem = async (item: string): Promise<void> => {
     isAdding.value = true  // Start loading
     error.value = null  // Clear previous errors
     try {
-        const {infoExchanges} = useRuntimeStore()
-        const {exchanges, markets} = useSettingsStore()
+        const runtime = useRuntimeStore()
+        const {infoExchanges} = storeToRefs(runtime)
+        const settings = useSettingsStore()
+        const {exchanges, markets} = storeToRefs(settings)
         if (!list.value?.includes(item)) {
             switch (props.type) {
                 case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
                     list.value.push(item)
-                    markets.push(item)
+                    markets.value.push(item)
                     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
                     break
                 case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
                     list.value.push(item.toUpperCase())
-                    exchanges.push(item)
+                    exchanges.value.push(item.toUpperCase())
                     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
-                    const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData([...newItem.value])
-                    infoExchanges.set(exchanges[exchanges.length], exchangesInfoData[0].value)
+                    const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData([newItem.value])
+                    infoExchanges.value.set(exchanges.value[exchanges.value.length - 1], exchangesInfoData[0].value)
                     break
                 default:
             }

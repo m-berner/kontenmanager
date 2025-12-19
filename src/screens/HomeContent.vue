@@ -126,8 +126,6 @@ const changeHandler = (changes: Record<string, browser.storage.StorageChange>): 
     }
 }
 const removeStorageChangedListener = addStorageChangedListener(changeHandler)
-// TODO ad exchange immediate update not working
-// TODO after stockmanager data import defaults to disconnect symbol
 const {shortcuts} = useKeyboardShortcuts()
 const resetStorage = async (): Promise<void> => {
     await clearStorage()

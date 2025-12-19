@@ -11,6 +11,7 @@ import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRouter} from 'vue-router'
 import connectionIcon from '@/assets/connection48.png'
+import defaultIcon from '@/assets/icon48.png'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
@@ -60,7 +61,7 @@ const logoUrl = computed((): string => {
     }
 
     const account = records.accounts.items.find(a => a.cID === activeAccountId.value)
-    return account?.cLogoUrl || connectionIcon
+    return account?.cLogoUrl || defaultIcon
 })
 const balance = computed((): string => {
     return n(records.bookings.sumBookings(), 'currency')
