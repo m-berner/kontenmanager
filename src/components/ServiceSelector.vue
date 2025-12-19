@@ -7,21 +7,17 @@
   -->
 <script lang="ts" setup>
 import {onBeforeMount, ref} from 'vue'
-import {useTheme} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 
 const {CONS, log} = useApp()
 const {getStorage, setStorage} = useBrowser()
-const theme = useTheme()
 
-const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
+const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
 
-const setService = async (service: string | null): Promise<void> => {
-    if (service !== null) {
-        theme.global.name.value = service
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service)
-    }
+const setService = async (): Promise<void> => {
+    log('SERVICE_SELECTOR: setService')
+    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service.value)
 }
 
 const serviceLabels = (item: string): string => {
@@ -34,7 +30,7 @@ const serviceLabels = (item: string): string => {
 }
 
 onBeforeMount(async () => {
-    log('SERVICE_SELECTOR: onBeforeMounted')
+    log('SERVICE_SELECTOR: onBeforeMount')
     const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
     service.value = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
 })
@@ -46,7 +42,7 @@ log('--- ServiceSelector.vue setup ---')
     <v-radio-group
         v-model="service"
         column
-        @update:modelValue="setService">
+        @update:model-value="async () => {await setService()}">
         <v-radio
             v-for="item in [...CONS.SERVICES.MAP.keys()]"
             :key="item"

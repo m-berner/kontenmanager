@@ -6,7 +6,7 @@
   - Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
-import type {I_Header, I_Menu_Item, T_Menu_Action_Type} from '@/types'
+import type {I_Header, I_Menu_Item} from '@/types'
 import {computed, onBeforeMount, onBeforeUpdate} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
@@ -131,11 +131,6 @@ const winLossClass = computed(() => {
     })
 })
 
-// Optional: Custom action handler
-const handleCustomAction = (action: T_Menu_Action_Type, recordId: number) => {
-    console.log(`Custom handling for ${action} on ${recordId}`)
-}
-
 const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
     const pagesToLoad: number[] = []
 
@@ -207,8 +202,7 @@ log('--- CompanyContent.vue setup ---')
                 <td>
                     <DotMenu
                         :items="T.MENU_ITEMS"
-                        :record-id="item.cID!"
-                        :on-action="handleCustomAction"/>
+                        :record-id="item.cID!"/>
                 </td>
                 <td>{{ item.cCompany }}</td>
                 <td>{{ item.cISIN }}</td>

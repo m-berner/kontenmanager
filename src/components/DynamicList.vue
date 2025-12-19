@@ -126,7 +126,7 @@ const removeItem = async (n: number): Promise<void> => {
 }
 
 onBeforeMount(async () => {
-    log('DYNAMIC_LIST: onBeforeMounted')
+    log('DYNAMIC_LIST: onBeforeMount')
     isLoading.value = true
     error.value = null
 
@@ -142,7 +142,7 @@ onBeforeMount(async () => {
         }
     } catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to load data'
-        log('DYNAMIC_LIST: onBeforeMounted error', {error: err})
+        log('DYNAMIC_LIST: onBeforeMount error', {error: err})
     } finally {
         isLoading.value = false
     }

@@ -17,21 +17,24 @@ import DeleteAccountConfirmation from '@/components/dialogs/DeleteAccountConfirm
 const { log } = useApp();
 const ComponentsPlugin = {
     install: (app) => {
-        app.component('fadeInStock', FadeInStock);
-        app.component('showDividend', ShowDividend);
-        app.component('addStock', AddStock);
-        app.component('updateStock', UpdateStock);
-        app.component('addAccount', AddAccount);
-        app.component('updateAccount', UpdateAccount);
-        app.component('addBookingType', AddBookingType);
-        app.component('deleteBookingType', DeleteBookingType);
-        app.component('updateBookingType', UpdateBookingType);
-        app.component('addBooking', AddBooking);
-        app.component('updateBooking', UpdateBooking);
-        app.component('exportDatabase', ExportDatabase);
-        app.component('importDatabase', ImportDatabase);
-        app.component('showAccounting', ShowAccounting);
-        app.component('deleteAccountConfirmation', DeleteAccountConfirmation);
+        const registerComponent = (name, component) => {
+            app.component(name, component);
+        };
+        registerComponent('fadeInStock', FadeInStock);
+        registerComponent('showDividend', ShowDividend);
+        registerComponent('addStock', AddStock);
+        registerComponent('updateStock', UpdateStock);
+        registerComponent('addAccount', AddAccount);
+        registerComponent('updateAccount', UpdateAccount);
+        registerComponent('addBookingType', AddBookingType);
+        registerComponent('deleteBookingType', DeleteBookingType);
+        registerComponent('updateBookingType', UpdateBookingType);
+        registerComponent('addBooking', AddBooking);
+        registerComponent('updateBooking', UpdateBooking);
+        registerComponent('exportDatabase', ExportDatabase);
+        registerComponent('importDatabase', ImportDatabase);
+        registerComponent('showAccounting', ShowAccounting);
+        registerComponent('deleteAccountConfirmation', DeleteAccountConfirmation);
     }
 };
 export default ComponentsPlugin;

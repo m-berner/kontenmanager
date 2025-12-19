@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {App, Plugin} from 'vue'
+import type {App, Component, Plugin} from 'vue'
 import {useApp} from '@/composables/useApp'
 import FadeInStock from '@/components/dialogs/FadeInStock.vue'
 import ShowDividend from '@/components/dialogs/ShowDividend.vue'
@@ -22,26 +22,33 @@ import ExportDatabase from '@/components/dialogs/ExportDatabase.vue'
 import ImportDatabase from '@/components/dialogs/ImportDatabase.vue'
 import ShowAccounting from '@/components/dialogs/ShowAccounting.vue'
 import DeleteAccountConfirmation from '@/components/dialogs/DeleteAccountConfirmation.vue'
+import type {T_Menu_Action_Type} from '@/types'
 
 const {log} = useApp()
 
 const ComponentsPlugin: Plugin = {
     install: (app: App) => {
-        app.component('fadeInStock', FadeInStock)
-        app.component('showDividend', ShowDividend)
-        app.component('addStock', AddStock)
-        app.component('updateStock', UpdateStock)
-        app.component('addAccount', AddAccount)
-        app.component('updateAccount', UpdateAccount)
-        app.component('addBookingType', AddBookingType)
-        app.component('deleteBookingType', DeleteBookingType)
-        app.component('updateBookingType', UpdateBookingType)
-        app.component('addBooking', AddBooking)
-        app.component('updateBooking', UpdateBooking)
-        app.component('exportDatabase', ExportDatabase)
-        app.component('importDatabase', ImportDatabase)
-        app.component('showAccounting', ShowAccounting)
-        app.component('deleteAccountConfirmation', DeleteAccountConfirmation)
+        const registerComponent = <K extends T_Menu_Action_Type>(
+            name: K,
+            component: Component
+        ) => {
+            app.component(name, component)
+        }
+        registerComponent('fadeInStock', FadeInStock)
+        registerComponent('showDividend', ShowDividend)
+        registerComponent('addStock', AddStock)
+        registerComponent('updateStock', UpdateStock)
+        registerComponent('addAccount', AddAccount)
+        registerComponent('updateAccount', UpdateAccount)
+        registerComponent('addBookingType', AddBookingType)
+        registerComponent('deleteBookingType', DeleteBookingType)
+        registerComponent('updateBookingType', UpdateBookingType)
+        registerComponent('addBooking', AddBooking)
+        registerComponent('updateBooking', UpdateBooking)
+        registerComponent('exportDatabase', ExportDatabase)
+        registerComponent('importDatabase', ImportDatabase)
+        registerComponent('showAccounting', ShowAccounting)
+        registerComponent('deleteAccountConfirmation', DeleteAccountConfirmation)
     }
 }
 

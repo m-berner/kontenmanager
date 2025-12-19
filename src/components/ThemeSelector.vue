@@ -33,11 +33,8 @@ const T = Object.freeze<Record<string, Record<string, string>>>(
 const skin = ref<string>('')
 
 const setSkin = async (): Promise<void> => {
-    console.error(skin.value)
-    //if (skin !== null) {
-    //theme.global.name.value = skin.value
+    log('THEME_SELECTOR: setSkin')
     await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN, skin.value)
-    //}
 }
 
 onBeforeMount(async () => {

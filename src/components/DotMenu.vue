@@ -29,14 +29,8 @@ const handleItemClick = async (item: I_Menu_Item) => {
     log('DOT_MENU: handleItemClick', {info: [props.recordId, item.action]})
 
     try {
-        // Custom callback if provided
-        if (props.onAction) {
-            props.onAction(item.action, props.recordId)
-        } else {
-            // Default action handling
-            await executeAction(item.action, props.recordId)
-        }
-
+        // Default action handling
+        await executeAction(item.action, props.recordId)
         clearAllHighlights()
     } catch (error) {
         log('DOT_MENU: action failed', {error})
