@@ -14,7 +14,6 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB} from '@/composables/useIndexedDB'
-import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import BookingFormular from '@/components/dialogs/forms/BookingFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
@@ -23,9 +22,8 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {add, isConnected} = useBookingsDB()
-const {validateForm} = useValidation()
 const {formRef, mapBookingFormToDb, reset} = useBookingFormular()
-const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
+const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)

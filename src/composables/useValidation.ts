@@ -7,73 +7,118 @@
  */
 import type {Ref} from 'vue'
 import {useRecordsStore} from '@/stores/records'
+import type {T_Number_Validator, T_String_Validator, T_Validation_Rule} from '@/types'
 
-type TStringValidator = (_v: string) => boolean | string
-type TNumberValidator = (_v: number) => boolean | string
+function createRule(
+    validator: (_value: unknown) => boolean,
+    message: string
+): T_Validation_Rule {
+    return (value) => validator(value) || message
+}
+
+function required(message: string): T_Validation_Rule {
+    return createRule(
+        (v) => v !== null && v !== '' && v !== undefined,
+        message
+    )
+}
+
+function stringLength(min: number, max: number, message: string): T_Validation_Rule {
+    return createRule(
+        (v) => {
+            const tv = v as string
+            return tv.length >= min && tv.length <= max
+        },
+        message
+    )
+}
+
+function regex(pattern: RegExp, message: string): T_Validation_Rule {
+    return createRule(
+        (v) => {
+            const tv = v as string
+            return pattern.test(tv)
+        },
+        message
+    )
+}
 
 export function useValidation() {
-    function ibanRules(msgArray: string[]): TStringValidator[] {
-        const ibanLengths: Record<string, number> = {
-            AD: 24, AE: 23, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22,
-            BH: 22, BR: 29, BY: 28, CH: 21, CR: 22, CY: 28, CZ: 24, DE: 22,
-            DK: 18, DO: 28, EE: 20, EG: 29, ES: 24, FI: 18, FO: 18, FR: 27,
-            GB: 22, GE: 22, GI: 23, GL: 18, GR: 27, GT: 28, HR: 21, HU: 28,
-            IE: 22, IL: 23, IS: 26, IT: 27, JO: 30, KW: 30, KZ: 20, LB: 28,
-            LC: 32, LI: 21, LT: 20, LU: 20, LV: 21, MC: 27, MD: 24, ME: 22,
-            MK: 19, MR: 27, MT: 31, MU: 30, NL: 18, NO: 15, PK: 24, PL: 28,
-            PS: 29, PT: 25, QA: 29, RO: 24, RS: 22, SA: 24, SE: 24, SI: 19,
-            SK: 24, SM: 27, TN: 24, TR: 26, UA: 29, VG: 24, XK: 20
+
+    function ibanRules(msgArray: string[]): T_Validation_Rule[] {
+        const ibanLength = (message: string): T_Validation_Rule => {
+            const ibanLengths: Record<string, number> = {
+                AD: 24, AE: 23, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22,
+                BH: 22, BR: 29, BY: 28, CH: 21, CR: 22, CY: 28, CZ: 24, DE: 22,
+                DK: 18, DO: 28, EE: 20, EG: 29, ES: 24, FI: 18, FO: 18, FR: 27,
+                GB: 22, GE: 22, GI: 23, GL: 18, GR: 27, GT: 28, HR: 21, HU: 28,
+                IE: 22, IL: 23, IS: 26, IT: 27, JO: 30, KW: 30, KZ: 20, LB: 28,
+                LC: 32, LI: 21, LT: 20, LU: 20, LV: 21, MC: 27, MD: 24, ME: 22,
+                MK: 19, MR: 27, MT: 31, MU: 30, NL: 18, NO: 15, PK: 24, PL: 28,
+                PS: 29, PT: 25, QA: 29, RO: 24, RS: 22, SA: 24, SE: 24, SI: 19,
+                SK: 24, SM: 27, TN: 24, TR: 26, UA: 29, VG: 24, XK: 20
+            }
+            return createRule(
+                v => {
+                    const tv = v as string
+                    const iban = tv.replace(/\s/g, '')
+                    const countryCode = iban.substring(0, 2)
+                    return iban.length == ibanLengths[countryCode]
+                },
+                message
+            )
+        }
+        const createLuhnValidator = (message: string): T_Validation_Rule => {
+            return createRule(
+                v => {
+                    const tv = v as string
+                    // MOD-97 algorithm
+                    const rearranged = tv.replace(/\s/g, '').substring(4) + tv.replace(/\s/g, '').substring(0, 4)
+                    const numericString = rearranged.replace(/[A-Z]/g, (char) => {
+                        return (char.charCodeAt(0) - 55).toString()
+                    })
+                    const remainder = BigInt(numericString) % 97n
+                    return remainder === 1n
+                },
+                message
+            )
+        }
+        const isDuplicate = (message: string): T_Validation_Rule => {
+            return createRule(
+                v => {
+                    const tv = v as string
+                    const records = useRecordsStore()
+                    return !records.accounts.isDuplicate(tv.replace(/\s/g, ''))
+                },
+                message
+            )
         }
         return [
-            (v: string) => v !== null || msgArray[0],
-            (v: string) => {
-                const countryCode = v.replace(/\s/g, '').substring(0, 2)
-                const expectedLength = ibanLengths[countryCode]
-                return !!expectedLength || msgArray[1]
-            },
-            (v: string) => {
-                const countryCode = v.replace(/\s/g, '').substring(0, 2)
-                return v.replace(/\s/g, '').length === ibanLengths[countryCode] || msgArray[2]
-            },
-            (v: string) => v.replace(/\s/g, '').match(/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/) !== null || msgArray[3],
-            (v: string) => {
-                // MOD-97 algorithm
-                const rearranged = v.replace(/\s/g, '').substring(4) + v.replace(/\s/g, '').substring(0, 4)
-                const numericString = rearranged.replace(/[A-Z]/g, (char) => {
-                    return (char.charCodeAt(0) - 55).toString()
-                })
-                const remainder = BigInt(numericString) % 97n
-                return remainder === 1n || msgArray[4]
-            }
+            required(msgArray[0]),
+            ibanLength(msgArray[1]),
+            regex(/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/, msgArray[2]),
+            createLuhnValidator(msgArray[3]),
+            isDuplicate(msgArray[4])
         ]
     }
 
-    function ibanDuplicateRules(msgArray: string[]): TStringValidator[] {
+    function nameRules(msgArray: string[]): T_Validation_Rule[] {
         return [
-            (v: string) => {
-                const records = useRecordsStore()
-                return !records.accounts.isDuplicate(v.replace(/\s/g, '')) || msgArray[5]
-            }
+            required(msgArray[0]),
+            stringLength(2, 32, msgArray[1]),
+            regex(/^[a-zA-ZäöüÄÖÜ].*/g, msgArray[2])
         ]
     }
 
-    function nameRules(msgArray: string[]): TStringValidator[] {
+    function hasBookingType(msgArray: string[]): T_Validation_Rule[] {
         return [
-            (v: string) => v !== null || msgArray[0],
-            (v: string) => (v !== null && v.length < 32) || msgArray[1],
-            (v: string) => v.match(/^[a-zA-ZäöüÄÖÜ].*/g) !== null || msgArray[2]
+            required(msgArray[0])
         ]
     }
 
-    function positiveBookingType(msgArray: string[]): TNumberValidator[] {
+    function swiftRules(msgArray: string[]): T_String_Validator[] {
         return [
-            (v: number) => v > 0 || msgArray[0]
-        ]
-    }
-
-    function swiftRules(msgArray: string[]): TStringValidator[] {
-        return [
-            (v: string) => v !== null || msgArray[0],
+            required(msgArray[0]),
             (v: string) => (v.replace(/\s/g, '').length === 8 || v.replace(/\s/g, '').length === 11) || msgArray[1],
             (v: string) => v.replace(/\s/g, '').match(/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/) !== null || msgArray[2],
             (v: string) => v.replace(/\s/g, '').substring(0, 4).match(/^[A-Z]{4}$/) !== null || msgArray[3],
@@ -84,33 +129,27 @@ export function useValidation() {
                 return branchCode?.match(/^[A-Z0-9]{3}$/) !== null || msgArray[6]
             },
             (v: string) => !v.replace(/\s/g, '').substring(6, 8).startsWith('0') || msgArray[7]
-            //(v: string) => !v.replace(/\s/g, '').substring(6, 8).endsWith('1') || msgArray[8]
         ]
     }
 
-    function dateRules(msgArray: string[]): TStringValidator[] {
+    function isoDateRules(msgArray: string[]): T_String_Validator[] {
+        const isValid = (message: string): T_Validation_Rule => {
+            return createRule(
+                v => {
+                    const tv = v as string
+                    const date = new Date(`${tv}T00:00:00Z`)
+                    return isNaN(date.getTime())
+                },
+                message
+            )
+        }
         return [
-            (v: string) => (v !== null && v.match(/^([1-2])?[0-9]{3}-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$/g) !== null) || msgArray[0]
+            regex(/^\d{4}-\d{2}-\d{2}$/, msgArray[0]),
+            isValid(msgArray[1])
         ]
     }
 
-    function valCurrencyCodeRules(msgArray: string[]): TStringValidator[] {
-        return [
-            (v: string) => v !== null || msgArray[0],
-            (v: string) => (v !== null && v.length === 3) || msgArray[1],
-            (v: string) => v.match(/[^a-zA-Z]/g) === null || msgArray[2]
-        ]
-    }
-
-    function requiredRules(msgArray: string[]): TStringValidator[] {
-        return [
-            (v: string) => {
-                return (v !== null && v !== '' && v !== undefined) || msgArray[0]
-            }
-        ]
-    }
-
-    function isValidCredit(msgArray: string[], debitValue: Ref<number> | number): TNumberValidator[] {
+    function isValidCredit(msgArray: string[], debitValue: Ref<number> | number): T_Number_Validator[] {
         return [
             (v: number) => {
                 const debit = typeof debitValue === 'number' ? debitValue : debitValue.value
@@ -125,7 +164,7 @@ export function useValidation() {
         ]
     }
 
-    function isValidDebit(msgArray: string[], creditValue: Ref<number> | number): TNumberValidator[] {
+    function isValidDebit(msgArray: string[], creditValue: Ref<number> | number): T_Number_Validator[] {
         return [
             (v: number) => {
                 const credit = typeof creditValue === 'number' ? creditValue : creditValue.value
@@ -140,27 +179,7 @@ export function useValidation() {
         ]
     }
 
-    function requiredSelect(msgArray: string[]): TStringValidator[] {
-        return [
-            (v: string) => (v === null || v.length > 0) || msgArray[0]
-        ]
-    }
-
-    function validateForm(form: Ref<HTMLFormElement | null>): boolean {
-        if (form.value !== null) {
-            return form.value.validate()
-        }
-        return false
-    }
-
-    function mounted(el: HTMLElement) {
-        el.addEventListener('focus', () => {
-            const form = el.closest('form')
-            form?.resetValidation?.()
-        })
-    }
-
-    function isinRules(msgArray: string[]): TStringValidator[] {
+    function isinRules(msgArray: string[]): T_String_Validator[] {
         const validCountryCodes: string[] = [
             'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT',
             'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI',
@@ -236,18 +255,12 @@ export function useValidation() {
 
     return {
         ibanRules,
-        ibanDuplicateRules,
         isinRules,
         isValidCredit,
         isValidDebit,
-        mounted,
         nameRules,
         swiftRules,
-        dateRules,
-        valCurrencyCodeRules,
-        requiredRules,
-        requiredSelect,
-        validateForm,
-        positiveBookingType
+        isoDateRules,
+        hasBookingType
     }
 }

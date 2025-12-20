@@ -16,7 +16,6 @@ import {useSettingsStore} from '@/stores/settings'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useStocksDB} from '@/composables/useIndexedDB'
-import {useValidation} from '@/composables/useValidation'
 import {useApp} from '@/composables/useApp'
 import StockFormular from '@/components/dialogs/forms/StockFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
@@ -25,14 +24,13 @@ const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {update, isConnected} = useStocksDB()
-const {validateForm} = useValidation()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {activeId} = storeToRefs(runtime)
 const {stockFormularData, formRef, mapStockFormToDb} = useStockFormular()
-const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
+const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 
 const T = Object.freeze(
     {

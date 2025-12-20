@@ -12,7 +12,6 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
-import {useValidation} from '@/composables/useValidation'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 
@@ -20,8 +19,7 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {remove, isConnected} = useBookingTypesDB()
-const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
-const {validateForm} = useValidation()
+const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 

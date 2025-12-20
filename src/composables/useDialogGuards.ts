@@ -11,11 +11,11 @@ import {ref} from 'vue'
 export function useDialogGuards() {
     const isLoading = ref<boolean>(false)
 
-    const ensureConnected = async (
+    async function ensureConnected(
         isConnected: Ref<boolean>,
         notice: (_msg: string[]) => Promise<void>,
         errorMessage = 'Database not connected'
-    ): Promise<boolean> => {
+    ): Promise<boolean> {
         if (!isConnected.value) {
             await notice([errorMessage])
             return false
@@ -23,21 +23,21 @@ export function useDialogGuards() {
         return true
     }
 
-    const handleError = async (
+    async function handleError(
         error: unknown,
         log: (_msg: string, _data?: any) => void,
         notice: (_msg: string[]) => Promise<void>,
         context: string,
         userMessage: string
-    ): Promise<void> => {
+    ): Promise<void> {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
         log(`${context}: Error`, {error: errorMessage, stack: error instanceof Error ? error.stack : undefined})
         await notice([userMessage, errorMessage])
     }
 
-    const withLoading = async <T>(
+    async function withLoading<T>(
         operation: () => Promise<T>
-    ): Promise<T | undefined> => {
+    ): Promise<T | undefined> {
         isLoading.value = true
         try {
             return await operation()
@@ -46,10 +46,18 @@ export function useDialogGuards() {
         }
     }
 
+    function validateForm(form: Ref<HTMLFormElement | null>): boolean {
+        if (form.value !== null) {
+            return form.value.validate()
+        }
+        return false
+    }
+
     return {
         isLoading,
         ensureConnected,
         handleError,
+        validateForm,
         withLoading
     }
 }

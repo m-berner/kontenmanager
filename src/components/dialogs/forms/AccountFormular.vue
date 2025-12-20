@@ -42,7 +42,6 @@ const T = Object.freeze(
         ],
         IBAN_RULES: [
             t('validators.ibanRules.required'),
-            t('validators.ibanRules.country'),
             t('validators.ibanRules.length'),
             t('validators.ibanRules.format'),
             t('validators.ibanRules.checksum'),

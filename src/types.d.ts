@@ -409,3 +409,9 @@ export type T_Menu_Action_Type =
     | 'home'
     | 'company'
     | 'setting'
+
+export type T_String_Validator = (_v: string) => boolean | string
+
+export type T_Number_Validator = (_v: number) => boolean | string
+
+export type T_Validation_Rule = (_value: unknown) => boolean | string

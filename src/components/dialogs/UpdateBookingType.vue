@@ -22,11 +22,11 @@ const {t} = useI18n()
 const {CONS, log} = useApp()
 const {notice} = useBrowser()
 const {update, isConnected} = useBookingTypesDB()
-const {nameRules, validateForm} = useValidation()
+const {nameRules} = useValidation()
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
-const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
+const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 
 const T = Object.freeze(
     {

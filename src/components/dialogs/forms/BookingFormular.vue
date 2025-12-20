@@ -17,7 +17,7 @@ import CreditDebitFieldset from '@/components/CreditDebitFieldset.vue'
 
 const {t} = useI18n()
 const {CONS, log} = useApp()
-const {dateRules, positiveBookingType} = useValidation()
+const {isoDateRules, hasBookingType} = useValidation()
 const {bookingFormularData, selected} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
 const {markets} = useSettingsStore()
@@ -39,8 +39,11 @@ const T = Object.freeze(
             TRANSACTION_TAX_LABEL: t('components.dialogs.forms.bookingFormular.transactionTaxLabel'),
             DESCRIPTION_LABEL: t('components.dialogs.forms.bookingFormular.descriptionLabel')
         },
-        DATE_RULES: [t('validators.dateRules.required')],
-        BOOKING_TYPE_RULES: [t('validators.bookingTypeRules')]
+        DATE_RULES: [
+            t('validators.isoDateRules.required'),
+            t('validators.isoDateRules.valid')
+        ],
+        BOOKING_TYPE_RULES: [t('validators.bookingTypeRules.required')]
     }
 )
 
@@ -133,7 +136,7 @@ log('--- BookingFormular.vue setup ---')
                 <v-text-field
                     v-model="bookingFormularData.bookDate"
                     :label="T.STRINGS.DATE_LABEL"
-                    :rules="dateRules(T.DATE_RULES)"
+                    :rules="isoDateRules(T.DATE_RULES)"
                     autofocus
                     density="compact"
                     type="date"
@@ -163,7 +166,7 @@ log('--- BookingFormular.vue setup ---')
                     :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
                     :items="sortedBookingTypes"
                     :label="T.STRINGS.BOOKING_TYPE_LABEL"
-                    :rules="positiveBookingType(T.BOOKING_TYPE_RULES)"
+                    :rules="hasBookingType(T.BOOKING_TYPE_RULES)"
                     clearable
                     density="compact"
                     max-width="300"
@@ -189,7 +192,7 @@ log('--- BookingFormular.vue setup ---')
                     ref="date-input"
                     v-model="bookingFormularData.exDate"
                     :label="T.STRINGS.EX_DATE_LABEL"
-                    :rules="dateRules(T.DATE_RULES)"
+                    :rules="isoDateRules(T.DATE_RULES)"
                     autofocus
                     density="compact"
                     required

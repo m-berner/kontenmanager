@@ -15,7 +15,6 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB} from '@/composables/useIndexedDB'
-import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import AccountFormular from '@/components/dialogs/forms/AccountFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
@@ -24,14 +23,13 @@ const {t} = useI18n()
 const {log} = useApp()
 const {notice} = useBrowser()
 const {update, isConnected} = useAccountsDB()
-const {validateForm} = useValidation()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 const runtime = useRuntimeStore()
 const {accountFormularData, formRef, mapAccountFormToDb} = useAccountFormular()
 const records = useRecordsStore()
 const {items: accountItems} = storeToRefs(records.accounts)
-const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
+const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 
 const T = Object.freeze(
     {

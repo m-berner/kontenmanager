@@ -25,6 +25,17 @@ const isConnected = ref<boolean>(false)
 const error = ref<unknown | null>(null)
 const isLoading = ref<boolean>(false)
 
+class DatabaseError extends Error {
+    constructor(
+        message: string,
+        public _code: string,
+        public _operation: string
+    ) {
+        super(message)
+        this.name = 'DatabaseError'
+    }
+}
+
 function useDBStore<T>(storeName: string) {
     const dbi = useIndexedDB()
     return {
@@ -147,81 +158,177 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function add<T>(storeName: string, data: T): Promise<number> {
-        const db = await _openDB()
-        const tx = db.transaction(storeName, 'readwrite')
-        const store = tx.objectStore(storeName)
-        const request = store.add(data)
+        try {
+            const db = await _openDB()
+            const tx = db.transaction(storeName, 'readwrite')
+            const store = tx.objectStore(storeName)
+            const request = store.add(data)
 
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result as number)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
-        })
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result as number)
+                tx.onerror = () => reject(new DatabaseError(
+                    `Failed to add record: ${tx.error?.message}`,
+                    'DB_ADD_FAILED',
+                    'add'
+                ))
+                tx.onabort = () => reject(new DatabaseError(
+                    'Transaction aborted',
+                    'TX_ABORTED',
+                    'add'
+                ))
+            })
+        } catch (error) {
+            throw new DatabaseError(
+                `Database operation failed: ${error}`,
+                'DB_CONNECTION_FAILED',
+                'add'
+            )
+        }
     }
 
     async function get<T>(storeName: string, key: number): Promise<T> {
-        const db = await _openDB()
-        const tx = db.transaction(storeName, 'readonly')
-        const store = tx.objectStore(storeName)
-        const request = store.get(key)
+        try {
+            const db = await _openDB()
+            const tx = db.transaction(storeName, 'readonly')
+            const store = tx.objectStore(storeName)
+            const request = store.get(key)
 
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
-        })
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result)
+                tx.onerror = () => reject(new DatabaseError(
+                    `Failed to get records: ${tx.error?.message}`,
+                    'DB_GET_FAILED',
+                    'get'
+                ))
+                tx.onabort = () => reject(new DatabaseError(
+                    'Transaction aborted',
+                    'TX_ABORTED',
+                    'get'
+                ))
+            })
+        } catch (error) {
+            throw new DatabaseError(
+                `Database operation failed: ${error}`,
+                'DB_CONNECTION_FAILED',
+                'get'
+            )
+        }
     }
 
     async function getAll<T>(storeName: string): Promise<T[]> {
-        const db = await _openDB()
-        const tx = db.transaction(storeName, 'readonly')
-        const store = tx.objectStore(storeName)
-        const request = store.getAll()
+        try {
+            const db = await _openDB()
+            const tx = db.transaction(storeName, 'readonly')
+            const store = tx.objectStore(storeName)
+            const request = store.getAll()
 
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
-        })
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result)
+                tx.onerror = () => reject(new DatabaseError(
+                    `Failed to getAll records: ${tx.error?.message}`,
+                    'DB_GET_ALL_FAILED',
+                    'getAll'
+                ))
+                tx.onabort = () => reject(new DatabaseError(
+                    'Transaction aborted',
+                    'TX_ABORTED',
+                    'getAll'
+                ))
+            })
+        } catch (error) {
+            throw new DatabaseError(
+                `Database operation failed: ${error}`,
+                'DB_CONNECTION_FAILED',
+                'getAll'
+            )
+        }
     }
 
     async function update<T>(storeName: string, data: T): Promise<IDBValidKey> {
-        const db = await _openDB()
-        const tx = db.transaction(storeName, 'readwrite')
-        const store = tx.objectStore(storeName)
-        const request = store.put(data)
+        try {
+            const db = await _openDB()
+            const tx = db.transaction(storeName, 'readwrite')
+            const store = tx.objectStore(storeName)
+            const request = store.put(data)
 
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result as number)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
-        })
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result as number)
+                tx.onerror = () => reject(new DatabaseError(
+                    `Failed to update record: ${tx.error?.message}`,
+                    'DB_UPDATE_FAILED',
+                    'update'
+                ))
+                tx.onabort = () => reject(new DatabaseError(
+                    'Transaction aborted',
+                    'TX_ABORTED',
+                    'update'
+                ))
+            })
+        } catch (error) {
+            throw new DatabaseError(
+                `Database operation failed: ${error}`,
+                'DB_CONNECTION_FAILED',
+                'update'
+            )
+        }
     }
 
     async function remove(storeName: string, key: number): Promise<void> {
-        const db = await _openDB()
-        const tx = db.transaction(storeName, 'readwrite')
-        const store = tx.objectStore(storeName)
-        const request = store.delete(key)
+        try {
+            const db = await _openDB()
+            const tx = db.transaction(storeName, 'readwrite')
+            const store = tx.objectStore(storeName)
+            const request = store.delete(key)
 
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
-        })
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result)
+                tx.onerror = () => reject(new DatabaseError(
+                    `Failed to remove record: ${tx.error?.message}`,
+                    'DB_REMOVE_FAILED',
+                    'remove'
+                ))
+                tx.onabort = () => reject(new DatabaseError(
+                    'Transaction aborted',
+                    'TX_ABORTED',
+                    'remove'
+                ))
+            })
+        } catch (error) {
+            throw new DatabaseError(
+                `Database operation failed: ${error}`,
+                'DB_CONNECTION_FAILED',
+                'remove'
+            )
+        }
     }
 
     async function clear(storeName: string): Promise<void> {
-        const db = await _openDB()
-        const tx = db.transaction(storeName, 'readwrite')
-        const store = tx.objectStore(storeName)
-        const request = store.clear()
+        try {
+            const db = await _openDB()
+            const tx = db.transaction(storeName, 'readwrite')
+            const store = tx.objectStore(storeName)
+            const request = store.clear()
 
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
-        })
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result)
+                tx.onerror = () => reject(new DatabaseError(
+                    `Failed to clear records: ${tx.error?.message}`,
+                    'DB_CLEAR_FAILED',
+                    'clrea'
+                ))
+                tx.onabort = () => reject(new DatabaseError(
+                    'Transaction aborted',
+                    'TX_ABORTED',
+                    'clear'
+                ))
+            })
+        } catch (error) {
+            throw new DatabaseError(
+                `Database operation failed: ${error}`,
+                'DB_CONNECTION_FAILED',
+                'clear'
+            )
+        }
     }
 
     async function batchOperations(storeName: string, operations: I_Records[]): Promise<void> {
@@ -265,8 +372,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             } catch (e) {
                 log('USE_INDEXED_DB', {error: e})
             }
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
+            tx.onerror = () => reject(new DatabaseError(
+                `Failed to execute operations: ${tx.error?.message}`,
+                'DB_BATCH_FAILED',
+                'batchOperations'
+            ))
+            tx.onabort = () => reject(new DatabaseError(
+                'Transaction aborted',
+                'TX_ABORTED',
+                'batchOperations'
+            ))
         })
     }
 
@@ -279,8 +394,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => resolve(request.result)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
+            tx.onerror = () => reject(new DatabaseError(
+                `Failed to getAllByIndex record: ${tx.error?.message}`,
+                'DB_GETALLBYINDEX_FAILED',
+                'getAllByIndex'
+            ))
+            tx.onabort = () => reject(new DatabaseError(
+                'Transaction aborted',
+                'TX_ABORTED',
+                'getAllByIndex'
+            ))
         })
     }
 
@@ -322,7 +445,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         accountsStore.delete(accountId)
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => resolve()
-            tx.onerror = () => reject(tx.error)
+            tx.onerror = () => reject(new DatabaseError(
+                `Failed to delete database: ${tx.error?.message}`,
+                'DB_DELETION_FAILED',
+                'deleteDatabaseWithAccount'
+            ))
+            tx.onabort = () => reject(new DatabaseError(
+                'Transaction aborted',
+                'TX_ABORTED',
+                'deleteDatabaseWithAccount'
+            ))
         })
     }
 
@@ -377,8 +509,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                     }
                 )
             }
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
+            tx.onerror = () => reject(new DatabaseError(
+                `Failed to get database stores: ${tx.error?.message}`,
+                'DB_GETDATABASESTORES_FAILED',
+                'getDatabaseStore'
+            ))
+            tx.onabort = () => reject(new DatabaseError(
+                'Transaction aborted',
+                'TX_ABORTED',
+                'getDatabaseStores'
+            ))
         })
     }
 
@@ -391,8 +531,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => resolve(request.result)
-            tx.onerror = () => reject(tx.error)
-            tx.onabort = () => reject(new Error('Transaction aborted'))
+            tx.onerror = () => reject(new DatabaseError(
+                `Failed to count records by index: ${tx.error?.message}`,
+                'DB_COUNTBYINDEX_FAILED',
+                'countByIndex'
+            ))
+            tx.onabort = () => reject(new DatabaseError(
+                'Transaction aborted',
+                'TX_ABORTED',
+                'countByIndex'
+            ))
         })
     }
 
@@ -419,10 +567,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                         resolve()
                     }
                 }
-                //tx.oncomplete = () => resolve(request.result)
-                tx.onerror = () => reject(request.error)
-                tx.onabort = () => reject(new Error('Transaction aborted'))
-            })
+                tx.onerror = () => reject(new DatabaseError(
+                    `Failed to add record: ${tx.error?.message}`,
+                    'DB_PROCESS_WITH_CURSOR_FAILED',
+                    'processWithCursor'
+                ))
+                tx.onabort = () => reject(new DatabaseError(
+                    'Transaction aborted',
+                    'TX_ABORTED',
+                    'processWithCursor'
+                )) })
         }
         return null
     }

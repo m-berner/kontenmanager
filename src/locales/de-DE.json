@@ -358,7 +358,6 @@
   "validators": {
     "ibanRules": {
       "required": "IBAN ist erforderlich",
-      "country": "Falscher Ländercode",
       "length": "Ungültige IBAN Länge",
       "format": "Ungültige IBAN",
       "checksum": "Ungültige Prüfsumme",
@@ -387,13 +386,15 @@
       "test": "Test BIC",
       "passive": "BIC von passivem Teilnehmer"
     },
-    "dateRules": {
+    "isoDateRules": {
       "required": "Datum ist erforderlich",
-      "iso": ""
+      "valid": "Datum ist ungültig"
     },
     "requiredRules": "Ist erforderlich",
     "notNegative": "Nur positive Werte",
     "onlyOnePositive": "Ein Wert muss 0 sein",
-    "bookingTypeRules": "Buchungstyp ist erforderlich"
+    "bookingTypeRules": {
+      "required": "Buchungstyp ist erforderlich"
+    }
   }
 }

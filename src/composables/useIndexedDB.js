@@ -5,6 +5,16 @@ const dbInstance = ref(null);
 const isConnected = ref(false);
 const error = ref(null);
 const isLoading = ref(false);
+class DatabaseError extends Error {
+    _code;
+    _operation;
+    constructor(message, _code, _operation) {
+        super(message);
+        this._code = _code;
+        this._operation = _operation;
+        this.name = 'DatabaseError';
+    }
+}
 function useDBStore(storeName) {
     const dbi = useIndexedDB();
     return {
@@ -106,70 +116,100 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         return dbInstance.value;
     }
     async function add(storeName, data) {
-        const db = await _openDB();
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        const request = store.add(data);
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result);
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
-        });
+        try {
+            const db = await _openDB();
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            const request = store.add(data);
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result);
+                tx.onerror = () => reject(new DatabaseError(`Failed to add record: ${tx.error?.message}`, 'DB_ADD_FAILED', 'add'));
+                tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'add'));
+            });
+        }
+        catch (error) {
+            throw new DatabaseError(`Database operation failed: ${error}`, 'DB_CONNECTION_FAILED', 'add');
+        }
     }
     async function get(storeName, key) {
-        const db = await _openDB();
-        const tx = db.transaction(storeName, 'readonly');
-        const store = tx.objectStore(storeName);
-        const request = store.get(key);
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result);
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
-        });
+        try {
+            const db = await _openDB();
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            const request = store.get(key);
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result);
+                tx.onerror = () => reject(new DatabaseError(`Failed to get records: ${tx.error?.message}`, 'DB_GET_FAILED', 'get'));
+                tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'get'));
+            });
+        }
+        catch (error) {
+            throw new DatabaseError(`Database operation failed: ${error}`, 'DB_CONNECTION_FAILED', 'get');
+        }
     }
     async function getAll(storeName) {
-        const db = await _openDB();
-        const tx = db.transaction(storeName, 'readonly');
-        const store = tx.objectStore(storeName);
-        const request = store.getAll();
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result);
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
-        });
+        try {
+            const db = await _openDB();
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            const request = store.getAll();
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result);
+                tx.onerror = () => reject(new DatabaseError(`Failed to getAll records: ${tx.error?.message}`, 'DB_GET_ALL_FAILED', 'getAll'));
+                tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'getAll'));
+            });
+        }
+        catch (error) {
+            throw new DatabaseError(`Database operation failed: ${error}`, 'DB_CONNECTION_FAILED', 'getAll');
+        }
     }
     async function update(storeName, data) {
-        const db = await _openDB();
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        const request = store.put(data);
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result);
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
-        });
+        try {
+            const db = await _openDB();
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            const request = store.put(data);
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result);
+                tx.onerror = () => reject(new DatabaseError(`Failed to update record: ${tx.error?.message}`, 'DB_UPDATE_FAILED', 'update'));
+                tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'update'));
+            });
+        }
+        catch (error) {
+            throw new DatabaseError(`Database operation failed: ${error}`, 'DB_CONNECTION_FAILED', 'update');
+        }
     }
     async function remove(storeName, key) {
-        const db = await _openDB();
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        const request = store.delete(key);
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result);
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
-        });
+        try {
+            const db = await _openDB();
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            const request = store.delete(key);
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result);
+                tx.onerror = () => reject(new DatabaseError(`Failed to remove record: ${tx.error?.message}`, 'DB_REMOVE_FAILED', 'remove'));
+                tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'remove'));
+            });
+        }
+        catch (error) {
+            throw new DatabaseError(`Database operation failed: ${error}`, 'DB_CONNECTION_FAILED', 'remove');
+        }
     }
     async function clear(storeName) {
-        const db = await _openDB();
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        const request = store.clear();
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve(request.result);
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
-        });
+        try {
+            const db = await _openDB();
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            const request = store.clear();
+            return new Promise((resolve, reject) => {
+                tx.oncomplete = () => resolve(request.result);
+                tx.onerror = () => reject(new DatabaseError(`Failed to clear records: ${tx.error?.message}`, 'DB_CLEAR_FAILED', 'clrea'));
+                tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'clear'));
+            });
+        }
+        catch (error) {
+            throw new DatabaseError(`Database operation failed: ${error}`, 'DB_CONNECTION_FAILED', 'clear');
+        }
     }
     async function batchOperations(storeName, operations) {
         const db = await _openDB();
@@ -212,8 +252,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
             catch (e) {
                 log('USE_INDEXED_DB', { error: e });
             }
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
+            tx.onerror = () => reject(new DatabaseError(`Failed to execute operations: ${tx.error?.message}`, 'DB_BATCH_FAILED', 'batchOperations'));
+            tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'batchOperations'));
         });
     }
     async function getAllByIndex(storeName, indexName, value) {
@@ -224,8 +264,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = index.getAll(value);
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => resolve(request.result);
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
+            tx.onerror = () => reject(new DatabaseError(`Failed to getAllByIndex record: ${tx.error?.message}`, 'DB_GETALLBYINDEX_FAILED', 'getAllByIndex'));
+            tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'getAllByIndex'));
         });
     }
     async function _getAllInTransaction(tx, storeName) {
@@ -258,7 +298,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         accountsStore.delete(accountId);
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
+            tx.onerror = () => reject(new DatabaseError(`Failed to delete database: ${tx.error?.message}`, 'DB_DELETION_FAILED', 'deleteDatabaseWithAccount'));
+            tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'deleteDatabaseWithAccount'));
         });
     }
     async function getDatabaseStores(accountId) {
@@ -305,8 +346,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                     stocksDB: results.stocksDB
                 });
             };
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
+            tx.onerror = () => reject(new DatabaseError(`Failed to get database stores: ${tx.error?.message}`, 'DB_GETDATABASESTORES_FAILED', 'getDatabaseStore'));
+            tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'getDatabaseStores'));
         });
     }
     async function countByIndex(storeName, indexName, value) {
@@ -317,8 +358,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const request = index.count(value);
         return new Promise((resolve, reject) => {
             tx.oncomplete = () => resolve(request.result);
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(new Error('Transaction aborted'));
+            tx.onerror = () => reject(new DatabaseError(`Failed to count records by index: ${tx.error?.message}`, 'DB_COUNTBYINDEX_FAILED', 'countByIndex'));
+            tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'countByIndex'));
         });
     }
     async function processWithCursor(storeName, callback, indexName, range) {
@@ -339,8 +380,8 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
                         resolve();
                     }
                 };
-                tx.onerror = () => reject(request.error);
-                tx.onabort = () => reject(new Error('Transaction aborted'));
+                tx.onerror = () => reject(new DatabaseError(`Failed to add record: ${tx.error?.message}`, 'DB_PROCESS_WITH_CURSOR_FAILED', 'processWithCursor'));
+                tx.onabort = () => reject(new DatabaseError('Transaction aborted', 'TX_ABORTED', 'processWithCursor'));
             });
         }
         return null;

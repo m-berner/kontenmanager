@@ -16,7 +16,6 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingTypesDB} from '@/composables/useIndexedDB'
-import {useValidation} from '@/composables/useValidation'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import AccountFormular from '@/components/dialogs/forms/AccountFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
@@ -26,9 +25,8 @@ const {CONS, log} = useApp()
 const {notice, setStorage} = useBrowser()
 const {add, isConnected, remove} = useAccountsDB()
 const {add: addBookingType} = useBookingTypesDB()
-const {validateForm} = useValidation()
 const {accountFormularData, formRef, mapAccountFormToDb, reset} = useAccountFormular()
-const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
+const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 const {resetTeleport} = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
