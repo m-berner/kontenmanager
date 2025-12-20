@@ -12,9 +12,11 @@ import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {n, t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {SETTINGS} = useAppConfig()
 const runtime = useRuntimeStore()
 const {curUsd, infoMaterials} = storeToRefs(runtime)
 const settings = useSettingsStore()
@@ -24,7 +26,7 @@ const materialValues = computed(() => {
     const result = new Map<string, { usd: number, local: number }>()
 
     for (const item of settings.materials) {
-        const code = CONS.SETTINGS.MATERIALS.get(item) ?? ''
+        const code = SETTINGS.MATERIALS.get(item) ?? ''
         const usdValue = infoMaterials.value.get(code) ?? 0
         const localValue = usdValue / curUsd.value
 
@@ -46,7 +48,7 @@ log('--- InfoBar.vue setup ---')
             </v-list-item>
 
             <v-list-item v-for="item in settings.indexes" :key="item">
-                <v-list-item-title>{{ CONS.SETTINGS.INDEXES.get(item) }}</v-list-item-title>
+                <v-list-item-title>{{ SETTINGS.INDEXES.get(item) }}</v-list-item-title>
                 <v-list-item-subtitle>{{ n(runtime.infoIndexes.get(item) ?? 0, 'integer') }}</v-list-item-subtitle>
             </v-list-item>
 

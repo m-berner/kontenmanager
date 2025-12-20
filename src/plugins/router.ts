@@ -8,15 +8,17 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import {useApp} from '@/composables/useApp'
 import type {I_Router} from '@/types'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {ROUTES} = useAppConfig()
 
 const routerInstance = createRouter(
     {
         history: createWebHashHistory(),
         routes: [
             {
-                path: CONS.ROUTES.HOME,
+                path: ROUTES.HOME,
                 name: 'home',
                 components: {
                     default: () => import('@/screens/HomeContent.vue'),
@@ -26,7 +28,7 @@ const routerInstance = createRouter(
                 }
             },
             {
-                path: CONS.ROUTES.COMPANY,
+                path: ROUTES.COMPANY,
                 name: 'company',
                 components: {
                     default: () => import('@/screens/CompanyContent.vue'),
@@ -37,7 +39,7 @@ const routerInstance = createRouter(
                 }
             },
             {
-                path: CONS.ROUTES.PRIVACY,
+                path: ROUTES.PRIVACY,
                 name: 'privacy',
                 components: {
                     default: () => import('@/screens/SheetContent.vue'),

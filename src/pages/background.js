@@ -1,6 +1,8 @@
 import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
-const { CONS, log } = useApp();
+import { useAppConfig } from '@/composables/useAppConfig';
+const { log } = useApp();
+const { SESSION_STORAGE } = useAppConfig();
 const { actionOnClicked, installStorageLocal, runtimeOnInstalled, tabsCreate, tabsQuery, tabsUpdate, windowsUpdate } = useBrowser();
 async function onInstall() {
     log('BACKGROUND: onInstall');
@@ -12,7 +14,7 @@ async function onClick() {
     if (foundTabs.length === 0) {
         const extensionTab = await tabsCreate();
         const extensionTabIdStr = (extensionTab.id ?? -1).toString();
-        sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.EXTENSION_TAB_ID, extensionTabIdStr);
+        sessionStorage.setItem(SESSION_STORAGE.PROPS.EXTENSION_TAB_ID, extensionTabIdStr);
     }
     else {
         await windowsUpdate(foundTabs[0].windowId);

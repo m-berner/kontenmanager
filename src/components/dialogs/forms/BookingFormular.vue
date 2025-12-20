@@ -14,10 +14,12 @@ import {useApp} from '@/composables/useApp'
 import {useValidation} from '@/composables/useValidation'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import CreditDebitFieldset from '@/components/CreditDebitFieldset.vue'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
-const {isoDateRules, hasBookingType} = useValidation()
+const {log} = useApp()
+const {INDEXED_DB} = useAppConfig()
+const {isoDateRules, bookingTypeRules} = useValidation()
 const {bookingFormularData, selected} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
 const {markets} = useSettingsStore()
@@ -113,14 +115,14 @@ const feeModel = computed(
         }
     }
 )
-const isStockBookingType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.BUY || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.SELL || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.DIVIDEND)
-const isDividendType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.DIVIDEND)
-const isBuySellType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.BUY || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.SELL)
-const isBuyType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.BUY)
-const isDividendSellType = computed(() => selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.SELL || selected.value === CONS.INDEXED_DB.STORES.BOOKING_TYPES.DIVIDEND)
+const isStockBookingType = computed(() => selected.value === INDEXED_DB.STORE.BOOKING_TYPES.BUY || selected.value === INDEXED_DB.STORE.BOOKING_TYPES.SELL || selected.value === INDEXED_DB.STORE.BOOKING_TYPES.DIVIDEND)
+const isDividendType = computed(() => selected.value === INDEXED_DB.STORE.BOOKING_TYPES.DIVIDEND)
+const isBuySellType = computed(() => selected.value === INDEXED_DB.STORE.BOOKING_TYPES.BUY || selected.value === INDEXED_DB.STORE.BOOKING_TYPES.SELL)
+const isBuyType = computed(() => selected.value === INDEXED_DB.STORE.BOOKING_TYPES.BUY)
+const isDividendSellType = computed(() => selected.value === INDEXED_DB.STORE.BOOKING_TYPES.SELL || selected.value === INDEXED_DB.STORE.BOOKING_TYPES.DIVIDEND)
 const sortedStocks = computed(() => [...stocks.items].sort((a, b) => a.cCompany.localeCompare(b.cCompany)))
 const sortedBookingTypes = computed(() => [{
-    cID: CONS.INDEXED_DB.STORES.BOOKING_TYPES.NONE,
+    cID: INDEXED_DB.STORE.BOOKING_TYPES.NONE,
     cName: '',
     cAccountNumberID: null
 }, ...bookingTypes.items].sort((a, b) => a.cName.localeCompare(b.cName)))
@@ -147,8 +149,8 @@ log('--- BookingFormular.vue setup ---')
                 <v-select
                     v-if="isStockBookingType"
                     v-model="bookingFormularData.stockId"
-                    :item-title="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.COMPANY"
-                    :item-value="CONS.INDEXED_DB.STORES.STOCKS.FIELDS.ID"
+                    :item-title="INDEXED_DB.STORE.STOCKS.FIELDS.COMPANY"
+                    :item-value="INDEXED_DB.STORE.STOCKS.FIELDS.ID"
                     :items="sortedStocks"
                     :label="T.STRINGS.STOCK_LABEL"
                     clearable
@@ -162,11 +164,11 @@ log('--- BookingFormular.vue setup ---')
             <v-col cols="6">
                 <v-select
                     v-model="selected"
-                    :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-                    :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
+                    :item-title="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.NAME"
+                    :item-value="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID"
                     :items="sortedBookingTypes"
                     :label="T.STRINGS.BOOKING_TYPE_LABEL"
-                    :rules="hasBookingType(T.BOOKING_TYPE_RULES)"
+                    :rules="bookingTypeRules(T.BOOKING_TYPE_RULES)"
                     clearable
                     density="compact"
                     max-width="300"

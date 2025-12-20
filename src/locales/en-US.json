@@ -392,7 +392,9 @@
     },
     "requiredRules": "Is required",
     "notNegative": "Only positive values",
-    "onlyOnePositive": "One value must be 0",
+    "creditDebitFieldset": {
+      "onlyOnePositive": "One value must be 0 the other > 0"
+    },
     "bookingTypeRules": {
       "required": "Booking type is required"
     }

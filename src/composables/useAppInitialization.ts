@@ -6,7 +6,6 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import type {I_Exchange_Data} from '@/types'
-import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
@@ -14,14 +13,15 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {storeToRefs} from 'pinia'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useFetch} from '@/composables/useFetch'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS} = useApp()
+const {CURRENCIES} = useAppConfig()
 
 const processExchangeBase = (baseData: I_Exchange_Data[]) => {
     const runtime = useRuntimeStore()
     const {curUsd, curEur} = storeToRefs(runtime)
     baseData.forEach((data) => {
-        if (data.key.includes(CONS.CURRENCIES.USD)) {
+        if (data.key.includes(CURRENCIES.USD)) {
             curUsd.value = data.value
         } else {
             curEur.value = data.value
@@ -68,9 +68,9 @@ export const useAppInitialization = () => {
         }
 
         try {
-            const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value)
-            const CUR_EUR = `${cur}${CONS.CURRENCIES.EUR}`
-            const CUR_USD = `${cur}${CONS.CURRENCIES.USD}`
+            const cur = CURRENCIES.CODE.get(uiLanguage.value)
+            const CUR_EUR = `${cur}${CURRENCIES.EUR}`
+            const CUR_USD = `${cur}${CURRENCIES.USD}`
 
             // Initialize storage first (critical)
             results.storage = await getStorage()

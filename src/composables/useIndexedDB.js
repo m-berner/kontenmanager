@@ -1,6 +1,8 @@
 import { ref } from 'vue';
 import { useApp } from '@/composables/useApp';
-const { CONS, log } = useApp();
+import { useAppConfig } from '@/composables/useAppConfig';
+const { log } = useApp();
+const { INDEXED_DB } = useAppConfig();
 const dbInstance = ref(null);
 const isConnected = ref(false);
 const error = ref(null);
@@ -29,43 +31,42 @@ function useDBStore(storeName) {
         batchImport: (batch) => dbi.batchOperations(storeName, batch)
     };
 }
-export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
+export function useIndexedDB(dbName = INDEXED_DB.NAME, version = INDEXED_DB.VERSION) {
     function _setupDatabase(db) {
-        const stores = CONS.INDEXED_DB.STORES;
-        if (!db.objectStoreNames.contains(stores.ACCOUNTS.NAME)) {
-            const store = db.createObjectStore(stores.ACCOUNTS.NAME, {
-                keyPath: stores.ACCOUNTS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(INDEXED_DB.STORE.ACCOUNTS.NAME)) {
+            const store = db.createObjectStore(INDEXED_DB.STORE.ACCOUNTS.NAME, {
+                keyPath: INDEXED_DB.STORE.ACCOUNTS.FIELDS.ID,
                 autoIncrement: true
             });
-            store.createIndex(`${stores.ACCOUNTS.NAME}_uk1`, stores.ACCOUNTS.FIELDS.IBAN, { unique: true });
+            store.createIndex(`${INDEXED_DB.STORE.ACCOUNTS.NAME}_uk1`, INDEXED_DB.STORE.ACCOUNTS.FIELDS.IBAN, { unique: true });
         }
-        if (!db.objectStoreNames.contains(stores.BOOKINGS.NAME)) {
-            const store = db.createObjectStore(stores.BOOKINGS.NAME, {
-                keyPath: stores.BOOKINGS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(INDEXED_DB.STORE.BOOKINGS.NAME)) {
+            const store = db.createObjectStore(INDEXED_DB.STORE.BOOKINGS.NAME, {
+                keyPath: INDEXED_DB.STORE.BOOKINGS.FIELDS.ID,
                 autoIncrement: true
             });
-            store.createIndex(`${stores.BOOKINGS.NAME}_k1`, stores.BOOKINGS.FIELDS.DATE, { unique: false });
-            store.createIndex(`${stores.BOOKINGS.NAME}_k2`, stores.BOOKINGS.FIELDS.BOOKING_TYPE_ID, { unique: false });
-            store.createIndex(`${stores.BOOKINGS.NAME}_k3`, stores.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
-            store.createIndex(`${stores.BOOKINGS.NAME}_k4`, stores.BOOKINGS.FIELDS.STOCK_ID, { unique: false });
+            store.createIndex(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k1`, INDEXED_DB.STORE.BOOKINGS.FIELDS.DATE, { unique: false });
+            store.createIndex(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k2`, INDEXED_DB.STORE.BOOKINGS.FIELDS.BOOKING_TYPE_ID, { unique: false });
+            store.createIndex(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k3`, INDEXED_DB.STORE.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+            store.createIndex(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k4`, INDEXED_DB.STORE.BOOKINGS.FIELDS.STOCK_ID, { unique: false });
         }
-        if (!db.objectStoreNames.contains(stores.BOOKING_TYPES.NAME)) {
-            const store = db.createObjectStore(stores.BOOKING_TYPES.NAME, {
-                keyPath: stores.BOOKING_TYPES.FIELDS.ID,
+        if (!db.objectStoreNames.contains(INDEXED_DB.STORE.BOOKING_TYPES.NAME)) {
+            const store = db.createObjectStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME, {
+                keyPath: INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID,
                 autoIncrement: true
             });
-            store.createIndex(`${stores.BOOKING_TYPES.NAME}_k1`, stores.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+            store.createIndex(`${INDEXED_DB.STORE.BOOKING_TYPES.NAME}_k1`, INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
         }
-        if (!db.objectStoreNames.contains(stores.STOCKS.NAME)) {
-            const store = db.createObjectStore(stores.STOCKS.NAME, {
-                keyPath: stores.STOCKS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(INDEXED_DB.STORE.STOCKS.NAME)) {
+            const store = db.createObjectStore(INDEXED_DB.STORE.STOCKS.NAME, {
+                keyPath: INDEXED_DB.STORE.STOCKS.FIELDS.ID,
                 autoIncrement: true
             });
-            store.createIndex(`${stores.STOCKS.NAME}_uk1`, stores.STOCKS.FIELDS.ISIN, { unique: true });
-            store.createIndex(`${stores.STOCKS.NAME}_uk2`, stores.STOCKS.FIELDS.SYMBOL, { unique: true });
-            store.createIndex(`${stores.STOCKS.NAME}_k1`, stores.STOCKS.FIELDS.FADE_OUT, { unique: false });
-            store.createIndex(`${stores.STOCKS.NAME}_k2`, stores.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
-            store.createIndex(`${stores.STOCKS.NAME}_k3`, stores.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_uk1`, INDEXED_DB.STORE.STOCKS.FIELDS.ISIN, { unique: true });
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_uk2`, INDEXED_DB.STORE.STOCKS.FIELDS.SYMBOL, { unique: true });
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_k1`, INDEXED_DB.STORE.STOCKS.FIELDS.FADE_OUT, { unique: false });
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_k2`, INDEXED_DB.STORE.STOCKS.FIELDS.FIRST_PAGE, { unique: false });
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_k3`, INDEXED_DB.STORE.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, { unique: false });
         }
     }
     async function closeDB() {
@@ -277,21 +278,21 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         });
     }
     async function deleteDatabaseWithAccount(accountId) {
-        log('INDEXED_DB: deleteDatabaseWithAccount');
+        log('USE_INDEXED_DB: deleteDatabaseWithAccount');
         const db = await _openDB();
         const tx = db.transaction([
-            CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
-            CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
-            CONS.INDEXED_DB.STORES.STOCKS.NAME,
-            CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+            INDEXED_DB.STORE.BOOKINGS.NAME,
+            INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+            INDEXED_DB.STORE.STOCKS.NAME,
+            INDEXED_DB.STORE.ACCOUNTS.NAME
         ], 'readwrite');
-        const bookings = await _getAllInTransaction(tx, CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
-        const bookingTypes = await _getAllInTransaction(tx, CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
-        const stocks = await _getAllInTransaction(tx, CONS.INDEXED_DB.STORES.STOCKS.NAME);
-        const bookingsStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
-        const bookingTypesStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
-        const stocksStore = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME);
-        const accountsStore = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
+        const bookings = await _getAllInTransaction(tx, INDEXED_DB.STORE.BOOKINGS.NAME);
+        const bookingTypes = await _getAllInTransaction(tx, INDEXED_DB.STORE.BOOKING_TYPES.NAME);
+        const stocks = await _getAllInTransaction(tx, INDEXED_DB.STORE.STOCKS.NAME);
+        const bookingsStore = tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME);
+        const bookingTypesStore = tx.objectStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME);
+        const stocksStore = tx.objectStore(INDEXED_DB.STORE.STOCKS.NAME);
+        const accountsStore = tx.objectStore(INDEXED_DB.STORE.ACCOUNTS.NAME);
         bookings.filter((b) => b.cAccountNumberID === accountId).forEach((b) => bookingsStore.delete(b.cID));
         bookingTypes.filter((bt) => bt.cAccountNumberID === accountId).forEach((bt) => bookingTypesStore.delete(bt.cID));
         stocks.filter((s) => s.cAccountNumberID === accountId).forEach((s) => stocksStore.delete(s.cID));
@@ -306,15 +307,15 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         log('USE_INDEXED_DB: getDatabaseStores');
         const db = await _openDB();
         const tx = db.transaction([
-            CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
-            CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
-            CONS.INDEXED_DB.STORES.STOCKS.NAME,
-            CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+            INDEXED_DB.STORE.BOOKINGS.NAME,
+            INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+            INDEXED_DB.STORE.STOCKS.NAME,
+            INDEXED_DB.STORE.ACCOUNTS.NAME
         ], 'readonly');
-        const accountsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
-        const bookingsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
-        const bookingTypesStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
-        const stocksStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME);
+        const accountsStoreDB = tx.objectStore(INDEXED_DB.STORE.ACCOUNTS.NAME);
+        const bookingsStoreDB = tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME);
+        const bookingTypesStoreDB = tx.objectStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME);
+        const stocksStoreDB = tx.objectStore(INDEXED_DB.STORE.STOCKS.NAME);
         const requestAccounts = accountsStoreDB.getAll();
         const requestBookings = bookingsStoreDB.getAll();
         const requestBookingTypes = bookingTypesStoreDB.getAll();
@@ -406,16 +407,16 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     };
 }
 export function useAccountsDB() {
-    return useDBStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME);
+    return useDBStore(INDEXED_DB.STORE.ACCOUNTS.NAME);
 }
 export function useBookingsDB() {
-    return useDBStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME);
+    return useDBStore(INDEXED_DB.STORE.BOOKINGS.NAME);
 }
 export function useBookingTypesDB() {
-    return useDBStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME);
+    return useDBStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME);
 }
 export function useStocksDB() {
-    const store = useDBStore(CONS.INDEXED_DB.STORES.STOCKS.NAME);
+    const store = useDBStore(INDEXED_DB.STORE.STOCKS.NAME);
     return {
         ...store,
         update: (stockData) => {

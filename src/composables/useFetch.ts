@@ -17,14 +17,16 @@ import type {
 } from '@/types'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS, log, mean, toNumber} = useApp()
+const {log, mean, toNumber} = useApp()
+const {BROWSER_STORAGE, STATES, SERVICES, SETTINGS, SYSTEM} = useAppConfig()
 const {notice, getStorage} = useBrowser()
 
 export function useFetch() {
     async function _fetchWithRetry(url: string): Promise<Response> {
         const response = await fetch(url)
-        if (!response.ok || response.status >= CONS.STATES.SRV) {
+        if (!response.ok || response.status >= STATES.SRV) {
             throw new Error(`Fetch failed: ${response.statusText}`)
         }
         return response
@@ -42,7 +44,7 @@ export function useFetch() {
     async function fetchIsOk(): Promise<boolean> {
         log('USE_FETCH: fetchIsOk')
         return new Promise(async (resolve): Promise<void> => {
-            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.ONLINE_TEST)
+            const firstResponse = await _fetchWithRetry(SERVICES.FNET.ONLINE_TEST)
             resolve(firstResponse.ok)
         })
     }
@@ -59,7 +61,7 @@ export function useFetch() {
             let company = ''
             let child: ChildNode | undefined
             let symbol: string
-            const service = CONS.SERVICES.MAP.get('tgate')
+            const service = SERVICES.MAP.get('tgate')
             let tables: NodeListOf<HTMLTableRowElement>
             let firstResponse: Response
             let result: I_Company_Data = {
@@ -110,8 +112,8 @@ export function useFetch() {
     async function fetchMinRateMaxData(storageOnline: I_Storage_Online[]): Promise<I_Min_Rate_Max_Data[]> {
         log('USE_FETCH: fetchMinRateMaxData')
         return new Promise(async (resolve, reject) => {
-            const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
-            const serviceName = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
+            const storageService = await getStorage([BROWSER_STORAGE.PROPS.SERVICE])
+            const serviceName = storageService[BROWSER_STORAGE.PROPS.SERVICE] as string
             const _fnet = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
@@ -361,7 +363,7 @@ export function useFetch() {
             }
             const _select = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return new Promise(async (resolve, reject) => {
-                    const service = CONS.SERVICES.MAP.get(serviceName)
+                    const service = SERVICES.MAP.get(serviceName)
                     switch (serviceName) {
                         case 'fnet':
                             resolve(await _fnet(urls))
@@ -394,7 +396,7 @@ export function useFetch() {
             const urls: I_Number_String[] = []
             if (storageOnline.length > 0) {
                 for (let i = 0; i < storageOnline.length; i++) {
-                    const service = CONS.SERVICES.MAP.get(serviceName)
+                    const service = SERVICES.MAP.get(serviceName)
                     const isin = storageOnline[i].isin
                     if (isin !== undefined && service !== undefined && service !== null) {
                         urls.push(
@@ -419,14 +421,14 @@ export function useFetch() {
      * @returns An array with changes values
      * @throws Error if the request fails or data cannot be parsed
      */
-    async function fetchDailyChangeData(table: string, mode = CONS.SERVICES.TGATE.CHANGES.SMALL): Promise<I_Daily_Changes_Data[]> {
+    async function fetchDailyChangeData(table: string, mode = SERVICES.TGATE.CHANGES.SMALL): Promise<I_Daily_Changes_Data[]> {
         log('USE_FETCH: fetchDailyChangesData')
         let valuestr: string
         let company: string
-        let url = `${CONS.SERVICES.TGATE.CHB_URL}${table}`
+        let url = `${SERVICES.TGATE.CHB_URL}${table}`
         let selector = '#kursliste_abc > tr'
-        if (mode === CONS.SERVICES.TGATE.CHANGES.SMALL) {
-            url = `${CONS.SERVICES.TGATE.CHS_URL}${table}`
+        if (mode === SERVICES.TGATE.CHANGES.SMALL) {
+            url = `${SERVICES.TGATE.CHS_URL}${table}`
             selector = '#kursliste_daten > tr'
         }
         const convertHTMLEntities = (str: string | null): string => {
@@ -456,7 +458,7 @@ export function useFetch() {
             if (str !== null) {
                 result = str
                     .trim()
-                    .replace(new RegExp(CONS.SYSTEM.HTML_ENTITY, 'g'), fMatch)
+                    .replace(new RegExp(SYSTEM.HTML_ENTITY, 'g'), fMatch)
             }
             return result
         }
@@ -497,7 +499,7 @@ export function useFetch() {
      */
     async function fetchExchangesData(exchangeCodes: string[]): Promise<I_Exchange_Data[]> {
         log('USE_FETCH: fetchExchangesData')
-        const service = CONS.SERVICES.FX
+        const service = SERVICES.FX
         const fExUrl = (code: string): string => {
             if (service !== undefined) {
                 return `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`
@@ -535,7 +537,7 @@ export function useFetch() {
         log('USE_FETCH: fetchMaterialData')
         return new Promise(async (resolve) => {
             const materials: I_String_Number[] = []
-            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.MATERIALS)
+            const firstResponse = await _fetchWithRetry(SERVICES.FNET.MATERIALS)
             const firstResponseText = await firstResponse.text()
             const resultDocument: Document = await _parseHTML(firstResponseText)
             const resultTr = resultDocument.querySelectorAll(
@@ -569,13 +571,13 @@ export function useFetch() {
         log('USE_FETCH: fetchIndexData')
         return new Promise(async (resolve) => {
             const indexes: I_String_Number[] = []
-            const indexesKeys = CONS.SETTINGS.INDEXES.keys()
-            const firstResponse = await _fetchWithRetry(CONS.SERVICES.FNET.INDEXES)
+            const indexesKeys = SETTINGS.INDEXES.keys()
+            const firstResponse = await _fetchWithRetry(SERVICES.FNET.INDEXES)
             const firstResponseText = await firstResponse.text()
             const resultDocument: Document = await _parseHTML(firstResponseText)
             const resultTr = resultDocument.querySelectorAll('.index-world-map a')
             indexesKeys.forEach((property) => {
-                const indexValue = CONS.SETTINGS.INDEXES.get(property)
+                const indexValue = SETTINGS.INDEXES.get(property)
                 for (let j = 0; j < resultTr.length; j++) {
                     if (indexValue?.includes(resultTr[j].getAttribute('title') ?? '') && resultTr[j].children[0].textContent !== undefined) {
                         indexes.push(
@@ -612,11 +614,11 @@ export function useFetch() {
             return new Date(`${year}-${month}-${day}`).getTime()
         }
         const promises = obj.map(async (entry: I_Number_String): Promise<I_Date_Data> => {
-            const firstResponse = await _fetchWithRetry(`${CONS.SERVICES.FNET.SEARCH}${entry.value}`)
+            const firstResponse = await _fetchWithRetry(`${SERVICES.FNET.SEARCH}${entry.value}`)
             if (firstResponse.ok) {
                 const atoms = firstResponse.url.split('/')
                 const stockName = atoms[atoms.length - 1].replace('-aktie', '')
-                const secondResponse = await _fetchWithRetry(`${CONS.SERVICES.FNET.DATES}${stockName}`)
+                const secondResponse = await _fetchWithRetry(`${SERVICES.FNET.DATES}${stockName}`)
                 if (secondResponse.ok) {
                     const secondResponseText = await secondResponse.text()
                     const qfgmDocument = await _parseHTML(secondResponseText)

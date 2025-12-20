@@ -18,9 +18,11 @@ import {useTheme} from 'vuetify'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useKeyboardShortcuts} from '@/composables/useKeyboardShortcuts'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {d, n, t} = useI18n()
-const {CONS, log, utcDate} = useApp()
+const {log, utcDate} = useApp()
+const {BROWSER_STORAGE, LOCAL_STORAGE, SETTINGS, SYSTEM} = useAppConfig()
 const {closeDB} = useIndexedDB()
 const {addStorageChangedListener, clearStorage, installStorageLocal} = useBrowser()
 const records = useRecordsStore()
@@ -101,26 +103,26 @@ const changeHandler = (changes: Record<string, browser.storage.StorageChange>): 
     const changesKey = Object.keys(changes)
     const {service, indexes, markets, materials, exchanges} = storeToRefs(settings)
     switch (changesKey[0]) {
-        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN:
+        case BROWSER_STORAGE.PROPS.SKIN:
             if (theme?.global?.name) {
-                theme.global.name.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue
+                theme.global.name.value = changes[BROWSER_STORAGE.PROPS.SKIN].newValue
             }
-            skin.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN].newValue
+            skin.value = changes[BROWSER_STORAGE.PROPS.SKIN].newValue
             break
-        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE:
-            service.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE].newValue
+        case BROWSER_STORAGE.PROPS.SERVICE:
+            service.value = changes[BROWSER_STORAGE.PROPS.SERVICE].newValue
             break
-        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES:
-            indexes.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES].newValue
+        case BROWSER_STORAGE.PROPS.INDEXES:
+            indexes.value = changes[BROWSER_STORAGE.PROPS.INDEXES].newValue
             break
-        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS:
-            markets.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS].newValue
+        case BROWSER_STORAGE.PROPS.MARKETS:
+            markets.value = changes[BROWSER_STORAGE.PROPS.MARKETS].newValue
             break
-        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS:
-            materials.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS].newValue
+        case BROWSER_STORAGE.PROPS.MATERIALS:
+            materials.value = changes[BROWSER_STORAGE.PROPS.MATERIALS].newValue
             break
-        case CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES:
-            exchanges.value = changes[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES].newValue
+        case BROWSER_STORAGE.PROPS.EXCHANGES:
+            exchanges.value = changes[BROWSER_STORAGE.PROPS.EXCHANGES].newValue
             break
         default:
     }
@@ -132,11 +134,11 @@ const resetStorage = async (): Promise<void> => {
     await installStorageLocal()
 }
 const toggleDebug = () => {
-    const debugValue = localStorage.getItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG)
+    const debugValue = localStorage.getItem(LOCAL_STORAGE.PROPS.DEBUG)
     if (debugValue !== '1') {
-        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '1')
+        localStorage.setItem(LOCAL_STORAGE.PROPS.DEBUG, '1')
     } else {
-        localStorage.setItem(CONS.DEFAULTS.LOCAL_STORAGE.PROPS.DEBUG, '0')
+        localStorage.setItem(LOCAL_STORAGE.PROPS.DEBUG, '0')
     }
 }
 shortcuts.value.set('Alt+Control+d', toggleDebug)
@@ -147,7 +149,7 @@ const onBeforeUnload = (): void => {
     removeStorageChangedListener()
     closeDB()
 }
-window.addEventListener('beforeunload', onBeforeUnload, CONS.SYSTEM.ONCE)
+window.addEventListener('beforeunload', onBeforeUnload, SYSTEM.ONCE)
 
 log('--- HomeContent.vue setup ---')
 </script>
@@ -167,7 +169,7 @@ log('--- HomeContent.vue setup ---')
         :hover="true"
         :items="bookingItems"
         :items-per-page="bookingsPerPage"
-        :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+        :items-per-page-options="SETTINGS.ITEMS_PER_PAGE_OPTIONS"
         :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
         :no-data-text="T.STRINGS.NO_DATA_TEXT"
         :search="search"

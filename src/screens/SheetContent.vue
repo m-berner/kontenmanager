@@ -13,9 +13,11 @@ import {useI18n} from 'vue-i18n'
 import {useRouter} from 'vue-router'
 import {useApp} from '@/composables/useApp'
 import ContentCard from '@/components/ContentCard.vue'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {ROUTES} = useAppConfig()
 const router = useRouter()
 
 const T = Object.freeze(
@@ -44,7 +46,7 @@ const T = Object.freeze(
 )
 
 let formatData: ComputedRef
-if (router.currentRoute.value.path === CONS.ROUTES.PRIVACY) {
+if (router.currentRoute.value.path === ROUTES.PRIVACY) {
     formatData = computed((): I_Content[] => {
         const data = []
         for (let i = 0; i < T.GENERAL.PARAGRAPHS.length; i++) {

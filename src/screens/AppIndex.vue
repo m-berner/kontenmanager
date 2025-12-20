@@ -14,8 +14,10 @@ import {useBrowser} from '@/composables/useBrowser'
 import AlertOverlay from '@/components/AlertOverlay.vue'
 import {useAppInitialization} from '@/composables/useAppInitialization'
 import {useTheme} from 'vuetify'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE} = useAppConfig()
 const {t} = useI18n()
 const {notice} = useBrowser()
 const {initializeApp} = useAppInitialization()
@@ -37,7 +39,7 @@ onBeforeMount(async () => {
     log('APP_INDEX: onBeforeMount')
     const initializedData = await initializeApp(T)
     if (initializedData.success) {
-        theme.global.name.value = initializedData.results!.storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN]
+        theme.global.name.value = initializedData.results!.storage[BROWSER_STORAGE.PROPS.SKIN]
     } else {
         const errorMessage = initializedData.error instanceof Error ? initializedData.error.message : 'Unknown error'
         log(T.MESSAGES.ERROR_ON_BEFORE_MOUNT, {error: errorMessage})

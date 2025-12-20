@@ -9,19 +9,21 @@
 import {onBeforeMount, ref} from 'vue'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE, SERVICES} = useAppConfig()
 const {getStorage, setStorage} = useBrowser()
 
-const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
+const service = ref<string>(BROWSER_STORAGE.SERVICE)
 
 const setService = async (): Promise<void> => {
     log('SERVICE_SELECTOR: setService')
-    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE, service.value)
+    await setStorage(BROWSER_STORAGE.PROPS.SERVICE, service.value)
 }
 
 const serviceLabels = (item: string): string => {
-    const service = CONS.SERVICES.MAP.get(item)
+    const service = SERVICES.MAP.get(item)
     if (service !== undefined && service?.NAME !== undefined) {
         return service.NAME
     } else {
@@ -31,8 +33,8 @@ const serviceLabels = (item: string): string => {
 
 onBeforeMount(async () => {
     log('SERVICE_SELECTOR: onBeforeMount')
-    const storageService = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE])
-    service.value = storageService[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
+    const storageService = await getStorage([BROWSER_STORAGE.PROPS.SERVICE])
+    service.value = storageService[BROWSER_STORAGE.PROPS.SERVICE] as string
 })
 
 log('--- ServiceSelector.vue setup ---')
@@ -44,7 +46,7 @@ log('--- ServiceSelector.vue setup ---')
         column
         @update:model-value="async () => {await setService()}">
         <v-radio
-            v-for="item in [...CONS.SERVICES.MAP.keys()]"
+            v-for="item in [...SERVICES.MAP.keys()]"
             :key="item"
             :label="serviceLabels(item)"
             :value="item"

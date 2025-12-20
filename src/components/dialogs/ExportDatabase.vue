@@ -14,9 +14,11 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {useImportExport} from '@/composables/useImportExport'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, isoDate, log} = useApp()
+const {isoDate, log} = useApp()
+const {DATE, INDEXED_DB} = useAppConfig()
 const {manifest, writeBufferToFile} = useBrowser()
 const {getAll: getAllAccounts} = useAccountsDB()
 const {getAll: getAllBookings} = useBookingsDB()
@@ -26,10 +28,10 @@ const {isLoading, handleError, withLoading} = useDialogGuards()
 const {resetTeleport} = useRuntimeStore()
 const {ImportExportService} = useImportExport()
 
-const exportService = new ImportExportService(CONS, isoDate)
+const exportService = new ImportExportService(INDEXED_DB, DATE, isoDate)
 
 const prefix = new Date().toISOString().substring(0, 10)
-const filename = `${prefix}_${CONS.INDEXED_DB.CURRENT_VERSION}_${CONS.INDEXED_DB.NAME}.json`
+const filename = `${prefix}_${INDEXED_DB.VERSION}_${INDEXED_DB.NAME}.json`
 
 const T = Object.freeze(
     {
@@ -54,7 +56,7 @@ const createExportData = async (): Promise<string> => {
     )
     const metadata = {
         cVersion: parseInt(manifest.value.version.replace(/./g, '')),
-        cDBVersion: CONS.INDEXED_DB.CURRENT_VERSION,
+        cDBVersion: INDEXED_DB.VERSION,
         cEngine: 'indexeddb'
     }
     const dataString = exportService.stringifyDatabase(

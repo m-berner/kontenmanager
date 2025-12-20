@@ -11,10 +11,12 @@ import {useI18n} from 'vue-i18n'
 import {useTheme} from 'vuetify/framework'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
 const theme = useTheme()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE} = useAppConfig()
 const {getStorage, setStorage} = useBrowser()
 
 const T = Object.freeze<Record<string, Record<string, string>>>(
@@ -34,13 +36,13 @@ const skin = ref<string>('')
 
 const setSkin = async (): Promise<void> => {
     log('THEME_SELECTOR: setSkin')
-    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN, skin.value)
+    await setStorage(BROWSER_STORAGE.PROPS.SKIN, skin.value)
 }
 
 onBeforeMount(async () => {
     log('THEME_SELECTOR: onBeforeMount')
-    const storageSkin = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN])
-    skin.value = storageSkin[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string || CONS.DEFAULTS.BROWSER_STORAGE.SKIN
+    const storageSkin = await getStorage([BROWSER_STORAGE.PROPS.SKIN])
+    skin.value = storageSkin[BROWSER_STORAGE.PROPS.SKIN] as string || BROWSER_STORAGE.SKIN
 })
 
 log('--- ThemeSelector.vue setup ---')

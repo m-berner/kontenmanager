@@ -16,9 +16,11 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useDialogGuards} from '@/composables/useDialogGuards'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE} = useAppConfig()
 const {notice, setStorage} = useBrowser()
 const {deleteDatabaseWithAccount, getDatabaseStores, isConnected} = useIndexedDB()
 const settings = useSettingsStore()
@@ -48,13 +50,13 @@ const T = Object.freeze(
 const switchToNextAccount = async (): Promise<void> => {
     if (accountItems.value.length === 0) {
         activeAccountId.value = -1
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
+        await setStorage(BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
         return
     }
 
     const newActiveId = accountItems.value[0].cID
     activeAccountId.value = newActiveId!
-    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, newActiveId!)
+    await setStorage(BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, newActiveId!)
 
     const storesDB = await getDatabaseStores(newActiveId!)
     await records.init(storesDB, T.MESSAGES)

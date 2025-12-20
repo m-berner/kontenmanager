@@ -1,9 +1,11 @@
 export function useImportExport() {
     class ImportExportService {
-        _CONS;
+        _INDEXED_DB;
+        _DATE;
         _isoDate;
-        constructor(_CONS, _isoDate) {
-            this._CONS = _CONS;
+        constructor(_INDEXED_DB, _DATE, _isoDate) {
+            this._INDEXED_DB = _INDEXED_DB;
+            this._DATE = _DATE;
             this._isoDate = _isoDate;
         }
         transformLegacyStock(rec, activeId) {
@@ -18,11 +20,11 @@ export function useImportExport() {
                 cFadeOut: rec.cFadeOut,
                 cFirstPage: rec.cFirstPage,
                 cURL: rec.cURL,
-                cAskDates: this._CONS.DATE.DEFAULT_ISO
+                cAskDates: this._DATE.ISO
             };
         }
         transformLegacyBooking(smTransfer, index, activeId) {
-            const BOOKING_TYPES = this._CONS.INDEXED_DB.STORES.BOOKING_TYPES;
+            const BOOKING_TYPES = this._INDEXED_DB.STORE.BOOKING_TYPES;
             const booking = {
                 cID: index + 1,
                 cAccountNumberID: activeId,
@@ -87,7 +89,7 @@ export function useImportExport() {
                 stringifyArray('bookings', bookings, true));
         }
         createCreditDebitObject(rec) {
-            const BOOKING_TYPES = this._CONS.INDEXED_DB.STORES.BOOKING_TYPES;
+            const BOOKING_TYPES = this._INDEXED_DB.STORE.BOOKING_TYPES;
             let result = { value: 0, type: -1 };
             if (rec.cAmount !== 0) {
                 result.type = BOOKING_TYPES.OTHER;

@@ -1,4 +1,3 @@
-import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
 import { useRecordsStore } from '@/stores/records';
 import { useSettingsStore } from '@/stores/settings';
@@ -6,12 +5,13 @@ import { useRuntimeStore } from '@/stores/runtime';
 import { storeToRefs } from 'pinia';
 import { useIndexedDB } from '@/composables/useIndexedDB';
 import { useFetch } from '@/composables/useFetch';
-const { CONS } = useApp();
+import { useAppConfig } from '@/composables/useAppConfig';
+const { CURRENCIES } = useAppConfig();
 const processExchangeBase = (baseData) => {
     const runtime = useRuntimeStore();
     const { curUsd, curEur } = storeToRefs(runtime);
     baseData.forEach((data) => {
-        if (data.key.includes(CONS.CURRENCIES.USD)) {
+        if (data.key.includes(CURRENCIES.USD)) {
             curUsd.value = data.value;
         }
         else {
@@ -53,9 +53,9 @@ export const useAppInitialization = () => {
             materials: []
         };
         try {
-            const cur = CONS.CURRENCIES.CODE.get(uiLanguage.value);
-            const CUR_EUR = `${cur}${CONS.CURRENCIES.EUR}`;
-            const CUR_USD = `${cur}${CONS.CURRENCIES.USD}`;
+            const cur = CURRENCIES.CODE.get(uiLanguage.value);
+            const CUR_EUR = `${cur}${CURRENCIES.EUR}`;
+            const CUR_USD = `${cur}${CURRENCIES.USD}`;
             results.storage = await getStorage();
             if (results.storage !== null) {
                 settings.init(results.storage);

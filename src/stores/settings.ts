@@ -7,60 +7,61 @@
  */
 import type {T_Storage} from '@/types'
 import {ref} from 'vue'
-//import type {ThemeInstance} from 'vuetify'
 import {useApp} from '@/composables/useApp'
 import {defineStore} from 'pinia'
 import {useBrowser} from '@/composables/useBrowser'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE} = useAppConfig()
 const {setStorage} = useBrowser()
 
 export const useSettingsStore = defineStore('settings', function () {
-    const skin = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SKIN)
-    const bookingsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE)
-    const stocksPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE)
-    const dividendsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
-    const sumsPerPage = ref<number>(CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE)
+    const skin = ref<string>(BROWSER_STORAGE.SKIN)
+    const bookingsPerPage = ref<number>(BROWSER_STORAGE.BOOKINGS_PER_PAGE)
+    const stocksPerPage = ref<number>(BROWSER_STORAGE.STOCKS_PER_PAGE)
+    const dividendsPerPage = ref<number>(BROWSER_STORAGE.DIVIDENDS_PER_PAGE)
+    const sumsPerPage = ref<number>(BROWSER_STORAGE.SUMS_PER_PAGE)
     const activeAccountId = ref<number>(-1)
-    const service = ref<string>(CONS.DEFAULTS.BROWSER_STORAGE.SERVICE)
-    const materials = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS)
-    const markets = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.MARKETS)
-    const indexes = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.INDEXES)
-    const exchanges = ref<string[]>(CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES)
+    const service = ref<string>(BROWSER_STORAGE.SERVICE)
+    const materials = ref<string[]>(BROWSER_STORAGE.MATERIALS)
+    const markets = ref<string[]>(BROWSER_STORAGE.MARKETS)
+    const indexes = ref<string[]>(BROWSER_STORAGE.INDEXES)
+    const exchanges = ref<string[]>(BROWSER_STORAGE.EXCHANGES)
 
     function init(storage: T_Storage): void {
         log('SETTINGS: init')
-        skin.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SKIN] as string
-        bookingsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] as number
-        stocksPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE] as number
-        dividendsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE] as number
-        sumsPerPage.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE] as number
-        activeAccountId.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID] as number
-        service.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SERVICE] as string
-        materials.value = [...storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS] as string[]]
-        markets.value = [...storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS] as string[]]
-        indexes.value = [...storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES] as string[]]
-        exchanges.value = [...storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] as string[]]
+        skin.value = storage[BROWSER_STORAGE.PROPS.SKIN] as string
+        bookingsPerPage.value = storage[BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE] as number
+        stocksPerPage.value = storage[BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE] as number
+        dividendsPerPage.value = storage[BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE] as number
+        sumsPerPage.value = storage[BROWSER_STORAGE.PROPS.SUMS_PER_PAGE] as number
+        activeAccountId.value = storage[BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID] as number
+        service.value = storage[BROWSER_STORAGE.PROPS.SERVICE] as string
+        materials.value = [...storage[BROWSER_STORAGE.PROPS.MATERIALS] as string[]]
+        markets.value = [...storage[BROWSER_STORAGE.PROPS.MARKETS] as string[]]
+        indexes.value = [...storage[BROWSER_STORAGE.PROPS.INDEXES] as string[]]
+        exchanges.value = [...storage[BROWSER_STORAGE.PROPS.EXCHANGES] as string[]]
     }
 
     async function setSumsPerPage(v: number) {
         sumsPerPage.value = v
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.SUMS_PER_PAGE, v)
+        await setStorage(BROWSER_STORAGE.PROPS.SUMS_PER_PAGE, v)
     }
 
     async function setBookingsPerPage(v: number) {
         bookingsPerPage.value = v
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE, v)
+        await setStorage(BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE, v)
     }
 
     async function setStocksPerPage(v: number) {
         stocksPerPage.value = v
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE, v)
+        await setStorage(BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE, v)
     }
 
     async function setDividendsPerPage(v: number) {
         dividendsPerPage.value = v
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE, v)
+        await setStorage(BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE, v)
     }
 
     return {

@@ -11,10 +11,12 @@ import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import type {I_Checkbox_Grid_Props} from '@/types'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const props = defineProps<I_Checkbox_Grid_Props>()
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE, COMPONENTS, SETTINGS} = useAppConfig()
 const {getStorage, setStorage} = useBrowser()
 
 const T = Object.freeze<{ STRINGS: Record<string, string> }>(
@@ -41,20 +43,20 @@ const isSaving = ref<boolean>(false)
 const error = ref<string | null>(null)
 
 const boxes = computed((): { A: string[], B: string[] } => {
-    const indexesKeys: string[] = Array.from(CONS.SETTINGS.INDEXES.keys())
-    const materialsKeys: string[] = Array.from(CONS.SETTINGS.MATERIALS.keys())
+    const indexesKeys: string[] = Array.from(SETTINGS.INDEXES.keys())
+    const materialsKeys: string[] = Array.from(SETTINGS.MATERIALS.keys())
     let resultBoxes: { A: string[], B: string[] } = {A: [], B: []}
     switch (props.type) {
-        case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
+        case COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
             resultBoxes = {
-                A: indexesKeys.filter((_key: string, index: number) => index < CONS.SETTINGS.INDEXES.size / 2),
-                B: indexesKeys.filter((_key: string, index: number) => index >= CONS.SETTINGS.INDEXES.size / 2)
+                A: indexesKeys.filter((_key: string, index: number) => index < SETTINGS.INDEXES.size / 2),
+                B: indexesKeys.filter((_key: string, index: number) => index >= SETTINGS.INDEXES.size / 2)
             }
             break
-        case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
+        case COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
             resultBoxes = {
-                A: materialsKeys.filter((_key: string, index: number) => index < CONS.SETTINGS.MATERIALS.size / 2),
-                B: materialsKeys.filter((_key: string, index: number) => index >= CONS.SETTINGS.MATERIALS.size / 2)
+                A: materialsKeys.filter((_key: string, index: number) => index < SETTINGS.MATERIALS.size / 2),
+                B: materialsKeys.filter((_key: string, index: number) => index >= SETTINGS.MATERIALS.size / 2)
             }
             break
     }
@@ -64,10 +66,10 @@ const boxes = computed((): { A: string[], B: string[] } => {
 const setLabel = (item: string, labels: Record<string, string>): string | undefined => {
     let resultLabel: string | undefined = ''
     switch (props.type) {
-        case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
-            resultLabel = CONS.SETTINGS.INDEXES.get(item)
+        case COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
+            resultLabel = SETTINGS.INDEXES.get(item)
             break
-        case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
+        case COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
             resultLabel = labels[item]
             break
     }
@@ -81,11 +83,11 @@ const setChecked = async (): Promise<void> => {
     try {
         const checkedBoxes = checked.value
         switch (props.type) {
-            case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
-                await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES, [...checkedBoxes])
+            case COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
+                await setStorage(BROWSER_STORAGE.PROPS.INDEXES, [...checkedBoxes])
                 break
-            case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
-                await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS, [...checkedBoxes])
+            case COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
+                await setStorage(BROWSER_STORAGE.PROPS.MATERIALS, [...checkedBoxes])
                 break
         }
     } catch (err) {
@@ -104,17 +106,17 @@ onBeforeMount(async () => {
     try {
         const storage = await getStorage(
             [
-                CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES,
-                CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS
+                BROWSER_STORAGE.PROPS.INDEXES,
+                BROWSER_STORAGE.PROPS.MATERIALS
             ]
         )
 
         switch (props.type) {
-            case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
-                checked.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.INDEXES] as string[]
+            case COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
+                checked.value = storage[BROWSER_STORAGE.PROPS.INDEXES] as string[]
                 break
-            case CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
-                checked.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MATERIALS] as string[]
+            case COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
+                checked.value = storage[BROWSER_STORAGE.PROPS.MATERIALS] as string[]
                 break
         }
     } catch (err) {

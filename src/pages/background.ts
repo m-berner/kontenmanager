@@ -7,9 +7,10 @@
  */
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS, log} = useApp()
-
+const {log} = useApp()
+const {SESSION_STORAGE} = useAppConfig()
 //if (window.document.location.href.includes(CONS.PAGES.BACKGROUND)) {
 const {
     actionOnClicked,
@@ -33,7 +34,7 @@ async function onClick(): Promise<void> {
     if (foundTabs.length === 0) {
         const extensionTab = await tabsCreate()
         const extensionTabIdStr = (extensionTab.id ?? -1).toString()
-        sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.EXTENSION_TAB_ID, extensionTabIdStr)
+        sessionStorage.setItem(SESSION_STORAGE.PROPS.EXTENSION_TAB_ID, extensionTabIdStr)
     } else {
         await windowsUpdate(foundTabs[0].windowId)
         await tabsUpdate(foundTabs[0].id)

@@ -1,8 +1,8 @@
-import { useApp } from '@/composables/useApp';
 import { computed } from 'vue';
-const { CONS } = useApp();
+import { useAppConfig } from '@/composables/useAppConfig';
+const { BROWSER_STORAGE, EVENTS, PAGES } = useAppConfig();
 export function useBrowser() {
-    const indexUrl = computed(() => browser.runtime.getURL(CONS.PAGES.INDEX));
+    const indexUrl = computed(() => browser.runtime.getURL(PAGES.INDEX));
     const manifest = computed(() => browser.runtime.getManifest());
     const uiLanguage = computed(() => browser.i18n.getUILanguage());
     const locale5 = computed(() => {
@@ -69,17 +69,17 @@ export function useBrowser() {
     }
     async function installStorageLocal() {
         const defaultStorage = Object.freeze({
-            sActiveAccountId: CONS.DEFAULTS.BROWSER_STORAGE.ACTIVE_ACCOUNT_ID,
-            sSkin: CONS.DEFAULTS.BROWSER_STORAGE.SKIN,
-            sBookingsPerPage: CONS.DEFAULTS.BROWSER_STORAGE.BOOKINGS_PER_PAGE,
-            sStocksPerPage: CONS.DEFAULTS.BROWSER_STORAGE.STOCKS_PER_PAGE,
-            sDividendsPerPage: CONS.DEFAULTS.BROWSER_STORAGE.DIVIDENDS_PER_PAGE,
-            sSumsPerPage: CONS.DEFAULTS.BROWSER_STORAGE.SUMS_PER_PAGE,
-            sService: CONS.DEFAULTS.BROWSER_STORAGE.SERVICE,
-            sExchanges: CONS.DEFAULTS.BROWSER_STORAGE.EXCHANGES,
-            sIndexes: CONS.DEFAULTS.BROWSER_STORAGE.INDEXES,
-            sMarkets: CONS.DEFAULTS.BROWSER_STORAGE.MARKETS,
-            sMaterials: CONS.DEFAULTS.BROWSER_STORAGE.MATERIALS
+            sActiveAccountId: BROWSER_STORAGE.ACTIVE_ACCOUNT_ID,
+            sSkin: BROWSER_STORAGE.SKIN,
+            sBookingsPerPage: BROWSER_STORAGE.BOOKINGS_PER_PAGE,
+            sStocksPerPage: BROWSER_STORAGE.STOCKS_PER_PAGE,
+            sDividendsPerPage: BROWSER_STORAGE.DIVIDENDS_PER_PAGE,
+            sSumsPerPage: BROWSER_STORAGE.SUMS_PER_PAGE,
+            sService: BROWSER_STORAGE.SERVICE,
+            sExchanges: BROWSER_STORAGE.EXCHANGES,
+            sIndexes: BROWSER_STORAGE.INDEXES,
+            sMarkets: BROWSER_STORAGE.MARKETS,
+            sMaterials: BROWSER_STORAGE.MATERIALS
         });
         const storageLocal = await browser.storage.local.get();
         if (storageLocal !== undefined) {
@@ -119,7 +119,7 @@ export function useBrowser() {
         await browser.downloads.download(op);
         await notice(['Database exported!']);
         const onDownloadChange = (change) => {
-            if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === CONS.EVENTS.COMPLETE)) {
+            if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === EVENTS.COMPLETE)) {
                 URL.revokeObjectURL(blobUrl);
                 browser.downloads.onChanged.removeListener(onDownloadChange);
             }

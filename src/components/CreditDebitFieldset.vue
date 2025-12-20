@@ -17,7 +17,7 @@ const props = defineProps<I_Credit_Debit_Fieldset_Props>()
 // eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['update:modelValue'])
 const {t} = useI18n()
-const {isValidCredit, isValidDebit} = useValidation()
+const {creditRules, debitRules} = useValidation()
 const {log} = useApp()
 
 const T = Object.freeze(
@@ -27,8 +27,7 @@ const T = Object.freeze(
             DEBIT_LABEL: t('components.creditDebitFieldset.debitLabel')
         },
         RULES: [
-            t('components.creditDebitFieldset.onlyOnePositive'),
-            t('components.creditDebitFieldset.notNegative')
+            t('validators.creditDebitFieldset.onlyOnePositive')
         ]
     }
 )
@@ -55,8 +54,8 @@ const debitValue = computed(
         }
     }
 )
-const creditRules = computed(() => isValidCredit(T.RULES, props.modelValue.debit))
-const debitRules = computed(() => isValidDebit(T.RULES, props.modelValue.credit))
+const cRules = computed(() => creditRules(props.modelValue.debit, T.RULES))
+const dRules = computed(() => debitRules(props.modelValue.credit, T.RULES))
 
 log('--- CreditDebitFieldset.vue ---')
 </script>
@@ -69,12 +68,12 @@ log('--- CreditDebitFieldset.vue ---')
                 v-model="creditValue"
                 :disabled="props.disabled"
                 :label="T.STRINGS.CREDIT_LABEL"
-                :rules="creditRules"/>
+                :rules="cRules"/>
             <CurrencyInput
                 v-model="debitValue"
                 :disabled="props.disabled"
                 :label="T.STRINGS.DEBIT_LABEL"
-                :rules="debitRules"/>
+                :rules="dRules"/>
         </div>
     </fieldset>
 </template>

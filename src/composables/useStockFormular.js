@@ -1,6 +1,6 @@
 import { reactive, ref } from 'vue';
-import { useApp } from '@/composables/useApp';
-const { CONS } = useApp();
+import { useAppConfig } from '@/composables/useAppConfig';
+const { DATE } = useAppConfig();
 const stockFormularData = reactive({
     id: -1,
     isin: '',
@@ -11,7 +11,7 @@ const stockFormularData = reactive({
     fadeOut: false,
     firstPage: false,
     url: '',
-    askDates: CONS.DATE.DEFAULT_ISO
+    askDates: DATE.ISO
 });
 const formRef = ref(null);
 function mapStockFormToDb(aAId) {
@@ -40,7 +40,7 @@ function reset() {
         fadeOut: false,
         firstPage: false,
         url: '',
-        askDates: CONS.DATE.DEFAULT_ISO
+        askDates: DATE.ISO
     });
     formRef.value = null;
 }

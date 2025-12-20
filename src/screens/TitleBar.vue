@@ -19,6 +19,8 @@ import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
 import {useApp} from '@/composables/useApp'
 import {useFetch} from '@/composables/useFetch'
+import {INDEXED_DB} from '@/configurations/indexed_db'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {n, t} = useI18n()
 const router = useRouter()
@@ -28,7 +30,8 @@ const runtime = useRuntimeStore()
 const {isCompanyPage, isDownloading} = storeToRefs(runtime)
 const {notice, setStorage} = useBrowser()
 const {fetchIsOk} = useFetch()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE, COMPONENTS} = useAppConfig()
 const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
 
@@ -74,7 +77,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
     log('TITLE_BAR onUpdateTitleBar')
     try {
         const storesDB = await getDatabaseStores(activeAccountId.value)
-        await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
+        await setStorage(BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
         await records.init(storesDB, T.MESSAGES)
         isCompanyPage.value = false
         router.push('/')
@@ -100,7 +103,7 @@ log('--- TitleBar.vue setup ---')
 <template>
     <v-app-bar app color="secondary" flat>
         <template #prepend>
-            <img :alt="T.STRINGS.LOGO_ALT" :src="CONS.COMPONENTS.TITLE_BAR.LOGO"/>
+            <img :alt="T.STRINGS.LOGO_ALT" :src="COMPONENTS.TITLE_BAR.LOGO"/>
         </template>
         <v-app-bar-title>{{ T.STRINGS.TITLE }}</v-app-bar-title>
         <v-text-field
@@ -121,8 +124,8 @@ log('--- TitleBar.vue setup ---')
         <v-select
             v-if="activeAccountId > 0"
             v-model="activeAccountId"
-            :item-title="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.IBAN"
-            :item-value="CONS.INDEXED_DB.STORES.ACCOUNTS.FIELDS.ID"
+            :item-title="INDEXED_DB.STORE.ACCOUNTS.FIELDS.IBAN"
+            :item-value="INDEXED_DB.STORE.ACCOUNTS.FIELDS.ID"
             :items="records.accounts.items"
             :label="T.STRINGS.SELECT_ACCOUNT_LABEL"
             density="compact"

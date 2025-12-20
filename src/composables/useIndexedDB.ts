@@ -17,8 +17,10 @@ import type {
 } from '@/types'
 import {ref} from 'vue'
 import {useApp} from '@/composables/useApp'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {INDEXED_DB} = useAppConfig()
 // Single global database promise
 const dbInstance = ref<Promise<IDBDatabase> | null>(null)
 const isConnected = ref<boolean>(false)
@@ -52,52 +54,52 @@ function useDBStore<T>(storeName: string) {
     }
 }
 
-export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEXED_DB.CURRENT_VERSION) {
+export function useIndexedDB(dbName = INDEXED_DB.NAME, version = INDEXED_DB.VERSION) {
     // Database schema setup
     function _setupDatabase(db: IDBDatabase): void {
-        const stores = CONS.INDEXED_DB.STORES
+        //const stores = INDEXED_DB.STORE
 
         // Accounts store
-        if (!db.objectStoreNames.contains(stores.ACCOUNTS.NAME)) {
-            const store = db.createObjectStore(stores.ACCOUNTS.NAME, {
-                keyPath: stores.ACCOUNTS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(INDEXED_DB.STORE.ACCOUNTS.NAME)) {
+            const store = db.createObjectStore(INDEXED_DB.STORE.ACCOUNTS.NAME, {
+                keyPath: INDEXED_DB.STORE.ACCOUNTS.FIELDS.ID,
                 autoIncrement: true
             })
-            store.createIndex(`${stores.ACCOUNTS.NAME}_uk1`, stores.ACCOUNTS.FIELDS.IBAN, {unique: true})
+            store.createIndex(`${INDEXED_DB.STORE.ACCOUNTS.NAME}_uk1`, INDEXED_DB.STORE.ACCOUNTS.FIELDS.IBAN, {unique: true})
         }
 
         // Bookings store
-        if (!db.objectStoreNames.contains(stores.BOOKINGS.NAME)) {
-            const store = db.createObjectStore(stores.BOOKINGS.NAME, {
-                keyPath: stores.BOOKINGS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(INDEXED_DB.STORE.BOOKINGS.NAME)) {
+            const store = db.createObjectStore(INDEXED_DB.STORE.BOOKINGS.NAME, {
+                keyPath: INDEXED_DB.STORE.BOOKINGS.FIELDS.ID,
                 autoIncrement: true
             })
-            store.createIndex(`${stores.BOOKINGS.NAME}_k1`, stores.BOOKINGS.FIELDS.DATE, {unique: false})
-            store.createIndex(`${stores.BOOKINGS.NAME}_k2`, stores.BOOKINGS.FIELDS.BOOKING_TYPE_ID, {unique: false})
-            store.createIndex(`${stores.BOOKINGS.NAME}_k3`, stores.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
-            store.createIndex(`${stores.BOOKINGS.NAME}_k4`, stores.BOOKINGS.FIELDS.STOCK_ID, {unique: false})
+            store.createIndex(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k1`, INDEXED_DB.STORE.BOOKINGS.FIELDS.DATE, {unique: false})
+            store.createIndex(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k2`, INDEXED_DB.STORE.BOOKINGS.FIELDS.BOOKING_TYPE_ID, {unique: false})
+            store.createIndex(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k3`, INDEXED_DB.STORE.BOOKINGS.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
+            store.createIndex(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k4`, INDEXED_DB.STORE.BOOKINGS.FIELDS.STOCK_ID, {unique: false})
         }
 
         // Booking Types store
-        if (!db.objectStoreNames.contains(stores.BOOKING_TYPES.NAME)) {
-            const store = db.createObjectStore(stores.BOOKING_TYPES.NAME, {
-                keyPath: stores.BOOKING_TYPES.FIELDS.ID,
+        if (!db.objectStoreNames.contains(INDEXED_DB.STORE.BOOKING_TYPES.NAME)) {
+            const store = db.createObjectStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME, {
+                keyPath: INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID,
                 autoIncrement: true
             })
-            store.createIndex(`${stores.BOOKING_TYPES.NAME}_k1`, stores.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
+            store.createIndex(`${INDEXED_DB.STORE.BOOKING_TYPES.NAME}_k1`, INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
         }
 
         // Stocks store
-        if (!db.objectStoreNames.contains(stores.STOCKS.NAME)) {
-            const store = db.createObjectStore(stores.STOCKS.NAME, {
-                keyPath: stores.STOCKS.FIELDS.ID,
+        if (!db.objectStoreNames.contains(INDEXED_DB.STORE.STOCKS.NAME)) {
+            const store = db.createObjectStore(INDEXED_DB.STORE.STOCKS.NAME, {
+                keyPath: INDEXED_DB.STORE.STOCKS.FIELDS.ID,
                 autoIncrement: true
             })
-            store.createIndex(`${stores.STOCKS.NAME}_uk1`, stores.STOCKS.FIELDS.ISIN, {unique: true})
-            store.createIndex(`${stores.STOCKS.NAME}_uk2`, stores.STOCKS.FIELDS.SYMBOL, {unique: true})
-            store.createIndex(`${stores.STOCKS.NAME}_k1`, stores.STOCKS.FIELDS.FADE_OUT, {unique: false})
-            store.createIndex(`${stores.STOCKS.NAME}_k2`, stores.STOCKS.FIELDS.FIRST_PAGE, {unique: false})
-            store.createIndex(`${stores.STOCKS.NAME}_k3`, stores.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_uk1`, INDEXED_DB.STORE.STOCKS.FIELDS.ISIN, {unique: true})
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_uk2`, INDEXED_DB.STORE.STOCKS.FIELDS.SYMBOL, {unique: true})
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_k1`, INDEXED_DB.STORE.STOCKS.FIELDS.FADE_OUT, {unique: false})
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_k2`, INDEXED_DB.STORE.STOCKS.FIELDS.FIRST_PAGE, {unique: false})
+            store.createIndex(`${INDEXED_DB.STORE.STOCKS.NAME}_k3`, INDEXED_DB.STORE.STOCKS.FIELDS.ACCOUNT_NUMBER_ID, {unique: false})
         }
     }
 
@@ -417,27 +419,27 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
     }
 
     async function deleteDatabaseWithAccount(accountId: number): Promise<void> {
-        log('INDEXED_DB: deleteDatabaseWithAccount')
+        log('USE_INDEXED_DB: deleteDatabaseWithAccount')
         const db = await _openDB()
         const tx = db.transaction(
             [
-                CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
-                CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
-                CONS.INDEXED_DB.STORES.STOCKS.NAME,
-                CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+                INDEXED_DB.STORE.BOOKINGS.NAME,
+                INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+                INDEXED_DB.STORE.STOCKS.NAME,
+                INDEXED_DB.STORE.ACCOUNTS.NAME
             ], 'readwrite'
         )
 
         // Get all records first
-        const bookings = await _getAllInTransaction<I_Booking_DB>(tx, CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
-        const bookingTypes = await _getAllInTransaction<I_Booking_Type_DB>(tx, CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
-        const stocks = await _getAllInTransaction<I_Stock_DB>(tx, CONS.INDEXED_DB.STORES.STOCKS.NAME)
+        const bookings = await _getAllInTransaction<I_Booking_DB>(tx, INDEXED_DB.STORE.BOOKINGS.NAME)
+        const bookingTypes = await _getAllInTransaction<I_Booking_Type_DB>(tx, INDEXED_DB.STORE.BOOKING_TYPES.NAME)
+        const stocks = await _getAllInTransaction<I_Stock_DB>(tx, INDEXED_DB.STORE.STOCKS.NAME)
 
         // Delete in one transaction
-        const bookingsStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
-        const bookingTypesStore = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
-        const stocksStore = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME)
-        const accountsStore = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
+        const bookingsStore = tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME)
+        const bookingTypesStore = tx.objectStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME)
+        const stocksStore = tx.objectStore(INDEXED_DB.STORE.STOCKS.NAME)
+        const accountsStore = tx.objectStore(INDEXED_DB.STORE.ACCOUNTS.NAME)
 
         bookings.filter((b: I_Booking_DB) => b.cAccountNumberID === accountId).forEach((b: I_Booking_DB) => bookingsStore.delete(b.cID!))
         bookingTypes.filter((bt: I_Booking_Type_DB) => bt.cAccountNumberID === accountId).forEach((bt: I_Booking_Type_DB) => bookingTypesStore.delete(bt.cID!))
@@ -463,17 +465,17 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
         const db = await _openDB()
         const tx = db.transaction(
             [
-                CONS.INDEXED_DB.STORES.BOOKINGS.NAME,
-                CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME,
-                CONS.INDEXED_DB.STORES.STOCKS.NAME,
-                CONS.INDEXED_DB.STORES.ACCOUNTS.NAME
+                INDEXED_DB.STORE.BOOKINGS.NAME,
+                INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+                INDEXED_DB.STORE.STOCKS.NAME,
+                INDEXED_DB.STORE.ACCOUNTS.NAME
             ], 'readonly'
         )
 
-        const accountsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
-        const bookingsStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
-        const bookingTypesStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
-        const stocksStoreDB = tx.objectStore(CONS.INDEXED_DB.STORES.STOCKS.NAME)
+        const accountsStoreDB = tx.objectStore(INDEXED_DB.STORE.ACCOUNTS.NAME)
+        const bookingsStoreDB = tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME)
+        const bookingTypesStoreDB = tx.objectStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME)
+        const stocksStoreDB = tx.objectStore(INDEXED_DB.STORE.STOCKS.NAME)
 
         const requestAccounts = accountsStoreDB.getAll()
         const requestBookings = bookingsStoreDB.getAll()
@@ -602,20 +604,20 @@ export function useIndexedDB(dbName = CONS.INDEXED_DB.NAME, version = CONS.INDEX
 }
 
 export function useAccountsDB() {
-    return useDBStore<I_Account_DB>(CONS.INDEXED_DB.STORES.ACCOUNTS.NAME)
+    return useDBStore<I_Account_DB>(INDEXED_DB.STORE.ACCOUNTS.NAME)
 }
 
 export function useBookingsDB() {
-    return useDBStore<I_Booking_DB>(CONS.INDEXED_DB.STORES.BOOKINGS.NAME)
+    return useDBStore<I_Booking_DB>(INDEXED_DB.STORE.BOOKINGS.NAME)
 }
 
 export function useBookingTypesDB() {
-    return useDBStore<I_Booking_Type_DB>(CONS.INDEXED_DB.STORES.BOOKING_TYPES.NAME)
+    return useDBStore<I_Booking_Type_DB>(INDEXED_DB.STORE.BOOKING_TYPES.NAME)
 }
 
 // Stocks need special handling for computed properties
 export function useStocksDB() {
-    const store = useDBStore<I_Stock_DB>(CONS.INDEXED_DB.STORES.STOCKS.NAME)
+    const store = useDBStore<I_Stock_DB>(INDEXED_DB.STORE.STOCKS.NAME)
 
     return {
         ...store,

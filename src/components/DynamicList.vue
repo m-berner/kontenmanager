@@ -15,10 +15,12 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useFetch} from '@/composables/useFetch'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const props = defineProps<I_Dynamic_List_Props>()
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE, COMPONENTS} = useAppConfig()
 const {getStorage, setStorage} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
@@ -43,10 +45,10 @@ const error = ref<string | null>(null)
 const label = computed<string>(() => {
     let resultLabel = 'Error'
     switch (props.type) {
-        case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+        case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
             resultLabel = T.STRINGS.EXCHANGES_LABEL
             break
-        case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+        case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
             resultLabel = T.STRINGS.MARKETS_LABEL
             break
         default:
@@ -56,10 +58,10 @@ const label = computed<string>(() => {
 const title = computed<string>(() => {
     let resultTitle = 'Error'
     switch (props.type) {
-        case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+        case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
             resultTitle = T.STRINGS.EXCHANGES_TITLE
             break
-        case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+        case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
             resultTitle = T.STRINGS.MARKETS_TITLE
             break
         default:
@@ -80,15 +82,15 @@ const addItem = async (item: string): Promise<void> => {
         const {exchanges, markets} = storeToRefs(settings)
         if (!list.value?.includes(item)) {
             switch (props.type) {
-                case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+                case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
                     list.value.push(item)
                     markets.value.push(item)
-                    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
+                    await setStorage(BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
                     break
-                case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+                case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
                     list.value.push(item.toUpperCase())
                     exchanges.value.push(item.toUpperCase())
-                    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
+                    await setStorage(BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
                     const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData([newItem.value])
                     infoExchanges.value.set(exchanges.value[exchanges.value.length - 1], exchangesInfoData[0].value)
                     break
@@ -114,11 +116,11 @@ const removeItem = async (n: number): Promise<void> => {
         list.value.splice(n, 1)
         newItem.value = ''
         switch (props.type) {
-            case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-                await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
+            case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+                await setStorage(BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
                 break
-            case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-                await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
+            case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+                await setStorage(BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
                 break
             default:
         }
@@ -134,13 +136,13 @@ onBeforeMount(async () => {
     error.value = null
 
     try {
-        const storage = await getStorage([CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS, CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES])
+        const storage = await getStorage([BROWSER_STORAGE.PROPS.MARKETS, BROWSER_STORAGE.PROPS.EXCHANGES])
         switch (props.type) {
-            case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-                list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.EXCHANGES] as string[]
+            case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+                list.value = storage[BROWSER_STORAGE.PROPS.EXCHANGES] as string[]
                 break
-            case CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-                list.value = storage[CONS.DEFAULTS.BROWSER_STORAGE.PROPS.MARKETS] as string[]
+            case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+                list.value = storage[BROWSER_STORAGE.PROPS.MARKETS] as string[]
                 break
         }
     } catch (err) {

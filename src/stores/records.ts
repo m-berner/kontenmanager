@@ -23,8 +23,10 @@ import {useSettingsStore} from '@/stores/settings'
 import {useAlertStore} from '@/stores/alerts'
 import {useFetch} from '@/composables/useFetch'
 import {useRuntimeStore} from '@/stores/runtime'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS, isoDate, toNumber, utcDate, log} = useApp()
+const {isoDate, toNumber, utcDate, log} = useApp()
+const {DATE, DEFAULTS, SESSION_STORAGE} = useAppConfig()
 
 const defaultStockMemory: I_Stock_Memory = {
     mPortfolio: 0,
@@ -137,14 +139,13 @@ const useStocksStore = defineStore('stocks', function () {
     }
 
     async function loadOnlineData(page: number) {
-        log('INDEXED_DB/STOCKS: loadOnlineData')
+        log('RECORDS: loadOnlineData')
         const {fetchDateData, fetchMinRateMaxData} = useFetch()
         const {loadedStocksPages} = useRuntimeStore()
         const runtime = useRuntimeStore()
         const {curEur, curUsd} = storeToRefs(runtime)
         const settings = useSettingsStore()
         const {stocksPerPage} = storeToRefs(settings)
-        const {CONS} = useApp()
         const isin = []
         const isinDates = []
         const itemsLength = active.value.length
@@ -193,9 +194,9 @@ const useStocksStore = defineStore('stocks', function () {
             pageStocks[i].mMax = minRateMaxResponse[i].cur === 'USD' ? toNumber(minRateMaxResponse[i].max) / curUsd.value : toNumber(minRateMaxResponse[i].max) / curEur.value
             pageStocks[i].mEuroChange = (pageStocks[i].mValue ?? 0) * (pageStocks[i].mPortfolio ?? 0) - (pageStocks[i].mInvest ?? 0)
             for (let j = 0; isinDates.length > 0 && j < isinDates.length && pageStocks[i].cID === isinDates[j].key; j++) {
-                pageStocks[i].cMeetingDay = (dateResponse[j]).value.gm > 0 ? isoDate((dateResponse[j]).value.gm) : CONS.DATE.DEFAULT_ISO
-                pageStocks[i].cQuarterDay = (dateResponse[j]).value.qf > 0 ? isoDate((dateResponse[j]).value.qf) : CONS.DATE.DEFAULT_ISO
-                pageStocks[i].cAskDates = isoDate(Date.now() + CONS.DEFAULTS.ASK_DATE_INTERVAL * 86400000)
+                pageStocks[i].cMeetingDay = (dateResponse[j]).value.gm > 0 ? isoDate((dateResponse[j]).value.gm) : DATE.ISO
+                pageStocks[i].cQuarterDay = (dateResponse[j]).value.qf > 0 ? isoDate((dateResponse[j]).value.qf) : DATE.ISO
+                pageStocks[i].cAskDates = isoDate(Date.now() + DEFAULTS.ASK_DATE_INTERVAL * 86400000)
             }
             update({...pageStocks[i]})
         }
@@ -613,12 +614,12 @@ export const useRecordsStore = defineStore('records', function () {
                 cMeetingDay: '',
                 cQuarterDay: '',
                 cAccountNumberID: activeAccountId.value,
-                cAskDates: CONS.DATE.DEFAULT_ISO
+                cAskDates: DATE.ISO
             }, true
         )
-        if (accountsStore.items.length === 0 && sessionStorage.getItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT) === null) {
+        if (accountsStore.items.length === 0 && sessionStorage.getItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT) === null) {
             info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null)
-            sessionStorage.setItem(CONS.DEFAULTS.SESSION_STORAGE.HIDE_IMPORT_ALERT, 'true')
+            sessionStorage.setItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT, 'true')
         }
     }
 

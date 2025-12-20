@@ -17,9 +17,11 @@ import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import BookingFormular from '@/components/dialogs/forms/BookingFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {DATE} = useAppConfig()
 const {notice} = useBrowser()
 const {add, isConnected} = useBookingsDB()
 const {formRef, mapBookingFormToDb, reset} = useBookingFormular()
@@ -52,7 +54,7 @@ const onClickOk = async (): Promise<void> => {
         try {
             const booking = mapBookingFormToDb(
                 activeAccountId.value,
-                CONS.DATE.DEFAULT_ISO
+                DATE.ISO
             )
             delete booking.cID
             const addBookingID = await add(booking)

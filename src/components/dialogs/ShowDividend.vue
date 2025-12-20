@@ -14,9 +14,11 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import type {I_Header} from '@/types'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {d, n, t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {SETTINGS} = useAppConfig()
 const settings = useSettingsStore()
 const {dividendsPerPage} = storeToRefs(settings)
 const {setDividendsPerPage} = settings
@@ -65,7 +67,7 @@ log('--- ShowDividend.vue setup ---')
                     :hover="false"
                     :items="records.bookings.dividendsByStockId(activeId)"
                     :items-per-page="dividendsPerPage"
-                    :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+                    :items-per-page-options="SETTINGS.ITEMS_PER_PAGE_OPTIONS"
                     :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
                     :no-data-text="T.STRINGS.NO_DATA_TEXT"
                     density="compact"

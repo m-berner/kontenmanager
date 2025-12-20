@@ -19,9 +19,11 @@ import {useAccountsDB, useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useAccountFormular} from '@/composables/useAccountFormular'
 import AccountFormular from '@/components/dialogs/forms/AccountFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {BROWSER_STORAGE} = useAppConfig()
 const {notice, setStorage} = useBrowser()
 const {add, isConnected, remove} = useAccountsDB()
 const {add: addBookingType} = useBookingTypesDB()
@@ -110,7 +112,7 @@ const onClickOk = async (): Promise<void> => {
             records.accounts.add(account)
 
             activeAccountId.value = addAccountID
-            await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
+            await setStorage(BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
 
             // Add booking types with rollback support
             const bookingTypesAdded = await addBookingTypesForAccount(addAccountID)

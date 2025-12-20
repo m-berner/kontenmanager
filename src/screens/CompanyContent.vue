@@ -15,9 +15,11 @@ import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useApp} from '@/composables/useApp'
 import DotMenu from '@/components/DotMenu.vue'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {d, n, t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {SETTINGS} = useAppConfig()
 const records = useRecordsStore()
 const {active: activeStockItems} = storeToRefs(records.stocks)
 const settings = useSettingsStore()
@@ -188,7 +190,7 @@ log('--- CompanyContent.vue setup ---')
         :hover="true"
         :items="activeStockItems"
         :items-per-page="stocksPerPage"
-        :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+        :items-per-page-options="SETTINGS.ITEMS_PER_PAGE_OPTIONS"
         :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
         :loading="isStockLoading"
         :no-data-text="T.STRINGS.NO_DATA_TEXT"

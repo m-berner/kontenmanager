@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue';
-import { useApp } from '@/composables/useApp';
-const { CONS } = useApp();
-const BOOKING_TYPES = CONS.INDEXED_DB.STORES.BOOKING_TYPES;
+import { useAppConfig } from '@/composables/useAppConfig';
+const { INDEXED_DB } = useAppConfig();
+const BOOKING_TYPES = INDEXED_DB.STORE.BOOKING_TYPES;
 const bookingFormularData = reactive({
     id: -1,
     bookDate: '',

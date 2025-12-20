@@ -6,10 +6,10 @@
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import {reactive, ref} from 'vue'
-import {useApp} from '@/composables/useApp'
 import type {I_Stock_DB, I_Stock_Formular} from '@/types'
+import {useAppConfig} from '@/composables/useAppConfig'
 
-const {CONS} = useApp()
+const {DATE} = useAppConfig()
 const stockFormularData = reactive<I_Stock_Formular>(
     {
         id: -1,
@@ -21,7 +21,7 @@ const stockFormularData = reactive<I_Stock_Formular>(
         fadeOut: false,
         firstPage: false,
         url: '',
-        askDates: CONS.DATE.DEFAULT_ISO
+        askDates: DATE.ISO
     }
 )
 const formRef = ref<HTMLFormElement | null>(null)
@@ -53,7 +53,7 @@ function reset(): void {
         fadeOut: false,
         firstPage: false,
         url: '',
-        askDates: CONS.DATE.DEFAULT_ISO
+        askDates: DATE.ISO
     })
     formRef.value = null
 }

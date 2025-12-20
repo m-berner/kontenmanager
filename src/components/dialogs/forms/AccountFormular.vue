@@ -13,9 +13,11 @@ import {useValidation} from '@/composables/useValidation'
 import {useFavicon} from '@/composables/useFavicon'
 import {useDomain} from '@/composables/useDomain'
 import {useAccountFormular} from '@/composables/useAccountFormular'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {COMPONENTS} = useAppConfig()
 const {accountFormularData, formRef} = useAccountFormular()
 const {ibanRules, swiftRules} = useValidation()
 
@@ -111,7 +113,7 @@ log('--- AccountFormular.vue setup ---')
     <v-text-field
         v-model="formSearch"
         :label="T.STRINGS.SEARCH_LABEL"
-        :placeholder="CONS.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
+        :placeholder="COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
         variant="outlined"
     />
     <!-- Logo Preview -->

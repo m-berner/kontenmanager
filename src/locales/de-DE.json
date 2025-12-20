@@ -392,7 +392,9 @@
     },
     "requiredRules": "Ist erforderlich",
     "notNegative": "Nur positive Werte",
-    "onlyOnePositive": "Ein Wert muss 0 sein",
+    "creditDebitFieldset": {
+      "onlyOnePositive": "Ein Wert muss 0 der andere > 0 sein"
+    },
     "bookingTypeRules": {
       "required": "Buchungstyp ist erforderlich"
     }

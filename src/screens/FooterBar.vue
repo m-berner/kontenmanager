@@ -9,9 +9,11 @@
 import {useI18n} from 'vue-i18n'
 import {RouterLink} from 'vue-router'
 import {useApp} from '@/composables/useApp'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {ROUTES, SYSTEM} = useAppConfig()
 
 const T = Object.freeze(
     {
@@ -29,7 +31,7 @@ log('--- FooterBar.vue setup ---')
 <template>
     <v-bottom-navigation color="primary">
         <v-btn color="white">
-            <a :href="CONS.SYSTEM.HELP_URL"
+            <a :href="SYSTEM.HELP_URL"
                class="router-link-active"
                rel="noopener noreferrer"
                target="_blank">
@@ -38,19 +40,19 @@ log('--- FooterBar.vue setup ---')
             </a>
         </v-btn>
         <v-btn color="white">
-            <RouterLink :to="CONS.ROUTES.PRIVACY" class="router-link-active">
+            <RouterLink :to="ROUTES.PRIVACY" class="router-link-active">
                 <v-icon icon="
         $privacy"/>
                 <div>{{ T.STRINGS.PRIVACY }}</div>
             </RouterLink>
         </v-btn>
-        <v-btn :href="CONS.SYSTEM.MAILTO" color="white">
+        <v-btn :href="SYSTEM.MAILTO" color="white">
             <v-icon icon="$mail"/>
             <div>{{ T.STRINGS.MAIL }}</div>
         </v-btn>
         <v-btn :disabled="true" color="white">
             <v-icon icon="$mdiCopyright"/>
-            <div class="nowrap">{{ CONS.SYSTEM.COPYRIGHT }}</div>
+            <div class="nowrap">{{ SYSTEM.COPYRIGHT }}</div>
         </v-btn>
     </v-bottom-navigation>
 </template>

@@ -11,7 +11,8 @@ export function useImportExport() {
 
     class ImportExportService {
         constructor(
-            private readonly _CONS: any,
+            private readonly _INDEXED_DB: any,
+            private readonly _DATE: any,
             private readonly _isoDate: (_date: number) => string
         ) {
         }
@@ -28,7 +29,7 @@ export function useImportExport() {
                 cFadeOut: rec.cFadeOut,
                 cFirstPage: rec.cFirstPage,
                 cURL: rec.cURL,
-                cAskDates: this._CONS.DATE.DEFAULT_ISO
+                cAskDates: this._DATE.ISO
             } as I_Stock_DB
         }
 
@@ -37,7 +38,7 @@ export function useImportExport() {
             index: number,
             activeId: number
         ): I_Booking_DB {
-            const BOOKING_TYPES = this._CONS.INDEXED_DB.STORES.BOOKING_TYPES
+            const BOOKING_TYPES = this._INDEXED_DB.STORE.BOOKING_TYPES
             const booking: I_Booking_DB = {
                 cID: index + 1,
                 cAccountNumberID: activeId,
@@ -116,7 +117,7 @@ export function useImportExport() {
         }
 
         private createCreditDebitObject(rec: I_Booking_SM): { value: number; type: number } {
-            const BOOKING_TYPES = this._CONS.INDEXED_DB.STORES.BOOKING_TYPES
+            const BOOKING_TYPES = this._INDEXED_DB.STORE.BOOKING_TYPES
             let result = {value: 0, type: -1}
 
             // Determine non-zero fields (types 4, 5) and recreate type

@@ -14,9 +14,11 @@ import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useDialogGuards} from '@/composables/useDialogGuards'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {INDEXED_DB} = useAppConfig()
 const {notice} = useBrowser()
 const {remove, isConnected} = useBookingTypesDB()
 const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
@@ -98,8 +100,8 @@ log('--- DeleteBookingType.vue setup ---')
         @submit.prevent>
         <v-select
             v-model="selected"
-            :item-title="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.NAME"
-            :item-value="CONS.INDEXED_DB.STORES.BOOKING_TYPES.FIELDS.ID"
+            :item-title="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.NAME"
+            :item-value="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID"
             :items="records.bookingTypes.items"
             :label="T.STRINGS.BOOKING_TYPE_LABEL"
             :placeholder="T.STRINGS.PLACEHOLDER"

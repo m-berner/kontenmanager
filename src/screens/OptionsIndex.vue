@@ -13,9 +13,11 @@ import DynamicList from '@/components/DynamicList.vue'
 import ThemeSelector from '@/components/ThemeSelector.vue'
 import ServiceSelector from '@/components/ServiceSelector.vue'
 import CheckboxGrid from '@/components/CheckboxGrid.vue'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {COMPONENTS} = useAppConfig()
 
 const T = Object.freeze(
     {
@@ -73,7 +75,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                         <v-row class="pa-10" justify="center">
                             <v-col cols="12" md="10" sm="10">
                                 <DynamicList
-                                    :type="CONS.COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS"
+                                    :type="COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS"
                                 />
                             </v-col>
                         </v-row>
@@ -81,14 +83,14 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                     <v-tabs-window-item :value="2">
                         <v-row>
                             <CheckboxGrid
-                                :type="CONS.COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES"
+                                :type="COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES"
                             />
                         </v-row>
                     </v-tabs-window-item>
                     <v-tabs-window-item :value="3">
                         <v-row>
                             <CheckboxGrid
-                                :type="CONS.COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS"
+                                :type="COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS"
                             />
                         </v-row>
                     </v-tabs-window-item>
@@ -96,7 +98,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
                         <v-row class="pa-12" justify="center">
                             <v-col cols="12" md="10" sm="10">
                                 <DynamicList
-                                    :type="CONS.COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES"
+                                    :type="COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES"
                                 />
                             </v-col>
                         </v-row>

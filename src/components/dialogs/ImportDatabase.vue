@@ -19,9 +19,11 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {useImportExport} from '@/composables/useImportExport'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log, isoDate} = useApp()
+const {log, isoDate} = useApp()
+const {DEFAULTS, INDEXED_DB, DATE} = useAppConfig()
 const {notice, setStorage} = useBrowser()
 const {clear: clearAllAccounts, batchImport: importAccounts} = useAccountsDB()
 const {clear: clearAllBookings, batchImport: importBookings} = useBookingsDB()
@@ -61,7 +63,7 @@ const T = Object.freeze(
 )
 
 const fileBlob = ref<Blob>(new Blob())
-const importService = new ImportExportService(CONS, isoDate)
+const importService = new ImportExportService(INDEXED_DB, DATE, isoDate)
 
 const onChange = (ev: I_Event_Target) => {
     fileBlob.value = ev.target.files[0]
@@ -72,11 +74,11 @@ const validateBackup = (backup: I_Backup, accountItems: I_Account_DB[]): string 
         return T.STRINGS.INVALID
     }
 
-    if (backup.sm.cDBVersion < CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
+    if (backup.sm.cDBVersion < INDEXED_DB.SM_IMPORT_VERSION) {
         return T.STRINGS.VERSION
     }
 
-    if (backup.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION && accountItems.length > 0) {
+    if (backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION && accountItems.length > 0) {
         return T.STRINGS.NOT_EMPTY
     }
 
@@ -185,9 +187,9 @@ const processBackupFile = async (fileContent: string): Promise<void> => {
     }
 
     // Set active account
-    const activeId = backup.accounts?.[0]?.cID ?? CONS.INDEXED_DB.STOCKMANAGER_RESTORE_ACCOUNT_ID
+    const activeId = backup.accounts?.[0]?.cID ?? DEFAULTS.SM_RESTORE_ACCOUNT_ID
     activeAccountId.value = activeId
-    await setStorage(CONS.DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
+    await setStorage(DEFAULTS.BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeId)
 
     // Clear existing data
     await clearAllAccounts()
@@ -195,9 +197,9 @@ const processBackupFile = async (fileContent: string): Promise<void> => {
     await clearAllBookingTypes()
     await clearAllStocks()
     // Import based on version
-    if (backup.sm.cDBVersion === CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
+    if (backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION) {
         await importLegacyData(backup, activeId)
-    } else if (backup.sm.cDBVersion > CONS.INDEXED_DB.IMPORT_MIN_VERSION) {
+    } else if (backup.sm.cDBVersion > INDEXED_DB.SM_IMPORT_VERSION) {
         await importModernData(backup, activeId)
     } else {
         await notice(['IMPORT_DATABASE: Unsupported database version'])

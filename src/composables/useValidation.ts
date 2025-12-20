@@ -7,7 +7,7 @@
  */
 import type {Ref} from 'vue'
 import {useRecordsStore} from '@/stores/records'
-import type {T_Number_Validator, T_String_Validator, T_Validation_Rule} from '@/types'
+import type {T_Validation_Rule} from '@/types'
 
 function createRule(
     validator: (_value: unknown) => boolean,
@@ -27,7 +27,8 @@ function stringLength(min: number, max: number, message: string): T_Validation_R
     return createRule(
         (v) => {
             const tv = v as string
-            return tv.length >= min && tv.length <= max
+            const clean = tv.replace(/\s/g, '')
+            return clean.length >= min && clean.length <= max
         },
         message
     )
@@ -37,7 +38,25 @@ function regex(pattern: RegExp, message: string): T_Validation_Rule {
     return createRule(
         (v) => {
             const tv = v as string
-            return pattern.test(tv)
+            const ttv = tv.replace(/\s/g, '')
+            return pattern.test(ttv)
+        },
+        message
+    )
+}
+
+function oneOfTwo(zeroValue: Ref<number> | number, message: string): T_Validation_Rule {
+    return createRule(
+        v => {
+            const tv = v as number
+            const zero = typeof zeroValue === 'number' ? zeroValue : zeroValue.value
+            // Only one of the values could be 0
+            if (tv > 0 && zero > 0) {
+                return false
+            } else if (tv < 0) {
+                return false
+            }
+            return true
         },
         message
     )
@@ -110,29 +129,66 @@ export function useValidation() {
         ]
     }
 
-    function hasBookingType(msgArray: string[]): T_Validation_Rule[] {
+    function bookingTypeRules(msgArray: string[]): T_Validation_Rule[] {
         return [
             required(msgArray[0])
         ]
     }
 
-    function swiftRules(msgArray: string[]): T_String_Validator[] {
+    function swiftRules(msgArray: string[]): T_Validation_Rule[] {
+        const swiftLength = (message: string): T_Validation_Rule => {
+            return createRule(
+                v => {
+                    const tv = v as string
+                    const inLength = tv.replace(/\s/g, '').length
+                    return inLength === 8 || inLength === 11
+                },
+                message
+            )
+        }
+        const branchCode = (message: string): T_Validation_Rule => {
+            return createRule(
+                v => {
+                    const tv = v as string
+                    const branchCode = tv.replace(/\s/g, '').length === 11 ? tv.replace(/\s/g, '').substring(8, 11) : ''
+                    return /^[A-Z0-9]{3}$/.test(branchCode)
+                },
+                message
+            )
+        }
+        const subRegex = (start: number, end: number, pattern: RegExp, message: string): T_Validation_Rule => {
+            return createRule(
+                (v) => {
+                    const tv = v as string
+                    const ttv = tv.replace(/\s/g, '').substring(start, end)
+                    return pattern.test(ttv)
+                },
+                message
+            )
+        }
+        const startsWith = (start: number, end: number, message: string): T_Validation_Rule => {
+            return createRule(
+                (v) => {
+                    const tv = v as string
+                    const ttv = tv.replace(/\s/g, '').substring(start, end)
+                    return !ttv.startsWith('0')
+                },
+                message
+            )
+        }
         return [
             required(msgArray[0]),
-            (v: string) => (v.replace(/\s/g, '').length === 8 || v.replace(/\s/g, '').length === 11) || msgArray[1],
-            (v: string) => v.replace(/\s/g, '').match(/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/) !== null || msgArray[2],
-            (v: string) => v.replace(/\s/g, '').substring(0, 4).match(/^[A-Z]{4}$/) !== null || msgArray[3],
-            (v: string) => v.replace(/\s/g, '').substring(4, 6).match(/^[A-Z]{2}$/) !== null || msgArray[4],
-            (v: string) => v.replace(/\s/g, '').substring(6, 8).match(/^[A-Z0-9]{2}$/) !== null || msgArray[5],
-            (v: string) => {
-                const branchCode = v.replace(/\s/g, '').length === 11 ? v.replace(/\s/g, '').substring(8, 11) : null
-                return branchCode?.match(/^[A-Z0-9]{3}$/) !== null || msgArray[6]
-            },
-            (v: string) => !v.replace(/\s/g, '').substring(6, 8).startsWith('0') || msgArray[7]
+            swiftLength(msgArray[1]),
+            regex(/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/, msgArray[2]),
+            subRegex(0, 4, /^[A-Z]{4}$/, msgArray[3]),
+            subRegex(4, 6, /^[A-Z]{2}$/, msgArray[4]),
+            subRegex(6, 8, /^[A-Z0-9]{2}$/, msgArray[5]),
+            branchCode(msgArray[6]),
+            startsWith(6, 8, msgArray[7])
         ]
     }
 
-    function isoDateRules(msgArray: string[]): T_String_Validator[] {
+    function isoDateRules(msgArray: string[]): T_Validation_Rule[] {
         const isValid = (message: string): T_Validation_Rule => {
             return createRule(
                 v => {
@@ -149,37 +205,19 @@ export function useValidation() {
         ]
     }
 
-    function isValidCredit(msgArray: string[], debitValue: Ref<number> | number): T_Number_Validator[] {
+    function creditRules(zeroValue: Ref<number> | number, msgArray: string[]): T_Validation_Rule[] {
         return [
-            (v: number) => {
-                const debit = typeof debitValue === 'number' ? debitValue : debitValue.value
-                // Only one of the values could be 0
-                if (v > 0 && debit > 0) {
-                    return msgArray[0]
-                } else if (v < 0) {
-                    return msgArray[1]
-                }
-                return true
-            }
+            oneOfTwo(zeroValue, msgArray[0])
         ]
     }
 
-    function isValidDebit(msgArray: string[], creditValue: Ref<number> | number): T_Number_Validator[] {
+    function debitRules(zeroValue: Ref<number> | number, msgArray: string[]): T_Validation_Rule[] {
         return [
-            (v: number) => {
-                const credit = typeof creditValue === 'number' ? creditValue : creditValue.value
-                // Only one of the values could be 0
-                if (v > 0 && credit > 0) {
-                    return msgArray[0]
-                } else if (v < 0) {
-                    return msgArray[1]
-                }
-                return true
-            }
+            oneOfTwo(zeroValue, msgArray[0])
         ]
     }
 
-    function isinRules(msgArray: string[]): T_String_Validator[] {
+    function isinRules(msgArray: string[]): T_Validation_Rule[] {
         const validCountryCodes: string[] = [
             'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT',
             'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI',
@@ -203,64 +241,70 @@ export function useValidation() {
             'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI',
             'VN', 'VU', 'WF', 'WS', 'XS', 'YE', 'YT', 'ZA', 'ZM', 'ZW'
         ]
-        return [
-            (v: string) => v !== null || msgArray[0],
-            (v: string) => {
-                const cleanISIN = v.replace(/\s/g, '').toUpperCase()
-                return cleanISIN.length === 12 || msgArray[1]
-            },
-            (v: string) => {
-                // Check format: 2 letters + 9 alphanumeric + 1 digit
-                const cleanISIN = v.replace(/\s/g, '').toUpperCase()
-                return cleanISIN.match(/^[A-Z]{2}[A-Z0-9]{9}[0-9]$/) !== null || msgArray[2]
-            },
-            (v: string) => {
-                // Validate country code (first 2 characters)
-                const cleanISIN = v.replace(/\s/g, '').toUpperCase()
-                const countryCode = cleanISIN.substring(0, 2)
-                return validCountryCodes.includes(countryCode) || msgArray[3]
-            },
-            (v: string) => {
-                const cleanISIN = v.replace(/\s/g, '').toUpperCase()
-                const digits = cleanISIN.substring(0, 11)
-                let numericString = ''
-                // Convert letters to numbers (A=10, B=11, ..., Z=35)
-                for (const char of digits) {
-                    if (char >= 'A' && char <= 'Z') {
-                        numericString += (char.charCodeAt(0) - 55).toString()
-                    } else {
-                        numericString += char
-                    }
-                }
-                // Apply Luhn algorithm
-                let sum = 0
-                let alternate = true
-                for (let i = numericString.length - 1; i >= 0; i--) {
-                    let digit = parseInt(numericString[i])
-                    if (alternate) {
-                        digit *= 2
-                        if (digit > 9) {
-                            digit = Math.floor(digit / 10) + (digit % 10)
+        const countryCode = (message: string): T_Validation_Rule => {
+            return createRule(
+                v => {
+                    const tv = v as string
+                    const clean = tv.replace(/\s/g, '').toUpperCase()
+                    const countryCode = clean.substring(0, 2)
+                    return validCountryCodes.includes(countryCode)
+                },
+                message
+            )
+        }
+        const checkSum = (message: string): T_Validation_Rule => {
+            return createRule(
+                v => {
+                    const tv = v as string
+                    const clean = tv.replace(/\s/g, '').toUpperCase()
+                    const digits = clean.substring(0, 11)
+                    let numericString = ''
+                    // Convert letters to numbers (A=10, B=11, ..., Z=35)
+                    for (const char of digits) {
+                        if (char >= 'A' && char <= 'Z') {
+                            numericString += (char.charCodeAt(0) - 55).toString()
+                        } else {
+                            numericString += char
                         }
                     }
-                    sum += digit
-                    alternate = !alternate
-                }
-                const checkDigit = (10 - (sum % 10)) % 10
-                const providedCheckDigit = parseInt(cleanISIN[11])
-                return checkDigit === providedCheckDigit || msgArray[4]
-            }
+                    // Apply Luhn algorithm
+                    let sum = 0
+                    let alternate = true
+                    for (let i = numericString.length - 1; i >= 0; i--) {
+                        let digit = parseInt(numericString[i])
+                        if (alternate) {
+                            digit *= 2
+                            if (digit > 9) {
+                                digit = Math.floor(digit / 10) + (digit % 10)
+                            }
+                        }
+                        sum += digit
+                        alternate = !alternate
+                    }
+                    const checkDigit = (10 - (sum % 10)) % 10
+                    const providedCheckDigit = parseInt(clean[11])
+                    return checkDigit === providedCheckDigit
+                },
+                message
+            )
+        }
+        return [
+            required(msgArray[0]),
+            stringLength(12, 12, msgArray[1]),
+            regex(/^[A-z]{2}[A-z0-9]{9}[0-9]$/, msgArray[2]),
+            countryCode(msgArray[3]),
+            checkSum(msgArray[4])
         ]
     }
-
+    //TODO test validations!!!
     return {
         ibanRules,
         isinRules,
-        isValidCredit,
-        isValidDebit,
+        creditRules,
+        debitRules,
         nameRules,
         swiftRules,
         isoDateRules,
-        hasBookingType
+        bookingTypeRules
     }
 }

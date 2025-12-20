@@ -13,13 +13,15 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import type {I_Account_Entry, I_Header} from '@/types'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {n, t} = useI18n()
 const records = useRecordsStore()
 const settings = useSettingsStore()
 const {sumsPerPage} = storeToRefs(settings)
 const {setSumsPerPage} = settings
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {COMPONENTS, SETTINGS} = useAppConfig()
 
 const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>(
     {
@@ -50,14 +52,14 @@ const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }
     }
 )
 
-const selected = ref<number>(CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID)
+const selected = ref<number>(COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID)
 
 const yearEntries = computed(() => {
-    const years = [CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID, ...Array.from(records.bookings.bookedYears)]
+    const years = [COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID, ...Array.from(records.bookings.bookedYears)]
     return years.map((entry) => {
         return {
             id: entry,
-            title: entry === CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID ? T.STRINGS.ALL_YEARS : entry.toString()
+            title: entry === COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID ? T.STRINGS.ALL_YEARS : entry.toString()
         }
     })
 })
@@ -121,7 +123,7 @@ const accountEntries = computed(() => {
 })
 
 const getAccountData = (year: number) => {
-    if (year === CONS.COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID) {
+    if (year === COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID) {
         return {
             sums: records.bookings.sumBookingsPerType,
             taxes: records.bookings.sumAllTaxes,
@@ -165,7 +167,7 @@ log('--- ShowAccounting.vue setup ---')
                     :hover="false"
                     :items="accountEntries"
                     :items-per-page="sumsPerPage"
-                    :items-per-page-options="CONS.SETTINGS.ITEMS_PER_PAGE_OPTIONS"
+                    :items-per-page-options="SETTINGS.ITEMS_PER_PAGE_OPTIONS"
                     :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
                     :no-data-text="T.STRINGS.NO_DATA_TEXT"
                     density="compact"

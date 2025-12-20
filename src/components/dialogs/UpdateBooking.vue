@@ -19,9 +19,11 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useBookingFormular} from '@/composables/useBookingFormular'
 import BookingFormular from '@/components/dialogs/forms/BookingFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
+import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
-const {CONS, log} = useApp()
+const {log} = useApp()
+const {DATE} = useAppConfig()
 const {notice} = useBrowser()
 const {update, isConnected} = useBookingsDB()
 const settings = useSettingsStore()
@@ -91,7 +93,7 @@ const onClickOk = async (): Promise<void> => {
 
     await withLoading(async () => {
         try {
-            const booking: I_Booking_DB = mapBookingFormToDb(activeAccountId.value, CONS.DATE.DEFAULT_ISO)
+            const booking: I_Booking_DB = mapBookingFormToDb(activeAccountId.value, DATE.ISO)
 
             records.bookings.update(booking)
             await update(booking)
