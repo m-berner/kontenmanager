@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "KontenManager",
+  "version": "2026.0.1.0",
+  "author": "Martin Berner",
+  "icons": {
+    "64": "assets/icon64.png"
+  },
+  "action": {
+    "default_icon": {
+      "64": "assets/icon64.png"
+    },
+    "default_title": "KontenManager"
+  },
+  "background": {
+    "page": "pages/background.html"
+  },
+  "permissions": [
+    "downloads",
+    "notifications",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.tradegate.de/*",
+    "https://*.finanzen.net/*",
+    "https://fx-rate.net/*",
+    "https://www.goyax.de/*",
+    "https://www.wallstreet-online.de/*",
+    "https://*.aktiencheck.de/*",
+    "https://www.tagesschau.de/*"
+  ],
+  "options_ui": {
+    "browser_style": false,
+    "open_in_tab": false,
+    "page": "pages/options.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kontenmanager@gmx.de",
+      "strict_min_version": "145.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}

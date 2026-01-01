@@ -1,0 +1,13 @@
+.yarn/**
+.vscode/**
+docs/**
+node_modules/**
+releases/**
+resources/**
+build/**
+out/**
+dist/**
+public/**
+desktop.ini
+kontenmanager@gmx.de/**
+manifests/**
