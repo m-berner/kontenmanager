@@ -65,25 +65,25 @@ function reset (): void {
         marketPlace: ''
     })
     selected.value = -1
-    formRef.value = null
-}
-
-const isStockRelated = (bookingTypeId: number): boolean => {
-    return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND
-}
-
-const isDividendBooking = (bookingTypeId: number): boolean => {
-    return bookingTypeId === BOOKING_TYPES.DIVIDEND
-}
-
-const hasMarketplace = (bookingTypeId: number): boolean => {
-    return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND
+    //formRef.value = null
+    //cdRef.value = null
 }
 
 function mapBookingFormToDb (
     accountId: number,
     defaultISODate: string
 ): I_Booking_DB {
+    const isStockRelated = (bookingTypeId: number): boolean => {
+        return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND
+    }
+
+    const isDividendBooking = (bookingTypeId: number): boolean => {
+        return bookingTypeId === BOOKING_TYPES.DIVIDEND
+    }
+
+    const hasMarketplace = (bookingTypeId: number): boolean => {
+        return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND
+    }
     const base = {
         cID: bookingFormularData.id,
         cAccountNumberID: accountId,

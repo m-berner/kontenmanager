@@ -91,7 +91,7 @@ const addBookingTypesForAccount = async (accountId: number): Promise<boolean> =>
 const onClickOk = async (): Promise<void> => {
     log('ADD_ACCOUNT: onClickOk')
 
-    if (!validateForm(formRef)) return
+    if (!await validateForm(formRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
 
     await withLoading(async () => {

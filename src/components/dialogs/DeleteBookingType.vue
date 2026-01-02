@@ -51,7 +51,7 @@ const canDeleteBookingType = (bookingTypeId: number): boolean => {
 const onClickOk = async (): Promise<void> => {
     log('DELETE_BOOKING_TYPE : onClickOk')
 
-    if (!validateForm(formRef)) return
+    if (!await validateForm(formRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
 
     if (!selected.value) {

@@ -53,18 +53,17 @@ function reset() {
         marketPlace: ''
     });
     selected.value = -1;
-    formRef.value = null;
 }
-const isStockRelated = (bookingTypeId) => {
-    return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND;
-};
-const isDividendBooking = (bookingTypeId) => {
-    return bookingTypeId === BOOKING_TYPES.DIVIDEND;
-};
-const hasMarketplace = (bookingTypeId) => {
-    return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND;
-};
 function mapBookingFormToDb(accountId, defaultISODate) {
+    const isStockRelated = (bookingTypeId) => {
+        return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND;
+    };
+    const isDividendBooking = (bookingTypeId) => {
+        return bookingTypeId === BOOKING_TYPES.DIVIDEND;
+    };
+    const hasMarketplace = (bookingTypeId) => {
+        return bookingTypeId === BOOKING_TYPES.BUY || bookingTypeId === BOOKING_TYPES.SELL || bookingTypeId === BOOKING_TYPES.DIVIDEND;
+    };
     const base = {
         cID: bookingFormularData.id,
         cAccountNumberID: accountId,

@@ -47,7 +47,7 @@ const T = Object.freeze(
 const onClickOk = async (): Promise<void> => {
     log('ADD_BOOKING : onClickOk')
 
-    if (!validateForm(formRef) || !validateForm(cdRef)) return
+    if (!await validateForm(formRef) || !await validateForm(cdRef)) return
     if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
     await withLoading(async () => {
         try {

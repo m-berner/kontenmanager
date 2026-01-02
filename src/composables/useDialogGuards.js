@@ -22,9 +22,10 @@ export function useDialogGuards() {
             isLoading.value = false;
         }
     }
-    function validateForm(form) {
+    async function validateForm(form) {
         if (form.value !== null) {
-            return form.value.validate();
+            const values = await form.value.validate();
+            return values.valid;
         }
         return false;
     }

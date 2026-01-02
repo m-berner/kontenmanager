@@ -46,9 +46,11 @@ export function useDialogGuards() {
         }
     }
 
-    function validateForm(form: Ref<HTMLFormElement | null>): boolean {
+    async function validateForm(form: Ref<HTMLFormElement | null>): Promise<boolean> {
         if (form.value !== null) {
-            return form.value.validate()
+            // noinspection ES6RedundantAwait
+            const values = await form.value.validate()
+            return values.valid
         }
         return false
     }

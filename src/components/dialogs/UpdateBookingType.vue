@@ -78,7 +78,7 @@ const buildBookingTypeFromForm = (index: number): I_Booking_Type_Store => ({
 
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_BOOKING_TYPE: onClickOk')
-    if (!validateForm(formRef)) return
+    if (!await validateForm(formRef)) return
     if (!formSelectedIndex.value) {
         await notice(['No booking type selected'])
         return
