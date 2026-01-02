@@ -8,17 +8,17 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
 import {computed, defineEmits, defineProps} from 'vue'
-//import {useValidation} from '@/composables/useValidation'
 import CurrencyInput from '@/components/CurrencyInput.vue'
 import type {I_Credit_Debit_Fieldset_Props} from '@/types'
 import {useApp} from '@/composables/useApp'
+import {useBookingFormular} from '@/composables/useBookingFormular'
 
 const props = defineProps<I_Credit_Debit_Fieldset_Props>()
 // eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['update:modelValue'])
 const {t} = useI18n()
-//const {creditRules, debitRules} = useValidation()
 const {log} = useApp()
+const {cdRef} = useBookingFormular()
 
 const T = Object.freeze(
     {
@@ -54,8 +54,6 @@ const debitValue = computed(
         }
     }
 )
-//const cRules = computed(() => creditRules(props.modelValue.debit, T.RULES))
-//const dRules = computed(() => debitRules(props.modelValue.credit, T.RULES))
 
 const cRules = computed(() => props.rules[0](props.modelValue.debit))
 const dRules = computed(() => props.rules[1](props.modelValue.credit))
