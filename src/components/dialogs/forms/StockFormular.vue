@@ -27,7 +27,7 @@ const {stockFormularData, formRef} = useStockFormular()
 const T = Object.freeze(
     {
         MESSAGES: {
-            ERROR_ONUPDATE_ISIN: t('messages.onUpdateIsin')
+            ERROR_ONUPDATE_ISIN: t('components.dialogs.forms.stockFormular.messages.onUpdateIsin')
         },
         STRINGS: {
             COMPANY_LABEL: t('components.dialogs.forms.stockFormular.companyLabel'),

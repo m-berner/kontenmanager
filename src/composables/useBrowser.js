@@ -1,23 +1,24 @@
 import { computed } from 'vue';
 import { useAppConfig } from '@/composables/useAppConfig';
-const { BROWSER_STORAGE, EVENTS, PAGES } = useAppConfig();
+import { useDialogGuards } from '@/composables/useDialogGuards';
+const { BROWSER_STORAGE, EVENTS, PAGES, SYSTEM } = useAppConfig();
+const { handleError } = useDialogGuards();
 export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(PAGES.INDEX));
     const manifest = computed(() => browser.runtime.getManifest());
     const uiLanguage = computed(() => browser.i18n.getUILanguage());
     const locale5 = computed(() => {
         const defaultLanguage = navigator.languages[0];
-        let result = '';
+        if (!defaultLanguage) {
+            throw new Error(`${SYSTEM.ERRORS.LOCALE5}: No language available`);
+        }
         if (defaultLanguage.length === 5) {
-            result = defaultLanguage;
+            return defaultLanguage;
         }
-        else if (defaultLanguage.length === 2) {
-            result = `${defaultLanguage}-${defaultLanguage.toUpperCase()}`;
+        if (defaultLanguage.length === 2) {
+            return `${defaultLanguage}-${defaultLanguage.toUpperCase()}`;
         }
-        else {
-            throw new Error('Could not read the browser language!');
-        }
-        return result;
+        throw new Error(`${SYSTEM.ERRORS.LOCALE5}: Invalid language format "${defaultLanguage}"`);
     });
     function actionOnClicked(listener) {
         browser.action.onClicked.addListener(listener);
@@ -26,105 +27,138 @@ export function useBrowser() {
         browser.runtime.onInstalled.addListener(listener);
     }
     async function clearStorage() {
-        await browser.storage.local.clear();
+        try {
+            await browser.storage.local.clear();
+        }
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.STORAGE_LOCAL, err);
+        }
     }
     async function tabsCreate() {
-        return await browser.tabs.create({
-            url: indexUrl.value,
-            active: true
-        });
+        try {
+            return await browser.tabs.create({
+                url: indexUrl.value,
+                active: true
+            });
+        }
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.TABS, err);
+        }
     }
     async function tabsQuery() {
-        return await browser.tabs.query({ url: indexUrl.value });
+        try {
+            return await browser.tabs.query({ url: indexUrl.value });
+        }
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.TABS, err);
+        }
     }
-    async function windowsUpdate(wId) {
-        return await browser.windows.update(wId ?? 0, {
-            focused: true
-        });
+    async function windowsUpdate(windowId) {
+        try {
+            return await browser.windows.update(windowId, {
+                focused: true
+            });
+        }
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.WINDOWS, err);
+        }
     }
-    async function tabsUpdate(id) {
-        return await browser.tabs.update(id ?? 0, {
-            active: true
-        });
+    async function tabsUpdate(tabId) {
+        try {
+            return await browser.tabs.update(tabId, {
+                active: true
+            });
+        }
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.TABS, err);
+        }
     }
     async function setStorage(key, value) {
         try {
             await browser.storage.local.set({ [key]: value });
         }
-        catch (error) {
-            throw error;
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.STORAGE_LOCAL, err);
         }
     }
     async function getStorage(keys = null) {
         try {
             return await browser.storage.local.get(keys);
         }
-        catch (error) {
-            throw error;
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.STORAGE_LOCAL, err);
         }
     }
     function addStorageChangedListener(callback) {
-        browser.storage.local.onChanged.addListener(callback);
-        return () => browser.storage.local.onChanged.removeListener(callback);
+        const wrappedCallback = (changes, areaName) => {
+            if (areaName === 'local') {
+                callback(changes, areaName);
+            }
+        };
+        browser.storage.onChanged.addListener(wrappedCallback);
+        return () => browser.storage.onChanged.removeListener(wrappedCallback);
     }
     async function installStorageLocal() {
-        const defaultStorage = Object.freeze({
-            sActiveAccountId: BROWSER_STORAGE.ACTIVE_ACCOUNT_ID,
-            sSkin: BROWSER_STORAGE.SKIN,
-            sBookingsPerPage: BROWSER_STORAGE.BOOKINGS_PER_PAGE,
-            sStocksPerPage: BROWSER_STORAGE.STOCKS_PER_PAGE,
-            sDividendsPerPage: BROWSER_STORAGE.DIVIDENDS_PER_PAGE,
-            sSumsPerPage: BROWSER_STORAGE.SUMS_PER_PAGE,
-            sService: BROWSER_STORAGE.SERVICE,
-            sExchanges: BROWSER_STORAGE.EXCHANGES,
-            sIndexes: BROWSER_STORAGE.INDEXES,
-            sMarkets: BROWSER_STORAGE.MARKETS,
-            sMaterials: BROWSER_STORAGE.MATERIALS
-        });
-        const storageLocal = await browser.storage.local.get();
-        if (storageLocal !== undefined) {
-            for (const [key, value] of Object.entries(defaultStorage)) {
-                if (storageLocal[key] === undefined) {
-                    await browser.storage.local.set({ [key]: value });
+        try {
+            const storageLocal = await browser.storage.local.get();
+            const updates = {};
+            for (const value of Object.values(BROWSER_STORAGE.LOCAL)) {
+                if (storageLocal[value.key] === undefined) {
+                    updates[value.key] = value.value;
                 }
             }
+            if (Object.keys(updates).length > 0) {
+                await browser.storage.local.set(updates);
+            }
         }
-        return storageLocal;
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.STORAGE_LOCAL, err);
+        }
     }
     async function openOptionsPage() {
         try {
-            return await browser.runtime.openOptionsPage();
+            await browser.runtime.openOptionsPage();
         }
-        catch (error) {
-            throw error;
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.OPEN_OPTIONS, err);
         }
     }
     async function notice(messages) {
-        const msg = messages.join('\n');
-        const notificationOption = {
-            type: 'basic',
-            iconUrl: 'assets/icon16.png',
-            title: 'KontenManager',
-            message: msg
-        };
-        await browser.notifications.create(notificationOption);
+        try {
+            const notificationOption = {
+                type: 'basic',
+                iconUrl: 'assets/icon16.png',
+                title: SYSTEM.TITLE,
+                message: messages.join('\n')
+            };
+            await browser.notifications.create(notificationOption);
+        }
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.NOTICE, err);
+        }
     }
-    async function writeBufferToFile(buffer, fn) {
-        const blob = new Blob([buffer], { type: 'application/json' });
-        const blobUrl = URL.createObjectURL(blob);
-        const op = {
-            url: blobUrl,
-            filename: fn
-        };
-        await browser.downloads.download(op);
-        await notice(['Database exported!']);
-        const onDownloadChange = (change) => {
-            if ((change.state !== undefined && change.id > 0) || (change.state !== undefined && change.state.current === EVENTS.COMPLETE)) {
-                URL.revokeObjectURL(blobUrl);
-                browser.downloads.onChanged.removeListener(onDownloadChange);
-            }
-        };
-        browser.downloads.onChanged.addListener(onDownloadChange);
+    async function writeBufferToFile(buffer, filename) {
+        if (!filename || filename.trim() === '') {
+            throw handleError(SYSTEM.ERRORS.WRITE_BUFFER_TO_FILE, new Error('Invalid filename'));
+        }
+        try {
+            const blob = new Blob([buffer], { type: 'application/json' });
+            const blobUrl = URL.createObjectURL(blob);
+            await browser.downloads.download({
+                url: blobUrl,
+                filename
+            });
+            const onDownloadChange = (change) => {
+                if (change.state?.current === EVENTS.COMPLETE) {
+                    URL.revokeObjectURL(blobUrl);
+                    browser.downloads.onChanged.removeListener(onDownloadChange);
+                }
+            };
+            browser.downloads.onChanged.addListener(onDownloadChange);
+        }
+        catch (err) {
+            throw handleError(SYSTEM.ERRORS.WRITE_BUFFER_TO_FILE, err);
+        }
     }
     return {
         locale5,

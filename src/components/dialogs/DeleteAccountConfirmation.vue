@@ -33,13 +33,13 @@ const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 const T = Object.freeze(
     {
         MESSAGES: {
-            INFO_TITLE: t('messages.infoTitle'),
+            INFO_TITLE: t('components.dialogs.deleteAccountConfirmation.infoTitle'),
             RESTRICTED_IMPORT: t('messages.restrictedImport'),
-            SUCCESS_DELETE: t('messages.deleteAccountConfirmation.success'),
-            ERROR_ONCLICK_OK: t('messages.onClickOk'),
-            NO_ACCOUNT: t('messages.noAccount'),
-            CONFIRM: t('messages.deleteAccountConfirmation.confirm'),
-            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+            SUCCESS_DELETE: t('components.dialogs.deleteAccountConfirmation.messages.success'),
+            ERROR_ONCLICK_OK: t('components.dialogs.deleteAccountConfirmation.messages.onClickOk'),
+            NO_ACCOUNT: t('screens.headerBar.messages.noAccount'),
+            CONFIRM: t('components.dialogs.deleteAccountConfirmation.messages.confirm'),
+            DB_NOT_CONNECTED: t('components.dialogs.deleteAccountConfirmation.messages.dbNotConnected')
         },
         STRINGS: {
             TITLE: t('components.dialogs.deleteAccountConfirmation.title')
@@ -50,13 +50,13 @@ const T = Object.freeze(
 const switchToNextAccount = async (): Promise<void> => {
     if (accountItems.value.length === 0) {
         activeAccountId.value = -1
-        await setStorage(BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, -1)
+        await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, -1)
         return
     }
 
     const newActiveId = accountItems.value[0].cID
     activeAccountId.value = newActiveId!
-    await setStorage(BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, newActiveId!)
+    await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, newActiveId!)
 
     const storesDB = await getDatabaseStores(newActiveId!)
     await records.init(storesDB, T.MESSAGES)
@@ -78,13 +78,10 @@ const onClickOk = async (): Promise<void> => {
 
             resetTeleport()
             await notice([T.MESSAGES.SUCCESS_DELETE])
-        } catch (error) {
-            await handleError(
-                error,
-                log,
-                notice,
-                'DELETE_ACCOUNT_CONFIRMATION',
-                T.MESSAGES.ERROR_ONCLICK_OK
+        } catch (err) {
+            throw handleError(
+                T.MESSAGES.ERROR_ONCLICK_OK,
+                err
             )
         }
     })

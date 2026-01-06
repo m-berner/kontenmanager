@@ -1,4 +1,5 @@
 export const SYSTEM = Object.freeze({
+    TITLE: 'KontenManager',
     COPYRIGHT: `2025-${new Date().getFullYear()} Martin Berner`,
     MAILTO: 'mailto:kontenmanager@gmx.de',
     HELP_URL: 'https://kontenmanager8.wixsite.com/kontenmanager',
@@ -20,7 +21,14 @@ export const SYSTEM = Object.freeze({
         SRV: 'Remote Server error!',
         WRONG_PARAM: 'Wrong parameter!',
         SEND: 'Send message failed!',
-        PORT: 'Message port is missing!'
+        PORT: 'Message port is missing!',
+        WRITE_BUFFER_TO_FILE: 'Write buffer to file failed',
+        LOCALE5: 'Could not read the browser language',
+        NOTICE: 'Notification failed',
+        OPEN_OPTIONS: 'Open options page failed',
+        STORAGE_LOCAL: 'Storage local API failed',
+        TABS: 'Tabs API failed',
+        WINDOWS: 'Windows API failed'
     },
     ONCE: { once: true }
 });

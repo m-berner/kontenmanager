@@ -7,10 +7,10 @@
  */
 export const DATE = Object.freeze(
     {
-        //DEFAULT: 0,
         ISO: '1970-01-01',
-        //DEFAULT_YEAR: 1970,
         MILLI_PER_DAY: 86400000,
         MILLI_PER_MIN: 60000
     }
 )
+
+export type I_DATE = typeof DATE

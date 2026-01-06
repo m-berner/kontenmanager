@@ -550,7 +550,7 @@ export const useRecordsStore = defineStore('records', function () {
             cAskDates: DATE.ISO
         }, true);
         if (accountsStore.items.length === 0 && sessionStorage.getItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT) === null) {
-            info(messages.INFO_TITLE, messages.RESTRICTED_IMPORT, null);
+            info(messages.title, messages.smImportOnly, null);
             sessionStorage.setItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT, 'true');
         }
     }

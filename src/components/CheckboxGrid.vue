@@ -19,23 +19,19 @@ const {log} = useApp()
 const {BROWSER_STORAGE, COMPONENTS, SETTINGS} = useAppConfig()
 const {getStorage, setStorage} = useBrowser()
 
-const T = Object.freeze<{ STRINGS: Record<string, string> }>(
-    {
-        STRINGS: {
-            au: t('optionsIndex.materials.au'),
-            ag: t('optionsIndex.materials.ag'),
-            brent: t('optionsIndex.materials.brent'),
-            wti: t('optionsIndex.materials.wti'),
-            cu: t('optionsIndex.materials.cu'),
-            pt: t('optionsIndex.materials.pt'),
-            al: t('optionsIndex.materials.al'),
-            ni: t('optionsIndex.materials.ni'),
-            sn: t('optionsIndex.materials.sn'),
-            pb: t('optionsIndex.materials.pb'),
-            pd: t('optionsIndex.materials.pd')
-        }
-    }
-)
+const MATERIALS = {
+    au: t('screens.optionsIndex.materials.au'),
+    ag: t('screens.optionsIndex.materials.ag'),
+    brent: t('screens.optionsIndex.materials.brent'),
+    wti: t('screens.optionsIndex.materials.wti'),
+    cu: t('screens.optionsIndex.materials.cu'),
+    pt: t('screens.optionsIndex.materials.pt'),
+    al: t('screens.optionsIndex.materials.al'),
+    ni: t('screens.optionsIndex.materials.ni'),
+    sn: t('screens.optionsIndex.materials.sn'),
+    pb: t('screens.optionsIndex.materials.pb'),
+    pd: t('screens.optionsIndex.materials.pd')
+}
 
 const checked = ref<string[]>([])
 const isLoading = ref<boolean>(true)
@@ -84,10 +80,10 @@ const setChecked = async (): Promise<void> => {
         const checkedBoxes = checked.value
         switch (props.type) {
             case COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
-                await setStorage(BROWSER_STORAGE.PROPS.INDEXES, [...checkedBoxes])
+                await setStorage(BROWSER_STORAGE.LOCAL.INDEXES.key, [...checkedBoxes])
                 break
             case COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
-                await setStorage(BROWSER_STORAGE.PROPS.MATERIALS, [...checkedBoxes])
+                await setStorage(BROWSER_STORAGE.LOCAL.MATERIALS.key, [...checkedBoxes])
                 break
         }
     } catch (err) {
@@ -106,17 +102,17 @@ onBeforeMount(async () => {
     try {
         const storage = await getStorage(
             [
-                BROWSER_STORAGE.PROPS.INDEXES,
-                BROWSER_STORAGE.PROPS.MATERIALS
+                BROWSER_STORAGE.LOCAL.INDEXES.key,
+                BROWSER_STORAGE.LOCAL.MATERIALS.key
             ]
         )
 
         switch (props.type) {
             case COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
-                checked.value = storage[BROWSER_STORAGE.PROPS.INDEXES] as string[]
+                checked.value = storage[BROWSER_STORAGE.LOCAL.INDEXES.key] as string[]
                 break
             case COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
-                checked.value = storage[BROWSER_STORAGE.PROPS.MATERIALS] as string[]
+                checked.value = storage[BROWSER_STORAGE.LOCAL.MATERIALS.key] as string[]
                 break
         }
     } catch (err) {
@@ -159,7 +155,7 @@ log('--- CheckboxGrid.vue setup ---')
                 :key="item"
                 v-model="checked"
                 :disabled="isSaving"
-                :label="setLabel(item, T.STRINGS)"
+                :label="setLabel(item, MATERIALS)"
                 :value="item"
                 hide-details
                 @change="setChecked"
@@ -171,7 +167,7 @@ log('--- CheckboxGrid.vue setup ---')
                 :key="item"
                 v-model="checked"
                 :disabled="isSaving"
-                :label="setLabel(item, T.STRINGS)"
+                :label="setLabel(item, MATERIALS)"
                 :value="item"
                 hide-details
                 @change="setChecked"

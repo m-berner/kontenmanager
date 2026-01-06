@@ -33,10 +33,10 @@ const {activeAccountId} = storeToRefs(settings)
 const T = Object.freeze(
     {
         MESSAGES: {
-            ERROR_ONCLICK_OK: t('messages.onClickOk'),
-            SUCCESS_ADD: t('messages.addBooking.success'),
-            ERROR_ADD: t('messages.addBooking.error'),
-            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+            ERROR_ONCLICK_OK: t('components.dialogs.addBooking.messages.onClickOk'),
+            SUCCESS_ADD: t('components.dialogs.addBooking.messages.success'),
+            ERROR_ADD: t('components.dialogs.addBooking.messages.error'),
+            DB_NOT_CONNECTED: t('components.dialogs.addBooking.messages.dbNotConnected')
         },
         STRINGS: {
             TITLE: t('components.dialogs.addBooking.title')
@@ -68,13 +68,10 @@ const onClickOk = async (): Promise<void> => {
             records.bookings.add(booking, true)
             reset()
             await notice([T.MESSAGES.SUCCESS_ADD])
-        } catch (error) {
-            await handleError(
-                error,
-                log,
-                notice,
-                'ADD_BOOKING',
-                T.MESSAGES.ERROR_ONCLICK_OK
+        } catch (err) {
+            throw handleError(
+                T.MESSAGES.ERROR_ONCLICK_OK,
+                err
             )
         }
     })

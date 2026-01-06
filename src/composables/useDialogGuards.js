@@ -8,10 +8,9 @@ export function useDialogGuards() {
         }
         return true;
     }
-    async function handleError(error, log, notice, context, userMessage) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-        log(`${context}: Error`, { error: errorMessage, stack: error instanceof Error ? error.stack : undefined });
-        await notice([userMessage, errorMessage]);
+    function handleError(errorKey, err) {
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        return new Error(`${errorKey}: ${message}`);
     }
     async function withLoading(operation) {
         isLoading.value = true;

@@ -20,41 +20,34 @@ const {log} = useApp()
 const {ROUTES} = useAppConfig()
 const router = useRouter()
 
-const T = Object.freeze(
+const PARAGRAPHS = [
     {
-        GENERAL: {
-            TITLE: t('sheetContent.privacyContent.general.title'),
-            PARAGRAPHS: [
-                {
-                    SUBTITLE: t('sheetContent.privacyContent.general.paragraphs.local.subTitle'),
-                    CONTENT: t('sheetContent.privacyContent.general.paragraphs.local.content'),
-                    ICON: t('sheetContent.privacyContent.general.paragraphs.local.icon')
-                },
-                {
-                    SUBTITLE: t('sheetContent.privacyContent.general.paragraphs.public.subTitle'),
-                    CONTENT: t('sheetContent.privacyContent.general.paragraphs.public.content'),
-                    ICON: t('sheetContent.privacyContent.general.paragraphs.public.icon')
-                },
-                {
-                    SUBTITLE: t('sheetContent.privacyContent.general.paragraphs.connection.subTitle'),
-                    CONTENT: t('sheetContent.privacyContent.general.paragraphs.connection.content'),
-                    ICON: t('sheetContent.privacyContent.general.paragraphs.connection.icon')
-                }
-            ]
-        }
+        SUBTITLE: t('screens.sheetContent.privacyContent.general.paragraphs.local.subTitle'),
+        CONTENT: t('screens.sheetContent.privacyContent.general.paragraphs.local.content'),
+        ICON: t('screens.sheetContent.privacyContent.general.paragraphs.local.icon')
+    },
+    {
+        SUBTITLE: t('screens.sheetContent.privacyContent.general.paragraphs.public.subTitle'),
+        CONTENT: t('screens.sheetContent.privacyContent.general.paragraphs.public.content'),
+        ICON: t('screens.sheetContent.privacyContent.general.paragraphs.public.icon')
+    },
+    {
+        SUBTITLE: t('screens.sheetContent.privacyContent.general.paragraphs.connection.subTitle'),
+        CONTENT: t('screens.sheetContent.privacyContent.general.paragraphs.connection.content'),
+        ICON: t('screens.sheetContent.privacyContent.general.paragraphs.connection.icon')
     }
-)
+]
 
 let formatData: ComputedRef
 if (router.currentRoute.value.path === ROUTES.PRIVACY) {
     formatData = computed((): I_Content[] => {
         const data = []
-        for (let i = 0; i < T.GENERAL.PARAGRAPHS.length; i++) {
+        for (let i = 0; i < PARAGRAPHS.length; i++) {
             data.push(
                 {
-                    subTitle: T.GENERAL.PARAGRAPHS[i].SUBTITLE,
-                    content: T.GENERAL.PARAGRAPHS[i].CONTENT,
-                    icon: T.GENERAL.PARAGRAPHS[i].ICON
+                    subTitle: PARAGRAPHS[i].SUBTITLE,
+                    content: PARAGRAPHS[i].CONTENT,
+                    icon: PARAGRAPHS[i].ICON
                 }
             )
         }
@@ -70,7 +63,7 @@ log('--- SheetContent.vue setup ---')
         <v-container>
             <ContentCard
                 :data="formatData"
-                :title="T.GENERAL.TITLE"/>
+                :title="t('screens.sheetContent.privacyContent.general.title')"/>
         </v-container>
     </v-sheet>
 </template>

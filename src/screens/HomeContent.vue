@@ -13,12 +13,12 @@ import {useSettingsStore} from '@/stores/settings'
 import {useRecordsStore} from '@/stores/records'
 import {useApp} from '@/composables/useApp'
 import DotMenu from '@/components/DotMenu.vue'
-import type {I_Header, I_Menu_Item} from '@/types'
 import {useTheme} from 'vuetify'
 import {useBrowser} from '@/composables/useBrowser'
 import {useIndexedDB} from '@/composables/useIndexedDB'
 import {useKeyboardShortcuts} from '@/composables/useKeyboardShortcuts'
 import {useAppConfig} from '@/composables/useAppConfig'
+import type {I_Header, I_Menu_Item} from '@/types'
 
 const {d, n, t} = useI18n()
 const {log, utcDate} = useApp()
@@ -32,68 +32,59 @@ const {bookingsPerPage, skin} = storeToRefs(settings)
 const {setBookingsPerPage} = settings
 const theme = useTheme()
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>(
+const HEADERS: I_Header[] = [
     {
-        STRINGS: {
-            ITEMS_PER_PAGE_TEXT: t('homeContent.bookingsTable.itemsPerPageText'),
-            NO_DATA_TEXT: t('homeContent.bookingsTable.noDataText'),
-            SEARCH_LABEL: t('homeContent.search')
-        },
-        HEADERS: [
-            {
-                title: t('homeContent.bookingsTable.headers.action'),
-                align: 'start',
-                sortable: false,
-                key: 'mAction'
-            },
-            {
-                title: t('homeContent.bookingsTable.headers.date'),
-                align: 'start',
-                sortable: false,
-                key: 'cDate'
-            },
-            {
-                title: t('homeContent.bookingsTable.headers.debit'),
-                align: 'start',
-                sortable: false,
-                key: 'cDebit'
-            },
-            {
-                title: t('homeContent.bookingsTable.headers.credit'),
-                align: 'start',
-                sortable: false,
-                key: 'cCredit'
-            },
-            {
-                title: t('homeContent.bookingsTable.headers.description'),
-                align: 'start',
-                sortable: false,
-                key: 'cDescription'
-            },
-            {
-                title: t('homeContent.bookingsTable.headers.bookingType'),
-                align: 'start',
-                sortable: false,
-                key: 'cBookingType'
-            }
-        ],
-        MENU_ITEMS: [
-            {
-                id: 'delete-booking',
-                title: t('homeContent.bookingsTable.menuItems.delete'),
-                icon: '$deleteBooking',
-                action: 'deleteBooking'
-            },
-            {
-                id: 'update-booking',
-                title: t('homeContent.bookingsTable.menuItems.update'),
-                icon: '$updateBooking',
-                action: 'updateBooking',
-                variant: 'danger'
-            }
-        ]
+        title: t('screens.homeContent.bookingsTable.headers.action'),
+        align: 'start',
+        sortable: false,
+        key: 'mAction'
+    },
+    {
+        title: t('screens.homeContent.bookingsTable.headers.date'),
+        align: 'start',
+        sortable: false,
+        key: 'cDate'
+    },
+    {
+        title: t('screens.homeContent.bookingsTable.headers.debit'),
+        align: 'start',
+        sortable: false,
+        key: 'cDebit'
+    },
+    {
+        title: t('screens.homeContent.bookingsTable.headers.credit'),
+        align: 'start',
+        sortable: false,
+        key: 'cCredit'
+    },
+    {
+        title: t('screens.homeContent.bookingsTable.headers.description'),
+        align: 'start',
+        sortable: false,
+        key: 'cDescription'
+    },
+    {
+        title: t('screens.homeContent.bookingsTable.headers.bookingType'),
+        align: 'start',
+        sortable: false,
+        key: 'cBookingType'
     }
-)
+]
+const MENU_ITEMS: I_Menu_Item[] = [
+    {
+        id: 'delete-booking',
+        title: t('screens.homeContent.bookingsTable.menuItems.delete'),
+        icon: '$deleteBooking',
+        action: 'deleteBooking'
+    },
+    {
+        id: 'update-booking',
+        title: t('screens.homeContent.bookingsTable.menuItems.update'),
+        icon: '$updateBooking',
+        action: 'updateBooking',
+        variant: 'danger'
+    }
+]
 
 const search = ref<string>('')
 
@@ -102,26 +93,26 @@ const onChangeHandler = (changes: Record<string, browser.storage.StorageChange>)
     const changesKey = Object.keys(changes)
     const {service, indexes, markets, materials, exchanges} = storeToRefs(settings)
     switch (changesKey[0]) {
-        case BROWSER_STORAGE.PROPS.SKIN:
+        case BROWSER_STORAGE.LOCAL.SKIN.key:
             if (theme?.global?.name) {
-                theme.global.name.value = changes[BROWSER_STORAGE.PROPS.SKIN].newValue
+                theme.global.name.value = changes[BROWSER_STORAGE.LOCAL.SKIN.key].newValue
             }
-            skin.value = changes[BROWSER_STORAGE.PROPS.SKIN].newValue
+            skin.value = changes[BROWSER_STORAGE.LOCAL.SKIN.key].newValue
             break
-        case BROWSER_STORAGE.PROPS.SERVICE:
-            service.value = changes[BROWSER_STORAGE.PROPS.SERVICE].newValue
+        case BROWSER_STORAGE.LOCAL.SERVICE.key:
+            service.value = changes[BROWSER_STORAGE.LOCAL.SERVICE.key].newValue
             break
-        case BROWSER_STORAGE.PROPS.INDEXES:
-            indexes.value = changes[BROWSER_STORAGE.PROPS.INDEXES].newValue
+        case BROWSER_STORAGE.LOCAL.INDEXES.key:
+            indexes.value = changes[BROWSER_STORAGE.LOCAL.INDEXES.key].newValue
             break
-        case BROWSER_STORAGE.PROPS.MARKETS:
-            markets.value = changes[BROWSER_STORAGE.PROPS.MARKETS].newValue
+        case BROWSER_STORAGE.LOCAL.MARKETS.key:
+            markets.value = changes[BROWSER_STORAGE.LOCAL.MARKETS.key].newValue
             break
-        case BROWSER_STORAGE.PROPS.MATERIALS:
-            materials.value = changes[BROWSER_STORAGE.PROPS.MATERIALS].newValue
+        case BROWSER_STORAGE.LOCAL.MATERIALS.key:
+            materials.value = changes[BROWSER_STORAGE.LOCAL.MATERIALS.key].newValue
             break
-        case BROWSER_STORAGE.PROPS.EXCHANGES:
-            exchanges.value = changes[BROWSER_STORAGE.PROPS.EXCHANGES].newValue
+        case BROWSER_STORAGE.LOCAL.EXCHANGES.key:
+            exchanges.value = changes[BROWSER_STORAGE.LOCAL.EXCHANGES.key].newValue
             break
         default:
     }
@@ -155,21 +146,21 @@ log('--- HomeContent.vue setup ---')
 <template>
     <v-text-field
         v-model="search"
-        :label="T.STRINGS.SEARCH_LABEL"
+        :label="t('screens.homeContent.search')"
         density="compact"
         hide-details
         prepend-inner-icon="$magnify"
         single-line
         variant="outlined"/>
     <v-data-table
-        :headers="T.HEADERS"
+        :headers="HEADERS"
         :hide-no-data="false"
         :hover="true"
         :items="bookingItems"
         :items-per-page="bookingsPerPage"
         :items-per-page-options="SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-        :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
-        :no-data-text="T.STRINGS.NO_DATA_TEXT"
+        :items-per-page-text="t('screens.homeContent.bookingsTable.itemsPerPageText')"
+        :no-data-text="t('screens.homeContent.bookingsTable.noDataText')"
         :search="search"
         density="compact"
         item-key="cID"
@@ -179,7 +170,7 @@ log('--- HomeContent.vue setup ---')
                 <td class="d-none">{{ item.cID }}</td>
                 <td>
                     <DotMenu
-                        :items="T.MENU_ITEMS"
+                        :items="MENU_ITEMS"
                         :record-id="item.cID!"/>
                 </td>
                 <td>{{ d(utcDate(item.cBookDate), 'short') }}</td>

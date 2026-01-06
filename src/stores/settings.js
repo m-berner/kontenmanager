@@ -7,46 +7,46 @@ const { log } = useApp();
 const { BROWSER_STORAGE } = useAppConfig();
 const { setStorage } = useBrowser();
 export const useSettingsStore = defineStore('settings', function () {
-    const skin = ref(BROWSER_STORAGE.SKIN);
-    const bookingsPerPage = ref(BROWSER_STORAGE.BOOKINGS_PER_PAGE);
-    const stocksPerPage = ref(BROWSER_STORAGE.STOCKS_PER_PAGE);
-    const dividendsPerPage = ref(BROWSER_STORAGE.DIVIDENDS_PER_PAGE);
-    const sumsPerPage = ref(BROWSER_STORAGE.SUMS_PER_PAGE);
+    const skin = ref(BROWSER_STORAGE.LOCAL.SKIN.value);
+    const bookingsPerPage = ref(BROWSER_STORAGE.LOCAL.BOOKINGS_PER_PAGE.value);
+    const stocksPerPage = ref(BROWSER_STORAGE.LOCAL.STOCKS_PER_PAGE.value);
+    const dividendsPerPage = ref(BROWSER_STORAGE.LOCAL.DIVIDENDS_PER_PAGE.value);
+    const sumsPerPage = ref(BROWSER_STORAGE.LOCAL.SUMS_PER_PAGE.value);
     const activeAccountId = ref(-1);
-    const service = ref(BROWSER_STORAGE.SERVICE);
-    const materials = ref(BROWSER_STORAGE.MATERIALS);
-    const markets = ref(BROWSER_STORAGE.MARKETS);
-    const indexes = ref(BROWSER_STORAGE.INDEXES);
-    const exchanges = ref(BROWSER_STORAGE.EXCHANGES);
+    const service = ref(BROWSER_STORAGE.LOCAL.SERVICE.value);
+    const materials = ref(BROWSER_STORAGE.LOCAL.MATERIALS.value);
+    const markets = ref(BROWSER_STORAGE.LOCAL.MARKETS.value);
+    const indexes = ref(BROWSER_STORAGE.LOCAL.INDEXES.value);
+    const exchanges = ref(BROWSER_STORAGE.LOCAL.EXCHANGES.value);
     function init(storage) {
         log('SETTINGS: init');
-        skin.value = storage[BROWSER_STORAGE.PROPS.SKIN];
-        bookingsPerPage.value = storage[BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE];
-        stocksPerPage.value = storage[BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE];
-        dividendsPerPage.value = storage[BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE];
-        sumsPerPage.value = storage[BROWSER_STORAGE.PROPS.SUMS_PER_PAGE];
-        activeAccountId.value = storage[BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID];
-        service.value = storage[BROWSER_STORAGE.PROPS.SERVICE];
-        materials.value = [...storage[BROWSER_STORAGE.PROPS.MATERIALS]];
-        markets.value = [...storage[BROWSER_STORAGE.PROPS.MARKETS]];
-        indexes.value = [...storage[BROWSER_STORAGE.PROPS.INDEXES]];
-        exchanges.value = [...storage[BROWSER_STORAGE.PROPS.EXCHANGES]];
+        skin.value = storage[BROWSER_STORAGE.LOCAL.SKIN.key];
+        bookingsPerPage.value = storage[BROWSER_STORAGE.LOCAL.BOOKINGS_PER_PAGE.key];
+        stocksPerPage.value = storage[BROWSER_STORAGE.LOCAL.STOCKS_PER_PAGE.key];
+        dividendsPerPage.value = storage[BROWSER_STORAGE.LOCAL.DIVIDENDS_PER_PAGE.key];
+        sumsPerPage.value = storage[BROWSER_STORAGE.LOCAL.SUMS_PER_PAGE.key];
+        activeAccountId.value = storage[BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key];
+        service.value = storage[BROWSER_STORAGE.LOCAL.SERVICE.key];
+        materials.value = [...storage[BROWSER_STORAGE.LOCAL.MATERIALS.key]];
+        markets.value = [...storage[BROWSER_STORAGE.LOCAL.MARKETS.key]];
+        indexes.value = [...storage[BROWSER_STORAGE.LOCAL.INDEXES.key]];
+        exchanges.value = [...storage[BROWSER_STORAGE.LOCAL.EXCHANGES.key]];
     }
     async function setSumsPerPage(v) {
         sumsPerPage.value = v;
-        await setStorage(BROWSER_STORAGE.PROPS.SUMS_PER_PAGE, v);
+        await setStorage(BROWSER_STORAGE.LOCAL.SUMS_PER_PAGE.key, v);
     }
     async function setBookingsPerPage(v) {
         bookingsPerPage.value = v;
-        await setStorage(BROWSER_STORAGE.PROPS.BOOKINGS_PER_PAGE, v);
+        await setStorage(BROWSER_STORAGE.LOCAL.BOOKINGS_PER_PAGE.key, v);
     }
     async function setStocksPerPage(v) {
         stocksPerPage.value = v;
-        await setStorage(BROWSER_STORAGE.PROPS.STOCKS_PER_PAGE, v);
+        await setStorage(BROWSER_STORAGE.LOCAL.STOCKS_PER_PAGE.key, v);
     }
     async function setDividendsPerPage(v) {
         dividendsPerPage.value = v;
-        await setStorage(BROWSER_STORAGE.PROPS.DIVIDENDS_PER_PAGE, v);
+        await setStorage(BROWSER_STORAGE.LOCAL.DIVIDENDS_PER_PAGE.key, v);
     }
     return {
         skin,

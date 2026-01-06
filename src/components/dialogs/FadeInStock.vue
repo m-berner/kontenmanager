@@ -27,9 +27,9 @@ const records = useRecordsStore()
 const T = Object.freeze(
     {
         MESSAGES: {
-            SUCCESS_FADE_IN: t('messages.fadeInStock.success'),
-            ERROR_ONCLICK_OK: t('messages.onClickOk'),
-            DB_NOT_CONNECTED: t('messages.dbNotConnected'),
+            SUCCESS_FADE_IN: t('components.dialogs.fadeInStock.messages.success'),
+            ERROR_ONCLICK_OK: t('components.dialogs.fadeInStock.messages.onClickOk'),
+            DB_NOT_CONNECTED: t('components.dialogs.fadeInStock.messages.dbNotConnected'),
             NO_STOCK_SELECTED: t('messages.noStockSelected')
         },
         STRINGS: {
@@ -62,13 +62,10 @@ const onClickOk = async (): Promise<void> => {
             await notice([T.MESSAGES.SUCCESS_FADE_IN])
             runtime.resetTeleport()
 
-        } catch (error) {
-            await handleError(
-                error,
-                log,
-                notice,
-                'FADE_IN_STOCK',
-                T.MESSAGES.ERROR_ONCLICK_OK
+        } catch (err) {
+            throw handleError(
+                T.MESSAGES.ERROR_ONCLICK_OK,
+                err
             )
         }
     })

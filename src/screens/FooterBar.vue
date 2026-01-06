@@ -15,16 +15,6 @@ const {t} = useI18n()
 const {log} = useApp()
 const {ROUTES, SYSTEM} = useAppConfig()
 
-const T = Object.freeze(
-    {
-        STRINGS: {
-            HELP: t('footerBar.help'),
-            PRIVACY: t('footerBar.privacy'),
-            MAIL: t('footerBar.mail')
-        }
-    }
-)
-
 log('--- FooterBar.vue setup ---')
 </script>
 
@@ -36,19 +26,19 @@ log('--- FooterBar.vue setup ---')
                rel="noopener noreferrer"
                target="_blank">
                 <v-icon icon="$help"/>
-                <div>{{ T.STRINGS.HELP }}</div>
+                <div>{{ t('screens.footerBar.help') }}</div>
             </a>
         </v-btn>
         <v-btn color="white">
             <RouterLink :to="ROUTES.PRIVACY" class="router-link-active">
                 <v-icon icon="
         $privacy"/>
-                <div>{{ T.STRINGS.PRIVACY }}</div>
+                <div>{{ t('screens.footerBar.privacy') }}</div>
             </RouterLink>
         </v-btn>
         <v-btn :href="SYSTEM.MAILTO" color="white">
             <v-icon icon="$mail"/>
-            <div>{{ T.STRINGS.MAIL }}</div>
+            <div>{{ t('screens.footerBar.help') }}</div>
         </v-btn>
         <v-btn :disabled="true" color="white">
             <v-icon icon="$mdiCopyright"/>

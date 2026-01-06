@@ -19,32 +19,28 @@ const {t} = useI18n()
 const {log} = useApp()
 const {COMPONENTS} = useAppConfig()
 
-const T = Object.freeze(
+const TABS = [
     {
-        TABS: [
-            {
-                title: t('optionsIndex.tabs.ge'),
-                id: 'register_ge'
-            },
-            {
-                title: t('optionsIndex.tabs.mp'),
-                id: 'register_mp'
-            },
-            {
-                title: t('optionsIndex.tabs.ind'),
-                id: 'register_ind'
-            },
-            {
-                title: t('optionsIndex.tabs.mat'),
-                id: 'register_mat'
-            },
-            {
-                title: t('optionsIndex.tabs.ex'),
-                id: 'register_ex'
-            }
-        ]
+        title: t('screens.optionsIndex.tabs.ge'),
+        id: 'register_ge'
+    },
+    {
+        title: t('screens.optionsIndex.tabs.mp'),
+        id: 'register_mp'
+    },
+    {
+        title: t('screens.optionsIndex.tabs.ind'),
+        id: 'register_ind'
+    },
+    {
+        title: t('screens.optionsIndex.tabs.mat'),
+        id: 'register_mat'
+    },
+    {
+        title: t('screens.optionsIndex.tabs.ex'),
+        id: 'register_ex'
     }
-)
+]
 
 const tab = ref<number>(0)
 
@@ -56,7 +52,7 @@ log('--- OptionsIndex.vue setup ---', {info: window.location.href})
         <v-main>
             <v-container>
                 <v-tabs v-model="tab" show-arrows>
-                    <v-tab v-for="(item, index) in T.TABS" :key="item.id" :value="index">
+                    <v-tab v-for="(item, index) in TABS" :key="item.id" :value="index">
                         {{ item.title }}
                     </v-tab>
                 </v-tabs>

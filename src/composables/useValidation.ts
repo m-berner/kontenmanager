@@ -286,7 +286,7 @@ export function useValidation() {
             checkSum(msgArray[4])
         ]
     }
-    //TODO test validations!!!
+
     return {
         ibanRules,
         isinRules,

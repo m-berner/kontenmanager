@@ -36,16 +36,16 @@ const records = useRecordsStore()
 const T = Object.freeze(
     {
         MESSAGES: {
-            SUCCESS_ADD: t('messages.addAccount.success'),
-            ERROR_ADD: t('messages.addAccount.error'),
-            ERROR_ONCLICK_OK: t('messages.onClickOk'),
-            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+            SUCCESS_ADD: t('components.dialogs.addAccount.messages.success'),
+            ERROR_ADD: t('components.dialogs.addAccount.messages.error'),
+            ERROR_ONCLICK_OK: t('components.dialogs.addAccount.messages.onClickOk'),
+            DB_NOT_CONNECTED: t('components.dialogs.addAccount.messages.dbNotConnected')
         },
         STRINGS: {
             TITLE: t('components.dialogs.addAccount.title'),
-            BUY: t('names.bookingTypes.buy'),
-            SELL: t('names.bookingTypes.sell'),
-            DIVIDEND: t('names.bookingTypes.dividend')
+            BUY: t('components.dialogs.addAccount.bookingTypes.buy'),
+            SELL: t('components.dialog.addAccount.bookingTypes.sell'),
+            DIVIDEND: t('components.dialogs.addAccount.bookingTypes.dividend')
         }
     }
 )
@@ -112,7 +112,7 @@ const onClickOk = async (): Promise<void> => {
             records.accounts.add(account)
 
             activeAccountId.value = addAccountID
-            await setStorage(BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, addAccountID)
+            await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, addAccountID)
 
             // Add booking types with rollback support
             const bookingTypesAdded = await addBookingTypesForAccount(addAccountID)
@@ -129,13 +129,10 @@ const onClickOk = async (): Promise<void> => {
             resetTeleport()
             reset()
             await notice([T.MESSAGES.SUCCESS_ADD])
-        } catch (error) {
-            await handleError(
-                error,
-                log,
-                notice,
-                'ADD_ACCOUNT',
-                T.MESSAGES.ERROR_ONCLICK_OK
+        } catch (err) {
+            throw handleError(
+                T.MESSAGES.ERROR_ONCLICK_OK,
+                err
             )
         }
     })
