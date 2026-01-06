@@ -28,10 +28,10 @@ const runtime = useRuntimeStore()
 const T = Object.freeze(
     {
         MESSAGES: {
-            SUCCESS_DELETE: t('messages.deleteBookingType.success'),
-            ERROR_IN_USE: t('messages.deleteBookingType.error'),
-            ERROR_ONCLICK_OK: t('messages.onClickOk'),
-            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+            SUCCESS_DELETE: t('components.dialogs.deleteBookingType.messages.success'),
+            ERROR_IN_USE: t('components.dialogs.deleteBookingType.messages.error'),
+            ERROR_ONCLICK_OK: t('components.dialogs.deleteBookingType.messages.onClickOk'),
+            DB_NOT_CONNECTED: t('components.dialogs.deleteBookingType.messages.dbNotConnected')
         },
         STRINGS: {
             TITLE: t('components.dialogs.deleteBookingType.title'),
@@ -70,13 +70,10 @@ const onClickOk = async (): Promise<void> => {
             await remove(selected.value!)
             await notice([T.MESSAGES.SUCCESS_DELETE])
             runtime.resetTeleport()
-        } catch (error) {
-            await handleError(
-                error,
-                log,
-                notice,
-                'DELETE_BOOKING_TYPE',
-                T.MESSAGES.ERROR_ONCLICK_OK
+        } catch (err) {
+            throw handleError(
+                T.MESSAGES.ERROR_ONCLICK_OK,
+                err
             )
         }
     })

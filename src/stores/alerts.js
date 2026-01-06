@@ -2,12 +2,24 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useApp } from '@/composables/useApp';
 const defaultAlert = { id: -1, type: undefined, title: '', message: '' };
+const defaultConfirmation = {
+    id: -1,
+    title: '',
+    message: '',
+    confirmText: 'Confirm',
+    cancelText: 'Cancel',
+    type: 'warning',
+    resolve: () => { },
+    reject: () => { }
+};
 const alerts = ref([]);
 const currentAlert = ref(defaultAlert);
+const confirmationDialog = ref(defaultConfirmation);
 const { log } = useApp();
 export const useAlertStore = defineStore('alert', () => {
     const pendingCount = computed(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1);
     const showOverlay = computed(() => currentAlert.value.id > -1);
+    const showConfirmation = computed(() => confirmationDialog.value.id > -1);
     const alertType = computed(() => currentAlert.value?.type || 'info');
     const alertTitle = computed(() => currentAlert.value?.title || '');
     const alertMessage = computed(() => currentAlert.value?.message || '');
@@ -54,14 +66,51 @@ export const useAlertStore = defineStore('alert', () => {
     function info(title, message, duration = null) {
         return showAlert('info', title, message, duration);
     }
+    function confirm(title, message, options) {
+        return new Promise((resolve, _reject) => {
+            const id = Date.now() + Math.random();
+            confirmationDialog.value = {
+                id,
+                title,
+                message,
+                confirmText: options?.confirmText || 'Confirm',
+                cancelText: options?.cancelText || 'Cancel',
+                type: options?.type || 'warning',
+                resolve: () => {
+                    confirmationDialog.value = { ...defaultConfirmation };
+                    resolve(true);
+                },
+                reject: () => {
+                    confirmationDialog.value = { ...defaultConfirmation };
+                    resolve(false);
+                }
+            };
+        });
+    }
+    function handleConfirm() {
+        if (confirmationDialog.value.resolve) {
+            confirmationDialog.value.resolve();
+        }
+    }
+    function handleCancel() {
+        if (confirmationDialog.value.reject) {
+            confirmationDialog.value.reject();
+        }
+    }
     function clearAll() {
         alerts.value = [];
         currentAlert.value = { ...defaultAlert };
+        if (confirmationDialog.value.reject) {
+            confirmationDialog.value.reject();
+        }
+        confirmationDialog.value = { ...defaultConfirmation };
     }
     return {
         currentAlert,
+        confirmationDialog,
         pendingCount,
         showOverlay,
+        showConfirmation,
         alertType,
         alertTitle,
         alertMessage,
@@ -72,6 +121,9 @@ export const useAlertStore = defineStore('alert', () => {
         error,
         warning,
         info,
+        confirm,
+        handleConfirm,
+        handleCancel,
         clearAll
     };
 });

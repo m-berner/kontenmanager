@@ -28,104 +28,95 @@ const {setStocksPerPage} = settings
 const runtime = useRuntimeStore()
 const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
 
-// constants
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[], MENU_ITEMS: I_Menu_Item[] }>(
+const HEADERS: I_Header[] = [
     {
-        STRINGS: {
-            ITEMS_PER_PAGE_TEXT: t('companyContent.stocksTable.itemsPerPageText'),
-            NO_DATA_TEXT: t('companyContent.stocksTable.noDataText')
-        },
-        HEADERS: [
-            {
-                title: t('companyContent.stocksTable.headers.action'),
-                align: 'start',
-                sortable: false,
-                key: 'mAction'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.company'),
-                align: 'start',
-                sortable: true,
-                key: 'cCompany'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.isin'),
-                align: 'start',
-                sortable: false,
-                key: 'cISIN'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.qf'),
-                align: 'start',
-                sortable: false,
-                key: 'cQuarterDay'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.gm'),
-                align: 'start',
-                sortable: false,
-                key: 'cMeetingDay'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.portfolio'),
-                align: 'start',
-                sortable: true,
-                key: 'mPortfolio'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.winLoss'),
-                align: 'start',
-                sortable: false,
-                key: 'mEuroChange'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.52low'),
-                align: 'start',
-                sortable: false,
-                key: 'mMin'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.rate'),
-                align: 'start',
-                sortable: false,
-                key: 'mValue'
-            },
-            {
-                title: t('companyContent.stocksTable.headers.52high'),
-                align: 'start',
-                sortable: false,
-                key: 'mMax'
-            }
-        ],
-        MENU_ITEMS: [
-            {
-                id: 'update-stock',
-                title: t('companyContent.stocksTable.menuItems.update'),
-                icon: '$showCompany',
-                action: 'updateStock'
-            },
-            {
-                id: 'show-dividend',
-                title: t('companyContent.stocksTable.menuItems.dividend'),
-                icon: '$showDividend',
-                action: 'showDividend'
-            },
-            {
-                id: 'open-link',
-                title: t('companyContent.stocksTable.menuItems.link'),
-                icon: '$link',
-                action: 'openLink'
-            },
-            {
-                id: 'delete-stock',
-                title: t('companyContent.stocksTable.menuItems.delete'),
-                icon: '$deleteCompany',
-                action: 'deleteStock',
-                variant: 'danger'
-            }
-        ]
+        title: t('screens.companyContent.stocksTable.headers.action'),
+        align: 'start',
+        sortable: false,
+        key: 'mAction'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.company'),
+        align: 'start',
+        sortable: true,
+        key: 'cCompany'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.isin'),
+        align: 'start',
+        sortable: false,
+        key: 'cISIN'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.qf'),
+        align: 'start',
+        sortable: false,
+        key: 'cQuarterDay'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.gm'),
+        align: 'start',
+        sortable: false,
+        key: 'cMeetingDay'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.portfolio'),
+        align: 'start',
+        sortable: true,
+        key: 'mPortfolio'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.winLoss'),
+        align: 'start',
+        sortable: false,
+        key: 'mEuroChange'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.52low'),
+        align: 'start',
+        sortable: false,
+        key: 'mMin'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.rate'),
+        align: 'start',
+        sortable: false,
+        key: 'mValue'
+    },
+    {
+        title: t('screens.companyContent.stocksTable.headers.52high'),
+        align: 'start',
+        sortable: false,
+        key: 'mMax'
     }
-)
+]
+const MENU_ITEMS: I_Menu_Item[] = [
+    {
+        id: 'update-stock',
+        title: t('screens.companyContent.stocksTable.menuItems.update'),
+        icon: '$showCompany',
+        action: 'updateStock'
+    },
+    {
+        id: 'show-dividend',
+        title: t('screens.companyContent.stocksTable.menuItems.dividend'),
+        icon: '$showDividend',
+        action: 'showDividend'
+    },
+    {
+        id: 'open-link',
+        title: t('screens.companyContent.stocksTable.menuItems.link'),
+        icon: '$link',
+        action: 'openLink'
+    },
+    {
+        id: 'delete-stock',
+        title: t('screens.companyContent.stocksTable.menuItems.delete'),
+        icon: '$deleteCompany',
+        action: 'deleteStock',
+        variant: 'danger'
+    }
+]
 
 const winLossClass = computed(() => {
     return (value: number): Record<string, boolean> => ({
@@ -171,15 +162,15 @@ log('--- CompanyContent.vue setup ---')
 
 <template>
     <v-data-table
-        :headers="T.HEADERS"
+        :headers="HEADERS"
         :hide-no-data="false"
         :hover="true"
         :items="activeStockItems"
         :items-per-page="stocksPerPage"
         :items-per-page-options="SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-        :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
+        :items-per-page-text="t('screens.companyContent.stocksTable.itemsPerPageText')"
         :loading="isStockLoading"
-        :no-data-text="T.STRINGS.NO_DATA_TEXT"
+        :no-data-text="t('screens.companyContent.stocksTable.noDataText')"
         density="compact"
         item-key="cID"
         @update:items-per-page="setStocksPerPage"
@@ -189,7 +180,7 @@ log('--- CompanyContent.vue setup ---')
                 <td class="d-none">{{ item.cID }}</td>
                 <td>
                     <DotMenu
-                        :items="T.MENU_ITEMS"
+                        :items="MENU_ITEMS"
                         :record-id="item.cID!"/>
                 </td>
                 <td>{{ item.cCompany }}</td>

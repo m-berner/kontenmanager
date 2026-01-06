@@ -34,10 +34,10 @@ const formRef = ref<HTMLFormElement | null>(null)
 const T = Object.freeze(
     {
         MESSAGES: {
-            SUCCESS_ADD: t('messages.addBookingType.success'),
-            ERROR_DUPLICATE: t('messages.addBookingType.error'),
-            ERROR_ONCLICK_OK: t('messages.onClickOk'),
-            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+            SUCCESS_ADD: t('components.dialogs.addBookingType.messages.success'),
+            ERROR_DUPLICATE: t('components.dialogs.addBookingType.messages.error'),
+            ERROR_ONCLICK_OK: t('components.dialogs.addBookingType.messages.onClickOk'),
+            DB_NOT_CONNECTED: t('components.dialogs.addBookingType.messages.dbNotConnected')
         },
         STRINGS: {
             TITLE: t('components.dialogs.addBookingType.title'),
@@ -89,13 +89,10 @@ const onClickOk = async (): Promise<void> => {
             reset()
             await notice([T.MESSAGES.SUCCESS_ADD])
 
-        } catch (error) {
-            await handleError(
-                error,
-                log,
-                notice,
-                'ADD_BOOKING_TYPE',
-                T.MESSAGES.ERROR_ONCLICK_OK
+        } catch (err) {
+            throw handleError(
+                T.MESSAGES.ERROR_ONCLICK_OK,
+                err
             )
         }
     })

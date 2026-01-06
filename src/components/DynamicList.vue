@@ -24,17 +24,6 @@ const {BROWSER_STORAGE, COMPONENTS} = useAppConfig()
 const {getStorage, setStorage} = useBrowser()
 const {fetchExchangesData} = useFetch()
 
-const T = Object.freeze(
-    {
-        STRINGS: {
-            EXCHANGES_LABEL: t('optionsIndex.exchanges.label'),
-            MARKETS_LABEL: t('optionsIndex.markets.label'),
-            EXCHANGES_TITLE: t('optionsIndex.exchanges.title'),
-            MARKETS_TITLE: t('optionsIndex.markets.title')
-        }
-    }
-)
-
 const newItem = ref<string>('')
 const list = ref<string[]>([])
 
@@ -46,10 +35,10 @@ const label = computed<string>(() => {
     let resultLabel = 'Error'
     switch (props.type) {
         case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-            resultLabel = T.STRINGS.EXCHANGES_LABEL
+            resultLabel = t('screens.optionsIndex.exchanges.label')
             break
         case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-            resultLabel = T.STRINGS.MARKETS_LABEL
+            resultLabel = t('screens.optionsIndex.markets.label')
             break
         default:
     }
@@ -59,10 +48,10 @@ const title = computed<string>(() => {
     let resultTitle = 'Error'
     switch (props.type) {
         case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-            resultTitle = T.STRINGS.EXCHANGES_TITLE
+            resultTitle = t('screens.optionsIndex.exchanges.title')
             break
         case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-            resultTitle = T.STRINGS.MARKETS_TITLE
+            resultTitle = t('screens.optionsIndex.markets.title')
             break
         default:
     }
@@ -85,12 +74,12 @@ const addItem = async (item: string): Promise<void> => {
                 case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
                     list.value.push(item)
                     markets.value.push(item)
-                    await setStorage(BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
+                    await setStorage(BROWSER_STORAGE.LOCAL.MARKETS.key, [...list.value])
                     break
                 case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
                     list.value.push(item.toUpperCase())
                     exchanges.value.push(item.toUpperCase())
-                    await setStorage(BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
+                    await setStorage(BROWSER_STORAGE.LOCAL.EXCHANGES.key, [...list.value])
                     const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData([newItem.value])
                     infoExchanges.value.set(exchanges.value[exchanges.value.length - 1], exchangesInfoData[0].value)
                     break
@@ -117,10 +106,10 @@ const removeItem = async (n: number): Promise<void> => {
         newItem.value = ''
         switch (props.type) {
             case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-                await setStorage(BROWSER_STORAGE.PROPS.MARKETS, [...list.value])
+                await setStorage(BROWSER_STORAGE.LOCAL.MARKETS.key, [...list.value])
                 break
             case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-                await setStorage(BROWSER_STORAGE.PROPS.EXCHANGES, [...list.value])
+                await setStorage(BROWSER_STORAGE.LOCAL.EXCHANGES.key, [...list.value])
                 break
             default:
         }
@@ -136,13 +125,13 @@ onBeforeMount(async () => {
     error.value = null
 
     try {
-        const storage = await getStorage([BROWSER_STORAGE.PROPS.MARKETS, BROWSER_STORAGE.PROPS.EXCHANGES])
+        const storage = await getStorage([BROWSER_STORAGE.LOCAL.MARKETS.key, BROWSER_STORAGE.LOCAL.EXCHANGES.key])
         switch (props.type) {
             case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-                list.value = storage[BROWSER_STORAGE.PROPS.EXCHANGES] as string[]
+                list.value = storage[BROWSER_STORAGE.LOCAL.EXCHANGES.key] as string[]
                 break
             case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-                list.value = storage[BROWSER_STORAGE.PROPS.MARKETS] as string[]
+                list.value = storage[BROWSER_STORAGE.LOCAL.MARKETS.key] as string[]
                 break
         }
     } catch (err) {

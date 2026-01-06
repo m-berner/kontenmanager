@@ -51,6 +51,12 @@ export interface I_Backup {
     transfers?: I_Booking_SM[]
 }
 
+export interface I_Backup_Validation {
+    isValid: boolean
+    version: number
+    error?: string
+}
+
 export interface I_Booking_DB {
     cID: number | undefined
     cBookDate: string
@@ -144,6 +150,17 @@ export interface I_Company_Data {
     symbol: string
 }
 
+export interface I_Confirmation_Dialog {
+    id: number
+    title: string
+    message: string
+    confirmText: string
+    cancelText: string
+    type: 'error' | 'success' | 'warning' | 'info'
+    resolve: () => void
+    reject: () => void
+}
+
 export interface I_Content {
     readonly subTitle: string
     readonly content: string
@@ -210,6 +227,38 @@ export interface I_Header {
 
 export interface I_I18n {
     i18n: I18n<{ 'de-DE': T_Message_Schema, 'en-US': T_Message_Schema }>
+}
+
+export interface I_Import_Export_Service {
+    validateDataIntegrity(_backup: I_Backup): string[]
+    validateLegacyDataIntegrity(_backup: I_Backup): string[]
+    transformLegacyStock(_rec: I_Legacy_Stock, _activeId: number): I_Stock_DB
+    transformLegacyBooking(_smTransfer: I_Booking_SM, _index: number, _activeId: number): I_Booking_DB
+    stringifyDatabase(
+        _sm: any,
+        _accounts: I_Account_DB[],
+        _stocks: I_Stock_DB[],
+        _bookingTypes: I_Booking_Type_DB[],
+        _bookings: I_Booking_DB[]
+    ): string
+}
+
+export interface I_Legacy_Stock {
+    cID: number
+    cSym: string
+    cMeetingDay: number
+    cQuarterDay: number
+    cCompany: string
+    cISIN: string
+    cFadeOut: number
+    cFirstPage: number
+    cURL: string
+}
+
+export interface I_Metadata {
+    cVersion: number
+    cDBVersion: number
+    cEngine: string
 }
 
 export interface I_String_Number {
@@ -351,6 +400,14 @@ export interface I_Records_Store {
     bookings: I_Booking_Store[],
     bookingTypes: I_Booking_Type_Store[],
     stocks: I_Stock_Store[]
+}
+
+export interface I_Rollback_Data {
+    accounts: I_Account_DB[]
+    stocks: I_Stock_DB[]
+    bookingTypes: I_Booking_Type_DB[]
+    bookings: I_Booking_DB[]
+    activeAccountId: number
 }
 
 export interface I_Storage_Local {

@@ -35,22 +35,10 @@ const {BROWSER_STORAGE, COMPONENTS} = useAppConfig()
 const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            INFO_TITLE: t('messages.infoTitle'),
-            RESTRICTED_IMPORT: t('messages.restrictedImport'),
-            ERROR_ONUPDATE_TITLE_BAR: t('messages.onUpdateTitleBar')
-        },
-        STRINGS: {
-            TITLE: t('titleBar.title'),
-            LOGO_ALT: t('titleBar.iconsAlt.logo'),
-            DEPOT_SUM_LABEL: t('titleBar.depotSumLabel'),
-            BOOKING_SUM_LABEL: t('titleBar.bookingsSumLabel'),
-            SELECT_ACCOUNT_LABEL: t('titleBar.selectAccountLabel')
-        }
-    }
-)
+const INIT_MESSAGE = {
+    title: t('screens.titleBar.title'),
+    smImportOnly: t('screens.titleBar.messages.smImportOnly')
+}
 
 const connectionState = ref<'checking' | 'online' | 'offline'>('checking')
 
@@ -77,14 +65,14 @@ const onUpdateTitleBar = async (): Promise<void> => {
     log('TITLE_BAR onUpdateTitleBar')
     try {
         const storesDB = await getDatabaseStores(activeAccountId.value)
-        await setStorage(BROWSER_STORAGE.PROPS.ACTIVE_ACCOUNT_ID, activeAccountId.value)
-        await records.init(storesDB, T.MESSAGES)
+        await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, activeAccountId.value)
+        await records.init(storesDB, INIT_MESSAGE)
         isCompanyPage.value = false
         router.push('/')
     } catch (e) {
         const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, {error: errorMessage})
-        await notice([T.MESSAGES.ERROR_ONUPDATE_TITLE_BAR, errorMessage])
+        log(t('screens.titleBar.messages.onUpdateTitleBar'), {error: errorMessage})
+        await notice([t('screens.titleBar.messages.onUpdateTitleBar'), errorMessage])
     }
 }
 
@@ -103,20 +91,20 @@ log('--- TitleBar.vue setup ---')
 <template>
     <v-app-bar app color="secondary" flat>
         <template #prepend>
-            <img :alt="T.STRINGS.LOGO_ALT" :src="COMPONENTS.TITLE_BAR.LOGO"/>
+            <img :alt="t('screens.titleBar.iconsAlt.logo')" :src="COMPONENTS.TITLE_BAR.LOGO"/>
         </template>
-        <v-app-bar-title>{{ T.STRINGS.TITLE }}</v-app-bar-title>
+        <v-app-bar-title>{{ t('screens.titleBar.title') }}</v-app-bar-title>
         <v-text-field
             v-if="isCompanyPage && !isDownloading"
             :disabled="true"
-            :label="T.STRINGS.DEPOT_SUM_LABEL"
+            :label="t('screens.titleBar.depotSumLabel')"
             :model-value="depot"
             hide-details
             max-width="150"/>
         <v-text-field
             v-if="!isCompanyPage"
             :disabled="true"
-            :label="T.STRINGS.BOOKING_SUM_LABEL"
+            :label="t('screens.titleBar.bookingsSumLabel')"
             :model-value="balance"
             hide-details
             max-width="150"/>
@@ -127,7 +115,7 @@ log('--- TitleBar.vue setup ---')
             :item-title="INDEXED_DB.STORE.ACCOUNTS.FIELDS.IBAN"
             :item-value="INDEXED_DB.STORE.ACCOUNTS.FIELDS.ID"
             :items="records.accounts.items"
-            :label="T.STRINGS.SELECT_ACCOUNT_LABEL"
+            :label="t('screens.titleBar.selectAccountLabel')"
             density="compact"
             hide-details
             max-width="350"
@@ -135,7 +123,7 @@ log('--- TitleBar.vue setup ---')
             variant="outlined"
             @update:model-value="onUpdateTitleBar">
             <template #prepend>
-                <img :alt="T.STRINGS.LOGO_ALT" :src="logoUrl"/>
+                <img :alt="t('screens.titleBar.iconsAlt.logo')" :src="logoUrl"/>
             </template>
         </v-select>
     </v-app-bar>

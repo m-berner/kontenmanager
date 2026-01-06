@@ -74,6 +74,10 @@ export const INDEXED_DB = Object.freeze(
             }
         },
         SM_IMPORT_VERSION: 25,
-        VERSION: 26
+        VERSION: 26,
+        MAX_FILE_SIZE: 64 * 1024 * 1024,
+        CHUNK_SIZE: 100
     }
 )
+
+export type I_INDEXED_DB =  typeof INDEXED_DB

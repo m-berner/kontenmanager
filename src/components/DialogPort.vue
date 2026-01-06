@@ -13,19 +13,11 @@ import {useApp} from '@/composables/useApp'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const {t} = useI18n()
-const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
 const runtime = useRuntimeStore()
 const {log} = useApp()
 const {isLoading} = useDialogGuards()
 
-const T = Object.freeze(
-    {
-        STRINGS: {
-            OK: t('components.dialogs.ok'),
-            CANCEL: t('components.dialogs.cancel')
-        }
-    }
-)
+const dialogRef = ref<{ onClickOk: () => Promise<void>, title: string }>()
 
 log('--- DialogPort.vue setup ---')
 </script>
@@ -41,7 +33,7 @@ log('--- DialogPort.vue setup ---')
                     <component :is="runtime.dialogName" ref="dialogRef"/>
                 </v-card-text>
                 <v-card-actions class="pa-5">
-                    <v-tooltip :text="T.STRINGS.OK" location="bottom">
+                    <v-tooltip :text="t('components.dialogs.ok')" location="bottom">
                         <template v-slot:activator="{ props }">
                             <v-btn
                                 v-if="runtime.dialogOk"
@@ -57,7 +49,7 @@ log('--- DialogPort.vue setup ---')
                         </template>
                     </v-tooltip>
                     <v-spacer/>
-                    <v-tooltip :text="T.STRINGS.CANCEL" location="bottom">
+                    <v-tooltip :text="t('components.dialogs.cancel')" location="bottom">
                         <template v-slot:activator="{ props }">
                             <v-btn
                                 class="ml-auto"

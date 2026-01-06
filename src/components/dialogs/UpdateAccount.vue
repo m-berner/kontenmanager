@@ -34,9 +34,9 @@ const {isLoading, ensureConnected, handleError, validateForm, withLoading} = use
 const T = Object.freeze(
     {
         MESSAGES: {
-            SUCCESS_UPDATE: t('messages.updateAccount.success'),
-            ERROR_ONCLICK_OK: t('messages.onClickOk'),
-            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+            SUCCESS_UPDATE: t('components.dialogs.updateAccount.messages.success'),
+            ERROR_ONCLICK_OK: t('components.dialogs.updateAccount.messages.onClickOk'),
+            DB_NOT_CONNECTED: t('components.dialogs.updateAccount.messages.dbNotConnected')
         },
         STRINGS: {
             TITLE: t('components.dialogs.updateAccount.title')
@@ -71,13 +71,10 @@ const onClickOk = async (): Promise<void> => {
             records.accounts.update(account)
             await update(account)
             await notice([T.MESSAGES.SUCCESS_UPDATE])
-        } catch (error) {
-            await handleError(
-                error,
-                log,
-                notice,
-                'UPDATE_ACCOUNT',
-                T.MESSAGES.ERROR_ONCLICK_OK
+        } catch (err) {
+            throw handleError(
+                T.MESSAGES.ERROR_ONCLICK_OK,
+                err
             )
         }
     })

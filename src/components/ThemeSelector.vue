@@ -19,30 +19,27 @@ const {log} = useApp()
 const {BROWSER_STORAGE} = useAppConfig()
 const {getStorage, setStorage} = useBrowser()
 
-const T = Object.freeze<Record<string, Record<string, string>>>(
-    {
-        // NOTE: lowercase properties required due to vuetify plugin object
-        STRINGS: {
-            earth: t('optionsIndex.themeNames.earth'),
-            ocean: t('optionsIndex.themeNames.ocean'),
-            sky: t('optionsIndex.themeNames.sky'),
-            meadow: t('optionsIndex.themeNames.meadow'),
-            dark: t('optionsIndex.themeNames.dark'),
-            light: t('optionsIndex.themeNames.light')
-        }
-    }
-)
+const THEMES: {[p:string]: string} = {
+    // NOTE: lowercase properties required due to vuetify plugin object
+    earth: t('screens.optionsIndex.themeNames.earth'),
+    ocean: t('screens.optionsIndex.themeNames.ocean'),
+    sky: t('screens.optionsIndex.themeNames.sky'),
+    meadow: t('screens.optionsIndex.themeNames.meadow'),
+    dark: t('screens.optionsIndex.themeNames.dark'),
+    light: t('screens.optionsIndex.themeNames.light')
+}
+
 const skin = ref<string>('')
 
 const setSkin = async (): Promise<void> => {
     log('THEME_SELECTOR: setSkin')
-    await setStorage(BROWSER_STORAGE.PROPS.SKIN, skin.value)
+    await setStorage(BROWSER_STORAGE.LOCAL.SKIN.key, skin.value)
 }
 
 onBeforeMount(async () => {
     log('THEME_SELECTOR: onBeforeMount')
-    const storageSkin = await getStorage([BROWSER_STORAGE.PROPS.SKIN])
-    skin.value = storageSkin[BROWSER_STORAGE.PROPS.SKIN] as string || BROWSER_STORAGE.SKIN
+    const storageSkin = await getStorage([BROWSER_STORAGE.LOCAL.SKIN.key])
+    skin.value = storageSkin[BROWSER_STORAGE.LOCAL.SKIN.key] as string || BROWSER_STORAGE.LOCAL.SKIN.value
 })
 
 log('--- ThemeSelector.vue setup ---')
@@ -56,7 +53,7 @@ log('--- ThemeSelector.vue setup ---')
         <v-radio
             v-for="item in Object.keys(theme.themes.value)"
             :key="item"
-            :label="T.STRINGS[item]"
+            :label="THEMES[item]"
             :value="item"
         />
     </v-radio-group>

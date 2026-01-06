@@ -15,11 +15,11 @@ const {log} = useApp()
 const {BROWSER_STORAGE, SERVICES} = useAppConfig()
 const {getStorage, setStorage} = useBrowser()
 
-const service = ref<string>(BROWSER_STORAGE.SERVICE)
+const service = ref<string>(BROWSER_STORAGE.LOCAL.SERVICE.value)
 
 const setService = async (): Promise<void> => {
     log('SERVICE_SELECTOR: setService')
-    await setStorage(BROWSER_STORAGE.PROPS.SERVICE, service.value)
+    await setStorage(BROWSER_STORAGE.LOCAL.SERVICE.key, service.value)
 }
 
 const serviceLabels = (item: string): string => {
@@ -33,8 +33,8 @@ const serviceLabels = (item: string): string => {
 
 onBeforeMount(async () => {
     log('SERVICE_SELECTOR: onBeforeMount')
-    const storageService = await getStorage([BROWSER_STORAGE.PROPS.SERVICE])
-    service.value = storageService[BROWSER_STORAGE.PROPS.SERVICE] as string
+    const storageService = await getStorage([BROWSER_STORAGE.LOCAL.SERVICE.key])
+    service.value = storageService[BROWSER_STORAGE.LOCAL.SERVICE.key] as string
 })
 
 log('--- ServiceSelector.vue setup ---')

@@ -36,8 +36,8 @@ async function onClick(): Promise<void> {
         const extensionTabIdStr = (extensionTab.id ?? -1).toString()
         sessionStorage.setItem(SESSION_STORAGE.PROPS.EXTENSION_TAB_ID, extensionTabIdStr)
     } else {
-        await windowsUpdate(foundTabs[0].windowId)
-        await tabsUpdate(foundTabs[0].id)
+        await windowsUpdate(foundTabs[0].windowId!)
+        await tabsUpdate(foundTabs[0].id!)
     }
 }
 

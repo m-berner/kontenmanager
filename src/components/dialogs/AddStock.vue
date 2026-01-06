@@ -33,10 +33,10 @@ const {isLoading, ensureConnected, handleError, validateForm, withLoading} = use
 const T = Object.freeze(
     {
         MESSAGES: {
-            SUCCESS_ADD: t('messages.addStock.success'),
-            ERROR_ADD: t('messages.addStock.error'),
-            ERROR_ONCLICK_OK: t('messages.onClickOk'),
-            DB_NOT_CONNECTED: t('messages.dbNotConnected')
+            SUCCESS_ADD: t('components.dialogs.addStock.messages.success'),
+            ERROR_ADD: t('components.dialogs.addStock.messages.error'),
+            ERROR_ONCLICK_OK: t('components.dialogs.addStock.messages.onClickOk'),
+            DB_NOT_CONNECTED: t('components.dialogs.addStock.messages.dbNotConnected')
         },
         STRINGS: {
             TITLE: t('components.dialogs.addStock.title')
@@ -77,13 +77,10 @@ const onClickOk = async (): Promise<void> => {
             records.stocks.add(stock)
             resetTeleport()
             await notice([T.MESSAGES.SUCCESS_ADD])
-        } catch (error) {
-            await handleError(
-                error,
-                log,
-                notice,
-                'ADD_STOCK',
-                T.MESSAGES.ERROR_ONCLICK_OK
+        } catch (err) {
+            throw handleError(
+                T.MESSAGES.ERROR_ONCLICK_OK,
+                err
             )
         }
     })

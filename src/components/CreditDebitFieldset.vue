@@ -20,18 +20,6 @@ const {t} = useI18n()
 const {log} = useApp()
 const {cdRef} = useBookingFormular()
 
-const T = Object.freeze(
-    {
-        STRINGS: {
-            CREDIT_LABEL: t('components.creditDebitFieldset.creditLabel'),
-            DEBIT_LABEL: t('components.creditDebitFieldset.debitLabel')
-        },
-        RULES: [
-            t('validators.creditDebitFieldset.onlyOnePositive')
-        ]
-    }
-)
-
 const creditValue = computed(
     {
         get: () => props.modelValue.credit,
@@ -54,7 +42,6 @@ const debitValue = computed(
         }
     }
 )
-
 const cRules = computed(() => props.rules[0](props.modelValue.debit))
 const dRules = computed(() => props.rules[1](props.modelValue.credit))
 
@@ -69,12 +56,12 @@ log('--- CreditDebitFieldset.vue ---')
                 <CurrencyInput
                     v-model="creditValue"
                     :disabled="props.disabled"
-                    :label="T.STRINGS.CREDIT_LABEL"
+                    :label="t('components.creditDebitFieldset.creditLabel')"
                     :rules="cRules"/>
                 <CurrencyInput
                     v-model="debitValue"
                     :disabled="props.disabled"
-                    :label="T.STRINGS.DEBIT_LABEL"
+                    :label="t('components.creditDebitFieldset.debitLabel')"
                     :rules="dRules"/>
             </div>
         </fieldset>
