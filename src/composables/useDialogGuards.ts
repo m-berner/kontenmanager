@@ -28,6 +28,18 @@ export function useDialogGuards() {
         return new Error(`${errorKey}: ${message}`)
     }
 
+    // async function handleError(
+    //     error: unknown,
+    //     log: (_msg: string, _data?: any) => void,
+    //     notice: (_msg: string[]) => Promise<void>,
+    //     context: string,
+    //     userMessage: string
+    // ): Promise<void> {
+    //     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    //     log(`${context}: Error`, {error: errorMessage, stack: error instanceof Error ? error.stack : undefined})
+    //     await notice([userMessage, errorMessage])
+    // }
+
     async function withLoading<T>(
         operation: () => Promise<T>
     ): Promise<T | undefined> {
