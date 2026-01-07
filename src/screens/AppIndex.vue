@@ -10,7 +10,7 @@ import {onBeforeMount, ref} from 'vue'
 import {RouterView} from 'vue-router'
 import {useI18n} from 'vue-i18n'
 import {useApp} from '@/composables/useApp'
-import {useBrowser} from '@/composables/useBrowser'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 import AlertOverlay from '@/components/AlertOverlay.vue'
 import {useAppInitialization} from '@/composables/useAppInitialization'
 import {useTheme} from 'vuetify'
@@ -19,8 +19,8 @@ import {storeToRefs} from 'pinia'
 
 const {log} = useApp()
 const {t} = useI18n()
-const {notice} = useBrowser()
 const {initializeApp} = useAppInitialization()
+const {handleError} = useDialogGuards()
 const settings = useSettingsStore()
 const {skin} = storeToRefs(settings)
 
@@ -28,8 +28,8 @@ const theme = useTheme()
 const isInitialized = ref(false)
 
 const INIT_MESSAGE = {
-    INFO_TITLE: t('screens.appIndex.infoTitle'),
-    RESTRICTED_IMPORT: t('messages.restrictedImport')
+    infoTitle: t('screens.appIndex.infoTitle'),
+    smImportOnly: t('screens.appIndex.messages.smImportOnly')
 }
 
 onBeforeMount(async () => {
@@ -43,15 +43,11 @@ onBeforeMount(async () => {
         isInitialized.value = true
 
         log('APP_INDEX: Initialization successful')
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-        log(t('screens.appIndex.messages.onBeforeMount'), {error: errorMessage})
-
-        // Show error notification to user
-        await notice([t('screens.appIndex.messages.onBeforeMount'), errorMessage])
-
-        // Don't set isInitialized to true - app failed to initialize
-        log('APP_INDEX: Initialization failed', {error: errorMessage})
+    } catch (err) {
+        throw handleError(
+            t('screens.appIndex.messages.onBeforeMount'),
+            err
+        )
     }
 })
 

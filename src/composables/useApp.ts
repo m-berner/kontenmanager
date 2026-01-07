@@ -19,33 +19,113 @@ export function useApp() {
         return new Date(ms).toISOString().substring(0, 10)
     }
 
-    function toNumber(str: string | boolean | number | undefined | null): number {
-        let result = 0
-        if (str !== null && str !== undefined) {
-            const a = str.toString().replace(/,$/g, '')
-            const b = a.split(',')
-            if (b.length === 2) {
-                const tmp2 = a
-                    .trim()
-                    .replace(/\s|\.|\t|%/g, '')
-                    .replace(',', '.')
-                result = Number.isNaN(Number.parseFloat(tmp2))
-                    ? 0
-                    : Number.parseFloat(tmp2)
-            } else if (b.length > 2) {
-                let tmp: string = ''
-                for (let i = b.length - 1; i > 0; i--) {
-                    tmp += b[i]
-                }
-                const tmp2 = `${tmp}.${b[0]}`
-                result = Number.isNaN(Number.parseFloat(tmp2))
-                    ? 0
-                    : Number.parseFloat(tmp2)
+    // function toNumber(str: string | boolean | number | undefined | null): number {
+    //     let result = 0
+    //     if (str !== null && str !== undefined) {
+    //         const a = str.toString().replace(/,$/g, '')
+    //         const b = a.split(',')
+    //         if (b.length === 2) {
+    //             const tmp2 = a
+    //                 .trim()
+    //                 .replace(/\s|\.|\t|%/g, '')
+    //                 .replace(',', '.')
+    //             result = Number.isNaN(Number.parseFloat(tmp2))
+    //                 ? 0
+    //                 : Number.parseFloat(tmp2)
+    //         } else if (b.length > 2) {
+    //             let tmp: string = ''
+    //             for (let i = b.length - 1; i > 0; i--) {
+    //                 tmp += b[i]
+    //             }
+    //             const tmp2 = `${tmp}.${b[0]}`
+    //             result = Number.isNaN(Number.parseFloat(tmp2))
+    //                 ? 0
+    //                 : Number.parseFloat(tmp2)
+    //         } else {
+    //             result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
+    //         }
+    //     }
+    //     return result
+    // }
+
+    /**
+     * Converts a string, number, or boolean to a number.
+     * Handles various number formats including:
+     * - European format: 1.234,56 (dot as thousands separator, comma as decimal)
+     * - US format: 1,234.56 (comma as thousands separator, dot as decimal)
+     * - Percentages: 25% -> 25
+     * - Whitespace and tabs
+     *
+     * @param str - Input value to convert
+     * @param locale - Optional locale hint ('de' for European, 'en' for US format)
+     * @returns Parsed number or 0 if parsing fails
+     */
+    function toNumber(
+        str: string | boolean | number | undefined | null,
+        locale?: 'de' | 'en'
+    ): number {
+        // Handle null/undefined
+        if (str === null || str === undefined) {
+            return 0
+        }
+
+        // Handle boolean
+        if (typeof str === 'boolean') {
+            return str ? 1 : 0
+        }
+
+        // Handle number (already parsed)
+        if (typeof str === 'number') {
+            return Number.isNaN(str) ? 0 : str
+        }
+
+        // Clean the string
+        let cleaned = str
+            .toString()
+            .trim()
+            .replace(/\s|\t/g, '') // Remove whitespace and tabs
+            .replace(/%$/g, '')     // Remove trailing percentage sign
+
+        if (cleaned === '') {
+            return 0
+        }
+
+        // Auto-detect format if locale not specified
+        if (!locale) {
+            // Count dots and commas
+            const dotCount = (cleaned.match(/\./g) || []).length
+            const commaCount = (cleaned.match(/,/g) || []).length
+            const lastDot = cleaned.lastIndexOf('.')
+            const lastComma = cleaned.lastIndexOf(',')
+
+            // Determine format based on position and count
+            if (commaCount === 0 && dotCount > 0) {
+                // Only dots: US format (or single decimal)
+                locale = 'en'
+            } else if (dotCount === 0 && commaCount > 0) {
+                // Only commas: could be European decimal or US thousands
+                // If last comma is within last 3 chars, it's likely European decimal
+                locale = (cleaned.length - lastComma <= 4) ? 'de' : 'en'
+            } else if (lastComma > lastDot) {
+                // Comma comes after dot: European format (1.234,56)
+                locale = 'de'
             } else {
-                result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
+                // Dot comes after comma: US format (1,234.56)
+                locale = 'en'
             }
         }
-        return result
+
+        // Parse based on detected/specified locale
+        if (locale === 'de') {
+            // European format: remove dots (thousands), replace comma with dot (decimal)
+            cleaned = cleaned.replace(/\./g, '').replace(',', '.')
+        } else {
+            // US format: remove commas (thousands), keep dots (decimal)
+            cleaned = cleaned.replace(/,/g, '')
+        }
+
+        const result = Number.parseFloat(cleaned)
+        return Number.isNaN(result) ? 0 : result
     }
 
     function log(msg: string, mode?: { info?: unknown, warn?: unknown, error?: unknown }) {

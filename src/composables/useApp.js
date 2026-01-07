@@ -7,35 +7,50 @@ export function useApp() {
     function isoDate(ms) {
         return new Date(ms).toISOString().substring(0, 10);
     }
-    function toNumber(str) {
-        let result = 0;
-        if (str !== null && str !== undefined) {
-            const a = str.toString().replace(/,$/g, '');
-            const b = a.split(',');
-            if (b.length === 2) {
-                const tmp2 = a
-                    .trim()
-                    .replace(/\s|\.|\t|%/g, '')
-                    .replace(',', '.');
-                result = Number.isNaN(Number.parseFloat(tmp2))
-                    ? 0
-                    : Number.parseFloat(tmp2);
+    function toNumber(str, locale) {
+        if (str === null || str === undefined) {
+            return 0;
+        }
+        if (typeof str === 'boolean') {
+            return str ? 1 : 0;
+        }
+        if (typeof str === 'number') {
+            return Number.isNaN(str) ? 0 : str;
+        }
+        let cleaned = str
+            .toString()
+            .trim()
+            .replace(/\s|\t/g, '')
+            .replace(/%$/g, '');
+        if (cleaned === '') {
+            return 0;
+        }
+        if (!locale) {
+            const dotCount = (cleaned.match(/\./g) || []).length;
+            const commaCount = (cleaned.match(/,/g) || []).length;
+            const lastDot = cleaned.lastIndexOf('.');
+            const lastComma = cleaned.lastIndexOf(',');
+            if (commaCount === 0 && dotCount > 0) {
+                locale = 'en';
             }
-            else if (b.length > 2) {
-                let tmp = '';
-                for (let i = b.length - 1; i > 0; i--) {
-                    tmp += b[i];
-                }
-                const tmp2 = `${tmp}.${b[0]}`;
-                result = Number.isNaN(Number.parseFloat(tmp2))
-                    ? 0
-                    : Number.parseFloat(tmp2);
+            else if (dotCount === 0 && commaCount > 0) {
+                locale = (cleaned.length - lastComma <= 4) ? 'de' : 'en';
+            }
+            else if (lastComma > lastDot) {
+                locale = 'de';
             }
             else {
-                result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0]);
+                locale = 'en';
             }
         }
-        return result;
+        if (locale === 'de') {
+            cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+        }
+        else {
+            cleaned = cleaned.replace(/,/g, '');
+        }
+        const result = Number.parseFloat(cleaned);
+        return Number.isNaN(result) ? 0 : result;
     }
     function log(msg, mode) {
         const localDebug = localStorage.getItem(LOCAL_STORAGE.PROPS.DEBUG);

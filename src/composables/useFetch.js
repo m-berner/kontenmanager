@@ -121,9 +121,9 @@ export function useFetch() {
                     return {
                         id: urlObj.key,
                         isin: '',
-                        rate: onlineRate,
-                        min: onlineMin,
-                        max: onlineMax,
+                        rate: onlineRate.replace(/,/, '.'),
+                        min: onlineMin.replace(/,/, '.'),
+                        max: onlineMax.replace(/,/, '.'),
                         cur: onlineCurrency
                     };
                 }));
@@ -146,9 +146,9 @@ export function useFetch() {
                         return {
                             id: urlObj.key,
                             isin: '',
-                            rate: onlineRate,
-                            min: onlineMin,
-                            max: onlineMax,
+                            rate: onlineRate.replace(/,/, '.'),
+                            min: onlineMin.replace(/,/, '.'),
+                            max: onlineMax.replace(/,/, '.'),
                             cur: onlineCurrency
                         };
                     }
@@ -187,9 +187,9 @@ export function useFetch() {
                     return {
                         id: urlObj.key ?? 0,
                         isin: '',
-                        rate: onlineRate,
-                        min: onlineMin ?? '',
-                        max: onlineMax ?? '',
+                        rate: onlineRate.replace(/,/, '.'),
+                        min: onlineMin.replace(/,/, '.') ?? '',
+                        max: onlineMax.replace(/,/, '.') ?? '',
                         cur: onlineCurrency
                     };
                 }));
@@ -214,9 +214,9 @@ export function useFetch() {
                     return {
                         id: urlObj.key,
                         isin: '',
-                        rate: onlineRate,
-                        min: onlineMin,
-                        max: onlineMax,
+                        rate: onlineRate.replace(/,/, '.'),
+                        min: onlineMin.replace(/,/, '.'),
+                        max: onlineMax.replace(/,/, '.'),
                         cur: onlineCurrency
                     };
                 }));

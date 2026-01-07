@@ -1,25 +1,35 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 export const useKeyboardShortcuts = () => {
     const shortcuts = ref(new Map());
-    const activeKeys = ref(new Set());
     const handleKeyDown = (ev) => {
-        activeKeys.value.add(ev.key);
-        const combination = Array.from(activeKeys.value).sort().join('+');
+        const modifiers = [];
+        if (ev.ctrlKey)
+            modifiers.push('Ctrl');
+        if (ev.altKey)
+            modifiers.push('Alt');
+        if (ev.shiftKey)
+            modifiers.push('Shift');
+        if (ev.metaKey)
+            modifiers.push('Meta');
+        const key = ev.key.length === 1 ? ev.key.toUpperCase() : ev.key;
+        const combination = [...modifiers, key].join('+');
         const handler = shortcuts.value.get(combination);
         if (handler) {
+            ev.preventDefault();
             handler();
         }
     };
-    const handleKeyUp = (ev) => {
-        activeKeys.value.delete(ev.key);
+    const register = (combination, handler) => {
+        shortcuts.value.set(combination, handler);
+    };
+    const unregister = (combination) => {
+        shortcuts.value.delete(combination);
     };
     onMounted(() => {
         window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
     });
     onUnmounted(() => {
         window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('keyup', handleKeyUp);
     });
-    return { shortcuts };
+    return { register, shortcuts, unregister };
 };

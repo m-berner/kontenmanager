@@ -503,6 +503,7 @@ export const useRecordsStore = defineStore('records', function () {
         const settings = useSettingsStore();
         const { activeAccountId } = storeToRefs(settings);
         const { info } = useAlertStore();
+        console.error('JHJHJH', messages);
         const stores = {
             accounts: storesDB.accountsDB,
             bookings: storesDB.bookingsDB,
@@ -550,7 +551,7 @@ export const useRecordsStore = defineStore('records', function () {
             cAskDates: DATE.ISO
         }, true);
         if (accountsStore.items.length === 0 && sessionStorage.getItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT) === null) {
-            info(messages.title, messages.smImportOnly, null);
+            info(messages.infoTitle, messages.smImportOnly, null);
             sessionStorage.setItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT, 'true');
         }
     }

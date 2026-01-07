@@ -343,7 +343,7 @@ const processBackupFile = async (): Promise<void> => {
         // At the end of processBackupFile, after successful import
         const duration = Date.now() - startTime
 
-        await notice([t('components.dialogs.importDatabase.messages.importSucces', {
+        await notice([t('components.dialogs.importDatabase.messages.importSuccess', {
             summary: summary.replace(/\n/g, ', '),
             duration: (duration / 1000).toFixed(1)
         })])

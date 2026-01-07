@@ -118,7 +118,14 @@ const onChangeHandler = (changes: Record<string, browser.storage.StorageChange>)
     }
 }
 const removeStorageChangedListener = addStorageChangedListener(onChangeHandler)
-const {shortcuts} = useKeyboardShortcuts()
+const onBeforeUnload = (): void => {
+    log('APP_INDEX: onBeforeUnload')
+    removeStorageChangedListener()
+    closeDB()
+}
+window.addEventListener('beforeunload', onBeforeUnload, SYSTEM.ONCE)
+
+const {register, unregister} = useKeyboardShortcuts()
 const onResetStorage = async (): Promise<void> => {
     await clearStorage()
     await installStorageLocal()
@@ -129,16 +136,11 @@ const onToggleDebug = () => {
         localStorage.setItem(LOCAL_STORAGE.PROPS.DEBUG, '1')
     } else {
         localStorage.setItem(LOCAL_STORAGE.PROPS.DEBUG, '0')
+        unregister('Ctrl+Alt+D')
     }
 }
-shortcuts.value.set('Alt+Control+d', onToggleDebug)
-shortcuts.value.set('Alt+Control+r', onResetStorage)
-const onBeforeUnload = (): void => {
-    log('APP_INDEX: onBeforeUnload')
-    removeStorageChangedListener()
-    closeDB()
-}
-window.addEventListener('beforeunload', onBeforeUnload, SYSTEM.ONCE)
+register('Ctrl+Alt+D', onToggleDebug)
+register('Ctrl+Alt+R', onResetStorage)
 
 log('--- HomeContent.vue setup ---')
 </script>

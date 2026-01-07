@@ -240,7 +240,8 @@
     "appIndex": {
       "infoTitle": "INFO",
       "messages": {
-        "onBeforeMount": "Fehler in 'onBeforeMount'"
+        "onBeforeMount": "Fehler in 'onBeforeMount'",
+        "smImportOnly": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde."
       }
     },
     "titleBar": {
