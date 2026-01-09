@@ -35,19 +35,6 @@ const records = useRecordsStore()
 const {items: bookingItems} = storeToRefs(records.bookings)
 const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            ERROR_ONCLICK_OK: t('components.dialogs.updateBooking.messages.onClickOk'),
-            SUCCESS_UPDATE: t('components.dialogs.updateBooking.messages.success'),
-            DB_NOT_CONNECTED: t('components.dialogs.updateBooking.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.updateBooking.title')
-        }
-    }
-)
-
 const loadCurrentBooking = (): void => {
     log('UPDATE_BOOKING: loadCurrentBooking')
     const bookingIndex = records.bookings.getIndexById(activeId.value)
@@ -89,7 +76,7 @@ const onClickOk = async (): Promise<void> => {
     log('UPDATE_BOOKING : onClickOk')
 
     if (!await validateForm(formRef)) return
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.updateBooking.messages.dbNotConnected'))) return
 
     await withLoading(async () => {
         try {
@@ -97,20 +84,19 @@ const onClickOk = async (): Promise<void> => {
 
             records.bookings.update(booking)
             await update(booking)
-            await notice([T.MESSAGES.SUCCESS_UPDATE])
+            await notice([t('components.dialogs.updateBooking.messages.success')])
             runtime.resetOptionsMenuColors()
             runtime.resetTeleport()
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
     })
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({onClickOk, title: t('components.dialogs.updateBooking.title')})
 
 onBeforeMount(() => {
     log('UPDATE_BOOKING: onMounted')

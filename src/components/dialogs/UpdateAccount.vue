@@ -31,19 +31,6 @@ const records = useRecordsStore()
 const {items: accountItems} = storeToRefs(records.accounts)
 const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            SUCCESS_UPDATE: t('components.dialogs.updateAccount.messages.success'),
-            ERROR_ONCLICK_OK: t('components.dialogs.updateAccount.messages.onClickOk'),
-            DB_NOT_CONNECTED: t('components.dialogs.updateAccount.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.updateAccount.title')
-        }
-    }
-)
-
 const loadCurrentAccount = (): void => {
     const accountIndex = records.accounts.getIndexById(activeAccountId.value)
     if (accountIndex === -1) {
@@ -63,25 +50,25 @@ const loadCurrentAccount = (): void => {
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_ACCOUNT: onClickOk')
     if (!await validateForm(formRef)) return
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.updateAccount.messages.dbNotConnected'))) return
 
     await withLoading(async () => {
         try {
             const account = mapAccountFormToDb(activeAccountId.value)
             records.accounts.update(account)
             await update(account)
-            await notice([T.MESSAGES.SUCCESS_UPDATE])
+            await notice([t('components.dialogs.updateAccount.messages.success')])
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('components.dialogs.updateAccount.title'),
                 err
             )
         }
     })
     resetTeleport()
 }
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+
+defineExpose({onClickOk, title: t('components.dialogs.updateAccount.title')})
 
 onBeforeMount(() => {
     log('UPDATE_ACCOUNT: onBeforeMount')

@@ -56,7 +56,6 @@
         },
         "messages": {
           "success": "Konto wurde hinzugefügt",
-          "onClickOk": "Fehler in 'onClickOk'",
           "error": "Das Konto konnte nicht hinzugfügt werden",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
@@ -66,7 +65,6 @@
         "messages": {
           "success": "Buchung wurde hinzugefügt",
           "error": "Buchung konnte nicht hinzugefügt werden",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
@@ -76,25 +74,21 @@
         "placeholder": "Name eingeben",
         "messages": {
           "success": "Buchungstyp wurde hinzugefügt",
-          "error": "Die Buchungstyp existiert bereits",
-          "onClickOk": "Fehler in 'onClickOk'"
+          "error": "Die Buchungstyp existiert bereits"
         }
       },
       "addStock": {
         "title": "Unternehmen hinzufügen",
         "messages": {
           "success": "Unternehmen wurde hinzugefügt",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
       "deleteAccountConfirmation": {
         "title": "Bankkonto - alle Daten löschen",
-        "infoTitle": "INFO",
         "messages": {
           "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
           "success": "Konto wurde entfernt",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
@@ -111,7 +105,6 @@
         "messages": {
           "success": "Buchungstyp wurde entfernt",
           "error": "Es existiert bereits eine Buchungskategorie",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
@@ -139,7 +132,6 @@
         "messages": {
           "success": "Unternehmen ist eingeblendet",
           "error": "Unternehmen konnte nicht eingeblendet werden",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung",
           "noRecords": "Es gibt keine Daten zum Einblenden"
         }
@@ -171,8 +163,7 @@
           "noFileSelected": "Keine Datei ausgewählt",
           "createBackupFailed": "Sichern der Daten vor dem Import fehlgeschlagen.",
           "emptyFile": "Die Datei ist leer.",
-          "fileToLarge": "Die Sicherungsdatei ist zu gross.",
-          "smImportOnly": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde."
+          "fileToLarge": "Die Sicherungsdatei ist zu gross."
         }
       },
       "showAccounting": {
@@ -198,7 +189,6 @@
         "title": "Bankkonto aktualisieren",
         "messages": {
           "success": "Konto wurde aktualisiert",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
@@ -206,7 +196,6 @@
         "title": "Buchung bearbeiten",
         "messages": {
           "success": "Die Buchung wurde aktualisiert",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
@@ -216,7 +205,6 @@
         "messages": {
           "success": "Buchungstyp wurde aktualisiert",
           "error": "Der Buchungstyp konnte nicht aktualisiert werden",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
@@ -224,7 +212,6 @@
         "title": "Unternehmen bearbeiten",
         "messages": {
           "success": "Unternehmen wurde aktualisiert",
-          "onClickOk": "Fehler in 'onClickOk'",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       }
@@ -236,12 +223,17 @@
       "onlyOnePositive": "Ein Wert muss 0 sein"
     }
   },
+  "mixed": {
+    "onClickOk": "Fehler in 'onClickOk'",
+    "smImportOnly": {
+      "title": "INFO",
+      "message": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde."
+    }
+  },
   "screens": {
     "appIndex": {
-      "infoTitle": "INFO",
       "messages": {
-        "onBeforeMount": "Fehler in 'onBeforeMount'",
-        "smImportOnly": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde."
+        "onBeforeMount": "Fehler in 'onBeforeMount'"
       }
     },
     "titleBar": {
@@ -253,8 +245,7 @@
         "logo": "Bank Logo"
       },
       "messages": {
-        "onUpdateTitleBar": "Fehler in 'onUpdateTitleBar'",
-        "smImportOnly": "KontenManager ist eine Weiterentwicklung von vormals StockManager. Der Import von StockManager Daten ist nur direkt nach der Installation möglich. Sprich bevor irgendein KontenManager Objekt manuell angelegt wurde."
+        "onUpdateTitleBar": "Fehler in 'onUpdateTitleBar'"
       }
     },
     "headerBar": {

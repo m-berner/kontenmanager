@@ -24,31 +24,16 @@ const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 const runtime = useRuntimeStore()
 const records = useRecordsStore()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            SUCCESS_FADE_IN: t('components.dialogs.fadeInStock.messages.success'),
-            ERROR_ONCLICK_OK: t('components.dialogs.fadeInStock.messages.onClickOk'),
-            DB_NOT_CONNECTED: t('components.dialogs.fadeInStock.messages.dbNotConnected'),
-            NO_STOCK_SELECTED: t('messages.noStockSelected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.fadeInStock.title'),
-            SELECT_LABEL: t('components.dialogs.fadeInStock.selectLabel')
-        }
-    }
-)
-
 const selected = ref<I_Stock_Store | null>(null)
 const formRef = ref<HTMLFormElement | null>(null)
 
 const onClickOk = async (): Promise<void> => {
     log('FADE_IN_STOCK: onClickOk')
 
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.fadeInStock.messages.dbNotConnected'))) return
 
     if (!selected.value) {
-        await notice([T.MESSAGES.NO_STOCK_SELECTED])
+        await notice([t('messages.noStockSelected')])
         return
     }
 
@@ -59,20 +44,19 @@ const onClickOk = async (): Promise<void> => {
 
             await update(stock)
             records.stocks.update(stock)
-            await notice([T.MESSAGES.SUCCESS_FADE_IN])
+            await notice([t('components.dialogs.fadeInStock.messages.success')])
             runtime.resetTeleport()
 
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
     })
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({onClickOk, title: t('components.dialogs.fadeInStock.title')})
 
 onBeforeMount(() => {
     log('FADE_IN_STOCK: onBeforeMount')
@@ -95,7 +79,7 @@ log('--- FadeInStock.vue setup ---')
                 item-title="cCompany"
                 v-bind:clearable="true"
                 v-bind:items="records.stocks.passive"
-                v-bind:label="T.STRINGS.SELECT_LABEL"
+                v-bind:label="t('components.dialogs.fadeInStock.selectLabel')"
                 v-bind:return-object="true"
                 variant="outlined"/>
         </v-card-text>

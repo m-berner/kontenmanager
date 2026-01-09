@@ -30,25 +30,11 @@ const records = useRecordsStore()
 const settings = useSettingsStore()
 const {activeAccountId} = storeToRefs(settings)
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            ERROR_ONCLICK_OK: t('components.dialogs.addBooking.messages.onClickOk'),
-            SUCCESS_ADD: t('components.dialogs.addBooking.messages.success'),
-            ERROR_ADD: t('components.dialogs.addBooking.messages.error'),
-            DB_NOT_CONNECTED: t('components.dialogs.addBooking.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.addBooking.title')
-        }
-    }
-)
-
 const onClickOk = async (): Promise<void> => {
     log('ADD_BOOKING : onClickOk')
 
     if (!await validateForm(formRef) || !await validateForm(cdRef)) return
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.addBooking.messages.dbNotConnected'))) return
     await withLoading(async () => {
         try {
             const booking = mapBookingFormToDb(
@@ -59,26 +45,25 @@ const onClickOk = async (): Promise<void> => {
             const addBookingID = await add(booking)
 
             if (addBookingID === -1) {
-                log('ADD_BOOKING: onClickOk: done', {error: T.MESSAGES.ERROR_ADD})
-                await notice([T.MESSAGES.ERROR_ADD])
+                log('ADD_BOOKING: onClickOk: done', {error: t('components.dialogs.addBooking.messages.error')})
+                await notice([t('components.dialogs.addBooking.messages.error')])
                 return
             }
 
             booking.cID = addBookingID
             records.bookings.add(booking, true)
             reset()
-            await notice([T.MESSAGES.SUCCESS_ADD])
+            await notice([t('components.dialogs.addBooking.messages.success')])
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
     })
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({onClickOk, title: t('components.dialogs.addBooking.title')})
 
 onBeforeMount(() => {
     log('ADD_BOOKING: onMounted')

@@ -30,22 +30,10 @@ const records = useRecordsStore()
 const {items: accountItems} = storeToRefs(records.accounts)
 const {isLoading, ensureConnected, handleError, withLoading} = useDialogGuards()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            INFO_TITLE: t('components.dialogs.deleteAccountConfirmation.infoTitle'),
-            RESTRICTED_IMPORT: t('messages.restrictedImport'),
-            SUCCESS_DELETE: t('components.dialogs.deleteAccountConfirmation.messages.success'),
-            ERROR_ONCLICK_OK: t('components.dialogs.deleteAccountConfirmation.messages.onClickOk'),
-            NO_ACCOUNT: t('screens.headerBar.messages.noAccount'),
-            CONFIRM: t('components.dialogs.deleteAccountConfirmation.messages.confirm'),
-            DB_NOT_CONNECTED: t('components.dialogs.deleteAccountConfirmation.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.deleteAccountConfirmation.title')
-        }
-    }
-)
+const smImportOnly = {
+    title: t('mixed.smImportOnly.title'),
+    message: t('mixed.smImportOnly.message')
+}
 
 const switchToNextAccount = async (): Promise<void> => {
     if (accountItems.value.length === 0) {
@@ -59,43 +47,41 @@ const switchToNextAccount = async (): Promise<void> => {
     await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, newActiveId!)
 
     const storesDB = await getDatabaseStores(newActiveId!)
-    await records.init(storesDB, T.MESSAGES)
+    await records.init(storesDB, smImportOnly)
 }
 
 const onClickOk = async (): Promise<void> => {
     log('DELETE_ACCOUNT_CONFIRMATION: onClickOk')
 
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.deleteAccountConfirmation.messages.dbNotConnected'))) return
 
     await withLoading(async () => {
         try {
             const accountToDelete = activeAccountId.value
-
             await deleteDatabaseWithAccount(accountToDelete)
             records.accounts.remove(accountToDelete)
 
             await switchToNextAccount()
 
             resetTeleport()
-            await notice([T.MESSAGES.SUCCESS_DELETE])
+            await notice([t('components.dialogs.deleteAccountConfirmation.messages.success')])
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
     })
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({onClickOk, title: t('components.dialogs.deleteAccountConfirmation.title')})
 
 log('--- DeleteAccountConfirmation.vue setup ---')
 </script>
 
 <template>
-    <v-alert v-if="records.accounts.items.length === 0">{{ T.MESSAGES.NO_ACCOUNT }}</v-alert>
-    <v-alert v-else type="warning">{{ T.MESSAGES.CONFIRM }}</v-alert>
+    <v-alert v-if="records.accounts.items.length === 0">{{ t('screens.headerBar.messages.noAccount') }}</v-alert>
+    <v-alert v-else type="warning">{{ t('components.dialogs.deleteAccountConfirmation.messages.confirm') }}</v-alert>
     <v-overlay
         v-model="isLoading"
         class="align-center justify-center"

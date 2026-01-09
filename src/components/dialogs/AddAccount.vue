@@ -33,30 +33,13 @@ const {resetTeleport} = useRuntimeStore()
 const settings = useSettingsStore()
 const records = useRecordsStore()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            SUCCESS_ADD: t('components.dialogs.addAccount.messages.success'),
-            ERROR_ADD: t('components.dialogs.addAccount.messages.error'),
-            ERROR_ONCLICK_OK: t('components.dialogs.addAccount.messages.onClickOk'),
-            DB_NOT_CONNECTED: t('components.dialogs.addAccount.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.addAccount.title'),
-            BUY: t('components.dialogs.addAccount.bookingTypes.buy'),
-            SELL: t('components.dialog.addAccount.bookingTypes.sell'),
-            DIVIDEND: t('components.dialogs.addAccount.bookingTypes.dividend')
-        }
-    }
-)
-
 const addBookingTypesForAccount = async (accountId: number): Promise<boolean> => {
     if (!accountFormularData.withDepot) return true
 
     const bookingTypes: I_Booking_Type_DB[] = [
-        {cID: -1, cName: T.STRINGS.BUY, cAccountNumberID: accountId},
-        {cID: -1, cName: T.STRINGS.SELL, cAccountNumberID: accountId},
-        {cID: -1, cName: T.STRINGS.DIVIDEND, cAccountNumberID: accountId}
+        {cID: -1, cName: t('components.dialogs.addAccount.bookingTypes.buy'), cAccountNumberID: accountId},
+        {cID: -1, cName: t('components.dialog.addAccount.bookingTypes.sell'), cAccountNumberID: accountId},
+        {cID: -1, cName: t('components.dialog.addAccount.bookingTypes.dividend'), cAccountNumberID: accountId}
     ]
     const addedTypes: I_Booking_Type_DB[] = []
 
@@ -92,7 +75,7 @@ const onClickOk = async (): Promise<void> => {
     log('ADD_ACCOUNT: onClickOk')
 
     if (!await validateForm(formRef)) return
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.addAccount.messages.dbNotConnected'))) return
 
     await withLoading(async () => {
         try {
@@ -103,8 +86,8 @@ const onClickOk = async (): Promise<void> => {
             const addAccountID = await add(account)
 
             if (addAccountID === -1) {
-                log('ADD_ACCOUNT: onClickOk', {error: T.MESSAGES.ERROR_ADD})
-                await notice([T.MESSAGES.ERROR_ADD])
+                log('ADD_ACCOUNT: onClickOk', {error: t('components.dialogs.addAccount.messages.error')})
+                await notice([t('components.dialogs.addAccount.messages.error')])
                 return
             }
 
@@ -121,25 +104,24 @@ const onClickOk = async (): Promise<void> => {
                 // If booking types failed, we should ideally roll back the account too
                 await remove(addAccountID)
                 records.accounts.remove(addAccountID)
-                await notice([T.MESSAGES.ERROR_ADD])
+                await notice([t('components.dialogs.addAccount.messages.error')])
                 return
             }
 
             records.clean(false)
             resetTeleport()
             reset()
-            await notice([T.MESSAGES.SUCCESS_ADD])
+            await notice([t('components.dialogs.addAccount.messages.success')])
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
     })
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({onClickOk, title: t('components.dialogs.addAccount.title')})
 
 onBeforeMount(() => {
     log('ADD_ACCOUNT: onBeforeMount')

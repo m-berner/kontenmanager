@@ -35,9 +35,9 @@ const {BROWSER_STORAGE, COMPONENTS} = useAppConfig()
 const {getDatabaseStores} = useIndexedDB()
 const {activeAccountId} = storeToRefs(settings)
 
-const INIT_MESSAGE = {
-    title: t('screens.titleBar.title'),
-    smImportOnly: t('screens.titleBar.messages.smImportOnly')
+const smImportOnly = {
+    title: t('mixed.smImportOnly.title'),
+    message: t('mixed.smImportOnly.message')
 }
 
 const connectionState = ref<'checking' | 'online' | 'offline'>('checking')
@@ -66,7 +66,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
     try {
         const storesDB = await getDatabaseStores(activeAccountId.value)
         await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, activeAccountId.value)
-        await records.init(storesDB, INIT_MESSAGE)
+        await records.init(storesDB, smImportOnly)
         isCompanyPage.value = false
         router.push('/')
     } catch (e) {

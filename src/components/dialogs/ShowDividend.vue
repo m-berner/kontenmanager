@@ -25,32 +25,22 @@ const {setDividendsPerPage} = settings
 const {activeId} = useRuntimeStore()
 const records = useRecordsStore()
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>(
+const HEADERS: I_Header[] = [
     {
-        STRINGS: {
-            TITLE: t('components.dialogs.showDividend.title'),
-            ITEMS_PER_PAGE_TEXT: t('components.dialogs.showDividend.itemsPerPageText'),
-            NO_DATA_TEXT: t('components.dialogs.showDividend.noDataText')
-        },
-        HEADERS: [
-            {
-                title: t('components.dialogs.showDividend.yearLabel'),
-                align: 'start',
-                sortable: false,
-                key: 'year'
-            },
-            {
-                title: t('components.dialogs.showDividend.sumLabel'),
-                align: 'start',
-                sortable: false,
-                key: 'sum'
-            }
-        ]
+        title: t('components.dialogs.showDividend.yearLabel'),
+        align: 'start',
+        sortable: false,
+        key: 'year'
+    },
+    {
+        title: t('components.dialogs.showDividend.sumLabel'),
+        align: 'start',
+        sortable: false,
+        key: 'sum'
     }
-)
+]
 
-const title = T.STRINGS.TITLE
-defineExpose({title})
+defineExpose({title: t('components.dialogs.showDividend.title')})
 
 log('--- ShowDividend.vue setup ---')
 </script>
@@ -62,14 +52,14 @@ log('--- ShowDividend.vue setup ---')
         <v-card>
             <v-card-text class="pa-5">
                 <v-data-table
-                    :headers="T.HEADERS"
+                    :headers="HEADERS"
                     :hide-no-data="false"
                     :hover="false"
                     :items="records.bookings.dividendsByStockId(activeId)"
                     :items-per-page="dividendsPerPage"
                     :items-per-page-options="SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-                    :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
-                    :no-data-text="T.STRINGS.NO_DATA_TEXT"
+                    :items-per-page-text="t('components.dialogs.showDividend.itemsPerPageText')"
+                    :no-data-text="t('components.dialogs.showDividend.noDataText')"
                     density="compact"
                     item-key="id"
                     @update:items-per-page="setDividendsPerPage">

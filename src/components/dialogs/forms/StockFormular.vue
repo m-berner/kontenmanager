@@ -12,42 +12,25 @@ import {useValidation} from '@/composables/useValidation'
 import {useApp} from '@/composables/useApp'
 import {useStockFormular} from '@/composables/useStockFormular'
 import {useFetch} from '@/composables/useFetch'
-import {useBrowser} from '@/composables/useBrowser'
 import type {I_Stock_Formular_Props} from '@/types'
+import {useDialogGuards} from '@/composables/useDialogGuards'
 
 const props = defineProps<I_Stock_Formular_Props>()
 
 const {t} = useI18n()
 const {log} = useApp()
-const {notice} = useBrowser()
+const {handleError} = useDialogGuards()
 const {isinRules} = useValidation()
 const {fetchCompanyData} = useFetch()
 const {stockFormularData, formRef} = useStockFormular()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            ERROR_ONUPDATE_ISIN: t('components.dialogs.forms.stockFormular.messages.onUpdateIsin')
-        },
-        STRINGS: {
-            COMPANY_LABEL: t('components.dialogs.forms.stockFormular.companyLabel'),
-            SYMBOL_LABEL: t('components.dialogs.forms.stockFormular.symbolLabel'),
-            MEETING_DAY_LABEL: t('components.dialogs.forms.stockFormular.meetingDayLabel'),
-            QUARTER_DAY_LABEL: t('components.dialogs.forms.stockFormular.quarterDayLabel'),
-            FADEOUT_LABEL: t('components.dialogs.forms.stockFormular.fadeOutLabel'),
-            FIRST_PAGE_LABEL: t('components.dialogs.forms.stockFormular.firstPageLabel'),
-            URL_LABEL: t('components.dialogs.forms.stockFormular.urlLabel'),
-            ISIN_LABEL: t('components.dialogs.forms.stockFormular.isinLabel')
-        },
-        ISIN_RULES: [
-            t('validators.isinRules.required'),
-            t('validators.isinRules.length'),
-            t('validators.isinRules.format'),
-            t('validators.isinRules.country'),
-            t('validators.isinRules.luhn')
-        ]
-    }
-)
+const ISIN_RULES = [
+    t('validators.isinRules.required'),
+    t('validators.isinRules.length'),
+    t('validators.isinRules.format'),
+    t('validators.isinRules.country'),
+    t('validators.isinRules.luhn')
+]
 
 const onUpdateIsin = async () => {
     log('STOCK_FORMULAR: onUpdateISIN')
@@ -58,12 +41,13 @@ const onUpdateIsin = async () => {
             stockFormularData.company = companyData.company
             stockFormularData.symbol = companyData.symbol
         }
-    } catch (e) {
+    } catch (err) {
         stockFormularData.company = ''
         stockFormularData.symbol = ''
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(T.MESSAGES.ERROR_ONUPDATE_ISIN, {error: errorMessage})
-        await notice([T.MESSAGES.ERROR_ONUPDATE_ISIN, errorMessage])
+        throw handleError(
+            t('components.dialogs.forms.stockFormular.messages.onUpdateIsin'),
+            err
+        )
     }
 }
 
@@ -76,8 +60,8 @@ log('--- StockFormular.vue setup ---')
             <v-text-field
                 v-model="stockFormularData.isin"
                 :counter="12"
-                :label="T.STRINGS.ISIN_LABEL"
-                :rules="isinRules(T.ISIN_RULES)"
+                :label="t('components.dialogs.forms.stockFormular.isinLabel')"
+                :rules="isinRules(ISIN_RULES)"
                 autofocus
                 variant="outlined"
                 @focus="formRef?.resetValidation?.()"
@@ -86,7 +70,7 @@ log('--- StockFormular.vue setup ---')
         <v-row>
             <v-text-field
                 v-model="stockFormularData.company"
-                :label="T.STRINGS.COMPANY_LABEL"
+                :label="t('components.dialogs.forms.stockFormular.companyLabel')"
                 required
                 variant="outlined"
                 @focus="formRef?.resetValidation?.()"
@@ -97,7 +81,7 @@ log('--- StockFormular.vue setup ---')
             <v-col>
                 <v-text-field
                     v-model="stockFormularData.symbol"
-                    :label="T.STRINGS.SYMBOL_LABEL"
+                    :label="t('components.dialogs.forms.stockFormular.symbolLabel')"
                     required
                     variant="outlined"
                     @focus="formRef?.resetValidation?.()"
@@ -110,7 +94,7 @@ log('--- StockFormular.vue setup ---')
             <v-col>
                 <v-text-field
                     v-model="stockFormularData.meetingDay"
-                    :label="T.STRINGS.MEETING_DAY_LABEL"
+                    :label="t('components.dialogs.forms.stockFormular.meetingDayLabel')"
                     type="date"
                     variant="outlined"
                     @focus="formRef?.resetValidation?.()"
@@ -119,7 +103,7 @@ log('--- StockFormular.vue setup ---')
             <v-col>
                 <v-text-field
                     v-model="stockFormularData.quarterDay"
-                    :label="T.STRINGS.QUARTER_DAY_LABEL"
+                    :label="t('components.dialogs.forms.stockFormular.quarterDayLabel')"
                     type="date"
                     variant="outlined"
                     @focus="formRef?.resetValidation?.()"
@@ -130,7 +114,7 @@ log('--- StockFormular.vue setup ---')
             <v-col>
                 <v-checkbox
                     v-model="stockFormularData.fadeOut"
-                    :label="T.STRINGS.FADEOUT_LABEL"
+                    :label="t('components.dialogs.forms.stockFormular.fadeOutLabel')"
                     variant="outlined"
                     @focus="formRef?.resetValidation?.()"
                 />
@@ -138,7 +122,7 @@ log('--- StockFormular.vue setup ---')
             <v-col>
                 <v-checkbox
                     v-model="stockFormularData.firstPage"
-                    :label="T.STRINGS.FIRST_PAGE_LABEL"
+                    :label="t('components.dialogs.forms.stockFormular.firstPageLabel')"
                     variant="outlined"
                     @focus="formRef?.resetValidation?.()"
                 />
@@ -147,7 +131,7 @@ log('--- StockFormular.vue setup ---')
         <v-row>
             <v-text-field
                 v-model="stockFormularData.url"
-                :label="T.STRINGS.URL_LABEL"
+                :label="t('components.dialogs.forms.stockFormular.urlLabel')"
                 variant="outlined"
                 @focus="formRef?.resetValidation?.()"
             />

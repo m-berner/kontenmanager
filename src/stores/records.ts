@@ -201,7 +201,7 @@ const useStocksStore = defineStore('stocks', function () {
         }
         loadedStocksPages.add(page)
     }
-    // TODO new install empty alert?
+
     return {
         items,
         getItemById,
@@ -564,8 +564,6 @@ export const useRecordsStore = defineStore('records', function () {
         const {activeAccountId} = storeToRefs(settings)
         const {info} = useAlertStore()
 
-        console.error('JHJHJH', messages)
-
         const stores: I_Records_Store = {
             accounts: storesDB.accountsDB,
             bookings: storesDB.bookingsDB,
@@ -619,7 +617,7 @@ export const useRecordsStore = defineStore('records', function () {
             }, true
         )
         if (accountsStore.items.length === 0 && sessionStorage.getItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT) === null) {
-            info(messages.infoTitle, messages.smImportOnly, null)
+            info(messages.title, messages.message, null)
             sessionStorage.setItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT, 'true')
         }
     }

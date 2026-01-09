@@ -27,16 +27,16 @@ const {skin} = storeToRefs(settings)
 const theme = useTheme()
 const isInitialized = ref(false)
 
-const INIT_MESSAGE = {
-    infoTitle: t('screens.appIndex.infoTitle'),
-    smImportOnly: t('screens.appIndex.messages.smImportOnly')
+const smImportOnly = {
+    title: t('mixed.smImportOnly.title'),
+    message: t('mixed.smImportOnly.message')
 }
 
 onBeforeMount(async () => {
     log('APP_INDEX: onBeforeMount')
 
     try {
-        await initializeApp(INIT_MESSAGE)
+        await initializeApp(smImportOnly)
 
         // Apply theme after successful initialization
         theme.global.name.value = skin.value

@@ -30,25 +30,11 @@ const runtime = useRuntimeStore()
 const {items: bookingTypeItems} = storeToRefs(records.bookingTypes)
 const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            SUCCESS_UPDATE: t('components.dialogs.updateBookingType.messages.success'),
-            ERROR_DUPLICATE: t('components.dialogs.updateBookingType.messages.error'),
-            ERROR_ONCLICK_OK: t('components.dialogs.updateBookingType.messages.onClickOk'),
-            DB_NOT_CONNECTED: t('components.dialogs.updateBookingType.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.updateBookingType.title'),
-            BOOKING_TYPE_LABEL: t('components.dialogs.updateBookingType.bookingTypeLabel')
-        },
-        NAME_RULES: [
-            t('validators.nameRules.required'),
-            t('validators.nameRules.length'),
-            t('validators.nameRules.begin')
-        ]
-    }
-)
+const NAME_RULES = [
+    t('validators.nameRules.required'),
+    t('validators.nameRules.length'),
+    t('validators.nameRules.begin')
+]
 
 const formSelectedIndex = ref<number | undefined>()
 const formName = ref<string>('')
@@ -83,7 +69,7 @@ const onClickOk = async (): Promise<void> => {
         await notice(['No booking type selected'])
         return
     }
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.updateBookingType.messages.dbNotConnected'))) return
 
     await withLoading(async () => {
         try {
@@ -94,7 +80,7 @@ const onClickOk = async (): Promise<void> => {
             }
 
             if (isDuplicateName(formName.value, formSelectedIndex.value!)) {
-                await notice([T.MESSAGES.ERROR_DUPLICATE])
+                await notice([t('components.dialogs.updateBookingType.messages.error')])
                 return
             }
 
@@ -103,19 +89,18 @@ const onClickOk = async (): Promise<void> => {
             records.bookingTypes.update(bookingType)
             await update(bookingType)
             runtime.resetTeleport()
-            await notice([T.MESSAGES.SUCCESS_UPDATE])
+            await notice([t('components.dialogs.updateBookingType.messages.success')])
 
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
     })
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({onClickOk, title: t('components.dialogs.updateBookingType.title')})
 
 onBeforeMount(() => {
     log('UPDATE_BOOKING_TYPE: onBeforeMount')
@@ -135,8 +120,8 @@ log('--- UpdateBookingType.vue setup ---')
         <v-text-field
             v-if="!formVisible"
             v-model="formName"
-            :label="T.STRINGS.BOOKING_TYPE_LABEL"
-            :rules="nameRules(T.NAME_RULES)"
+            :label="t('components.dialogs.updateBookingType.bookingTypeLabel')"
+            :rules="nameRules(NAME_RULES)"
             density="compact"
             variant="outlined"
             @focus="formRef?.resetValidation?.()"
@@ -148,7 +133,7 @@ log('--- UpdateBookingType.vue setup ---')
             :item-title="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.NAME"
             :item-value="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID"
             :items="records.bookingTypes.items"
-            :label="T.STRINGS.BOOKING_TYPE_LABEL"
+            :label="t('components.dialogs.updateBookingType.bookingTypeLabel')"
             :menu="true"
             :menu-props="{ maxHeight: '200px' }"
             density="compact"

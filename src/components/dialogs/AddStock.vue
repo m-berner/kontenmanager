@@ -30,20 +30,6 @@ const records = useRecordsStore()
 const {stockFormularData, formRef, mapStockFormToDb} = useStockFormular()
 const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            SUCCESS_ADD: t('components.dialogs.addStock.messages.success'),
-            ERROR_ADD: t('components.dialogs.addStock.messages.error'),
-            ERROR_ONCLICK_OK: t('components.dialogs.addStock.messages.onClickOk'),
-            DB_NOT_CONNECTED: t('components.dialogs.addStock.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.addStock.title')
-        }
-    }
-)
-
 const formDisabled = ref<boolean>(false)
 
 const reset = (): void => {
@@ -59,7 +45,7 @@ const onClickOk = async (): Promise<void> => {
     log('ADD_STOCK : onClickOk')
 
     if (!await validateForm(formRef)) return
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.addStock.messages.dbNotConnected'))) return
 
     await withLoading(async () => {
         try {
@@ -68,26 +54,25 @@ const onClickOk = async (): Promise<void> => {
             const addStockID = await add(stock)
 
             if (addStockID === -1) {
-                log('ADD_STOCK: onClickOk', {error: T.MESSAGES.ERROR_ADD})
-                await notice([T.MESSAGES.ERROR_ADD])
+                log('ADD_STOCK: onClickOk', {error: t('components.dialogs.addStock.messages.error')})
+                await notice([t('components.dialogs.addStock.messages.error')])
                 return
             }
 
             stock.cID = addStockID
             records.stocks.add(stock)
             resetTeleport()
-            await notice([T.MESSAGES.SUCCESS_ADD])
+            await notice([t('components.dialogs.addStock.messages.success')])
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
     })
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({onClickOk, title: t('components.dialogs.addStock.title')})
 
 onMounted(() => {
     log('ADD_STOCK: onMounted')

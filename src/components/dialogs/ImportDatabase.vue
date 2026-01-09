@@ -37,9 +37,9 @@ const {info, confirm, error} = useAlertStore()
 const {ImportExportService, readJsonFile, validateBackup} = useImportExport()
 const {items: accountItems} = storeToRefs(records.accounts)
 
-const INIT_MESSAGE = {
-    title: t('components.dialogs.importDatabase.title'),
-    smImportOnly: t('components.dialogs.importDatabase.messages.smImportOnly')
+const smImportOnly = {
+    title: t('mixed.smImportOnly.title'),
+    message: t('mixed.smImportOnly.message')
 }
 
 const files = ref<File[] | File | null>(null)
@@ -163,7 +163,7 @@ const importLegacyData = async (backup: I_Backup, activeId: number): Promise<voi
             bookingsDB: bookingsImportData.map(r => r.data as I_Booking_DB).filter(b => b.cAccountNumberID === activeId),
             bookingTypesDB: bookingTypes,
             stocksDB: stocksImportData.map(r => r.data as I_Stock_DB).filter(s => s.cAccountNumberID === activeId)
-        }, INIT_MESSAGE)
+        }, smImportOnly)
 }
 
 const importModernData = async (backup: I_Backup, activeId: number): Promise<void> => {
@@ -181,7 +181,7 @@ const importModernData = async (backup: I_Backup, activeId: number): Promise<voi
             bookingsDB: backup.bookings.filter(rec => rec.cAccountNumberID === activeId),
             bookingTypesDB: backup.bookingTypes.filter(rec => rec.cAccountNumberID === activeId),
             stocksDB: backup.stocks.filter(rec => rec.cAccountNumberID === activeId)
-        }, INIT_MESSAGE)
+        }, smImportOnly)
 }
 
 const createRollbackPoint = async (): Promise<I_Rollback_Data | null> => {
@@ -222,7 +222,7 @@ const restoreFromRollback = async (rollbackData: I_Rollback_Data): Promise<void>
                 bookingsDB: rollbackData.bookings,
                 bookingTypesDB: rollbackData.bookingTypes,
                 stocksDB: rollbackData.stocks
-            }, INIT_MESSAGE)
+            }, smImportOnly)
 
         log('IMPORT_DATABASE: Rollback completed successfully')
     } catch (error) {

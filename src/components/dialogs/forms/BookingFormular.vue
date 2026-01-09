@@ -25,33 +25,14 @@ const {formRef, bookingFormularData, selected} = useBookingFormular()
 const {bookingTypes, stocks} = useRecordsStore()
 const {markets} = useSettingsStore()
 
-const T = Object.freeze(
-    {
-        STRINGS: {
-            DATE_LABEL: t('components.dialogs.forms.bookingFormular.dateLabel'),
-            STOCK_LABEL: t('components.dialogs.forms.bookingFormular.stockLabel'),
-            BOOKING_TYPE_LABEL: t('components.dialogs.forms.bookingFormular.bookingTypeLabel'),
-            COUNT_LABEL: t('components.dialogs.forms.bookingFormular.countLabel'),
-            EX_DATE_LABEL: t('components.dialogs.forms.bookingFormular.exDateLabel'),
-            MARKET_PLACE_LABEL: t('components.dialogs.forms.bookingFormular.marketPlaceLabel'),
-            BOOKING_LABEL: t('components.dialogs.forms.bookingFormular.bookingLabel'),
-            TAX_LABEL: t('components.dialogs.forms.bookingFormular.taxLabel'),
-            SOLI_LABEL: t('components.dialogs.forms.bookingFormular.soliLabel'),
-            SOURCE_TAX_LABEL: t('components.dialogs.forms.bookingFormular.sourceTaxLabel'),
-            FEE_LABEL: t('components.dialogs.forms.bookingFormular.feeLabel'),
-            TRANSACTION_TAX_LABEL: t('components.dialogs.forms.bookingFormular.transactionTaxLabel'),
-            DESCRIPTION_LABEL: t('components.dialogs.forms.bookingFormular.descriptionLabel')
-        },
-        DATE_RULES: [
-            t('validators.isoDateRules.required'),
-            t('validators.isoDateRules.valid')
-        ],
-        BOOKING_TYPE_RULES: [t('validators.bookingTypeRules.required')],
-        RULES: [
-            t('validators.creditDebitFieldset.onlyOnePositive')
-        ]
-    }
-)
+const DATE_RULES = [
+    t('validators.isoDateRules.required'),
+    t('validators.isoDateRules.valid')
+]
+const BOOKING_TYPE_RULES = [t('validators.bookingTypeRules.required')]
+const RULES = [
+    t('validators.creditDebitFieldset.onlyOnePositive')
+]
 
 const creditDebitModel = computed(
     {
@@ -141,8 +122,8 @@ log('--- BookingFormular.vue setup ---')
             <v-col cols="6">
                 <v-text-field
                     v-model="bookingFormularData.bookDate"
-                    :label="T.STRINGS.DATE_LABEL"
-                    :rules="isoDateRules(T.DATE_RULES)"
+                    :label="t('components.dialogs.forms.bookingFormular.dateLabel')"
+                    :rules="isoDateRules(DATE_RULES)"
                     autofocus
                     density="compact"
                     type="date"
@@ -157,7 +138,7 @@ log('--- BookingFormular.vue setup ---')
                     :item-title="INDEXED_DB.STORE.STOCKS.FIELDS.COMPANY"
                     :item-value="INDEXED_DB.STORE.STOCKS.FIELDS.ID"
                     :items="sortedStocks"
-                    :label="T.STRINGS.STOCK_LABEL"
+                    :label="t('components.dialogs.forms.bookingFormular.stockLabel')"
                     clearable
                     density="compact"
                     max-width="300"
@@ -173,8 +154,8 @@ log('--- BookingFormular.vue setup ---')
                     :item-title="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.NAME"
                     :item-value="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID"
                     :items="sortedBookingTypes"
-                    :label="T.STRINGS.BOOKING_TYPE_LABEL"
-                    :rules="bookingTypeRules(T.BOOKING_TYPE_RULES)"
+                    :label="t('components.dialogs.forms.bookingFormular.bookingTypeLabel')"
+                    :rules="bookingTypeRules(BOOKING_TYPE_RULES)"
                     clearable
                     density="compact"
                     max-width="300"
@@ -186,7 +167,7 @@ log('--- BookingFormular.vue setup ---')
                 <v-text-field
                     v-if="isStockBookingType"
                     v-model="bookingFormularData.count"
-                    :label="T.STRINGS.COUNT_LABEL"
+                    :label="t('components.dialogs.forms.bookingFormular.countLabel')"
                     class="withoutSpinner"
                     density="compact"
                     type="number"
@@ -201,8 +182,8 @@ log('--- BookingFormular.vue setup ---')
                     v-if="isDividendType"
                     ref="date-input"
                     v-model="bookingFormularData.exDate"
-                    :label="T.STRINGS.EX_DATE_LABEL"
-                    :rules="isoDateRules(T.DATE_RULES)"
+                    :label="t('components.dialogs.forms.bookingFormular.exDateLabel')"
+                    :rules="isoDateRules(DATE_RULES)"
                     autofocus
                     density="compact"
                     required
@@ -216,7 +197,7 @@ log('--- BookingFormular.vue setup ---')
                     v-if="isBuySellType"
                     v-model="bookingFormularData.marketPlace"
                     :items="sortedMarkets"
-                    :label="T.STRINGS.MARKET_PLACE_LABEL"
+                    :label="t('components.dialogs.forms.bookingFormular.marketPlaceLabel')"
                     density="compact"
                     max-width="350"
                     variant="outlined"
@@ -227,44 +208,44 @@ log('--- BookingFormular.vue setup ---')
         <v-row justify="center">
             <CreditDebitFieldset
                 v-model="creditDebitModel"
-                :rules="[(v: number) => creditRules(v, T.RULES), (v: number) => debitRules(v, T.RULES)]"
-                :legend="T.STRINGS.BOOKING_LABEL"/>
+                :legend="t('components.dialogs.forms.bookingFormular.bookingLabel')"
+                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isDividendSellType" justify="center">
             <CreditDebitFieldset
                 v-model="taxModel"
-                :rules="[(v: number) => creditRules(v, T.RULES), (v: number) => debitRules(v, T.RULES)]"
-                :legend="T.STRINGS.TAX_LABEL"/>
+                :legend="t('components.dialogs.forms.bookingFormular.taxLabel')"
+                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isDividendSellType" justify="center">
             <CreditDebitFieldset
                 v-model="soliModel"
-                :rules="[(v: number) => creditRules(v, T.RULES), (v: number) => debitRules(v, T.RULES)]"
-                :legend="T.STRINGS.SOLI_LABEL"/>
+                :legend="t('components.dialogs.forms.bookingFormular.soliLabel')"
+                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isDividendSellType" justify="center">
             <CreditDebitFieldset
                 v-model="sourceTaxModel"
-                :rules="[(v: number) => creditRules(v, T.RULES), (v: number) => debitRules(v, T.RULES)]"
-                :legend="T.STRINGS.SOURCE_TAX_LABEL"/>
+                :legend="t('components.dialogs.forms.bookingFormular.sourceTaxLabel')"
+                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isBuySellType" justify="center">
             <CreditDebitFieldset
                 v-model="feeModel"
-                :rules="[(v: number) => creditRules(v, T.RULES), (v: number) => debitRules(v, T.RULES)]"
-                :legend="T.STRINGS.FEE_LABEL"/>
+                :legend="t('components.dialogs.forms.bookingFormular.feeLabel')"
+                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isBuyType" justify="center">
             <CreditDebitFieldset
                 v-model="transactionTaxModel"
-                :rules="[(v: number) => creditRules(v, T.RULES), (v: number) => debitRules(v, T.RULES)]"
-                :legend="T.STRINGS.TRANSACTION_TAX_LABEL"/>
+                :legend="t('components.dialogs.forms.bookingFormular.transactionTaxLabel')"
+                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
         </v-row>
         <v-row justify="center">
             <v-col cols="12">
                 <v-text-field
                     v-model="bookingFormularData.description"
-                    :label="T.STRINGS.DESCRIPTION_LABEL"
+                    :label="t('components.dialogs.forms.bookingFormular.descriptionLabel')"
                     density="compact"
                     type="text"
                     variant="outlined"

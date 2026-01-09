@@ -25,22 +25,6 @@ const {isLoading, ensureConnected, handleError, validateForm, withLoading} = use
 const records = useRecordsStore()
 const runtime = useRuntimeStore()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            SUCCESS_DELETE: t('components.dialogs.deleteBookingType.messages.success'),
-            ERROR_IN_USE: t('components.dialogs.deleteBookingType.messages.error'),
-            ERROR_ONCLICK_OK: t('components.dialogs.deleteBookingType.messages.onClickOk'),
-            DB_NOT_CONNECTED: t('components.dialogs.deleteBookingType.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.deleteBookingType.title'),
-            BOOKING_TYPE_LABEL: t('components.dialogs.deleteBookingType.bookingTypeLabel'),
-            PLACEHOLDER: t('components.dialogs.deleteBookingType.placeholder')
-        }
-    }
-)
-
 const selected = ref<number | undefined>()
 const formRef = ref<HTMLFormElement | null>(null)
 
@@ -52,7 +36,7 @@ const onClickOk = async (): Promise<void> => {
     log('DELETE_BOOKING_TYPE : onClickOk')
 
     if (!await validateForm(formRef)) return
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.deleteBookingType.messages.dbNotConnected'))) return
 
     if (!selected.value) {
         log('DELETE_BOOKING_TYPE: No booking type selected')
@@ -62,25 +46,24 @@ const onClickOk = async (): Promise<void> => {
     await withLoading(async () => {
         try {
             if (!canDeleteBookingType(selected.value!)) {
-                await notice([T.MESSAGES.ERROR_IN_USE])
+                await notice([t('components.dialogs.deleteBookingType.messages.error')])
                 return
             }
 
             records.bookingTypes.remove(selected.value!)
             await remove(selected.value!)
-            await notice([T.MESSAGES.SUCCESS_DELETE])
+            await notice([t('components.dialogs.deleteBookingType.messages.success')])
             runtime.resetTeleport()
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
     })
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({title, onClickOk})
+defineExpose({onClickOk, title: t('components.dialogs.deleteBookingType.title')})
 
 onBeforeMount(() => {
     log('DELETE_BOOKING_TYPE: onBeforeMount')
@@ -100,8 +83,8 @@ log('--- DeleteBookingType.vue setup ---')
             :item-title="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.NAME"
             :item-value="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID"
             :items="records.bookingTypes.items"
-            :label="T.STRINGS.BOOKING_TYPE_LABEL"
-            :placeholder="T.STRINGS.PLACEHOLDER"
+            :label="t('components.dialogs.deleteBookingType.bookingTypeLabel')"
+            :placeholder="t('components.dialogs.deleteBookingType.placeholder')"
             autocomplete
             autofocus
             clearable

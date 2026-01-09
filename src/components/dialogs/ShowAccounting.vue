@@ -23,34 +23,20 @@ const {setSumsPerPage} = settings
 const {log} = useApp()
 const {COMPONENTS, SETTINGS} = useAppConfig()
 
-const T = Object.freeze<{ STRINGS: Record<string, string>, HEADERS: I_Header[] }>(
+const HEADERS: I_Header[] = [
     {
-        STRINGS: {
-            TITLE: t('components.dialogs.showAccounting.title'),
-            ITEMS_PER_PAGE_TEXT: t('components.dialogs.showAccounting.itemsPerPageText'),
-            NO_DATA_TEXT: t('components.dialogs.showAccounting.noDataText'),
-            FEES: t('components.dialogs.showAccounting.fees'),
-            TAXES: t('components.dialogs.showAccounting.taxes'),
-            SUM: t('components.dialogs.showAccounting.sum'),
-            YEAR: t('components.dialogs.showAccounting.year'),
-            ALL_YEARS: t('components.dialogs.showAccounting.allYears')
-        },
-        HEADERS: [
-            {
-                title: t('components.dialogs.showAccounting.nameLabel'),
-                align: 'start',
-                sortable: false,
-                key: 'name'
-            },
-            {
-                title: t('components.dialogs.showAccounting.sumLabel'),
-                align: 'start',
-                sortable: false,
-                key: 'sum'
-            }
-        ]
+        title: t('components.dialogs.showAccounting.nameLabel'),
+        align: 'start',
+        sortable: false,
+        key: 'name'
+    },
+    {
+        title: t('components.dialogs.showAccounting.sumLabel'),
+        align: 'start',
+        sortable: false,
+        key: 'sum'
     }
-)
+]
 
 const selected = ref<number>(COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID)
 
@@ -59,7 +45,7 @@ const yearEntries = computed(() => {
     return years.map((entry) => {
         return {
             id: entry,
-            title: entry === COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID ? T.STRINGS.ALL_YEARS : entry.toString()
+            title: entry === COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID ? t('components.dialogs.showAccounting.allYears') : entry.toString()
         }
     })
 })
@@ -91,7 +77,7 @@ const accountEntries = computed(() => {
         result.unshift(
             {
                 id: sums.length + 2,
-                name: T.STRINGS.FEES,
+                name: t('components.dialogs.showAccounting.fees'),
                 sum: fees,
                 nameClass: '',
                 sumClass: 'color-red'
@@ -100,7 +86,7 @@ const accountEntries = computed(() => {
         result.unshift(
             {
                 id: sums.length + 1,
-                name: T.STRINGS.TAXES,
+                name: t('components.dialogs.showAccounting.taxes'),
                 sum: taxes,
                 nameClass: '',
                 sumClass: 'color-red'
@@ -112,7 +98,7 @@ const accountEntries = computed(() => {
     result.push(
         {
             id: sums.length,
-            name: T.STRINGS.SUM,
+            name: t('components.dialogs.showAccounting.sum'),
             sum: finalSum + taxes + fees,
             nameClass: 'font-weight-bold',
             sumClass: 'font-weight-bold'
@@ -138,8 +124,7 @@ const getAccountData = (year: number) => {
     }
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({title})
+defineExpose({title: t('components.dialogs.showAccounting.title')})
 
 log('--- ShowAccounting.vue setup ---')
 </script>
@@ -151,7 +136,7 @@ log('--- ShowAccounting.vue setup ---')
         <v-select
             v-model="selected"
             :items="yearEntries"
-            :label="T.STRINGS.YEAR"
+            :label="t('components.dialogs.showAccounting.year')"
             clearable
             density="compact"
             item-title="title"
@@ -162,14 +147,14 @@ log('--- ShowAccounting.vue setup ---')
         <v-card>
             <v-card-text class="pa-5">
                 <v-data-table
-                    :headers="T.HEADERS"
+                    :headers="HEADERS"
                     :hide-no-data="false"
                     :hover="false"
                     :items="accountEntries"
                     :items-per-page="sumsPerPage"
                     :items-per-page-options="SETTINGS.ITEMS_PER_PAGE_OPTIONS"
-                    :items-per-page-text="T.STRINGS.ITEMS_PER_PAGE_TEXT"
-                    :no-data-text="T.STRINGS.NO_DATA_TEXT"
+                    :items-per-page-text="t('components.dialogs.showAccounting.itemsPerPageText')"
+                    :no-data-text="t('components.dialogs.showAccounting.noDataText')"
                     density="compact"
                     item-key="id"
                     @update:items-per-page="setSumsPerPage">

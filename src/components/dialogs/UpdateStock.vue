@@ -32,19 +32,6 @@ const {activeId} = storeToRefs(runtime)
 const {stockFormularData, formRef, mapStockFormToDb} = useStockFormular()
 const {isLoading, ensureConnected, handleError, validateForm, withLoading} = useDialogGuards()
 
-const T = Object.freeze(
-    {
-        MESSAGES: {
-            SUCCESS_UPDATE: t('components.dialogs.updateStock.messages.success'),
-            ERROR_ONCLICK_OK: t('components.dialogs.updateStock.messages.onClickOk'),
-            DB_NOT_CONNECTED: t('components.dialogs.updateStock.messages.dbNotConnected')
-        },
-        STRINGS: {
-            TITLE: t('components.dialogs.updateStock.title')
-        }
-    }
-)
-
 const loadCurrentStock = (): void => {
     const currentStock = records.stocks.getItemById(activeId.value)
 
@@ -65,17 +52,17 @@ const loadCurrentStock = (): void => {
 const onClickOk = async (): Promise<void> => {
     log('UPDATE_STOCK : onClickOk')
     if (!await validateForm(formRef)) return
-    if (!await ensureConnected(isConnected, notice, T.MESSAGES.DB_NOT_CONNECTED)) return
+    if (!await ensureConnected(isConnected, notice, t('components.dialogs.updateStock.messages.dbNotConnected'))) return
 
     await withLoading(async () => {
         try {
             const stock: I_Stock_DB = mapStockFormToDb(activeAccountId.value)
             records.stocks.update(stock)
             await update(stock)
-            await notice([T.MESSAGES.SUCCESS_UPDATE])
+            await notice([t('components.dialogs.updateStock.messages.success')])
         } catch (err) {
             throw handleError(
-                T.MESSAGES.ERROR_ONCLICK_OK,
+                t('mixed.onClickOk'),
                 err
             )
         }
@@ -83,8 +70,7 @@ const onClickOk = async (): Promise<void> => {
     runtime.resetTeleport()
 }
 
-const title = T.STRINGS.TITLE
-defineExpose({onClickOk, title})
+defineExpose({onClickOk, title: t('components.dialogs.updateStock.title')})
 
 onBeforeMount(() => {
     log('UPDATE_STOCK_FORMULAR: onBeforeMount')

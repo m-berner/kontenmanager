@@ -273,6 +273,7 @@ export function useFetch() {
                     })
                 )
             }
+            //TODO is toNumber everywhere really required
             const _goyax = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
                 return await Promise.all(
                     urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
