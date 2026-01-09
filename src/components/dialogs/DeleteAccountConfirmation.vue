@@ -38,13 +38,13 @@ const smImportOnly = {
 const switchToNextAccount = async (): Promise<void> => {
     if (accountItems.value.length === 0) {
         activeAccountId.value = -1
-        await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, -1)
+        await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, -1)
         return
     }
 
     const newActiveId = accountItems.value[0].cID
     activeAccountId.value = newActiveId!
-    await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, newActiveId!)
+    await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, newActiveId!)
 
     const storesDB = await getDatabaseStores(newActiveId!)
     await records.init(storesDB, smImportOnly)

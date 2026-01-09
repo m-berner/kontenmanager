@@ -37,12 +37,12 @@ export const DEFAULTS = Object.freeze(
         //         SUMS_PER_PAGE: 'sSumsPerPage'
         //     }
         // },
-        LOCAL_STORAGE: {
-            DEBUG: '0',
-            PROPS: {
-                DEBUG: 'sDebug'
-            }
-        },
+        // LOCAL_STORAGE: {
+        //     DEBUG: '0',
+        //     PROPS: {
+        //         DEBUG: 'sDebug'
+        //     }
+        // },
         SM_RESTORE_ACCOUNT_ID: 1,
         LARGE_FILE_THRESHOLD_KB: 10000
     }

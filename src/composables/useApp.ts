@@ -129,7 +129,7 @@ export function useApp() {
     }
 
     function log(msg: string, mode?: { info?: unknown, warn?: unknown, error?: unknown }) {
-        const localDebug = localStorage.getItem(LOCAL_STORAGE.PROPS.DEBUG)
+        const localDebug = localStorage.getItem(LOCAL_STORAGE.DEBUG.key)
         if (Number.parseInt(localDebug ?? '0') > 0) {
             if (mode?.info !== undefined) {
                 // eslint-disable-next-line no-console

@@ -53,7 +53,7 @@ export function useApp() {
         return Number.isNaN(result) ? 0 : result;
     }
     function log(msg, mode) {
-        const localDebug = localStorage.getItem(LOCAL_STORAGE.PROPS.DEBUG);
+        const localDebug = localStorage.getItem(LOCAL_STORAGE.DEBUG.key);
         if (Number.parseInt(localDebug ?? '0') > 0) {
             if (mode?.info !== undefined) {
                 console.info(msg, mode?.info);

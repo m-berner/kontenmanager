@@ -1,9 +1,9 @@
 import { INDEXED_DB } from '@/configurations/indexed_db';
 import { DATE } from '@/configurations/date';
 import { DEFAULTS } from '@/configurations/defaults';
-import { SESSION_STORAGE } from '@/configurations/session_storage';
-import { LOCAL_STORAGE } from '@/configurations/local_storage';
-import { BROWSER_STORAGE } from '@/configurations/browser_storage';
+import { SESSION_STORAGE } from '@/configurations/storage';
+import { LOCAL_STORAGE } from '@/configurations/storage';
+import { BROWSER_STORAGE } from '@/configurations/storage';
 import { PAGES } from '@/configurations/pages';
 import { EVENTS } from '@/configurations/events';
 import { SERVICES } from '@/configurations/services';

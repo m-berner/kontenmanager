@@ -17,51 +17,51 @@ const {BROWSER_STORAGE} = useAppConfig()
 const {setStorage} = useBrowser()
 
 export const useSettingsStore = defineStore('settings', function () {
-    const skin = ref<string>(BROWSER_STORAGE.LOCAL.SKIN.value)
-    const bookingsPerPage = ref<number>(BROWSER_STORAGE.LOCAL.BOOKINGS_PER_PAGE.value)
-    const stocksPerPage = ref<number>(BROWSER_STORAGE.LOCAL.STOCKS_PER_PAGE.value)
-    const dividendsPerPage = ref<number>(BROWSER_STORAGE.LOCAL.DIVIDENDS_PER_PAGE.value)
-    const sumsPerPage = ref<number>(BROWSER_STORAGE.LOCAL.SUMS_PER_PAGE.value)
+    const skin = ref<string>(BROWSER_STORAGE.SKIN.value)
+    const bookingsPerPage = ref<number>(BROWSER_STORAGE.BOOKINGS_PER_PAGE.value)
+    const stocksPerPage = ref<number>(BROWSER_STORAGE.STOCKS_PER_PAGE.value)
+    const dividendsPerPage = ref<number>(BROWSER_STORAGE.DIVIDENDS_PER_PAGE.value)
+    const sumsPerPage = ref<number>(BROWSER_STORAGE.SUMS_PER_PAGE.value)
     const activeAccountId = ref<number>(-1)
-    const service = ref<string>(BROWSER_STORAGE.LOCAL.SERVICE.value)
-    const materials = ref<string[]>(BROWSER_STORAGE.LOCAL.MATERIALS.value)
-    const markets = ref<string[]>(BROWSER_STORAGE.LOCAL.MARKETS.value)
-    const indexes = ref<string[]>(BROWSER_STORAGE.LOCAL.INDEXES.value)
-    const exchanges = ref<string[]>(BROWSER_STORAGE.LOCAL.EXCHANGES.value)
+    const service = ref<string>(BROWSER_STORAGE.SERVICE.value)
+    const materials = ref<string[]>(BROWSER_STORAGE.MATERIALS.value)
+    const markets = ref<string[]>(BROWSER_STORAGE.MARKETS.value)
+    const indexes = ref<string[]>(BROWSER_STORAGE.INDEXES.value)
+    const exchanges = ref<string[]>(BROWSER_STORAGE.EXCHANGES.value)
 
     function init(storage: T_Storage): void {
         log('SETTINGS: init')
-        skin.value = storage[BROWSER_STORAGE.LOCAL.SKIN.key] as string
-        bookingsPerPage.value = storage[BROWSER_STORAGE.LOCAL.BOOKINGS_PER_PAGE.key] as number
-        stocksPerPage.value = storage[BROWSER_STORAGE.LOCAL.STOCKS_PER_PAGE.key] as number
-        dividendsPerPage.value = storage[BROWSER_STORAGE.LOCAL.DIVIDENDS_PER_PAGE.key] as number
-        sumsPerPage.value = storage[BROWSER_STORAGE.LOCAL.SUMS_PER_PAGE.key] as number
-        activeAccountId.value = storage[BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key] as number
-        service.value = storage[BROWSER_STORAGE.LOCAL.SERVICE.key] as string
-        materials.value = [...storage[BROWSER_STORAGE.LOCAL.MATERIALS.key] as string[]]
-        markets.value = [...storage[BROWSER_STORAGE.LOCAL.MARKETS.key] as string[]]
-        indexes.value = [...storage[BROWSER_STORAGE.LOCAL.INDEXES.key] as string[]]
-        exchanges.value = [...storage[BROWSER_STORAGE.LOCAL.EXCHANGES.key] as string[]]
+        skin.value = storage[BROWSER_STORAGE.SKIN.key] as string
+        bookingsPerPage.value = storage[BROWSER_STORAGE.BOOKINGS_PER_PAGE.key] as number
+        stocksPerPage.value = storage[BROWSER_STORAGE.STOCKS_PER_PAGE.key] as number
+        dividendsPerPage.value = storage[BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key] as number
+        sumsPerPage.value = storage[BROWSER_STORAGE.SUMS_PER_PAGE.key] as number
+        activeAccountId.value = storage[BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key] as number
+        service.value = storage[BROWSER_STORAGE.SERVICE.key] as string
+        materials.value = [...storage[BROWSER_STORAGE.MATERIALS.key] as string[]]
+        markets.value = [...storage[BROWSER_STORAGE.MARKETS.key] as string[]]
+        indexes.value = [...storage[BROWSER_STORAGE.INDEXES.key] as string[]]
+        exchanges.value = [...storage[BROWSER_STORAGE.EXCHANGES.key] as string[]]
     }
 
     async function setSumsPerPage(v: number) {
         sumsPerPage.value = v
-        await setStorage(BROWSER_STORAGE.LOCAL.SUMS_PER_PAGE.key, v)
+        await setStorage(BROWSER_STORAGE.SUMS_PER_PAGE.key, v)
     }
 
     async function setBookingsPerPage(v: number) {
         bookingsPerPage.value = v
-        await setStorage(BROWSER_STORAGE.LOCAL.BOOKINGS_PER_PAGE.key, v)
+        await setStorage(BROWSER_STORAGE.BOOKINGS_PER_PAGE.key, v)
     }
 
     async function setStocksPerPage(v: number) {
         stocksPerPage.value = v
-        await setStorage(BROWSER_STORAGE.LOCAL.STOCKS_PER_PAGE.key, v)
+        await setStorage(BROWSER_STORAGE.STOCKS_PER_PAGE.key, v)
     }
 
     async function setDividendsPerPage(v: number) {
         dividendsPerPage.value = v
-        await setStorage(BROWSER_STORAGE.LOCAL.DIVIDENDS_PER_PAGE.key, v)
+        await setStorage(BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key, v)
     }
 
     return {

@@ -214,7 +214,7 @@ const restoreFromRollback = async (rollbackData: I_Rollback_Data): Promise<void>
         await importBookings(toImportRecords(rollbackData.bookings))
 
         settings.activeAccountId = rollbackData.activeAccountId
-        await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, rollbackData.activeAccountId)
+        await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, rollbackData.activeAccountId)
 
         records.init(
             {
@@ -318,7 +318,7 @@ const processBackupFile = async (): Promise<void> => {
         // Set active account
         const activeId = backup.accounts?.[0]?.cID ?? DEFAULTS.SM_RESTORE_ACCOUNT_ID
         activeAccountId.value = activeId
-        await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, activeId)
+        await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeId)
         // Clear existing data
         await clearAllAccounts()
         await clearAllBookings()
@@ -336,7 +336,7 @@ const processBackupFile = async (): Promise<void> => {
                 4000
             )
             activeAccountId.value = originalActiveId
-            await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, originalActiveId)
+            await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId)
             return
         }
         resetTeleport()
@@ -350,7 +350,7 @@ const processBackupFile = async (): Promise<void> => {
         resetFileInput()
     } catch (err) {
         activeAccountId.value = originalActiveId
-        await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, originalActiveId)
+        await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId)
         throw handleError(
             t('components.dialogs.importDatabase.invalidJson'),
             err

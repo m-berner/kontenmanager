@@ -135,7 +135,7 @@ export function useBrowser() {
             const updates: Record<string, string | number | boolean | string[]> = {}
 
             // Collect all missing keys
-            for (const value of Object.values(BROWSER_STORAGE.LOCAL)) {
+            for (const value of Object.values(BROWSER_STORAGE)) {
                 if (storageLocal[value.key] === undefined) {
                     updates[value.key] = value.value
                 }

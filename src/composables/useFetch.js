@@ -89,8 +89,8 @@ export function useFetch() {
     async function fetchMinRateMaxData(storageOnline) {
         log('USE_FETCH: fetchMinRateMaxData');
         return new Promise(async (resolve, reject) => {
-            const storageService = await getStorage([BROWSER_STORAGE.LOCAL.SERVICE.key]);
-            const serviceName = storageService[BROWSER_STORAGE.LOCAL.SERVICE.key];
+            const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
+            const serviceName = storageService[BROWSER_STORAGE.SERVICE.key];
             const _fnet = async (urls) => {
                 return await Promise.all(urls.map(async (urlObj) => {
                     const firstResponse = await _fetchWithRetry(urlObj.value);

@@ -95,7 +95,7 @@ const onClickOk = async (): Promise<void> => {
             records.accounts.add(account)
 
             activeAccountId.value = addAccountID
-            await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, addAccountID)
+            await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, addAccountID)
 
             // Add booking types with rollback support
             const bookingTypesAdded = await addBookingTypesForAccount(addAccountID)

@@ -65,7 +65,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
     log('TITLE_BAR onUpdateTitleBar')
     try {
         const storesDB = await getDatabaseStores(activeAccountId.value)
-        await setStorage(BROWSER_STORAGE.LOCAL.ACTIVE_ACCOUNT_ID.key, activeAccountId.value)
+        await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeAccountId.value)
         await records.init(storesDB, smImportOnly)
         isCompanyPage.value = false
         router.push('/')

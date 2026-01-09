@@ -102,7 +102,7 @@ export function useBrowser() {
         try {
             const storageLocal = await browser.storage.local.get();
             const updates = {};
-            for (const value of Object.values(BROWSER_STORAGE.LOCAL)) {
+            for (const value of Object.values(BROWSER_STORAGE)) {
                 if (storageLocal[value.key] === undefined) {
                     updates[value.key] = value.value;
                 }

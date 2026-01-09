@@ -80,10 +80,10 @@ const setChecked = async (): Promise<void> => {
         const checkedBoxes = checked.value
         switch (props.type) {
             case COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
-                await setStorage(BROWSER_STORAGE.LOCAL.INDEXES.key, [...checkedBoxes])
+                await setStorage(BROWSER_STORAGE.INDEXES.key, [...checkedBoxes])
                 break
             case COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
-                await setStorage(BROWSER_STORAGE.LOCAL.MATERIALS.key, [...checkedBoxes])
+                await setStorage(BROWSER_STORAGE.MATERIALS.key, [...checkedBoxes])
                 break
         }
     } catch (err) {
@@ -102,17 +102,17 @@ onBeforeMount(async () => {
     try {
         const storage = await getStorage(
             [
-                BROWSER_STORAGE.LOCAL.INDEXES.key,
-                BROWSER_STORAGE.LOCAL.MATERIALS.key
+                BROWSER_STORAGE.INDEXES.key,
+                BROWSER_STORAGE.MATERIALS.key
             ]
         )
 
         switch (props.type) {
             case COMPONENTS.CHECKBOX_GRID.TYPES.INDEXES:
-                checked.value = storage[BROWSER_STORAGE.LOCAL.INDEXES.key] as string[]
+                checked.value = storage[BROWSER_STORAGE.INDEXES.key] as string[]
                 break
             case COMPONENTS.CHECKBOX_GRID.TYPES.MATERIALS:
-                checked.value = storage[BROWSER_STORAGE.LOCAL.MATERIALS.key] as string[]
+                checked.value = storage[BROWSER_STORAGE.MATERIALS.key] as string[]
                 break
         }
     } catch (err) {

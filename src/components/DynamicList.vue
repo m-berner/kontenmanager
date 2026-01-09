@@ -74,12 +74,12 @@ const addItem = async (item: string): Promise<void> => {
                 case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
                     list.value.push(item)
                     markets.value.push(item)
-                    await setStorage(BROWSER_STORAGE.LOCAL.MARKETS.key, [...list.value])
+                    await setStorage(BROWSER_STORAGE.MARKETS.key, [...list.value])
                     break
                 case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
                     list.value.push(item.toUpperCase())
                     exchanges.value.push(item.toUpperCase())
-                    await setStorage(BROWSER_STORAGE.LOCAL.EXCHANGES.key, [...list.value])
+                    await setStorage(BROWSER_STORAGE.EXCHANGES.key, [...list.value])
                     const exchangesInfoData: I_Exchange_Data[] = await fetchExchangesData([newItem.value])
                     infoExchanges.value.set(exchanges.value[exchanges.value.length - 1], exchangesInfoData[0].value)
                     break
@@ -106,10 +106,10 @@ const removeItem = async (n: number): Promise<void> => {
         newItem.value = ''
         switch (props.type) {
             case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-                await setStorage(BROWSER_STORAGE.LOCAL.MARKETS.key, [...list.value])
+                await setStorage(BROWSER_STORAGE.MARKETS.key, [...list.value])
                 break
             case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-                await setStorage(BROWSER_STORAGE.LOCAL.EXCHANGES.key, [...list.value])
+                await setStorage(BROWSER_STORAGE.EXCHANGES.key, [...list.value])
                 break
             default:
         }
@@ -125,13 +125,13 @@ onBeforeMount(async () => {
     error.value = null
 
     try {
-        const storage = await getStorage([BROWSER_STORAGE.LOCAL.MARKETS.key, BROWSER_STORAGE.LOCAL.EXCHANGES.key])
+        const storage = await getStorage([BROWSER_STORAGE.MARKETS.key, BROWSER_STORAGE.EXCHANGES.key])
         switch (props.type) {
             case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-                list.value = storage[BROWSER_STORAGE.LOCAL.EXCHANGES.key] as string[]
+                list.value = storage[BROWSER_STORAGE.EXCHANGES.key] as string[]
                 break
             case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-                list.value = storage[BROWSER_STORAGE.LOCAL.MARKETS.key] as string[]
+                list.value = storage[BROWSER_STORAGE.MARKETS.key] as string[]
                 break
         }
     } catch (err) {

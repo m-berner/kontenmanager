@@ -93,26 +93,26 @@ const onChangeHandler = (changes: Record<string, browser.storage.StorageChange>)
     const changesKey = Object.keys(changes)
     const {service, indexes, markets, materials, exchanges} = storeToRefs(settings)
     switch (changesKey[0]) {
-        case BROWSER_STORAGE.LOCAL.SKIN.key:
+        case BROWSER_STORAGE.SKIN.key:
             if (theme?.global?.name) {
-                theme.global.name.value = changes[BROWSER_STORAGE.LOCAL.SKIN.key].newValue
+                theme.global.name.value = changes[BROWSER_STORAGE.SKIN.key].newValue
             }
-            skin.value = changes[BROWSER_STORAGE.LOCAL.SKIN.key].newValue
+            skin.value = changes[BROWSER_STORAGE.SKIN.key].newValue
             break
-        case BROWSER_STORAGE.LOCAL.SERVICE.key:
-            service.value = changes[BROWSER_STORAGE.LOCAL.SERVICE.key].newValue
+        case BROWSER_STORAGE.SERVICE.key:
+            service.value = changes[BROWSER_STORAGE.SERVICE.key].newValue
             break
-        case BROWSER_STORAGE.LOCAL.INDEXES.key:
-            indexes.value = changes[BROWSER_STORAGE.LOCAL.INDEXES.key].newValue
+        case BROWSER_STORAGE.INDEXES.key:
+            indexes.value = changes[BROWSER_STORAGE.INDEXES.key].newValue
             break
-        case BROWSER_STORAGE.LOCAL.MARKETS.key:
-            markets.value = changes[BROWSER_STORAGE.LOCAL.MARKETS.key].newValue
+        case BROWSER_STORAGE.MARKETS.key:
+            markets.value = changes[BROWSER_STORAGE.MARKETS.key].newValue
             break
-        case BROWSER_STORAGE.LOCAL.MATERIALS.key:
-            materials.value = changes[BROWSER_STORAGE.LOCAL.MATERIALS.key].newValue
+        case BROWSER_STORAGE.MATERIALS.key:
+            materials.value = changes[BROWSER_STORAGE.MATERIALS.key].newValue
             break
-        case BROWSER_STORAGE.LOCAL.EXCHANGES.key:
-            exchanges.value = changes[BROWSER_STORAGE.LOCAL.EXCHANGES.key].newValue
+        case BROWSER_STORAGE.EXCHANGES.key:
+            exchanges.value = changes[BROWSER_STORAGE.EXCHANGES.key].newValue
             break
         default:
     }
@@ -131,11 +131,11 @@ const onResetStorage = async (): Promise<void> => {
     await installStorageLocal()
 }
 const onToggleDebug = () => {
-    const debugValue = localStorage.getItem(LOCAL_STORAGE.PROPS.DEBUG)
+    const debugValue = localStorage.getItem(LOCAL_STORAGE.DEBUG.key)
     if (debugValue !== '1') {
-        localStorage.setItem(LOCAL_STORAGE.PROPS.DEBUG, '1')
+        localStorage.setItem(LOCAL_STORAGE.DEBUG.key, '1')
     } else {
-        localStorage.setItem(LOCAL_STORAGE.PROPS.DEBUG, '0')
+        localStorage.setItem(LOCAL_STORAGE.DEBUG.key, '0')
         unregister('Ctrl+Alt+D')
     }
 }

@@ -33,13 +33,13 @@ const skin = ref<string>('')
 
 const setSkin = async (): Promise<void> => {
     log('THEME_SELECTOR: setSkin')
-    await setStorage(BROWSER_STORAGE.LOCAL.SKIN.key, skin.value)
+    await setStorage(BROWSER_STORAGE.SKIN.key, skin.value)
 }
 
 onBeforeMount(async () => {
     log('THEME_SELECTOR: onBeforeMount')
-    const storageSkin = await getStorage([BROWSER_STORAGE.LOCAL.SKIN.key])
-    skin.value = storageSkin[BROWSER_STORAGE.LOCAL.SKIN.key] as string || BROWSER_STORAGE.LOCAL.SKIN.value
+    const storageSkin = await getStorage([BROWSER_STORAGE.SKIN.key])
+    skin.value = storageSkin[BROWSER_STORAGE.SKIN.key] as string || BROWSER_STORAGE.SKIN.value
 })
 
 log('--- ThemeSelector.vue setup ---')

@@ -549,9 +549,9 @@ export const useRecordsStore = defineStore('records', function () {
             cAccountNumberID: activeAccountId.value,
             cAskDates: DATE.ISO
         }, true);
-        if (accountsStore.items.length === 0 && sessionStorage.getItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT) === null) {
+        if (accountsStore.items.length === 0 && sessionStorage.getItem(SESSION_STORAGE.HIDE_IMPORT_ALERT.key) === null) {
             info(messages.title, messages.message, null);
-            sessionStorage.setItem(SESSION_STORAGE.PROPS.HIDE_IMPORT_ALERT, 'true');
+            sessionStorage.setItem(SESSION_STORAGE.HIDE_IMPORT_ALERT.key, 'true');
         }
     }
     return {
