@@ -1,4 +1,14 @@
 import { INDEXED_DB } from '@/configurations/indexed_db';
+export class ImportExportError extends Error {
+    _code;
+    _context;
+    constructor(message, _code, _context) {
+        super(message);
+        this._code = _code;
+        this._context = _context;
+        this.name = 'ImportExportError';
+    }
+}
 export function useImportExport() {
     class ImportExportService {
         _INDEXED_DB;
@@ -8,6 +18,36 @@ export function useImportExport() {
             this._INDEXED_DB = _INDEXED_DB;
             this._DATE = _DATE;
             this._isoDate = _isoDate;
+        }
+        stringifyDatabase(sm, accounts, stocks, bookingTypes, bookings) {
+            this.validateExportData(accounts, stocks, bookingTypes, bookings);
+            const exportData = {
+                sm,
+                accounts,
+                stocks,
+                bookingTypes,
+                bookings
+            };
+            try {
+                return JSON.stringify(exportData, null, 2);
+            }
+            catch (err) {
+                throw new ImportExportError('Failed to serialize data', 'SERIALIZE_FAILED', { originalError: err });
+            }
+        }
+        validateExportData(accounts, stocks, bookingTypes, bookings) {
+            const errors = [];
+            if (!Array.isArray(accounts))
+                errors.push('Invalid accounts data');
+            if (!Array.isArray(stocks))
+                errors.push('Invalid stocks data');
+            if (!Array.isArray(bookingTypes))
+                errors.push('Invalid booking types data');
+            if (!Array.isArray(bookings))
+                errors.push('Invalid bookings data');
+            if (errors.length > 0) {
+                throw new ImportExportError('Export data validation failed', 'VALIDATION_FAILED', { errors });
+            }
         }
         verifyExportIntegrity(exportedData) {
             try {
@@ -28,28 +68,39 @@ export function useImportExport() {
             catch (err) {
                 return {
                     valid: false,
-                    errors: [err.message]
+                    errors: [`Parse error: ${err.message}`]
                 };
             }
         }
         validateDataIntegrity(backup) {
             const errors = [];
             if (!backup.accounts || !backup.stocks || !backup.bookings || !backup.bookingTypes) {
-                errors.push('Missing required data arrays');
-                return errors;
+                return ['Missing required data arrays'];
             }
-            const undefinedAccountIds = backup.accounts.filter(a => a.cID === undefined).length;
-            if (undefinedAccountIds > 0) {
-                errors.push(`${undefinedAccountIds} accounts have undefined IDs`);
+            errors.push(...this.checkUndefinedIds(backup));
+            errors.push(...this.validateForeignKeys(backup));
+            errors.push(...this.checkDuplicateIds(backup));
+            errors.push(...this.validateBusinessRules(backup));
+            return errors;
+        }
+        checkUndefinedIds(backup) {
+            const errors = [];
+            const undefinedAccounts = backup.accounts.filter(a => a.cID === undefined).length;
+            if (undefinedAccounts > 0) {
+                errors.push(`${undefinedAccounts} accounts have undefined IDs`);
             }
-            const undefinedStockIds = backup.stocks.filter(s => s.cID === undefined).length;
-            if (undefinedStockIds > 0) {
-                errors.push(`${undefinedStockIds} stocks have undefined IDs`);
+            const undefinedStocks = backup.stocks.filter(s => s.cID === undefined).length;
+            if (undefinedStocks > 0) {
+                errors.push(`${undefinedStocks} stocks have undefined IDs`);
             }
-            const undefinedBookingIds = backup.bookings.filter(b => b.cID === undefined).length;
-            if (undefinedBookingIds > 0) {
-                errors.push(`${undefinedBookingIds} bookings have undefined IDs`);
+            const undefinedBookings = backup.bookings.filter(b => b.cID === undefined).length;
+            if (undefinedBookings > 0) {
+                errors.push(`${undefinedBookings} bookings have undefined IDs`);
             }
+            return errors;
+        }
+        validateForeignKeys(backup) {
+            const errors = [];
             const accountIds = new Set(backup.accounts.map(a => a.cID));
             const stockIds = new Set(backup.stocks.map(s => s.cID));
             const bookingTypeIds = new Set(backup.bookingTypes.map(bt => bt.cID));
@@ -63,12 +114,6 @@ export function useImportExport() {
                 if (!bookingTypeIds.has(booking.cBookingTypeID)) {
                     errors.push(`Booking ${booking.cID} references non-existent booking type ${booking.cBookingTypeID}`);
                 }
-                if (booking.cCredit < 0 || booking.cDebit < 0) {
-                    errors.push(`Booking ${booking.cID} has negative credit/debit values`);
-                }
-                if (booking.cCredit > 0 && booking.cDebit > 0) {
-                    errors.push(`Booking ${booking.cID} has both credit and debit values`);
-                }
             }
             for (const stock of backup.stocks) {
                 if (!accountIds.has(stock.cAccountNumberID)) {
@@ -80,6 +125,10 @@ export function useImportExport() {
                     errors.push(`Booking type ${bt.cID} references non-existent account ${bt.cAccountNumberID}`);
                 }
             }
+            return errors;
+        }
+        checkDuplicateIds(backup) {
+            const errors = [];
             const duplicateAccounts = this.findDuplicates(backup.accounts.map(a => a.cID).filter((id) => id !== undefined));
             if (duplicateAccounts.length > 0) {
                 errors.push(`Duplicate account IDs: ${duplicateAccounts.join(', ')}`);
@@ -94,11 +143,36 @@ export function useImportExport() {
             }
             return errors;
         }
+        validateBusinessRules(backup) {
+            const errors = [];
+            for (const booking of backup.bookings) {
+                if (booking.cCredit < 0 || booking.cDebit < 0) {
+                    errors.push(`Booking ${booking.cID} has negative credit/debit values`);
+                }
+                if (booking.cCredit > 0 && booking.cDebit > 0) {
+                    errors.push(`Booking ${booking.cID} has both credit and debit values`);
+                }
+                if (booking.cCredit === 0 && booking.cDebit === 0) {
+                    errors.push(`Booking ${booking.cID} has zero for both credit and debit`);
+                }
+            }
+            return errors;
+        }
+        findDuplicates(arr) {
+            const seen = new Set();
+            const duplicates = new Set();
+            for (const id of arr) {
+                if (seen.has(id)) {
+                    duplicates.add(id);
+                }
+                seen.add(id);
+            }
+            return Array.from(duplicates);
+        }
         validateLegacyDataIntegrity(backup) {
             const errors = [];
             if (!backup.stocks || !backup.transfers) {
-                errors.push('Missing required legacy data arrays');
-                return errors;
+                return ['Missing required legacy data arrays'];
             }
             const duplicateStocks = this.findDuplicates(backup.stocks.map(s => s.cID).filter((id) => id !== undefined));
             if (duplicateStocks.length > 0) {
@@ -181,44 +255,6 @@ export function useImportExport() {
             }
             return booking;
         }
-        stringifyDatabase(sm, accounts, stocks, bookingTypes, bookings) {
-            if (!accounts || !Array.isArray(accounts)) {
-                throw new Error('Invalid accounts data');
-            }
-            if (!stocks || !Array.isArray(stocks)) {
-                throw new Error('Invalid stocks data');
-            }
-            if (!bookingTypes || !Array.isArray(bookingTypes)) {
-                throw new Error('Invalid booking types data');
-            }
-            if (!bookings || !Array.isArray(bookings)) {
-                throw new Error('Invalid bookings data');
-            }
-            const exportData = {
-                sm,
-                accounts,
-                stocks,
-                bookingTypes,
-                bookings
-            };
-            try {
-                return JSON.stringify(exportData, null, 2);
-            }
-            catch (err) {
-                throw new Error(`Failed to serialize data: ${err.message}`);
-            }
-        }
-        findDuplicates(arr) {
-            const seen = new Set();
-            const duplicates = new Set();
-            for (const id of arr) {
-                if (seen.has(id)) {
-                    duplicates.add(id);
-                }
-                seen.add(id);
-            }
-            return Array.from(duplicates);
-        }
         createCreditDebitObject(rec) {
             const BOOKING_TYPES = this._INDEXED_DB.STORE.BOOKING_TYPES;
             const result = { value: 0, type: -1 };
@@ -231,24 +267,22 @@ export function useImportExport() {
             else if (rec.cTax !== 0 || rec.cSoli !== 0 || rec.cSTax !== 0 || rec.cFTax !== 0) {
                 result.type = BOOKING_TYPES.TAX;
             }
-            if (rec.cType === BOOKING_TYPES.BUY) {
-                return { value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.BUY };
+            switch (rec.cType) {
+                case BOOKING_TYPES.BUY:
+                    return { value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.BUY };
+                case BOOKING_TYPES.SELL:
+                    return { value: rec.cUnitQuotation * -rec.cCount, type: BOOKING_TYPES.SELL };
+                case BOOKING_TYPES.DIVIDEND:
+                    return { value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.DIVIDEND };
+                case BOOKING_TYPES.CREDIT:
+                    result.value = rec.cAmount + rec.cFees + rec.cSTax + rec.cFTax + rec.cTax + rec.cSoli;
+                    return result;
+                case BOOKING_TYPES.DEBIT:
+                    result.value = -rec.cAmount - rec.cFees - rec.cSTax - rec.cFTax - rec.cTax - rec.cSoli;
+                    return result;
+                default:
+                    throw new ImportExportError('Unknown booking type', 'UNKNOWN_BOOKING_TYPE', { type: rec.cType });
             }
-            if (rec.cType === BOOKING_TYPES.SELL) {
-                return { value: rec.cUnitQuotation * -rec.cCount, type: BOOKING_TYPES.SELL };
-            }
-            if (rec.cType === BOOKING_TYPES.DIVIDEND) {
-                return { value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.DIVIDEND };
-            }
-            if (rec.cType === BOOKING_TYPES.CREDIT) {
-                result.value = rec.cAmount + rec.cFees + rec.cSTax + rec.cFTax + rec.cTax + rec.cSoli;
-                return result;
-            }
-            if (rec.cType === BOOKING_TYPES.DEBIT) {
-                result.value = -rec.cAmount - rec.cFees - rec.cSTax - rec.cFTax - rec.cTax - rec.cSoli;
-                return result;
-            }
-            throw new Error(`Unknown booking type: ${rec.cType}`);
         }
         resetTaxesAndFees(booking) {
             booking.cFeeCredit = 0;
@@ -269,10 +303,18 @@ export function useImportExport() {
         }
         const backup = data;
         if (!backup.sm?.cDBVersion) {
-            return { isValid: false, version: -1, error: 'Missing version information' };
+            return {
+                isValid: false,
+                version: -1,
+                error: 'Missing version information'
+            };
         }
         if (backup.sm.cDBVersion < INDEXED_DB.SM_IMPORT_VERSION) {
-            return { isValid: false, version: backup.sm.cDBVersion, error: 'Version too old' };
+            return {
+                isValid: false,
+                version: backup.sm.cDBVersion,
+                error: `Version ${backup.sm.cDBVersion} is too old (minimum: ${INDEXED_DB.SM_IMPORT_VERSION})`
+            };
         }
         const isLegacy = backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION;
         if (isLegacy) {
@@ -292,7 +334,11 @@ export function useImportExport() {
             ];
             for (const { field, name } of requiredFields) {
                 if (!field || !Array.isArray(field)) {
-                    return { isValid: false, version: backup.sm.cDBVersion, error: `Missing or invalid ${name} data` };
+                    return {
+                        isValid: false,
+                        version: backup.sm.cDBVersion,
+                        error: `Missing or invalid ${name} data`
+                    };
                 }
             }
         }
@@ -300,20 +346,21 @@ export function useImportExport() {
     }
     async function readJsonFile(blob) {
         if (!blob || blob.size === 0) {
-            throw new Error('Empty or invalid file');
+            throw new ImportExportError('Empty or invalid file', 'EMPT_FILE');
+        }
+        const MAX_SIZE = 100 * 1024 * 1024;
+        if (blob.size > MAX_SIZE) {
+            throw new ImportExportError('File too large', 'FILE_TOO_LARGE', { size: blob.size, maxSize: MAX_SIZE });
         }
         let text;
         try {
             text = await blob.text();
         }
         catch (err) {
-            if (err instanceof SyntaxError) {
-                throw new Error(`Invalid JSON format: ${err.message}`);
-            }
-            throw err;
+            throw new ImportExportError('Failed to read file', 'READ_FAILED', { originalError: err });
         }
         if (!text || text.trim().length === 0) {
-            throw new Error('File contains no data');
+            throw new ImportExportError('File contains no data', 'NO_DATA');
         }
         let parsed;
         try {
@@ -321,12 +368,12 @@ export function useImportExport() {
         }
         catch (err) {
             if (err instanceof SyntaxError) {
-                throw new Error(`Invalid JSON format: ${err.message}`);
+                throw new ImportExportError(`Invalid JSON format: ${err.message}`, 'INVALID_JSON', { originalError: err });
             }
             throw err;
         }
         if (!parsed || typeof parsed !== 'object') {
-            throw new Error('Invalid JSON structure');
+            throw new ImportExportError('Invalid JSON structure', 'INVALID_STRUCTURE');
         }
         return parsed;
     }

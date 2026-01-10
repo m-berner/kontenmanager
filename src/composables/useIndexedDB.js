@@ -61,7 +61,7 @@ class IndexedDBManager {
             this.dbPromise = new Promise((resolve, reject) => {
                 const request = indexedDB.open(INDEXED_DB.NAME, INDEXED_DB.VERSION);
                 request.onerror = () => {
-                    log('Database open failed', { error: request.error });
+                    log('Database open failed', request.error, 'error');
                     reject(request.error);
                 };
                 request.onsuccess = () => {
@@ -83,7 +83,7 @@ class IndexedDBManager {
                 };
                 request.onupgradeneeded = (ev) => {
                     const db = ev.target.result;
-                    log('Database upgrade needed', { info: ev.oldVersion + ev.newVersion });
+                    log('Database upgrade needed', ev.oldVersion + ev.newVersion, 'info');
                     this.setupDatabase(db);
                 };
             });

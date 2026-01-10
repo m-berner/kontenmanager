@@ -1,10 +1,3 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * you could obtain one at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
- */
 import type {
     I_Company_Data,
     I_Daily_Changes_Data,
@@ -12,6 +5,7 @@ import type {
     I_Exchange_Data,
     I_Min_Rate_Max_Data,
     I_Number_String,
+    I_Service_Fetcher,
     I_Storage_Online,
     I_String_Number
 } from '@/types'
@@ -20,374 +14,461 @@ import {useBrowser} from '@/composables/useBrowser'
 import {useAppConfig} from '@/composables/useAppConfig'
 
 const {log, mean, toNumber} = useApp()
-const {BROWSER_STORAGE, STATES, SERVICES, SETTINGS, SYSTEM} = useAppConfig()
-const {notice, getStorage} = useBrowser()
+const {BROWSER_STORAGE, SERVICES, SETTINGS, SYSTEM} = useAppConfig()
+const {getStorage} = useBrowser()
 
-const requestCache = new Map<string, { dataText: string; timestamp: number }>()
-const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+// ============================================================
+// Enhanced error handling
+// ============================================================
+
+export class FetchError extends Error {
+    constructor(
+        message: string,
+        public readonly _statusCode?: number,
+        public readonly _url?: string,
+        public readonly _context?: Record<string, unknown>
+    ) {
+        super(message)
+        this.name = 'FetchError'
+    }
+}
+
+// ============================================================
+// Cache management with TTL
+// ============================================================
+
+interface CacheEntry<T> {
+    data: T
+    timestamp: number
+    etag?: string
+}
+
+class FetchCache {
+    private cache = new Map<string, CacheEntry<string>>()
+    private readonly DEFAULT_TTL = 5 * 60 * 1000 // 5 minutes
+
+    set(key: string, data: string, _ttl?: number): void {
+        this.cache.set(key, {
+            data,
+            timestamp: Date.now()
+        })
+
+        // Auto-cleanup old entries
+        if (this.cache.size > 100) {
+            this.cleanup()
+        }
+    }
+
+    get(key: string, ttl: number = this.DEFAULT_TTL): string | null {
+        const entry = this.cache.get(key)
+        if (!entry) return null
+
+        const isExpired = Date.now() - entry.timestamp > ttl
+        if (isExpired) {
+            this.cache.delete(key)
+            return null
+        }
+
+        return entry.data
+    }
+
+    has(key: string, ttl: number = this.DEFAULT_TTL): boolean {
+        return this.get(key, ttl) !== null
+    }
+
+    clear(): void {
+        this.cache.clear()
+    }
+
+    private cleanup(): void {
+        const now = Date.now()
+        for (const [key, entry] of this.cache.entries()) {
+            if (now - entry.timestamp > this.DEFAULT_TTL) {
+                this.cache.delete(key)
+            }
+        }
+    }
+
+    getStats() {
+        return {
+            size: this.cache.size,
+            keys: Array.from(this.cache.keys())
+        }
+    }
+}
+
+const requestCache = new FetchCache()
+
+// ============================================================
+// Core fetch utilities
+// ============================================================
 
 export function useFetch() {
-    async function _fetchWithRetry(url: string): Promise<Response> {
-        const response = await fetch(url)
-        if (!response.ok || response.status >= STATES.SRV) {
-            throw new Error(`Fetch failed: ${response.statusText}`)
+
+    const fetchError = (resp: Response, url:string) => {
+        throw new FetchError(
+            `HTTP ${resp.status}: ${resp.statusText}`,
+            resp.status,
+            url
+        )
+    }
+    /**
+     * Enhanced fetch with better error handling and retry logic
+     */
+    async function fetchWithRetry(
+        url: string,
+        options: RequestInit = {},
+        maxRetries = 3
+    ): Promise<Response> {
+        let lastError: Error | null = null
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const response = await fetch(url, options)
+
+                if (!response.ok) {
+                    if (response.status >= 500 && attempt < maxRetries) {
+                        // Retry on server errors
+                        await delay(1000 * attempt)
+                        continue
+                    }
+
+                    fetchError(response, url)
+                }
+
+                return response
+            } catch (error) {
+                lastError = error as Error
+
+                if (attempt < maxRetries) {
+                    log(`Fetch attempt ${attempt} failed, retrying...`, error, 'warn')
+                    await delay(1000 * attempt)
+                }
+            }
         }
-        return response
+
+        throw new FetchError(
+            `Failed after ${maxRetries} attempts: ${lastError?.message}`,
+            undefined,
+            url,
+            {originalError: lastError}
+        )
     }
 
-    function _parseHTML(text: string): Document {
-        return new DOMParser().parseFromString(text, 'text/html')
+    function delay(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms))
     }
 
+    /**
+     * Parse HTML with error handling
+     */
+    function parseHTML(text: string): Document {
+        try {
+            return new DOMParser().parseFromString(text, 'text/html')
+        } catch (error) {
+            throw new FetchError(
+                'Failed to parse HTML',
+                undefined,
+                undefined,
+                {originalError: error}
+            )
+        }
+    }
+
+    /**
+     * Enhanced cache-aware fetch
+     */
     async function fetchWithCache(
         key: string,
         url: string,
-        fetcher: (_url: string) => Promise<Response>
+        ttl = 5 * 60 * 1000
     ): Promise<string> {
-        const cached = requestCache.get(key)
-        const now = Date.now()
-
-        if (cached && (now - cached.timestamp) < CACHE_TTL) {
-            return cached.dataText
+        // Check cache first
+        const cached = requestCache.get(key, ttl)
+        if (cached) {
+            log(`Cache hit for ${key}`)
+            return cached
         }
 
-        const data: Response = await fetcher(url)
-        if (data.ok) {
-            const dataText = await data.text()
-            requestCache.set(key, {dataText, timestamp: now})
-            return dataText
-        } else {
-            throw new Error('Request failed!')
-        }
+        // Fetch fresh data
+        log(`Cache miss for ${key}, fetching...`)
+        const response = await fetchWithRetry(url)
+        const text = await response.text()
+
+        // Store in cache
+        requestCache.set(key, text, ttl)
+
+        return text
     }
 
+    // ============================================================
+    // Specialized fetchers with better error handling
+    // ============================================================
+
     /**
-     * Tests the internet connectivity
-     * @returns response.ok - true/false
-     * @throws Error if the request fails
+     * Test internet connectivity
      */
     async function fetchIsOk(): Promise<boolean> {
-        log('USE_FETCH: fetchIsOk')
-        return new Promise(async (resolve): Promise<void> => {
-            const firstResponse = await _fetchWithRetry(SERVICES.FNET.ONLINE_TEST)
-            resolve(firstResponse.ok)
-        })
+        log('Checking internet connectivity...')
+        try {
+            const response = await fetchWithRetry(
+                SERVICES.FNET.ONLINE_TEST,
+                {},
+                1 // Single attempt for connectivity check
+            )
+            return response.ok
+        } catch {
+            return false
+        }
     }
 
     /**
-     * Fetches company data for a given ISIN
-     * @param isin - The International Securities Identification Number
-     * @returns Company name and trading symbol
-     * @throws Error if the request fails or data cannot be parsed
+     * Fetch company data with validation
      */
     async function fetchCompanyData(isin: string): Promise<I_Company_Data> {
-        return new Promise(async (resolve, reject) => {
-            let sDocument: Document
-            let company = ''
-            let child: ChildNode | undefined
-            let symbol: string
-            const service = SERVICES.MAP.get('tgate')
-            let tables: NodeListOf<HTMLTableRowElement>
-            let firstResponse: Response
-            let result: I_Company_Data = {
-                company: '',
-                symbol: ''
+        if (!isin || isin.length !== 12) {
+            throw new FetchError('Invalid ISIN format', undefined, undefined, {isin})
+        }
+
+        log('Fetching company data', {isin})
+
+        const service = SERVICES.MAP.get('tgate')
+        if (!service) {
+            throw new FetchError('Service configuration not found', undefined, undefined, {service: 'tgate'})
+        }
+
+        const isValidCompany = (comName: string, url: string) => {
+            if (!comName || comName.includes('Die Gattung wird')) {
+                throw new FetchError('Company not found or inactive', 404, url, {isin})
             }
-            if (service !== undefined) {
-                firstResponse = await _fetchWithRetry(service.QUOTE + isin)
-                if (firstResponse.ok) {
-                    const secondResponse = await _fetchWithRetry(firstResponse.url)
-                    if (secondResponse.ok) {
-                        const secondResponseText = await secondResponse.text()
-                        sDocument = _parseHTML(secondResponseText)
-                        tables = sDocument.querySelectorAll('table > tbody tr')
-                        child = sDocument?.querySelector('#col1_content')?.childNodes[1]
-                        company =
-                            child?.textContent !== null
-                                ? child?.textContent.split(',')[0].trim() ?? ''
-                                : ''
-                        if (
-                            !company.includes('Die Gattung wird') &&
-                            tables[1].cells !== null &&
-                            tables.length > 0
-                        ) {
-                            symbol = tables[1].cells[1].textContent ?? ''
-                            result = {
-                                company,
-                                symbol
-                            }
-                            resolve(result)
-                        } else {
-                            const error = new Error(`Request failed: ${secondResponse.statusText}`)
-                            await notice([error.message])
-                            reject(error)
-                        }
-                    }
-                }
+        }
+
+        const isValidSymbol = (symName: string, url: string) => {
+            if (!symName) {
+                throw new FetchError('Symbol not found', 404, url, {isin})
             }
-        })
+        }
+
+        try {
+            const firstResponse = await fetchWithRetry(service.QUOTE + isin)
+            const secondResponse = await fetchWithRetry(firstResponse.url)
+            const html = await secondResponse.text()
+            const doc = parseHTML(html)
+
+            // Extract company name
+            const nameNode = doc.querySelector('#col1_content')?.childNodes[1]
+            const company = nameNode?.textContent?.split(',')[0].trim() || ''
+
+            // Validate data
+            isValidCompany(company, firstResponse.url)
+
+            // Extract symbol
+            const tables: NodeListOf<HTMLTableRowElement> = doc.querySelectorAll('table > tbody tr')
+            const symbol = tables[1]?.cells[1]?.textContent?.trim() || ''
+
+            isValidSymbol(symbol, firstResponse.url)
+
+            return {company, symbol}
+
+        } catch (error) {
+            if (error instanceof FetchError) throw error
+
+            throw new FetchError(
+                'Failed to fetch company data',
+                undefined,
+                undefined,
+                {isin, originalError: error}
+            )
+        }
     }
 
     /**
-     * Fetch online values for active companies
-     * @param storageOnline - An array of ISINs (active companies)
-     * @returns An array with min, rate, max values
-     * @throws Error if the request fails or data cannot be parsed
+     * Service-specific fetchers (refactored with shared logic)
      */
-    async function fetchMinRateMaxData(storageOnline: I_Storage_Online[]): Promise<I_Min_Rate_Max_Data[]> {
-        log('USE_FETCH: fetchMinRateMaxData')
-        return new Promise(async (resolve, reject) => {
-            const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key])
-            const serviceName = storageService[BROWSER_STORAGE.SERVICE.key] as string
-            const _fnet = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
-                return await Promise.all(
-                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await _fetchWithRetry(urlObj.value)
-                        const secondResponseText = fetchWithCache(
-                            firstResponse.url,
-                            firstResponse.url,
-                            _fetchWithRetry)
-                        const onlineDocument = _parseHTML(await secondResponseText)
-                        const onlineNodes = onlineDocument.querySelectorAll('#snapshot-value-fst-current-0 > span')
-                        const onlineArticleNodes = onlineDocument.querySelectorAll('main div[class=accordion__content]')
-                        let onlineMin = '0'
-                        let onlineMax = '0'
-                        let onlineCurrency = 'EUR'
-                        let onlineRate = '0'
-                        if (onlineArticleNodes.length > 0) {
-                            const onlineMmNodes =
-                                onlineArticleNodes[0].querySelectorAll('table > tbody > tr')
-                            for (let i = 0; i < onlineMmNodes.length; i++) {
-                                if (onlineMmNodes[i].textContent?.includes('1 Jahr')) {
-                                    const tr = onlineMmNodes[i].querySelectorAll('td')
-                                    onlineMin =
-                                        tr[3].textContent ?? '0'
-                                    onlineMax =
-                                        tr[4].textContent ?? '0'
-                                }
+    const serviceFetchers: Record<string, I_Service_Fetcher> = {
+        async fnet(urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> {
+            return Promise.all(
+                urls.map(async (urlObj): Promise<I_Min_Rate_Max_Data> => {
+                    const response = await fetchWithRetry(urlObj.value)
+                    const html = await fetchWithCache(response.url, response.url)
+                    const doc = parseHTML(html)
+
+                    const nodes = doc.querySelectorAll('#snapshot-value-fst-current-0 > span')
+                    const articleNodes = doc.querySelectorAll('main div[class=accordion__content]')
+
+                    let min = '0', max = '0', currency = 'EUR', rate = '0'
+
+                    // Extract min/max
+                    if (articleNodes.length > 0) {
+                        const mmNodes = articleNodes[0].querySelectorAll('table > tbody > tr')
+                        for (const row of mmNodes) {
+                            if (row.textContent?.includes('1 Jahr')) {
+                                const cells = row.querySelectorAll('td')
+                                min = cells[3]?.textContent?.trim() || '0'
+                                max = cells[4]?.textContent?.trim() || '0'
+                                break
                             }
                         }
-                        if (onlineNodes.length > 1) {
-                            onlineCurrency = onlineNodes[1].textContent ?? ''
-                            onlineRate = onlineNodes[0].textContent ?? ''
-                        }
+                    }
+
+                    // Extract rate and currency
+                    if (nodes.length > 1) {
+                        currency = nodes[1]?.textContent?.trim() || 'EUR'
+                        rate = nodes[0]?.textContent?.trim() || '0'
+                    }
+
+                    return {
+                        id: urlObj.key!,
+                        isin: '',
+                        rate: rate.replace(/,/, '.'),
+                        min: min.replace(/,/, '.'),
+                        max: max.replace(/,/, '.'),
+                        cur: currency
+                    }
+                })
+            )
+        },
+
+        async ard(urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> {
+            return await Promise.all(
+                urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
+                    const html = await fetchWithCache(urlObj.value, urlObj.value)
+                    const doc = parseHTML(html)
+
+                    const rows = doc.querySelectorAll('#desktopSearchResult > table > tbody > tr')
+
+                    let min = '0', max = '0', currency = 'EUR', rate = '0'
+
+                    if (rows.length > 0) {
+                        const attr = rows[0].getAttribute('onclick') ?? ''
+                        const url = attr.replace('document.location=\'', '').replace('\';', '')
+
+                        const html2 = await fetchWithCache(url, url)
+                        //const secondResponseText = await secondResponse.text()
+                        const doc2 = new DOMParser().parseFromString(html2, 'text/html')
+                        currency = 'EUR'
+                        const ardRows: NodeListOf<HTMLTableRowElement> = doc2.querySelectorAll('#USFkursdaten table > tbody tr')
+                        rate = (ardRows[0].cells[1].textContent ?? '0').replace('€', '')
+                        min = (ardRows[6].cells[1].textContent ?? '0').replace('€', '')
+                        max = (ardRows[7].cells[1].textContent ?? '0').replace('€', '')
                         return {
                             id: urlObj.key!,
                             isin: '',
-                            rate: onlineRate.replace(/,/, '.'),
-                            min: onlineMin.replace(/,/, '.'),
-                            max: onlineMax.replace(/,/, '.'),
-                            cur: onlineCurrency
+                            rate: rate.replace(/,/, '.'),
+                            min: min.replace(/,/, '.'),
+                            max: max.replace(/,/, '.'),
+                            cur: currency
                         }
-                    })
-                )
-            }
-            const _ard = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
-                return await Promise.all(
-                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponseText = fetchWithCache(
-                            urlObj.value,
-                            urlObj.value,
-                            _fetchWithRetry)
-                        const firstResponseDocument = _parseHTML(await firstResponseText)
-                        const firstResponseRows = firstResponseDocument.querySelectorAll(
-                            '#desktopSearchResult > table > tbody > tr'
-                        )
-                        if (firstResponseRows.length > 0) {
-                            const url = firstResponseRows[0].getAttribute('onclick') ?? ''
-                            const secondResponse = await fetch(
-                                url.replace('document.location=\'', '').replace('\';', '')
-                            )
-                            const secondResponseText = await secondResponse.text()
-                            const onlineDocument = new DOMParser().parseFromString(
-                                secondResponseText,
-                                'text/html'
-                            )
-                            const onlineCurrency = 'EUR'
-                            const ardRows: NodeListOf<HTMLTableRowElement> =
-                                onlineDocument.querySelectorAll(
-                                    '#USFkursdaten table > tbody tr'
-                                )
-                            const onlineRate = (
-                                ardRows[0].cells[1].textContent ?? '0'
-                            ).replace('€', '')
-                            const onlineMin = (
-                                ardRows[6].cells[1].textContent ?? '0'
-                            ).replace('€', '')
-                            const onlineMax = (
-                                ardRows[7].cells[1].textContent ?? '0'
-                            ).replace('€', '')
-                            return {
-                                id: urlObj.key!,
-                                isin: '',
-                                rate: onlineRate.replace(/,/, '.'),
-                                min: onlineMin.replace(/,/, '.'),
-                                max: onlineMax.replace(/,/, '.'),
-                                cur: onlineCurrency
-                            }
-                        } else {
-                            return {
-                                id: urlObj.key!,
-                                isin: '',
-                                rate: '0',
-                                min: '0',
-                                max: '0',
-                                cur: 'EUR'
-                            }
+                    } else {
+                        return {
+                            id: urlObj.key!,
+                            isin: '',
+                            rate: '0',
+                            min: '0',
+                            max: '0',
+                            cur: 'EUR'
                         }
-                    })
-                )
-            }
-            const _wstreet = async (urls: I_Number_String[], homeUrl: string): Promise<I_Min_Rate_Max_Data[]> => {
-                return await Promise.all(
-                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await _fetchWithRetry(urlObj.value)
-                        const firstResponseJson = await firstResponse.json()
-                        const secondResponseText = fetchWithCache(
-                            firstResponseJson.result[0].link,
-                            homeUrl + firstResponseJson.result[0].link,
-                            _fetchWithRetry)
-                        const onlineDocument = _parseHTML(await secondResponseText)
-                        const onlineRates = onlineDocument.querySelectorAll('div.c2 table')
-                        const onlineMinMax = onlineDocument.querySelectorAll('div.fundamental > div > div.float-start')
-                        let onlineCurrency = ''
+                    }
+                })
+            )
+        },
+
+        async wstreet(urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> {
+            return await Promise.all(
+                urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
+                    const response = await fetchWithRetry(urlObj.value)
+                    const responseJson = await response.json()
+                    const html = await fetchWithCache(responseJson.result[0].link, SERVICES.MAP.get('wstreet')?.HOME + responseJson.result[0].link)
+                    const doc = parseHTML(html)
+
+                    const nodes = doc.querySelectorAll('div.c2 table')
+                    const articleNodes = doc.querySelectorAll('div.fundamental > div > div.float-start')
+
+                    let min = '0', max = '0', currency = 'EUR', rate = '0'
+
+                    rate = nodes[0]?.querySelectorAll('tr')[1]?.querySelectorAll('td')[1].textContent ?? '0'
+                    max = articleNodes[1]?.textContent?.split('Hoch')[1] ?? '0'
+                    min = articleNodes[1]?.textContent?.split('Hoch')[0].split('WochenTief')[1] ?? '0'
+                    if (rate.includes('USD')) {
+                        currency = 'USD'
+                    } else if (rate.includes('EUR')) {
+                        currency = 'EUR'
+                    }
+                    return {
+                        id: urlObj.key ?? 0,
+                        isin: '',
+                        rate: rate.replace(/,/, '.'),
+                        min: min.replace(/,/, '.') ?? '',
+                        max: max.replace(/,/, '.') ?? '',
+                        cur: currency
+                    }
+                })
+            )
+        },
+        //TODO is toNumber everywhere really required
+        async goyax(urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> {
+            return await Promise.all(
+                urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
+                    const response = await fetchWithRetry(urlObj.value)
+                    const html = await fetchWithCache(response.url, response.url)
+                    const doc = parseHTML(html)
+
+                    const nodes = doc.querySelectorAll('div#instrument-ueberblick > div')
+                    const listRows = nodes[1].querySelectorAll('ul.list-rows')
+                    const rateAll = listRows[1].querySelectorAll('li')[3].textContent ?? '0'
+                    const rows = nodes[0].querySelectorAll('table')[1].querySelectorAll('tr')
+
+                    let min = '0', max = '0', rate = '0'
+
+                    rate = rateAll.split(')')[1] ?? '0'
+                    max = rows[4].querySelectorAll('td')[3].textContent ?? '0'
+                    min = rows[5].querySelectorAll('td')[3].textContent ?? '0'
+
+                    return {
+                        id: urlObj.key!,
+                        isin: '',
+                        rate: rate.replace(/,/, '.'),
+                        min: min.replace(/,/, '.'),
+                        max: max.replace(/,/, '.'),
+                        cur: 'EUR'
+                    }
+                })
+            )
+        },
+
+        async acheck(urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> {
+            return await Promise.all(
+                urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
+                    let onlineCurrency = ''
+                    const firstResponse = await fetchWithRetry(urlObj.value)
+                    const secondResponseText = fetchWithCache(
+                        firstResponse.url,
+                        firstResponse.url)
+                    const onlineDocument = parseHTML(await secondResponseText)
+                    const onlineTables =
+                        onlineDocument.querySelectorAll('#content table')
+                    if (onlineTables.length > 1) {
                         const onlineRate =
-                            onlineRates[0]
-                                ?.querySelectorAll('tr')[1]
-                                ?.querySelectorAll('td')[1].textContent ?? '0'
-                        const onlineMax = onlineMinMax[1]?.textContent?.split('Hoch')[1] ?? '0'
-                        const onlineMin = onlineMinMax[1]?.textContent?.split('Hoch')[0].split('WochenTief')[1] ?? '0'
-                        if (onlineRate.includes('USD')) {
+                            onlineTables[0]
+                                .querySelectorAll('tr')[1]
+                                .querySelectorAll('td')[1].textContent ?? '0'
+                        const findCurrency =
+                            onlineTables[0]
+                                .querySelectorAll('tr')[1]
+                                .querySelectorAll('td')[2].textContent ?? '0'
+                        const onlineMin =
+                            onlineTables[2]
+                                .querySelectorAll('tr')[3]
+                                .querySelectorAll('td')[2].textContent ?? '0'
+                        const onlineMax =
+                            onlineTables[2]
+                                .querySelectorAll('tr')[3]
+                                .querySelectorAll('td')[1].textContent ?? '0'
+                        if (findCurrency.includes('$')) {
                             onlineCurrency = 'USD'
-                        } else if (onlineRate.includes('EUR')) {
+                        } else if (findCurrency.includes('€')) {
                             onlineCurrency = 'EUR'
                         }
-                        return {
-                            id: urlObj.key ?? 0,
-                            isin: '',
-                            rate: onlineRate.replace(/,/, '.'),
-                            min: onlineMin.replace(/,/, '.') ?? '',
-                            max: onlineMax.replace(/,/, '.') ?? '',
-                            cur: onlineCurrency
-                        }
-                    })
-                )
-            }
-            //TODO is toNumber everywhere really required
-            const _goyax = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
-                return await Promise.all(
-                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponse = await _fetchWithRetry(urlObj.value)
-                        const secondResponseText = fetchWithCache(
-                            firstResponse.url,
-                            firstResponse.url,
-                            _fetchWithRetry)
-                        const onlineDocument = _parseHTML(await secondResponseText)
-                        const onlineNodes = onlineDocument.querySelectorAll(
-                            'div#instrument-ueberblick > div'
-                        )
-                        const onlineRateNodes =
-                            onlineNodes[1].querySelectorAll('ul.list-rows')
-                        const onlineRateAll =
-                            onlineRateNodes[1].querySelectorAll('li')[3].textContent ?? '0'
-                        const onlineRate = onlineRateAll.split(')')[1] ?? '0'
-                        const onlineStatisticRows = onlineNodes[0]
-                            .querySelectorAll('table')[1]
-                            .querySelectorAll('tr')
-                        const onlineMax =
-                            onlineStatisticRows[4].querySelectorAll('td')[3].textContent ??
-                            '0'
-                        const onlineMin =
-                            onlineStatisticRows[5].querySelectorAll('td')[3].textContent ??
-                            '0'
-                        const onlineCurrency = 'EUR'
-                        return {
-                            id: urlObj.key!,
-                            isin: '',
-                            rate: onlineRate.replace(/,/, '.'),
-                            min: onlineMin.replace(/,/, '.'),
-                            max: onlineMax.replace(/,/, '.'),
-                            cur: onlineCurrency
-                        }
-                    })
-                )
-            }
-            const _acheck = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
-                return await Promise.all(
-                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        let onlineCurrency = ''
-                        const firstResponse = await _fetchWithRetry(urlObj.value)
-                        const secondResponseText = fetchWithCache(
-                            firstResponse.url,
-                            firstResponse.url,
-                            _fetchWithRetry)
-                        const onlineDocument = _parseHTML(await secondResponseText)
-                        const onlineTables =
-                            onlineDocument.querySelectorAll('#content table')
-                        if (onlineTables.length > 1) {
-                            const onlineRate =
-                                onlineTables[0]
-                                    .querySelectorAll('tr')[1]
-                                    .querySelectorAll('td')[1].textContent ?? '0'
-                            const findCurrency =
-                                onlineTables[0]
-                                    .querySelectorAll('tr')[1]
-                                    .querySelectorAll('td')[2].textContent ?? '0'
-                            const onlineMin =
-                                onlineTables[2]
-                                    .querySelectorAll('tr')[3]
-                                    .querySelectorAll('td')[2].textContent ?? '0'
-                            const onlineMax =
-                                onlineTables[2]
-                                    .querySelectorAll('tr')[3]
-                                    .querySelectorAll('td')[1].textContent ?? '0'
-                            if (findCurrency.includes('$')) {
-                                onlineCurrency = 'USD'
-                            } else if (findCurrency.includes('€')) {
-                                onlineCurrency = 'EUR'
-                            }
-                            return {
-                                id: urlObj.key!,
-                                isin: '',
-                                rate: onlineRate,
-                                min: onlineMin,
-                                max: onlineMax,
-                                cur: onlineCurrency
-                            }
-                        } else {
-                            return {
-                                id: -1,
-                                isin: '',
-                                rate: '0',
-                                min: '0',
-                                max: '0',
-                                cur: 'EUR'
-                            }
-                        }
-                    })
-                )
-            }
-            const _tgate = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
-                return await Promise.all(
-                    urls.map(async (urlObj: I_Number_String): Promise<I_Min_Rate_Max_Data> => {
-                        const firstResponseText = fetchWithCache(
-                            urlObj.value,
-                            urlObj.value,
-                            _fetchWithRetry)
-                        const onlineCurrency = 'EUR'
-                        const onlineMax = '0'
-                        const onlineMin = '0'
-                        const onlineDocument = _parseHTML(await firstResponseText)
-                        const resultask =
-                            onlineDocument.querySelector('#ask') !== null
-                                ? onlineDocument.querySelector('#ask')?.textContent
-                                : '0'
-                        const resultbid =
-                            onlineDocument.querySelector('#bid') !== null
-                                ? onlineDocument.querySelector('#bid')?.textContent
-                                : '0'
-                        const quote = mean([toNumber(resultbid), toNumber(resultask)])
-                        const onlineRate = quote.toString()
                         return {
                             id: urlObj.key!,
                             isin: '',
@@ -396,324 +477,374 @@ export function useFetch() {
                             max: onlineMax,
                             cur: onlineCurrency
                         }
-                    })
-                )
-            }
-            const _select = async (urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> => {
-                return new Promise(async (resolve, reject) => {
-                    const service = SERVICES.MAP.get(serviceName)
-                    switch (serviceName) {
-                        case 'fnet':
-                            resolve(await _fnet(urls))
-                            break
-                        case 'ard':
-                            resolve(await _ard(urls))
-                            break
-                        case 'wstreet':
-                            if (service !== undefined) {
-                                resolve(await _wstreet(urls, service.HOME))
-                            } else {
-                                reject(new Error('Unexpected error occurred'))
-                            }
-                            break
-                        case 'goyax':
-                            resolve(await _goyax(urls))
-                            break
-                        case 'acheck':
-                            resolve(await _acheck(urls))
-                            break
-                        case 'tgate':
-                            resolve(await _tgate(urls))
-                            break
-                        default:
-                            throw new Error('ONLINE: fetchMinRateMaxData: unknown service!')
+                    } else {
+                        return {
+                            id: -1,
+                            isin: '',
+                            rate: '0',
+                            min: '0',
+                            max: '0',
+                            cur: 'EUR'
+                        }
                     }
                 })
-            }
-
-            const urls: I_Number_String[] = []
-            if (storageOnline.length > 0) {
-                for (let i = 0; i < storageOnline.length; i++) {
-                    const service = SERVICES.MAP.get(serviceName)
-                    const isin = storageOnline[i].isin
-                    if (isin !== undefined && service !== undefined && service !== null) {
-                        urls.push(
-                            {
-                                value: service.QUOTE + isin,
-                                key: storageOnline[i].id ?? -1
-                            }
-                        )
-                    }
-                }
-            } else {
-                reject(new Error('System Error'))
-            }
-            resolve(await _select(urls))
-        })
-    }
-
-    /**
-     * Fetch changes values for the asked list
-     * @param table - List identifier
-     * @param mode - List selector
-     * @returns An array with changes values
-     * @throws Error if the request fails or data cannot be parsed
-     */
-    async function fetchDailyChangeData(table: string, mode = SERVICES.TGATE.CHANGES.SMALL): Promise<I_Daily_Changes_Data[]> {
-        log('USE_FETCH: fetchDailyChangesData')
-        let valuestr: string
-        let company: string
-        let url = `${SERVICES.TGATE.CHB_URL}${table}`
-        let selector = '#kursliste_abc > tr'
-        if (mode === SERVICES.TGATE.CHANGES.SMALL) {
-            url = `${SERVICES.TGATE.CHS_URL}${table}`
-            selector = '#kursliste_daten > tr'
-        }
-        const convertHTMLEntities = (str: string | null): string => {
-            const entities = new Map(
-                [
-                    ['aum', 'ä'],
-                    ['Aum', 'Ä'],
-                    ['oum', 'ö'],
-                    ['Oum', 'Ö'],
-                    ['uum', 'ü'],
-                    ['Uum', 'Ü'],
-                    ['amp', '&'],
-                    ['eac', 'é'],
-                    ['Eac', 'É'],
-                    ['eci', 'ê'],
-                    ['Eci', 'Ê'],
-                    ['oac', 'ó'],
-                    ['Oac', 'Ó'],
-                    ['ael', 'æ'],
-                    ['Ael', 'Æ']
-                ]
             )
-            const fMatch = (match: string): string => {
-                return entities.get(match.substring(1, 4)) ?? ''
-            }
-            let result = ''
-            if (str !== null) {
-                result = str
-                    .trim()
-                    .replace(new RegExp(SYSTEM.HTML_ENTITY, 'g'), fMatch)
-            }
-            return result
+        },
+
+        async tgate(urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]> {
+            return Promise.all(
+                urls.map(async (urlObj): Promise<I_Min_Rate_Max_Data> => {
+                    const html = await fetchWithCache(urlObj.value, urlObj.value)
+                    const doc = parseHTML(html)
+
+                    const ask = doc.querySelector('#ask')?.textContent || '0'
+                    const bid = doc.querySelector('#bid')?.textContent || '0'
+                    const quote = mean([toNumber(bid), toNumber(ask)])
+
+                    return {
+                        id: urlObj.key!,
+                        isin: '',
+                        rate: quote.toString(),
+                        min: '0',
+                        max: '0',
+                        cur: 'EUR'
+                    }
+                })
+            )
         }
-        const entry: I_Daily_Changes_Data = {
-            key: '',
-            value: {
-                percentChange: '',
-                change: 0,
-                stringChange: ''
-            }
-        }
-        const firstResponse = await _fetchWithRetry(url)
-        const _changes: I_Daily_Changes_Data[] = []
-        const firstResponseText = await firstResponse.text()
-        const sDocument = _parseHTML(firstResponseText)
-        const trCollection = sDocument.querySelectorAll(selector)
-        for (let i = 0; i < trCollection.length; i++) {
-            valuestr = trCollection[i].childNodes[11].textContent ?? ''
-            company = convertHTMLEntities(
-                trCollection[i].childNodes[1].textContent ?? ''
-            ).replace('<wbr>', '')
-            entry.key = company.toUpperCase()
-            entry.value = {
-                percentChange: valuestr.replace(/\t/g, ''),
-                change: toNumber(valuestr),
-                stringChange: toNumber(valuestr).toString()
-            }
-            _changes.push({...entry})
-        }
-        return _changes
     }
 
     /**
-     * Fetch exchanges data
-     * @param exchangeCodes - An array of exchange codes to be queried
-     * @returns An array exchange values
-     * @throws Error if the request fails or data cannot be parsed
+     * Unified quote fetcher with service selection
      */
-    async function fetchExchangesData(exchangeCodes: string[]): Promise<I_Exchange_Data[]> {
-        log('USE_FETCH: fetchExchangesData')
-        const service = SERVICES.FX
-        const fExUrl = (code: string): string => {
-            if (service !== undefined) {
-                return `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`
-            } else {
-                throw new Error('Undefined service constant!')
-            }
+    async function fetchMinRateMaxData(
+        storageOnline: I_Storage_Online[]
+    ): Promise<I_Min_Rate_Max_Data[]> {
+        if (storageOnline.length === 0) {
+            return []
         }
-        return new Promise(async (resolve): Promise<I_Exchange_Data[]> => {
-            const result: I_Exchange_Data[] = []
-            for (let i = 0; i < exchangeCodes.length; i++) {
-                const firstResponse = await _fetchWithRetry(fExUrl(exchangeCodes[i]))
-                //const firstResponseText = await firstResponse.text()
-                const firstResponseText = fetchWithCache(
-                    firstResponse.url,
-                    firstResponse.url,
-                    _fetchWithRetry)
-                const resultDocument: Document = _parseHTML(await firstResponseText)
-                const resultTr = resultDocument.querySelector(
+
+        log('Fetching min/rate/max data', {count: storageOnline.length})
+
+        const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key])
+        const serviceName = storageService[BROWSER_STORAGE.SERVICE.key] as string
+        const service = SERVICES.MAP.get(serviceName)
+
+        if (!service) {
+            throw new FetchError(
+                'Service not configured',
+                undefined,
+                undefined,
+                {serviceName}
+            )
+        }
+
+        const fetcher = serviceFetchers[serviceName]
+        if (!fetcher) {
+            throw new FetchError(
+                'Unsupported service',
+                undefined,
+                undefined,
+                {serviceName}
+            )
+        }
+
+        const urls = storageOnline.map(item => ({
+            value: service.QUOTE + item.isin,
+            key: item.id ?? -1
+        }))
+
+        return fetcher(urls)
+    }
+
+    /**
+     * Fetch exchange rates with caching
+     */
+    async function fetchExchangesData(
+        exchangeCodes: string[]
+    ): Promise<I_Exchange_Data[]> {
+        if (exchangeCodes.length === 0) {
+            return []
+        }
+
+        log('Fetching exchange data', {codes: exchangeCodes})
+
+        const service = SERVICES.FX
+        if (!service) {
+            throw new FetchError('FX service not configured')
+        }
+
+        const results = await Promise.allSettled(
+            exchangeCodes.map(async (code): Promise<I_Exchange_Data> => {
+                const url = `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`
+                const html = await fetchWithCache(url, url)
+                const doc = parseHTML(html)
+
+                const rateElement = doc.querySelector(
                     'form#formcalculator.formcalculator > div'
                 )
-                if (resultTr !== undefined && resultTr !== null) {
-                    const resultString = resultTr.getAttribute('data-rate') //?.textContent ?? ''
-                    const resultMatchArray = resultString?.match(/[0-9]*\.?[0-9]+/g) ?? ['1']
-                    const exchangeRate = Number.parseFloat(resultMatchArray[0])
-                    result.push({key: exchangeCodes[i], value: exchangeRate})
-                }
-            }
-            resolve(result)
-            return result
-        })
-    }
 
-    /**
-     * Fetch material data
-     * @returns An array with material data
-     * @throws Error if the request fails or data cannot be parsed
-     */
-    async function fetchMaterialData(): Promise<I_String_Number[]> {
-        log('USE_FETCH: fetchMaterialData')
-        return new Promise(async (resolve) => {
-            const materials: I_String_Number[] = []
-            //const firstResponse = await _fetchWithRetry(SERVICES.FNET.MATERIALS)
-            const firstResponseText = fetchWithCache(
-                SERVICES.FNET.MATERIALS,
-                SERVICES.FNET.MATERIALS,
-                _fetchWithRetry)
-            //const firstResponseText = await firstResponse.text()
-            const resultDocument: Document = _parseHTML(await firstResponseText)
-            const resultTr = resultDocument.querySelectorAll(
-                '#commodity_prices > table > tbody tr'
-            )
-            for (let i = 0; i < resultTr.length; i++) {
-                const material = resultTr[i].children[0].textContent ?? ''
-                if (
-                    resultTr[i].children[0].tagName === 'TD' &&
-                    material !== undefined
-                ) {
-                    materials.push(
-                        {
-                            key: material,
-                            value: toNumber(resultTr[i].children[1].textContent)
-                        }
+                if (!rateElement) {
+                    throw new FetchError(
+                        'Exchange rate not found',
+                        404,
+                        url,
+                        {code}
                     )
                 }
+
+                const rateString = rateElement.getAttribute('data-rate')
+                const rateMatch = rateString?.match(/[0-9]*\.?[0-9]+/g)
+                const rate = rateMatch ? Number.parseFloat(rateMatch[0]) : 1
+
+                return {key: code, value: rate}
+            })
+        )
+
+        // Filter successful results
+        const successfulResults: I_Exchange_Data[] = []
+        for (const result of results) {
+            if (result.status === 'fulfilled') {
+                successfulResults.push(result.value)
+            } else {
+                log('Exchange fetch failed', result.reason, 'warn')
             }
-            resolve(materials)
-            return materials
-        })
+        }
+
+        return successfulResults
     }
 
     /**
-     * Fetch index data
-     * @returns An array with index data
-     * @throws Error if the request fails or data cannot be parsed
+     * Fetch material data (commodities)
+     */
+    async function fetchMaterialData(): Promise<I_String_Number[]> {
+        log('Fetching material data')
+
+        const html = await fetchWithCache(
+            SERVICES.FNET.MATERIALS,
+            SERVICES.FNET.MATERIALS
+        )
+        const doc = parseHTML(html)
+        const rows = doc.querySelectorAll('#commodity_prices > table > tbody tr')
+
+        const materials: I_String_Number[] = []
+        for (const row of rows) {
+            const nameCell = row.children[0]
+            const valueCell = row.children[1]
+
+            if (nameCell?.tagName === 'TD' && valueCell) {
+                const name = nameCell.textContent?.trim()
+                const value = toNumber(valueCell.textContent)
+
+                if (name) {
+                    materials.push({key: name, value})
+                }
+            }
+        }
+
+        return materials
+    }
+
+    /**
+     * Fetch index data (stock indices)
      */
     async function fetchIndexData(): Promise<I_String_Number[]> {
-        log('USE_FETCH: fetchIndexData')
-        return new Promise(async (resolve) => {
-            const indexes: I_String_Number[] = []
-            const indexesKeys = SETTINGS.INDEXES.keys()
-            //const firstResponse = await _fetchWithRetry(SERVICES.FNET.INDEXES)
-            const firstResponseText = fetchWithCache(
-                SERVICES.FNET.INDEXES,
-                SERVICES.FNET.INDEXES,
-                _fetchWithRetry)
-            //const firstResponseText = await firstResponse.text()
-            const resultDocument: Document = _parseHTML(await firstResponseText)
-            const resultTr = resultDocument.querySelectorAll('.index-world-map a')
-            indexesKeys.forEach((property) => {
-                const indexValue = SETTINGS.INDEXES.get(property)
-                for (let j = 0; j < resultTr.length; j++) {
-                    if (indexValue?.includes(resultTr[j].getAttribute('title') ?? '') && resultTr[j].children[0].textContent !== undefined) {
-                        indexes.push(
-                            {
-                                key: property,
-                                value: toNumber(resultTr[j].children[0].textContent)
-                            }
-                        )
-                    }
-                }
+        log('Fetching index data')
 
-            })
-            resolve(indexes)
-            return indexes
-        })
+        const html = await fetchWithCache(
+            SERVICES.FNET.INDEXES,
+            SERVICES.FNET.INDEXES
+        )
+        const doc = parseHTML(html)
+        const links = doc.querySelectorAll('.index-world-map a')
+
+        const indexes: I_String_Number[] = []
+        for (const [property, indexValue] of SETTINGS.INDEXES.entries()) {
+            for (const link of links) {
+                const title = link.getAttribute('title')
+                const valueText = link.children[0]?.textContent
+
+                if (indexValue?.includes(title || '') && valueText) {
+                    indexes.push(
+                        {
+                            key: property,
+                            value: toNumber(valueText)
+                        }
+                    )
+                    break
+                }
+            }
+        }
+
+        return indexes
     }
 
     /**
-     * Fetch company dates
-     * @param obj - An array of company dates data
-     * @returns An array company dates data
-     * @throws Error if the request fails or data cannot be parsed
+     * Fetch daily changes with HTML entity conversion
      */
-    async function fetchDateData(obj: I_Number_String[]): Promise<I_Date_Data[]> {
-        log('USE_FETCH: fetchDatesData')
-        //if (obj.length === 0) return Promise.resolve([])
-        const gmqf = {gm: 0, qf: 0}
-        const parseGermanDate = (germanDateString: string): number => {
-            const parts = germanDateString.match(/(\d+)/g) ?? ['01', '01', '1970']
-            const year =
-                parts.length === 3 && parts[2].length === 4 ? parts[2] : '1970'
-            const month = parts.length === 3 ? parts[1].padStart(2, '0') : '01'
-            const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01'
-            return new Date(`${year}-${month}-${day}`).getTime()
-        }
-        const promises = obj.map(async (entry: I_Number_String): Promise<I_Date_Data> => {
-            const firstResponse = await _fetchWithRetry(`${SERVICES.FNET.SEARCH}${entry.value}`)
-            if (firstResponse.ok) {
-                const atoms = firstResponse.url.split('/')
-                const stockName = atoms[atoms.length - 1].replace('-aktie', '')
-                const secondResponseText = fetchWithCache(
-                    `${SERVICES.FNET.DATES}${stockName}`,
-                    `${SERVICES.FNET.DATES}${stockName}`,
-                    _fetchWithRetry)
-                const qfgmDocument = _parseHTML(await secondResponseText)
-                const tables = qfgmDocument.querySelectorAll('.table')
-                const rows = tables[1].querySelectorAll('tr')
-                let stopGm = false
-                let stopQf = false
-                const gmqfString = {gm: '01.01.1970', qf: '01.01.1970'}
-                for (let j = 0; j < rows.length && !!(rows[j].cells[3]); j++) {
-                    const row = rows[j].cells[3].textContent?.replaceAll('(e)*', '').trim() ?? '01.01.1970'
-                    if (
-                        rows[j].cells[0].textContent === 'Quartalszahlen' &&
-                        row !== '01.01.1970' &&
-                        row.length === 10 &&
-                        !stopQf
-                    ) {
-                        gmqfString.qf = row
-                        stopQf = true
-                    } else if (
-                        rows[j].cells[0].textContent === 'Hauptversammlung' &&
-                        row !== '01.01.1970' &&
-                        row.length === 10 &&
-                        !stopGm
-                    ) {
-                        gmqfString.gm = row
-                        stopGm = true
+    async function fetchDailyChangeData(
+        table: string,
+        mode = SERVICES.TGATE.CHANGES.SMALL
+    ): Promise<I_Daily_Changes_Data[]> {
+        log('Fetching daily changes', {table, mode})
+
+        const url = mode === SERVICES.TGATE.CHANGES.SMALL
+            ? `${SERVICES.TGATE.CHS_URL}${table}`
+            : `${SERVICES.TGATE.CHB_URL}${table}`
+
+        const selector = mode === SERVICES.TGATE.CHANGES.SMALL
+            ? '#kursliste_daten > tr'
+            : '#kursliste_abc > tr'
+
+        const html = await fetchWithRetry(url).then(r => r.text())
+        const doc = parseHTML(html)
+        const rows = doc.querySelectorAll(selector)
+
+        const changes: I_Daily_Changes_Data[] = []
+        for (const row of rows) {
+            const company = convertHTMLEntities(
+                row.childNodes[1]?.textContent || ''
+            ).replace('<wbr>', '')
+
+            const valueStr = row.childNodes[11]?.textContent?.trim() || '0'
+
+            changes.push(
+                {
+                    key: company.toUpperCase(),
+                    value: {
+                        percentChange: valueStr.replace(/\t/g, ''),
+                        change: toNumber(valueStr),
+                        stringChange: toNumber(valueStr).toString()
                     }
-                    if (stopQf && stopGm) break
                 }
-                gmqf.qf =
-                    gmqfString.qf !== undefined && gmqfString.qf !== ''
-                        ? parseGermanDate(gmqfString.qf)
-                        : 0
-                gmqf.gm =
-                    gmqfString.gm !== undefined && gmqfString.gm !== ''
-                        ? parseGermanDate(gmqfString.gm)
-                        : 0
-            }
-            return {key: entry.key, value: gmqf}
-        })
-        return Promise.all(promises)
+            )
+        }
+
+        return changes
+    }
+
+    /**
+     * Convert HTML entities to proper characters
+     */
+    function convertHTMLEntities(str: string | null): string {
+        if (!str) return ''
+
+        const entities = new Map(
+            [
+                ['aum', 'ä'], ['Aum', 'Ä'],
+                ['oum', 'ö'], ['Oum', 'Ö'],
+                ['uum', 'ü'], ['Uum', 'Ü'],
+                ['amp', '&'],
+                ['eac', 'é'], ['Eac', 'É'],
+                ['eci', 'ê'], ['Eci', 'Ê'],
+                ['oac', 'ó'], ['Oac', 'Ó'],
+                ['ael', 'æ'], ['Ael', 'Æ']
+            ]
+        )
+
+        return str
+            .trim()
+            .replace(new RegExp(SYSTEM.HTML_ENTITY, 'g'), (match) => {
+                const code = match.substring(1, 4)
+                return entities.get(code) || ''
+            })
+    }
+
+    /**
+     * Fetch date data (meeting/quarter days)
+     */
+    async function fetchDateData(
+        items: I_Number_String[]
+    ): Promise<I_Date_Data[]> {
+        if (items.length === 0) return []
+
+        log('Fetching date data', {count: items.length})
+
+        return Promise.all(
+            items.map(async (item): Promise<I_Date_Data> => {
+                const gmqf = {gm: 0, qf: 0}
+
+                try {
+                    const response = await fetchWithRetry(`${SERVICES.FNET.SEARCH}${item.value}`)
+                    const atoms = response.url.split('/')
+                    const stockName = atoms[atoms.length - 1].replace('-aktie', '')
+
+                    const html = await fetchWithCache(
+                        `${SERVICES.FNET.DATES}${stockName}`,
+                        `${SERVICES.FNET.DATES}${stockName}`
+                    )
+                    const doc = parseHTML(html)
+                    const tables = doc.querySelectorAll('.table')
+
+                    if (tables.length < 2) {
+                        return {key: item.key, value: gmqf}
+                    }
+
+                    const rows = tables[1].querySelectorAll('tr')
+                    let foundQf = false, foundGm = false
+
+                    for (const row of rows) {
+                        if (!row.cells[3]) continue
+
+                        const dateText = row.cells[3].textContent
+                            ?.replaceAll('(e)*', '')
+                            .trim() || ''
+
+                        const rowType = row.cells[0]?.textContent
+
+                        if (rowType === 'Quartalszahlen' && !foundQf && dateText.length === 10) {
+                            gmqf.qf = parseGermanDate(dateText)
+                            foundQf = true
+                        } else if (rowType === 'Hauptversammlung' && !foundGm && dateText.length === 10) {
+                            gmqf.gm = parseGermanDate(dateText)
+                            foundGm = true
+                        }
+
+                        if (foundQf && foundGm) break
+                    }
+                } catch (error) {
+                    log('Failed to fetch date data', {item, error}, 'warn')
+                }
+
+                return {key: item.key, value: gmqf}
+            })
+        )
+    }
+
+    /**
+     * Parse German date format (DD.MM.YYYY) to timestamp
+     */
+    function parseGermanDate(germanDateString: string): number {
+        const parts = germanDateString.match(/(\d+)/g) || []
+        if (parts.length !== 3) return 0
+
+        const day = parts[0].padStart(2, '0')
+        const month = parts[1].padStart(2, '0')
+        const year = parts[2].length === 4 ? parts[2] : '1970'
+
+        return new Date(`${year}-${month}-${day}`).getTime()
+    }
+
+    // ============================================================
+    // Cache management API
+    // ============================================================
+
+    function getCacheStats() {
+        return requestCache.getStats()
+    }
+
+    function clearCache() {
+        requestCache.clear()
     }
 
     return {
+        // Core utilities
+        fetchWithRetry,
+        fetchWithCache,
+        parseHTML,
+
+        // Main fetchers
+        fetchIsOk,
         fetchCompanyData,
         fetchMinRateMaxData,
         fetchDailyChangeData,
@@ -721,6 +852,9 @@ export function useFetch() {
         fetchMaterialData,
         fetchIndexData,
         fetchDateData,
-        fetchIsOk
+
+        // Cache management
+        getCacheStats,
+        clearCache
     }
 }

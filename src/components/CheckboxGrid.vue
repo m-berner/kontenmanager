@@ -88,7 +88,7 @@ const setChecked = async (): Promise<void> => {
         }
     } catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to save selection'
-        log('CHECKBOX_GRID: setChecked error', {error: err})
+        log('CHECKBOX_GRID: setChecked error', err)
     } finally {
         isSaving.value = false
     }
@@ -117,7 +117,7 @@ onBeforeMount(async () => {
         }
     } catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to load selections'
-        log('CHECKBOX_GRID: onBeforeMount error', {error: err})
+        log('CHECKBOX_GRID: onBeforeMount error', err)
     } finally {
         isLoading.value = false
     }

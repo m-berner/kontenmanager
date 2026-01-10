@@ -203,6 +203,12 @@ export interface I_Date_Data {
     }
 }
 
+export interface I_Date_Utils {
+    utcDate: (_iso: string) => Date
+    isoDate: (_ms: number) => string
+    isValidISODate: (_iso: string) => boolean
+}
+
 export interface I_Dynamic_List_Props {
     type: symbol
     hint?: string
@@ -261,9 +267,10 @@ export interface I_Metadata {
     cEngine: string
 }
 
-export interface I_String_Number {
-    key: string
-    value: number
+export interface I_Number_Parse_Options {
+    locale?: 'de' | 'en'
+    fallback?: number
+    throwOnError?: boolean
 }
 
 export interface I_Number_String {
@@ -388,6 +395,11 @@ export interface I_Storage_Online {
     cur: string
 }
 
+export interface I_String_Number {
+    key: string
+    value: number
+}
+
 export interface I_Records_DB {
     accountsDB: I_Account_DB[],
     bookingsDB: I_Booking_DB[],
@@ -410,6 +422,10 @@ export interface I_Rollback_Data {
     activeAccountId: number
 }
 
+export interface I_Service_Fetcher {
+    (_urls: I_Number_String[]): Promise<I_Min_Rate_Max_Data[]>
+}
+
 export interface I_Storage_Local {
     sActiveAccountId: number
     sSkin: string
@@ -430,6 +446,11 @@ export interface I_Teleport {
     dialogVisibility: boolean
 }
 
+export interface I_Validation_Result {
+    valid: boolean
+    error?: string
+}
+
 export interface I_Visible_Alert {
     id: number
     type: 'error' | 'success' | 'warning' | 'info' | undefined
@@ -441,7 +462,12 @@ export interface I_Vuetify {
     vuetify: ReturnType<typeof createVuetify>
 }
 
+export type T_Log_Level = 'info' | 'warn' | 'error' | 'log'
+
 export type T_Message_Schema = typeof deDE
+
+// Rule builder type
+export type T_Rule_Builder = (..._args: any[]) => T_Validation_Rule
 
 export type T_Storage = {
     [p: string]: string | number | string[]

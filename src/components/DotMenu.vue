@@ -21,19 +21,19 @@ const {highlightedItems, highlightTemporary, clearAllHighlights} = useMenuHighli
 const currentColor = computed(() => highlightedItems.value.get(props.recordId) || '')
 
 const handleMenuOpen = () => {
-    log('DOT_MENU: handleMenuOpen', {info: props.recordId})
+    log('DOT_MENU: handleMenuOpen', props.recordId)
     highlightTemporary(props.recordId)
 }
 
 const handleItemClick = async (item: I_Menu_Item) => {
-    log('DOT_MENU: handleItemClick', {info: [props.recordId, item.action]})
+    log('DOT_MENU: handleItemClick', [props.recordId, item.action])
 
     try {
         // Default action handling
         await executeAction(item.action, props.recordId)
         clearAllHighlights()
-    } catch (error) {
-        log('DOT_MENU: action failed', {error})
+    } catch (err) {
+        log('DOT_MENU: action failed', err)
     }
 }
 

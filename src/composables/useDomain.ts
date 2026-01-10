@@ -23,6 +23,7 @@ export function useDomain(url: Ref<string>) {
             return ''
         }
     })
+
     const subdomain = computed(() => {
         if (!url.value) return null
         try {
@@ -32,14 +33,41 @@ export function useDomain(url: Ref<string>) {
                 return parts[0] !== 'www' ? parts[0] : null
             }
             return null
-            // eslint-disable-next-line no-unused-vars
-        } catch (e) {
+        } catch {
+            return null
+        }
+    })
+
+    const protocol = computed(() => {
+        if (!url.value) return null
+
+        try {
+            const urlObj = new URL(
+                url.value.startsWith('http') ? url.value : `https://${url.value}`
+            )
+            return urlObj.protocol.replace(':', '')
+        } catch {
+            return null
+        }
+    })
+
+    const pathname = computed(() => {
+        if (!url.value) return null
+
+        try {
+            const urlObj = new URL(
+                url.value.startsWith('http') ? url.value : `https://${url.value}`
+            )
+            return urlObj.pathname
+        } catch {
             return null
         }
     })
 
     return {
         domain,
-        subdomain
+        subdomain,
+        protocol,
+        pathname
     }
 }

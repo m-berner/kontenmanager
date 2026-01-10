@@ -5,12 +5,27 @@
  *
  * Copyright (c) 2025-2025, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import type {Ref} from 'vue'
-import {ref} from 'vue'
+import type { Ref } from 'vue'
+import { ref } from 'vue'
+
+export class GuardError extends Error {
+    constructor(
+        message: string,
+        public readonly _code: string,
+        public readonly _context?: Record<string, unknown>
+    ) {
+        super(message)
+        this.name = 'GuardError'
+    }
+}
 
 export function useDialogGuards() {
     const isLoading = ref<boolean>(false)
+    const loadingOperations = ref<Set<string>>(new Set())
 
+    /**
+     * Enhanced connection check with custom error
+     */
     async function ensureConnected(
         isConnected: Ref<boolean>,
         notice: (_msg: string[]) => Promise<void>,
@@ -23,48 +38,103 @@ export function useDialogGuards() {
         return true
     }
 
+    /**
+     * Enhanced error handler with better type safety
+     */
     function handleError(errorKey: string, err: unknown): Error {
-        const message = err instanceof Error ? err.message : 'Unknown error'
-        return new Error(`${errorKey}: ${message}`)
+        if (err instanceof Error) {
+            return new GuardError(
+                `${errorKey}: ${err.message}`,
+                errorKey,
+                { originalError: err }
+            )
+        }
+
+        return new GuardError(
+            `${errorKey}: Unknown error`,
+            errorKey,
+            { originalError: err }
+        )
     }
 
-    // async function handleError(
-    //     error: unknown,
-    //     log: (_msg: string, _data?: any) => void,
-    //     notice: (_msg: string[]) => Promise<void>,
-    //     context: string,
-    //     userMessage: string
-    // ): Promise<void> {
-    //     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-    //     log(`${context}: Error`, {error: errorMessage, stack: error instanceof Error ? error.stack : undefined})
-    //     await notice([userMessage, errorMessage])
-    // }
-
+    /**
+     * Track multiple concurrent operations
+     */
     async function withLoading<T>(
-        operation: () => Promise<T>
-    ): Promise<T | undefined> {
+        operation: () => Promise<T>,
+        operationId?: string
+    ): Promise<T> {
+        const id = operationId || `op-${Date.now()}`
+
         isLoading.value = true
+        loadingOperations.value.add(id)
+
         try {
             return await operation()
         } finally {
-            isLoading.value = false
+            loadingOperations.value.delete(id)
+            isLoading.value = loadingOperations.value.size > 0
         }
     }
 
-    async function validateForm(form: Ref<HTMLFormElement | null>): Promise<boolean> {
-        if (form.value !== null) {
-            // noinspection ES6RedundantAwait
-            const values = await form.value.validate()
-            return values.valid
+    /**
+     * Enhanced form validation with detailed errors
+     */
+    function validateForm(
+        form: Ref<HTMLFormElement | null>
+    ): { valid: boolean; errors?: string[] } {
+        if (!form.value) {
+            return { valid: false, errors: ['Form reference not available'] }
         }
-        return false
+
+        try {
+            const result = form.value.validate()
+            return {
+                valid: result.valid,
+                errors: result.errors || []
+            }
+        } catch (error) {
+            return {
+                valid: false,
+                errors: [(error as Error).message]
+            }
+        }
+    }
+
+    /**
+     * Retry mechanism for failed operations
+     */
+    async function withRetry<T>(
+        operation: () => Promise<T>,
+        options: {
+            maxRetries?: number
+            delay?: number
+            onRetry?: (_attempt: number, _error: Error) => void
+        } = {}
+    ): Promise<T> {
+        const { maxRetries = 3, delay = 1000, onRetry } = options
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                return await operation()
+            } catch (error) {
+                if (attempt === maxRetries) throw error
+
+                onRetry?.(attempt, error as Error)
+                await new Promise(resolve => setTimeout(resolve, delay * attempt))
+            }
+        }
+
+        throw new Error('Should not reach here')
     }
 
     return {
         isLoading,
+        loadingOperations,
         ensureConnected,
         handleError,
         validateForm,
-        withLoading
+        withLoading,
+        withRetry
     }
 }

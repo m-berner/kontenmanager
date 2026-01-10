@@ -16,7 +16,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBookingsDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
-import {useBookingFormular} from '@/composables/useBookingFormular'
+import {useBookingFormular} from '@/composables/useForms'
 import BookingFormular from '@/components/dialogs/forms/BookingFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {useAppConfig} from '@/composables/useAppConfig'
@@ -40,7 +40,7 @@ const loadCurrentBooking = (): void => {
     const bookingIndex = records.bookings.getIndexById(activeId.value)
 
     if (bookingIndex === -1) {
-        log('UPDATE_BOOKING: Booking not found', {error: activeId.value})
+        log('UPDATE_BOOKING: Booking not found', activeId.value)
         return
     }
 

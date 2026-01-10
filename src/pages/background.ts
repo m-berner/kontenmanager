@@ -44,7 +44,7 @@ async function onClick(): Promise<void> {
 runtimeOnInstalled(onInstall)
 actionOnClicked(onClick)
 
-log('--- PAGE_SCRIPT background.js ---', {info: window.document.location.href})
+log('--- PAGE_SCRIPT background.js ---', window.document.location.href, 'info')
 //}
 
 log('--- PAGE_SCRIPT background.js (does nothing) ---')

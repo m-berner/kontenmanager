@@ -46,7 +46,7 @@ const defaultStockMemory: I_Stock_Memory = {
     mDeleteable: false
 }
 
-const useStocksStore = defineStore('stocks', function () {
+const subStocksStore = defineStore('stocks', function () {
     const items = ref<I_Stock_Store[]>([])
 
     const getIndexById = computed(() => (id: number): number => {
@@ -59,7 +59,7 @@ const useStocksStore = defineStore('stocks', function () {
         })
     })
     const active = computed(() => {
-        const {investByStockId, portfolioByStockId} = useBookingsStore()
+        const {investByStockId, portfolioByStockId} = subBookingsStore()
         return items.value.filter(rec => rec.cFadeOut === 0 && rec.cID! > 0)
             .map(rec => {
                 rec.mPortfolio = portfolioByStockId(rec.cID!)
@@ -100,7 +100,7 @@ const useStocksStore = defineStore('stocks', function () {
     }
 
     function update(stock: I_Stock_DB): void {
-        log('STOCKS_STORE: updateStock', {info: stock})
+        log('STOCKS_STORE: updateStock', stock, 'info')
         const index = getIndexById.value(stock?.cID ?? -1)
         if (index !== -1) {
             const stocksOnlyMemory = {
@@ -125,7 +125,7 @@ const useStocksStore = defineStore('stocks', function () {
     }
 
     function remove(ident: number): void {
-        log('STOCKS_STORE: remove', {info: ident})
+        log('STOCKS_STORE: remove', ident, 'info')
         const index = getIndexById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
@@ -217,7 +217,7 @@ const useStocksStore = defineStore('stocks', function () {
     }
 })
 
-const useAccountsStore = defineStore('accounts', function () {
+const subAccountsStore = defineStore('accounts', function () {
     const settings = useSettingsStore()
     const {activeAccountId} = storeToRefs(settings)
 
@@ -260,7 +260,7 @@ const useAccountsStore = defineStore('accounts', function () {
     }
 
     function remove(ident: number): void {
-        log('ACCOUNTS_STORE: remove', {info: ident})
+        log('ACCOUNTS_STORE: remove', ident, 'info')
         const index = getIndexById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
@@ -285,7 +285,7 @@ const useAccountsStore = defineStore('accounts', function () {
     }
 })
 
-const useBookingsStore = defineStore('bookings', function () {
+const subBookingsStore = defineStore('bookings', function () {
     const items = ref<I_Booking_Store[]>([])
 
     const getById = computed(() => (id: number): I_Booking_Store | undefined => {
@@ -351,7 +351,7 @@ const useBookingsStore = defineStore('bookings', function () {
         }).reduce((acc: number, cur: number) => acc + cur, 0)
     })
     const sumBookingsPerTypeAndYear = computed(() => (y: number) => {
-        const bt = useBookingTypesStore()
+        const bt = subBookingTypesStore()
         const sums: I_Number_String[] = []
         for (let i = 0; i < bt.items.length; i++) {
             const t = items.value.filter((entry: I_Booking_Store) => {
@@ -364,7 +364,7 @@ const useBookingsStore = defineStore('bookings', function () {
         return sums
     })
     const sumBookingsPerType = computed(() => {
-        const bt = useBookingTypesStore()
+        const bt = subBookingTypesStore()
         const sums: I_Number_String[] = []
         for (let i = 0; i < bt.items.length; i++) {
             const t = items.value.filter((entry: I_Booking_Store) => {
@@ -432,7 +432,7 @@ const useBookingsStore = defineStore('bookings', function () {
     }
 
     function remove(ident: number): void {
-        log('BOOKINGS_STORE: remove', {info: ident})
+        log('BOOKINGS_STORE: remove', ident, 'info')
         const index = getIndexById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
@@ -473,7 +473,7 @@ const useBookingsStore = defineStore('bookings', function () {
     }
 })
 
-const useBookingTypesStore = defineStore('bookingTypes', function () {
+const subBookingTypesStore = defineStore('bookingTypes', function () {
     const items = ref<I_Booking_Type_Store[]>([])
 
     const getNameById = computed(() => (ident: number): string => {
@@ -515,7 +515,7 @@ const useBookingTypesStore = defineStore('bookingTypes', function () {
     }
 
     function remove(ident: number): void {
-        log('BOOKING_TYPE_STORE: remove', {info: ident})
+        log('BOOKING_TYPE_STORE: remove', ident, 'info')
         const index = getIndexById.value(ident)
         if (index !== -1) {
             items.value.splice(index, 1)
@@ -543,10 +543,10 @@ const useBookingTypesStore = defineStore('bookingTypes', function () {
 })
 
 export const useRecordsStore = defineStore('records', function () {
-    const accountsStore = useAccountsStore()
-    const bookingsStore = useBookingsStore()
-    const bookingTypesStore = useBookingTypesStore()
-    const stocksStore = useStocksStore()
+    const accountsStore = subAccountsStore()
+    const bookingsStore = subBookingsStore()
+    const bookingTypesStore = subBookingTypesStore()
+    const stocksStore = subStocksStore()
 
     function clean(all = true) {
         log('RECORDS: clean')
@@ -559,7 +559,7 @@ export const useRecordsStore = defineStore('records', function () {
     }
 
     async function init(storesDB: I_Records_DB, messages: Record<string, string>, removeAccounts = true): Promise<void> {
-        log('RECORDS: init', {info: storesDB})
+        log('RECORDS: init', storesDB, 'info')
         const settings = useSettingsStore()
         const {activeAccountId} = storeToRefs(settings)
         const {info} = useAlertStore()
@@ -573,7 +573,7 @@ export const useRecordsStore = defineStore('records', function () {
             })
         }
         const load = (stores: I_Records_Store) => {
-            log('RECORDS: load', {info: stores})
+            log('RECORDS: load', stores,'info')
             for (const entry of stores.accounts) {
                 accountsStore.add(entry)
             }

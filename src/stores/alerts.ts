@@ -22,13 +22,13 @@ const defaultConfirmation: I_Confirmation_Dialog = {
     reject: () => {}
 }
 
-const alerts = ref<I_Visible_Alert[]>([])
-const currentAlert = ref<I_Visible_Alert>(defaultAlert)
-const confirmationDialog = ref<I_Confirmation_Dialog>(defaultConfirmation)
-
 const {log} = useApp()
 
 export const useAlertStore = defineStore('alert', () => {
+    const alerts = ref<I_Visible_Alert[]>([])
+    const currentAlert = ref<I_Visible_Alert>(defaultAlert)
+    const confirmationDialog = ref<I_Confirmation_Dialog>(defaultConfirmation)
+
     const pendingCount = computed(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1)
     const showOverlay = computed(() => currentAlert.value.id > -1)
     const showConfirmation = computed(() => confirmationDialog.value.id > -1)

@@ -12,11 +12,11 @@ const defaultConfirmation = {
     resolve: () => { },
     reject: () => { }
 };
-const alerts = ref([]);
-const currentAlert = ref(defaultAlert);
-const confirmationDialog = ref(defaultConfirmation);
 const { log } = useApp();
 export const useAlertStore = defineStore('alert', () => {
+    const alerts = ref([]);
+    const currentAlert = ref(defaultAlert);
+    const confirmationDialog = ref(defaultConfirmation);
     const pendingCount = computed(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1);
     const showOverlay = computed(() => currentAlert.value.id > -1);
     const showConfirmation = computed(() => confirmationDialog.value.id > -1);

@@ -20,6 +20,17 @@ import type {I_DATE} from '@/configurations/date'
 import type {I_INDEXED_DB} from '@/configurations/indexed_db'
 import {INDEXED_DB} from '@/configurations/indexed_db'
 
+export class ImportExportError extends Error {
+    constructor(
+        message: string,
+        public readonly _code: string,
+        public readonly _context?: Record<string, unknown>
+    ) {
+        super(message)
+        this.name = 'ImportExportError'
+    }
+}
+
 export function useImportExport() {
 
     class ImportExportService {
@@ -28,6 +39,55 @@ export function useImportExport() {
             private readonly _DATE: I_DATE,
             private readonly _isoDate: (_date: number) => string
         ) {
+        }
+
+        stringifyDatabase(
+            sm: I_Metadata,
+            accounts: I_Account_DB[],
+            stocks: I_Stock_DB[],
+            bookingTypes: I_Booking_Type_DB[],
+            bookings: I_Booking_DB[]
+        ): string {
+            this.validateExportData(accounts, stocks, bookingTypes, bookings)
+
+            const exportData = {
+                sm,
+                accounts,
+                stocks,
+                bookingTypes,
+                bookings
+            }
+            try {
+                return JSON.stringify(exportData, null, 2)
+            } catch (err) {
+                throw new ImportExportError(
+                    'Failed to serialize data',
+                    'SERIALIZE_FAILED',
+                    {originalError: err}
+                )
+            }
+        }
+
+        private validateExportData(
+            accounts: I_Account_DB[],
+            stocks: I_Stock_DB[],
+            bookingTypes: I_Booking_Type_DB[],
+            bookings: I_Booking_DB[]
+        ): void {
+            const errors: string[] = []
+
+            if (!Array.isArray(accounts)) errors.push('Invalid accounts data')
+            if (!Array.isArray(stocks)) errors.push('Invalid stocks data')
+            if (!Array.isArray(bookingTypes)) errors.push('Invalid booking types data')
+            if (!Array.isArray(bookings)) errors.push('Invalid bookings data')
+
+            if (errors.length > 0) {
+                throw new ImportExportError(
+                    'Export data validation failed',
+                    'VALIDATION_FAILED',
+                    {errors}
+                )
+            }
         }
 
         verifyExportIntegrity(exportedData: string): { valid: boolean; errors: string[] } {
@@ -52,7 +112,7 @@ export function useImportExport() {
             } catch (err) {
                 return {
                     valid: false,
-                    errors: [(err as Error).message]
+                    errors: [`Parse error: ${(err as Error).message}`]
                 }
             }
         }
@@ -60,27 +120,49 @@ export function useImportExport() {
         validateDataIntegrity(backup: I_Backup): string[] {
             const errors: string[] = []
 
-            // Null/undefined safety checks
             if (!backup.accounts || !backup.stocks || !backup.bookings || !backup.bookingTypes) {
-                errors.push('Missing required data arrays')
-                return errors
+                return ['Missing required data arrays']
             }
+
             // Check for undefined IDs
-            const undefinedAccountIds = backup.accounts.filter(a => a.cID === undefined).length
-            if (undefinedAccountIds > 0) {
-                errors.push(`${undefinedAccountIds} accounts have undefined IDs`)
-            }
+            errors.push(...this.checkUndefinedIds(backup))
 
-            const undefinedStockIds = backup.stocks.filter(s => s.cID === undefined).length
-            if (undefinedStockIds > 0) {
-                errors.push(`${undefinedStockIds} stocks have undefined IDs`)
-            }
-
-            const undefinedBookingIds = backup.bookings.filter(b => b.cID === undefined).length
-            if (undefinedBookingIds > 0) {
-                errors.push(`${undefinedBookingIds} bookings have undefined IDs`)
-            }
             // Check foreign key relationships
+            errors.push(...this.validateForeignKeys(backup))
+
+            // Check for duplicate IDs
+            errors.push(...this.checkDuplicateIds(backup))
+
+            // Validate business rules
+            errors.push(...this.validateBusinessRules(backup))
+
+            return errors
+        }
+
+        private checkUndefinedIds(backup: I_Backup): string[] {
+            const errors: string[] = []
+
+            const undefinedAccounts = backup.accounts.filter(a => a.cID === undefined).length
+            if (undefinedAccounts > 0) {
+                errors.push(`${undefinedAccounts} accounts have undefined IDs`)
+            }
+
+            const undefinedStocks = backup.stocks.filter(s => s.cID === undefined).length
+            if (undefinedStocks > 0) {
+                errors.push(`${undefinedStocks} stocks have undefined IDs`)
+            }
+
+            const undefinedBookings = backup.bookings.filter(b => b.cID === undefined).length
+            if (undefinedBookings > 0) {
+                errors.push(`${undefinedBookings} bookings have undefined IDs`)
+            }
+
+            return errors
+        }
+
+        private validateForeignKeys(backup: I_Backup): string[] {
+            const errors: string[] = []
+
             const accountIds = new Set(backup.accounts.map(a => a.cID))
             const stockIds = new Set(backup.stocks.map(s => s.cID))
             const bookingTypeIds = new Set(backup.bookingTypes.map(bt => bt.cID))
@@ -98,18 +180,7 @@ export function useImportExport() {
                 if (!bookingTypeIds.has(booking.cBookingTypeID)) {
                     errors.push(`Booking ${booking.cID} references non-existent booking type ${booking.cBookingTypeID}`)
                 }
-
-                // Validate amounts
-                if (booking.cCredit < 0 || booking.cDebit < 0) {
-                    errors.push(`Booking ${booking.cID} has negative credit/debit values`)
-                }
-
-                // Both credit and debit should not be positive at the same time
-                if (booking.cCredit > 0 && booking.cDebit > 0) {
-                    errors.push(`Booking ${booking.cID} has both credit and debit values`)
-                }
             }
-
             // Validate stocks
             for (const stock of backup.stocks) {
                 if (!accountIds.has(stock.cAccountNumberID)) {
@@ -124,18 +195,29 @@ export function useImportExport() {
                 }
             }
 
-            // Check for duplicate IDs
-            const duplicateAccounts = this.findDuplicates(backup.accounts.map(a => a.cID).filter((id): id is number => id !== undefined))
+            return errors
+        }
+
+        private checkDuplicateIds(backup: I_Backup): string[] {
+            const errors: string[] = []
+
+            const duplicateAccounts = this.findDuplicates(
+                backup.accounts.map(a => a.cID).filter((id): id is number => id !== undefined)
+            )
             if (duplicateAccounts.length > 0) {
                 errors.push(`Duplicate account IDs: ${duplicateAccounts.join(', ')}`)
             }
 
-            const duplicateStocks = this.findDuplicates(backup.stocks.map(s => s.cID).filter((id): id is number => id !== undefined))
+            const duplicateStocks = this.findDuplicates(
+                backup.stocks.map(s => s.cID).filter((id): id is number => id !== undefined)
+            )
             if (duplicateStocks.length > 0) {
                 errors.push(`Duplicate stock IDs: ${duplicateStocks.join(', ')}`)
             }
 
-            const duplicateBookings = this.findDuplicates(backup.bookings.map(b => b.cID).filter((id): id is number => id !== undefined))
+            const duplicateBookings = this.findDuplicates(
+                backup.bookings.map(b => b.cID).filter((id): id is number => id !== undefined)
+            )
             if (duplicateBookings.length > 0) {
                 errors.push(`Duplicate booking IDs: ${duplicateBookings.join(', ')}`)
             }
@@ -143,21 +225,57 @@ export function useImportExport() {
             return errors
         }
 
+        private validateBusinessRules(backup: I_Backup): string[] {
+            const errors: string[] = []
+
+            for (const booking of backup.bookings) {
+                // Validate amounts
+                if (booking.cCredit < 0 || booking.cDebit < 0) {
+                    errors.push(`Booking ${booking.cID} has negative credit/debit values`)
+                }
+
+                // Both credit and debit should not be positive at the same time
+                if (booking.cCredit > 0 && booking.cDebit > 0) {
+                    errors.push(`Booking ${booking.cID} has both credit and debit values`)
+                }
+
+                // At least one should be positive
+                if (booking.cCredit === 0 && booking.cDebit === 0) {
+                    errors.push(`Booking ${booking.cID} has zero for both credit and debit`)
+                }
+            }
+
+            return errors
+        }
+
+        private findDuplicates(arr: number[]): number[] {
+            const seen = new Set<number>()
+            const duplicates = new Set<number>()
+
+            for (const id of arr) {
+                if (seen.has(id)) {
+                    duplicates.add(id)
+                }
+                seen.add(id)
+            }
+
+            return Array.from(duplicates)
+        }
+
         validateLegacyDataIntegrity(backup: I_Backup): string[] {
             const errors: string[] = []
 
             if (!backup.stocks || !backup.transfers) {
-                errors.push('Missing required legacy data arrays')
-                return errors
+                return ['Missing required legacy data arrays']
             }
 
-            // Check for duplicate IDs in legacy data
-            const duplicateStocks = this.findDuplicates(backup.stocks.map(s => s.cID).filter((id): id is number => id !== undefined))
+            const duplicateStocks = this.findDuplicates(
+                backup.stocks.map(s => s.cID).filter((id): id is number => id !== undefined)
+            )
             if (duplicateStocks.length > 0) {
                 errors.push(`Duplicate stock IDs: ${duplicateStocks.join(', ')}`)
             }
 
-            // Validate transfers reference valid stocks
             const stockIds = new Set(backup.stocks.map(s => s.cID))
             for (let i = 0; i < backup.transfers.length; i++) {
                 const transfer = backup.transfers[i]
@@ -247,60 +365,11 @@ export function useImportExport() {
             return booking
         }
 
-        stringifyDatabase(
-            sm: I_Metadata,
-            accounts: I_Account_DB[],
-            stocks: I_Stock_DB[],
-            bookingTypes: I_Booking_Type_DB[],
-            bookings: I_Booking_DB[]
-        ): string {
-            if (!accounts || !Array.isArray(accounts)) {
-                throw new Error('Invalid accounts data')
-            }
-            if (!stocks || !Array.isArray(stocks)) {
-                throw new Error('Invalid stocks data')
-            }
-            if (!bookingTypes || !Array.isArray(bookingTypes)) {
-                throw new Error('Invalid booking types data')
-            }
-            if (!bookings || !Array.isArray(bookings)) {
-                throw new Error('Invalid bookings data')
-            }
-
-            const exportData = {
-                sm,
-                accounts,
-                stocks,
-                bookingTypes,
-                bookings
-            }
-            try {
-                return JSON.stringify(exportData, null, 2)
-            } catch (err) {
-                throw new Error(`Failed to serialize data: ${(err as Error).message}`)
-            }
-        }
-
-        private findDuplicates(arr: number[]): number[] {
-            const seen = new Set<number>()
-            const duplicates = new Set<number>()
-
-            for (const id of arr) {
-                if (seen.has(id)) {
-                    duplicates.add(id)
-                }
-                seen.add(id)
-            }
-
-            return Array.from(duplicates)
-        }
-
         private createCreditDebitObject(rec: I_Booking_SM): { value: number; type: number } {
             const BOOKING_TYPES = this._INDEXED_DB.STORE.BOOKING_TYPES
             const result = {value: 0, type: -1}
 
-            // Determine non-zero fields (types 4, 5) and recreate type
-            // Types 1-3 will be overwritten in the next step
+            // Determine type based on non-zero fields
             if (rec.cAmount !== 0) {
                 result.type = BOOKING_TYPES.OTHER
             } else if (rec.cFees !== 0) {
@@ -309,26 +378,27 @@ export function useImportExport() {
                 result.type = BOOKING_TYPES.TAX
             }
 
-            // Select by type and create value
-            if (rec.cType === BOOKING_TYPES.BUY) {
-                return {value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.BUY}
+            // Calculate value based on type
+            switch (rec.cType) {
+                case BOOKING_TYPES.BUY:
+                    return {value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.BUY}
+                case BOOKING_TYPES.SELL:
+                    return {value: rec.cUnitQuotation * -rec.cCount, type: BOOKING_TYPES.SELL}
+                case BOOKING_TYPES.DIVIDEND:
+                    return {value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.DIVIDEND}
+                case BOOKING_TYPES.CREDIT:
+                    result.value = rec.cAmount + rec.cFees + rec.cSTax + rec.cFTax + rec.cTax + rec.cSoli
+                    return result
+                case BOOKING_TYPES.DEBIT:
+                    result.value = -rec.cAmount - rec.cFees - rec.cSTax - rec.cFTax - rec.cTax - rec.cSoli
+                    return result
+                default:
+                    throw new ImportExportError(
+                        'Unknown booking type',
+                        'UNKNOWN_BOOKING_TYPE',
+                        {type: rec.cType}
+                    )
             }
-            if (rec.cType === BOOKING_TYPES.SELL) {
-                return {value: rec.cUnitQuotation * -rec.cCount, type: BOOKING_TYPES.SELL}
-            }
-            if (rec.cType === BOOKING_TYPES.DIVIDEND) {
-                return {value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.DIVIDEND}
-            }
-            if (rec.cType === BOOKING_TYPES.CREDIT) {
-                result.value = rec.cAmount + rec.cFees + rec.cSTax + rec.cFTax + rec.cTax + rec.cSoli
-                return result
-            }
-            if (rec.cType === BOOKING_TYPES.DEBIT) {
-                result.value = -rec.cAmount - rec.cFees - rec.cSTax - rec.cFTax - rec.cTax - rec.cSoli
-                return result
-            }
-
-            throw new Error(`Unknown booking type: ${rec.cType}`)
         }
 
         private resetTaxesAndFees(booking: Partial<I_Booking_DB>): void {
@@ -353,11 +423,19 @@ export function useImportExport() {
         const backup = data as Partial<I_Backup>
 
         if (!backup.sm?.cDBVersion) {
-            return {isValid: false, version: -1, error: 'Missing version information'}
+            return {
+                isValid: false,
+                version: -1,
+                error: 'Missing version information'
+            }
         }
 
         if (backup.sm.cDBVersion < INDEXED_DB.SM_IMPORT_VERSION) {
-            return {isValid: false, version: backup.sm.cDBVersion, error: 'Version too old'}
+            return {
+                isValid: false,
+                version: backup.sm.cDBVersion,
+                error: `Version ${backup.sm.cDBVersion} is too old (minimum: ${INDEXED_DB.SM_IMPORT_VERSION})`
+            }
         }
 
         // Check for required fields
@@ -380,7 +458,11 @@ export function useImportExport() {
 
             for (const {field, name} of requiredFields) {
                 if (!field || !Array.isArray(field)) {
-                    return {isValid: false, version: backup.sm.cDBVersion, error: `Missing or invalid ${name} data`}
+                    return {
+                        isValid: false,
+                        version: backup.sm.cDBVersion,
+                        error: `Missing or invalid ${name} data`
+                    }
                 }
             }
         }
@@ -390,21 +472,32 @@ export function useImportExport() {
 
     async function readJsonFile(blob: Blob): Promise<I_Backup> {
         if (!blob || blob.size === 0) {
-            throw new Error('Empty or invalid file')
+            throw new ImportExportError('Empty or invalid file', 'EMPT_FILE')
+        }
+
+        // Size check (e.g., max 100MB)
+        const MAX_SIZE = 100 * 1024 * 1024
+        if (blob.size > MAX_SIZE) {
+            throw new ImportExportError(
+                'File too large',
+                'FILE_TOO_LARGE',
+                {size: blob.size, maxSize: MAX_SIZE}
+            )
         }
 
         let text: string
         try {
             text = await blob.text()
         } catch (err) {
-            if (err instanceof SyntaxError) {
-                throw new Error(`Invalid JSON format: ${err.message}`)
-            }
-            throw err
+            throw new ImportExportError(
+                'Failed to read file',
+                'READ_FAILED',
+                {originalError: err}
+            )
         }
 
         if (!text || text.trim().length === 0) {
-            throw new Error('File contains no data')
+            throw new ImportExportError('File contains no data', 'NO_DATA')
         }
 
         let parsed: I_Backup
@@ -412,13 +505,17 @@ export function useImportExport() {
             parsed = JSON.parse(text)
         } catch (err) {
             if (err instanceof SyntaxError) {
-                throw new Error(`Invalid JSON format: ${err.message}`)
+                throw new ImportExportError(
+                    `Invalid JSON format: ${err.message}`,
+                    'INVALID_JSON',
+                    {originalError: err}
+                )
             }
             throw err
         }
 
         if (!parsed || typeof parsed !== 'object') {
-            throw new Error('Invalid JSON structure')
+            throw new ImportExportError('Invalid JSON structure', 'INVALID_STRUCTURE')
         }
 
         return parsed

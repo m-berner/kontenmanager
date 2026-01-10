@@ -71,7 +71,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
         router.push('/')
     } catch (e) {
         const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-        log(t('screens.titleBar.messages.onUpdateTitleBar'), {error: errorMessage})
+        log(t('screens.titleBar.messages.onUpdateTitleBar'), errorMessage, 'error')
         await notice([t('screens.titleBar.messages.onUpdateTitleBar'), errorMessage])
     }
 }

@@ -18,10 +18,10 @@ const {log} = useApp()
 const app = createApp(AppIndex)
 
 app.config.errorHandler = (err: unknown) => {
-    log('APP: errorHandler', {error: err})
+    log('APP: errorHandler', err, 'error')
 }
 app.config.warnHandler = (msg: string) => {
-    log('APP: warnHandler', {warn: msg})
+    log('APP: warnHandler', msg, 'warn')
 }
 app.use(vuetifyPlugin.vuetify)
 app.use(componentsPlugin)

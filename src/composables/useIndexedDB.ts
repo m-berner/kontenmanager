@@ -93,7 +93,7 @@ class IndexedDBManager {
                 const request = indexedDB.open(INDEXED_DB.NAME, INDEXED_DB.VERSION)
 
                 request.onerror = () => {
-                    log('Database open failed', {error: request.error})
+                    log('Database open failed', request.error, 'error')
                     reject(request.error)
                 }
 
@@ -120,7 +120,7 @@ class IndexedDBManager {
 
                 request.onupgradeneeded = (ev: IDBVersionChangeEvent) => {
                     const db = (ev.target as IDBOpenDBRequest).result
-                    log('Database upgrade needed', {info: ev.oldVersion + ev.newVersion!})
+                    log('Database upgrade needed', ev.oldVersion + ev.newVersion!, 'info')
                     this.setupDatabase(db)
                 }
             })

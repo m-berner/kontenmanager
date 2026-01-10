@@ -15,7 +15,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStocksDB} from '@/composables/useIndexedDB'
-import {useStockFormular} from '@/composables/useStockFormular'
+import {useStockFormular} from '@/composables/useForms'
 import StockFormular from '@/components/dialogs/forms/StockFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 
@@ -54,7 +54,7 @@ const onClickOk = async (): Promise<void> => {
             const addStockID = await add(stock)
 
             if (addStockID === -1) {
-                log('ADD_STOCK: onClickOk', {error: t('components.dialogs.addStock.messages.error')})
+                log('ADD_STOCK: onClickOk', t('components.dialogs.addStock.messages.error'))
                 await notice([t('components.dialogs.addStock.messages.error')])
                 return
             }

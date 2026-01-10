@@ -12,13 +12,13 @@ import {useRecordsStore} from '@/stores/records'
 import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useValidation} from '@/composables/useValidation'
-import {useBookingFormular} from '@/composables/useBookingFormular'
+import {useBookingFormular} from '@/composables/useForms'
 import CreditDebitFieldset from '@/components/CreditDebitFieldset.vue'
 import {useAppConfig} from '@/composables/useAppConfig'
 
 const {t} = useI18n()
 const {log} = useApp()
-const {creditRules, debitRules} = useValidation()
+const {amountRules} = useValidation()
 const {INDEXED_DB} = useAppConfig()
 const {isoDateRules, bookingTypeRules} = useValidation()
 const {formRef, bookingFormularData, selected} = useBookingFormular()
@@ -209,37 +209,37 @@ log('--- BookingFormular.vue setup ---')
             <CreditDebitFieldset
                 v-model="creditDebitModel"
                 :legend="t('components.dialogs.forms.bookingFormular.bookingLabel')"
-                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
+                :rules="[(v: number) => amountRules(v, RULES), (v: number) => amountRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isDividendSellType" justify="center">
             <CreditDebitFieldset
                 v-model="taxModel"
                 :legend="t('components.dialogs.forms.bookingFormular.taxLabel')"
-                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
+                :rules="[(v: number) => amountRules(v, RULES), (v: number) => amountRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isDividendSellType" justify="center">
             <CreditDebitFieldset
                 v-model="soliModel"
                 :legend="t('components.dialogs.forms.bookingFormular.soliLabel')"
-                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
+                :rules="[(v: number) => amountRules(v, RULES), (v: number) => amountRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isDividendSellType" justify="center">
             <CreditDebitFieldset
                 v-model="sourceTaxModel"
                 :legend="t('components.dialogs.forms.bookingFormular.sourceTaxLabel')"
-                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
+                :rules="[(v: number) => amountRules(v, RULES), (v: number) => amountRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isBuySellType" justify="center">
             <CreditDebitFieldset
                 v-model="feeModel"
                 :legend="t('components.dialogs.forms.bookingFormular.feeLabel')"
-                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
+                :rules="[(v: number) => amountRules(v, RULES), (v: number) => amountRules(v, RULES)]"/>
         </v-row>
         <v-row v-if="isBuyType" justify="center">
             <CreditDebitFieldset
                 v-model="transactionTaxModel"
                 :legend="t('components.dialogs.forms.bookingFormular.transactionTaxLabel')"
-                :rules="[(v: number) => creditRules(v, RULES), (v: number) => debitRules(v, RULES)]"/>
+                :rules="[(v: number) => amountRules(v, RULES), (v: number) => amountRules(v, RULES)]"/>
         </v-row>
         <v-row justify="center">
             <v-col cols="12">

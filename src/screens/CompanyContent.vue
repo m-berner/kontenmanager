@@ -136,7 +136,7 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
 }
 
 const onUpdatePage = async (page: number): Promise<void> => {
-    log('COMPANY_CONTENT: onUpdatePage', {info: page})
+    log('COMPANY_CONTENT: onUpdatePage', page, 'info')
     stocksPage.value = page
     if (!runtime.loadedStocksPages.has(page)) {
         isStockLoading.value = true

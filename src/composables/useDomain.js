@@ -26,12 +26,36 @@ export function useDomain(url) {
             }
             return null;
         }
-        catch (e) {
+        catch {
+            return null;
+        }
+    });
+    const protocol = computed(() => {
+        if (!url.value)
+            return null;
+        try {
+            const urlObj = new URL(url.value.startsWith('http') ? url.value : `https://${url.value}`);
+            return urlObj.protocol.replace(':', '');
+        }
+        catch {
+            return null;
+        }
+    });
+    const pathname = computed(() => {
+        if (!url.value)
+            return null;
+        try {
+            const urlObj = new URL(url.value.startsWith('http') ? url.value : `https://${url.value}`);
+            return urlObj.pathname;
+        }
+        catch {
             return null;
         }
     });
     return {
         domain,
-        subdomain
+        subdomain,
+        protocol,
+        pathname
     };
 }

@@ -11,7 +11,7 @@ import {computed, defineEmits, defineProps} from 'vue'
 import CurrencyInput from '@/components/CurrencyInput.vue'
 import type {I_Credit_Debit_Fieldset_Props} from '@/types'
 import {useApp} from '@/composables/useApp'
-import {useBookingFormular} from '@/composables/useBookingFormular'
+import {useBookingFormular} from '@/composables/useForms'
 
 const props = defineProps<I_Credit_Debit_Fieldset_Props>()
 // eslint-disable-next-line vue/define-emits-declaration

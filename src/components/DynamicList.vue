@@ -89,7 +89,7 @@ const addItem = async (item: string): Promise<void> => {
         }
     } catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to add item'
-        log('DYNAMIC_LIST: addItem error', {error: err})
+        log('DYNAMIC_LIST: addItem error', err)
     } finally {
         isAdding.value = false  // Stop loading
     }
@@ -115,7 +115,7 @@ const removeItem = async (n: number): Promise<void> => {
         }
     } catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to remove item'
-        log('DYNAMIC_LIST: removeItem error', {error: err})
+        log('DYNAMIC_LIST: removeItem error', err)
     }
 }
 
@@ -136,7 +136,7 @@ onBeforeMount(async () => {
         }
     } catch (err) {
         error.value = err instanceof Error ? err.message : 'Failed to load data'
-        log('DYNAMIC_LIST: onBeforeMount error', {error: err})
+        log('DYNAMIC_LIST: onBeforeMount error', err)
     } finally {
         isLoading.value = false
     }

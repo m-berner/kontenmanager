@@ -14,7 +14,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingsDB} from '@/composables/useIndexedDB'
-import {useBookingFormular} from '@/composables/useBookingFormular'
+import {useBookingFormular} from '@/composables/useForms'
 import BookingFormular from '@/components/dialogs/forms/BookingFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {useAppConfig} from '@/composables/useAppConfig'
@@ -45,7 +45,7 @@ const onClickOk = async (): Promise<void> => {
             const addBookingID = await add(booking)
 
             if (addBookingID === -1) {
-                log('ADD_BOOKING: onClickOk: done', {error: t('components.dialogs.addBooking.messages.error')})
+                log('ADD_BOOKING: onClickOk: done', t('components.dialogs.addBooking.messages.error'))
                 await notice([t('components.dialogs.addBooking.messages.error')])
                 return
             }

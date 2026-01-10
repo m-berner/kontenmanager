@@ -15,7 +15,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB} from '@/composables/useIndexedDB'
-import {useAccountFormular} from '@/composables/useAccountFormular'
+import {useAccountFormular} from '@/composables/useForms'
 import AccountFormular from '@/components/dialogs/forms/AccountFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 
@@ -34,7 +34,7 @@ const {isLoading, ensureConnected, handleError, validateForm, withLoading} = use
 const loadCurrentAccount = (): void => {
     const accountIndex = records.accounts.getIndexById(activeAccountId.value)
     if (accountIndex === -1) {
-        log('UPDATE_ACCOUNT: Account not found', {error: activeAccountId.value})
+        log('UPDATE_ACCOUNT: Account not found', activeAccountId.value)
         return
     }
     const currentAccount = accountItems.value[accountIndex]

@@ -44,7 +44,7 @@ const TABS = [
 
 const tab = ref<number>(0)
 
-log('--- OptionsIndex.vue setup ---', {info: window.location.href})
+log('--- OptionsIndex.vue setup ---', window.location.href, 'info')
 </script>
 
 <template>

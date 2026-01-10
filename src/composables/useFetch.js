@@ -2,287 +2,312 @@ import { useApp } from '@/composables/useApp';
 import { useBrowser } from '@/composables/useBrowser';
 import { useAppConfig } from '@/composables/useAppConfig';
 const { log, mean, toNumber } = useApp();
-const { BROWSER_STORAGE, STATES, SERVICES, SETTINGS, SYSTEM } = useAppConfig();
-const { notice, getStorage } = useBrowser();
-const requestCache = new Map();
-const CACHE_TTL = 5 * 60 * 1000;
-export function useFetch() {
-    async function _fetchWithRetry(url) {
-        const response = await fetch(url);
-        if (!response.ok || response.status >= STATES.SRV) {
-            throw new Error(`Fetch failed: ${response.statusText}`);
+const { BROWSER_STORAGE, SERVICES, SETTINGS, SYSTEM } = useAppConfig();
+const { getStorage } = useBrowser();
+export class FetchError extends Error {
+    _statusCode;
+    _url;
+    _context;
+    constructor(message, _statusCode, _url, _context) {
+        super(message);
+        this._statusCode = _statusCode;
+        this._url = _url;
+        this._context = _context;
+        this.name = 'FetchError';
+    }
+}
+class FetchCache {
+    cache = new Map();
+    DEFAULT_TTL = 5 * 60 * 1000;
+    set(key, data, _ttl) {
+        this.cache.set(key, {
+            data,
+            timestamp: Date.now()
+        });
+        if (this.cache.size > 100) {
+            this.cleanup();
         }
-        return response;
     }
-    function _parseHTML(text) {
-        return new DOMParser().parseFromString(text, 'text/html');
+    get(key, ttl = this.DEFAULT_TTL) {
+        const entry = this.cache.get(key);
+        if (!entry)
+            return null;
+        const isExpired = Date.now() - entry.timestamp > ttl;
+        if (isExpired) {
+            this.cache.delete(key);
+            return null;
+        }
+        return entry.data;
     }
-    async function fetchWithCache(key, url, fetcher) {
-        const cached = requestCache.get(key);
+    has(key, ttl = this.DEFAULT_TTL) {
+        return this.get(key, ttl) !== null;
+    }
+    clear() {
+        this.cache.clear();
+    }
+    cleanup() {
         const now = Date.now();
-        if (cached && (now - cached.timestamp) < CACHE_TTL) {
-            return cached.dataText;
+        for (const [key, entry] of this.cache.entries()) {
+            if (now - entry.timestamp > this.DEFAULT_TTL) {
+                this.cache.delete(key);
+            }
         }
-        const data = await fetcher(url);
-        if (data.ok) {
-            const dataText = await data.text();
-            requestCache.set(key, { dataText, timestamp: now });
-            return dataText;
+    }
+    getStats() {
+        return {
+            size: this.cache.size,
+            keys: Array.from(this.cache.keys())
+        };
+    }
+}
+const requestCache = new FetchCache();
+export function useFetch() {
+    const fetchError = (resp, url) => {
+        throw new FetchError(`HTTP ${resp.status}: ${resp.statusText}`, resp.status, url);
+    };
+    async function fetchWithRetry(url, options = {}, maxRetries = 3) {
+        let lastError = null;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    if (response.status >= 500 && attempt < maxRetries) {
+                        await delay(1000 * attempt);
+                        continue;
+                    }
+                    fetchError(response, url);
+                }
+                return response;
+            }
+            catch (error) {
+                lastError = error;
+                if (attempt < maxRetries) {
+                    log(`Fetch attempt ${attempt} failed, retrying...`, error, 'warn');
+                    await delay(1000 * attempt);
+                }
+            }
         }
-        else {
-            throw new Error('Request failed!');
+        throw new FetchError(`Failed after ${maxRetries} attempts: ${lastError?.message}`, undefined, url, { originalError: lastError });
+    }
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    function parseHTML(text) {
+        try {
+            return new DOMParser().parseFromString(text, 'text/html');
         }
+        catch (error) {
+            throw new FetchError('Failed to parse HTML', undefined, undefined, { originalError: error });
+        }
+    }
+    async function fetchWithCache(key, url, ttl = 5 * 60 * 1000) {
+        const cached = requestCache.get(key, ttl);
+        if (cached) {
+            log(`Cache hit for ${key}`);
+            return cached;
+        }
+        log(`Cache miss for ${key}, fetching...`);
+        const response = await fetchWithRetry(url);
+        const text = await response.text();
+        requestCache.set(key, text, ttl);
+        return text;
     }
     async function fetchIsOk() {
-        log('USE_FETCH: fetchIsOk');
-        return new Promise(async (resolve) => {
-            const firstResponse = await _fetchWithRetry(SERVICES.FNET.ONLINE_TEST);
-            resolve(firstResponse.ok);
-        });
+        log('Checking internet connectivity...');
+        try {
+            const response = await fetchWithRetry(SERVICES.FNET.ONLINE_TEST, {}, 1);
+            return response.ok;
+        }
+        catch {
+            return false;
+        }
     }
     async function fetchCompanyData(isin) {
-        return new Promise(async (resolve, reject) => {
-            let sDocument;
-            let company = '';
-            let child;
-            let symbol;
-            const service = SERVICES.MAP.get('tgate');
-            let tables;
-            let firstResponse;
-            let result = {
-                company: '',
-                symbol: ''
-            };
-            if (service !== undefined) {
-                firstResponse = await _fetchWithRetry(service.QUOTE + isin);
-                if (firstResponse.ok) {
-                    const secondResponse = await _fetchWithRetry(firstResponse.url);
-                    if (secondResponse.ok) {
-                        const secondResponseText = await secondResponse.text();
-                        sDocument = _parseHTML(secondResponseText);
-                        tables = sDocument.querySelectorAll('table > tbody tr');
-                        child = sDocument?.querySelector('#col1_content')?.childNodes[1];
-                        company =
-                            child?.textContent !== null
-                                ? child?.textContent.split(',')[0].trim() ?? ''
-                                : '';
-                        if (!company.includes('Die Gattung wird') &&
-                            tables[1].cells !== null &&
-                            tables.length > 0) {
-                            symbol = tables[1].cells[1].textContent ?? '';
-                            result = {
-                                company,
-                                symbol
-                            };
-                            resolve(result);
-                        }
-                        else {
-                            const error = new Error(`Request failed: ${secondResponse.statusText}`);
-                            await notice([error.message]);
-                            reject(error);
+        if (!isin || isin.length !== 12) {
+            throw new FetchError('Invalid ISIN format', undefined, undefined, { isin });
+        }
+        log('Fetching company data', { isin });
+        const service = SERVICES.MAP.get('tgate');
+        if (!service) {
+            throw new FetchError('Service configuration not found', undefined, undefined, { service: 'tgate' });
+        }
+        const isValidCompany = (comName, url) => {
+            if (!comName || comName.includes('Die Gattung wird')) {
+                throw new FetchError('Company not found or inactive', 404, url, { isin });
+            }
+        };
+        const isValidSymbol = (symName, url) => {
+            if (!symName) {
+                throw new FetchError('Symbol not found', 404, url, { isin });
+            }
+        };
+        try {
+            const firstResponse = await fetchWithRetry(service.QUOTE + isin);
+            const secondResponse = await fetchWithRetry(firstResponse.url);
+            const html = await secondResponse.text();
+            const doc = parseHTML(html);
+            const nameNode = doc.querySelector('#col1_content')?.childNodes[1];
+            const company = nameNode?.textContent?.split(',')[0].trim() || '';
+            isValidCompany(company, firstResponse.url);
+            const tables = doc.querySelectorAll('table > tbody tr');
+            const symbol = tables[1]?.cells[1]?.textContent?.trim() || '';
+            isValidSymbol(symbol, firstResponse.url);
+            return { company, symbol };
+        }
+        catch (error) {
+            if (error instanceof FetchError)
+                throw error;
+            throw new FetchError('Failed to fetch company data', undefined, undefined, { isin, originalError: error });
+        }
+    }
+    const serviceFetchers = {
+        async fnet(urls) {
+            return Promise.all(urls.map(async (urlObj) => {
+                const response = await fetchWithRetry(urlObj.value);
+                const html = await fetchWithCache(response.url, response.url);
+                const doc = parseHTML(html);
+                const nodes = doc.querySelectorAll('#snapshot-value-fst-current-0 > span');
+                const articleNodes = doc.querySelectorAll('main div[class=accordion__content]');
+                let min = '0', max = '0', currency = 'EUR', rate = '0';
+                if (articleNodes.length > 0) {
+                    const mmNodes = articleNodes[0].querySelectorAll('table > tbody > tr');
+                    for (const row of mmNodes) {
+                        if (row.textContent?.includes('1 Jahr')) {
+                            const cells = row.querySelectorAll('td');
+                            min = cells[3]?.textContent?.trim() || '0';
+                            max = cells[4]?.textContent?.trim() || '0';
+                            break;
                         }
                     }
                 }
-            }
-        });
-    }
-    async function fetchMinRateMaxData(storageOnline) {
-        log('USE_FETCH: fetchMinRateMaxData');
-        return new Promise(async (resolve, reject) => {
-            const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
-            const serviceName = storageService[BROWSER_STORAGE.SERVICE.key];
-            const _fnet = async (urls) => {
-                return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await _fetchWithRetry(urlObj.value);
-                    const secondResponseText = fetchWithCache(firstResponse.url, firstResponse.url, _fetchWithRetry);
-                    const onlineDocument = _parseHTML(await secondResponseText);
-                    const onlineNodes = onlineDocument.querySelectorAll('#snapshot-value-fst-current-0 > span');
-                    const onlineArticleNodes = onlineDocument.querySelectorAll('main div[class=accordion__content]');
-                    let onlineMin = '0';
-                    let onlineMax = '0';
-                    let onlineCurrency = 'EUR';
-                    let onlineRate = '0';
-                    if (onlineArticleNodes.length > 0) {
-                        const onlineMmNodes = onlineArticleNodes[0].querySelectorAll('table > tbody > tr');
-                        for (let i = 0; i < onlineMmNodes.length; i++) {
-                            if (onlineMmNodes[i].textContent?.includes('1 Jahr')) {
-                                const tr = onlineMmNodes[i].querySelectorAll('td');
-                                onlineMin =
-                                    tr[3].textContent ?? '0';
-                                onlineMax =
-                                    tr[4].textContent ?? '0';
-                            }
-                        }
-                    }
-                    if (onlineNodes.length > 1) {
-                        onlineCurrency = onlineNodes[1].textContent ?? '';
-                        onlineRate = onlineNodes[0].textContent ?? '';
-                    }
+                if (nodes.length > 1) {
+                    currency = nodes[1]?.textContent?.trim() || 'EUR';
+                    rate = nodes[0]?.textContent?.trim() || '0';
+                }
+                return {
+                    id: urlObj.key,
+                    isin: '',
+                    rate: rate.replace(/,/, '.'),
+                    min: min.replace(/,/, '.'),
+                    max: max.replace(/,/, '.'),
+                    cur: currency
+                };
+            }));
+        },
+        async ard(urls) {
+            return await Promise.all(urls.map(async (urlObj) => {
+                const html = await fetchWithCache(urlObj.value, urlObj.value);
+                const doc = parseHTML(html);
+                const rows = doc.querySelectorAll('#desktopSearchResult > table > tbody > tr');
+                let min = '0', max = '0', currency = 'EUR', rate = '0';
+                if (rows.length > 0) {
+                    const attr = rows[0].getAttribute('onclick') ?? '';
+                    const url = attr.replace('document.location=\'', '').replace('\';', '');
+                    const html2 = await fetchWithCache(url, url);
+                    const doc2 = new DOMParser().parseFromString(html2, 'text/html');
+                    currency = 'EUR';
+                    const ardRows = doc2.querySelectorAll('#USFkursdaten table > tbody tr');
+                    rate = (ardRows[0].cells[1].textContent ?? '0').replace('€', '');
+                    min = (ardRows[6].cells[1].textContent ?? '0').replace('€', '');
+                    max = (ardRows[7].cells[1].textContent ?? '0').replace('€', '');
                     return {
                         id: urlObj.key,
                         isin: '',
-                        rate: onlineRate.replace(/,/, '.'),
-                        min: onlineMin.replace(/,/, '.'),
-                        max: onlineMax.replace(/,/, '.'),
-                        cur: onlineCurrency
+                        rate: rate.replace(/,/, '.'),
+                        min: min.replace(/,/, '.'),
+                        max: max.replace(/,/, '.'),
+                        cur: currency
                     };
-                }));
-            };
-            const _ard = async (urls) => {
-                return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponseText = fetchWithCache(urlObj.value, urlObj.value, _fetchWithRetry);
-                    const firstResponseDocument = _parseHTML(await firstResponseText);
-                    const firstResponseRows = firstResponseDocument.querySelectorAll('#desktopSearchResult > table > tbody > tr');
-                    if (firstResponseRows.length > 0) {
-                        const url = firstResponseRows[0].getAttribute('onclick') ?? '';
-                        const secondResponse = await fetch(url.replace('document.location=\'', '').replace('\';', ''));
-                        const secondResponseText = await secondResponse.text();
-                        const onlineDocument = new DOMParser().parseFromString(secondResponseText, 'text/html');
-                        const onlineCurrency = 'EUR';
-                        const ardRows = onlineDocument.querySelectorAll('#USFkursdaten table > tbody tr');
-                        const onlineRate = (ardRows[0].cells[1].textContent ?? '0').replace('€', '');
-                        const onlineMin = (ardRows[6].cells[1].textContent ?? '0').replace('€', '');
-                        const onlineMax = (ardRows[7].cells[1].textContent ?? '0').replace('€', '');
-                        return {
-                            id: urlObj.key,
-                            isin: '',
-                            rate: onlineRate.replace(/,/, '.'),
-                            min: onlineMin.replace(/,/, '.'),
-                            max: onlineMax.replace(/,/, '.'),
-                            cur: onlineCurrency
-                        };
-                    }
-                    else {
-                        return {
-                            id: urlObj.key,
-                            isin: '',
-                            rate: '0',
-                            min: '0',
-                            max: '0',
-                            cur: 'EUR'
-                        };
-                    }
-                }));
-            };
-            const _wstreet = async (urls, homeUrl) => {
-                return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await _fetchWithRetry(urlObj.value);
-                    const firstResponseJson = await firstResponse.json();
-                    const secondResponseText = fetchWithCache(firstResponseJson.result[0].link, homeUrl + firstResponseJson.result[0].link, _fetchWithRetry);
-                    const onlineDocument = _parseHTML(await secondResponseText);
-                    const onlineRates = onlineDocument.querySelectorAll('div.c2 table');
-                    const onlineMinMax = onlineDocument.querySelectorAll('div.fundamental > div > div.float-start');
-                    let onlineCurrency = '';
-                    const onlineRate = onlineRates[0]
-                        ?.querySelectorAll('tr')[1]
-                        ?.querySelectorAll('td')[1].textContent ?? '0';
-                    const onlineMax = onlineMinMax[1]?.textContent?.split('Hoch')[1] ?? '0';
-                    const onlineMin = onlineMinMax[1]?.textContent?.split('Hoch')[0].split('WochenTief')[1] ?? '0';
-                    if (onlineRate.includes('USD')) {
+                }
+                else {
+                    return {
+                        id: urlObj.key,
+                        isin: '',
+                        rate: '0',
+                        min: '0',
+                        max: '0',
+                        cur: 'EUR'
+                    };
+                }
+            }));
+        },
+        async wstreet(urls) {
+            return await Promise.all(urls.map(async (urlObj) => {
+                const response = await fetchWithRetry(urlObj.value);
+                const responseJson = await response.json();
+                const html = await fetchWithCache(responseJson.result[0].link, SERVICES.MAP.get('wstreet')?.HOME + responseJson.result[0].link);
+                const doc = parseHTML(html);
+                const nodes = doc.querySelectorAll('div.c2 table');
+                const articleNodes = doc.querySelectorAll('div.fundamental > div > div.float-start');
+                let min = '0', max = '0', currency = 'EUR', rate = '0';
+                rate = nodes[0]?.querySelectorAll('tr')[1]?.querySelectorAll('td')[1].textContent ?? '0';
+                max = articleNodes[1]?.textContent?.split('Hoch')[1] ?? '0';
+                min = articleNodes[1]?.textContent?.split('Hoch')[0].split('WochenTief')[1] ?? '0';
+                if (rate.includes('USD')) {
+                    currency = 'USD';
+                }
+                else if (rate.includes('EUR')) {
+                    currency = 'EUR';
+                }
+                return {
+                    id: urlObj.key ?? 0,
+                    isin: '',
+                    rate: rate.replace(/,/, '.'),
+                    min: min.replace(/,/, '.') ?? '',
+                    max: max.replace(/,/, '.') ?? '',
+                    cur: currency
+                };
+            }));
+        },
+        async goyax(urls) {
+            return await Promise.all(urls.map(async (urlObj) => {
+                const response = await fetchWithRetry(urlObj.value);
+                const html = await fetchWithCache(response.url, response.url);
+                const doc = parseHTML(html);
+                const nodes = doc.querySelectorAll('div#instrument-ueberblick > div');
+                const listRows = nodes[1].querySelectorAll('ul.list-rows');
+                const rateAll = listRows[1].querySelectorAll('li')[3].textContent ?? '0';
+                const rows = nodes[0].querySelectorAll('table')[1].querySelectorAll('tr');
+                let min = '0', max = '0', rate = '0';
+                rate = rateAll.split(')')[1] ?? '0';
+                max = rows[4].querySelectorAll('td')[3].textContent ?? '0';
+                min = rows[5].querySelectorAll('td')[3].textContent ?? '0';
+                return {
+                    id: urlObj.key,
+                    isin: '',
+                    rate: rate.replace(/,/, '.'),
+                    min: min.replace(/,/, '.'),
+                    max: max.replace(/,/, '.'),
+                    cur: 'EUR'
+                };
+            }));
+        },
+        async acheck(urls) {
+            return await Promise.all(urls.map(async (urlObj) => {
+                let onlineCurrency = '';
+                const firstResponse = await fetchWithRetry(urlObj.value);
+                const secondResponseText = fetchWithCache(firstResponse.url, firstResponse.url);
+                const onlineDocument = parseHTML(await secondResponseText);
+                const onlineTables = onlineDocument.querySelectorAll('#content table');
+                if (onlineTables.length > 1) {
+                    const onlineRate = onlineTables[0]
+                        .querySelectorAll('tr')[1]
+                        .querySelectorAll('td')[1].textContent ?? '0';
+                    const findCurrency = onlineTables[0]
+                        .querySelectorAll('tr')[1]
+                        .querySelectorAll('td')[2].textContent ?? '0';
+                    const onlineMin = onlineTables[2]
+                        .querySelectorAll('tr')[3]
+                        .querySelectorAll('td')[2].textContent ?? '0';
+                    const onlineMax = onlineTables[2]
+                        .querySelectorAll('tr')[3]
+                        .querySelectorAll('td')[1].textContent ?? '0';
+                    if (findCurrency.includes('$')) {
                         onlineCurrency = 'USD';
                     }
-                    else if (onlineRate.includes('EUR')) {
+                    else if (findCurrency.includes('€')) {
                         onlineCurrency = 'EUR';
                     }
-                    return {
-                        id: urlObj.key ?? 0,
-                        isin: '',
-                        rate: onlineRate.replace(/,/, '.'),
-                        min: onlineMin.replace(/,/, '.') ?? '',
-                        max: onlineMax.replace(/,/, '.') ?? '',
-                        cur: onlineCurrency
-                    };
-                }));
-            };
-            const _goyax = async (urls) => {
-                return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponse = await _fetchWithRetry(urlObj.value);
-                    const secondResponseText = fetchWithCache(firstResponse.url, firstResponse.url, _fetchWithRetry);
-                    const onlineDocument = _parseHTML(await secondResponseText);
-                    const onlineNodes = onlineDocument.querySelectorAll('div#instrument-ueberblick > div');
-                    const onlineRateNodes = onlineNodes[1].querySelectorAll('ul.list-rows');
-                    const onlineRateAll = onlineRateNodes[1].querySelectorAll('li')[3].textContent ?? '0';
-                    const onlineRate = onlineRateAll.split(')')[1] ?? '0';
-                    const onlineStatisticRows = onlineNodes[0]
-                        .querySelectorAll('table')[1]
-                        .querySelectorAll('tr');
-                    const onlineMax = onlineStatisticRows[4].querySelectorAll('td')[3].textContent ??
-                        '0';
-                    const onlineMin = onlineStatisticRows[5].querySelectorAll('td')[3].textContent ??
-                        '0';
-                    const onlineCurrency = 'EUR';
-                    return {
-                        id: urlObj.key,
-                        isin: '',
-                        rate: onlineRate.replace(/,/, '.'),
-                        min: onlineMin.replace(/,/, '.'),
-                        max: onlineMax.replace(/,/, '.'),
-                        cur: onlineCurrency
-                    };
-                }));
-            };
-            const _acheck = async (urls) => {
-                return await Promise.all(urls.map(async (urlObj) => {
-                    let onlineCurrency = '';
-                    const firstResponse = await _fetchWithRetry(urlObj.value);
-                    const secondResponseText = fetchWithCache(firstResponse.url, firstResponse.url, _fetchWithRetry);
-                    const onlineDocument = _parseHTML(await secondResponseText);
-                    const onlineTables = onlineDocument.querySelectorAll('#content table');
-                    if (onlineTables.length > 1) {
-                        const onlineRate = onlineTables[0]
-                            .querySelectorAll('tr')[1]
-                            .querySelectorAll('td')[1].textContent ?? '0';
-                        const findCurrency = onlineTables[0]
-                            .querySelectorAll('tr')[1]
-                            .querySelectorAll('td')[2].textContent ?? '0';
-                        const onlineMin = onlineTables[2]
-                            .querySelectorAll('tr')[3]
-                            .querySelectorAll('td')[2].textContent ?? '0';
-                        const onlineMax = onlineTables[2]
-                            .querySelectorAll('tr')[3]
-                            .querySelectorAll('td')[1].textContent ?? '0';
-                        if (findCurrency.includes('$')) {
-                            onlineCurrency = 'USD';
-                        }
-                        else if (findCurrency.includes('€')) {
-                            onlineCurrency = 'EUR';
-                        }
-                        return {
-                            id: urlObj.key,
-                            isin: '',
-                            rate: onlineRate,
-                            min: onlineMin,
-                            max: onlineMax,
-                            cur: onlineCurrency
-                        };
-                    }
-                    else {
-                        return {
-                            id: -1,
-                            isin: '',
-                            rate: '0',
-                            min: '0',
-                            max: '0',
-                            cur: 'EUR'
-                        };
-                    }
-                }));
-            };
-            const _tgate = async (urls) => {
-                return await Promise.all(urls.map(async (urlObj) => {
-                    const firstResponseText = fetchWithCache(urlObj.value, urlObj.value, _fetchWithRetry);
-                    const onlineCurrency = 'EUR';
-                    const onlineMax = '0';
-                    const onlineMin = '0';
-                    const onlineDocument = _parseHTML(await firstResponseText);
-                    const resultask = onlineDocument.querySelector('#ask') !== null
-                        ? onlineDocument.querySelector('#ask')?.textContent
-                        : '0';
-                    const resultbid = onlineDocument.querySelector('#bid') !== null
-                        ? onlineDocument.querySelector('#bid')?.textContent
-                        : '0';
-                    const quote = mean([toNumber(resultbid), toNumber(resultask)]);
-                    const onlineRate = quote.toString();
                     return {
                         id: urlObj.key,
                         isin: '',
@@ -291,252 +316,240 @@ export function useFetch() {
                         max: onlineMax,
                         cur: onlineCurrency
                     };
-                }));
-            };
-            const _select = async (urls) => {
-                return new Promise(async (resolve, reject) => {
-                    const service = SERVICES.MAP.get(serviceName);
-                    switch (serviceName) {
-                        case 'fnet':
-                            resolve(await _fnet(urls));
-                            break;
-                        case 'ard':
-                            resolve(await _ard(urls));
-                            break;
-                        case 'wstreet':
-                            if (service !== undefined) {
-                                resolve(await _wstreet(urls, service.HOME));
-                            }
-                            else {
-                                reject(new Error('Unexpected error occurred'));
-                            }
-                            break;
-                        case 'goyax':
-                            resolve(await _goyax(urls));
-                            break;
-                        case 'acheck':
-                            resolve(await _acheck(urls));
-                            break;
-                        case 'tgate':
-                            resolve(await _tgate(urls));
-                            break;
-                        default:
-                            throw new Error('ONLINE: fetchMinRateMaxData: unknown service!');
-                    }
-                });
-            };
-            const urls = [];
-            if (storageOnline.length > 0) {
-                for (let i = 0; i < storageOnline.length; i++) {
-                    const service = SERVICES.MAP.get(serviceName);
-                    const isin = storageOnline[i].isin;
-                    if (isin !== undefined && service !== undefined && service !== null) {
-                        urls.push({
-                            value: service.QUOTE + isin,
-                            key: storageOnline[i].id ?? -1
-                        });
-                    }
                 }
-            }
-            else {
-                reject(new Error('System Error'));
-            }
-            resolve(await _select(urls));
-        });
-    }
-    async function fetchDailyChangeData(table, mode = SERVICES.TGATE.CHANGES.SMALL) {
-        log('USE_FETCH: fetchDailyChangesData');
-        let valuestr;
-        let company;
-        let url = `${SERVICES.TGATE.CHB_URL}${table}`;
-        let selector = '#kursliste_abc > tr';
-        if (mode === SERVICES.TGATE.CHANGES.SMALL) {
-            url = `${SERVICES.TGATE.CHS_URL}${table}`;
-            selector = '#kursliste_daten > tr';
+                else {
+                    return {
+                        id: -1,
+                        isin: '',
+                        rate: '0',
+                        min: '0',
+                        max: '0',
+                        cur: 'EUR'
+                    };
+                }
+            }));
+        },
+        async tgate(urls) {
+            return Promise.all(urls.map(async (urlObj) => {
+                const html = await fetchWithCache(urlObj.value, urlObj.value);
+                const doc = parseHTML(html);
+                const ask = doc.querySelector('#ask')?.textContent || '0';
+                const bid = doc.querySelector('#bid')?.textContent || '0';
+                const quote = mean([toNumber(bid), toNumber(ask)]);
+                return {
+                    id: urlObj.key,
+                    isin: '',
+                    rate: quote.toString(),
+                    min: '0',
+                    max: '0',
+                    cur: 'EUR'
+                };
+            }));
         }
-        const convertHTMLEntities = (str) => {
-            const entities = new Map([
-                ['aum', 'ä'],
-                ['Aum', 'Ä'],
-                ['oum', 'ö'],
-                ['Oum', 'Ö'],
-                ['uum', 'ü'],
-                ['Uum', 'Ü'],
-                ['amp', '&'],
-                ['eac', 'é'],
-                ['Eac', 'É'],
-                ['eci', 'ê'],
-                ['Eci', 'Ê'],
-                ['oac', 'ó'],
-                ['Oac', 'Ó'],
-                ['ael', 'æ'],
-                ['Ael', 'Æ']
-            ]);
-            const fMatch = (match) => {
-                return entities.get(match.substring(1, 4)) ?? '';
-            };
-            let result = '';
-            if (str !== null) {
-                result = str
-                    .trim()
-                    .replace(new RegExp(SYSTEM.HTML_ENTITY, 'g'), fMatch);
-            }
-            return result;
-        };
-        const entry = {
-            key: '',
-            value: {
-                percentChange: '',
-                change: 0,
-                stringChange: ''
-            }
-        };
-        const firstResponse = await _fetchWithRetry(url);
-        const _changes = [];
-        const firstResponseText = await firstResponse.text();
-        const sDocument = _parseHTML(firstResponseText);
-        const trCollection = sDocument.querySelectorAll(selector);
-        for (let i = 0; i < trCollection.length; i++) {
-            valuestr = trCollection[i].childNodes[11].textContent ?? '';
-            company = convertHTMLEntities(trCollection[i].childNodes[1].textContent ?? '').replace('<wbr>', '');
-            entry.key = company.toUpperCase();
-            entry.value = {
-                percentChange: valuestr.replace(/\t/g, ''),
-                change: toNumber(valuestr),
-                stringChange: toNumber(valuestr).toString()
-            };
-            _changes.push({ ...entry });
+    };
+    async function fetchMinRateMaxData(storageOnline) {
+        if (storageOnline.length === 0) {
+            return [];
         }
-        return _changes;
+        log('Fetching min/rate/max data', { count: storageOnline.length });
+        const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
+        const serviceName = storageService[BROWSER_STORAGE.SERVICE.key];
+        const service = SERVICES.MAP.get(serviceName);
+        if (!service) {
+            throw new FetchError('Service not configured', undefined, undefined, { serviceName });
+        }
+        const fetcher = serviceFetchers[serviceName];
+        if (!fetcher) {
+            throw new FetchError('Unsupported service', undefined, undefined, { serviceName });
+        }
+        const urls = storageOnline.map(item => ({
+            value: service.QUOTE + item.isin,
+            key: item.id ?? -1
+        }));
+        return fetcher(urls);
     }
     async function fetchExchangesData(exchangeCodes) {
-        log('USE_FETCH: fetchExchangesData');
+        if (exchangeCodes.length === 0) {
+            return [];
+        }
+        log('Fetching exchange data', { codes: exchangeCodes });
         const service = SERVICES.FX;
-        const fExUrl = (code) => {
-            if (service !== undefined) {
-                return `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`;
+        if (!service) {
+            throw new FetchError('FX service not configured');
+        }
+        const results = await Promise.allSettled(exchangeCodes.map(async (code) => {
+            const url = `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`;
+            const html = await fetchWithCache(url, url);
+            const doc = parseHTML(html);
+            const rateElement = doc.querySelector('form#formcalculator.formcalculator > div');
+            if (!rateElement) {
+                throw new FetchError('Exchange rate not found', 404, url, { code });
+            }
+            const rateString = rateElement.getAttribute('data-rate');
+            const rateMatch = rateString?.match(/[0-9]*\.?[0-9]+/g);
+            const rate = rateMatch ? Number.parseFloat(rateMatch[0]) : 1;
+            return { key: code, value: rate };
+        }));
+        const successfulResults = [];
+        for (const result of results) {
+            if (result.status === 'fulfilled') {
+                successfulResults.push(result.value);
             }
             else {
-                throw new Error('Undefined service constant!');
+                log('Exchange fetch failed', result.reason, 'warn');
             }
-        };
-        return new Promise(async (resolve) => {
-            const result = [];
-            for (let i = 0; i < exchangeCodes.length; i++) {
-                const firstResponse = await _fetchWithRetry(fExUrl(exchangeCodes[i]));
-                const firstResponseText = fetchWithCache(firstResponse.url, firstResponse.url, _fetchWithRetry);
-                const resultDocument = _parseHTML(await firstResponseText);
-                const resultTr = resultDocument.querySelector('form#formcalculator.formcalculator > div');
-                if (resultTr !== undefined && resultTr !== null) {
-                    const resultString = resultTr.getAttribute('data-rate');
-                    const resultMatchArray = resultString?.match(/[0-9]*\.?[0-9]+/g) ?? ['1'];
-                    const exchangeRate = Number.parseFloat(resultMatchArray[0]);
-                    result.push({ key: exchangeCodes[i], value: exchangeRate });
-                }
-            }
-            resolve(result);
-            return result;
-        });
+        }
+        return successfulResults;
     }
     async function fetchMaterialData() {
-        log('USE_FETCH: fetchMaterialData');
-        return new Promise(async (resolve) => {
-            const materials = [];
-            const firstResponseText = fetchWithCache(SERVICES.FNET.MATERIALS, SERVICES.FNET.MATERIALS, _fetchWithRetry);
-            const resultDocument = _parseHTML(await firstResponseText);
-            const resultTr = resultDocument.querySelectorAll('#commodity_prices > table > tbody tr');
-            for (let i = 0; i < resultTr.length; i++) {
-                const material = resultTr[i].children[0].textContent ?? '';
-                if (resultTr[i].children[0].tagName === 'TD' &&
-                    material !== undefined) {
-                    materials.push({
-                        key: material,
-                        value: toNumber(resultTr[i].children[1].textContent)
-                    });
+        log('Fetching material data');
+        const html = await fetchWithCache(SERVICES.FNET.MATERIALS, SERVICES.FNET.MATERIALS);
+        const doc = parseHTML(html);
+        const rows = doc.querySelectorAll('#commodity_prices > table > tbody tr');
+        const materials = [];
+        for (const row of rows) {
+            const nameCell = row.children[0];
+            const valueCell = row.children[1];
+            if (nameCell?.tagName === 'TD' && valueCell) {
+                const name = nameCell.textContent?.trim();
+                const value = toNumber(valueCell.textContent);
+                if (name) {
+                    materials.push({ key: name, value });
                 }
             }
-            resolve(materials);
-            return materials;
-        });
+        }
+        return materials;
     }
     async function fetchIndexData() {
-        log('USE_FETCH: fetchIndexData');
-        return new Promise(async (resolve) => {
-            const indexes = [];
-            const indexesKeys = SETTINGS.INDEXES.keys();
-            const firstResponseText = fetchWithCache(SERVICES.FNET.INDEXES, SERVICES.FNET.INDEXES, _fetchWithRetry);
-            const resultDocument = _parseHTML(await firstResponseText);
-            const resultTr = resultDocument.querySelectorAll('.index-world-map a');
-            indexesKeys.forEach((property) => {
-                const indexValue = SETTINGS.INDEXES.get(property);
-                for (let j = 0; j < resultTr.length; j++) {
-                    if (indexValue?.includes(resultTr[j].getAttribute('title') ?? '') && resultTr[j].children[0].textContent !== undefined) {
-                        indexes.push({
-                            key: property,
-                            value: toNumber(resultTr[j].children[0].textContent)
-                        });
-                    }
+        log('Fetching index data');
+        const html = await fetchWithCache(SERVICES.FNET.INDEXES, SERVICES.FNET.INDEXES);
+        const doc = parseHTML(html);
+        const links = doc.querySelectorAll('.index-world-map a');
+        const indexes = [];
+        for (const [property, indexValue] of SETTINGS.INDEXES.entries()) {
+            for (const link of links) {
+                const title = link.getAttribute('title');
+                const valueText = link.children[0]?.textContent;
+                if (indexValue?.includes(title || '') && valueText) {
+                    indexes.push({
+                        key: property,
+                        value: toNumber(valueText)
+                    });
+                    break;
+                }
+            }
+        }
+        return indexes;
+    }
+    async function fetchDailyChangeData(table, mode = SERVICES.TGATE.CHANGES.SMALL) {
+        log('Fetching daily changes', { table, mode });
+        const url = mode === SERVICES.TGATE.CHANGES.SMALL
+            ? `${SERVICES.TGATE.CHS_URL}${table}`
+            : `${SERVICES.TGATE.CHB_URL}${table}`;
+        const selector = mode === SERVICES.TGATE.CHANGES.SMALL
+            ? '#kursliste_daten > tr'
+            : '#kursliste_abc > tr';
+        const html = await fetchWithRetry(url).then(r => r.text());
+        const doc = parseHTML(html);
+        const rows = doc.querySelectorAll(selector);
+        const changes = [];
+        for (const row of rows) {
+            const company = convertHTMLEntities(row.childNodes[1]?.textContent || '').replace('<wbr>', '');
+            const valueStr = row.childNodes[11]?.textContent?.trim() || '0';
+            changes.push({
+                key: company.toUpperCase(),
+                value: {
+                    percentChange: valueStr.replace(/\t/g, ''),
+                    change: toNumber(valueStr),
+                    stringChange: toNumber(valueStr).toString()
                 }
             });
-            resolve(indexes);
-            return indexes;
+        }
+        return changes;
+    }
+    function convertHTMLEntities(str) {
+        if (!str)
+            return '';
+        const entities = new Map([
+            ['aum', 'ä'], ['Aum', 'Ä'],
+            ['oum', 'ö'], ['Oum', 'Ö'],
+            ['uum', 'ü'], ['Uum', 'Ü'],
+            ['amp', '&'],
+            ['eac', 'é'], ['Eac', 'É'],
+            ['eci', 'ê'], ['Eci', 'Ê'],
+            ['oac', 'ó'], ['Oac', 'Ó'],
+            ['ael', 'æ'], ['Ael', 'Æ']
+        ]);
+        return str
+            .trim()
+            .replace(new RegExp(SYSTEM.HTML_ENTITY, 'g'), (match) => {
+            const code = match.substring(1, 4);
+            return entities.get(code) || '';
         });
     }
-    async function fetchDateData(obj) {
-        log('USE_FETCH: fetchDatesData');
-        const gmqf = { gm: 0, qf: 0 };
-        const parseGermanDate = (germanDateString) => {
-            const parts = germanDateString.match(/(\d+)/g) ?? ['01', '01', '1970'];
-            const year = parts.length === 3 && parts[2].length === 4 ? parts[2] : '1970';
-            const month = parts.length === 3 ? parts[1].padStart(2, '0') : '01';
-            const day = parts.length === 3 ? parts[0].padStart(2, '0') : '01';
-            return new Date(`${year}-${month}-${day}`).getTime();
-        };
-        const promises = obj.map(async (entry) => {
-            const firstResponse = await _fetchWithRetry(`${SERVICES.FNET.SEARCH}${entry.value}`);
-            if (firstResponse.ok) {
-                const atoms = firstResponse.url.split('/');
+    async function fetchDateData(items) {
+        if (items.length === 0)
+            return [];
+        log('Fetching date data', { count: items.length });
+        return Promise.all(items.map(async (item) => {
+            const gmqf = { gm: 0, qf: 0 };
+            try {
+                const response = await fetchWithRetry(`${SERVICES.FNET.SEARCH}${item.value}`);
+                const atoms = response.url.split('/');
                 const stockName = atoms[atoms.length - 1].replace('-aktie', '');
-                const secondResponseText = fetchWithCache(`${SERVICES.FNET.DATES}${stockName}`, `${SERVICES.FNET.DATES}${stockName}`, _fetchWithRetry);
-                const qfgmDocument = _parseHTML(await secondResponseText);
-                const tables = qfgmDocument.querySelectorAll('.table');
+                const html = await fetchWithCache(`${SERVICES.FNET.DATES}${stockName}`, `${SERVICES.FNET.DATES}${stockName}`);
+                const doc = parseHTML(html);
+                const tables = doc.querySelectorAll('.table');
+                if (tables.length < 2) {
+                    return { key: item.key, value: gmqf };
+                }
                 const rows = tables[1].querySelectorAll('tr');
-                let stopGm = false;
-                let stopQf = false;
-                const gmqfString = { gm: '01.01.1970', qf: '01.01.1970' };
-                for (let j = 0; j < rows.length && !!(rows[j].cells[3]); j++) {
-                    const row = rows[j].cells[3].textContent?.replaceAll('(e)*', '').trim() ?? '01.01.1970';
-                    if (rows[j].cells[0].textContent === 'Quartalszahlen' &&
-                        row !== '01.01.1970' &&
-                        row.length === 10 &&
-                        !stopQf) {
-                        gmqfString.qf = row;
-                        stopQf = true;
+                let foundQf = false, foundGm = false;
+                for (const row of rows) {
+                    if (!row.cells[3])
+                        continue;
+                    const dateText = row.cells[3].textContent
+                        ?.replaceAll('(e)*', '')
+                        .trim() || '';
+                    const rowType = row.cells[0]?.textContent;
+                    if (rowType === 'Quartalszahlen' && !foundQf && dateText.length === 10) {
+                        gmqf.qf = parseGermanDate(dateText);
+                        foundQf = true;
                     }
-                    else if (rows[j].cells[0].textContent === 'Hauptversammlung' &&
-                        row !== '01.01.1970' &&
-                        row.length === 10 &&
-                        !stopGm) {
-                        gmqfString.gm = row;
-                        stopGm = true;
+                    else if (rowType === 'Hauptversammlung' && !foundGm && dateText.length === 10) {
+                        gmqf.gm = parseGermanDate(dateText);
+                        foundGm = true;
                     }
-                    if (stopQf && stopGm)
+                    if (foundQf && foundGm)
                         break;
                 }
-                gmqf.qf =
-                    gmqfString.qf !== undefined && gmqfString.qf !== ''
-                        ? parseGermanDate(gmqfString.qf)
-                        : 0;
-                gmqf.gm =
-                    gmqfString.gm !== undefined && gmqfString.gm !== ''
-                        ? parseGermanDate(gmqfString.gm)
-                        : 0;
             }
-            return { key: entry.key, value: gmqf };
-        });
-        return Promise.all(promises);
+            catch (error) {
+                log('Failed to fetch date data', { item, error }, 'warn');
+            }
+            return { key: item.key, value: gmqf };
+        }));
+    }
+    function parseGermanDate(germanDateString) {
+        const parts = germanDateString.match(/(\d+)/g) || [];
+        if (parts.length !== 3)
+            return 0;
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        const year = parts[2].length === 4 ? parts[2] : '1970';
+        return new Date(`${year}-${month}-${day}`).getTime();
+    }
+    function getCacheStats() {
+        return requestCache.getStats();
+    }
+    function clearCache() {
+        requestCache.clear();
     }
     return {
+        fetchWithRetry,
+        fetchWithCache,
+        parseHTML,
+        fetchIsOk,
         fetchCompanyData,
         fetchMinRateMaxData,
         fetchDailyChangeData,
@@ -544,6 +557,7 @@ export function useFetch() {
         fetchMaterialData,
         fetchIndexData,
         fetchDateData,
-        fetchIsOk
+        getCacheStats,
+        clearCache
     };
 }

@@ -193,8 +193,8 @@ const createRollbackPoint = async (): Promise<I_Rollback_Data | null> => {
             bookings: [...records.bookings.items],
             activeAccountId: settings.activeAccountId
         }
-    } catch (error) {
-        log('IMPORT_DATABASE: Failed to create rollback point', {error})
+    } catch (err) {
+        log('IMPORT_DATABASE: Failed to create rollback point', err)
         return null
     }
 }
@@ -225,8 +225,8 @@ const restoreFromRollback = async (rollbackData: I_Rollback_Data): Promise<void>
             }, smImportOnly)
 
         log('IMPORT_DATABASE: Rollback completed successfully')
-    } catch (error) {
-        log('IMPORT_DATABASE: CRITICAL - Rollback failed', {error})
+    } catch (err) {
+        log('IMPORT_DATABASE: CRITICAL - Rollback failed', err)
         info(t('components.dialogs.importDatabase.title'), 'Critical error during rollback. Please refresh the page.', null)
     }
 }
@@ -390,7 +390,7 @@ const onClickOk = async (): Promise<void> => {
                 error(t('components.dialogs.importDatabase.title'),
                       t('components.dialogs.importDatabase.messages.rollbackFailed'),
                       5000)
-                log('IMPORT_DATABASE: CRITICAL - Rollback failed', {error: rollbackErr})
+                log('IMPORT_DATABASE: CRITICAL - Rollback failed', rollbackErr)
             }
 
             throw handleError(t('components.dialogs.importDatabase.messages.importFailed'), err)

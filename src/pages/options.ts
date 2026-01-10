@@ -16,14 +16,14 @@ const {log} = useApp()
 
 const op = createApp(OptionsIndex)
 op.config.errorHandler = (err: unknown) => {
-    log('PAGE_SCRIPTS options.js', {error: err})
+    log('PAGE_SCRIPTS options.js', err, 'error')
 }
 op.config.warnHandler = (msg: string) => {
-    log('PAGE_SCRIPTS options.js', {warn: msg})
+    log('PAGE_SCRIPTS options.js', msg, 'warn')
 }
 op.use(vuetifyPlugin.vuetify)
 op.use(i18nPlugin.i18n)
 op.use(piniaPlugin.pinia)
 op.mount('#options')
 
-log('--- PAGE_SCRIPT options.js ---', {info: window.location.href})
+log('--- PAGE_SCRIPT options.js ---', window.location.href, 'info')

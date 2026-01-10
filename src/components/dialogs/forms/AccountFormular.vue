@@ -12,7 +12,7 @@ import {useApp} from '@/composables/useApp'
 import {useValidation} from '@/composables/useValidation'
 import {useFavicon} from '@/composables/useFavicon'
 import {useDomain} from '@/composables/useDomain'
-import {useAccountFormular} from '@/composables/useAccountFormular'
+import {useAccountFormular} from '@/composables/useForms'
 import {useAppConfig} from '@/composables/useAppConfig'
 import type {I_Account_Formular_Props} from '@/types'
 

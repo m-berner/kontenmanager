@@ -51,7 +51,7 @@ onBeforeMount(async () => {
     }
 })
 
-log('--- AppIndex.vue setup ---', {info: window.location.href})
+log('--- AppIndex.vue setup ---', window.location.href, 'info')
 </script>
 
 <template>

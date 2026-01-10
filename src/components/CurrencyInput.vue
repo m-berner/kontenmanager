@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import {computed, defineProps, onMounted, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
-import {useBookingFormular} from '@/composables/useBookingFormular'
+import {useBookingFormular} from '@/composables/useForms'
 import type {I_Currency_Input_Props} from '@/types'
 import {useApp} from '@/composables/useApp'
 

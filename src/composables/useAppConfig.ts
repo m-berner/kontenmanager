@@ -20,6 +20,7 @@ import {CURRENCIES} from '@/configurations/currencies'
 import {COMPONENTS} from '@/configurations/components'
 import {ROUTES} from '@/configurations/routes'
 import {SYSTEM} from '@/configurations/system'
+import {VALIDATIONS} from '@/configurations/validations'
 
 export function useAppConfig() {
     return {
@@ -37,6 +38,7 @@ export function useAppConfig() {
         SESSION_STORAGE,
         SETTINGS,
         STATES,
-        SYSTEM
+        SYSTEM,
+        VALIDATIONS
     }
 }

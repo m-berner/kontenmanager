@@ -7,46 +7,29 @@
  */
 
 import {useAppConfig} from '@/composables/useAppConfig'
+import type {I_Number_Parse_Options, T_Log_Level} from '@/types'
 
-const {LOCAL_STORAGE} = useAppConfig()
+const {DATE, LOCAL_STORAGE} = useAppConfig()
 
 export function useApp() {
+
     function utcDate(iso: string): Date {
+        if (!DATE.ISO_DATE_REGEX.test(iso) && iso !== '') {
+            throw new Error(`Invalid ISO date format: ${iso}`)
+        }
         return new Date(`${iso}T00:00:00.000`)
     }
 
     function isoDate(ms: number): string {
+        if (!Number.isFinite(ms)) {
+            throw new Error(`Invalid timestamp: ${ms}`)
+        }
         return new Date(ms).toISOString().substring(0, 10)
     }
 
-    // function toNumber(str: string | boolean | number | undefined | null): number {
-    //     let result = 0
-    //     if (str !== null && str !== undefined) {
-    //         const a = str.toString().replace(/,$/g, '')
-    //         const b = a.split(',')
-    //         if (b.length === 2) {
-    //             const tmp2 = a
-    //                 .trim()
-    //                 .replace(/\s|\.|\t|%/g, '')
-    //                 .replace(',', '.')
-    //             result = Number.isNaN(Number.parseFloat(tmp2))
-    //                 ? 0
-    //                 : Number.parseFloat(tmp2)
-    //         } else if (b.length > 2) {
-    //             let tmp: string = ''
-    //             for (let i = b.length - 1; i > 0; i--) {
-    //                 tmp += b[i]
-    //             }
-    //             const tmp2 = `${tmp}.${b[0]}`
-    //             result = Number.isNaN(Number.parseFloat(tmp2))
-    //                 ? 0
-    //                 : Number.parseFloat(tmp2)
-    //         } else {
-    //             result = Number.isNaN(parseFloat(b[0])) ? 0 : Number.parseFloat(b[0])
-    //         }
-    //     }
-    //     return result
-    // }
+    function isValidISODate(iso: string): boolean {
+        return DATE.ISO_DATE_REGEX.test(iso) && !isNaN(utcDate(iso).getTime())
+    }
 
     /**
      * Converts a string, number, or boolean to a number.
@@ -56,133 +39,202 @@ export function useApp() {
      * - Percentages: 25% -> 25
      * - Whitespace and tabs
      *
-     * @param str - Input value to convert
-     * @param locale - Optional locale hint ('de' for European, 'en' for US format)
+     * @param value - Input value to convert
+     * @param options - Optional locale hint ('de' for European, 'en' for US format)
      * @returns Parsed number or 0 if parsing fails
      */
     function toNumber(
-        str: string | boolean | number | undefined | null,
-        locale?: 'de' | 'en'
+        value: string | boolean | number | undefined | null,
+        options: I_Number_Parse_Options = {}
     ): number {
-        // Handle null/undefined
-        if (str === null || str === undefined) {
-            return 0
+        const {locale, fallback = 0, throwOnError = false} = options
+
+        // Handle primitive types
+        if (value === null || value === undefined) return fallback
+        if (typeof value === 'boolean') return value ? 1 : 0
+        if (typeof value === 'number') {
+            return Number.isNaN(value) ? fallback : value
         }
 
-        // Handle boolean
-        if (typeof str === 'boolean') {
-            return str ? 1 : 0
-        }
-
-        // Handle number (already parsed)
-        if (typeof str === 'number') {
-            return Number.isNaN(str) ? 0 : str
-        }
-
-        // Clean the string
-        let cleaned = str
+        // Clean and parse string
+        const cleaned = value
             .toString()
             .trim()
-            .replace(/\s|\t/g, '') // Remove whitespace and tabs
-            .replace(/%$/g, '')     // Remove trailing percentage sign
+            .replace(/\s|\t/g, '')
+            .replace(/%$/g, '')
 
-        if (cleaned === '') {
-            return 0
-        }
+        if (cleaned === '') return fallback
 
-        // Auto-detect format if locale not specified
-        if (!locale) {
-            // Count dots and commas
-            const dotCount = (cleaned.match(/\./g) || []).length
-            const commaCount = (cleaned.match(/,/g) || []).length
-            const lastDot = cleaned.lastIndexOf('.')
-            const lastComma = cleaned.lastIndexOf(',')
-
-            // Determine format based on position and count
-            if (commaCount === 0 && dotCount > 0) {
-                // Only dots: US format (or single decimal)
-                locale = 'en'
-            } else if (dotCount === 0 && commaCount > 0) {
-                // Only commas: could be European decimal or US thousands
-                // If last comma is within last 3 chars, it's likely European decimal
-                locale = (cleaned.length - lastComma <= 4) ? 'de' : 'en'
-            } else if (lastComma > lastDot) {
-                // Comma comes after dot: European format (1.234,56)
-                locale = 'de'
-            } else {
-                // Dot comes after comma: US format (1,234.56)
-                locale = 'en'
+        const isParseError = () => {
+            if (throwOnError) {
+                throw new Error(`Cannot parse "${value}" as number`)
             }
         }
 
-        // Parse based on detected/specified locale
-        if (locale === 'de') {
-            // European format: remove dots (thousands), replace comma with dot (decimal)
-            cleaned = cleaned.replace(/\./g, '').replace(',', '.')
-        } else {
-            // US format: remove commas (thousands), keep dots (decimal)
-            cleaned = cleaned.replace(/,/g, '')
-        }
+        try {
+            // Auto-detect format if locale not specified
+            const detectedLocale = locale || detectNumberFormat(cleaned)
+            const normalized = normalizeNumber(cleaned, detectedLocale)
+            const result = Number.parseFloat(normalized)
 
-        const result = Number.parseFloat(cleaned)
-        return Number.isNaN(result) ? 0 : result
-    }
-
-    function log(msg: string, mode?: { info?: unknown, warn?: unknown, error?: unknown }) {
-        const localDebug = localStorage.getItem(LOCAL_STORAGE.DEBUG.key)
-        if (Number.parseInt(localDebug ?? '0') > 0) {
-            if (mode?.info !== undefined) {
-                // eslint-disable-next-line no-console
-                console.info(msg, mode?.info)
-            } else if (mode?.warn !== undefined) {
-                // eslint-disable-next-line no-console
-                console.warn(msg, mode?.warn)
-            } else if (mode?.error !== undefined) {
-                // eslint-disable-next-line no-console
-                console.error(msg, mode?.error)
-            } else {
-                // eslint-disable-next-line no-console
-                console.log(msg)
+            if (Number.isNaN(result)) {
+                isParseError()
+                return fallback
             }
+
+            return result
+        } catch (error) {
+            if (throwOnError) throw error
+            return fallback
         }
     }
 
-    function mean(nar: number[]): number {
+    function detectNumberFormat(str: string): 'de' | 'en' {
+        const dotCount = (str.match(/\./g) || []).length
+        const commaCount = (str.match(/,/g) || []).length
+        const lastDot = str.lastIndexOf('.')
+        const lastComma = str.lastIndexOf(',')
+
+        // Only dots: US format
+        if (commaCount === 0 && dotCount > 0) return 'en'
+
+        // Only commas: check position (last 3-4 chars = decimal)
+        if (dotCount === 0 && commaCount > 0) {
+            return (str.length - lastComma <= 4) ? 'de' : 'en'
+        }
+
+        // Both present: comma after dot = European
+        return lastComma > lastDot ? 'de' : 'en'
+    }
+
+    function normalizeNumber(str: string, locale: 'de' | 'en'): string {
+        return locale === 'de'
+            ? str.replace(/\./g, '').replace(',', '.')
+            : str.replace(/,/g, '')
+    }
+
+    function log(
+        msg: string,
+        data?: unknown,
+        level: T_Log_Level = 'log'
+    ): void {
+        const debugLevel = Number.parseInt(
+            localStorage.getItem(LOCAL_STORAGE.DEBUG.key) ?? '0'
+        )
+
+        if (debugLevel <= 0) return
+
+        // eslint-disable-next-line no-console
+        const logFn = console[level] || console.log
+        data !== undefined ? logFn(msg, data) : logFn(msg)
+    }
+
+    function mean(numbers: number[]): number {
+        if (numbers.length === 0) return 0
+
         let sum = 0
-        let len: number = nar.length
-        for (const n of nar) {
-            if (n !== 0 && !Number.isNaN(n)) {
+        let count = 0
+
+        for (const n of numbers) {
+            if (n !== 0 && Number.isFinite(n)) {
                 sum += n
-            } else {
-                len--
+                count++
             }
         }
-        return len > 0 ? sum / len : 0
+
+        return count > 0 ? sum / count : 0
     }
 
     function haveSameStrings(arr1: string[], arr2: string[]): boolean {
-        if (arr1.length !== arr2.length) {
-            return false
-        }
+        if (arr1.length !== arr2.length) return false
+
         const set1 = new Set(arr1)
         const set2 = new Set(arr2)
-        if (set1.size !== set2.size) {
-            return false
-        }
+
+        if (set1.size !== set2.size) return false
+
         for (const item of set1) {
-            if (!set2.has(item)) {
-                return false
+            if (!set2.has(item)) return false
+        }
+
+        return true
+    }
+
+    /**
+     * Additional utility: debounced function creator
+     */
+    function debounce<T extends (..._args: any[]) => any>(
+        fn: T,
+        delay: number
+    ): (..._args: Parameters<T>) => void {
+        let timeoutId: ReturnType<typeof setTimeout>
+
+        return (...args: Parameters<T>) => {
+            clearTimeout(timeoutId)
+            timeoutId = setTimeout(() => fn(...args), delay)
+        }
+    }
+
+    /**
+     * Additional utility: throttled function creator
+     */
+    function throttle<T extends (..._args: any[]) => any>(
+        fn: T,
+        limit: number
+    ): (..._args: Parameters<T>) => void {
+        let inThrottle: boolean
+
+        return (...args: Parameters<T>) => {
+            if (!inThrottle) {
+                fn(...args)
+                inThrottle = true
+                setTimeout(() => inThrottle = false, limit)
             }
         }
-        return true
+    }
+
+    /**
+     * Memoize expensive computations
+     */
+    function memoize<T extends (..._args: any[]) => any>(fn: T): T {
+        const cache = new Map<string, ReturnType<T>>()
+
+        return ((...args: Parameters<T>) => {
+            const key = JSON.stringify(args)
+
+            if (cache.has(key)) {
+                return cache.get(key)!
+            }
+
+            const result = fn(...args)
+            cache.set(key, result)
+            return result
+        }) as T
+    }
+
+    /**
+     * Create a cleanup function for component unmounting
+     */
+    function createCleanup() {
+        const cleanupFns: (() => void)[] = []
+
+        return {
+            add: (fn: () => void) => cleanupFns.push(fn),
+            cleanup: () => cleanupFns.forEach(fn => fn())
+        }
     }
 
     return {
         utcDate,
         isoDate,
+        isValidISODate,
         toNumber,
         haveSameStrings,
         log,
-        mean
+        mean,
+        debounce,
+        throttle,
+        createCleanup,
+        memoize
     }
 }

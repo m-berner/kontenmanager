@@ -16,7 +16,7 @@ import {useSettingsStore} from '@/stores/settings'
 import {useApp} from '@/composables/useApp'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingTypesDB} from '@/composables/useIndexedDB'
-import {useAccountFormular} from '@/composables/useAccountFormular'
+import {useAccountFormular} from '@/composables/useForms'
 import AccountFormular from '@/components/dialogs/forms/AccountFormular.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {useAppConfig} from '@/composables/useAppConfig'
@@ -49,7 +49,7 @@ const addBookingTypesForAccount = async (accountId: number): Promise<boolean> =>
             const addBookingTypeID = await addBookingType(bookingType)
 
             if (addBookingTypeID === -1) {
-                log('ADD_ACCOUNT: Failed to add booking type', {error: bookingType})
+                log('ADD_ACCOUNT: Failed to add booking type', bookingType)
                 // Rollback: remove previously added types
                 for (const added of addedTypes) {
                     records.bookingTypes.remove(added.cID!)
@@ -86,7 +86,7 @@ const onClickOk = async (): Promise<void> => {
             const addAccountID = await add(account)
 
             if (addAccountID === -1) {
-                log('ADD_ACCOUNT: onClickOk', {error: t('components.dialogs.addAccount.messages.error')})
+                log('ADD_ACCOUNT: onClickOk', t('components.dialogs.addAccount.messages.error'))
                 await notice([t('components.dialogs.addAccount.messages.error')])
                 return
             }

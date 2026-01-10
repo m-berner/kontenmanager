@@ -1,7 +1,10 @@
-import { onMounted, onUnmounted, ref } from 'vue';
-export const useKeyboardShortcuts = () => {
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+export function useKeyboardShortcuts() {
     const shortcuts = ref(new Map());
+    const enabled = ref(true);
     const handleKeyDown = (ev) => {
+        if (!enabled.value)
+            return;
         const modifiers = [];
         if (ev.ctrlKey)
             modifiers.push('Ctrl');
@@ -25,11 +28,28 @@ export const useKeyboardShortcuts = () => {
     const unregister = (combination) => {
         shortcuts.value.delete(combination);
     };
+    const clear = () => {
+        shortcuts.value.clear();
+    };
+    const disable = () => {
+        enabled.value = false;
+    };
+    const enable = () => {
+        enabled.value = true;
+    };
     onMounted(() => {
         window.addEventListener('keydown', handleKeyDown);
     });
     onUnmounted(() => {
         window.removeEventListener('keydown', handleKeyDown);
     });
-    return { register, shortcuts, unregister };
-};
+    return {
+        register,
+        unregister,
+        clear,
+        disable,
+        enable,
+        shortcuts: computed(() => Array.from(shortcuts.value.keys())),
+        enabled
+    };
+}
