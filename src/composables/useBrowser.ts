@@ -1,0 +1,259 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * one could get a copy at https://mozilla.org/MPL/2.0/.
+ *
+ * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
+ */
+
+import {computed} from 'vue'
+import {AppError} from '@/domains/errors'
+import {EVENTS} from '@/config/events'
+import {ENTRYPOINTS} from '@/config/entrypoints'
+import {DEFAULTS} from '@/config/defaults'
+import {SYSTEM} from '@/domains/config/system'
+
+/**
+ * Composable providing access to browser extension APIs.
+ * Wraps common browser operations (storage, tabs, windows, notifications)
+ * with error handling and reactive state.
+ *
+ * @module composables/useBrowser
+ */
+export function useBrowser() {
+    /** The extension's internal index page URL. */
+    const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP))
+    /** The current extension manifest. */
+    const manifest = computed(() => browser.runtime.getManifest())
+    /** The user's UI language. */
+    const uiLanguage = computed(() => browser.i18n.getUILanguage())
+    /** The 5-character locale code (e.g., 'en-US', 'de-DE'). */
+    const locale5 = computed(() => {
+        const defaultLanguage = navigator.languages[0]
+
+        if (!defaultLanguage) {
+            throw new AppError(
+                `${SYSTEM.ERRORS.LOCALE5}: No language available`,
+                'USE_BROWSER: ...',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {},
+                false
+            )
+        }
+
+        if (defaultLanguage.length === 5) {
+            return defaultLanguage
+        }
+
+        if (defaultLanguage.length === 2) {
+            return `${defaultLanguage}-${defaultLanguage.toUpperCase()}`
+        }
+
+        throw new AppError(
+            `${SYSTEM.ERRORS.LOCALE5}: Invalid language format "${defaultLanguage}"`,
+            'USE_BROWSER ...',
+            SYSTEM.ERROR_CATEGORY.VALIDATION,
+            {lError: 'invalid_lang_format'},
+            false
+        )
+    })
+
+    /**
+     * Registers a listener for the extension action button click.
+     * @param listener - Callback function.
+     */
+    function actionOnClicked(listener: (_tab: browser.tabs.Tab, _info?: browser.action.OnClickData) => void): void {
+        browser.action.onClicked.addListener(listener)
+    }
+
+    /**
+     * Registers a listener for extension installation or update.
+     * @param listener - Async callback function.
+     */
+    function runtimeOnInstalled(listener: (_details: browser.runtime._OnInstalledDetails | undefined) => Promise<void>): void {
+        browser.runtime.onInstalled.addListener(listener)
+    }
+
+    /**
+     * Creates a new tab with the extension's main page.
+     * @returns A promise resolving to the created tab.
+     */
+    async function tabsCreate(): Promise<browser.tabs.Tab> {
+        try {
+            return await browser.tabs.create(
+                {
+                    url: indexUrl.value,
+                    active: true
+                }
+            )
+        } catch (err) {
+            throw new AppError(
+                SYSTEM.ERRORS.TABS,
+                'USE_BROWSER',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {b: err},
+                true
+            )
+        }
+    }
+
+    /**
+     * Queries for existing extension tabs.
+     * @returns A promise resolving to an array of matching tabs.
+     */
+    async function tabsQuery(): Promise<browser.tabs.Tab[]> {
+        try {
+            return await browser.tabs.query({url: indexUrl.value})
+        } catch (err) {
+            throw new AppError(
+                SYSTEM.ERRORS.TABS,
+                'USE_BROWSER',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {b: err},
+                true
+            )
+        }
+    }
+
+    /**
+     * Focuses a specific window.
+     * @param windowId - ID of the window to focus.
+     */
+    async function windowsUpdate(windowId: number): Promise<browser.windows.Window> {
+        try {
+            return await browser.windows.update(windowId, {
+                focused: true
+            })
+        } catch (err) {
+            throw new AppError(
+                SYSTEM.ERRORS.WINDOWS,
+                'USE_BROWSER',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {b: err},
+                true
+            )
+        }
+    }
+
+    /**
+     * Activates a specific tab.
+     * @param tabId - ID of the tab to activate.
+     */
+    async function tabsUpdate(tabId: number): Promise<browser.tabs.Tab> {
+        try {
+            return await browser.tabs.update(tabId, {
+                active: true
+            })
+        } catch (err) {
+            throw new AppError(
+                SYSTEM.ERRORS.TABS,
+                'USE_BROWSER',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {b: err},
+                true
+            )
+        }
+    }
+
+    /**
+     * Opens the extension's options page.
+     */
+    async function openOptionsPage(): Promise<void> {
+        try {
+            await browser.runtime.openOptionsPage()
+        } catch (err) {
+            throw new AppError(
+                SYSTEM.ERRORS.OPEN_OPTIONS,
+                'USE_BROWSER',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {b: err},
+                true
+            )
+        }
+    }
+
+    /**
+     * Displays a browser notification.
+     * @param messages - Array of message lines.
+     */
+    async function notice(messages: string[]): Promise<void> {
+        try {
+            const notificationOption: browser.notifications.CreateNotificationOptions = {
+                type: 'basic',
+                iconUrl: 'assets/icon16.png',
+                title: DEFAULTS.TITLE,
+                message: messages.join('\n')
+            }
+            await browser.notifications.create(notificationOption)
+        } catch (err) {
+            throw new AppError(
+                SYSTEM.ERRORS.NOTICE,
+                'USE_BROWSER',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {b: err},
+                true
+            )
+        }
+    }
+
+    /**
+     * Downloads a string buffer as a JSON file.
+     * @param buffer - The string content to save.
+     * @param filename - The target filename.
+     */
+    async function writeBufferToFile(buffer: string, filename: string): Promise<void> {
+        if (!filename || filename.trim() === '') {
+            throw new AppError(
+                'Invalid filename',
+                'USE_BROWSER: ...',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {fileError: filename},
+                false
+            )
+        }
+
+        try {
+            const blob = new Blob([buffer], {type: 'application/json'})
+            const blobUrl = URL.createObjectURL(blob)
+
+            await browser.downloads.download(
+                {
+                    url: blobUrl,
+                    filename
+                }
+            )
+
+            const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
+                if (change.state?.current === EVENTS.COMPLETE) {
+                    URL.revokeObjectURL(blobUrl)
+                    browser.downloads.onChanged.removeListener(onDownloadChange)
+                }
+            }
+
+            browser.downloads.onChanged.addListener(onDownloadChange)
+        } catch (err) {
+            throw new AppError(
+                SYSTEM.ERRORS.WRITE_BUFFER_TO_FILE,
+                'USE_BROWSER',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {b: err},
+                true
+            )
+        }
+    }
+
+    return {
+        locale5,
+        manifest,
+        uiLanguage,
+        actionOnClicked,
+        runtimeOnInstalled,
+        notice,
+        openOptionsPage,
+        tabsCreate,
+        tabsQuery,
+        tabsUpdate,
+        windowsUpdate,
+        writeBufferToFile
+    }
+}

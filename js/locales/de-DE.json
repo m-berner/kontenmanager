@@ -1,0 +1,445 @@
+{
+    "components": {
+        "dialogs": {
+            "forms": {
+                "accountForm": {
+                    "swiftLabel": "BIC / SWIFT",
+                    "searchLabel": "Logo Suche",
+                    "withDepotLabel": "Depot Verrechnungskonto",
+                    "withNoDepotLabel": "Konto",
+                    "ibanLabel": "IBAN / Kontonummer",
+                    "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+                    "missingLogo": "Kein Logo gefunden"
+                },
+                "bookingForm": {
+                    "bookingLabel": "Buchung",
+                    "dateLabel": "Buchungstag",
+                    "exDateLabel": "Ex-Tag",
+                    "descriptionLabel": "Bemerkung",
+                    "countLabel": "Anzahl",
+                    "bookingTypeLabel": "Buchungstyp",
+                    "feeLabel": "Gebühr",
+                    "taxLabel": "Steuer",
+                    "soliLabel": "Soli",
+                    "stockLabel": "Unternehmen",
+                    "marketPlaceLabel": "Handelsplatz",
+                    "transactionTaxLabel": "Transaktionssteuer",
+                    "sourceTaxLabel": "Quellensteuer",
+                    "creditLabel": "Haben",
+                    "debitLabel": "Soll"
+                },
+                "stockForm": {
+                    "isinLabel": "ISIN",
+                    "symbolLabel": "Kürzel",
+                    "companyLabel": "Unternehmen",
+                    "fadeOutLabel": "Ausblenden",
+                    "firstPageLabel": "Erste Seite",
+                    "meetingDayLabel": "Hauptversammlung",
+                    "quarterDayLabel": "Quartalszahlen",
+                    "urlLabel": "URL",
+                    "messages": {
+                        "onUpdateIsin": "Fehler in 'onUpdateIsin'"
+                    }
+                }
+            },
+            "cancel": "Abbrechen",
+            "ok": "OK",
+            "onClickOk": "Fehler in 'onClickOk'",
+            "addAccount": {
+                "title": "Bankkonto hinzufügen",
+                "bookingTypes": {
+                    "buy": "Aktienkauf",
+                    "sell": "Aktienverkauf",
+                    "dividend": "Dividende",
+                    "other": "Sonstiges",
+                    "fee": "Gebühr",
+                    "tax": "Steuer"
+                },
+                "messages": {
+                    "success": "Konto wurde hinzugefügt",
+                    "error": "Das Konto konnte nicht hinzugefügt werden",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            },
+            "addBooking": {
+                "title": "Buchung hinzufügen",
+                "messages": {
+                    "success": "Buchung wurde hinzugefügt",
+                    "error": "Buchung konnte nicht hinzugefügt werden",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            },
+            "addBookingType": {
+                "title": "Buchungstyp hinzufügen",
+                "bookingTypeLabel": "Buchungstyp",
+                "placeholder": "Name eingeben",
+                "messages": {
+                    "success": "Buchungstyp wurde hinzugefügt",
+                    "error": "Der Buchungstyp existiert bereits"
+                }
+            },
+            "addStock": {
+                "title": "Unternehmen hinzufügen",
+                "messages": {
+                    "error": "Unternehmen konnte nicht hinzugefügt werden",
+                    "success": "Unternehmen wurde hinzugefügt",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            },
+            "deleteAccountConfirmation": {
+                "title": "Bankkonto - alle Daten löschen",
+                "messages": {
+                    "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
+                    "success": "Konto wurde entfernt",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            },
+            "deleteBooking": {
+                "title": "Buchung",
+                "ask": "Soll die Buchung jetzt gelöscht werden?",
+                "success": "Buchung wurde entfernt",
+                "error": "Eingabefehler"
+            },
+            "deleteBookingType": {
+                "title": "Buchungstyp löschen",
+                "bookingTypeLabel": "Buchungstyp",
+                "placeholder": "Buchungstyp zum Löschen auswählen",
+                "messages": {
+                    "success": "Buchungstyp wurde entfernt",
+                    "error": "Der Buchungstyp wird noch verwendet",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            },
+            "deleteStock": {
+                "title": "Unternehmen entfernen",
+                "messages": {
+                    "success": "Unternehmen wurde entfernt",
+                    "error": "Das Unternehmen konnte nicht entfernt werden"
+                }
+            },
+            "exportDatabase": {
+                "title": "Daten exportieren",
+                "largeFileTitle": "Daten Export",
+                "text": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden).",
+                "continue": "Daten exportieren",
+                "cancel": "Abbrechen",
+                "messages": {
+                    "estimatedSize": "Die Sicherungsdatei wird ungefähr {size} KB groß sein.",
+                    "verificationFailed": "Die Sicherungsdatei ist ungültig"
+                }
+            },
+            "fadeInStock": {
+                "title": "Unternehmen einblenden",
+                "selectLabel": "Unternehmen",
+                "messages": {
+                    "success": "Unternehmen wurde eingeblendet",
+                    "error": "Unternehmen konnte nicht eingeblendet werden",
+                    "dbNotConnected": "Keine Datenbank Verbindung",
+                    "noRecords": "Es gibt keine Daten zum Einblenden"
+                }
+            },
+            "importDatabase": {
+                "title": "Daten importieren",
+                "invalid": "Die Datendatei ist ungültig!",
+                "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
+                "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
+                "fileLabel": "aus Datei",
+                "capitalTax": "Kapitalertragssteuer",
+                "sourceTax": "Quellensteuer",
+                "transactionTax": "Transaktionssteuer",
+                "soli": "Soli",
+                "confirmImportTitle": "Import starten",
+                "confirmOk": "Importieren",
+                "confirmCancel": "Abbrechen",
+                "messages": {
+                    "allStocksVisible": "Es sind keine Unternehmen ausgeblendet.",
+                    "dataIntegrity": "{count} Datenbank-Integritätsfehler gefunden.\n\n{errorList}{moreErrors}",
+                    "confirmImportWarning": "Alle Datensätze werden gelöscht:\n\n{summary}\n\n importieren. Fortsetzen?",
+                    "importSuccess": "Import erfolgreich! {summary} in {duration}s importiert",
+                    "importFailed": "Import fehlgeschlagen. Alte Daten wiederhergestellt.",
+                    "invalidJson": "Ungültiges JSON Format",
+                    "invalidSuffix": "Ungültiger Dateiname",
+                    "invalidVersion": "Datenbank Version wird nicht unterstützt",
+                    "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
+                    "rollbackFailed": "Import fehlgeschlagen. Daten Wiederherstellung nicht möglich.",
+                    "noFileSelected": "Keine Datei ausgewählt",
+                    "createBackupFailed": "Sichern der Daten vor dem Import fehlgeschlagen.",
+                    "emptyFile": "Die Datei ist leer.",
+                    "fileToLarge": "Die Sicherungsdatei ist zu gross."
+                }
+            },
+            "showAccounting": {
+                "title": "Buchungsergebnisse",
+                "nameLabel": "Buchungskategorie",
+                "sumLabel": "Betrag",
+                "sum": "Summe",
+                "fees": "Aktienhandel Gebühren",
+                "taxes": "Aktienhandel Steuern",
+                "itemsPerPageText": "Einträge pro Seite",
+                "noDataText": "Bisher keine Dividende erhalten",
+                "year": "Jahr",
+                "allYears": "Gesamt"
+            },
+            "showDividend": {
+                "title": "Dividenden Übersicht",
+                "yearLabel": "Ex-Tag",
+                "sumLabel": "Dividendenauszahlung",
+                "itemsPerPageText": "Einträge pro Seite",
+                "noDataText": "Bisher keine Dividende erhalten"
+            },
+            "updateAccount": {
+                "title": "Bankkonto aktualisieren",
+                "messages": {
+                    "success": "Konto wurde aktualisiert",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            },
+            "updateBooking": {
+                "title": "Buchung bearbeiten",
+                "messages": {
+                    "success": "Die Buchung wurde aktualisiert",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            },
+            "updateBookingType": {
+                "title": "Buchungstyp aktualisieren",
+                "bookingTypeLabel": "Buchungstyp",
+                "messages": {
+                    "success": "Buchungstyp wurde aktualisiert",
+                    "error": "Der Buchungstyp konnte nicht aktualisiert werden",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            },
+            "updateStock": {
+                "title": "Unternehmen bearbeiten",
+                "messages": {
+                    "success": "Unternehmen wurde aktualisiert",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
+                }
+            }
+        },
+        "creditDebitFieldset": {
+            "creditLabel": "Haben",
+            "debitLabel": "Soll",
+            "notNegative": "Nur positive Werte",
+            "onlyOnePositive": "Ein Wert muss 0 sein"
+        }
+    },
+    "mixed": {
+        "smImportOnly": {
+            "title": "INFO",
+            "message": "KontenManager ist eine Weiterentwicklung des ehemaligen StockManagers. Der Import von StockManager-Daten ist nur direkt nach der Installation möglich – das heißt, bevor manuell ein KontenManager-Objekt angelegt wurde."
+        }
+    },
+    "views": {
+        "appIndex": {
+            "messages": {
+                "onBeforeMount": "Fehler in 'onBeforeMount'"
+            }
+        },
+        "titleBar": {
+            "title": "KontenManager",
+            "bookingsSumLabel": "Kontostand",
+            "depotSumLabel": "Depotkonto",
+            "selectAccountLabel": "IBAN",
+            "iconsAlt": {
+                "logo": "Bank Logo"
+            },
+            "messages": {
+                "onUpdateTitleBar": "Fehler in 'onUpdateTitleBar'"
+            }
+        },
+        "headerBar": {
+            "infoTitle": "INFO",
+            "home": "Startseite",
+            "company": "Aktien-Unternehmen",
+            "updateQuote": "Kurse aktualisieren",
+            "addBookingType": "Buchungstyp hinzufügen",
+            "deleteBookingType": "Buchungstyp entfernen",
+            "updateBookingType": "Buchungstyp aktualisieren",
+            "addAccount": "Bankkonto hinzufügen",
+            "updateAccount": "Bankkonto bearbeiten",
+            "deleteAccount": "Bankkonto entfernen",
+            "addStock": "Aktien-Unternehmen hinzufügen",
+            "fadeInStock": "Unternehmen einblenden",
+            "deleteStock": "Aktien-Unternehmen entfernen",
+            "updateStock": "Aktien-Unternehmen bearbeiten",
+            "addBooking": "Buchung hinzufügen",
+            "exportToFile": "Datenbank exportieren",
+            "importDatabase": "Datenbank importieren",
+            "showAccounting": "Jahres-Berechnungen",
+            "settings": "Einstellungen",
+            "messages": {
+                "allStocksVisible": "Es sind keine Unternehmen ausgeblendet.",
+                "createAccount": "Sie müssen zuerst ein Konto anlegen...",
+                "noBookings": "Es sind keine Buchungen vorhanden.",
+                "noAccount": "Es ist noch kein Konto vorhanden.",
+                "noBookingTypes": "Es sind keine Buchungskategorien vorhanden.",
+                "nothingToExport": "Es existieren noch keine Daten zum Exportieren."
+            }
+        },
+        "infoBar": {},
+        "homeContent": {
+            "search": "Suchen",
+            "bookingsTable": {
+                "headers": {
+                    "id": "ID",
+                    "action": "Aktionen",
+                    "date": "Datum",
+                    "debit": "Soll",
+                    "credit": "Haben",
+                    "description": "Bemerkung",
+                    "bookingType": "Buchungstyp",
+                    "accountNumberId": "Konto"
+                },
+                "menuItems": {
+                    "delete": "Buchung löschen",
+                    "update": "Buchung bearbeiten"
+                },
+                "noDataText": "Keine Einträge gefunden.",
+                "itemsPerPageText": "Einträge pro Seite:"
+            }
+        },
+        "companyContent": {
+            "stocksTable": {
+                "headers": {
+                    "id": "ID",
+                    "action": "Aktionen",
+                    "company": "Unternehmen",
+                    "isin": "ISIN",
+                    "qf": "Quartals-Zahlen",
+                    "gm": "Hauptversammlung",
+                    "portfolio": "Portfolio",
+                    "buy": "Kaufpreis",
+                    "winLoss": "Gewinn-Verlust",
+                    "52low": "52-Wochen-Tief",
+                    "rate": "Kurs",
+                    "52high": "52-Wochen-Hoch"
+                },
+                "menuItems": {
+                    "delete": "Unternehmen löschen",
+                    "dividend": "Dividenden Übersicht",
+                    "update": "Unternehmen aktualisieren",
+                    "link": "Externen Link öffnen"
+                },
+                "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
+                "itemsPerPageText": "Einträge pro Seite:"
+            }
+        },
+        "footerBar": {
+            "help": "Hilfe",
+            "privacy": "Datenschutz",
+            "mail": "Email"
+        },
+        "checkboxGrid": {
+            "loading": "Optionen werden geladen...",
+            "saving": "Speichern..."
+        },
+        "optionsIndex": {
+            "tabs": {
+                "ge": "Themen & Dienste",
+                "mp": "Marktplätze",
+                "ind": "Indizes",
+                "mat": "Rohstoffe",
+                "ex": "Währungen"
+            },
+            "themeNames": {
+                "earth": "Erde",
+                "ocean": "Ozean",
+                "sky": "Himmel",
+                "meadow": "Wiese",
+                "dark": "Dunkel",
+                "light": "Hell"
+            },
+            "markets": {
+                "title": "Marktplätze",
+                "label": "Neuer Marktplatz"
+            },
+            "exchanges": {
+                "title": "Wechselkurse",
+                "label": "Neues Wechselkurs-Kürzel"
+            },
+            "materials": {
+                "au": "Gold",
+                "ag": "Silber",
+                "brent": "Ölpreis (Brent)",
+                "wti": "Ölpreis (WTI)",
+                "cu": "Kupfer",
+                "pt": "Platin",
+                "al": "Aluminium",
+                "ni": "Nickel",
+                "sn": "Zinn",
+                "pb": "Blei",
+                "pd": "Palladium"
+            }
+        },
+        "sheetContent": {
+            "privacyContent": {
+                "title": "KontenManager Datenschutz Richtlinien",
+                "general": {
+                    "title": "Allgemein",
+                    "paragraphs": {
+                        "local": {
+                            "subTitle": "Lokale Daten",
+                            "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
+                            "icon": ""
+                        },
+                        "public": {
+                            "subTitle": "Öffentliche Daten",
+                            "content": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
+                            "icon": ""
+                        },
+                        "connection": {
+                            "subTitle": "Internetverbindungen",
+                            "content": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen.",
+                            "icon": ""
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "validators": {
+        "ibanRules": {
+            "required": "IBAN ist erforderlich",
+            "length": "Ungültige IBAN Länge",
+            "format": "Ungültige IBAN",
+            "checksum": "Ungültige Prüfsumme",
+            "duplicate": "Konto existiert bereits"
+        },
+        "isinRules": {
+            "required": "ISIN ist erforderlich",
+            "length": "Ungültige ISIN Länge",
+            "format": "Ungültige ISIN",
+            "country": "Falscher Ländercode",
+            "luhn": "Ungültige Prüfsumme (Luhn)"
+        },
+        "nameRules": {
+            "required": "Name ist erforderlich",
+            "length": "Maximal 24 Zeichen",
+            "begin": "Erstes Zeichen muss ein Buchstabe sein"
+        },
+        "swiftRules": {
+            "required": "SWIFT ist erforderlich",
+            "length": "Nur 8 bzw. 11 Zeichen",
+            "format": "Ungültiges SWIFT Format",
+            "bankCode": "Ungültige Bank",
+            "countryCode": "Ungültiges Land",
+            "locationCode": "Ungültige Region",
+            "branchCode": "Ungültige Branche",
+            "test": "Test BIC"
+        },
+        "isoDateRules": {
+            "required": "Datum ist erforderlich",
+            "valid": "Datum ist ungültig"
+        },
+        "requiredRules": "Ist erforderlich",
+        "notNegative": "Nur positive Werte",
+        "creditDebitFieldset": {
+            "onlyOnePositive": "Ein Wert muss 0 der andere > 0 sein"
+        },
+        "bookingTypeRules": {
+            "required": "Buchungstyp ist erforderlich"
+        }
+    }
+}

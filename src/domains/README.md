@@ -1,0 +1,70 @@
+# Domain Layer
+
+This directory contains the core business logic, rules, and data structures of the application. In a Firefox
+WebExtension, the **Domain Layer** serves as the "brain" of the extension, remaining independent of browser-specific
+APIs (like `browser.storage` or `browser.tabs`), the UI framework (Vue/Vuetify), and persistence mechanisms (IndexedDB).
+
+## Core Principles
+
+- **Framework Independence**: Logic here should not depend on Vue or Pinia.
+- **Side-Effect Free**: Most functions in this layer are pure, making them easy to test and reason about.
+- **Single Source of Truth**: All business rules (validations, calculations, data transformations) are defined here.
+
+## Directory Structure
+
+### `config/`
+
+Contains domain-specific constants and configuration that govern business rules, such as:
+
+- `currencies.ts`: Supported currencies and formatting rules.
+- `date.ts`: Standardized date formats.
+- `defaults.ts`: Initial state and default values for domain objects.
+- `system.ts`: System-wide constants and error categories.
+
+### `importExport/`
+
+Handles the complexity of data portability:
+
+- `validator.ts`: Pure functions for deep validation of backup files, ensuring data integrity and foreign key
+  consistency before import.
+- `transformer.ts`: Logic for migrating legacy data formats to the current schema.
+
+### `validation/`
+
+Centralized validation engine used by both the UI (for immediate feedback) and the Database layer (for data integrity):
+
+- `codes.ts`: Stable, language-agnostic `VALIDATION_CODES`.
+- `rules.ts`: Atomic validation logic (e.g., IBAN/ISIN checksums, required fields).
+- `validators.ts`: High-level validators for domain entities (Accounts, Bookings, Stocks).
+
+## Key Components
+
+### `logic.ts` (`DomainLogic`)
+
+Encapsulates complex calculations and orchestration that don't belong in a single store:
+
+- Financial aggregations (sums, taxes, fees).
+- FIFO (First-In-First-Out) portfolio calculations.
+- Multi-store initialization logic.
+
+### `errors.ts` (`AppError`)
+
+Defines the standardized error structure used throughout the application, facilitating consistent error handling and
+localized user feedback.
+
+### `utils.ts` (`UtilsService`)
+
+General-purpose business utilities, such as date normalization and logging wrappers, that are used across multiple
+domain boundaries.
+
+## Why a Domain Layer in a WebExtension?
+
+WebExtensions often face unique challenges like background script persistence, limited lifecycle, and frequent schema
+migrations. By isolating the domain logic:
+
+1. **Testability**: We can run high-coverage unit tests for critical financial logic without mocking the entire
+   WebExtension environment.
+2. **Maintenance**: If the underlying storage changes (e.g., from `browser.storage` to `IndexedDB`), the core business
+   rules remain untouched.
+3. **Consistency**: The same validation rules used in the popup dialogs are applied when importing a 10MB backup file in
+   the options page.

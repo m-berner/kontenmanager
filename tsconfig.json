@@ -1,0 +1,87 @@
+{
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.vue",
+    "./vite.config.ts"
+  ],
+  "exclude": [
+    "./node_modules",
+    "./build",
+    "./dist",
+    "./docs",
+    "./.yarn",
+    "./yarnrc.yml",
+    "./.idea",
+    "./public",
+    "./releases",
+    "./resources",
+    "./kontenmanager@gmx.de"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "module": "esnext",
+    "target": "es2024",
+    "useDefineForClassFields": true,
+    "outDir": "./js",
+    "removeComments": true,
+    "sourceMap": false,
+    "emitDeclarationOnly": false,
+    "declarationMap": false,
+    "declaration": false,
+    "downlevelIteration": false,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable"
+    ],
+    "types": [
+      "node",
+      "@types/firefox-webext-browser",
+      "@types/firefox",
+      "@types/chrome",
+      "@types/web",
+      "vite/client"
+    ],
+    /* Bundler mode */
+    "composite": false,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": false,
+    "noEmitOnError": true,
+    "jsx": "preserve",
+    /* Linting */
+    "strict": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "vueCompilerOption": {
+    "target": 3.5,
+    "experimentalRFC": false,
+    "experimentalDisableTemplateSupport": false,
+    "plugins": [
+      {
+        "name": "@vue/typescript-plugin",
+        "configOptions": {
+          "suppressWarnings": true
+        }
+      }
+    ]
+  }
+}
