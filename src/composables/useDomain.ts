@@ -8,6 +8,7 @@
 
 import type {Ref} from 'vue'
 import {computed} from 'vue'
+import {UtilsService} from '@/domains/utils'
 
 export function useDomain(url: Ref<string>) {
     const domain = computed(() => {
@@ -21,6 +22,7 @@ export function useDomain(url: Ref<string>) {
             return urlObj.hostname.replace(/^www\./, '')
             // eslint-disable-next-line no-unused-vars
         } catch (e) {
+            UtilsService.log('useDomain:domain', e instanceof Error ? e.message : String(e), 'error')
             return ''
         }
     })
@@ -34,7 +36,8 @@ export function useDomain(url: Ref<string>) {
                 return parts[0] !== 'www' ? parts[0] : null
             }
             return null
-        } catch {
+        } catch (e) {
+            UtilsService.log('useDomain:subdomain', e instanceof Error ? e.message : String(e), 'error')
             return null
         }
     })
@@ -47,7 +50,8 @@ export function useDomain(url: Ref<string>) {
                 url.value.startsWith('http') ? url.value : `https://${url.value}`
             )
             return urlObj.protocol.replace(':', '')
-        } catch {
+        } catch (e) {
+            UtilsService.log('useDomain:protocol', e instanceof Error ? e.message : String(e), 'error')
             return null
         }
     })
@@ -60,7 +64,8 @@ export function useDomain(url: Ref<string>) {
                 url.value.startsWith('http') ? url.value : `https://${url.value}`
             )
             return urlObj.pathname
-        } catch {
+        } catch (e) {
+            UtilsService.log('useDomain:pathname', e instanceof Error ? e.message : String(e), 'error')
             return null
         }
     })

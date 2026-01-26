@@ -9,6 +9,7 @@
 <script lang="ts" setup>
 import {computed, onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
+import {AppError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useStorage} from '@/composables/useStorage'
 import type {CheckboxGridProps} from '@/types'
@@ -62,7 +63,7 @@ const setChecked = async (): Promise<void> => {
     try {
         await setStorage(config.value.storageKey, [...checked.value])
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'Failed to save selection'
+        error.value = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Failed to save selection')
         UtilsService.log('CHECKBOX_GRID: setChecked error', err)
     } finally {
         isSaving.value = false
@@ -78,7 +79,7 @@ onBeforeMount(async () => {
         const storage = await getStorage([config.value.storageKey])
         checked.value = (storage[config.value.storageKey] as string[]) || []
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'Failed to load selections'
+        error.value = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Failed to load selections')
         UtilsService.log('CHECKBOX_GRID: onBeforeMount error', err)
     } finally {
         isLoading.value = false

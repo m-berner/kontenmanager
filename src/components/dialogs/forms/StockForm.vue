@@ -48,8 +48,9 @@ const onUpdateIsin = async () => {
     } catch (err) {
         stockFormData.company = ''
         stockFormData.symbol = ''
+        const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : t('components.dialogs.forms.stockForm.messages.onUpdateIsin'))
         throw new AppError(
-            t('components.dialogs.forms.stockForm.messages.onUpdateIsin'),
+            errorMessage,
             'STOCK_FORMULAR',
             SYSTEM.ERROR_CATEGORY.VALIDATION,
             {i: err},

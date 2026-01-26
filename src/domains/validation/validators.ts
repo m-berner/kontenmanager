@@ -8,6 +8,8 @@
 
 import {ValidationRules} from './rules'
 import {UtilsService} from '@/domains/utils'
+import {AppError} from '@/domains/errors'
+import {SYSTEM} from '@/domains/config/system'
 import type {AccountDb, BookingDb, BookingTypeDb, StockDb} from '@/types'
 
 /**
@@ -17,7 +19,13 @@ import type {AccountDb, BookingDb, BookingTypeDb, StockDb} from '@/types'
 export class DomainValidators {
     static validateBooking(data: unknown): BookingDb {
         if (typeof data !== 'object' || data === null) {
-            throw new Error('Invalid booking data: Expected an object.')
+            throw new AppError(
+                'Invalid booking data.',
+                'DOMAIN_VALIDATORS',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {input: data, entity: 'booking'},
+                false
+            )
         }
 
         const raw = data as Record<string, unknown>
@@ -57,7 +65,13 @@ export class DomainValidators {
 
     static validateAccount(data: unknown): AccountDb {
         if (typeof data !== 'object' || data === null) {
-            throw new Error('Invalid account data')
+            throw new AppError(
+                'Invalid account data',
+                'DOMAIN_VALIDATORS',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {input: data, entity: 'account'},
+                false
+            )
         }
         const raw = data as Record<string, any>
 
@@ -77,7 +91,13 @@ export class DomainValidators {
 
     static validateStock(data: unknown): StockDb {
         if (typeof data !== 'object' || data === null) {
-            throw new Error('Invalid stock data')
+            throw new AppError(
+                'Invalid stock data',
+                'DOMAIN_VALIDATORS',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {input: data, entity: 'stock'},
+                false
+            )
         }
         const raw = data as Record<string, any>
 
@@ -103,7 +123,13 @@ export class DomainValidators {
 
     static validateBookingType(data: unknown): BookingTypeDb {
         if (typeof data !== 'object' || data === null) {
-            throw new Error('Invalid booking type data')
+            throw new AppError(
+                'Invalid booking type data',
+                'DOMAIN_VALIDATORS',
+                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                {input: data, entity: 'bookingType'},
+                false
+            )
         }
         const raw = data as Record<string, any>
         return {

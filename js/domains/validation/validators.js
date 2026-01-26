@@ -1,9 +1,11 @@
 import { ValidationRules } from './rules';
 import { UtilsService } from '@/domains/utils';
+import { AppError } from '@/domains/errors';
+import { SYSTEM } from '@/domains/config/system';
 export class DomainValidators {
     static validateBooking(data) {
         if (typeof data !== 'object' || data === null) {
-            throw new Error('Invalid booking data: Expected an object.');
+            throw new AppError('Invalid booking data.', 'DOMAIN_VALIDATORS', SYSTEM.ERROR_CATEGORY.VALIDATION, { input: data, entity: 'booking' }, false);
         }
         const raw = data;
         const normalized = {
@@ -36,7 +38,7 @@ export class DomainValidators {
     }
     static validateAccount(data) {
         if (typeof data !== 'object' || data === null) {
-            throw new Error('Invalid account data');
+            throw new AppError('Invalid account data', 'DOMAIN_VALIDATORS', SYSTEM.ERROR_CATEGORY.VALIDATION, { input: data, entity: 'account' }, false);
         }
         const raw = data;
         const ibanRes = ValidationRules.validateIBAN(raw.cIban);
@@ -53,7 +55,7 @@ export class DomainValidators {
     }
     static validateStock(data) {
         if (typeof data !== 'object' || data === null) {
-            throw new Error('Invalid stock data');
+            throw new AppError('Invalid stock data', 'DOMAIN_VALIDATORS', SYSTEM.ERROR_CATEGORY.VALIDATION, { input: data, entity: 'stock' }, false);
         }
         const raw = data;
         const isinRes = ValidationRules.validateISIN(raw.cISIN);
@@ -76,7 +78,7 @@ export class DomainValidators {
     }
     static validateBookingType(data) {
         if (typeof data !== 'object' || data === null) {
-            throw new Error('Invalid booking type data');
+            throw new AppError('Invalid booking type data', 'DOMAIN_VALIDATORS', SYSTEM.ERROR_CATEGORY.VALIDATION, { input: data, entity: 'bookingType' }, false);
         }
         const raw = data;
         return {

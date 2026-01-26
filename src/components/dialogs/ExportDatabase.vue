@@ -154,9 +154,10 @@ const onClickOk = async (): Promise<void> => {
 
             resetTeleport()
         } catch (err) {
+            const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
-                t('messages.exportDatabase.error'),
-                'EXPORT',
+                errorMessage,
+                'EXPORT_DATABASE',
                 SYSTEM.ERROR_CATEGORY.DATABASE,
                 {df: err},
                 true

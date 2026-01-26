@@ -291,11 +291,12 @@ export function useMenuAction() {
         try {
             await handler(recordId)
         } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error'
             throw new AppError(
-                'Unknown error',
+                errorMessage,
                 'USE_MENU_ACTION',
                 SYSTEM.ERROR_CATEGORY.VALIDATION,
-                {p: err},
+                {p: err, actionType, recordId},
                 true
             )
         }

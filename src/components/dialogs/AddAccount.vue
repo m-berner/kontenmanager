@@ -14,6 +14,7 @@ import {storeToRefs} from 'pinia'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
+import {AppError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStorage} from '@/composables/useStorage'
@@ -78,7 +79,14 @@ const addBookingTypesForAccount = async (accountId: number): Promise<boolean> =>
         for (const added of addedTypes) {
             records.bookingTypes.remove(added.cID)
         }
-        throw err
+        const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
+        throw new AppError(
+            errorMessage,
+            'ADD_ACCOUNT_BOOKING_TYPES',
+            'validation',
+            {u: err},
+            true
+        )
     }
 }
 

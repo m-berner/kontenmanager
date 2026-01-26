@@ -1,4 +1,5 @@
 import { computed } from 'vue';
+import { UtilsService } from '@/domains/utils';
 export function useDomain(url) {
     const domain = computed(() => {
         if (!url.value)
@@ -12,6 +13,7 @@ export function useDomain(url) {
             return urlObj.hostname.replace(/^www\./, '');
         }
         catch (e) {
+            UtilsService.log('useDomain:domain', e instanceof Error ? e.message : String(e), 'error');
             return '';
         }
     });
@@ -26,7 +28,8 @@ export function useDomain(url) {
             }
             return null;
         }
-        catch {
+        catch (e) {
+            UtilsService.log('useDomain:subdomain', e instanceof Error ? e.message : String(e), 'error');
             return null;
         }
     });
@@ -37,7 +40,8 @@ export function useDomain(url) {
             const urlObj = new URL(url.value.startsWith('http') ? url.value : `https://${url.value}`);
             return urlObj.protocol.replace(':', '');
         }
-        catch {
+        catch (e) {
+            UtilsService.log('useDomain:protocol', e instanceof Error ? e.message : String(e), 'error');
             return null;
         }
     });
@@ -48,7 +52,8 @@ export function useDomain(url) {
             const urlObj = new URL(url.value.startsWith('http') ? url.value : `https://${url.value}`);
             return urlObj.pathname;
         }
-        catch {
+        catch (e) {
+            UtilsService.log('useDomain:pathname', e instanceof Error ? e.message : String(e), 'error');
             return null;
         }
     });

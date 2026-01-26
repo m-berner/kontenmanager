@@ -42,8 +42,9 @@ export function useDialogGuards() {
                 return await operation();
             }
             catch (error) {
-                if (attempt === maxRetries)
-                    throw error;
+                if (attempt === maxRetries) {
+                    throw new AppError('Retry failed', 'USE_DIALOG_GUARDS', SYSTEM.ERROR_CATEGORY.VALIDATION, { retryError: error }, true);
+                }
                 onRetry?.(attempt, error);
                 await new Promise(resolve => setTimeout(resolve, delay * attempt));
             }

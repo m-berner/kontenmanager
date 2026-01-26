@@ -17,6 +17,7 @@ import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStorage} from '@/composables/useStorage'
+import {AppError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {fetchService} from '@/services/fetch'
 import {INDEXED_DB} from '@/config/database'
@@ -68,7 +69,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
         const storesDB = await databaseService.getAccountRecords(activeAccountId.value)
         await records.init(storesDB, {title: t('mixed.smImportOnly.title'), message: t('mixed.smImportOnly.message')})
     } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+        const errorMessage = e instanceof AppError ? e.message : (e instanceof Error ? e.message : 'Unknown error')
         UtilsService.log(t('views.titleBar.messages.onUpdateTitleBar'), errorMessage, 'error')
         await notice([t('views.titleBar.messages.onUpdateTitleBar'), errorMessage])
     }

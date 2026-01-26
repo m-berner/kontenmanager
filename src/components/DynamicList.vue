@@ -13,6 +13,7 @@ import {useI18n} from 'vue-i18n'
 import {storeToRefs} from 'pinia'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
+import {AppError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useStorage} from '@/composables/useStorage'
 import {fetchService} from '@/services/fetch'
@@ -70,7 +71,7 @@ const addItem = async (item: string): Promise<void> => {
             newItem.value = ''
         }
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'Failed to add item'
+        error.value = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Failed to add item')
         UtilsService.log('DYNAMIC_LIST: addItem error', err)
     } finally {
         isAdding.value = false  // Stop loading
@@ -96,7 +97,7 @@ const removeItem = async (n: number): Promise<void> => {
             default:
         }
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'Failed to remove item'
+        error.value = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Failed to remove item')
         UtilsService.log('DYNAMIC_LIST: removeItem error', err)
     }
 }
@@ -117,7 +118,7 @@ onBeforeMount(async () => {
                 break
         }
     } catch (err) {
-        error.value = err instanceof Error ? err.message : 'Failed to load data'
+        error.value = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Initialization failed')
         UtilsService.log('DYNAMIC_LIST: onBeforeMount error', err)
     } finally {
         isLoading.value = false

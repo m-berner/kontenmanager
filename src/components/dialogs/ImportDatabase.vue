@@ -234,7 +234,8 @@ const createRollbackPoint = async (): Promise<RollbackData | null> => {
             activeAccountId: settings.activeAccountId
         }
     } catch (err) {
-        UtilsService.log('IMPORT_DATABASE: Failed to create rollback point', err)
+        const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
+        UtilsService.log('IMPORT_DATABASE: Failed to create rollback point', errorMessage)
         return null
     }
 }
@@ -287,7 +288,8 @@ const restoreFromRollback = async (rollbackData: RollbackData): Promise<void> =>
 
         UtilsService.log('IMPORT_DATABASE: Rollback completed successfully')
     } catch (err) {
-        UtilsService.log('IMPORT_DATABASE: CRITICAL - Rollback failed', err)
+        const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
+        UtilsService.log('IMPORT_DATABASE: CRITICAL - Rollback failed', errorMessage)
         info(t('components.dialogs.importDatabase.title'), 'Critical error during rollback. Please refresh the page.', null)
     }
 }
@@ -405,14 +407,15 @@ const processBackupFile = async (): Promise<void> => {
             duration: (duration / 1000).toFixed(1)
         })])
         resetFileInput()
-    } catch {
+    } catch (err) {
         activeAccountId.value = originalActiveId
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId)
+        const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : t('components.dialogs.importDatabase.invalidJson'))
         throw new AppError(
-            t('components.dialogs.importDatabase.invalidJson'),
+            errorMessage,
             'IMPORT',
             SYSTEM.ERROR_CATEGORY.DATABASE,
-            {},
+            {u: err},
             true
         )
     }
@@ -447,10 +450,11 @@ const onClickOk = async (): Promise<void> => {
                      t('components.dialogs.importDatabase.messages.importFailed'),
                      5000)
             } catch (rollbackErr) {
+                const rollbackErrorMessage = rollbackErr instanceof AppError ? rollbackErr.message : (rollbackErr instanceof Error ? rollbackErr.message : 'Unknown error')
                 error(t('components.dialogs.importDatabase.title'),
                       t('components.dialogs.importDatabase.messages.rollbackFailed'),
                       5000)
-                UtilsService.log('IMPORT_DATABASE: CRITICAL - Rollback failed', rollbackErr)
+                UtilsService.log('IMPORT_DATABASE: CRITICAL - Rollback failed', rollbackErrorMessage)
             }
 
             throw new AppError(

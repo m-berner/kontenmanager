@@ -62,9 +62,10 @@ const onClickOk = async (): Promise<void> => {
             resetTeleport()
             await notice([t('components.dialogs.deleteAccountConfirmation.messages.success')])
         } catch (err) {
+            const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
-                t('components.dialogs.onClickOk'),
-                'DELETE_',
+                errorMessage,
+                'DELETE_ACCOUNT_CONFIRMATION',
                 SYSTEM.ERROR_CATEGORY.VALIDATION,
                 {a: err},
                 true

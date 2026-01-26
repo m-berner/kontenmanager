@@ -55,8 +55,9 @@ const onClickOk = async (): Promise<void> => {
             runtime.resetTeleport()
             await notice([t('components.dialogs.deleteBookingType.messages.success')])
         } catch (err) {
+            const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
-                t('components.dialogs.onClickOk'),
+                errorMessage,
                 'DELETE_BOOKING_TYPE',
                 SYSTEM.ERROR_CATEGORY.VALIDATION,
                 {a: err},

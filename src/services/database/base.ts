@@ -153,7 +153,13 @@ export class IndexedDbBase {
 
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result as T[])
-            request.onerror = () => reject(request.error)
+            request.onerror = () => reject(new AppError(
+                `Failed to getAllByIndex from ${storeName} on index ${indexName}: ${request.error?.message}`,
+                'DB_GET_ALL_BY_INDEX_FAILED',
+                SYSTEM.ERROR_CATEGORY.DATABASE,
+                {},
+                false
+            ))
         })
     }
 
@@ -169,7 +175,13 @@ export class IndexedDbBase {
                     resolve()
                 }
             }
-            req.onerror = () => reject(req.error)
+            req.onerror = () => reject(new AppError(
+                `Failed to deleteByCursor: ${req.error?.message}`,
+                'DB_DELETE_BY_CURSOR_FAILED',
+                SYSTEM.ERROR_CATEGORY.DATABASE,
+                {},
+                false
+            ))
         })
     }
 

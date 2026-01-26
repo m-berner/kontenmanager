@@ -50,8 +50,9 @@ const onClickOk = async (): Promise<void> => {
             runtime.resetTeleport()
 
         } catch (err) {
+            const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
-                t('components.dialogs.onClickOk'),
+                errorMessage,
                 'FADE_IN_STOCK',
                 SYSTEM.ERROR_CATEGORY.VALIDATION,
                 {g: err},

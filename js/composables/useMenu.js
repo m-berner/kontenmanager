@@ -176,7 +176,8 @@ export function useMenuAction() {
             await handler(recordId);
         }
         catch (err) {
-            throw new AppError('Unknown error', 'USE_MENU_ACTION', SYSTEM.ERROR_CATEGORY.VALIDATION, { p: err }, true);
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+            throw new AppError(errorMessage, 'USE_MENU_ACTION', SYSTEM.ERROR_CATEGORY.VALIDATION, { p: err, actionType, recordId }, true);
         }
     };
     const hasAction = (actionType) => {
