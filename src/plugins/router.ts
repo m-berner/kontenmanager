@@ -47,6 +47,17 @@ const routerInstance = createRouter(
                     footer: () => import('@/views/FooterBar.vue')
                 }
             }
+            ,
+            {
+                path: ROUTES.HELP,
+                name: CODES.VIEW_CODES.HELP,
+                components: {
+                    default: () => import('@/views/HelpContent.vue'),
+                    title: () => import('@/views/TitleBar.vue'),
+                    header: () => import ('@/views/HeaderBar.vue'),
+                    footer: () => import('@/views/FooterBar.vue')
+                }
+            }
         ]
     }
 )
