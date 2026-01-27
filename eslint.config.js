@@ -9,6 +9,7 @@
 import globals from 'globals'
 import * as parserVue from 'vue-eslint-parser'
 import pluginVue from 'eslint-plugin-vue'
+import appErrorConsistencyRule from './js/eslint-rules/app-error-consistency.js'
 
 export default [
     {
@@ -104,7 +105,10 @@ export default [
                 'ignoreDeclarationSort': true,
                 'ignoreMemberSort': false,
                 'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single']
-            }]
+            }],
+
+            // Custom rules
+            'app/app-error-consistency': 'error'
         }
     },
     {
@@ -147,6 +151,16 @@ export default [
             'vue/require-default-prop': 'error',
             'vue/require-explicit-emits': 'error'
             //'vue/v-on-event-hyphenation': ['error', 'always', {'autofix': true}]
+        }
+    },
+    {
+        // Register local custom rules as a plugin namespace "app"
+        plugins: {
+            app: {
+                rules: {
+                    'app-error-consistency': appErrorConsistencyRule
+                }
+            }
         }
     },
     {
