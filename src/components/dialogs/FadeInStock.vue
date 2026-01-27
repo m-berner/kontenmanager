@@ -12,7 +12,7 @@ import {onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
@@ -49,11 +49,10 @@ const onClickOk = async (): Promise<void> => {
             runtime.resetTeleport()
 
         } catch (err) {
-            const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
                 ERROR_CODES.FADE_IN_STOCK,
                 ERROR_CATEGORY.VALIDATION,
-                {input: errorMessage, entity: 'FadeInStock', stockId: selected.value!.cID as number},
+                {input: serializeError(err), entity: 'FadeInStock', stockId: selected.value!.cID as number},
                 true
             )
         }

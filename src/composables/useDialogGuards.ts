@@ -8,7 +8,7 @@
 
 import type {Ref} from 'vue'
 import {ref} from 'vue'
-import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 import type {FormInterface, FormValidateResultType} from '@/types'
 
 /**
@@ -88,7 +88,7 @@ export function useDialogGuards() {
             throw new AppError(
                 ERROR_CODES.USE_DIALOG_GUARDS.A,
                 ERROR_CATEGORY.VALIDATION,
-                {a: err},
+                {input: serializeError(err)},
                 true
             )
         }
@@ -115,17 +115,17 @@ export function useDialogGuards() {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 return await operation()
-            } catch (error) {
+            } catch (err) {
                 if (attempt === maxRetries) {
                     throw new AppError(
                         ERROR_CODES.USE_DIALOG_GUARDS.B,
                         ERROR_CATEGORY.VALIDATION,
-                        {input: error},
+                        {input: serializeError(err), attempt, maxRetries},
                         true
                     )
                 }
 
-                onRetry?.(attempt, error as Error)
+                onRetry?.(attempt, err as Error)
                 await new Promise(resolve => setTimeout(resolve, delay * attempt))
             }
         }
@@ -177,10 +177,14 @@ export function useDialogGuards() {
             try {
                 await operation()
             } catch (err) {
+                if (err instanceof AppError) {
+                    throw err
+                }
+
                 throw new AppError(
-                    '',
+                    ERROR_CODES.USE_DIALOG_GUARDS.B,
                     ERROR_CATEGORY.VALIDATION,
-                    {input: err},
+                    {input: serializeError(err), phase: 'submitGuard'},
                     true
                 )
             } finally {

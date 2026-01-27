@@ -1,9 +1,8 @@
 import { computed } from 'vue';
-import { AppError } from '@/domains/errors';
 import { EVENTS } from '@/config/events';
 import { ENTRYPOINTS } from '@/config/entrypoints';
 import { DEFAULTS } from '@/config/defaults';
-import { ERROR_CODES, ERROR_CATEGORY } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from '@/domains/errors';
 export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
     const manifest = computed(() => browser.runtime.getManifest());
@@ -35,7 +34,7 @@ export function useBrowser() {
             });
         }
         catch (err) {
-            throw new AppError(ERROR_CODES.USE_BROWSER.C, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.C, ERROR_CATEGORY.VALIDATION, { input: serializeError(err) }, true);
         }
     }
     async function tabsQuery() {
@@ -43,7 +42,7 @@ export function useBrowser() {
             return await browser.tabs.query({ url: indexUrl.value });
         }
         catch (err) {
-            throw new AppError(ERROR_CODES.USE_BROWSER.D, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.D, ERROR_CATEGORY.VALIDATION, { input: serializeError(err) }, true);
         }
     }
     async function windowsUpdate(windowId) {
@@ -53,7 +52,7 @@ export function useBrowser() {
             });
         }
         catch (err) {
-            throw new AppError(ERROR_CODES.USE_BROWSER.E, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.E, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), windowId }, true);
         }
     }
     async function tabsUpdate(tabId) {
@@ -63,7 +62,7 @@ export function useBrowser() {
             });
         }
         catch (err) {
-            throw new AppError(ERROR_CODES.USE_BROWSER.F, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.F, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), tabId }, true);
         }
     }
     async function openOptionsPage() {
@@ -71,7 +70,7 @@ export function useBrowser() {
             await browser.runtime.openOptionsPage();
         }
         catch (err) {
-            throw new AppError(ERROR_CODES.USE_BROWSER.G, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.G, ERROR_CATEGORY.VALIDATION, { input: serializeError(err) }, true);
         }
     }
     async function notice(messages) {
@@ -85,7 +84,7 @@ export function useBrowser() {
             await browser.notifications.create(notificationOption);
         }
         catch (err) {
-            throw new AppError(ERROR_CODES.USE_BROWSER.H, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.H, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), messages }, true);
         }
     }
     async function writeBufferToFile(buffer, filename) {
@@ -108,7 +107,7 @@ export function useBrowser() {
             browser.downloads.onChanged.addListener(onDownloadChange);
         }
         catch (err) {
-            throw new AppError(ERROR_CODES.USE_BROWSER.J, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.J, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), filename }, true);
         }
     }
     return {

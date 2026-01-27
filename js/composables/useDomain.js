@@ -1,5 +1,6 @@
 import { computed } from 'vue';
 import { UtilsService } from '@/domains/utils';
+import { serializeError } from '@/domains/errors';
 export function useDomain(url) {
     const domain = computed(() => {
         if (!url.value)
@@ -13,7 +14,7 @@ export function useDomain(url) {
             return urlObj.hostname.replace(/^www\./, '');
         }
         catch (e) {
-            UtilsService.log('useDomain:domain', e instanceof Error ? e.message : String(e), 'error');
+            UtilsService.log('useDomain:domain', serializeError(e), 'error');
             return '';
         }
     });
@@ -29,7 +30,7 @@ export function useDomain(url) {
             return null;
         }
         catch (e) {
-            UtilsService.log('useDomain:subdomain', e instanceof Error ? e.message : String(e), 'error');
+            UtilsService.log('useDomain:subdomain', serializeError(e), 'error');
             return null;
         }
     });
@@ -41,7 +42,7 @@ export function useDomain(url) {
             return urlObj.protocol.replace(':', '');
         }
         catch (e) {
-            UtilsService.log('useDomain:protocol', e instanceof Error ? e.message : String(e), 'error');
+            UtilsService.log('useDomain:protocol', serializeError(e), 'error');
             return null;
         }
     });
@@ -53,7 +54,7 @@ export function useDomain(url) {
             return urlObj.pathname;
         }
         catch (e) {
-            UtilsService.log('useDomain:pathname', e instanceof Error ? e.message : String(e), 'error');
+            UtilsService.log('useDomain:pathname', serializeError(e), 'error');
             return null;
         }
     });

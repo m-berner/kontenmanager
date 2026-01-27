@@ -7,7 +7,7 @@
  */
 
 import type {StorageDataType} from '@/types'
-import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 import {BROWSER_STORAGE} from '@/config/storage'
 
 /**
@@ -27,7 +27,7 @@ export function useStorage() {
             throw new AppError(
                 ERROR_CODES.USE_STORAGE.A,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err)},
                 true
             )
         }
@@ -45,7 +45,7 @@ export function useStorage() {
             throw new AppError(
                 ERROR_CODES.USE_STORAGE.B,
                 ERROR_CATEGORY.VALIDATION,
-                {b: err},
+                {input: serializeError(err), key},
                 true
             )
         }
@@ -63,7 +63,7 @@ export function useStorage() {
             throw new AppError(
                 ERROR_CODES.USE_STORAGE.C,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err), keys},
                 true
             )
         }
@@ -114,7 +114,7 @@ export function useStorage() {
             throw new AppError(
                 ERROR_CODES.USE_STORAGE.D,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err)},
                 true
             )
         }

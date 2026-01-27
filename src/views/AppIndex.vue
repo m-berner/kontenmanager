@@ -10,7 +10,7 @@
 import {onBeforeMount, ref} from 'vue'
 import {RouterView} from 'vue-router'
 import {useI18n} from 'vue-i18n'
-import {AppError} from '@/domains/errors'
+import {AppError, serializeError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import AlertOverlay from '@/components/AlertOverlay.vue'
 import {initializeApp} from '@/services/app'
@@ -41,7 +41,7 @@ onBeforeMount(async () => {
         throw new AppError(
             ERROR_CODES.VIEWS.APP_INDEX.A,
             ERROR_CATEGORY.VALIDATION,
-            {input: err, entity: 'AppIndex'},
+            {input: serializeError(err), entity: 'AppIndex'},
             true
         )
     }

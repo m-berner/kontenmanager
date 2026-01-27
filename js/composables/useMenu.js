@@ -5,7 +5,7 @@ import { useBookingsDB, useStocksDB } from '@/composables/useIndexedDB';
 import { useBrowser } from '@/composables/useBrowser';
 import { storeToRefs } from 'pinia';
 import { computed, onUnmounted, readonly, ref } from 'vue';
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from '@/domains/errors';
 import { CODES } from '@/config/codes';
 export function useMenuHighlight() {
     const highlightedItems = ref(new Map());
@@ -169,14 +169,13 @@ export function useMenuAction() {
         runtime.activeId = recordId;
         const handler = actionHandlers[actionType];
         if (!handler) {
-            throw new AppError(ERROR_CODES.USE_MENU.A, ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.USE_MENU.A, ERROR_CATEGORY.VALIDATION, { input: { actionType } }, false);
         }
         try {
             await handler(recordId);
         }
         catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-            throw new AppError(ERROR_CODES.USE_MENU.B, ERROR_CATEGORY.VALIDATION, { input: errorMessage }, true);
+            throw new AppError(ERROR_CODES.USE_MENU.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), actionType, recordId }, true);
         }
     };
     const hasAction = (actionType) => {

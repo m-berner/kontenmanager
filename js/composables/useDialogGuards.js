@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from '@/domains/errors';
 export function useDialogGuards() {
     const isLoading = ref(false);
     const loadingOperations = ref(new Set());
@@ -31,7 +31,7 @@ export function useDialogGuards() {
             return form.value.validate();
         }
         catch (err) {
-            throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.A, ERROR_CATEGORY.VALIDATION, { a: err }, true);
+            throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.A, ERROR_CATEGORY.VALIDATION, { input: serializeError(err) }, true);
         }
     }
     async function withRetry(operation, options = {}) {
@@ -40,11 +40,11 @@ export function useDialogGuards() {
             try {
                 return await operation();
             }
-            catch (error) {
+            catch (err) {
                 if (attempt === maxRetries) {
-                    throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, { input: error }, true);
+                    throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), attempt, maxRetries }, true);
                 }
-                onRetry?.(attempt, error);
+                onRetry?.(attempt, err);
                 await new Promise(resolve => setTimeout(resolve, delay * attempt));
             }
         }
@@ -66,7 +66,10 @@ export function useDialogGuards() {
                 await operation();
             }
             catch (err) {
-                throw new AppError('', ERROR_CATEGORY.VALIDATION, { input: err }, true);
+                if (err instanceof AppError) {
+                    throw err;
+                }
+                throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), phase: 'submitGuard' }, true);
             }
             finally {
                 onFinally?.();

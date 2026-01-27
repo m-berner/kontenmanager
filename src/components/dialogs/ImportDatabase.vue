@@ -15,7 +15,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useAlertStore} from '@/stores/alerts'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
-import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStorage} from '@/composables/useStorage'
@@ -137,36 +137,38 @@ const importLegacyData = async (backup: BackupData, activeId: number): Promise<v
     }
 
     // Import all data with logging
-    await atomicImport([
-                           {
-                               storeName: INDEXED_DB.STORE.ACCOUNTS.NAME,
-                               operations: [
-                                   {type: 'clear'},
-                                   ...accountsImportData
-                               ]
-                           },
-                           {
-                               storeName: INDEXED_DB.STORE.BOOKING_TYPES.NAME,
-                               operations: [
-                                   {type: 'clear'},
-                                   ...bookingTypesImportData
-                               ]
-                           },
-                           {
-                               storeName: INDEXED_DB.STORE.STOCKS.NAME,
-                               operations: [
-                                   {type: 'clear'},
-                                   ...stocksImportData
-                               ]
-                           },
-                           {
-                               storeName: INDEXED_DB.STORE.BOOKINGS.NAME,
-                               operations: [
-                                   {type: 'clear'},
-                                   ...bookingsImportData
-                               ]
-                           }
-                       ])
+    await atomicImport(
+        [
+            {
+                storeName: INDEXED_DB.STORE.ACCOUNTS.NAME,
+                operations: [
+                    {type: 'clear'},
+                    ...accountsImportData
+                ]
+            },
+            {
+                storeName: INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+                operations: [
+                    {type: 'clear'},
+                    ...bookingTypesImportData
+                ]
+            },
+            {
+                storeName: INDEXED_DB.STORE.STOCKS.NAME,
+                operations: [
+                    {type: 'clear'},
+                    ...stocksImportData
+                ]
+            },
+            {
+                storeName: INDEXED_DB.STORE.BOOKINGS.NAME,
+                operations: [
+                    {type: 'clear'},
+                    ...bookingsImportData
+                ]
+            }
+        ]
+    )
 
     // Initialize records store
     records.init(
@@ -183,36 +185,38 @@ const importModernData = async (backup: BackupData, activeId: number): Promise<v
     const safeBackup = structuredClone(backup)
     safeBackup.bookings = (safeBackup.bookings || []).map(b => DomainValidators.validateBooking(b))
 
-    await atomicImport([
-                           {
-                               storeName: INDEXED_DB.STORE.ACCOUNTS.NAME,
-                               operations: [
-                                   {type: 'clear'},
-                                   ...toImportRecords(safeBackup.accounts)
-                               ]
-                           },
-                           {
-                               storeName: INDEXED_DB.STORE.BOOKING_TYPES.NAME,
-                               operations: [
-                                   {type: 'clear'},
-                                   ...toImportRecords(safeBackup.bookingTypes)
-                               ]
-                           },
-                           {
-                               storeName: INDEXED_DB.STORE.STOCKS.NAME,
-                               operations: [
-                                   {type: 'clear'},
-                                   ...toImportRecords(safeBackup.stocks)
-                               ]
-                           },
-                           {
-                               storeName: INDEXED_DB.STORE.BOOKINGS.NAME,
-                               operations: [
-                                   {type: 'clear'},
-                                   ...toImportRecords(safeBackup.bookings)
-                               ]
-                           }
-                       ])
+    await atomicImport(
+        [
+            {
+                storeName: INDEXED_DB.STORE.ACCOUNTS.NAME,
+                operations: [
+                    {type: 'clear'},
+                    ...toImportRecords(safeBackup.accounts)
+                ]
+            },
+            {
+                storeName: INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+                operations: [
+                    {type: 'clear'},
+                    ...toImportRecords(safeBackup.bookingTypes)
+                ]
+            },
+            {
+                storeName: INDEXED_DB.STORE.STOCKS.NAME,
+                operations: [
+                    {type: 'clear'},
+                    ...toImportRecords(safeBackup.stocks)
+                ]
+            },
+            {
+                storeName: INDEXED_DB.STORE.BOOKINGS.NAME,
+                operations: [
+                    {type: 'clear'},
+                    ...toImportRecords(safeBackup.bookings)
+                ]
+            }
+        ]
+    )
 
     records.init(
         {
@@ -243,36 +247,38 @@ const restoreFromRollback = async (rollbackData: RollbackData): Promise<void> =>
     try {
         UtilsService.log('IMPORT_DATABASE: Starting rollback')
 
-        await atomicImport([
-                               {
-                                   storeName: INDEXED_DB.STORE.ACCOUNTS.NAME,
-                                   operations: [
-                                       {type: 'clear'},
-                                       ...toImportRecords(rollbackData.accounts)
-                                   ]
-                               },
-                               {
-                                   storeName: INDEXED_DB.STORE.BOOKING_TYPES.NAME,
-                                   operations: [
-                                       {type: 'clear'},
-                                       ...toImportRecords(rollbackData.bookingTypes)
-                                   ]
-                               },
-                               {
-                                   storeName: INDEXED_DB.STORE.STOCKS.NAME,
-                                   operations: [
-                                       {type: 'clear'},
-                                       ...toImportRecords(rollbackData.stocks)
-                                   ]
-                               },
-                               {
-                                   storeName: INDEXED_DB.STORE.BOOKINGS.NAME,
-                                   operations: [
-                                       {type: 'clear'},
-                                       ...toImportRecords(rollbackData.bookings)
-                                   ]
-                               }
-                           ])
+        await atomicImport(
+            [
+                {
+                    storeName: INDEXED_DB.STORE.ACCOUNTS.NAME,
+                    operations: [
+                        {type: 'clear'},
+                        ...toImportRecords(rollbackData.accounts)
+                    ]
+                },
+                {
+                    storeName: INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+                    operations: [
+                        {type: 'clear'},
+                        ...toImportRecords(rollbackData.bookingTypes)
+                    ]
+                },
+                {
+                    storeName: INDEXED_DB.STORE.STOCKS.NAME,
+                    operations: [
+                        {type: 'clear'},
+                        ...toImportRecords(rollbackData.stocks)
+                    ]
+                },
+                {
+                    storeName: INDEXED_DB.STORE.BOOKINGS.NAME,
+                    operations: [
+                        {type: 'clear'},
+                        ...toImportRecords(rollbackData.bookings)
+                    ]
+                }
+            ]
+        )
 
         settings.activeAccountId = rollbackData.activeAccountId
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, rollbackData.activeAccountId)
@@ -409,11 +415,10 @@ const processBackupFile = async (): Promise<void> => {
     } catch (err) {
         activeAccountId.value = originalActiveId
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId)
-        const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : t('components.dialogs.importDatabase.invalidJson'))
         throw new AppError(
             ERROR_CODES.IMPORT_DATABASE.A,
             ERROR_CATEGORY.DATABASE,
-            {input: errorMessage},
+            {input: serializeError(err)},
             true
         )
     }
@@ -458,7 +463,7 @@ const onClickOk = async (): Promise<void> => {
             throw new AppError(
                 ERROR_CODES.IMPORT_DATABASE.B,
                 ERROR_CATEGORY.DATABASE,
-                {input: err},
+                {input: serializeError(err)},
                 true
             )
         }

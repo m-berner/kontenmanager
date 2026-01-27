@@ -12,7 +12,7 @@ import {storeToRefs} from 'pinia'
 import {useSettingsStore} from '@/stores/settings'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useRecordsStore} from '@/stores/records'
-import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStorage} from '@/composables/useStorage'
@@ -61,11 +61,10 @@ const onClickOk = async (): Promise<void> => {
             resetTeleport()
             await notice([t('components.dialogs.deleteAccountConfirmation.messages.success')])
         } catch (err) {
-            const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
                 ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION,
                 ERROR_CATEGORY.VALIDATION,
-                {input: errorMessage, entity: 'DeleteAccountConfirmation'},
+                {input: serializeError(err), entity: 'DeleteAccountConfirmation'},
                 true
             )
         }

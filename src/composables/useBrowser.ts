@@ -7,11 +7,10 @@
  */
 
 import {computed} from 'vue'
-import {AppError} from '@/domains/errors'
 import {EVENTS} from '@/config/events'
 import {ENTRYPOINTS} from '@/config/entrypoints'
 import {DEFAULTS} from '@/config/defaults'
-import {ERROR_CODES, ERROR_CATEGORY} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 
 /**
  * Composable providing access to browser extension APIs.
@@ -88,7 +87,7 @@ export function useBrowser() {
             throw new AppError(
                 ERROR_CODES.USE_BROWSER.C,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err)},
                 true
             )
         }
@@ -105,7 +104,7 @@ export function useBrowser() {
             throw new AppError(
                 ERROR_CODES.USE_BROWSER.D,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err)},
                 true
             )
         }
@@ -124,7 +123,7 @@ export function useBrowser() {
             throw new AppError(
                 ERROR_CODES.USE_BROWSER.E,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err), windowId},
                 true
             )
         }
@@ -143,7 +142,7 @@ export function useBrowser() {
             throw new AppError(
                 ERROR_CODES.USE_BROWSER.F,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err), tabId},
                 true
             )
         }
@@ -159,7 +158,7 @@ export function useBrowser() {
             throw new AppError(
                 ERROR_CODES.USE_BROWSER.G,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err)},
                 true
             )
         }
@@ -182,7 +181,7 @@ export function useBrowser() {
             throw new AppError(
                 ERROR_CODES.USE_BROWSER.H,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err), messages},
                 true
             )
         }
@@ -226,7 +225,7 @@ export function useBrowser() {
             throw new AppError(
                 ERROR_CODES.USE_BROWSER.J,
                 ERROR_CATEGORY.VALIDATION,
-                {input: err},
+                {input: serializeError(err), filename},
                 true
             )
         }

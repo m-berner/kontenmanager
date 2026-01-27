@@ -3,9 +3,9 @@ export const ERROR_CODES = {
     DELETE_ACCOUNT_CONFIRMATION: '#khi',
     DELETE_BOOKING_TYPE: '#pol',
     EXPORT_DATABASE: {
-        A: '#dbx',
-        B: '#dbz',
-        C: '#dbm'
+        A: '#edx',
+        B: '#edz',
+        C: '#edm'
     },
     FADE_IN_STOCK: '#fis',
     IMPORT_DATABASE: {
@@ -14,16 +14,16 @@ export const ERROR_CODES = {
     },
     STOCK_FORM: '#sfo',
     USE_BROWSER: {
-        A: '#ubx',
-        B: '#ubz',
-        C: '#ubm',
-        D: '#ubs',
-        E: '#ubt',
-        F: '#ubv',
-        G: '#ubw',
-        H: '#ubx',
-        I: '#uby',
-        J: '#ubz'
+        A: '#uba',
+        B: '#ubb',
+        C: '#ubc',
+        D: '#ubd',
+        E: '#ube',
+        F: '#ubf',
+        G: '#ubg',
+        H: '#ubh',
+        I: '#ubi',
+        J: '#ubj'
     },
     USE_DIALOG_GUARDS: {
         A: '#wqa',
@@ -118,6 +118,43 @@ export const ERROR_CATEGORY = {
     BUSINESS: 'business'
 };
 const ERRORS = {
+    [ERROR_CODES.ADD_ACCOUNT]: 'Failed to add account',
+    [ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION]: 'Failed to delete account',
+    [ERROR_CODES.DELETE_BOOKING_TYPE]: 'Failed to delete booking type',
+    [ERROR_CODES.FADE_IN_STOCK]: 'Failed to reactivate stock',
+    [ERROR_CODES.STOCK_FORM]: 'Failed to update stock form',
+    [ERROR_CODES.APP_SERVICE]: 'Application service error',
+    [ERROR_CODES.EXPORT_DATABASE.A]: 'Export validation failed',
+    [ERROR_CODES.EXPORT_DATABASE.B]: 'Export integrity check failed',
+    [ERROR_CODES.EXPORT_DATABASE.C]: 'Export failed',
+    [ERROR_CODES.IMPORT_DATABASE.A]: 'Import failed',
+    [ERROR_CODES.IMPORT_DATABASE.B]: 'Import failed (rollback attempted)',
+    [ERROR_CODES.IMPORT_EXPORT.A]: 'Import/export failed',
+    [ERROR_CODES.IMPORT_EXPORT.B]: 'Import/export failed',
+    [ERROR_CODES.USE_DIALOG_GUARDS.A]: 'Dialog guard failed',
+    [ERROR_CODES.USE_DIALOG_GUARDS.B]: 'Form submit failed',
+    [ERROR_CODES.USE_DIALOG_GUARDS.C]: 'Database connection check failed',
+    [ERROR_CODES.USE_MENU.A]: 'Unknown menu action',
+    [ERROR_CODES.USE_MENU.B]: 'Menu action failed',
+    [ERROR_CODES.USE_STORAGE.A]: 'Failed to clear local storage',
+    [ERROR_CODES.USE_STORAGE.B]: 'Failed to write local storage',
+    [ERROR_CODES.USE_STORAGE.C]: 'Failed to read local storage',
+    [ERROR_CODES.USE_STORAGE.D]: 'Failed to install storage defaults',
+    [ERROR_CODES.UTILS.A]: 'Invalid ISO date',
+    [ERROR_CODES.UTILS.B]: 'Invalid timestamp',
+    [ERROR_CODES.UTILS.C]: 'Failed to parse number',
+    [ERROR_CODES.VALIDATION.A]: 'Invalid booking data',
+    [ERROR_CODES.VALIDATION.B]: 'Invalid account data',
+    [ERROR_CODES.VALIDATION.C]: 'Invalid stock data',
+    [ERROR_CODES.VALIDATION.D]: 'Invalid booking type data',
+    [ERROR_CODES.IMPORT_EXPORT_SERVICE.A]: 'Failed to read JSON file',
+    [ERROR_CODES.IMPORT_EXPORT_SERVICE.B]: 'Invalid backup format',
+    [ERROR_CODES.IMPORT_EXPORT_SERVICE.C]: 'Backup integrity check failed',
+    [ERROR_CODES.IMPORT_EXPORT_SERVICE.D]: 'Failed to validate backup data',
+    [ERROR_CODES.IMPORT_EXPORT_SERVICE.E]: 'Failed to transform legacy stock',
+    [ERROR_CODES.IMPORT_EXPORT_SERVICE.F]: 'Unsupported legacy booking',
+    [ERROR_CODES.IMPORT_EXPORT_SERVICE.G]: 'Failed to stringify database export',
+    [ERROR_CODES.IMPORT_EXPORT_SERVICE.H]: 'Failed to verify export integrity',
     [ERROR_CODES.VIEWS.APP_INDEX.A]: 'App initialization failed',
     [ERROR_CODES.STORES.BOOKINGS.A]: 'No booking found for ID',
     [ERROR_CODES.SERVICES.DATABASE.BASE.A]: 'Failed to delete by cursor',
@@ -129,6 +166,7 @@ const ERRORS = {
     [ERROR_CODES.SERVICES.DATABASE.BASE.G]: 'Failed to clear store',
     [ERROR_CODES.SERVICES.DATABASE.BASE.H]: 'Failed to get all records by index',
     [ERROR_CODES.SERVICES.DATABASE.BASE.I]: 'Database not connected',
+    [ERROR_CODES.SERVICES.DATABASE.BASE.J]: 'Database operation failed',
     [ERROR_CODES.SERVICES.DATABASE.A]: 'Failed to open IndexedDB connection',
     [ERROR_CODES.SERVICES.DATABASE.B]: 'Error closing database',
     [ERROR_CODES.SERVICES.DATABASE.C]: 'Delete operation requires a key',
@@ -145,15 +183,40 @@ const ERRORS = {
     [ERROR_CODES.SERVICES.FETCH.H]: 'Unsupported service',
     [ERROR_CODES.SERVICES.FETCH.I]: 'FX service not configured',
     [ERROR_CODES.SERVICES.FETCH.J]: 'Exchange rate not found',
-    [ERROR_CODES.USE_BROWSER.A]: 'Could not read the browser language'
+    [ERROR_CODES.USE_BROWSER.A]: 'Could not read the browser language',
+    [ERROR_CODES.USE_BROWSER.B]: 'Invalid browser language format',
+    [ERROR_CODES.USE_BROWSER.C]: 'Failed to create browser tab',
+    [ERROR_CODES.USE_BROWSER.D]: 'Failed to query browser tabs',
+    [ERROR_CODES.USE_BROWSER.E]: 'Failed to focus browser window',
+    [ERROR_CODES.USE_BROWSER.F]: 'Failed to activate browser tab',
+    [ERROR_CODES.USE_BROWSER.G]: 'Failed to open options page',
+    [ERROR_CODES.USE_BROWSER.H]: 'Failed to show browser notification',
+    [ERROR_CODES.USE_BROWSER.I]: 'Invalid export filename',
+    [ERROR_CODES.USE_BROWSER.J]: 'Failed to download export file'
 };
+export function serializeError(err) {
+    if (err instanceof AppError) {
+        return {
+            name: err.name,
+            code: err.code,
+            category: err._category,
+            recoverable: err._recoverable,
+            message: err.message,
+            context: err._context
+        };
+    }
+    if (err instanceof Error) {
+        return { name: err.name, message: err.message, stack: err.stack };
+    }
+    return { value: err };
+}
 export class AppError extends Error {
     code;
     _category;
     _context;
     _recoverable;
     constructor(code, _category, _context, _recoverable = true) {
-        super(ERRORS[code]);
+        super(ERRORS[code] ?? `Unknown error (${code})`);
         this.code = code;
         this._category = _category;
         this._context = _context;

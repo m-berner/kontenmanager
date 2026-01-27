@@ -99,9 +99,9 @@ export class ImportExportTransformer {
                 break
             default:
                 throw new AppError(
-                    ERROR_CODES.IMPORT_EXPORT.A,
+                    ERROR_CODES.IMPORT_EXPORT_SERVICE.F,
                     ERROR_CATEGORY.VALIDATION,
-                    {type: smTransfer.cType},
+                    {input: {type: smTransfer.cType}},
                     false
                 )
         }
@@ -136,9 +136,9 @@ export class ImportExportTransformer {
                 return result
             default:
                 throw new AppError(
-                    ERROR_CODES.IMPORT_EXPORT.B,
+                    ERROR_CODES.IMPORT_EXPORT_SERVICE.F,
                     ERROR_CATEGORY.VALIDATION,
-                    {type: rec.cType},
+                    {input: {type: rec.cType}},
                     false
                 )
         }

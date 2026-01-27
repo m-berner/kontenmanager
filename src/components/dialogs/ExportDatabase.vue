@@ -10,7 +10,7 @@
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
-import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
@@ -150,11 +150,14 @@ const onClickOk = async (): Promise<void> => {
 
             resetTeleport()
         } catch (err) {
-            const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
+            if (err instanceof AppError) {
+                throw err
+            }
+
             throw new AppError(
                 ERROR_CODES.EXPORT_DATABASE.C,
                 ERROR_CATEGORY.DATABASE,
-                {inout: errorMessage},
+                {input: serializeError(err), phase: 'onClickOk'},
                 true
             )
         }

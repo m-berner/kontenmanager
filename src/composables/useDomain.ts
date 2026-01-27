@@ -9,6 +9,7 @@
 import type {Ref} from 'vue'
 import {computed} from 'vue'
 import {UtilsService} from '@/domains/utils'
+import {serializeError} from '@/domains/errors'
 
 export function useDomain(url: Ref<string>) {
     const domain = computed(() => {
@@ -20,9 +21,8 @@ export function useDomain(url: Ref<string>) {
             }
             const urlObj = new URL(processedUrl)
             return urlObj.hostname.replace(/^www\./, '')
-            // eslint-disable-next-line no-unused-vars
         } catch (e) {
-            UtilsService.log('useDomain:domain', e instanceof Error ? e.message : String(e), 'error')
+            UtilsService.log('useDomain:domain', serializeError(e), 'error')
             return ''
         }
     })
@@ -37,7 +37,7 @@ export function useDomain(url: Ref<string>) {
             }
             return null
         } catch (e) {
-            UtilsService.log('useDomain:subdomain', e instanceof Error ? e.message : String(e), 'error')
+            UtilsService.log('useDomain:subdomain', serializeError(e), 'error')
             return null
         }
     })
@@ -51,7 +51,7 @@ export function useDomain(url: Ref<string>) {
             )
             return urlObj.protocol.replace(':', '')
         } catch (e) {
-            UtilsService.log('useDomain:protocol', e instanceof Error ? e.message : String(e), 'error')
+            UtilsService.log('useDomain:protocol', serializeError(e), 'error')
             return null
         }
     })
@@ -65,7 +65,7 @@ export function useDomain(url: Ref<string>) {
             )
             return urlObj.pathname
         } catch (e) {
-            UtilsService.log('useDomain:pathname', e instanceof Error ? e.message : String(e), 'error')
+            UtilsService.log('useDomain:pathname', serializeError(e), 'error')
             return null
         }
     })

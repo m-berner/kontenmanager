@@ -5,7 +5,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { useRuntimeStore } from '@/stores/runtime';
 import { databaseService } from '@/services/database';
 import { fetchService } from '@/services/fetch';
-import { AppError } from '@/domains/errors';
+import { AppError, serializeError } from '@/domains/errors';
 import { UtilsService } from '@/domains/utils';
 import { CURRENCIES } from '@/domains/config/currencies';
 import { ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
@@ -26,9 +26,12 @@ export class AppService {
             await this.fetchExternalData();
             UtilsService.log('Application initialization completed successfully');
         }
-        catch (error) {
-            UtilsService.log('Application initialization failed', error, 'error');
-            throw error;
+        catch (err) {
+            UtilsService.log('Application initialization failed', err, 'error');
+            if (err instanceof AppError) {
+                throw err;
+            }
+            throw new AppError(ERROR_CODES.APP_SERVICE, ERROR_CATEGORY.BUSINESS, { input: serializeError(err), entity: 'AppService', phase: 'initializeApp' }, true);
         }
     }
     async reset() {

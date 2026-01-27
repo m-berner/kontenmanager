@@ -8,7 +8,7 @@
 
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useStockForm} from '@/composables/useForms'
 import {fetchService} from '@/services/fetch'
@@ -47,11 +47,10 @@ const onUpdateIsin = async () => {
     } catch (err) {
         stockFormData.company = ''
         stockFormData.symbol = ''
-        const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : t('components.dialogs.forms.stockForm.messages.onUpdateIsin'))
         throw new AppError(
             ERROR_CODES.STOCK_FORM,
             ERROR_CATEGORY.VALIDATION,
-            {input: errorMessage},
+            {input: serializeError(err)},
             true
         )
     }

@@ -75,10 +75,12 @@ describe('AddAccount Logic Test', () => {
         // 4. Verify database interaction
         expect(addSpy).toHaveBeenCalledWith(
             INDEXED_DB.STORE.ACCOUNTS.NAME,
-            expect.objectContaining({
-                                        cSwift: 'TESTSWIFT',
-                                        cIban: 'DE12345678901234567890'
-                                    })
+            expect.objectContaining(
+                {
+                    cSwift: 'TESTSWIFT',
+                    cIban: 'DE12345678901234567890'
+                }
+            )
         )
 
         // 5. Verify store updates
@@ -88,9 +90,11 @@ describe('AddAccount Logic Test', () => {
 
         // 6. Verify browser storage was updated
         expect(browserMock.storage.local.set).toHaveBeenCalledWith(
-            expect.objectContaining({
-                                        'sActiveAccountId': 123
-                                    })
+            expect.objectContaining(
+                {
+                    'sActiveAccountId': 123
+                }
+            )
         )
     })
 })

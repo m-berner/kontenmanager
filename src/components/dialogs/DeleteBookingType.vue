@@ -11,7 +11,7 @@ import {onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
@@ -54,11 +54,10 @@ const onClickOk = async (): Promise<void> => {
             runtime.resetTeleport()
             await notice([t('components.dialogs.deleteBookingType.messages.success')])
         } catch (err) {
-            const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
                 ERROR_CODES.DELETE_BOOKING_TYPE,
                 ERROR_CATEGORY.VALIDATION,
-                {input: errorMessage, entity: 'DeleteBookingType', bookingTypeId: bookingTypeFormData.id! as number},
+                {input: serializeError(err), entity: 'DeleteBookingType', bookingTypeId: bookingTypeFormData.id! as number},
                 true
             )
         }
