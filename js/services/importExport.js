@@ -1,7 +1,6 @@
-import { AppError } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
 import { UtilsService } from '@/domains/utils';
 import { INDEXED_DB } from '@/config/database';
-import { SYSTEM } from '@/domains/config/system';
 import { ImportExportValidator } from '@/domains/importExport/validator';
 import { ImportExportTransformer } from '@/domains/importExport/transformer';
 import { DATE } from '@/domains/config/date';
@@ -15,21 +14,21 @@ export class ImportExportService {
     }
     static async readJsonFile(blob) {
         if (!blob || blob.size === 0) {
-            throw new AppError('Empty or invalid file', 'EMPTY_FILE', SYSTEM.ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.A, ERROR_CATEGORY.VALIDATION, {}, false);
         }
         const MAX_SIZE = 100 * 1024 * 1024;
         if (blob.size > MAX_SIZE) {
-            throw new AppError('File too large', 'FILE_TOO_LARGE', SYSTEM.ERROR_CATEGORY.VALIDATION, { size: blob.size, maxSize: MAX_SIZE }, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.B, ERROR_CATEGORY.VALIDATION, { size: blob.size, maxSize: MAX_SIZE }, false);
         }
         let text;
         try {
             text = await blob.text();
         }
         catch (err) {
-            throw new AppError('Failed to read file', 'READ_FAILED', SYSTEM.ERROR_CATEGORY.VALIDATION, { originalError: err }, true);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.C, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
         if (!text || text.trim().length === 0) {
-            throw new AppError('File contains no data', 'NO_DATA', SYSTEM.ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.D, ERROR_CATEGORY.VALIDATION, {}, false);
         }
         let parsed;
         try {
@@ -37,12 +36,12 @@ export class ImportExportService {
         }
         catch (err) {
             if (err instanceof SyntaxError) {
-                throw new AppError(`Invalid JSON format: ${err.message}`, 'INVALID_JSON', SYSTEM.ERROR_CATEGORY.VALIDATION, { originalError: err }, true);
+                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.E, ERROR_CATEGORY.VALIDATION, { input: err }, true);
             }
             throw err;
         }
         if (!parsed || typeof parsed !== 'object') {
-            throw new AppError('Invalid JSON structure', 'INVALID_STRUCTURE', SYSTEM.ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, {}, false);
         }
         return parsed;
     }
@@ -59,7 +58,7 @@ export class ImportExportService {
             return JSON.stringify(exportData, null, 2);
         }
         catch (err) {
-            throw new AppError('Failed to serialize data', 'SERIALIZE_FAILED', SYSTEM.ERROR_CATEGORY.VALIDATION, { originalError: err }, true);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.G, ERROR_CATEGORY.VALIDATION, { originalError: err }, true);
         }
     }
     verifyExportIntegrity(exportedData) {
@@ -108,7 +107,7 @@ export class ImportExportService {
         if (!Array.isArray(bookings))
             errors.push('Invalid bookings data');
         if (errors.length > 0) {
-            throw new AppError('Export data validation failed', 'VALIDATION_FAILED', SYSTEM.ERROR_CATEGORY.VALIDATION, { ieError: errors }, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.H, ERROR_CATEGORY.VALIDATION, { ieError: errors }, false);
         }
     }
 }

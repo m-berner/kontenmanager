@@ -24,6 +24,7 @@ import AccountForm from '@/components/dialogs/forms/AccountForm.vue'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {databaseService} from '@/services/database'
 import {BROWSER_STORAGE} from '@/config/storage'
+import {ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 
 const {t} = useI18n()
 const {notice} = useBrowser()
@@ -81,10 +82,9 @@ const addBookingTypesForAccount = async (accountId: number): Promise<boolean> =>
         }
         const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
         throw new AppError(
-            errorMessage,
-            'ADD_ACCOUNT_BOOKING_TYPES',
-            'validation',
-            {u: err},
+            ERROR_CODES.ADD_ACCOUNT,
+            ERROR_CATEGORY.VALIDATION,
+            {input: errorMessage, entity: 'AddAccount'},
             true
         )
     }

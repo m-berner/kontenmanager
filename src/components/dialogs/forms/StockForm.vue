@@ -8,13 +8,12 @@
 
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {AppError} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useStockForm} from '@/composables/useForms'
 import {fetchService} from '@/services/fetch'
 import type {StockFormProps} from '@/types'
 import {ValidationService} from '@/services/validation'
-import {SYSTEM} from '@/domains/config/system'
 
 const props = defineProps<StockFormProps>()
 
@@ -50,10 +49,9 @@ const onUpdateIsin = async () => {
         stockFormData.symbol = ''
         const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : t('components.dialogs.forms.stockForm.messages.onUpdateIsin'))
         throw new AppError(
-            errorMessage,
-            'STOCK_FORMULAR',
-            SYSTEM.ERROR_CATEGORY.VALIDATION,
-            {i: err},
+            ERROR_CODES.STOCK_FORM,
+            ERROR_CATEGORY.VALIDATION,
+            {input: errorMessage},
             true
         )
     }

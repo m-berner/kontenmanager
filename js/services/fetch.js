@@ -1,9 +1,8 @@
-import { AppError } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
 import { UtilsService } from '@/domains/utils';
 import { FETCH } from '@/config/fetch';
 import { STORES } from '@/config/stores';
 import { BROWSER_STORAGE } from '@/config/storage';
-import { SYSTEM } from '@/domains/config/system';
 class FetchCache {
     cache = new Map();
     DEFAULT_TTL = 5 * 60 * 1000;
@@ -256,7 +255,7 @@ export class FetchService {
         finally {
             clearTimeout(timeoutId);
         }
-        throw new AppError(`Failed after ${maxRetries} attempts: ${lastError?.message}`, 'FETCH_SERVICE', 'network', { originalError: lastError }, true);
+        throw new AppError(ERROR_CODES.SERVICES.FETCH.A, ERROR_CATEGORY.NETWORK, { input: lastError?.message, entity: 'fetch service' }, true);
     }
     async fetchWithCache(key, url, ttl = 5 * 60 * 1000) {
         const cached = this.cache.get(key, ttl);
@@ -272,17 +271,17 @@ export class FetchService {
     }
     async parseHTML(text) {
         if (!text) {
-            throw new AppError('Invalid HTML input', 'FETCH_SERVICE', SYSTEM.ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.B, ERROR_CATEGORY.VALIDATION, { input: text, entity: 'fetch service' }, false);
         }
         return new DOMParser().parseFromString(text, 'text/html');
     }
     async fetchCompanyData(isin) {
         if (!isin || isin.length !== 12) {
-            throw new AppError('Invalid ISIN format', 'FETCH_SERVICE', SYSTEM.ERROR_CATEGORY.VALIDATION, { isin }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.C, ERROR_CATEGORY.VALIDATION, { isin }, false);
         }
         const service = FETCH.MAP.get('tgate');
         if (!service) {
-            throw new AppError('Service configuration not found', 'FETCH_SERVICE', SYSTEM.ERROR_CATEGORY.VALIDATION, { service: 'tgate' }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.D, ERROR_CATEGORY.VALIDATION, { service: 'tgate' }, false);
         }
         const firstResponse = await this.fetchWithRetry(service.QUOTE + isin);
         const secondResponse = await this.fetchWithRetry(firstResponse.url);
@@ -291,12 +290,12 @@ export class FetchService {
         const nameNode = doc.querySelector('#col1_content')?.childNodes[1];
         const company = nameNode?.textContent?.split(',')[0].trim() || '';
         if (!company || company.includes('Die Gattung wird')) {
-            throw new AppError('Company not found or inactive', 'FETCH_SERVICE', SYSTEM.ERROR_CATEGORY.VALIDATION, { url: firstResponse.url }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.E, ERROR_CATEGORY.VALIDATION, { url: firstResponse.url }, false);
         }
         const tables = doc.querySelectorAll('table > tbody tr');
         const symbol = tables[1]?.cells[1]?.textContent?.trim() || '';
         if (!symbol) {
-            throw new AppError('Symbol not found', 'FETCH_SERVICE', SYSTEM.ERROR_CATEGORY.VALIDATION, { url: firstResponse.url }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.F, ERROR_CATEGORY.VALIDATION, { url: firstResponse.url }, false);
         }
         return { company, symbol };
     }
@@ -309,11 +308,11 @@ export class FetchService {
         const serviceName = storageService[BROWSER_STORAGE.SERVICE.key];
         const service = FETCH.MAP.get(serviceName);
         if (!service) {
-            throw new AppError('Service not configured', 'FETCH_SERVICE', SYSTEM.ERROR_CATEGORY.VALIDATION, { serviceName }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.G, ERROR_CATEGORY.VALIDATION, { serviceName }, false);
         }
         const fetcher = this.serviceFetchers[serviceName];
         if (!fetcher) {
-            throw new AppError('Unsupported service', 'FETCH_SERVICE', SYSTEM.ERROR_CATEGORY.NETWORK, { serviceName }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.H, ERROR_CATEGORY.NETWORK, { serviceName }, false);
         }
         const urls = storageOnline.map(item => ({
             value: service.QUOTE + item.isin,
@@ -380,7 +379,7 @@ export class FetchService {
             return [];
         const service = FETCH.FX;
         if (!service) {
-            throw new AppError('FX service not configured', 'FETCH_SERVICE', 'network', {}, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.I, ERROR_CATEGORY.NETWORK, { input: exchangeCodes }, false);
         }
         const results = await Promise.allSettled(exchangeCodes.map(async (code) => {
             const url = `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`;
@@ -388,7 +387,7 @@ export class FetchService {
             const doc = await this.parseHTML(html);
             const rateElement = doc.querySelector('form#formcalculator.formcalculator > div');
             if (!rateElement) {
-                throw new AppError('Exchange rate not found', 'FETCH_SERVICE', 'network', { url }, false);
+                throw new AppError(ERROR_CODES.SERVICES.FETCH.J, ERROR_CATEGORY.NETWORK, { url }, false);
             }
             const rateString = rateElement.getAttribute('data-rate');
             const rateMatch = rateString?.match(/[0-9]*\.?[0-9]+/g);

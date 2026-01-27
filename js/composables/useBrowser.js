@@ -3,7 +3,7 @@ import { AppError } from '@/domains/errors';
 import { EVENTS } from '@/config/events';
 import { ENTRYPOINTS } from '@/config/entrypoints';
 import { DEFAULTS } from '@/config/defaults';
-import { SYSTEM } from '@/domains/config/system';
+import { ERROR_CODES, ERROR_CATEGORY } from '@/domains/errors';
 export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
     const manifest = computed(() => browser.runtime.getManifest());
@@ -11,7 +11,7 @@ export function useBrowser() {
     const locale5 = computed(() => {
         const defaultLanguage = navigator.languages[0];
         if (!defaultLanguage) {
-            throw new AppError(`${SYSTEM.ERRORS.LOCALE5}: No language available`, 'USE_BROWSER: ...', SYSTEM.ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.USE_BROWSER.A, ERROR_CATEGORY.VALIDATION, {}, false);
         }
         if (defaultLanguage.length === 5) {
             return defaultLanguage;
@@ -19,7 +19,7 @@ export function useBrowser() {
         if (defaultLanguage.length === 2) {
             return `${defaultLanguage}-${defaultLanguage.toUpperCase()}`;
         }
-        throw new AppError(`${SYSTEM.ERRORS.LOCALE5}: Invalid language format "${defaultLanguage}"`, 'USE_BROWSER ...', SYSTEM.ERROR_CATEGORY.VALIDATION, { lError: 'invalid_lang_format' }, false);
+        throw new AppError(ERROR_CODES.USE_BROWSER.B, ERROR_CATEGORY.VALIDATION, { input: 'invalid_lang_format' }, false);
     });
     function actionOnClicked(listener) {
         browser.action.onClicked.addListener(listener);
@@ -35,7 +35,7 @@ export function useBrowser() {
             });
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.TABS, 'USE_BROWSER', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.C, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     async function tabsQuery() {
@@ -43,7 +43,7 @@ export function useBrowser() {
             return await browser.tabs.query({ url: indexUrl.value });
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.TABS, 'USE_BROWSER', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.D, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     async function windowsUpdate(windowId) {
@@ -53,7 +53,7 @@ export function useBrowser() {
             });
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.WINDOWS, 'USE_BROWSER', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.E, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     async function tabsUpdate(tabId) {
@@ -63,7 +63,7 @@ export function useBrowser() {
             });
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.TABS, 'USE_BROWSER', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.F, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     async function openOptionsPage() {
@@ -71,7 +71,7 @@ export function useBrowser() {
             await browser.runtime.openOptionsPage();
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.OPEN_OPTIONS, 'USE_BROWSER', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.G, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     async function notice(messages) {
@@ -85,12 +85,12 @@ export function useBrowser() {
             await browser.notifications.create(notificationOption);
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.NOTICE, 'USE_BROWSER', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.H, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     async function writeBufferToFile(buffer, filename) {
         if (!filename || filename.trim() === '') {
-            throw new AppError('Invalid filename', 'USE_BROWSER: ...', SYSTEM.ERROR_CATEGORY.VALIDATION, { fileError: filename }, false);
+            throw new AppError(ERROR_CODES.USE_BROWSER.I, ERROR_CATEGORY.VALIDATION, { input: filename }, false);
         }
         try {
             const blob = new Blob([buffer], { type: 'application/json' });
@@ -108,7 +108,7 @@ export function useBrowser() {
             browser.downloads.onChanged.addListener(onDownloadChange);
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.WRITE_BUFFER_TO_FILE, 'USE_BROWSER', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_BROWSER.J, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     return {

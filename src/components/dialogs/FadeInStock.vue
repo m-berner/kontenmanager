@@ -12,13 +12,12 @@ import {onBeforeMount, ref} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {AppError} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useStocksDB} from '@/composables/useIndexedDB'
 import {useBrowser} from '@/composables/useBrowser'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {databaseService} from '@/services/database'
-import {SYSTEM} from '@/domains/config/system'
 
 const {t} = useI18n()
 const {notice} = useBrowser()
@@ -52,10 +51,9 @@ const onClickOk = async (): Promise<void> => {
         } catch (err) {
             const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
-                errorMessage,
-                'FADE_IN_STOCK',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
-                {g: err},
+                ERROR_CODES.FADE_IN_STOCK,
+                ERROR_CATEGORY.VALIDATION,
+                {input: errorMessage, entity: 'FadeInStock', stockId: selected.value!.cID as number},
                 true
             )
         }

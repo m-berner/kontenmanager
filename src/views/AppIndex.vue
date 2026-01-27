@@ -17,7 +17,7 @@ import {initializeApp} from '@/services/app'
 import {useTheme} from 'vuetify'
 import {useSettingsStore} from '@/stores/settings'
 import {storeToRefs} from 'pinia'
-import {SYSTEM} from '@/domains/config/system'
+import {ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 
 const {t} = useI18n()
 const settings = useSettingsStore()
@@ -39,15 +39,14 @@ onBeforeMount(async () => {
         UtilsService.log('APP_INDEX: Initialization successful')
     } catch (err) {
         throw new AppError(
-            t('views.appIndex.messages.onBeforeMount'),
-            'APP_INDEX',
-            SYSTEM.ERROR_CATEGORY.VALIDATION,
-            {u: err},
+            ERROR_CODES.VIEWS.APP_INDEX.A,
+            ERROR_CATEGORY.VALIDATION,
+            {input: err, entity: 'AppIndex'},
             true
         )
     }
 })
-
+// TODO reload company page adjust the titlebar to home?
 UtilsService.log('--- views/AppIndex.vue setup ---', window.location.href, 'info')
 </script>
 

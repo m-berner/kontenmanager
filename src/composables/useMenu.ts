@@ -14,9 +14,8 @@ import {useBrowser} from '@/composables/useBrowser'
 import {storeToRefs} from 'pinia'
 import type {MenuActionType} from '@/types'
 import {computed, onUnmounted, readonly, ref} from 'vue'
-import {AppError} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import {CODES} from '@/config/codes'
-import {SYSTEM} from '@/domains/config/system'
 
 type HighlightColor = 'green' | 'red' | 'yellow' | 'blue'
 
@@ -280,9 +279,8 @@ export function useMenuAction() {
 
         if (!handler) {
             throw new AppError(
-                `Unknown action type: ${actionType}`,
-                'USE_MENU_ACTION',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                ERROR_CODES.USE_MENU.A,
+                ERROR_CATEGORY.VALIDATION,
                 {},
                 false
             )
@@ -293,10 +291,9 @@ export function useMenuAction() {
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Unknown error'
             throw new AppError(
-                errorMessage,
-                'USE_MENU_ACTION',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
-                {p: err, actionType, recordId},
+                ERROR_CODES.USE_MENU.B,
+                ERROR_CATEGORY.VALIDATION,
+                {input: errorMessage},
                 true
             )
         }

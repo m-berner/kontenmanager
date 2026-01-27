@@ -1,19 +1,18 @@
 import { DATE } from '@/domains/config/date';
 import { LOCAL_STORAGE } from '@/config/storage';
-import { SYSTEM } from '@/domains/config/system';
-import { AppError } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
 export class UtilsService {
     constructor() {
     }
     static utcDate(iso) {
         if (!DATE.ISO_DATE_REGEX.test(iso) && iso !== '') {
-            throw new AppError(`Invalid ISO date format: ${iso}`, 'USE_UTILS: ...', SYSTEM.ERROR_CATEGORY.VALIDATION, { validError: iso }, false);
+            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, { input: iso }, false);
         }
         return new Date(`${iso}T00:00:00.000`);
     }
     static isoDate(ms) {
         if (!Number.isFinite(ms)) {
-            throw new AppError(`Invalid timestamp: ${ms}`, 'USE_UTILS: ...', SYSTEM.ERROR_CATEGORY.VALIDATION, { vError: ms }, false);
+            throw new AppError(ERROR_CODES.UTILS.B, ERROR_CATEGORY.VALIDATION, { input: ms }, false);
         }
         return new Date(ms).toISOString().substring(0, 10);
     }
@@ -38,7 +37,7 @@ export class UtilsService {
             return fallback;
         const isParseError = () => {
             if (throwOnError) {
-                throw new AppError(`Cannot parse "${value}" as number`, 'USE_UTILS: ...', SYSTEM.ERROR_CATEGORY.VALIDATION, { testError: value }, false);
+                throw new AppError(ERROR_CODES.UTILS.C, ERROR_CATEGORY.VALIDATION, { input: value }, false);
             }
         };
         try {

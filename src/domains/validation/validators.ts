@@ -8,8 +8,7 @@
 
 import {ValidationRules} from './rules'
 import {UtilsService} from '@/domains/utils'
-import {AppError} from '@/domains/errors'
-import {SYSTEM} from '@/domains/config/system'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import type {AccountDb, BookingDb, BookingTypeDb, StockDb} from '@/types'
 
 /**
@@ -20,9 +19,8 @@ export class DomainValidators {
     static validateBooking(data: unknown): BookingDb {
         if (typeof data !== 'object' || data === null) {
             throw new AppError(
-                'Invalid booking data.',
-                'DOMAIN_VALIDATORS',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                ERROR_CODES.VALIDATION.A,
+                ERROR_CATEGORY.VALIDATION,
                 {input: data, entity: 'booking'},
                 false
             )
@@ -66,9 +64,8 @@ export class DomainValidators {
     static validateAccount(data: unknown): AccountDb {
         if (typeof data !== 'object' || data === null) {
             throw new AppError(
-                'Invalid account data',
-                'DOMAIN_VALIDATORS',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                ERROR_CODES.VALIDATION.B,
+                ERROR_CATEGORY.VALIDATION,
                 {input: data, entity: 'account'},
                 false
             )
@@ -92,9 +89,8 @@ export class DomainValidators {
     static validateStock(data: unknown): StockDb {
         if (typeof data !== 'object' || data === null) {
             throw new AppError(
-                'Invalid stock data',
-                'DOMAIN_VALIDATORS',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                ERROR_CODES.VALIDATION.C,
+                ERROR_CATEGORY.VALIDATION,
                 {input: data, entity: 'stock'},
                 false
             )
@@ -124,9 +120,8 @@ export class DomainValidators {
     static validateBookingType(data: unknown): BookingTypeDb {
         if (typeof data !== 'object' || data === null) {
             throw new AppError(
-                'Invalid booking type data',
-                'DOMAIN_VALIDATORS',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                ERROR_CODES.VALIDATION.D,
+                ERROR_CATEGORY.VALIDATION,
                 {input: data, entity: 'bookingType'},
                 false
             )

@@ -11,13 +11,12 @@ import {onBeforeMount} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRecordsStore} from '@/stores/records'
 import {useRuntimeStore} from '@/stores/runtime'
-import {AppError} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useBrowser} from '@/composables/useBrowser'
 import {useBookingTypesDB} from '@/composables/useIndexedDB'
 import {useDialogGuards} from '@/composables/useDialogGuards'
 import {databaseService} from '@/services/database'
-import {SYSTEM} from '@/domains/config/system'
 import BookingTypeForm from '@/components/dialogs/forms/BookingTypeForm.vue'
 import {useBookingTypeForm} from '@/composables/useForms'
 
@@ -57,10 +56,9 @@ const onClickOk = async (): Promise<void> => {
         } catch (err) {
             const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
-                errorMessage,
-                'DELETE_BOOKING_TYPE',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
-                {a: err},
+                ERROR_CODES.DELETE_BOOKING_TYPE,
+                ERROR_CATEGORY.VALIDATION,
+                {input: errorMessage, entity: 'DeleteBookingType', bookingTypeId: bookingTypeFormData.id! as number},
                 true
             )
         }

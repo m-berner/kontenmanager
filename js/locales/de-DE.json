@@ -231,6 +231,49 @@
             "message": "KontenManager ist eine Weiterentwicklung des ehemaligen StockManagers. Der Import von StockManager-Daten ist nur direkt nach der Installation möglich – das heißt, bevor manuell ein KontenManager-Objekt angelegt wurde."
         }
     },
+    "validators": {
+        "ibanRules": {
+            "required": "IBAN ist erforderlich",
+            "length": "Ungültige IBAN Länge",
+            "format": "Ungültige IBAN",
+            "checksum": "Ungültige Prüfsumme",
+            "duplicate": "Konto existiert bereits"
+        },
+        "isinRules": {
+            "required": "ISIN ist erforderlich",
+            "length": "Ungültige ISIN Länge",
+            "format": "Ungültige ISIN",
+            "country": "Falscher Ländercode",
+            "luhn": "Ungültige Prüfsumme (Luhn)"
+        },
+        "nameRules": {
+            "required": "Name ist erforderlich",
+            "length": "Maximal 24 Zeichen",
+            "begin": "Erstes Zeichen muss ein Buchstabe sein"
+        },
+        "swiftRules": {
+            "required": "SWIFT ist erforderlich",
+            "length": "Nur 8 bzw. 11 Zeichen",
+            "format": "Ungültiges SWIFT Format",
+            "bankCode": "Ungültige Bank",
+            "countryCode": "Ungültiges Land",
+            "locationCode": "Ungültige Region",
+            "branchCode": "Ungültige Branche",
+            "test": "Test BIC"
+        },
+        "isoDateRules": {
+            "required": "Datum ist erforderlich",
+            "valid": "Datum ist ungültig"
+        },
+        "requiredRules": "Ist erforderlich",
+        "notNegative": "Nur positive Werte",
+        "creditDebitFieldset": {
+            "onlyOnePositive": "Ein Wert muss 0 der andere > 0 sein"
+        },
+        "bookingTypeRules": {
+            "required": "Buchungstyp ist erforderlich"
+        }
+    },
     "views": {
         "appIndex": {
             "messages": {
@@ -397,49 +440,6 @@
                     }
                 }
             }
-        }
-    },
-    "validators": {
-        "ibanRules": {
-            "required": "IBAN ist erforderlich",
-            "length": "Ungültige IBAN Länge",
-            "format": "Ungültige IBAN",
-            "checksum": "Ungültige Prüfsumme",
-            "duplicate": "Konto existiert bereits"
-        },
-        "isinRules": {
-            "required": "ISIN ist erforderlich",
-            "length": "Ungültige ISIN Länge",
-            "format": "Ungültige ISIN",
-            "country": "Falscher Ländercode",
-            "luhn": "Ungültige Prüfsumme (Luhn)"
-        },
-        "nameRules": {
-            "required": "Name ist erforderlich",
-            "length": "Maximal 24 Zeichen",
-            "begin": "Erstes Zeichen muss ein Buchstabe sein"
-        },
-        "swiftRules": {
-            "required": "SWIFT ist erforderlich",
-            "length": "Nur 8 bzw. 11 Zeichen",
-            "format": "Ungültiges SWIFT Format",
-            "bankCode": "Ungültige Bank",
-            "countryCode": "Ungültiges Land",
-            "locationCode": "Ungültige Region",
-            "branchCode": "Ungültige Branche",
-            "test": "Test BIC"
-        },
-        "isoDateRules": {
-            "required": "Datum ist erforderlich",
-            "valid": "Datum ist ungültig"
-        },
-        "requiredRules": "Ist erforderlich",
-        "notNegative": "Nur positive Werte",
-        "creditDebitFieldset": {
-            "onlyOnePositive": "Ein Wert muss 0 der andere > 0 sein"
-        },
-        "bookingTypeRules": {
-            "required": "Buchungstyp ist erforderlich"
         }
     }
 }

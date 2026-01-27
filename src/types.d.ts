@@ -573,10 +573,10 @@ export type NumberValidatorType = (_v: number) => boolean | string
 export type ValidationRuleType = (_value: unknown) => boolean | string
 
 export type AppErrorCategoryType =
-    SYSTEM.ERROR_CATEGORY.NETWORK
-    | SYSTEM.ERROR_CATEGORY.VALIDATION
-    | SYSTEM.ERROR_CATEGORY.DATABASE
-    | SYSTEM.ERROR_CATEGORY.BUSINESS
+    SYSTEM.ERRORS.CATEGORY.NETWORK
+    | SYSTEM.ERRORS.CATEGORY.VALIDATION
+    | SYSTEM.ERRORS.CATEGORY.DATABASE
+    | SYSTEM.ERRORS.CATEGORY.BUSINESS
 
 export type ValidationCode = typeof VALIDATION_CODES[keyof typeof VALIDATION_CODES]
 

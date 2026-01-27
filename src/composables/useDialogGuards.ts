@@ -8,8 +8,7 @@
 
 import type {Ref} from 'vue'
 import {ref} from 'vue'
-import {AppError} from '@/domains/errors'
-import {SYSTEM} from '@/domains/config/system'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import type {FormInterface, FormValidateResultType} from '@/types'
 
 /**
@@ -87,9 +86,8 @@ export function useDialogGuards() {
             return form.value.validate()
         } catch (err) {
             throw new AppError(
-                'validateForm',
-                'DIALOG_GUARDS',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
+                ERROR_CODES.USE_DIALOG_GUARDS.A,
+                ERROR_CATEGORY.VALIDATION,
                 {a: err},
                 true
             )
@@ -120,10 +118,9 @@ export function useDialogGuards() {
             } catch (error) {
                 if (attempt === maxRetries) {
                     throw new AppError(
-                        'Retry failed',
-                        'USE_DIALOG_GUARDS',
-                        SYSTEM.ERROR_CATEGORY.VALIDATION,
-                        {retryError: error},
+                        ERROR_CODES.USE_DIALOG_GUARDS.B,
+                        ERROR_CATEGORY.VALIDATION,
+                        {input: error},
                         true
                     )
                 }
@@ -134,10 +131,9 @@ export function useDialogGuards() {
         }
 
         throw new AppError(
-            'Should not reach here',
-            'USE_DIALOG_GUARDS',
-            SYSTEM.ERROR_CATEGORY.VALIDATION,
-            {retryError: 'retry_exhausted'},
+            ERROR_CODES.USE_DIALOG_GUARDS.C,
+            ERROR_CATEGORY.VALIDATION,
+            {input: 'retry_exhausted'},
             false
         )
     }
@@ -164,9 +160,8 @@ export function useDialogGuards() {
             connectionErrorMessage = 'Database not connected',
             notice,
             operation,
-            onFinally,
-            errorContext = 'SUBMIT_GUARD',
-            errorTitle = 'Error'
+            onFinally
+            //errorContext = 'USE_DIALOG_GUARD'
         } = options
 
         if (formRef) {
@@ -183,10 +178,9 @@ export function useDialogGuards() {
                 await operation()
             } catch (err) {
                 throw new AppError(
-                    errorTitle,
-                    errorContext,
-                    SYSTEM.ERROR_CATEGORY.VALIDATION,
-                    {a: err},
+                    '',
+                    ERROR_CATEGORY.VALIDATION,
+                    {input: err},
                     true
                 )
             } finally {

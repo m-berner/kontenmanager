@@ -6,11 +6,10 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import {AppError} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import type {BookingDb, BookingTypeDb, RecordOperation, RecordsDbData, StockDb} from '@/types'
 import {INDEXED_DB} from '@/config/database'
-import {SYSTEM} from '@/domains/config/system'
 import {IndexedDbBase} from './database/base'
 import {DatabaseMigrator} from './database/migrator'
 import {AccountRepository} from './database/repositories/AccountRepository'
@@ -55,7 +54,12 @@ export class DatabaseService extends IndexedDbBase {
             request.onerror = () => {
                 this.db = null
                 this.connected = false
-                reject(request.error)
+                reject(new AppError(
+                    ERROR_CODES.SERVICES.DATABASE.A,
+                    ERROR_CATEGORY.DATABASE,
+                    {input: request.error, entity: 'database service (connect)'},
+                    false
+                ))
             }
 
             request.onsuccess = () => {
@@ -80,10 +84,9 @@ export class DatabaseService extends IndexedDbBase {
                 this.db.close()
             } catch (err) {
                 throw new AppError(
-                    'Error closing database',
-                    'DATABASE_SERVICE',
-                    SYSTEM.ERROR_CATEGORY.DATABASE,
-                    {dbError: err},
+                    ERROR_CODES.SERVICES.DATABASE.B,
+                    ERROR_CATEGORY.DATABASE,
+                    {input: err, entity: 'database service (disconnect)'},
                     true
                 )
             } finally {
@@ -109,14 +112,24 @@ export class DatabaseService extends IndexedDbBase {
                                 store.put(op.data)
                                 break
                             case 'delete':
-                                if (!op.key) throw new Error('Delete operation requires a key')
+                                if (!op.key) throw new AppError(
+                                    ERROR_CODES.SERVICES.DATABASE.C,
+                                    ERROR_CATEGORY.DATABASE,
+                                    {operation: op, storeName},
+                                    false
+                                )
                                 store.delete(op.key)
                                 break
                             case 'clear':
                                 store.clear()
                                 break
                             default:
-                                throw new Error(`Unknown operation type: ${(op as any).type}`)
+                                throw new AppError(
+                                    ERROR_CODES.SERVICES.DATABASE.D,
+                                    ERROR_CATEGORY.DATABASE,
+                                    {input: op, entity: storeName},
+                                    false
+                                )
                         }
                     }
                 }
@@ -136,14 +149,24 @@ export class DatabaseService extends IndexedDbBase {
                         store.put(op.data)
                         break
                     case 'delete':
-                        if (!op.key) throw new Error('Delete operation requires a key')
+                        if (!op.key) throw new AppError(
+                            ERROR_CODES.SERVICES.DATABASE.E,
+                            ERROR_CATEGORY.DATABASE,
+                            {input: op, entity: storeName},
+                            false
+                        )
                         store.delete(op.key)
                         break
                     case 'clear':
                         store.clear()
                         break
                     default:
-                        throw new Error(`Unknown operation type: ${(op as any).type}`)
+                        throw new AppError(
+                            ERROR_CODES.SERVICES.DATABASE.F,
+                            ERROR_CATEGORY.DATABASE,
+                            {operation: op, entity:  storeName},
+                            false
+                        )
                 }
             }
         })
@@ -160,12 +183,14 @@ export class DatabaseService extends IndexedDbBase {
             ],
             'readonly',
             async (tx) => {
-                const [accounts, bookings, bookingTypes, stocks] = await Promise.all([
-                                                                                         this.accounts.getAll(tx),
-                                                                                         this.bookings.getAllByAccount(accountId, tx),
-                                                                                         this.bookingTypes.getAllByAccount(accountId, tx),
-                                                                                         this.stocks.getAllByAccount(accountId, tx)
-                                                                                     ])
+                const [accounts, bookings, bookingTypes, stocks] = await Promise.all(
+                    [
+                        this.accounts.getAll(tx),
+                        this.bookings.getAllByAccount(accountId, tx),
+                        this.bookingTypes.getAllByAccount(accountId, tx),
+                        this.stocks.getAllByAccount(accountId, tx)
+                    ]
+                )
                 return {accountsDB: accounts, bookingsDB: bookings, bookingTypesDB: bookingTypes, stocksDB: stocks}
             }
         )
@@ -181,11 +206,13 @@ export class DatabaseService extends IndexedDbBase {
             ],
             'readwrite',
             async (tx) => {
-                await Promise.all([
-                                      this.bookings.deleteByAccount(accountId, tx),
-                                      this.bookingTypes.deleteByAccount(accountId, tx),
-                                      this.stocks.deleteByAccount(accountId, tx)
-                                  ])
+                await Promise.all(
+                    [
+                        this.bookings.deleteByAccount(accountId, tx),
+                        this.bookingTypes.deleteByAccount(accountId, tx),
+                        this.stocks.deleteByAccount(accountId, tx)
+                    ]
+                )
                 await this.accounts.delete(accountId, tx)
             }
         )

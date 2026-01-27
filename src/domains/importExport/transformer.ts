@@ -7,8 +7,7 @@
  */
 
 import type {BookingDb, DateConfigType, IndexedDbConfigType, LegacyBookingDb, LegacyStockDb, StockDb} from '@/types'
-import {AppError} from '@/domains/errors'
-import {SYSTEM} from '@/domains/config/system'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 
 /**
  * Domain-level transformer for database records.
@@ -100,9 +99,8 @@ export class ImportExportTransformer {
                 break
             default:
                 throw new AppError(
-                    `Unknown booking type: ${smTransfer.cType}`,
-                    'TRANSFORM_LEGACY: UNKNOWN_TYPE',
-                    SYSTEM.ERROR_CATEGORY.VALIDATION,
+                    ERROR_CODES.IMPORT_EXPORT.A,
+                    ERROR_CATEGORY.VALIDATION,
                     {type: smTransfer.cType},
                     false
                 )
@@ -138,9 +136,8 @@ export class ImportExportTransformer {
                 return result
             default:
                 throw new AppError(
-                    'Unknown booking type',
-                    'UNKNOWN_BOOKING_TYPE',
-                    SYSTEM.ERROR_CATEGORY.VALIDATION,
+                    ERROR_CODES.IMPORT_EXPORT.B,
+                    ERROR_CATEGORY.VALIDATION,
                     {type: rec.cType},
                     false
                 )

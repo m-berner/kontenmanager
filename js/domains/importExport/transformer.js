@@ -1,5 +1,4 @@
-import { AppError } from '@/domains/errors';
-import { SYSTEM } from '@/domains/config/system';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
 export class ImportExportTransformer {
     _INDEXED_DB;
     _DATE;
@@ -73,7 +72,7 @@ export class ImportExportTransformer {
                 booking.cDebit = creditDebit.value;
                 break;
             default:
-                throw new AppError(`Unknown booking type: ${smTransfer.cType}`, 'TRANSFORM_LEGACY: UNKNOWN_TYPE', SYSTEM.ERROR_CATEGORY.VALIDATION, { type: smTransfer.cType }, false);
+                throw new AppError(ERROR_CODES.IMPORT_EXPORT.A, ERROR_CATEGORY.VALIDATION, { type: smTransfer.cType }, false);
         }
         return booking;
     }
@@ -103,7 +102,7 @@ export class ImportExportTransformer {
                 result.value = -rec.cAmount - rec.cFees - rec.cSTax - rec.cFTax - rec.cTax - rec.cSoli;
                 return result;
             default:
-                throw new AppError('Unknown booking type', 'UNKNOWN_BOOKING_TYPE', SYSTEM.ERROR_CATEGORY.VALIDATION, { type: rec.cType }, false);
+                throw new AppError(ERROR_CODES.IMPORT_EXPORT.B, ERROR_CATEGORY.VALIDATION, { type: rec.cType }, false);
         }
     }
     resetTaxesAndFees(booking) {

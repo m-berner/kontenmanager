@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { AppError } from '@/domains/errors';
 import { UtilsService } from '@/domains/utils';
 import { useBookingTypesStore } from '@/stores/bookingTypes';
 import { DomainLogic } from '@/domains/logic';
-import { SYSTEM } from '@/domains/config/system';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
 export const useBookingsStore = defineStore('bookings', function () {
     const items = ref([]);
     const getIndexById = computed(() => (ident) => {
@@ -21,7 +20,7 @@ export const useBookingsStore = defineStore('bookings', function () {
             return `${booking.cBookDate} : ${booking.cDebit} : ${booking.cCredit}`;
         }
         else {
-            throw new AppError('getTextById: No booking found for given ID', 'RECORDS: by Id', SYSTEM.ERROR_CATEGORY.DATABASE, {}, false);
+            throw new AppError(ERROR_CODES.STORES.BOOKINGS.A, ERROR_CATEGORY.DATABASE, { input: ident, entity: 'getTextById' }, false);
         }
     });
     const sumBookings = computed(() => () => {

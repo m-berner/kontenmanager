@@ -1,7 +1,6 @@
-import { AppError } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
 import { UtilsService } from '@/domains/utils';
 import { INDEXED_DB } from '@/config/database';
-import { SYSTEM } from '@/domains/config/system';
 import { IndexedDbBase } from './database/base';
 import { DatabaseMigrator } from './database/migrator';
 import { AccountRepository } from './database/repositories/AccountRepository';
@@ -28,7 +27,7 @@ export class DatabaseService extends IndexedDbBase {
             request.onerror = () => {
                 this.db = null;
                 this.connected = false;
-                reject(request.error);
+                reject(new AppError(ERROR_CODES.SERVICES.DATABASE.A, ERROR_CATEGORY.DATABASE, { input: request.error, entity: 'database service (connect)' }, false));
             };
             request.onsuccess = () => {
                 this.db = request.result;
@@ -47,7 +46,7 @@ export class DatabaseService extends IndexedDbBase {
                 this.db.close();
             }
             catch (err) {
-                throw new AppError('Error closing database', 'DATABASE_SERVICE', SYSTEM.ERROR_CATEGORY.DATABASE, { dbError: err }, true);
+                throw new AppError(ERROR_CODES.SERVICES.DATABASE.B, ERROR_CATEGORY.DATABASE, { input: err, entity: 'database service (disconnect)' }, true);
             }
             finally {
                 this.db = null;
@@ -69,14 +68,14 @@ export class DatabaseService extends IndexedDbBase {
                             break;
                         case 'delete':
                             if (!op.key)
-                                throw new Error('Delete operation requires a key');
+                                throw new AppError(ERROR_CODES.SERVICES.DATABASE.C, ERROR_CATEGORY.DATABASE, { operation: op, storeName }, false);
                             store.delete(op.key);
                             break;
                         case 'clear':
                             store.clear();
                             break;
                         default:
-                            throw new Error(`Unknown operation type: ${op.type}`);
+                            throw new AppError(ERROR_CODES.SERVICES.DATABASE.D, ERROR_CATEGORY.DATABASE, { input: op, entity: storeName }, false);
                     }
                 }
             }
@@ -95,14 +94,14 @@ export class DatabaseService extends IndexedDbBase {
                         break;
                     case 'delete':
                         if (!op.key)
-                            throw new Error('Delete operation requires a key');
+                            throw new AppError(ERROR_CODES.SERVICES.DATABASE.E, ERROR_CATEGORY.DATABASE, { input: op, entity: storeName }, false);
                         store.delete(op.key);
                         break;
                     case 'clear':
                         store.clear();
                         break;
                     default:
-                        throw new Error(`Unknown operation type: ${op.type}`);
+                        throw new AppError(ERROR_CODES.SERVICES.DATABASE.F, ERROR_CATEGORY.DATABASE, { operation: op, entity: storeName }, false);
                 }
             }
         });

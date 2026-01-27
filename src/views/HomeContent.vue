@@ -23,7 +23,6 @@ import {useStorage} from '@/composables/useStorage'
 import {useKeyboardShortcuts} from '@/composables/useKeyboardShortcuts'
 import {databaseService} from '@/services/database'
 import {BROWSER_STORAGE, LOCAL_STORAGE} from '@/config/storage'
-import {SYSTEM} from '@/domains/config/system'
 import {createHomeHeaders, createHomeMenuItems, VIEWS} from '@/config/views'
 
 const {d, n, t} = useI18n()
@@ -48,7 +47,7 @@ const search = ref<string>('')
  * Handles changes in browser storage and synchronizes them with the local store.
  * Updates theme skin, services, and various market/material indexes.
  *
- * @param {Record<string, browser.storage.StorageChange>} changes - Object containing changed storage keys
+ * @param {Record<string, unknown>} changes - Object containing changed storage keys
  */
 const onChangeHandler = (changes: Record<string, browser.storage.StorageChange>): void => {
     UtilsService.log('APP_INDEX: changeHandler')
@@ -94,7 +93,7 @@ const onBeforeUnload = (): void => {
     databaseService.disconnect()
 }
 
-window.addEventListener('beforeunload', onBeforeUnload, SYSTEM.ONCE)
+window.addEventListener('beforeunload', onBeforeUnload, {once: true})
 
 // ============================================================================
 // Keyboard Shortcuts

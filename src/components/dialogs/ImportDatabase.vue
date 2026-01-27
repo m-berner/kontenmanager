@@ -15,7 +15,7 @@ import {useRecordsStore} from '@/stores/records'
 import {useAlertStore} from '@/stores/alerts'
 import {useRuntimeStore} from '@/stores/runtime'
 import {useSettingsStore} from '@/stores/settings'
-import {AppError} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useBrowser} from '@/composables/useBrowser'
 import {useStorage} from '@/composables/useStorage'
@@ -25,7 +25,6 @@ import {ImportExportService} from '@/services/importExport'
 import {BROWSER_STORAGE} from '@/config/storage'
 import {DEFAULTS} from '@/config/defaults'
 import {INDEXED_DB} from '@/config/database'
-import {SYSTEM} from '@/domains/config/system'
 import {DomainValidators} from '@/domains/validation/validators'
 
 const {t} = useI18n()
@@ -412,10 +411,9 @@ const processBackupFile = async (): Promise<void> => {
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId)
         const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : t('components.dialogs.importDatabase.invalidJson'))
         throw new AppError(
-            errorMessage,
-            'IMPORT',
-            SYSTEM.ERROR_CATEGORY.DATABASE,
-            {u: err},
+            ERROR_CODES.IMPORT_DATABASE.A,
+            ERROR_CATEGORY.DATABASE,
+            {input: errorMessage},
             true
         )
     }
@@ -458,10 +456,9 @@ const onClickOk = async (): Promise<void> => {
             }
 
             throw new AppError(
-                t('components.dialogs.importDatabase.messages.importFailed'),
-                'IMPORT_D',
-                SYSTEM.ERROR_CATEGORY.DATABASE,
-                {u: err},
+                ERROR_CODES.IMPORT_DATABASE.B,
+                ERROR_CATEGORY.DATABASE,
+                {input: err},
                 true
             )
         }

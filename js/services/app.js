@@ -8,6 +8,7 @@ import { fetchService } from '@/services/fetch';
 import { AppError } from '@/domains/errors';
 import { UtilsService } from '@/domains/utils';
 import { CURRENCIES } from '@/domains/config/currencies';
+import { ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
 export class AppService {
     records = useRecordsStore();
     settings = useSettingsStore();
@@ -55,7 +56,7 @@ export class AppService {
         UtilsService.log('Initializing database...');
         const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
         if (!currency) {
-            throw new AppError(`Unsupported UI language: ${this.browser.uiLanguage.value}`, 'APP_SERVICE', 'business', { language: this.browser.uiLanguage.value }, false);
+            throw new AppError(ERROR_CODES.APP_SERVICE, ERROR_CATEGORY.BUSINESS, { input: this.browser.uiLanguage.value, entity: 'AppService' }, false);
         }
         await databaseService.connect();
         const databaseStores = await databaseService.getAccountRecords(this.settings.activeAccountId);

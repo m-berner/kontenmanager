@@ -10,7 +10,7 @@
 import {computed} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRuntimeStore} from '@/stores/runtime'
-import {AppError} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 import {UtilsService} from '@/domains/utils'
 import {useBrowser} from '@/composables/useBrowser'
 import {useAccountsDB, useBookingsDB, useBookingTypesDB, useStocksDB} from '@/composables/useIndexedDB'
@@ -20,7 +20,6 @@ import type {AccountDb, BookingDb, BookingTypeDb, StockDb} from '@/types'
 import {useAlertStore} from '@/stores/alerts'
 import {DEFAULTS} from '@/config/defaults'
 import {INDEXED_DB} from '@/config/database'
-import {SYSTEM} from '@/domains/config/system'
 
 const {t} = useI18n()
 const {manifest, notice, writeBufferToFile} = useBrowser()
@@ -85,10 +84,9 @@ const createExportData = async (): Promise<string> => {
     const validationErrors = validateExportData(accounts, bookings, stocks, bookingTypes)
     if (validationErrors.length > 0) {
         throw new AppError(
-            validationErrors.join('\n'),
-            'EXPORT_DATABASE: valid data',
-            SYSTEM.ERROR_CATEGORY.DATABASE,
-            {},
+            ERROR_CODES.EXPORT_DATABASE.A,
+            ERROR_CATEGORY.DATABASE,
+            {input: validationErrors.join('\n')},
             false
         )
     }
@@ -107,11 +105,9 @@ const createExportData = async (): Promise<string> => {
     const verification = exportService.verifyExportIntegrity(dataString)
     if (!verification.valid) {
         throw new AppError(
-            `${t('exportDatabase.messages.verificationFailed')}\n
-            ${verification.errors.join('\n')}`,
-            'EXPORT_DATABASE: verify',
-            SYSTEM.ERROR_CATEGORY.DATABASE,
-            {},
+            ERROR_CODES.EXPORT_DATABASE.B,
+            ERROR_CATEGORY.DATABASE,
+            {input: verification.errors.join('\n')},
             false
         )
     }
@@ -156,10 +152,9 @@ const onClickOk = async (): Promise<void> => {
         } catch (err) {
             const errorMessage = err instanceof AppError ? err.message : (err instanceof Error ? err.message : 'Unknown error')
             throw new AppError(
-                errorMessage,
-                'EXPORT_DATABASE',
-                SYSTEM.ERROR_CATEGORY.DATABASE,
-                {df: err},
+                ERROR_CODES.EXPORT_DATABASE.C,
+                ERROR_CATEGORY.DATABASE,
+                {inout: errorMessage},
                 true
             )
         }

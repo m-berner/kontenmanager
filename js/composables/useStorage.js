@@ -1,13 +1,12 @@
-import { AppError } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
 import { BROWSER_STORAGE } from '@/config/storage';
-import { SYSTEM } from '@/domains/config/system';
 export function useStorage() {
     async function clearStorage() {
         try {
             await browser.storage.local.clear();
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.STORAGE_LOCAL, 'USE_STORAGE', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_STORAGE.A, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     async function setStorage(key, value) {
@@ -15,7 +14,7 @@ export function useStorage() {
             await browser.storage.local.set({ [key]: value });
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.STORAGE_LOCAL, 'USE_STORAGE', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_STORAGE.B, ERROR_CATEGORY.VALIDATION, { b: err }, true);
         }
     }
     async function getStorage(keys = null) {
@@ -23,7 +22,7 @@ export function useStorage() {
             return await browser.storage.local.get(keys);
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.STORAGE_LOCAL, 'USE_STORAGE', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_STORAGE.C, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     function addStorageChangedListener(callback) {
@@ -49,7 +48,7 @@ export function useStorage() {
             }
         }
         catch (err) {
-            throw new AppError(SYSTEM.ERRORS.STORAGE_LOCAL, 'USE_STORAGE', SYSTEM.ERROR_CATEGORY.VALIDATION, { b: err }, true);
+            throw new AppError(ERROR_CODES.USE_STORAGE.D, ERROR_CATEGORY.VALIDATION, { input: err }, true);
         }
     }
     return {

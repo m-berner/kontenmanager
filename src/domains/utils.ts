@@ -9,8 +9,7 @@
 import type {LogLevelType, NumberParseOptions} from '@/types'
 import {DATE} from '@/domains/config/date'
 import {LOCAL_STORAGE} from '@/config/storage'
-import {SYSTEM} from '@/domains/config/system'
-import {AppError} from '@/domains/errors'
+import {AppError, ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
 
 /**
  * General utility service providing date, number, and string manipulation helpers.
@@ -29,10 +28,9 @@ export class UtilsService {
     static utcDate(iso: string): Date {
         if (!DATE.ISO_DATE_REGEX.test(iso) && iso !== '') {
             throw new AppError(
-                `Invalid ISO date format: ${iso}`,
-                'USE_UTILS: ...',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
-                {validError: iso},
+                ERROR_CODES.UTILS.A,
+                ERROR_CATEGORY.VALIDATION,
+                {input: iso},
                 false
             )
         }
@@ -49,10 +47,9 @@ export class UtilsService {
     static isoDate(ms: number): string {
         if (!Number.isFinite(ms)) {
             throw new AppError(
-                `Invalid timestamp: ${ms}`,
-                'USE_UTILS: ...',
-                SYSTEM.ERROR_CATEGORY.VALIDATION,
-                {vError: ms},
+                ERROR_CODES.UTILS.B,
+                ERROR_CATEGORY.VALIDATION,
+                {input: ms},
                 false
             )
         }
@@ -106,10 +103,9 @@ export class UtilsService {
         const isParseError = () => {
             if (throwOnError) {
                 throw new AppError(
-                    `Cannot parse "${value}" as number`,
-                    'USE_UTILS: ...',
-                    SYSTEM.ERROR_CATEGORY.VALIDATION,
-                    {testError: value},
+                    ERROR_CODES.UTILS.C,
+                    ERROR_CATEGORY.VALIDATION,
+                    {input: value},
                     false
                 )
             }
