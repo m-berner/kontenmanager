@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createPinia, setActivePinia } from 'pinia';
-import { databaseService } from '@/services/database';
-import { INDEXED_DB } from '@/config/database';
-import { useAccountForm } from '@/composables/useForms';
-import { useSettingsStore } from '@/stores/settings';
-import { useAccountsStore } from '@/stores/accounts';
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
+import { databaseService } from "@/services/database";
+import { INDEXED_DB } from "@/config/database";
+import { useAccountForm } from "@/composables/useForms";
+import { useSettingsStore } from "@/stores/settings";
+import { useAccountsStore } from "@/stores/accounts";
 const browserMock = {
     storage: {
         local: {
@@ -16,42 +16,42 @@ const browserMock = {
         create: vi.fn().mockResolvedValue(undefined)
     },
     runtime: {
-        getURL: vi.fn().mockReturnValue(''),
-        getManifest: vi.fn().mockReturnValue({ version: '1.0.0' })
+        getURL: vi.fn().mockReturnValue(""),
+        getManifest: vi.fn().mockReturnValue({ version: "1.0.0" })
     },
     i18n: {
-        getUILanguage: vi.fn().mockReturnValue('de-DE')
+        getUILanguage: vi.fn().mockReturnValue("de-DE")
     }
 };
-vi.stubGlobal('browser', browserMock);
-describe('UpdateAccount Logic Test', () => {
+vi.stubGlobal("browser", browserMock);
+describe("UpdateAccount Logic Test", () => {
     beforeEach(async () => {
         setActivePinia(createPinia());
-        vi.spyOn(databaseService, 'isConnected').mockReturnValue(true);
+        vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
     });
-    it('should update an account and verify it reaches the database service', async () => {
+    it("should update an account and verify it reaches the database service", async () => {
         const { accountFormData } = useAccountForm();
         const accountsStore = useAccountsStore();
         const settings = useSettingsStore();
         const initialAccount = {
             cID: 1,
-            cSwift: 'OLD_SWIFT',
-            cIban: 'OLD_IBAN',
-            cLogoUrl: 'http://old.logo',
+            cSwift: "OLD_SWIFT",
+            cIban: "OLD_IBAN",
+            cLogoUrl: "http://old.logo",
             cWithDepot: false
         };
         accountsStore.add(initialAccount);
         settings.activeAccountId = 1;
         accountFormData.id = 1;
-        accountFormData.swift = 'NEW_SWIFT';
-        accountFormData.iban = 'NEW_IBAN';
-        accountFormData.logoUrl = 'http://new.logo';
+        accountFormData.swift = "NEW_SWIFT";
+        accountFormData.iban = "NEW_IBAN";
+        accountFormData.logoUrl = "http://new.logo";
         accountFormData.withDepot = true;
-        const updateSpy = vi.spyOn(databaseService, 'update').mockResolvedValue(1);
+        const updateSpy = vi.spyOn(databaseService, "update").mockResolvedValue(1);
         const updatedAccountData = {
             cID: accountFormData.id,
             cSwift: accountFormData.swift.trim().toUpperCase(),
-            cIban: accountFormData.iban.replace(/\s/g, '').toUpperCase(),
+            cIban: accountFormData.iban.replace(/\s/g, "").toUpperCase(),
             cLogoUrl: accountFormData.logoUrl.trim(),
             cWithDepot: accountFormData.withDepot
         };
@@ -59,12 +59,12 @@ describe('UpdateAccount Logic Test', () => {
         accountsStore.update(updatedAccountData);
         expect(updateSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.ACCOUNTS.NAME, expect.objectContaining({
             cID: 1,
-            cSwift: 'NEW_SWIFT',
-            cIban: 'NEW_IBAN',
+            cSwift: "NEW_SWIFT",
+            cIban: "NEW_IBAN",
             cWithDepot: true
         }));
         expect(accountsStore.items).toHaveLength(1);
-        expect(accountsStore.items[0].cSwift).toBe('NEW_SWIFT');
+        expect(accountsStore.items[0].cSwift).toBe("NEW_SWIFT");
         expect(accountsStore.items[0].cWithDepot).toBe(true);
     });
 });

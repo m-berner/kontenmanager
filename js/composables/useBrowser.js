@@ -1,8 +1,8 @@
-import { computed } from 'vue';
-import { EVENTS } from '@/config/events';
-import { ENTRYPOINTS } from '@/config/entrypoints';
-import { DEFAULTS } from '@/config/defaults';
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from '@/domains/errors';
+import { computed } from "vue";
+import { EVENTS } from "@/config/events";
+import { ENTRYPOINTS } from "@/config/entrypoints";
+import { DEFAULTS } from "@/config/defaults";
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
 export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
     const manifest = computed(() => browser.runtime.getManifest());
@@ -18,7 +18,7 @@ export function useBrowser() {
         if (defaultLanguage.length === 2) {
             return `${defaultLanguage}-${defaultLanguage.toUpperCase()}`;
         }
-        throw new AppError(ERROR_CODES.USE_BROWSER.B, ERROR_CATEGORY.VALIDATION, { input: 'invalid_lang_format' }, false);
+        throw new AppError(ERROR_CODES.USE_BROWSER.B, ERROR_CATEGORY.VALIDATION, { input: "invalid_lang_format" }, false);
     });
     function actionOnClicked(listener) {
         browser.action.onClicked.addListener(listener);
@@ -76,10 +76,10 @@ export function useBrowser() {
     async function notice(messages) {
         try {
             const notificationOption = {
-                type: 'basic',
-                iconUrl: 'assets/icon16.png',
+                type: "basic",
+                iconUrl: "assets/icon16.png",
                 title: DEFAULTS.TITLE,
-                message: messages.join('\n')
+                message: messages.join("\n")
             };
             await browser.notifications.create(notificationOption);
         }
@@ -88,11 +88,11 @@ export function useBrowser() {
         }
     }
     async function writeBufferToFile(buffer, filename) {
-        if (!filename || filename.trim() === '') {
+        if (!filename || filename.trim() === "") {
             throw new AppError(ERROR_CODES.USE_BROWSER.I, ERROR_CATEGORY.VALIDATION, { input: filename }, false);
         }
         try {
-            const blob = new Blob([buffer], { type: 'application/json' });
+            const blob = new Blob([buffer], { type: "application/json" });
             const blobUrl = URL.createObjectURL(blob);
             await browser.downloads.download({
                 url: blobUrl,

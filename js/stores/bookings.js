@@ -1,10 +1,10 @@
-import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
-import { UtilsService } from '@/domains/utils';
-import { useBookingTypesStore } from '@/stores/bookingTypes';
-import { DomainLogic } from '@/domains/logic';
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
-export const useBookingsStore = defineStore('bookings', function () {
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+import { UtilsService } from "@/domains/utils";
+import { useBookingTypesStore } from "@/stores/bookingTypes";
+import { DomainLogic } from "@/domains/logic";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+export const useBookingsStore = defineStore("bookings", function () {
     const items = ref([]);
     const getIndexById = computed(() => (ident) => {
         return items.value.findIndex((entry) => entry.cID === ident);
@@ -20,7 +20,7 @@ export const useBookingsStore = defineStore('bookings', function () {
             return `${booking.cBookDate} : ${booking.cDebit} : ${booking.cCredit}`;
         }
         else {
-            throw new AppError(ERROR_CODES.STORES.BOOKINGS.A, ERROR_CATEGORY.DATABASE, { input: ident, entity: 'getTextById' }, false);
+            throw new AppError(ERROR_CODES.STORES.BOOKINGS.A, ERROR_CATEGORY.DATABASE, { input: ident, entity: "getTextById" }, false);
         }
     });
     const sumBookings = computed(() => () => {
@@ -61,18 +61,20 @@ export const useBookingsStore = defineStore('bookings', function () {
         return DomainLogic.calculateInvestByStockId(items.value, ident);
     });
     const dividendsByStockId = computed(() => (ident) => {
-        return items.value.filter((entry) => {
+        return items.value
+            .filter((entry) => {
             return entry.cStockID === ident && entry.cBookingTypeID === 3;
-        }).map((entry) => {
+        })
+            .map((entry) => {
             return { id: ident, year: entry.cExDate, sum: entry.cCredit };
         });
     });
     const bookedYears = computed(() => {
-        const years = items.value.map((entry) => (new Date(entry.cBookDate).getFullYear()));
+        const years = items.value.map((entry) => new Date(entry.cBookDate).getFullYear());
         return new Set(years);
     });
     function add(booking, prepend = false) {
-        UtilsService.log('RECORDS_BOOKINGS: add');
+        UtilsService.log("RECORDS_BOOKINGS: add");
         if (prepend) {
             items.value = [booking, ...items.value];
         }
@@ -81,7 +83,7 @@ export const useBookingsStore = defineStore('bookings', function () {
         }
     }
     function update(booking) {
-        UtilsService.log('RECORDS_BOOKINGS: update');
+        UtilsService.log("RECORDS_BOOKINGS: update");
         const index = getIndexById.value(booking.cID);
         if (index !== -1) {
             const newItems = [...items.value];
@@ -90,11 +92,11 @@ export const useBookingsStore = defineStore('bookings', function () {
         }
     }
     function remove(ident) {
-        UtilsService.log('RECORDS_BOOKINGS: remove', ident, 'info');
-        items.value = items.value.filter(entry => entry.cID !== ident);
+        UtilsService.log("RECORDS_BOOKINGS: remove", ident, "info");
+        items.value = items.value.filter((entry) => entry.cID !== ident);
     }
     function clean() {
-        UtilsService.log('RECORDS_BOOKINGS: clean');
+        UtilsService.log("RECORDS_BOOKINGS: clean");
         items.value = [];
     }
     function set(bookings) {
@@ -126,4 +128,4 @@ export const useBookingsStore = defineStore('bookings', function () {
         clean
     };
 });
-UtilsService.log('--- stores/bookings.ts ---');
+UtilsService.log("--- stores/bookings.ts ---");

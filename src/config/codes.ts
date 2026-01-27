@@ -6,14 +6,12 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export const CODES = Object.freeze(
-    {
-        VIEW_CODES: {
-            HOME: 'home',
-            COMPANY: 'company',
-            SETTINGS: 'settings',
-            HELP: 'help',
-            PRIVACY: 'privacy'
-        }
-    }
-)
+export const CODES = Object.freeze({
+  VIEW_CODES: {
+    HOME: "home",
+    COMPANY: "company",
+    SETTINGS: "settings",
+    HELP: "help",
+    PRIVACY: "privacy"
+  }
+});

@@ -1,21 +1,21 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { DomainLogic } from '@/domains/logic';
-import { createPinia, setActivePinia } from 'pinia';
-vi.mock('@/composables/useBrowser', () => ({
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DomainLogic } from "@/domains/logic";
+import { createPinia, setActivePinia } from "pinia";
+vi.mock("@/composables/useBrowser", () => ({
     useBrowser: () => ({})
 }));
-vi.mock('@/composables/useStorage', () => ({
+vi.mock("@/composables/useStorage", () => ({
     useStorage: () => ({
         getStorage: vi.fn().mockResolvedValue({}),
         setStorage: vi.fn().mockResolvedValue(undefined)
     })
 }));
-describe('DomainLogic', () => {
+describe("DomainLogic", () => {
     beforeEach(() => {
         setActivePinia(createPinia());
     });
-    describe('calculateTotalSum', () => {
-        it('should calculate the correct total for a simple booking', () => {
+    describe("calculateTotalSum", () => {
+        it("should calculate the correct total for a simple booking", () => {
             const bookings = [
                 {
                     cCredit: 1000,
@@ -34,10 +34,10 @@ describe('DomainLogic', () => {
             ];
             expect(DomainLogic.calculateTotalSum(bookings)).toBe(950);
         });
-        it('should return 0 for empty bookings', () => {
+        it("should return 0 for empty bookings", () => {
             expect(DomainLogic.calculateTotalSum([])).toBe(0);
         });
-        it('should handle complex bookings with taxes and fees', () => {
+        it("should handle complex bookings with taxes and fees", () => {
             const bookings = [
                 {
                     cCredit: 500,
@@ -57,20 +57,22 @@ describe('DomainLogic', () => {
             expect(DomainLogic.calculateTotalSum(bookings)).toBe(394.5);
         });
     });
-    describe('calculateSumFees', () => {
-        it('should sum fees only for the specified year', () => {
+    describe("calculateSumFees", () => {
+        it("should sum fees only for the specified year", () => {
             const bookings = [
-                { cBookDate: '2024-01-01', cFeeDebit: 10, cFeeCredit: 0 },
-                { cBookDate: '2024-06-01', cFeeDebit: 15, cFeeCredit: 0 },
-                { cBookDate: '2023-12-31', cFeeDebit: 20, cFeeCredit: 0 }
+                { cBookDate: "2024-01-01", cFeeDebit: 10, cFeeCredit: 0 },
+                { cBookDate: "2024-06-01", cFeeDebit: 15, cFeeCredit: 0 },
+                { cBookDate: "2023-12-31", cFeeDebit: 20, cFeeCredit: 0 }
             ];
             expect(DomainLogic.calculateSumFees(bookings, 2024)).toBe(-25);
         });
     });
-    describe('initializeRecords', () => {
-        it('should initialize records correctly', async () => {
+    describe("initializeRecords", () => {
+        it("should initialize records correctly", async () => {
             const storesDB = {
-                accountsDB: [{ cID: 1, cSwift: 'S', cIban: 'I', cLogoUrl: 'L', cWithDepot: false }],
+                accountsDB: [
+                    { cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "L", cWithDepot: false }
+                ],
                 bookingsDB: [],
                 bookingTypesDB: [],
                 stocksDB: []
@@ -83,7 +85,7 @@ describe('DomainLogic', () => {
                 settings: { activeAccountId: 1 },
                 alerts: { info: vi.fn() }
             };
-            const messages = { title: 'Title', message: 'Message' };
+            const messages = { title: "Title", message: "Message" };
             await DomainLogic.initializeRecords(storesDB, mockStores, messages);
             expect(mockStores.accounts.clean).toHaveBeenCalled();
             expect(mockStores.accounts.add).toHaveBeenCalledWith(storesDB.accountsDB[0]);

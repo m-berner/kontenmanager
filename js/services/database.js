@@ -1,12 +1,12 @@
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
-import { UtilsService } from '@/domains/utils';
-import { INDEXED_DB } from '@/config/database';
-import { IndexedDbBase } from './database/base';
-import { DatabaseMigrator } from './database/migrator';
-import { AccountRepository } from './database/repositories/AccountRepository';
-import { BookingRepository } from './database/repositories/BookingRepository';
-import { BookingTypeRepository } from './database/repositories/BookingTypeRepository';
-import { StockRepository } from './database/repositories/StockRepository';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { UtilsService } from "@/domains/utils";
+import { INDEXED_DB } from "@/config/database";
+import { IndexedDbBase } from "./database/base";
+import { DatabaseMigrator } from "./database/migrator";
+import { AccountRepository } from "./database/repositories/AccountRepository";
+import { BookingRepository } from "./database/repositories/BookingRepository";
+import { BookingTypeRepository } from "./database/repositories/BookingTypeRepository";
+import { StockRepository } from "./database/repositories/StockRepository";
 export class DatabaseService extends IndexedDbBase {
     accounts = new AccountRepository(this);
     bookings = new BookingRepository(this);
@@ -27,7 +27,7 @@ export class DatabaseService extends IndexedDbBase {
             request.onerror = () => {
                 this.db = null;
                 this.connected = false;
-                reject(new AppError(ERROR_CODES.SERVICES.DATABASE.A, ERROR_CATEGORY.DATABASE, { input: request.error, entity: 'database service (connect)' }, false));
+                reject(new AppError(ERROR_CODES.SERVICES.DATABASE.A, ERROR_CATEGORY.DATABASE, { input: request.error, entity: "database service (connect)" }, false));
             };
             request.onsuccess = () => {
                 this.db = request.result;
@@ -46,7 +46,7 @@ export class DatabaseService extends IndexedDbBase {
                 this.db.close();
             }
             catch (err) {
-                throw new AppError(ERROR_CODES.SERVICES.DATABASE.B, ERROR_CATEGORY.DATABASE, { input: err, entity: 'database service (disconnect)' }, true);
+                throw new AppError(ERROR_CODES.SERVICES.DATABASE.B, ERROR_CATEGORY.DATABASE, { input: err, entity: "database service (disconnect)" }, true);
             }
             finally {
                 this.db = null;
@@ -55,23 +55,23 @@ export class DatabaseService extends IndexedDbBase {
         }
     }
     async atomicImport(stores) {
-        return this.withTransaction(stores.map(s => s.storeName), 'readwrite', async (tx) => {
+        return this.withTransaction(stores.map((s) => s.storeName), "readwrite", async (tx) => {
             for (const { storeName, operations } of stores) {
                 const store = tx.objectStore(storeName);
                 for (const op of operations) {
                     switch (op.type) {
-                        case 'add':
+                        case "add":
                             store.add(op.data);
                             break;
-                        case 'put':
+                        case "put":
                             store.put(op.data);
                             break;
-                        case 'delete':
+                        case "delete":
                             if (!op.key)
                                 throw new AppError(ERROR_CODES.SERVICES.DATABASE.C, ERROR_CATEGORY.DATABASE, { operation: op, storeName }, false);
                             store.delete(op.key);
                             break;
-                        case 'clear':
+                        case "clear":
                             store.clear();
                             break;
                         default:
@@ -82,22 +82,22 @@ export class DatabaseService extends IndexedDbBase {
         });
     }
     async batchOperations(storeName, operations) {
-        return this.withTransaction(storeName, 'readwrite', async (tx) => {
+        return this.withTransaction(storeName, "readwrite", async (tx) => {
             const store = tx.objectStore(storeName);
             for (const op of operations) {
                 switch (op.type) {
-                    case 'add':
+                    case "add":
                         store.add(op.data);
                         break;
-                    case 'put':
+                    case "put":
                         store.put(op.data);
                         break;
-                    case 'delete':
+                    case "delete":
                         if (!op.key)
                             throw new AppError(ERROR_CODES.SERVICES.DATABASE.E, ERROR_CATEGORY.DATABASE, { input: op, entity: storeName }, false);
                         store.delete(op.key);
                         break;
-                    case 'clear':
+                    case "clear":
                         store.clear();
                         break;
                     default:
@@ -107,20 +107,25 @@ export class DatabaseService extends IndexedDbBase {
         });
     }
     async getAccountRecords(accountId) {
-        UtilsService.log('DATABASE: getAccountRecords');
+        UtilsService.log("DATABASE: getAccountRecords");
         return this.withTransaction([
             INDEXED_DB.STORE.BOOKINGS.NAME,
             INDEXED_DB.STORE.BOOKING_TYPES.NAME,
             INDEXED_DB.STORE.STOCKS.NAME,
             INDEXED_DB.STORE.ACCOUNTS.NAME
-        ], 'readonly', async (tx) => {
+        ], "readonly", async (tx) => {
             const [accounts, bookings, bookingTypes, stocks] = await Promise.all([
                 this.accounts.getAll(tx),
                 this.bookings.getAllByAccount(accountId, tx),
                 this.bookingTypes.getAllByAccount(accountId, tx),
                 this.stocks.getAllByAccount(accountId, tx)
             ]);
-            return { accountsDB: accounts, bookingsDB: bookings, bookingTypesDB: bookingTypes, stocksDB: stocks };
+            return {
+                accountsDB: accounts,
+                bookingsDB: bookings,
+                bookingTypesDB: bookingTypes,
+                stocksDB: stocks
+            };
         });
     }
     async deleteAccountRecords(accountId) {
@@ -129,7 +134,7 @@ export class DatabaseService extends IndexedDbBase {
             INDEXED_DB.STORE.BOOKING_TYPES.NAME,
             INDEXED_DB.STORE.STOCKS.NAME,
             INDEXED_DB.STORE.ACCOUNTS.NAME
-        ], 'readwrite', async (tx) => {
+        ], "readwrite", async (tx) => {
             await Promise.all([
                 this.bookings.deleteByAccount(accountId, tx),
                 this.bookingTypes.deleteByAccount(accountId, tx),
@@ -144,15 +149,15 @@ export class DatabaseService extends IndexedDbBase {
             INDEXED_DB.STORE.BOOKINGS.NAME,
             INDEXED_DB.STORE.STOCKS.NAME,
             INDEXED_DB.STORE.BOOKING_TYPES.NAME
-        ], 'readonly', async (tx) => {
+        ], "readonly", async (tx) => {
             const accounts = await this.accounts.getAll(tx);
-            const accountIds = new Set(accounts.map(a => a.cID));
+            const accountIds = new Set(accounts.map((a) => a.cID));
             const bookings = await this.getAll(INDEXED_DB.STORE.BOOKINGS.NAME, tx);
             const stocks = await this.getAll(INDEXED_DB.STORE.STOCKS.NAME, tx);
             const bookingTypes = await this.getAll(INDEXED_DB.STORE.BOOKING_TYPES.NAME, tx);
-            const orphanedBookings = bookings.filter(b => !accountIds.has(b.cAccountNumberID)).length;
-            const orphanedStocks = stocks.filter(s => !accountIds.has(s.cAccountNumberID)).length;
-            const orphanedBookingTypes = bookingTypes.filter(bt => !accountIds.has(bt.cAccountNumberID)).length;
+            const orphanedBookings = bookings.filter((b) => !accountIds.has(b.cAccountNumberID)).length;
+            const orphanedStocks = stocks.filter((s) => !accountIds.has(s.cAccountNumberID)).length;
+            const orphanedBookingTypes = bookingTypes.filter((bt) => !accountIds.has(bt.cAccountNumberID)).length;
             return { orphanedBookings, orphanedStocks, orphanedBookingTypes };
         });
     }
@@ -162,9 +167,9 @@ export class DatabaseService extends IndexedDbBase {
             INDEXED_DB.STORE.BOOKINGS.NAME,
             INDEXED_DB.STORE.STOCKS.NAME,
             INDEXED_DB.STORE.BOOKING_TYPES.NAME
-        ], 'readwrite', async (tx) => {
+        ], "readwrite", async (tx) => {
             const accounts = await this.accounts.getAll(tx);
-            const accountIds = new Set(accounts.map(a => a.cID));
+            const accountIds = new Set(accounts.map((a) => a.cID));
             const bookings = await this.getAll(INDEXED_DB.STORE.BOOKINGS.NAME, tx);
             for (const b of bookings) {
                 if (!accountIds.has(b.cAccountNumberID)) {
@@ -201,4 +206,4 @@ export class DatabaseService extends IndexedDbBase {
     }
 }
 export const databaseService = new DatabaseService();
-UtilsService.log('--- services/database.ts ---');
+UtilsService.log("--- services/database.ts ---");

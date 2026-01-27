@@ -1,16 +1,16 @@
-import { useRuntimeStore } from '@/stores/runtime';
-import { useRecordsStore } from '@/stores/records';
-import { useAlertStore } from '@/stores/alerts';
-import { useBookingsDB, useStocksDB } from '@/composables/useIndexedDB';
-import { useBrowser } from '@/composables/useBrowser';
-import { storeToRefs } from 'pinia';
-import { computed, onUnmounted, readonly, ref } from 'vue';
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from '@/domains/errors';
-import { CODES } from '@/config/codes';
+import { useRuntimeStore } from "@/stores/runtime";
+import { useRecordsStore } from "@/stores/records";
+import { useAlertStore } from "@/stores/alerts";
+import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
+import { useBrowser } from "@/composables/useBrowser";
+import { storeToRefs } from "pinia";
+import { computed, onUnmounted, readonly, ref } from "vue";
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import { CODES } from "@/config/codes";
 export function useMenuHighlight() {
     const highlightedItems = ref(new Map());
     const timeouts = new Map();
-    const highlight = (recordId, color = 'green') => {
+    const highlight = (recordId, color = "green") => {
         clearHighlight(recordId);
         highlightedItems.value.set(recordId, color);
     };
@@ -30,7 +30,7 @@ export function useMenuHighlight() {
         timeouts.clear();
     };
     const highlightTemporary = (recordId, options = {}) => {
-        const { color = 'green', duration = 3000 } = options;
+        const { color = "green", duration = 3000 } = options;
         highlight(recordId, color);
         const existingTimeout = timeouts.get(recordId);
         if (existingTimeout) {
@@ -76,84 +76,84 @@ export function useMenuAction() {
     };
     const checkStockHasBookings = (stockId) => {
         const { items: bookingItems } = storeToRefs(records.bookings);
-        return bookingItems.value.some(booking => booking.cStockID === stockId);
+        return bookingItems.value.some((booking) => booking.cStockID === stockId);
     };
     const actionHandlers = {
         async updateBooking() {
-            openDialog('updateBooking', true);
+            openDialog("updateBooking", true);
         },
         async addBooking() {
-            openDialog('addBooking', true);
+            openDialog("addBooking", true);
         },
         async deleteBooking(recordId) {
             records.bookings.remove(recordId);
             await removeBooking(recordId);
-            await notice(['Booking deleted successfully']);
+            await notice(["Booking deleted successfully"]);
         },
         async updateStock() {
-            openDialog('updateStock', true);
+            openDialog("updateStock", true);
         },
         async addStock() {
-            openDialog('addStock', true);
+            openDialog("addStock", true);
         },
         async deleteStock(recordId) {
             if (checkStockHasBookings(recordId)) {
-                info('Cannot Delete', 'This stock has associated bookings. Delete bookings first.', null);
+                info("Cannot Delete", "This stock has associated bookings. Delete bookings first.", null);
                 return;
             }
             records.stocks.remove(recordId);
             await removeStock(recordId);
-            await notice(['Stock deleted successfully']);
+            await notice(["Stock deleted successfully"]);
         },
         async fadeInStock() {
-            openDialog('fadeInStock', true);
+            openDialog("fadeInStock", true);
         },
         async updateQuote() {
-            openDialog('updateQuote', true);
+            openDialog("updateQuote", true);
         },
         async addAccount() {
-            openDialog('addAccount', true);
+            openDialog("addAccount", true);
         },
         async updateAccount() {
-            openDialog('updateAccount', true);
+            openDialog("updateAccount", true);
         },
         async deleteAccount() {
-            openDialog('deleteAccount', true);
+            openDialog("deleteAccount", true);
         },
         async deleteAccountConfirmation() {
-            openDialog('deleteAccountConfirmation', true);
+            openDialog("deleteAccountConfirmation", true);
         },
         async addBookingType() {
-            openDialog('addBookingType', true);
+            openDialog("addBookingType", true);
         },
         async updateBookingType() {
-            openDialog('updateBookingType', true);
+            openDialog("updateBookingType", true);
         },
         async deleteBookingType() {
-            openDialog('deleteBookingType', true);
+            openDialog("deleteBookingType", true);
         },
         async showDividend() {
-            openDialog('showDividend', false);
+            openDialog("showDividend", false);
         },
         async showAccounting() {
-            openDialog('showAccounting', false);
+            openDialog("showAccounting", false);
         },
         async openLink(recordId) {
             const { items: stockItems } = storeToRefs(records.stocks);
             const stockIndex = records.stocks.getIndexById(recordId);
             const url = stockItems.value[stockIndex]?.cURL;
             if (url) {
-                window.open(url, '_blank', 'noopener,noreferrer');
+                window.open(url, "_blank", "noopener,noreferrer");
             }
             else {
-                await notice(['No URL available for this stock']);
+                await notice(["No URL available for this stock"]);
             }
         },
         async exportDatabase() {
-            openDialog('exportDatabase', true);
+            openDialog("exportDatabase", true);
         },
         async importDatabase() {
-            openDialog('importDatabase', true);
+            openDialog("importDatabase", true);
         },
         async home() {
             runtime.setCurrentView(CODES.VIEW_CODES.HOME);

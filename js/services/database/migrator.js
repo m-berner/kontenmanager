@@ -1,10 +1,10 @@
-import { INDEXED_DB } from '@/config/database';
-import { UtilsService } from '@/domains/utils';
+import { INDEXED_DB } from "@/config/database";
+import { UtilsService } from "@/domains/utils";
 export class DatabaseMigrator {
     setupDatabase(db, ev) {
         const oldVersion = ev.oldVersion;
         const newVersion = ev.newVersion || INDEXED_DB.VERSION;
-        UtilsService.log(`Database upgrade: ${oldVersion} -> ${newVersion}`, 'info');
+        UtilsService.log(`Database upgrade: ${oldVersion} -> ${newVersion}`, "info");
         if (oldVersion < 1) {
             this.createStores(db);
         }

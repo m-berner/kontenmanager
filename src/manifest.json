@@ -14,17 +14,10 @@
     "default_area": "navbar"
   },
   "background": {
-    "scripts": [
-      "entrypoints/background.js"
-    ],
+    "scripts": ["entrypoints/background.js"],
     "type": "module"
   },
-  "permissions": [
-    "downloads",
-    "notifications",
-    "storage",
-    "tabs"
-  ],
+  "permissions": ["downloads", "notifications", "storage", "tabs"],
   "host_permissions": [
     "https://www.tradegatebsx.com/*",
     "https://www.tradegate.de/*",
@@ -45,9 +38,7 @@
       "id": "kontenmanager@gmx.de",
       "strict_min_version": "145.0",
       "data_collection_permissions": {
-        "required": [
-          "none"
-        ]
+        "required": ["none"]
       }
     }
   }

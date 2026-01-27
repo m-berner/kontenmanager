@@ -1,10 +1,10 @@
-import { ValidationRules } from './rules';
-import { UtilsService } from '@/domains/utils';
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
+import { ValidationRules } from "./rules";
+import { UtilsService } from "@/domains/utils";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 export class DomainValidators {
     static validateBooking(data) {
-        if (typeof data !== 'object' || data === null) {
-            throw new AppError(ERROR_CODES.VALIDATION.A, ERROR_CATEGORY.VALIDATION, { input: data, entity: 'booking' }, false);
+        if (typeof data !== "object" || data === null) {
+            throw new AppError(ERROR_CODES.VALIDATION.A, ERROR_CATEGORY.VALIDATION, { input: data, entity: "booking" }, false);
         }
         const raw = data;
         const normalized = {
@@ -31,40 +31,40 @@ export class DomainValidators {
             cMarketPlace: this.normalizeString(raw.cMarketPlace)
         };
         if (normalized.cAccountNumberID === 0) {
-            UtilsService.log('DomainValidators: Booking missing account ID', normalized, 'warn');
+            UtilsService.log("DomainValidators: Booking missing account ID", normalized, "warn");
         }
         return normalized;
     }
     static validateAccount(data) {
-        if (typeof data !== 'object' || data === null) {
-            throw new AppError(ERROR_CODES.VALIDATION.B, ERROR_CATEGORY.VALIDATION, { input: data, entity: 'account' }, false);
+        if (typeof data !== "object" || data === null) {
+            throw new AppError(ERROR_CODES.VALIDATION.B, ERROR_CATEGORY.VALIDATION, { input: data, entity: "account" }, false);
         }
         const raw = data;
         const ibanRes = ValidationRules.validateIBAN(raw.cIban);
         if (!ibanRes.isValid) {
-            UtilsService.log('DomainValidators: Invalid IBAN', raw.cIban, 'warn');
+            UtilsService.log("DomainValidators: Invalid IBAN", raw.cIban, "warn");
         }
         return {
             cID: Number(raw.cID ?? 0),
             cSwift: this.normalizeString(raw.cSwift).toUpperCase(),
-            cIban: this.normalizeString(raw.cIban).replace(/\s/g, '').toUpperCase(),
+            cIban: this.normalizeString(raw.cIban).replace(/\s/g, "").toUpperCase(),
             cLogoUrl: this.normalizeString(raw.cLogoUrl),
             cWithDepot: Boolean(raw.cWithDepot)
         };
     }
     static validateStock(data) {
-        if (typeof data !== 'object' || data === null) {
-            throw new AppError(ERROR_CODES.VALIDATION.C, ERROR_CATEGORY.VALIDATION, { input: data, entity: 'stock' }, false);
+        if (typeof data !== "object" || data === null) {
+            throw new AppError(ERROR_CODES.VALIDATION.C, ERROR_CATEGORY.VALIDATION, { input: data, entity: "stock" }, false);
         }
         const raw = data;
         const isinRes = ValidationRules.validateISIN(raw.cISIN);
         if (!isinRes.isValid) {
-            UtilsService.log('DomainValidators: Invalid ISIN', raw.cISIN, 'warn');
+            UtilsService.log("DomainValidators: Invalid ISIN", raw.cISIN, "warn");
         }
         return {
             cID: Number(raw.cID ?? 0),
             cCompany: this.normalizeString(raw.cCompany),
-            cISIN: this.normalizeString(raw.cISIN).replace(/\s/g, '').toUpperCase(),
+            cISIN: this.normalizeString(raw.cISIN).replace(/\s/g, "").toUpperCase(),
             cSymbol: this.normalizeString(raw.cSymbol).toUpperCase(),
             cFirstPage: Number(raw.cFirstPage ?? 0),
             cFadeOut: Number(raw.cFadeOut ?? 0),
@@ -76,8 +76,8 @@ export class DomainValidators {
         };
     }
     static validateBookingType(data) {
-        if (typeof data !== 'object' || data === null) {
-            throw new AppError(ERROR_CODES.VALIDATION.D, ERROR_CATEGORY.VALIDATION, { input: data, entity: 'bookingType' }, false);
+        if (typeof data !== "object" || data === null) {
+            throw new AppError(ERROR_CODES.VALIDATION.D, ERROR_CATEGORY.VALIDATION, { input: data, entity: "bookingType" }, false);
         }
         const raw = data;
         return {
@@ -87,8 +87,8 @@ export class DomainValidators {
         };
     }
     static normalizeString(value) {
-        if (typeof value !== 'string')
-            return '';
+        if (typeof value !== "string")
+            return "";
         return value.trim();
     }
     static normalizeAmount(value) {
@@ -96,10 +96,10 @@ export class DomainValidators {
         return isFinite(num) ? num : 0;
     }
     static normalizeDate(value) {
-        if (typeof value === 'string' && UtilsService.isValidISODate(value)) {
+        if (typeof value === "string" && UtilsService.isValidISODate(value)) {
             return value;
         }
-        if (typeof value === 'number') {
+        if (typeof value === "number") {
             try {
                 return UtilsService.isoDate(value);
             }

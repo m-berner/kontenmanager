@@ -1,12 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createPinia, setActivePinia } from 'pinia';
-import { databaseService } from '@/services/database';
-import { INDEXED_DB } from '@/config/database';
-import { useBookingForm } from '@/composables/useForms';
-import { useBookingsStore } from '@/stores/bookings';
-import { useSettingsStore } from '@/stores/settings';
-import { useRuntimeStore } from '@/stores/runtime';
-import { DATE } from '@/domains/config/date';
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
+import { databaseService } from "@/services/database";
+import { INDEXED_DB } from "@/config/database";
+import { useBookingForm } from "@/composables/useForms";
+import { useBookingsStore } from "@/stores/bookings";
+import { useSettingsStore } from "@/stores/settings";
+import { useRuntimeStore } from "@/stores/runtime";
+import { DATE } from "@/domains/config/date";
 const browserMock = {
     storage: {
         local: {
@@ -18,20 +18,20 @@ const browserMock = {
         create: vi.fn().mockResolvedValue(undefined)
     },
     runtime: {
-        getURL: vi.fn().mockReturnValue(''),
-        getManifest: vi.fn().mockReturnValue({ version: '1.0.0' })
+        getURL: vi.fn().mockReturnValue(""),
+        getManifest: vi.fn().mockReturnValue({ version: "1.0.0" })
     },
     i18n: {
-        getUILanguage: vi.fn().mockReturnValue('de-DE')
+        getUILanguage: vi.fn().mockReturnValue("de-DE")
     }
 };
-vi.stubGlobal('browser', browserMock);
-describe('UpdateBooking Logic Test', () => {
+vi.stubGlobal("browser", browserMock);
+describe("UpdateBooking Logic Test", () => {
     beforeEach(async () => {
         setActivePinia(createPinia());
-        vi.spyOn(databaseService, 'isConnected').mockReturnValue(true);
+        vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
     });
-    it('should update a booking and verify it reaches the database service', async () => {
+    it("should update a booking and verify it reaches the database service", async () => {
         const { bookingFormData, mapBookingFormToDb } = useBookingForm();
         const bookingsStore = useBookingsStore();
         const settings = useSettingsStore();
@@ -40,11 +40,11 @@ describe('UpdateBooking Logic Test', () => {
         runtime.activeId = 500;
         const initialBooking = {
             cID: 500,
-            cBookDate: '2025-01-01',
-            cExDate: '2025-01-01',
+            cBookDate: "2025-01-01",
+            cExDate: "2025-01-01",
             cDebit: 100,
             cCredit: 0,
-            cDescription: 'Old Description',
+            cDescription: "Old Description",
             cCount: 0,
             cBookingTypeID: 5,
             cAccountNumberID: 1,
@@ -59,27 +59,29 @@ describe('UpdateBooking Logic Test', () => {
             cSourceTaxDebit: 0,
             cTransactionTaxCredit: 0,
             cTransactionTaxDebit: 0,
-            cMarketPlace: ''
+            cMarketPlace: ""
         };
         bookingsStore.add(initialBooking);
         bookingFormData.id = 500;
         bookingFormData.selected = 5;
         bookingFormData.bookingTypeId = 5;
-        bookingFormData.bookDate = '2025-02-01';
-        bookingFormData.description = 'New Description';
+        bookingFormData.bookDate = "2025-02-01";
+        bookingFormData.description = "New Description";
         bookingFormData.debit = 150;
         bookingFormData.credit = 0;
-        const updateSpy = vi.spyOn(databaseService, 'update').mockResolvedValue(500);
+        const updateSpy = vi
+            .spyOn(databaseService, "update")
+            .mockResolvedValue(500);
         const bookingData = mapBookingFormToDb(settings.activeAccountId, DATE.ISO);
         await databaseService.update(INDEXED_DB.STORE.BOOKINGS.NAME, bookingData);
         bookingsStore.update(bookingData);
         expect(updateSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.BOOKINGS.NAME, expect.objectContaining({
             cID: 500,
-            cDescription: 'New Description',
+            cDescription: "New Description",
             cDebit: 150
         }));
         expect(bookingsStore.items).toHaveLength(1);
-        expect(bookingsStore.items[0].cDescription).toBe('New Description');
+        expect(bookingsStore.items[0].cDescription).toBe("New Description");
         expect(bookingsStore.items[0].cDebit).toBe(150);
     });
 });

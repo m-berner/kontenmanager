@@ -6,100 +6,102 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {createPinia, setActivePinia} from 'pinia'
-import {databaseService} from '@/services/database'
-import {INDEXED_DB} from '@/config/database'
-import {useStockForm} from '@/composables/useForms'
-import {useStocksStore} from '@/stores/stocks'
-import {useSettingsStore} from '@/stores/settings'
-import {useRuntimeStore} from '@/stores/runtime'
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
+import { databaseService } from "@/services/database";
+import { INDEXED_DB } from "@/config/database";
+import { useStockForm } from "@/composables/useForms";
+import { useStocksStore } from "@/stores/stocks";
+import { useSettingsStore } from "@/stores/settings";
+import { useRuntimeStore } from "@/stores/runtime";
 
 // Mock browser API
 const browserMock = {
-    storage: {
-        local: {
-            get: vi.fn().mockResolvedValue({}),
-            set: vi.fn().mockResolvedValue(undefined)
-        }
-    },
-    notifications: {
-        create: vi.fn().mockResolvedValue(undefined)
-    },
-    runtime: {
-        getURL: vi.fn().mockReturnValue(''),
-        getManifest: vi.fn().mockReturnValue({version: '1.0.0'})
-    },
-    i18n: {
-        getUILanguage: vi.fn().mockReturnValue('de-DE')
+  storage: {
+    local: {
+      get: vi.fn().mockResolvedValue({}),
+      set: vi.fn().mockResolvedValue(undefined)
     }
-}
-vi.stubGlobal('browser', browserMock)
+  },
+  notifications: {
+    create: vi.fn().mockResolvedValue(undefined)
+  },
+  runtime: {
+    getURL: vi.fn().mockReturnValue(""),
+    getManifest: vi.fn().mockReturnValue({ version: "1.0.0" })
+  },
+  i18n: {
+    getUILanguage: vi.fn().mockReturnValue("de-DE")
+  }
+};
+vi.stubGlobal("browser", browserMock);
 
-describe('UpdateStock Logic Test', () => {
-    beforeEach(async () => {
-        setActivePinia(createPinia())
-        vi.spyOn(databaseService, 'isConnected').mockReturnValue(true)
-    })
+describe("UpdateStock Logic Test", () => {
+  beforeEach(async () => {
+    setActivePinia(createPinia());
+    vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+  });
 
-    it('should update a stock and verify it reaches the database service', async () => {
-        const {stockFormData, mapStockFormToDb} = useStockForm()
-        const stocksStore = useStocksStore()
-        const settings = useSettingsStore()
-        const runtime = useRuntimeStore()
+  it("should update a stock and verify it reaches the database service", async () => {
+    const { stockFormData, mapStockFormToDb } = useStockForm();
+    const stocksStore = useStocksStore();
+    const settings = useSettingsStore();
+    const runtime = useRuntimeStore();
 
-        settings.activeAccountId = 1
-        runtime.activeId = 123
+    settings.activeAccountId = 1;
+    runtime.activeId = 123;
 
-        // 1. Initial state
-        const initialStock = {
-            cID: 123,
-            cISIN: 'US0378331002',
-            cCompany: 'Apple Inc.',
-            cSymbol: 'AAPL',
-            cMeetingDay: '',
-            cQuarterDay: '',
-            cFadeOut: 0,
-            cFirstPage: 0,
-            cURL: '',
-            cAccountNumberID: 1,
-            cAskDates: '2025-01-01'
-        }
-        stocksStore.add(initialStock)
+    // 1. Initial state
+    const initialStock = {
+      cID: 123,
+      cISIN: "US0378331002",
+      cCompany: "Apple Inc.",
+      cSymbol: "AAPL",
+      cMeetingDay: "",
+      cQuarterDay: "",
+      cFadeOut: 0,
+      cFirstPage: 0,
+      cURL: "",
+      cAccountNumberID: 1,
+      cAskDates: "2025-01-01"
+    };
+    stocksStore.add(initialStock);
 
-        // 2. Setup form data for update
-        stockFormData.id = 123
-        stockFormData.isin = 'US0378331002'
-        stockFormData.company = 'Apple Updated'
-        stockFormData.symbol = 'AAPL'
-        stockFormData.fadeOut = 1
-        stockFormData.firstPage = 1
+    // 2. Setup form data for update
+    stockFormData.id = 123;
+    stockFormData.isin = "US0378331002";
+    stockFormData.company = "Apple Updated";
+    stockFormData.symbol = "AAPL";
+    stockFormData.fadeOut = 1;
+    stockFormData.firstPage = 1;
 
-        // 3. Mock the DB update operation
-        const updateSpy = vi.spyOn(databaseService, 'update').mockResolvedValue(123)
+    // 3. Mock the DB update operation
+    const updateSpy = vi
+      .spyOn(databaseService, "update")
+      .mockResolvedValue(123);
 
-        // 4. Directly test the mapping and updating logic (simulating onClickOk)
-        const stockData = mapStockFormToDb(settings.activeAccountId)
+    // 4. Directly test the mapping and updating logic (simulating onClickOk)
+    const stockData = mapStockFormToDb(settings.activeAccountId);
 
-        // In useStocksDB.ts, it strips 'm' properties, but our form mapper already returns clean DB object.
-        // However, we simulate what the component does.
-        await databaseService.update(INDEXED_DB.STORE.STOCKS.NAME, stockData)
-        stocksStore.update(stockData as any)
+    // In useStocksDB.ts, it strips 'm' properties, but our form mapper already returns clean DB object.
+    // However, we simulate what the component does.
+    await databaseService.update(INDEXED_DB.STORE.STOCKS.NAME, stockData);
+    stocksStore.update(stockData as any);
 
-        // 5. Verify database interaction
-        expect(updateSpy).toHaveBeenCalledWith(
-            INDEXED_DB.STORE.STOCKS.NAME,
-            expect.objectContaining({
-                                        cID: 123,
-                                        cCompany: 'Apple Updated',
-                                        cFadeOut: 1,
-                                        cFirstPage: 1
-                                    })
-        )
+    // 5. Verify database interaction
+    expect(updateSpy).toHaveBeenCalledWith(
+      INDEXED_DB.STORE.STOCKS.NAME,
+      expect.objectContaining({
+        cID: 123,
+        cCompany: "Apple Updated",
+        cFadeOut: 1,
+        cFirstPage: 1
+      })
+    );
 
-        // 6. Verify store updates
-        expect(stocksStore.items).toHaveLength(1)
-        expect(stocksStore.items[0].cCompany).toBe('Apple Updated')
-        expect(stocksStore.items[0].cFadeOut).toBe(1)
-    })
-})
+    // 6. Verify store updates
+    expect(stocksStore.items).toHaveLength(1);
+    expect(stocksStore.items[0].cCompany).toBe("Apple Updated");
+    expect(stocksStore.items[0].cFadeOut).toBe(1);
+  });
+});

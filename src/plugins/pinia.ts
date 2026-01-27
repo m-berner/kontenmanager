@@ -6,14 +6,14 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import {createPinia} from 'pinia'
-import {UtilsService} from '@/domains/utils'
-import type {PiniaWrapper} from '@/types'
+import { createPinia } from "pinia";
+import { UtilsService } from "@/domains/utils";
+import type { PiniaWrapper } from "@/types";
 
 const piniaConfig: PiniaWrapper = {
-    pinia: createPinia()
-}
+  pinia: createPinia()
+};
 
-export default piniaConfig
+export default piniaConfig;
 
-UtilsService.log('--- plugins/pinia.js ---')
+UtilsService.log("--- plugins/pinia.js ---");

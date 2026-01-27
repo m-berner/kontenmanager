@@ -6,11 +6,9 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export const ROUTES = Object.freeze(
-    {
-        HOME: '/',
-        HELP: '/help',
-        PRIVACY: '/privacy',
-        COMPANY: '/company'
-    }
-)
+export const ROUTES = Object.freeze({
+  HOME: "/",
+  HELP: "/help",
+  PRIVACY: "/privacy",
+  COMPANY: "/company"
+});

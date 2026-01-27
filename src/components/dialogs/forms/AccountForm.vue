@@ -7,95 +7,112 @@
   -->
 
 <script lang="ts" setup>
-import {ref, watch} from 'vue'
-import {useI18n} from 'vue-i18n'
-import {UtilsService} from '@/domains/utils'
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { UtilsService } from "@/domains/utils";
 
-import {useFavicon} from '@/composables/useFavicon'
-import {useDomain} from '@/composables/useDomain'
-import {useAccountForm} from '@/composables/useForms'
-import {COMPONENTS} from '@/config/components'
-import type {AccountFormProps} from '@/types'
-import {ValidationService} from '@/services/validation'
-import {createIbanMessages, createSwiftMessages} from '@/domains/validation/messages'
+import { useFavicon } from "@/composables/useFavicon";
+import { useDomain } from "@/composables/useDomain";
+import { useAccountForm } from "@/composables/useForms";
+import { COMPONENTS } from "@/config/components";
+import type { AccountFormProps } from "@/types";
+import { ValidationService } from "@/services/validation";
+import {
+  createIbanMessages,
+  createSwiftMessages
+} from "@/domains/validation/messages";
 
-const props = defineProps<AccountFormProps>()
+const props = defineProps<AccountFormProps>();
 
-const {t} = useI18n()
-const {accountFormData} = useAccountForm()
+const { t } = useI18n();
+const { accountFormData } = useAccountForm();
 
-const SWIFT_RULES = createSwiftMessages(t)
-const IBAN_RULES = createIbanMessages(t)
+const SWIFT_RULES = createSwiftMessages(t);
+const IBAN_RULES = createIbanMessages(t);
 
-const search = ref<string>('')
-const swiftLabel = ref<string>('')
-const ibanLabel = ref<string>('')
+const search = ref<string>("");
+const swiftLabel = ref<string>("");
+const ibanLabel = ref<string>("");
 
 const onUpdateSwift = (swift: string): void => {
-    if (!swift) return
-    const clean = swift.replace(/\s/g, '').toUpperCase()
-    accountFormData.swift = clean
-    swiftLabel.value = accountFormData.swift.length > 1 ? ` / ${clean.replace(/(.{4})/g, '$1 ')}` : ''
-}
+  if (!swift) return;
+  const clean = swift.replace(/\s/g, "").toUpperCase();
+  accountFormData.swift = clean;
+  swiftLabel.value =
+    accountFormData.swift.length > 1
+      ? ` / ${clean.replace(/(.{4})/g, "$1 ")}`
+      : "";
+};
 
 const onUpdateIban = (iban: string): void => {
-    if (!iban) return
-    const clean = iban.replace(/\s/g, '').toUpperCase()
-    accountFormData.iban = clean
-    ibanLabel.value = accountFormData.iban.length > 1 ? ` / ${clean.replace(/(.{4})/g, '$1 ')}` : ''
-}
+  if (!iban) return;
+  const clean = iban.replace(/\s/g, "").toUpperCase();
+  accountFormData.iban = clean;
+  ibanLabel.value =
+    accountFormData.iban.length > 1
+      ? ` / ${clean.replace(/(.{4})/g, "$1 ")}`
+      : "";
+};
 
-const {domain} = useDomain(search)
+const { domain } = useDomain(search);
 
-const {faviconUrl} = useFavicon(domain)
+const { faviconUrl } = useFavicon(domain);
 
-let timeoutId: ReturnType<typeof setTimeout>
+let timeoutId: ReturnType<typeof setTimeout>;
 watch(faviconUrl, (newUrl) => {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => {
-        if (newUrl) {
-            accountFormData.logoUrl = newUrl
-        }
-    }, 400)
-})
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(() => {
+    if (newUrl) {
+      accountFormData.logoUrl = newUrl;
+    }
+  }, 400);
+});
 
-UtilsService.log('--- components/dialogs/forms/AccountForm.vue setup ---')
+UtilsService.log("--- components/dialogs/forms/AccountForm.vue setup ---");
 </script>
 
 <template>
-    <v-switch
-        v-model="accountFormData.withDepot"
-        :label="t('components.dialogs.forms.accountForm.withDepotLabel')"
-        color="red"
-        variant="outlined"/>
-    <v-text-field
-        v-model="accountFormData.swift"
-        :counter="11"
-        :label="`${t('components.dialogs.forms.accountForm.swiftLabel')}${swiftLabel}`"
-        :rules="ValidationService.swiftRules(SWIFT_RULES)"
-        autofocus
-        variant="outlined"
-        @update:model-value="onUpdateSwift"/>
-    <v-text-field
-        v-model="accountFormData.iban"
-        :disabled="props.isUpdate"
-        :label="`${t('components.dialogs.forms.accountForm.ibanLabel')}${ibanLabel}`"
-        :placeholder="t('components.dialogs.forms.accountForm.ibanPlaceholder')"
-        :rules="ValidationService.ibanRules(IBAN_RULES)"
-        variant="outlined"
-        @update:model-value="onUpdateIban"/>
-    <v-text-field
-        v-model="search"
-        :label="t('components.dialogs.forms.accountForm.searchLabel')"
-        :placeholder="COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
-        variant="outlined"
-    />
-    <!-- Logo Preview -->
-    <div class="mb-4">
-        <v-avatar class="me-3" color="white" size="48">
-            <v-img
-                :alt="t('components.dialogs.forms.accountForm.missingLogo')"
-                :src="accountFormData.logoUrl"/>
-        </v-avatar>
-    </div>
+  <v-switch
+    v-model="accountFormData.withDepot"
+    :label="t('components.dialogs.forms.accountForm.withDepotLabel')"
+    color="red"
+    variant="outlined"
+  />
+  <v-text-field
+    v-model="accountFormData.swift"
+    :counter="11"
+    :label="`${t(
+      'components.dialogs.forms.accountForm.swiftLabel'
+    )}${swiftLabel}`"
+    :rules="ValidationService.swiftRules(SWIFT_RULES)"
+    autofocus
+    variant="outlined"
+    @update:model-value="onUpdateSwift"
+  />
+  <v-text-field
+    v-model="accountFormData.iban"
+    :disabled="props.isUpdate"
+    :label="`${t(
+      'components.dialogs.forms.accountForm.ibanLabel'
+    )}${ibanLabel}`"
+    :placeholder="t('components.dialogs.forms.accountForm.ibanPlaceholder')"
+    :rules="ValidationService.ibanRules(IBAN_RULES)"
+    variant="outlined"
+    @update:model-value="onUpdateIban"
+  />
+  <v-text-field
+    v-model="search"
+    :label="t('components.dialogs.forms.accountForm.searchLabel')"
+    :placeholder="COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL"
+    variant="outlined"
+  />
+  <!-- Logo Preview -->
+  <div class="mb-4">
+    <v-avatar class="me-3" color="white" size="48">
+      <v-img
+        :alt="t('components.dialogs.forms.accountForm.missingLogo')"
+        :src="accountFormData.logoUrl"
+      />
+    </v-avatar>
+  </div>
 </template>

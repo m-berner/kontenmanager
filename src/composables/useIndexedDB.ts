@@ -7,10 +7,10 @@
  */
 
 /* eslint-disable no-unused-vars */
-import type {AccountDb, BookingDb, BookingTypeDb, RecordOperation, StockDb, StockItem} from '@/types'
-import {INDEXED_DB} from '@/config/database'
-import {databaseService} from '@/services/database'
-import {DomainValidators} from '@/domains/validation/validators'
+import type { AccountDb, BookingDb, BookingTypeDb, RecordOperation, StockDb, StockItem } from "@/types";
+import { INDEXED_DB } from "@/config/database";
+import { databaseService } from "@/services/database";
+import { DomainValidators } from "@/domains/validation/validators";
 
 /**
  * Generic internal helper to create store-specific IndexedDB wrappers.
@@ -19,83 +19,89 @@ import {DomainValidators} from '@/domains/validation/validators'
  * @returns An object with common database operations for the store.
  */
 function useDBStore<T>(storeName: string) {
-    const dbi = databaseService
-    return {
-        /** Adds a new record. */
-        add: (data: Omit<T, 'cID'>, tx?: IDBTransaction) => dbi.add(storeName, data, tx),
-        /** Retrieves a record by ID. */
-        get: (id: IDBValidKey, tx?: IDBTransaction) => dbi.get<T>(storeName, id, tx),
-        /** Retrieves all records from the store. */
-        getAll: (tx?: IDBTransaction) => dbi.getAll<T>(storeName, tx),
-        /** Updates an existing record. */
-        update: (data: T, tx?: IDBTransaction) => dbi.update(storeName, data, tx),
-        /** Removes a record by ID. */
-        remove: (id: IDBValidKey, tx?: IDBTransaction) => dbi.remove(storeName, id, tx),
-        /** Clears all records in the store. */
-        clear: (tx?: IDBTransaction) => dbi.clear(storeName, tx),
-        /** Executes batch operations. */
-        batchImport: (batch: RecordOperation[]) => dbi.batchOperations(storeName, batch),
-        /** Atomic multi-store import. */
-        atomicImport: (stores: { storeName: string, operations: RecordOperation[] }[]) => dbi.atomicImport(stores)
-    }
+  const dbi = databaseService;
+  return {
+    /** Adds a new record. */
+    add: (data: Omit<T, "cID">, tx?: IDBTransaction) =>
+      dbi.add(storeName, data, tx),
+    /** Retrieves a record by ID. */
+    get: (id: IDBValidKey, tx?: IDBTransaction) =>
+      dbi.get<T>(storeName, id, tx),
+    /** Retrieves all records from the store. */
+    getAll: (tx?: IDBTransaction) => dbi.getAll<T>(storeName, tx),
+    /** Updates an existing record. */
+    update: (data: T, tx?: IDBTransaction) => dbi.update(storeName, data, tx),
+    /** Removes a record by ID. */
+    remove: (id: IDBValidKey, tx?: IDBTransaction) =>
+      dbi.remove(storeName, id, tx),
+    /** Clears all records in the store. */
+    clear: (tx?: IDBTransaction) => dbi.clear(storeName, tx),
+    /** Executes batch operations. */
+    batchImport: (batch: RecordOperation[]) =>
+      dbi.batchOperations(storeName, batch),
+    /** Atomic multi-store import. */
+    atomicImport: (
+      stores: { storeName: string; operations: RecordOperation[] }[]
+    ) => dbi.atomicImport(stores)
+  };
 }
 
 /**
  * Composable for interacting with the 'accounts' IndexedDB store.
  */
 export function useAccountsDB() {
-    const store = useDBStore<AccountDb>(INDEXED_DB.STORE.ACCOUNTS.NAME)
-    return {
-        ...store,
-        add: (data: Omit<AccountDb, 'cID'>, tx?: IDBTransaction) => {
-            return store.add(DomainValidators.validateAccount(data) as any, tx)
-        },
-        update: (data: AccountDb, tx?: IDBTransaction) => {
-            return store.update(DomainValidators.validateAccount(data), tx)
-        }
+  const store = useDBStore<AccountDb>(INDEXED_DB.STORE.ACCOUNTS.NAME);
+  return {
+    ...store,
+    add: (data: Omit<AccountDb, "cID">, tx?: IDBTransaction) => {
+      return store.add(DomainValidators.validateAccount(data) as any, tx);
+    },
+    update: (data: AccountDb, tx?: IDBTransaction) => {
+      return store.update(DomainValidators.validateAccount(data), tx);
     }
+  };
 }
 
 /**
  * Composable for interacting with the 'bookings' IndexedDB store.
  */
 export function useBookingsDB() {
-    const store = useDBStore<BookingDb>(INDEXED_DB.STORE.BOOKINGS.NAME)
+  const store = useDBStore<BookingDb>(INDEXED_DB.STORE.BOOKINGS.NAME);
 
-    return {
-        ...store,
-        /** Adds a new record with validation. */
-        add: (data: Omit<BookingDb, 'cID'>, tx?: IDBTransaction) => {
-            const validated = DomainValidators.validateBooking(data)
-            const {cID, ...rest} = validated
-            return store.add(rest, tx)
-        },
-        /** Updates an existing record with validation. */
-        update: (data: BookingDb, tx?: IDBTransaction) => {
-            return store.update(DomainValidators.validateBooking(data), tx)
-        },
-        /** Retrieves all records with validation. */
-        getAll: async (tx?: IDBTransaction) => {
-            const records = await store.getAll(tx)
-            return records.map(rec => DomainValidators.validateBooking(rec))
-        }
+  return {
+    ...store,
+    /** Adds a new record with validation. */
+    add: (data: Omit<BookingDb, "cID">, tx?: IDBTransaction) => {
+      const validated = DomainValidators.validateBooking(data);
+      const { cID, ...rest } = validated;
+      return store.add(rest, tx);
+    },
+    /** Updates an existing record with validation. */
+    update: (data: BookingDb, tx?: IDBTransaction) => {
+      return store.update(DomainValidators.validateBooking(data), tx);
+    },
+    /** Retrieves all records with validation. */
+    getAll: async (tx?: IDBTransaction) => {
+      const records = await store.getAll(tx);
+      return records.map((rec) => DomainValidators.validateBooking(rec));
     }
+  };
 }
 
 /**
  * Composable for interacting with the 'bookingTypes' IndexedDB store.
  */
 export function useBookingTypesDB() {
-    const store = useDBStore<BookingTypeDb>(INDEXED_DB.STORE.BOOKING_TYPES.NAME)
-    return {
-        ...store,
-        add: (data: Omit<BookingTypeDb, 'cID'>, tx?: IDBTransaction) => {
-            return store.add(DomainValidators.validateBookingType(data) as any, tx)
-        },
-        update: (data: BookingTypeDb, tx?: IDBTransaction) => {
-            return store.update(DomainValidators.validateBookingType(data), tx)
-        }
+  const store = useDBStore<BookingTypeDb>(INDEXED_DB.STORE.BOOKING_TYPES.NAME);
+  return {
+    ...store,
+    add: (data: Omit<BookingTypeDb, "cID">, tx?: IDBTransaction) => {
+      return store.add(DomainValidators.validateBookingType(data) as any, tx);
+    },
+    update: (data: BookingTypeDb, tx?: IDBTransaction) => {
+      return store.update(DomainValidators.validateBookingType(data), tx);
     }
+  };
 }
 
 /**
@@ -103,27 +109,43 @@ export function useBookingTypesDB() {
  * Includes a customized update method that strips RAM-only properties.
  */
 export function useStocksDB() {
-    const store = useDBStore<StockDb>(INDEXED_DB.STORE.STOCKS.NAME)
+  const store = useDBStore<StockDb>(INDEXED_DB.STORE.STOCKS.NAME);
 
-    return {
-        ...store,
-        add: (data: Omit<StockDb, 'cID'>, tx?: IDBTransaction) => {
-            return store.add(DomainValidators.validateStock(data) as any, tx)
-        },
-        /**
-         * Updates a stock record, ensuring only database-relevant fields are sent.
-         * Strips calculated properties (prefix 'm').
-         *
-         * @param stockData - The full stock object including RAM state.
-         * @param tx - Optional existing transaction.
-         */
-        update: (stockData: StockItem, tx?: IDBTransaction) => {
-            const {
-                mPortfolio, mInvest, mChange, mBuyValue, mEuroChange, mMin,
-                mValue, mMax, mDividendYielda, mDividendYeara, mDividendYieldb,
-                mDividendYearb, mRealDividend, mRealBuyValue, mDeleteable, ...cleanData
-            } = stockData
-            return store.update(DomainValidators.validateStock(cleanData as StockDb), tx)
-        }
+  return {
+    ...store,
+    add: (data: Omit<StockDb, "cID">, tx?: IDBTransaction) => {
+      return store.add(DomainValidators.validateStock(data) as any, tx);
+    },
+    /**
+     * Updates a stock record, ensuring only database-relevant fields are sent.
+     * Strips calculated properties (prefix 'm').
+     *
+     * @param stockData - The full stock object including RAM state.
+     * @param tx - Optional existing transaction.
+     */
+    update: (stockData: StockItem, tx?: IDBTransaction) => {
+      const {
+        mPortfolio,
+        mInvest,
+        mChange,
+        mBuyValue,
+        mEuroChange,
+        mMin,
+        mValue,
+        mMax,
+        mDividendYielda,
+        mDividendYeara,
+        mDividendYieldb,
+        mDividendYearb,
+        mRealDividend,
+        mRealBuyValue,
+        mDeleteable,
+        ...cleanData
+      } = stockData;
+      return store.update(
+        DomainValidators.validateStock(cleanData as StockDb),
+        tx
+      );
     }
+  };
 }

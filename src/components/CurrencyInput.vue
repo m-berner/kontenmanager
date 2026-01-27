@@ -7,89 +7,92 @@
   -->
 
 <script lang="ts" setup>
-import {computed, onMounted, ref, watch} from 'vue'
-import {useI18n} from 'vue-i18n'
-import type {CurrencyInputProps} from '@/types'
-import {UtilsService} from '@/domains/utils'
+import { computed, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import type { CurrencyInputProps } from "@/types";
+import { UtilsService } from "@/domains/utils";
 
-const props = defineProps<CurrencyInputProps>()
+const props = defineProps<CurrencyInputProps>();
 // eslint-disable-next-line vue/define-emits-declaration
-const emit = defineEmits(['update:modelValue'])
-const {n} = useI18n()
-const unformattedValue = ref<number>(props.modelValue)
-const formattedValue = ref<string>('')
-const isFocused = ref<boolean>(false)
+const emit = defineEmits(["update:modelValue"]);
+const { n } = useI18n();
+const unformattedValue = ref<number>(props.modelValue);
+const formattedValue = ref<string>("");
+const isFocused = ref<boolean>(false);
 
 const wrappedRules = computed(() => {
-    if (!props.rules) return undefined
-    return props.rules.map(rule => {
-        return (v: string) => {
-            const numValue = parseCurrency(v)
-            return rule(numValue)
-        }
-    })
-})
+  if (!props.rules) return undefined;
+  return props.rules.map((rule) => {
+    return (v: string) => {
+      const numValue = parseCurrency(v);
+      return rule(numValue);
+    };
+  });
+});
 
 // Watch für prop changes
-watch(() => props.modelValue, (newVal) => {
+watch(
+  () => props.modelValue,
+  (newVal) => {
     if (!isFocused.value) {
-        formattedValue.value = formatCurrency(newVal)
+      formattedValue.value = formatCurrency(newVal);
     }
-})
+  }
+);
 
 const formatCurrency = (value: number): string => {
-    if (!value || value === 0) return ''
-    return n(value, 'currency')
-}
+  if (!value || value === 0) return "";
+  return n(value, "currency");
+};
 
 const parseCurrency = (value: string): number => {
-    if (!value) return 0
-    const normalized = value.replace(',', '.')
-    const match = normalized.match(/-?\d+(\.\d*)?/)
-    return match ? Number.parseFloat(match[0]) : 0
-}
+  if (!value) return 0;
+  const normalized = value.replace(",", ".");
+  const match = normalized.match(/-?\d+(\.\d*)?/);
+  return match ? Number.parseFloat(match[0]) : 0;
+};
 
 const onFocus = (): void => {
-    isFocused.value = true
-    // Show raw number for editing
-    if (unformattedValue.value === 0) {
-        formattedValue.value = ''
-    } else {
-        formattedValue.value = unformattedValue.value.toString()
-    }
-}
+  isFocused.value = true;
+  // Show raw number for editing
+  if (unformattedValue.value === 0) {
+    formattedValue.value = "";
+  } else {
+    formattedValue.value = unformattedValue.value.toString();
+  }
+};
 
 const onBlur = (): void => {
-    isFocused.value = false
-    const parsed = parseCurrency(formattedValue.value)
-    emit('update:modelValue', parsed)
-    formattedValue.value = formatCurrency(parsed)
-}
+  isFocused.value = false;
+  const parsed = parseCurrency(formattedValue.value);
+  emit("update:modelValue", parsed);
+  formattedValue.value = formatCurrency(parsed);
+};
 
 const onInput = (ev: Event): void => {
-    if (ev.target instanceof HTMLInputElement && isFocused.value) {
-        formattedValue.value = ev.target.value.replace(',', '.')
-    }
-}
+  if (ev.target instanceof HTMLInputElement && isFocused.value) {
+    formattedValue.value = ev.target.value.replace(",", ".");
+  }
+};
 
 onMounted(() => {
-    UtilsService.log('CURRENCY_INPUT: onMounted')
-    formattedValue.value = formatCurrency(props.modelValue)
-})
+  UtilsService.log("CURRENCY_INPUT: onMounted");
+  formattedValue.value = formatCurrency(props.modelValue);
+});
 
-UtilsService.log('--- CurrencyInput.vue ---')
+UtilsService.log("--- CurrencyInput.vue ---");
 </script>
 
 <template>
-    <v-text-field
-        :disabled="props.disabled"
-        :label="props.label"
-        :model-value="formattedValue"
-        :rules="wrappedRules"
-        density="compact"
-        variant="solo-filled"
-        @blur="onBlur"
-        @focus="onFocus"
-        @input="onInput"
-    />
+  <v-text-field
+    :disabled="props.disabled"
+    :label="props.label"
+    :model-value="formattedValue"
+    :rules="wrappedRules"
+    density="compact"
+    variant="solo-filled"
+    @blur="onBlur"
+    @focus="onFocus"
+    @input="onInput"
+  />
 </template>

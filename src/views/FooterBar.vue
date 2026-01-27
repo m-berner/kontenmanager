@@ -7,39 +7,41 @@
   -->
 
 <script lang="ts" setup>
-import {useI18n} from 'vue-i18n'
-import {RouterLink} from 'vue-router'
-import {UtilsService} from '@/domains/utils'
-import {ROUTES} from '@/config/routes'
-import {DEFAULTS} from '@/config/defaults'
+import { useI18n } from "vue-i18n";
+import { RouterLink } from "vue-router";
+import { UtilsService } from "@/domains/utils";
+import { ROUTES } from "@/config/routes";
+import { DEFAULTS } from "@/config/defaults";
 
-const {t} = useI18n()
+const { t } = useI18n();
 
-UtilsService.log('--- views/FooterBar.vue setup ---')
+UtilsService.log("--- views/FooterBar.vue setup ---");
 </script>
 
 <template>
-    <v-bottom-navigation color="primary">
-        <v-btn color="white">
-            <RouterLink :to="ROUTES.HELP" class="router-link-active">
-                <v-icon icon="$help"/>
-                <div>{{ t('views.footerBar.help') }}</div>
-            </RouterLink>
-        </v-btn>
-        <v-btn color="white">
-            <RouterLink :to="ROUTES.PRIVACY" class="router-link-active">
-                <v-icon icon="
-        $privacy"/>
-                <div>{{ t('views.footerBar.privacy') }}</div>
-            </RouterLink>
-        </v-btn>
-        <v-btn :href="DEFAULTS.MAILTO" color="white">
-            <v-icon icon="$mail"/>
-            <div>{{ t('views.footerBar.mail') }}</div>
-        </v-btn>
-        <v-btn :disabled="true" color="white">
-            <v-icon icon="$mdiCopyright"/>
-            <div class="nowrap">{{ DEFAULTS.COPYRIGHT }}</div>
-        </v-btn>
-    </v-bottom-navigation>
+  <v-bottom-navigation color="primary">
+    <v-btn color="white">
+      <RouterLink :to="ROUTES.HELP" class="router-link-active">
+        <v-icon icon="$help" />
+        <div>{{ t("views.footerBar.help") }}</div>
+      </RouterLink>
+    </v-btn>
+    <v-btn color="white">
+      <RouterLink :to="ROUTES.PRIVACY" class="router-link-active">
+        <v-icon
+          icon="
+        $privacy"
+        />
+        <div>{{ t("views.footerBar.privacy") }}</div>
+      </RouterLink>
+    </v-btn>
+    <v-btn :href="DEFAULTS.MAILTO" color="white">
+      <v-icon icon="$mail" />
+      <div>{{ t("views.footerBar.mail") }}</div>
+    </v-btn>
+    <v-btn :disabled="true" color="white">
+      <v-icon icon="$mdiCopyright" />
+      <div class="nowrap">{{ DEFAULTS.COPYRIGHT }}</div>
+    </v-btn>
+  </v-bottom-navigation>
 </template>

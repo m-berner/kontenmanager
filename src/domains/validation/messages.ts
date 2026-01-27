@@ -12,18 +12,19 @@
  * @param t - Localization function
  * @returns Array of swift validation messages
  */
-export const createSwiftMessages = (t: (_key: string) => string): readonly string[] => Object.freeze(
-    [
-        t('validators.swiftRules.required'),
-        t('validators.swiftRules.length'),
-        t('validators.swiftRules.format'),
-        t('validators.swiftRules.bankCode'),
-        t('validators.swiftRules.countryCode'),
-        t('validators.swiftRules.locationCode'),
-        t('validators.swiftRules.branchCode'),
-        t('validators.swiftRules.test')
-    ]
-)
+export const createSwiftMessages = (
+  t: (_key: string) => string
+): readonly string[] =>
+  Object.freeze([
+    t("validators.swiftRules.required"),
+    t("validators.swiftRules.length"),
+    t("validators.swiftRules.format"),
+    t("validators.swiftRules.bankCode"),
+    t("validators.swiftRules.countryCode"),
+    t("validators.swiftRules.locationCode"),
+    t("validators.swiftRules.branchCode"),
+    t("validators.swiftRules.test")
+  ]);
 
 /**
  * Factory function to create iban rules.
@@ -31,12 +32,13 @@ export const createSwiftMessages = (t: (_key: string) => string): readonly strin
  * @param t - Localization function
  * @returns Array of iban validation messages
  */
-export const createIbanMessages = (t: (_key: string) => string): readonly string[] => Object.freeze(
-    [
-        t('validators.ibanRules.required'),
-        t('validators.ibanRules.length'),
-        t('validators.ibanRules.format'),
-        t('validators.ibanRules.checksum'),
-        t('validators.ibanRules.duplicate')
-    ]
-)
+export const createIbanMessages = (
+  t: (_key: string) => string
+): readonly string[] =>
+  Object.freeze([
+    t("validators.ibanRules.required"),
+    t("validators.ibanRules.length"),
+    t("validators.ibanRules.format"),
+    t("validators.ibanRules.checksum"),
+    t("validators.ibanRules.duplicate")
+  ]);

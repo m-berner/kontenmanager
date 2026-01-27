@@ -1,5 +1,5 @@
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from '@/domains/errors';
-import { BROWSER_STORAGE } from '@/config/storage';
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import { BROWSER_STORAGE } from "@/config/storage";
 export function useStorage() {
     async function clearStorage() {
         try {
@@ -27,7 +27,7 @@ export function useStorage() {
     }
     function addStorageChangedListener(callback) {
         const wrappedCallback = (changes, areaName) => {
-            if (areaName === 'local') {
+            if (areaName === "local") {
                 callback(changes, areaName);
             }
         };

@@ -321,8 +321,7 @@
         "nothingToExport": "Es existieren noch keine Daten zum Exportieren."
       }
     },
-    "infoBar": {
-    },
+    "infoBar": {},
     "homeContent": {
       "search": "Suchen",
       "bookingsTable": {

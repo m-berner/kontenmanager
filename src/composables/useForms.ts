@@ -6,26 +6,33 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import {reactive, type UnwrapNestedRefs} from 'vue'
+import { reactive, type UnwrapNestedRefs } from "vue";
 import type {
-    AccountDb,
-    AccountFormData,
-    BookingDb,
-    BookingFormData,
-    BookingTypeDb,
-    BookingTypeFormData,
-    FormsManager,
-    StockDb,
-    StockFormData
-} from '@/types'
-import {INDEXED_DB} from '@/config/database'
-import {DATE} from '@/domains/config/date'
-import {UtilsService} from '@/domains/utils'
+  AccountDb,
+  AccountFormData,
+  BookingDb,
+  BookingFormData,
+  BookingTypeDb,
+  BookingTypeFormData,
+  FormsManager,
+  StockDb,
+  StockFormData
+} from "@/types";
+import { INDEXED_DB } from "@/config/database";
+import { DATE } from "@/domains/config/date";
+import { UtilsService } from "@/domains/utils";
 
-let stockFormManagerInstance: ReturnType<typeof createStockFormManager> | null = null
-let accountFormManagerInstance: ReturnType<typeof createAccountFormManager> | null = null
-let bookingFormManagerInstance: ReturnType<typeof createBookingFormManager> | null = null
-let bookingTypeFormManagerInstance: ReturnType<typeof createBookingTypeFormManager> | null = null
+let stockFormManagerInstance: ReturnType<typeof createStockFormManager> | null =
+  null;
+let accountFormManagerInstance: ReturnType<
+  typeof createAccountFormManager
+> | null = null;
+let bookingFormManagerInstance: ReturnType<
+  typeof createBookingFormManager
+> | null = null;
+let bookingTypeFormManagerInstance: ReturnType<
+  typeof createBookingTypeFormManager
+> | null = null;
 
 /**
  * Base generic form manager that handles reactive data and validation references.
@@ -35,23 +42,23 @@ let bookingTypeFormManagerInstance: ReturnType<typeof createBookingTypeFormManag
  * @returns Form state, refs, and utility methods.
  */
 function createFormManager<TForm extends Record<string, any>, TDB>(
-    initialData: TForm,
-    mapFn: (_data: UnwrapNestedRefs<TForm>, ..._args: any[]) => TDB
+  initialData: TForm,
+  mapFn: (_data: UnwrapNestedRefs<TForm>, ..._args: any[]) => TDB
 ): FormsManager<TForm, TDB> {
-    const formData = reactive<TForm>({...initialData})
+  const formData = reactive<TForm>({ ...initialData });
 
-    /**
-     * Resets form data to its initial state and clears validation references.
-     */
-    function reset(): void {
-        Object.assign(formData, {...initialData})
-    }
+  /**
+   * Resets form data to its initial state and clears validation references.
+   */
+  function reset(): void {
+    Object.assign(formData, { ...initialData });
+  }
 
-    return {
-        formData,
-        reset,
-        mapFormToDb: mapFn
-    }
+  return {
+    formData,
+    reset,
+    mapFormToDb: mapFn
+  };
 }
 
 /**
@@ -60,213 +67,234 @@ function createFormManager<TForm extends Record<string, any>, TDB>(
  * @returns Stock-specific form state and mapping methods.
  */
 function createStockFormManager() {
-    const initialData: StockFormData = {
-        id: -1,
-        isin: '',
-        company: '',
-        symbol: '',
-        meetingDay: '',
-        quarterDay: '',
-        fadeOut: 0,
-        firstPage: 0,
-        url: '',
-        askDates: DATE.ISO
-    }
+  const initialData: StockFormData = {
+    id: -1,
+    isin: "",
+    company: "",
+    symbol: "",
+    meetingDay: "",
+    quarterDay: "",
+    fadeOut: 0,
+    firstPage: 0,
+    url: "",
+    askDates: DATE.ISO
+  };
 
-    function mapStockFormToDb(data: StockFormData, accountId: number): StockDb | Omit<StockDb, 'cID'> {
-        const stock: Omit<StockDb, 'cID'> = {
-            cISIN: data.isin.replace(/\s/g, '').toUpperCase(),
-            cCompany: data.company.trim(),
-            cSymbol: data.symbol.trim().toUpperCase(),
-            cMeetingDay: data.meetingDay,
-            cQuarterDay: data.quarterDay,
-            cFadeOut: data.fadeOut ? 1 : 0,
-            cFirstPage: data.firstPage ? 1 : 0,
-            cURL: data.url.trim(),
-            cAccountNumberID: accountId,
-            cAskDates: data.askDates
-        }
-        if (data.id > 0) {
-            return {cID: data.id, ...stock}
-        }
-        return stock
+  function mapStockFormToDb(
+    data: StockFormData,
+    accountId: number
+  ): StockDb | Omit<StockDb, "cID"> {
+    const stock: Omit<StockDb, "cID"> = {
+      cISIN: data.isin.replace(/\s/g, "").toUpperCase(),
+      cCompany: data.company.trim(),
+      cSymbol: data.symbol.trim().toUpperCase(),
+      cMeetingDay: data.meetingDay,
+      cQuarterDay: data.quarterDay,
+      cFadeOut: data.fadeOut ? 1 : 0,
+      cFirstPage: data.firstPage ? 1 : 0,
+      cURL: data.url.trim(),
+      cAccountNumberID: accountId,
+      cAskDates: data.askDates
+    };
+    if (data.id > 0) {
+      return { cID: data.id, ...stock };
     }
+    return stock;
+  }
 
-    const manager = createFormManager(initialData, mapStockFormToDb)
+  const manager = createFormManager(initialData, mapStockFormToDb);
 
-    return {
-        ...manager,
-        stockFormData: manager.formData,
-        mapStockFormToDb: (accountId: number) => manager.mapFormToDb(manager.formData, accountId)
-    }
+  return {
+    ...manager,
+    stockFormData: manager.formData,
+    mapStockFormToDb: (accountId: number) =>
+      manager.mapFormToDb(manager.formData, accountId)
+  };
 }
 
 /**
  * Creates or retrieves the singleton form manager for Accounts.
  */
 function createAccountFormManager() {
-    const initialData: AccountFormData = {
-        id: -1,
-        swift: '',
-        iban: '',
-        logoUrl: '',
-        withDepot: false
-    }
+  const initialData: AccountFormData = {
+    id: -1,
+    swift: "",
+    iban: "",
+    logoUrl: "",
+    withDepot: false
+  };
 
-    function mapAccountFormToDb(data: AccountFormData): AccountDb | Omit<AccountDb, 'cID'> {
-        const account: Omit<AccountDb, 'cID'> = {
-            cSwift: data.swift.trim().toUpperCase(),
-            cIban: data.iban.replace(/\s/g, '').toUpperCase(),
-            cLogoUrl: data.logoUrl.trim(),
-            cWithDepot: data.withDepot
-        }
-        if (data.id > 0) {
-            return {cID: data.id, ...account}
-        }
-        return account
+  function mapAccountFormToDb(
+    data: AccountFormData
+  ): AccountDb | Omit<AccountDb, "cID"> {
+    const account: Omit<AccountDb, "cID"> = {
+      cSwift: data.swift.trim().toUpperCase(),
+      cIban: data.iban.replace(/\s/g, "").toUpperCase(),
+      cLogoUrl: data.logoUrl.trim(),
+      cWithDepot: data.withDepot
+    };
+    if (data.id > 0) {
+      return { cID: data.id, ...account };
     }
+    return account;
+  }
 
-    const manager = createFormManager(initialData, mapAccountFormToDb)
+  const manager = createFormManager(initialData, mapAccountFormToDb);
 
-    return {
-        ...manager,
-        accountFormData: manager.formData,
-        mapAccountFormToDb: (id?: number) => manager.mapFormToDb(manager.formData, id)
-    }
+  return {
+    ...manager,
+    accountFormData: manager.formData,
+    mapAccountFormToDb: (id?: number) =>
+      manager.mapFormToDb(manager.formData, id)
+  };
 }
 
 function createBookingFormManager() {
-    const BOOKING_TYPES = INDEXED_DB.STORE.BOOKING_TYPES
+  const BOOKING_TYPES = INDEXED_DB.STORE.BOOKING_TYPES;
 
-    const initialData: BookingFormData = {
-        id: -1,
-        selected: -1,
-        bookDate: '',
-        exDate: '',
-        credit: 0,
-        debit: 0,
-        description: '',
-        count: 0,
-        bookingTypeId: 0,
-        accountTypeId: 0,
-        stockId: 0,
-        sourceTaxCredit: 0,
-        sourceTaxDebit: 0,
-        transactionTaxCredit: 0,
-        transactionTaxDebit: 0,
-        taxCredit: 0,
-        taxDebit: 0,
-        feeCredit: 0,
-        feeDebit: 0,
-        soliCredit: 0,
-        soliDebit: 0,
-        marketPlace: ''
+  const initialData: BookingFormData = {
+    id: -1,
+    selected: -1,
+    bookDate: "",
+    exDate: "",
+    credit: 0,
+    debit: 0,
+    description: "",
+    count: 0,
+    bookingTypeId: 0,
+    accountTypeId: 0,
+    stockId: 0,
+    sourceTaxCredit: 0,
+    sourceTaxDebit: 0,
+    transactionTaxCredit: 0,
+    transactionTaxDebit: 0,
+    taxCredit: 0,
+    taxDebit: 0,
+    feeCredit: 0,
+    feeDebit: 0,
+    soliCredit: 0,
+    soliDebit: 0,
+    marketPlace: ""
+  };
+
+  function mapBookingFormToDb(
+    data: BookingFormData,
+    accountId: number,
+    defaultISODate: string
+  ): BookingDb | Omit<BookingDb, "cID"> {
+    const isStockRelated = (typeId: number): boolean => {
+      return [
+        BOOKING_TYPES.BUY,
+        BOOKING_TYPES.SELL,
+        BOOKING_TYPES.DIVIDEND
+      ].includes(typeId);
+    };
+
+    const isDividend = (typeId: number): boolean => {
+      return typeId === BOOKING_TYPES.DIVIDEND;
+    };
+
+    const hasMarketplace = (typeId: number): boolean => {
+      return [
+        BOOKING_TYPES.BUY,
+        BOOKING_TYPES.SELL,
+        BOOKING_TYPES.DIVIDEND
+      ].includes(typeId);
+    };
+
+    const booking: Omit<BookingDb, "cID"> = {
+      cAccountNumberID: accountId,
+      cBookDate: data.bookDate,
+      cCredit: data.credit,
+      cDebit: data.debit,
+      cDescription: data.description.trim(),
+      cBookingTypeID: data.selected,
+      cSoliCredit: data.soliCredit,
+      cSoliDebit: data.soliDebit,
+      cTaxCredit: data.taxCredit,
+      cTaxDebit: data.taxDebit,
+      cFeeCredit: data.feeCredit,
+      cFeeDebit: data.feeDebit,
+      cSourceTaxCredit: data.sourceTaxCredit,
+      cSourceTaxDebit: data.sourceTaxDebit,
+      cTransactionTaxCredit: data.transactionTaxCredit,
+      cTransactionTaxDebit: data.transactionTaxDebit,
+      cStockID: isStockRelated(data.bookingTypeId) ? data.stockId : 0,
+      cCount: isStockRelated(data.bookingTypeId) ? data.count : 0,
+      cExDate: isDividend(data.bookingTypeId) ? data.exDate : defaultISODate,
+      cMarketPlace: hasMarketplace(data.bookingTypeId)
+        ? data.marketPlace.trim()
+        : ""
+    };
+    if (data.id > 0) {
+      return { cID: data.id, ...booking };
     }
+    return booking;
+  }
 
-    function mapBookingFormToDb(
-        data: BookingFormData,
-        accountId: number,
-        defaultISODate: string
-    ): BookingDb | Omit<BookingDb, 'cID'> {
-        const isStockRelated = (typeId: number): boolean => {
-            return [BOOKING_TYPES.BUY, BOOKING_TYPES.SELL, BOOKING_TYPES.DIVIDEND].includes(typeId)
-        }
+  const manager = createFormManager(initialData, mapBookingFormToDb);
 
-        const isDividend = (typeId: number): boolean => {
-            return typeId === BOOKING_TYPES.DIVIDEND
-        }
-
-        const hasMarketplace = (typeId: number): boolean => {
-            return [BOOKING_TYPES.BUY, BOOKING_TYPES.SELL, BOOKING_TYPES.DIVIDEND].includes(typeId)
-        }
-
-        const booking: Omit<BookingDb, 'cID'> = {
-            cAccountNumberID: accountId,
-            cBookDate: data.bookDate,
-            cCredit: data.credit,
-            cDebit: data.debit,
-            cDescription: data.description.trim(),
-            cBookingTypeID: data.selected,
-            cSoliCredit: data.soliCredit,
-            cSoliDebit: data.soliDebit,
-            cTaxCredit: data.taxCredit,
-            cTaxDebit: data.taxDebit,
-            cFeeCredit: data.feeCredit,
-            cFeeDebit: data.feeDebit,
-            cSourceTaxCredit: data.sourceTaxCredit,
-            cSourceTaxDebit: data.sourceTaxDebit,
-            cTransactionTaxCredit: data.transactionTaxCredit,
-            cTransactionTaxDebit: data.transactionTaxDebit,
-            cStockID: isStockRelated(data.bookingTypeId) ? data.stockId : 0,
-            cCount: isStockRelated(data.bookingTypeId) ? data.count : 0,
-            cExDate: isDividend(data.bookingTypeId) ? data.exDate : defaultISODate,
-            cMarketPlace: hasMarketplace(data.bookingTypeId) ? data.marketPlace.trim() : ''
-        }
-        if (data.id > 0) {
-            return {cID: data.id, ...booking}
-        }
-        return booking
-    }
-
-    const manager = createFormManager(initialData, mapBookingFormToDb)
-
-    return {
-        ...manager,
-        bookingFormData: manager.formData,
-        mapBookingFormToDb: (accountId: number, defaultISODate: string) =>
-            manager.mapFormToDb(manager.formData, accountId, defaultISODate)
-    }
+  return {
+    ...manager,
+    bookingFormData: manager.formData,
+    mapBookingFormToDb: (accountId: number, defaultISODate: string) =>
+      manager.mapFormToDb(manager.formData, accountId, defaultISODate)
+  };
 }
 
 function createBookingTypeFormManager() {
-    const initialData: BookingTypeFormData = {
-        id: null,
-        name: ''
-    }
+  const initialData: BookingTypeFormData = {
+    id: null,
+    name: ""
+  };
 
-    function mapBookingTypeFormToDb(data: BookingTypeFormData, accountId: number): BookingTypeDb | Omit<BookingTypeDb, 'cID'> {
-        const bookingType = {
-            cName: UtilsService.normalizeBookingTypeName(data.name),
-            cAccountNumberID: accountId
-        }
-        if (!data.id) return bookingType
-        if (data.id > 0) return {cID: data.id, ...bookingType}
-        return bookingType
-    }
+  function mapBookingTypeFormToDb(
+    data: BookingTypeFormData,
+    accountId: number
+  ): BookingTypeDb | Omit<BookingTypeDb, "cID"> {
+    const bookingType = {
+      cName: UtilsService.normalizeBookingTypeName(data.name),
+      cAccountNumberID: accountId
+    };
+    if (!data.id) return bookingType;
+    if (data.id > 0) return { cID: data.id, ...bookingType };
+    return bookingType;
+  }
 
-    const manager = createFormManager(initialData, mapBookingTypeFormToDb)
+  const manager = createFormManager(initialData, mapBookingTypeFormToDb);
 
-    return {
-        ...manager,
-        bookingTypeFormData: manager.formData,
-        mapBookingTypeFormToDb: (id?: number) => manager.mapFormToDb(manager.formData, id)
-    }
+  return {
+    ...manager,
+    bookingTypeFormData: manager.formData,
+    mapBookingTypeFormToDb: (id?: number) =>
+      manager.mapFormToDb(manager.formData, id)
+  };
 }
 
 export function useAccountForm() {
-    if (!accountFormManagerInstance) {
-        accountFormManagerInstance = createAccountFormManager()
-    }
-    return accountFormManagerInstance
+  if (!accountFormManagerInstance) {
+    accountFormManagerInstance = createAccountFormManager();
+  }
+  return accountFormManagerInstance;
 }
 
 export function useStockForm() {
-    if (!stockFormManagerInstance) {
-        stockFormManagerInstance = createStockFormManager()
-    }
-    return stockFormManagerInstance
+  if (!stockFormManagerInstance) {
+    stockFormManagerInstance = createStockFormManager();
+  }
+  return stockFormManagerInstance;
 }
 
 export function useBookingForm() {
-    if (!bookingFormManagerInstance) {
-        bookingFormManagerInstance = createBookingFormManager()
-    }
-    return bookingFormManagerInstance
+  if (!bookingFormManagerInstance) {
+    bookingFormManagerInstance = createBookingFormManager();
+  }
+  return bookingFormManagerInstance;
 }
 
 export function useBookingTypeForm() {
-    if (!bookingTypeFormManagerInstance) {
-        bookingTypeFormManagerInstance = createBookingTypeFormManager()
-    }
-    return bookingTypeFormManagerInstance
+  if (!bookingTypeFormManagerInstance) {
+    bookingTypeFormManagerInstance = createBookingTypeFormManager();
+  }
+  return bookingTypeFormManagerInstance;
 }

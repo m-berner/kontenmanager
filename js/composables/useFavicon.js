@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, ref } from "vue";
 export function useFavicon(domain, size = 48) {
     const error = ref(false);
     const loading = ref(true);
@@ -6,7 +6,7 @@ export function useFavicon(domain, size = 48) {
     const MAX_RETRIES = 2;
     const faviconUrl = computed(() => {
         if (domain.value.length <= 4)
-            return '';
+            return "";
         if (retryCount.value === 0) {
             return `https://www.google.com/s2/favicons?domain=${domain.value}&sz=${size}`;
         }

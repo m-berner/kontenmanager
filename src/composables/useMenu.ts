@@ -6,96 +6,96 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import {useRuntimeStore} from '@/stores/runtime'
-import {useRecordsStore} from '@/stores/records'
-import {useAlertStore} from '@/stores/alerts'
-import {useBookingsDB, useStocksDB} from '@/composables/useIndexedDB'
-import {useBrowser} from '@/composables/useBrowser'
-import {storeToRefs} from 'pinia'
-import type {MenuActionType} from '@/types'
-import {computed, onUnmounted, readonly, ref} from 'vue'
-import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
-import {CODES} from '@/config/codes'
+import { useRuntimeStore } from "@/stores/runtime";
+import { useRecordsStore } from "@/stores/records";
+import { useAlertStore } from "@/stores/alerts";
+import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
+import { useBrowser } from "@/composables/useBrowser";
+import { storeToRefs } from "pinia";
+import type { MenuActionType } from "@/types";
+import { computed, onUnmounted, readonly, ref } from "vue";
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import { CODES } from "@/config/codes";
 
-type HighlightColor = 'green' | 'red' | 'yellow' | 'blue'
+type HighlightColor = "green" | "red" | "yellow" | "blue";
 
 interface HighlightOptionsType {
-    color?: HighlightColor
-    duration?: number
+  color?: HighlightColor;
+  duration?: number;
 }
 
 export function useMenuHighlight() {
-    const highlightedItems = ref<Map<number, HighlightColor>>(new Map())
-    const timeouts = new Map<number, ReturnType<typeof setTimeout>>()
+  const highlightedItems = ref<Map<number, HighlightColor>>(new Map());
+  const timeouts = new Map<number, ReturnType<typeof setTimeout>>();
 
-    const highlight = (recordId: number, color: HighlightColor = 'green') => {
-        clearHighlight(recordId)
-        highlightedItems.value.set(recordId, color)
+  const highlight = (recordId: number, color: HighlightColor = "green") => {
+    clearHighlight(recordId);
+    highlightedItems.value.set(recordId, color);
+  };
+
+  const clearHighlight = (recordId: number) => {
+    highlightedItems.value.delete(recordId);
+
+    const timeout = timeouts.get(recordId);
+    if (timeout) {
+      clearTimeout(timeout);
+      timeouts.delete(recordId);
+    }
+  };
+
+  const clearAllHighlights = () => {
+    highlightedItems.value.clear();
+
+    for (const timeout of timeouts.values()) {
+      clearTimeout(timeout);
+    }
+    timeouts.clear();
+  };
+
+  const highlightTemporary = (
+    recordId: number,
+    options: HighlightOptionsType = {}
+  ) => {
+    const { color = "green", duration = 3000 } = options;
+
+    highlight(recordId, color);
+
+    const existingTimeout = timeouts.get(recordId);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
     }
 
-    const clearHighlight = (recordId: number) => {
-        highlightedItems.value.delete(recordId)
+    const timeout = setTimeout(() => {
+      clearHighlight(recordId);
+    }, duration);
 
-        const timeout = timeouts.get(recordId)
-        if (timeout) {
-            clearTimeout(timeout)
-            timeouts.delete(recordId)
-        }
-    }
+    timeouts.set(recordId, timeout);
+  };
 
-    const clearAllHighlights = () => {
-        highlightedItems.value.clear()
+  const isHighlighted = (recordId: number): boolean => {
+    return highlightedItems.value.has(recordId);
+  };
 
-        for (const timeout of timeouts.values()) {
-            clearTimeout(timeout)
-        }
-        timeouts.clear()
-    }
+  const getHighlightColor = (recordId: number): HighlightColor | undefined => {
+    return highlightedItems.value.get(recordId);
+  };
 
-    const highlightTemporary = (
-        recordId: number,
-        options: HighlightOptionsType = {}
-    ) => {
-        const {color = 'green', duration = 3000} = options
+  onUnmounted(() => {
+    clearAllHighlights();
+  });
 
-        highlight(recordId, color)
-
-        const existingTimeout = timeouts.get(recordId)
-        if (existingTimeout) {
-            clearTimeout(existingTimeout)
-        }
-
-        const timeout = setTimeout(() => {
-            clearHighlight(recordId)
-        }, duration)
-
-        timeouts.set(recordId, timeout)
-    }
-
-    const isHighlighted = (recordId: number): boolean => {
-        return highlightedItems.value.has(recordId)
-    }
-
-    const getHighlightColor = (recordId: number): HighlightColor | undefined => {
-        return highlightedItems.value.get(recordId)
-    }
-
-    onUnmounted(() => {
-        clearAllHighlights()
-    })
-
-    return {
-        highlightedItems: readonly(computed(() => highlightedItems.value)),
-        highlight,
-        clearHighlight,
-        clearAllHighlights,
-        highlightTemporary,
-        isHighlighted,
-        getHighlightColor
-    }
+  return {
+    highlightedItems: readonly(computed(() => highlightedItems.value)),
+    highlight,
+    clearHighlight,
+    clearAllHighlights,
+    highlightTemporary,
+    isHighlighted,
+    getHighlightColor
+  };
 }
 
-type ActionHandler = (_recordId: number) => Promise<void>
+type ActionHandler = (_recordId: number) => Promise<void>;
 
 /**
  * Composable for managing application menu actions and navigation.
@@ -105,205 +105,203 @@ type ActionHandler = (_recordId: number) => Promise<void>
  * @module composables/useMenuAction
  */
 export function useMenuAction() {
-    const runtime = useRuntimeStore()
-    const records = useRecordsStore()
-    const {info} = useAlertStore()
-    const {notice} = useBrowser()
-    const {remove: removeBooking} = useBookingsDB()
-    const {remove: removeStock} = useStocksDB()
+  const runtime = useRuntimeStore();
+  const records = useRecordsStore();
+  const { info } = useAlertStore();
+  const { notice } = useBrowser();
+  const { remove: removeBooking } = useBookingsDB();
+  const { remove: removeStock } = useStocksDB();
 
-    /**
-     * Internal helper to open a dialog via the teleport system.
-     *
-     * @param dialogName - Unique name of the dialog component.
-     * @param dialogOk - Whether the 'OK' button should be shown.
-     */
-    const openDialog = (dialogName: string, dialogOk = false): void => {
-        runtime.setTeleport(
-            {
-                dialogName,
-                dialogOk,
-                dialogVisibility: true
-            }
-        )
+  /**
+   * Internal helper to open a dialog via the teleport system.
+   *
+   * @param dialogName - Unique name of the dialog component.
+   * @param dialogOk - Whether the 'OK' button should be shown.
+   */
+  const openDialog = (dialogName: string, dialogOk = false): void => {
+    runtime.setTeleport({
+      dialogName,
+      dialogOk,
+      dialogVisibility: true
+    });
+  };
+
+  /**
+   * Checks if a stock has any associated bookings.
+   *
+   * @param stockId - ID of the stock to check.
+   * @returns True if bookings exist.
+   */
+  const checkStockHasBookings = (stockId: number): boolean => {
+    const { items: bookingItems } = storeToRefs(records.bookings);
+    return bookingItems.value.some((booking) => booking.cStockID === stockId);
+  };
+
+  /**
+   * Mapping of menu action keys to their handler functions.
+   */
+  const actionHandlers: Record<MenuActionType, ActionHandler> = {
+    async updateBooking() {
+      openDialog("updateBooking", true);
+    },
+
+    async addBooking() {
+      openDialog("addBooking", true);
+    },
+
+    async deleteBooking(recordId: number) {
+      records.bookings.remove(recordId);
+      await removeBooking(recordId);
+      await notice(["Booking deleted successfully"]);
+    },
+
+    // Stock Actions
+    async updateStock() {
+      openDialog("updateStock", true);
+    },
+
+    async addStock() {
+      openDialog("addStock", true);
+    },
+
+    async deleteStock(recordId: number) {
+      if (checkStockHasBookings(recordId)) {
+        info(
+          "Cannot Delete",
+          "This stock has associated bookings. Delete bookings first.",
+          null
+        );
+        return;
+      }
+
+      records.stocks.remove(recordId);
+      await removeStock(recordId);
+      await notice(["Stock deleted successfully"]);
+    },
+
+    async fadeInStock() {
+      openDialog("fadeInStock", true);
+    },
+
+    async updateQuote() {
+      openDialog("updateQuote", true);
+    },
+
+    // Account Actions
+    async addAccount() {
+      openDialog("addAccount", true);
+    },
+
+    async updateAccount() {
+      openDialog("updateAccount", true);
+    },
+
+    async deleteAccount() {
+      openDialog("deleteAccount", true);
+    },
+
+    async deleteAccountConfirmation() {
+      openDialog("deleteAccountConfirmation", true);
+    },
+
+    // Booking Type Actions
+    async addBookingType() {
+      openDialog("addBookingType", true);
+    },
+
+    async updateBookingType() {
+      openDialog("updateBookingType", true);
+    },
+
+    async deleteBookingType() {
+      openDialog("deleteBookingType", true);
+    },
+
+    // Info & Display Actions
+    async showDividend() {
+      openDialog("showDividend", false);
+    },
+
+    async showAccounting() {
+      openDialog("showAccounting", false);
+    },
+
+    async openLink(recordId: number) {
+      const { items: stockItems } = storeToRefs(records.stocks);
+      const stockIndex = records.stocks.getIndexById(recordId);
+      const url = stockItems.value[stockIndex]?.cURL;
+
+      if (url) {
+        window.open(url, "_blank", "noopener,noreferrer");
+      } else {
+        await notice(["No URL available for this stock"]);
+      }
+    },
+
+    // Database Actions
+    async exportDatabase() {
+      openDialog("exportDatabase", true);
+    },
+
+    async importDatabase() {
+      openDialog("importDatabase", true);
+    },
+
+    // Navigation Actions
+    async home() {
+      runtime.setCurrentView(CODES.VIEW_CODES.HOME);
+    },
+
+    async company() {
+      runtime.setCurrentView(CODES.VIEW_CODES.COMPANY);
+    },
+
+    async setting() {
+      runtime.setCurrentView(CODES.VIEW_CODES.SETTINGS);
+    }
+  };
+
+  /**
+   * Executes a specific menu action.
+   *
+   * @param actionType - The identifier of the action.
+   * @param recordId - The ID of the record associated with the action.
+   */
+  const executeAction = async (
+    actionType: MenuActionType,
+    recordId: number
+  ): Promise<void> => {
+    runtime.activeId = recordId;
+
+    const handler = actionHandlers[actionType];
+
+    if (!handler) {
+      throw new AppError(
+        ERROR_CODES.USE_MENU.A,
+        ERROR_CATEGORY.VALIDATION,
+        { input: { actionType } },
+        false
+      );
     }
 
-    /**
-     * Checks if a stock has any associated bookings.
-     *
-     * @param stockId - ID of the stock to check.
-     * @returns True if bookings exist.
-     */
-    const checkStockHasBookings = (stockId: number): boolean => {
-        const {items: bookingItems} = storeToRefs(records.bookings)
-        return bookingItems.value.some(booking => booking.cStockID === stockId)
+    try {
+      await handler(recordId);
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_MENU.B,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err), actionType, recordId },
+        true
+      );
     }
+  };
 
-    /**
-     * Mapping of menu action keys to their handler functions.
-     */
-    const actionHandlers: Record<MenuActionType, ActionHandler> = {
-        async updateBooking() {
-            openDialog('updateBooking', true)
-        },
+  const hasAction = (actionType: string): actionType is MenuActionType => {
+    return actionType in actionHandlers;
+  };
 
-        async addBooking() {
-            openDialog('addBooking', true)
-        },
-
-        async deleteBooking(recordId: number) {
-            records.bookings.remove(recordId)
-            await removeBooking(recordId)
-            await notice(['Booking deleted successfully'])
-        },
-
-        // Stock Actions
-        async updateStock() {
-            openDialog('updateStock', true)
-        },
-
-        async addStock() {
-            openDialog('addStock', true)
-        },
-
-        async deleteStock(recordId: number) {
-            if (checkStockHasBookings(recordId)) {
-                info(
-                    'Cannot Delete',
-                    'This stock has associated bookings. Delete bookings first.',
-                    null
-                )
-                return
-            }
-
-            records.stocks.remove(recordId)
-            await removeStock(recordId)
-            await notice(['Stock deleted successfully'])
-        },
-
-        async fadeInStock() {
-            openDialog('fadeInStock', true)
-        },
-
-        async updateQuote() {
-            openDialog('updateQuote', true)
-        },
-
-        // Account Actions
-        async addAccount() {
-            openDialog('addAccount', true)
-        },
-
-        async updateAccount() {
-            openDialog('updateAccount', true)
-        },
-
-        async deleteAccount() {
-            openDialog('deleteAccount', true)
-        },
-
-        async deleteAccountConfirmation() {
-            openDialog('deleteAccountConfirmation', true)
-        },
-
-        // Booking Type Actions
-        async addBookingType() {
-            openDialog('addBookingType', true)
-        },
-
-        async updateBookingType() {
-            openDialog('updateBookingType', true)
-        },
-
-        async deleteBookingType() {
-            openDialog('deleteBookingType', true)
-        },
-
-        // Info & Display Actions
-        async showDividend() {
-            openDialog('showDividend', false)
-        },
-
-        async showAccounting() {
-            openDialog('showAccounting', false)
-        },
-
-        async openLink(recordId: number) {
-            const {items: stockItems} = storeToRefs(records.stocks)
-            const stockIndex = records.stocks.getIndexById(recordId)
-            const url = stockItems.value[stockIndex]?.cURL
-
-            if (url) {
-                window.open(url, '_blank', 'noopener,noreferrer')
-            } else {
-                await notice(['No URL available for this stock'])
-            }
-        },
-
-        // Database Actions
-        async exportDatabase() {
-            openDialog('exportDatabase', true)
-        },
-
-        async importDatabase() {
-            openDialog('importDatabase', true)
-        },
-
-        // Navigation Actions
-        async home() {
-            runtime.setCurrentView(CODES.VIEW_CODES.HOME)
-        },
-
-        async company() {
-            runtime.setCurrentView(CODES.VIEW_CODES.COMPANY)
-        },
-
-        async setting() {
-            runtime.setCurrentView(CODES.VIEW_CODES.SETTINGS)
-        }
-    }
-
-    /**
-     * Executes a specific menu action.
-     *
-     * @param actionType - The identifier of the action.
-     * @param recordId - The ID of the record associated with the action.
-     */
-    const executeAction = async (
-        actionType: MenuActionType,
-        recordId: number
-    ): Promise<void> => {
-        runtime.activeId = recordId
-
-        const handler = actionHandlers[actionType]
-
-        if (!handler) {
-            throw new AppError(
-                ERROR_CODES.USE_MENU.A,
-                ERROR_CATEGORY.VALIDATION,
-                {input: {actionType}},
-                false
-            )
-        }
-
-        try {
-            await handler(recordId)
-        } catch (err) {
-            throw new AppError(
-                ERROR_CODES.USE_MENU.B,
-                ERROR_CATEGORY.VALIDATION,
-                {input: serializeError(err), actionType, recordId},
-                true
-            )
-        }
-    }
-
-    const hasAction = (actionType: string): actionType is MenuActionType => {
-        return actionType in actionHandlers
-    }
-
-    return {
-        executeAction,
-        hasAction
-    }
+  return {
+    executeAction,
+    hasAction
+  };
 }

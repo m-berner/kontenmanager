@@ -1,8 +1,8 @@
-import { computed, ref } from 'vue';
-import { defineStore } from 'pinia';
-import { UtilsService } from '@/domains/utils';
-import { CODES } from '@/config/codes';
-export const useRuntimeStore = defineStore('runtime', function () {
+import { computed, ref } from "vue";
+import { defineStore } from "pinia";
+import { UtilsService } from "@/domains/utils";
+import { CODES } from "@/config/codes";
+export const useRuntimeStore = defineStore("runtime", function () {
     const activeId = ref(-1);
     const currentView = ref(CODES.VIEW_CODES.HOME);
     const optionMenuColors = ref(new Map());
@@ -65,4 +65,4 @@ export const useRuntimeStore = defineStore('runtime', function () {
         setCurrentView
     };
 });
-UtilsService.log('--- stores/runtime.ts ---');
+UtilsService.log("--- stores/runtime.ts ---");

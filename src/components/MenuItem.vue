@@ -7,36 +7,36 @@
   -->
 
 <script lang="ts" setup>
-import {computed} from 'vue'
-import type {MenuItemData} from '@/types'
+import { computed } from "vue";
+import type { MenuItemData } from "@/types";
 
 const props = defineProps<{
-    item: MenuItemData
-    isHighlighted?: boolean
-}>()
+  item: MenuItemData;
+  isHighlighted?: boolean;
+}>();
 const emit = defineEmits<{
-    click: [item: MenuItemData]
-}>()
+  click: [item: MenuItemData];
+}>();
 
 const itemClass = computed(() => ({
-    'menu-item': true,
-    'menu-item--danger': props.item.variant === 'danger',
-    'menu-item--highlighted': props.isHighlighted
-}))
+  "menu-item": true,
+  "menu-item--danger": props.item.variant === "danger",
+  "menu-item--highlighted": props.isHighlighted
+}));
 </script>
 
 <template>
-    <v-hover v-slot="{ isHovering }">
-        <v-list-item
-            :id="item.id"
-            :aria-label="item.title"
-            :base-color="isHovering ? 'orange' : ''"
-            :class="itemClass"
-            :prepend-icon="item.icon"
-            :title="item.title"
-            class="pointer"
-            role="menuitem"
-            @click="emit('click', item)"
-        />
-    </v-hover>
+  <v-hover v-slot="{ isHovering }">
+    <v-list-item
+      :id="item.id"
+      :aria-label="item.title"
+      :base-color="isHovering ? 'orange' : ''"
+      :class="itemClass"
+      :prepend-icon="item.icon"
+      :title="item.title"
+      class="pointer"
+      role="menuitem"
+      @click="emit('click', item)"
+    />
+  </v-hover>
 </template>

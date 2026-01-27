@@ -1,9 +1,9 @@
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
-import { UtilsService } from '@/domains/utils';
-import { INDEXED_DB } from '@/config/database';
-import { ImportExportValidator } from '@/domains/importExport/validator';
-import { ImportExportTransformer } from '@/domains/importExport/transformer';
-import { DATE } from '@/domains/config/date';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { UtilsService } from "@/domains/utils";
+import { INDEXED_DB } from "@/config/database";
+import { ImportExportValidator } from "@/domains/importExport/validator";
+import { ImportExportTransformer } from "@/domains/importExport/transformer";
+import { DATE } from "@/domains/config/date";
 export class ImportExportService {
     _transformer;
     constructor() {
@@ -40,7 +40,7 @@ export class ImportExportService {
             }
             throw err;
         }
-        if (!parsed || typeof parsed !== 'object') {
+        if (!parsed || typeof parsed !== "object") {
             throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, {}, false);
         }
         return parsed;
@@ -68,7 +68,7 @@ export class ImportExportService {
             if (!validation.isValid) {
                 return {
                     valid: false,
-                    errors: [validation.error || 'Unknown validation error']
+                    errors: [validation.error || "Unknown validation error"]
                 };
             }
             const integrityErrors = ImportExportValidator.validateDataIntegrity(parsed);
@@ -99,16 +99,16 @@ export class ImportExportService {
     validateExportData(accounts, stocks, bookingTypes, bookings) {
         const errors = [];
         if (!Array.isArray(accounts))
-            errors.push('Invalid accounts data');
+            errors.push("Invalid accounts data");
         if (!Array.isArray(stocks))
-            errors.push('Invalid stocks data');
+            errors.push("Invalid stocks data");
         if (!Array.isArray(bookingTypes))
-            errors.push('Invalid booking types data');
+            errors.push("Invalid booking types data");
         if (!Array.isArray(bookings))
-            errors.push('Invalid bookings data');
+            errors.push("Invalid bookings data");
         if (errors.length > 0) {
             throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.H, ERROR_CATEGORY.VALIDATION, { ieError: errors }, false);
         }
     }
 }
-UtilsService.log('--- services/importExport.ts ---');
+UtilsService.log("--- services/importExport.ts ---");

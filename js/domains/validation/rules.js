@@ -1,17 +1,18 @@
-import { IBAN_LENGTH_CODES, RULE_CODES, VALID_COUNTRY_CODES, VALIDATION_CODES } from './codes';
+import { IBAN_LENGTH_CODES, RULE_CODES, VALID_COUNTRY_CODES, VALIDATION_CODES } from "./codes";
 export class ValidationRules {
     static required(value) {
-        if (value === null || value === undefined || value === '') {
+        if (value === null || value === undefined || value === "") {
             return { isValid: false, error: VALIDATION_CODES.REQUIRED };
         }
         return { isValid: true };
     }
     static validateIBAN(iban) {
-        const cleaned = iban.replace(/\s/g, '').toUpperCase();
+        const cleaned = iban.replace(/\s/g, "").toUpperCase();
         if (!cleaned)
             return { isValid: false, error: VALIDATION_CODES.REQUIRED };
         const countryCode = cleaned.substring(0, 2);
-        if (cleaned.length !== IBAN_LENGTH_CODES[countryCode]) {
+        if (cleaned.length !==
+            IBAN_LENGTH_CODES[countryCode]) {
             return { isValid: false, error: VALIDATION_CODES.INVALID_LENGTH };
         }
         if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/.test(cleaned)) {
@@ -20,10 +21,12 @@ export class ValidationRules {
         const rearranged = cleaned.substring(4) + cleaned.substring(0, 4);
         const numericString = this.convertToNumericString(rearranged);
         const isValid = BigInt(numericString) % RULE_CODES.MOD_97 === 1n;
-        return isValid ? { isValid: true } : { isValid: false, error: VALIDATION_CODES.INVALID_CHECKSUM };
+        return isValid
+            ? { isValid: true }
+            : { isValid: false, error: VALIDATION_CODES.INVALID_CHECKSUM };
     }
     static validateISIN(isin) {
-        const cleaned = isin.replace(/\s/g, '').toUpperCase();
+        const cleaned = isin.replace(/\s/g, "").toUpperCase();
         if (!cleaned)
             return { isValid: false, error: VALIDATION_CODES.REQUIRED };
         if (cleaned.length !== 12)
@@ -44,7 +47,7 @@ export class ValidationRules {
             : { isValid: false, error: VALIDATION_CODES.INVALID_CHECKSUM };
     }
     static validateSWIFT(swift) {
-        const cleaned = swift.replace(/\s/g, '').toUpperCase();
+        const cleaned = swift.replace(/\s/g, "").toUpperCase();
         if (!cleaned)
             return { isValid: false, error: VALIDATION_CODES.REQUIRED };
         if (cleaned.length !== 8 && cleaned.length !== 11) {
@@ -70,12 +73,14 @@ export class ValidationRules {
         return { isValid: true };
     }
     static convertToNumericString(text) {
-        return Array.from(text).map(char => {
-            if (char >= 'A' && char <= 'Z') {
+        return Array.from(text)
+            .map((char) => {
+            if (char >= "A" && char <= "Z") {
                 return (char.charCodeAt(0) - RULE_CODES.CHAR_CODE_OFFSET).toString();
             }
             return char;
-        }).join('');
+        })
+            .join("");
     }
     static calculateLuhnCheckDigit(numericString, base) {
         let sum = 0;
@@ -85,7 +90,7 @@ export class ValidationRules {
             if (shouldDouble) {
                 digit *= 2;
                 if (digit >= base)
-                    digit -= (base - 1);
+                    digit -= base - 1;
             }
             sum += digit;
             shouldDouble = !shouldDouble;

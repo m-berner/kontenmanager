@@ -1,4 +1,4 @@
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from "vue";
 export function useKeyboardShortcuts() {
     const shortcuts = ref(new Map());
     const enabled = ref(true);
@@ -7,15 +7,15 @@ export function useKeyboardShortcuts() {
             return;
         const modifiers = [];
         if (ev.ctrlKey)
-            modifiers.push('Ctrl');
+            modifiers.push("Ctrl");
         if (ev.altKey)
-            modifiers.push('Alt');
+            modifiers.push("Alt");
         if (ev.shiftKey)
-            modifiers.push('Shift');
+            modifiers.push("Shift");
         if (ev.metaKey)
-            modifiers.push('Meta');
+            modifiers.push("Meta");
         const key = ev.key.length === 1 ? ev.key.toUpperCase() : ev.key;
-        const combination = [...modifiers, key].join('+');
+        const combination = [...modifiers, key].join("+");
         const handler = shortcuts.value.get(combination);
         if (handler) {
             ev.preventDefault();
@@ -38,10 +38,10 @@ export function useKeyboardShortcuts() {
         enabled.value = true;
     };
     onMounted(() => {
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown);
     });
     onUnmounted(() => {
-        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener("keydown", handleKeyDown);
     });
     return {
         register,

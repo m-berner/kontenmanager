@@ -1,19 +1,19 @@
-import { UtilsService } from '@/domains/utils';
-import { VALIDATION_CODES } from '@/domains/validation/codes';
-import { ValidationRules } from '@/domains/validation/rules';
+import { UtilsService } from "@/domains/utils";
+import { VALIDATION_CODES } from "@/domains/validation/codes";
+import { ValidationRules } from "@/domains/validation/rules";
 export class ValidationService {
     static createRule(validator, message) {
         return (value) => validator(value) || message;
     }
     static cleanString(value) {
-        if (typeof value !== 'string')
+        if (typeof value !== "string")
             return null;
-        return value.replace(/\s/g, '');
+        return value.replace(/\s/g, "");
     }
     static oneOfTwo(zeroValue, message) {
-        return ValidationService.createRule(v => {
+        return ValidationService.createRule((v) => {
             const tv = v;
-            const zero = typeof zeroValue === 'number' ? zeroValue : zeroValue.value;
+            const zero = typeof zeroValue === "number" ? zeroValue : zeroValue.value;
             if (tv > 0 && zero > 0) {
                 return false;
             }
@@ -24,7 +24,7 @@ export class ValidationService {
         }, message);
     }
     static required(message) {
-        return this.createRule((v) => v !== null && v !== '' && v !== undefined, message);
+        return this.createRule((v) => v !== null && v !== "" && v !== undefined, message);
     }
     static stringLength(min, max, message) {
         return this.createRule((v) => {
@@ -50,21 +50,17 @@ export class ValidationService {
         ];
     }
     static bookingTypeRules(msgArray) {
-        return [
-            ValidationService.required(msgArray[0])
-        ];
+        return [ValidationService.required(msgArray[0])];
     }
     static amountRules(zeroValue, msgArray) {
-        return [
-            ValidationService.oneOfTwo(zeroValue, msgArray[0])
-        ];
+        return [ValidationService.oneOfTwo(zeroValue, msgArray[0])];
     }
     static validateIBAN(iban) {
         return ValidationRules.validateIBAN(iban).isValid;
     }
     static isoDateRules(msgArray) {
         const isValid = (message) => {
-            return ValidationService.createRule(v => {
+            return ValidationService.createRule((v) => {
                 const tv = v;
                 const date = new Date(`${tv}T00:00:00Z`);
                 return !isNaN(date.getTime());
@@ -121,8 +117,8 @@ export class ValidationService {
             const res = domainFn(v);
             if (res.isValid)
                 return true;
-            return messageMap[res.error] || 'Invalid';
+            return messageMap[res.error] || "Invalid";
         };
     }
 }
-UtilsService.log('--- services/validation.ts ---');
+UtilsService.log("--- services/validation.ts ---");

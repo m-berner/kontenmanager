@@ -7,106 +7,118 @@
   -->
 
 <script lang="ts" setup>
-import type {BookingTypeDb, FormInterface} from '@/types'
-import {onBeforeMount, ref} from 'vue'
-import {useI18n} from 'vue-i18n'
-import {storeToRefs} from 'pinia'
-import {useRecordsStore} from '@/stores/records'
-import {useRuntimeStore} from '@/stores/runtime'
-import {UtilsService} from '@/domains/utils'
-import {useBrowser} from '@/composables/useBrowser'
-import {useBookingTypesDB} from '@/composables/useIndexedDB'
-import {useDialogGuards} from '@/composables/useDialogGuards'
-import {databaseService} from '@/services/database'
-import {useBookingTypeForm} from '@/composables/useForms'
-import {useSettingsStore} from '@/stores/settings'
-import BookingTypeForm from '@/components/dialogs/forms/BookingTypeForm.vue'
+import type { BookingTypeDb, FormInterface } from "@/types";
+import { onBeforeMount, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
+import { useRecordsStore } from "@/stores/records";
+import { useRuntimeStore } from "@/stores/runtime";
+import { UtilsService } from "@/domains/utils";
+import { useBrowser } from "@/composables/useBrowser";
+import { useBookingTypesDB } from "@/composables/useIndexedDB";
+import { useDialogGuards } from "@/composables/useDialogGuards";
+import { databaseService } from "@/services/database";
+import { useBookingTypeForm } from "@/composables/useForms";
+import { useSettingsStore } from "@/stores/settings";
+import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 
-const {t} = useI18n()
-const {notice} = useBrowser()
-const {update} = useBookingTypesDB()
-const records = useRecordsStore()
-const runtime = useRuntimeStore()
-const {activeId} = storeToRefs(runtime)
-const {bookingTypeFormData, mapBookingTypeFormToDb, reset: resetForm} = useBookingTypeForm()
-const {isLoading, submitGuard} = useDialogGuards()
-const {activeAccountId} = useSettingsStore()
-const formRef = ref<FormInterface | null>(null)
+const { t } = useI18n();
+const { notice } = useBrowser();
+const { update } = useBookingTypesDB();
+const records = useRecordsStore();
+const runtime = useRuntimeStore();
+const { activeId } = storeToRefs(runtime);
+const {
+  bookingTypeFormData,
+  mapBookingTypeFormToDb,
+  reset: resetForm
+} = useBookingTypeForm();
+const { isLoading, submitGuard } = useDialogGuards();
+const { activeAccountId } = useSettingsStore();
+const formRef = ref<FormInterface | null>(null);
 
 const loadCurrentBookingType = (): void => {
-    UtilsService.log('UPDATE_BOOKING_TYPE: loadCurrentBookingType')
-    resetForm()
-    const currentBookingType = records.bookingTypes.getById(activeId.value)
-    if (!currentBookingType) return
+  UtilsService.log("UPDATE_BOOKING_TYPE: loadCurrentBookingType");
+  resetForm();
+  const currentBookingType = records.bookingTypes.getById(activeId.value);
+  if (!currentBookingType) return;
 
-    bookingTypeFormData.id = activeId.value
-    bookingTypeFormData.name = currentBookingType.cName
+  bookingTypeFormData.id = activeId.value;
+  bookingTypeFormData.name = currentBookingType.cName;
 
-    Object.assign(bookingTypeFormData, {
-        id: activeId.value,
-        name: currentBookingType.cName,
-        accountNumberId: currentBookingType.cAccountNumberID
-    })
-}
+  Object.assign(bookingTypeFormData, {
+    id: activeId.value,
+    name: currentBookingType.cName,
+    accountNumberId: currentBookingType.cAccountNumberID
+  });
+};
 
 const onClickOk = async (): Promise<void> => {
-    UtilsService.log('UPDATE_BOOKING_TYPE: onClickOk')
+  UtilsService.log("UPDATE_BOOKING_TYPE: onClickOk");
 
-    await submitGuard(
-        {
-            formRef,
-            isConnected: databaseService.isConnected(),
-            connectionErrorMessage: t('components.dialogs.updateBookingType.messages.dbNotConnected'),
-            notice,
-            errorContext: 'UPDATE_BOOKING_TYPE',
-            errorTitle: t('components.dialogs.onClickOk'),
-            operation: async () => {
-                if (!bookingTypeFormData.id) {
-                    await notice(['No booking type selected'])
-                    return
-                }
+  await submitGuard({
+    formRef,
+    isConnected: databaseService.isConnected(),
+    connectionErrorMessage: t(
+      "components.dialogs.updateBookingType.messages.dbNotConnected"
+    ),
+    notice,
+    errorContext: "UPDATE_BOOKING_TYPE",
+    errorTitle: t("components.dialogs.onClickOk"),
+    operation: async () => {
+      if (!bookingTypeFormData.id) {
+        await notice(["No booking type selected"]);
+        return;
+      }
 
-                if (records.bookingTypes.isDuplicate(bookingTypeFormData.name, bookingTypeFormData.id as number)) {
-                    await notice([t('components.dialogs.updateBookingType.messages.error')])
-                    return
-                }
+      if (
+        records.bookingTypes.isDuplicate(
+          bookingTypeFormData.name,
+          bookingTypeFormData.id as number
+        )
+      ) {
+        await notice([
+          t("components.dialogs.updateBookingType.messages.error")
+        ]);
+        return;
+      }
 
-                const bookingType = mapBookingTypeFormToDb(activeAccountId) as BookingTypeDb
+      const bookingType = mapBookingTypeFormToDb(
+        activeAccountId
+      ) as BookingTypeDb;
 
-                records.bookingTypes.update(bookingType)
-                await update(bookingType)
-                runtime.resetTeleport()
-                await notice([t('components.dialogs.updateBookingType.messages.success')])
-            }
-        }
-    )
-}
+      records.bookingTypes.update(bookingType);
+      await update(bookingType);
+      runtime.resetTeleport();
+      await notice([
+        t("components.dialogs.updateBookingType.messages.success")
+      ]);
+    }
+  });
+};
 
-defineExpose({onClickOk, title: t('components.dialogs.updateBookingType.title')})
+defineExpose({
+  onClickOk,
+  title: t("components.dialogs.updateBookingType.title")
+});
 
 onBeforeMount(() => {
-    UtilsService.log('UPDATE_BOOKING_TYPE: onBeforeMount')
-    loadCurrentBookingType()
-})
+  UtilsService.log("UPDATE_BOOKING_TYPE: onBeforeMount");
+  loadCurrentBookingType();
+});
 
-UtilsService.log('--- components/dialogs/UpdateBookingType.vue setup ---')
+UtilsService.log("--- components/dialogs/UpdateBookingType.vue setup ---");
 </script>
 
 <template>
-    <v-form
-        ref="formRef"
-        validate-on="submit"
-        @submit.prevent>
-        <BookingTypeForm :mode="'update'"/>
-        <v-overlay
-            v-model="isLoading"
-            class="align-center justify-center"
-            contained>
-            <v-progress-circular
-                color="primary"
-                indeterminate
-                size="64"
-            />
-        </v-overlay>
-    </v-form>
+  <v-form ref="formRef" validate-on="submit" @submit.prevent>
+    <BookingTypeForm :mode="'update'" />
+    <v-overlay
+      v-model="isLoading"
+      class="align-center justify-center"
+      contained
+    >
+      <v-progress-circular color="primary" indeterminate size="64" />
+    </v-overlay>
+  </v-form>
 </template>

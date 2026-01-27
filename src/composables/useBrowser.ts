@@ -6,11 +6,11 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import {computed} from 'vue'
-import {EVENTS} from '@/config/events'
-import {ENTRYPOINTS} from '@/config/entrypoints'
-import {DEFAULTS} from '@/config/defaults'
-import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/errors'
+import { computed } from "vue";
+import { EVENTS } from "@/config/events";
+import { ENTRYPOINTS } from "@/config/entrypoints";
+import { DEFAULTS } from "@/config/defaults";
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
 
 /**
  * Composable providing access to browser extension APIs.
@@ -20,229 +20,242 @@ import {AppError, ERROR_CATEGORY, ERROR_CODES, serializeError} from '@/domains/e
  * @module composables/useBrowser
  */
 export function useBrowser() {
-    /** The extension's internal index page URL. */
-    const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP))
-    /** The current extension manifest. */
-    const manifest = computed(() => browser.runtime.getManifest())
-    /** The user's UI language. */
-    const uiLanguage = computed(() => browser.i18n.getUILanguage())
-    /** The 5-character locale code (e.g., 'en-US', 'de-DE'). */
-    const locale5 = computed(() => {
-        const defaultLanguage = navigator.languages[0]
+  /** The extension's internal index page URL. */
+  const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
+  /** The current extension manifest. */
+  const manifest = computed(() => browser.runtime.getManifest());
+  /** The user's UI language. */
+  const uiLanguage = computed(() => browser.i18n.getUILanguage());
+  /** The 5-character locale code (e.g., 'en-US', 'de-DE'). */
+  const locale5 = computed(() => {
+    const defaultLanguage = navigator.languages[0];
 
-        if (!defaultLanguage) {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.A,
-                ERROR_CATEGORY.VALIDATION,
-                {},
-                false
-            )
-        }
-
-        if (defaultLanguage.length === 5) {
-            return defaultLanguage
-        }
-
-        if (defaultLanguage.length === 2) {
-            return `${defaultLanguage}-${defaultLanguage.toUpperCase()}`
-        }
-
-        throw new AppError(
-            ERROR_CODES.USE_BROWSER.B,
-            ERROR_CATEGORY.VALIDATION,
-            {input: 'invalid_lang_format'},
-            false
-        )
-    })
-
-    /**
-     * Registers a listener for the extension action button click.
-     * @param listener - Callback function.
-     */
-    function actionOnClicked(listener: (_tab: browser.tabs.Tab, _info?: browser.action.OnClickData) => void): void {
-        browser.action.onClicked.addListener(listener)
+    if (!defaultLanguage) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.A,
+        ERROR_CATEGORY.VALIDATION,
+        {},
+        false
+      );
     }
 
-    /**
-     * Registers a listener for extension installation or update.
-     * @param listener - Async callback function.
-     */
-    function runtimeOnInstalled(listener: (_details: browser.runtime._OnInstalledDetails | undefined) => Promise<void>): void {
-        browser.runtime.onInstalled.addListener(listener)
+    if (defaultLanguage.length === 5) {
+      return defaultLanguage;
     }
 
-    /**
-     * Creates a new tab with the extension's main page.
-     * @returns A promise resolving to the created tab.
-     */
-    async function tabsCreate(): Promise<browser.tabs.Tab> {
-        try {
-            return await browser.tabs.create(
-                {
-                    url: indexUrl.value,
-                    active: true
-                }
-            )
-        } catch (err) {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.C,
-                ERROR_CATEGORY.VALIDATION,
-                {input: serializeError(err)},
-                true
-            )
+    if (defaultLanguage.length === 2) {
+      return `${defaultLanguage}-${defaultLanguage.toUpperCase()}`;
+    }
+
+    throw new AppError(
+      ERROR_CODES.USE_BROWSER.B,
+      ERROR_CATEGORY.VALIDATION,
+      { input: "invalid_lang_format" },
+      false
+    );
+  });
+
+  /**
+   * Registers a listener for the extension action button click.
+   * @param listener - Callback function.
+   */
+  function actionOnClicked(
+    listener: (
+      _tab: browser.tabs.Tab,
+      _info?: browser.action.OnClickData
+    ) => void
+  ): void {
+    browser.action.onClicked.addListener(listener);
+  }
+
+  /**
+   * Registers a listener for extension installation or update.
+   * @param listener - Async callback function.
+   */
+  function runtimeOnInstalled(
+    listener: (
+      _details: browser.runtime._OnInstalledDetails | undefined
+    ) => Promise<void>
+  ): void {
+    browser.runtime.onInstalled.addListener(listener);
+  }
+
+  /**
+   * Creates a new tab with the extension's main page.
+   * @returns A promise resolving to the created tab.
+   */
+  async function tabsCreate(): Promise<browser.tabs.Tab> {
+    try {
+      return await browser.tabs.create({
+        url: indexUrl.value,
+        active: true
+      });
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.C,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err) },
+        true
+      );
+    }
+  }
+
+  /**
+   * Queries for existing extension tabs.
+   * @returns A promise resolving to an array of matching tabs.
+   */
+  async function tabsQuery(): Promise<browser.tabs.Tab[]> {
+    try {
+      return await browser.tabs.query({ url: indexUrl.value });
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.D,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err) },
+        true
+      );
+    }
+  }
+
+  /**
+   * Focuses a specific window.
+   * @param windowId - ID of the window to focus.
+   */
+  async function windowsUpdate(
+    windowId: number
+  ): Promise<browser.windows.Window> {
+    try {
+      return await browser.windows.update(windowId, {
+        focused: true
+      });
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.E,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err), windowId },
+        true
+      );
+    }
+  }
+
+  /**
+   * Activates a specific tab.
+   * @param tabId - ID of the tab to activate.
+   */
+  async function tabsUpdate(tabId: number): Promise<browser.tabs.Tab> {
+    try {
+      return await browser.tabs.update(tabId, {
+        active: true
+      });
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.F,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err), tabId },
+        true
+      );
+    }
+  }
+
+  /**
+   * Opens the extension's options page.
+   */
+  async function openOptionsPage(): Promise<void> {
+    try {
+      await browser.runtime.openOptionsPage();
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.G,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err) },
+        true
+      );
+    }
+  }
+
+  /**
+   * Displays a browser notification.
+   * @param messages - Array of message lines.
+   */
+  async function notice(messages: string[]): Promise<void> {
+    try {
+      const notificationOption: browser.notifications.CreateNotificationOptions =
+        {
+          type: "basic",
+          iconUrl: "assets/icon16.png",
+          title: DEFAULTS.TITLE,
+          message: messages.join("\n")
+        };
+      await browser.notifications.create(notificationOption);
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.H,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err), messages },
+        true
+      );
+    }
+  }
+
+  /**
+   * Downloads a string buffer as a JSON file.
+   * @param buffer - The string content to save.
+   * @param filename - The target filename.
+   */
+  async function writeBufferToFile(
+    buffer: string,
+    filename: string
+  ): Promise<void> {
+    if (!filename || filename.trim() === "") {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.I,
+        ERROR_CATEGORY.VALIDATION,
+        { input: filename },
+        false
+      );
+    }
+
+    try {
+      const blob = new Blob([buffer], { type: "application/json" });
+      const blobUrl = URL.createObjectURL(blob);
+
+      await browser.downloads.download({
+        url: blobUrl,
+        filename
+      });
+
+      const onDownloadChange = (
+        change: browser.downloads._OnChangedDownloadDelta
+      ): void => {
+        if (change.state?.current === EVENTS.COMPLETE) {
+          URL.revokeObjectURL(blobUrl);
+          browser.downloads.onChanged.removeListener(onDownloadChange);
         }
+      };
+
+      browser.downloads.onChanged.addListener(onDownloadChange);
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.J,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err), filename },
+        true
+      );
     }
+  }
 
-    /**
-     * Queries for existing extension tabs.
-     * @returns A promise resolving to an array of matching tabs.
-     */
-    async function tabsQuery(): Promise<browser.tabs.Tab[]> {
-        try {
-            return await browser.tabs.query({url: indexUrl.value})
-        } catch (err) {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.D,
-                ERROR_CATEGORY.VALIDATION,
-                {input: serializeError(err)},
-                true
-            )
-        }
-    }
-
-    /**
-     * Focuses a specific window.
-     * @param windowId - ID of the window to focus.
-     */
-    async function windowsUpdate(windowId: number): Promise<browser.windows.Window> {
-        try {
-            return await browser.windows.update(windowId, {
-                focused: true
-            })
-        } catch (err) {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.E,
-                ERROR_CATEGORY.VALIDATION,
-                {input: serializeError(err), windowId},
-                true
-            )
-        }
-    }
-
-    /**
-     * Activates a specific tab.
-     * @param tabId - ID of the tab to activate.
-     */
-    async function tabsUpdate(tabId: number): Promise<browser.tabs.Tab> {
-        try {
-            return await browser.tabs.update(tabId, {
-                active: true
-            })
-        } catch (err) {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.F,
-                ERROR_CATEGORY.VALIDATION,
-                {input: serializeError(err), tabId},
-                true
-            )
-        }
-    }
-
-    /**
-     * Opens the extension's options page.
-     */
-    async function openOptionsPage(): Promise<void> {
-        try {
-            await browser.runtime.openOptionsPage()
-        } catch (err) {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.G,
-                ERROR_CATEGORY.VALIDATION,
-                {input: serializeError(err)},
-                true
-            )
-        }
-    }
-
-    /**
-     * Displays a browser notification.
-     * @param messages - Array of message lines.
-     */
-    async function notice(messages: string[]): Promise<void> {
-        try {
-            const notificationOption: browser.notifications.CreateNotificationOptions = {
-                type: 'basic',
-                iconUrl: 'assets/icon16.png',
-                title: DEFAULTS.TITLE,
-                message: messages.join('\n')
-            }
-            await browser.notifications.create(notificationOption)
-        } catch (err) {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.H,
-                ERROR_CATEGORY.VALIDATION,
-                {input: serializeError(err), messages},
-                true
-            )
-        }
-    }
-
-    /**
-     * Downloads a string buffer as a JSON file.
-     * @param buffer - The string content to save.
-     * @param filename - The target filename.
-     */
-    async function writeBufferToFile(buffer: string, filename: string): Promise<void> {
-        if (!filename || filename.trim() === '') {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.I,
-                ERROR_CATEGORY.VALIDATION,
-                {input: filename},
-                false
-            )
-        }
-
-        try {
-            const blob = new Blob([buffer], {type: 'application/json'})
-            const blobUrl = URL.createObjectURL(blob)
-
-            await browser.downloads.download(
-                {
-                    url: blobUrl,
-                    filename
-                }
-            )
-
-            const onDownloadChange = (change: browser.downloads._OnChangedDownloadDelta): void => {
-                if (change.state?.current === EVENTS.COMPLETE) {
-                    URL.revokeObjectURL(blobUrl)
-                    browser.downloads.onChanged.removeListener(onDownloadChange)
-                }
-            }
-
-            browser.downloads.onChanged.addListener(onDownloadChange)
-        } catch (err) {
-            throw new AppError(
-                ERROR_CODES.USE_BROWSER.J,
-                ERROR_CATEGORY.VALIDATION,
-                {input: serializeError(err), filename},
-                true
-            )
-        }
-    }
-
-    return {
-        locale5,
-        manifest,
-        uiLanguage,
-        actionOnClicked,
-        runtimeOnInstalled,
-        notice,
-        openOptionsPage,
-        tabsCreate,
-        tabsQuery,
-        tabsUpdate,
-        windowsUpdate,
-        writeBufferToFile
-    }
+  return {
+    locale5,
+    manifest,
+    uiLanguage,
+    actionOnClicked,
+    runtimeOnInstalled,
+    notice,
+    openOptionsPage,
+    tabsCreate,
+    tabsQuery,
+    tabsUpdate,
+    windowsUpdate,
+    writeBufferToFile
+  };
 }

@@ -1,11 +1,10 @@
-import { DATE } from '@/domains/config/date';
-import { LOCAL_STORAGE } from '@/config/storage';
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
+import { DATE } from "@/domains/config/date";
+import { LOCAL_STORAGE } from "@/config/storage";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 export class UtilsService {
-    constructor() {
-    }
+    constructor() { }
     static utcDate(iso) {
-        if (!DATE.ISO_DATE_REGEX.test(iso) && iso !== '') {
+        if (!DATE.ISO_DATE_REGEX.test(iso) && iso !== "") {
             throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, { input: iso }, false);
         }
         return new Date(`${iso}T00:00:00.000`);
@@ -17,23 +16,24 @@ export class UtilsService {
         return new Date(ms).toISOString().substring(0, 10);
     }
     static isValidISODate(iso) {
-        return DATE.ISO_DATE_REGEX.test(iso) && !isNaN(UtilsService.utcDate(iso).getTime());
+        return (DATE.ISO_DATE_REGEX.test(iso) &&
+            !isNaN(UtilsService.utcDate(iso).getTime()));
     }
     static toNumber(value, options = {}) {
         const { locale, fallback = 0, throwOnError = false } = options;
         if (value === null || value === undefined)
             return fallback;
-        if (typeof value === 'boolean')
+        if (typeof value === "boolean")
             return value ? 1 : 0;
-        if (typeof value === 'number') {
+        if (typeof value === "number") {
             return Number.isNaN(value) ? fallback : value;
         }
         const cleaned = value
             .toString()
             .trim()
-            .replace(/\s|\t/g, '')
-            .replace(/%$/g, '');
-        if (cleaned === '')
+            .replace(/\s|\t/g, "")
+            .replace(/%$/g, "");
+        if (cleaned === "")
             return fallback;
         const isParseError = () => {
             if (throwOnError) {
@@ -59,25 +59,25 @@ export class UtilsService {
     static detectNumberFormat(str) {
         const dotCount = (str.match(/\./g) || []).length;
         const commaCount = (str.match(/,/g) || []).length;
-        const lastDot = str.lastIndexOf('.');
-        const lastComma = str.lastIndexOf(',');
+        const lastDot = str.lastIndexOf(".");
+        const lastComma = str.lastIndexOf(",");
         if (commaCount === 0 && dotCount > 0)
-            return 'en';
+            return "en";
         if (dotCount === 0 && commaCount > 0) {
-            return (str.length - lastComma <= 4) ? 'de' : 'en';
+            return str.length - lastComma <= 4 ? "de" : "en";
         }
-        return lastComma > lastDot ? 'de' : 'en';
+        return lastComma > lastDot ? "de" : "en";
     }
     static normalizeNumber(str, locale) {
-        return locale === 'de'
-            ? str.replace(/\./g, '').replace(',', '.')
-            : str.replace(/,/g, '');
+        return locale === "de"
+            ? str.replace(/\./g, "").replace(",", ".")
+            : str.replace(/,/g, "");
     }
     static normalizeBookingTypeName(name) {
-        return name.trim().replace(/\s+/g, ' ').toLowerCase();
+        return name.trim().replace(/\s+/g, " ").toLowerCase();
     }
-    static log(msg, data, level = 'log') {
-        const debugLevel = Number.parseInt(localStorage.getItem(LOCAL_STORAGE.DEBUG.key) ?? '0');
+    static log(msg, data, level = "log") {
+        const debugLevel = Number.parseInt(localStorage.getItem(LOCAL_STORAGE.DEBUG.key) ?? "0");
         if (debugLevel <= 0)
             return;
         const logFn = console[level] || console.log;
@@ -122,7 +122,7 @@ export class UtilsService {
             if (!inThrottle) {
                 fn(...args);
                 inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
+                setTimeout(() => (inThrottle = false), limit);
             }
         };
     }
@@ -142,8 +142,8 @@ export class UtilsService {
         const cleanupFns = [];
         return {
             add: (fn) => cleanupFns.push(fn),
-            cleanup: () => cleanupFns.forEach(fn => fn())
+            cleanup: () => cleanupFns.forEach((fn) => fn())
         };
     }
 }
-UtilsService.log('--- domain/utils.ts ---');
+UtilsService.log("--- domain/utils.ts ---");

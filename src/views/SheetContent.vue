@@ -7,47 +7,46 @@
   -->
 
 <script lang="ts" setup>
-import type {ContentItem} from '@/types'
-import type {ComputedRef} from 'vue'
-import {computed} from 'vue'
-import {useI18n} from 'vue-i18n'
-import {useRouter} from 'vue-router'
-import {UtilsService} from '@/domains/utils'
-import ContentCard from '@/components/ContentCard.vue'
-import {ROUTES} from '@/config/routes'
-import {createPrivacyContent} from '@/config/views'
+import type { ContentItem } from "@/types";
+import type { ComputedRef } from "vue";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
+import { UtilsService } from "@/domains/utils";
+import ContentCard from "@/components/ContentCard.vue";
+import { ROUTES } from "@/config/routes";
+import { createPrivacyContent } from "@/config/views";
 
-const {t} = useI18n()
-const router = useRouter()
+const { t } = useI18n();
+const router = useRouter();
 
-const PARAGRAPHS = createPrivacyContent(t)
+const PARAGRAPHS = createPrivacyContent(t);
 
-let formatData: ComputedRef
+let formatData: ComputedRef;
 if (router.currentRoute.value.path === ROUTES.PRIVACY) {
-    formatData = computed((): ContentItem[] => {
-        const data = []
-        for (let i = 0; i < PARAGRAPHS.length; i++) {
-            data.push(
-                {
-                    subTitle: PARAGRAPHS[i].SUBTITLE,
-                    content: PARAGRAPHS[i].CONTENT,
-                    icon: PARAGRAPHS[i].ICON
-                }
-            )
-        }
-        return data
-    })
+  formatData = computed((): ContentItem[] => {
+    const data = [];
+    for (let i = 0; i < PARAGRAPHS.length; i++) {
+      data.push({
+        subTitle: PARAGRAPHS[i].SUBTITLE,
+        content: PARAGRAPHS[i].CONTENT,
+        icon: PARAGRAPHS[i].ICON
+      });
+    }
+    return data;
+  });
 }
 
-UtilsService.log('--- views/SheetContent.vue setup ---')
+UtilsService.log("--- views/SheetContent.vue setup ---");
 </script>
 
 <template>
-    <v-sheet class="sheet" color="surface-light">
-        <v-container>
-            <ContentCard
-                :data="formatData"
-                :title="t('views.sheetContent.privacyContent.general.title')"/>
-        </v-container>
-    </v-sheet>
+  <v-sheet class="sheet" color="surface-light">
+    <v-container>
+      <ContentCard
+        :data="formatData"
+        :title="t('views.sheetContent.privacyContent.general.title')"
+      />
+    </v-container>
+  </v-sheet>
 </template>

@@ -278,8 +278,7 @@
         "nothingToExport": "There is no data to export."
       }
     },
-    "infoBar": {
-    },
+    "infoBar": {},
     "homeContent": {
       "search": "Search",
       "bookingsTable": {

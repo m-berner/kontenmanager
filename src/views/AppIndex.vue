@@ -7,71 +7,81 @@
   -->
 
 <script lang="ts" setup>
-import {onBeforeMount, ref} from 'vue'
-import {RouterView} from 'vue-router'
-import {useI18n} from 'vue-i18n'
-import {AppError, serializeError} from '@/domains/errors'
-import {UtilsService} from '@/domains/utils'
-import AlertOverlay from '@/components/AlertOverlay.vue'
-import {initializeApp} from '@/services/app'
-import {useTheme} from 'vuetify'
-import {useSettingsStore} from '@/stores/settings'
-import {storeToRefs} from 'pinia'
-import {ERROR_CATEGORY, ERROR_CODES} from '@/domains/errors'
+import { onBeforeMount, ref } from "vue";
+import { RouterView } from "vue-router";
+import { useI18n } from "vue-i18n";
+import {
+  AppError,
+  ERROR_CATEGORY,
+  ERROR_CODES,
+  serializeError
+} from "@/domains/errors";
+import { UtilsService } from "@/domains/utils";
+import AlertOverlay from "@/components/AlertOverlay.vue";
+import { initializeApp } from "@/services/app";
+import { useTheme } from "vuetify";
+import { useSettingsStore } from "@/stores/settings";
+import { storeToRefs } from "pinia";
 
-const {t} = useI18n()
-const settings = useSettingsStore()
-const {skin} = storeToRefs(settings)
-const theme = useTheme()
+const { t } = useI18n();
+const settings = useSettingsStore();
+const { skin } = storeToRefs(settings);
+const theme = useTheme();
 
-const isInitialized = ref(false)
+const isInitialized = ref(false);
 
 onBeforeMount(async () => {
-    UtilsService.log('APP_INDEX: onBeforeMount')
+  UtilsService.log("APP_INDEX: onBeforeMount");
 
-    try {
-        await initializeApp({title: t('mixed.smImportOnly.title'), message: t('mixed.smImportOnly.message')})
+  try {
+    await initializeApp({
+      title: t("mixed.smImportOnly.title"),
+      message: t("mixed.smImportOnly.message")
+    });
 
-        // Apply theme after successful initialization
-        theme.global.name.value = skin.value
-        isInitialized.value = true
+    // Apply theme after successful initialization
+    theme.global.name.value = skin.value;
+    isInitialized.value = true;
 
-        UtilsService.log('APP_INDEX: Initialization successful')
-    } catch (err) {
-        throw new AppError(
-            ERROR_CODES.VIEWS.APP_INDEX.A,
-            ERROR_CATEGORY.VALIDATION,
-            {input: serializeError(err), entity: 'AppIndex'},
-            true
-        )
-    }
-})
+    UtilsService.log("APP_INDEX: Initialization successful");
+  } catch (err) {
+    throw new AppError(
+      ERROR_CODES.VIEWS.APP_INDEX.A,
+      ERROR_CATEGORY.VALIDATION,
+      { input: serializeError(err), entity: "AppIndex" },
+      true
+    );
+  }
+});
 // TODO reload company page adjust the titlebar to home?
-UtilsService.log('--- views/AppIndex.vue setup ---', window.location.href, 'info')
+UtilsService.log(
+  "--- views/AppIndex.vue setup ---",
+  window.location.href,
+  "info"
+);
 </script>
 
 <template>
-    <v-app :flat="true">
-        <template v-if="isInitialized">
-            <RouterView name="title"/>
-            <RouterView name="header"/>
-            <RouterView name="info"/>
-            <v-main>
-                <RouterView/>
-            </v-main>
-            <RouterView name="footer"/>
-        </template>
-        <template v-else>
-            <v-main>
-                <v-container class="d-flex align-center justify-center" style="min-height: 100vh;">
-                    <v-progress-circular
-                        color="primary"
-                        indeterminate
-                        size="64"
-                    />
-                </v-container>
-            </v-main>
-        </template>
-        <AlertOverlay/>
-    </v-app>
+  <v-app :flat="true">
+    <template v-if="isInitialized">
+      <RouterView name="title" />
+      <RouterView name="header" />
+      <RouterView name="info" />
+      <v-main>
+        <RouterView />
+      </v-main>
+      <RouterView name="footer" />
+    </template>
+    <template v-else>
+      <v-main>
+        <v-container
+          class="d-flex align-center justify-center"
+          style="min-height: 100vh"
+        >
+          <v-progress-circular color="primary" indeterminate size="64" />
+        </v-container>
+      </v-main>
+    </template>
+    <AlertOverlay />
+  </v-app>
 </template>

@@ -1,4 +1,4 @@
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from '@/domains/errors';
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 export class ImportExportTransformer {
     _INDEXED_DB;
     _DATE;
@@ -85,21 +85,45 @@ export class ImportExportTransformer {
         else if (rec.cFees !== 0) {
             result.type = BOOKING_TYPES.FEE;
         }
-        else if (rec.cTax !== 0 || rec.cSoli !== 0 || rec.cSTax !== 0 || rec.cFTax !== 0) {
+        else if (rec.cTax !== 0 ||
+            rec.cSoli !== 0 ||
+            rec.cSTax !== 0 ||
+            rec.cFTax !== 0) {
             result.type = BOOKING_TYPES.TAX;
         }
         switch (rec.cType) {
             case BOOKING_TYPES.BUY:
-                return { value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.BUY };
+                return {
+                    value: rec.cUnitQuotation * rec.cCount,
+                    type: BOOKING_TYPES.BUY
+                };
             case BOOKING_TYPES.SELL:
-                return { value: rec.cUnitQuotation * -rec.cCount, type: BOOKING_TYPES.SELL };
+                return {
+                    value: rec.cUnitQuotation * -rec.cCount,
+                    type: BOOKING_TYPES.SELL
+                };
             case BOOKING_TYPES.DIVIDEND:
-                return { value: rec.cUnitQuotation * rec.cCount, type: BOOKING_TYPES.DIVIDEND };
+                return {
+                    value: rec.cUnitQuotation * rec.cCount,
+                    type: BOOKING_TYPES.DIVIDEND
+                };
             case BOOKING_TYPES.CREDIT:
-                result.value = rec.cAmount + rec.cFees + rec.cSTax + rec.cFTax + rec.cTax + rec.cSoli;
+                result.value =
+                    rec.cAmount +
+                        rec.cFees +
+                        rec.cSTax +
+                        rec.cFTax +
+                        rec.cTax +
+                        rec.cSoli;
                 return result;
             case BOOKING_TYPES.DEBIT:
-                result.value = -rec.cAmount - rec.cFees - rec.cSTax - rec.cFTax - rec.cTax - rec.cSoli;
+                result.value =
+                    -rec.cAmount -
+                        rec.cFees -
+                        rec.cSTax -
+                        rec.cFTax -
+                        rec.cTax -
+                        rec.cSoli;
                 return result;
             default:
                 throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, { input: { type: rec.cType } }, false);

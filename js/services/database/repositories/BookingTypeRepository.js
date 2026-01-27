@@ -1,5 +1,5 @@
-import { INDEXED_DB } from '@/config/database';
-import { IndexedDbBase } from '../base';
+import { INDEXED_DB } from "@/config/database";
+import { IndexedDbBase } from "../base";
 export class BookingTypeRepository {
     _dbBase;
     constructor(_dbBase) {

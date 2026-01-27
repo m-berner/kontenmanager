@@ -6,10 +6,8 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export const ENTRYPOINTS = Object.freeze(
-    {
-        BACKGROUND: 'entrypoints/background.html',
-        APP: 'entrypoints/app.html',
-        OPTIONS: 'entrypoints/options.html'
-    }
-)
+export const ENTRYPOINTS = Object.freeze({
+  BACKGROUND: "entrypoints/background.html",
+  APP: "entrypoints/app.html",
+  OPTIONS: "entrypoints/options.html"
+});

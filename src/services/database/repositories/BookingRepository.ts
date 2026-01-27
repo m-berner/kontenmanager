@@ -6,26 +6,28 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import {INDEXED_DB} from '@/config/database'
-import type {BookingDb} from '@/types'
-import {IndexedDbBase} from '../base'
+import { INDEXED_DB } from "@/config/database";
+import type { BookingDb } from "@/types";
+import { IndexedDbBase } from "../base";
 
 export class BookingRepository {
-    constructor(private _dbBase: IndexedDbBase) {
-    }
+  constructor(private _dbBase: IndexedDbBase) {}
 
-    async getAllByAccount(accountId: number, tx?: IDBTransaction): Promise<BookingDb[]> {
-        return this._dbBase.getAllByIndex<BookingDb>(
-            INDEXED_DB.STORE.BOOKINGS.NAME,
-            `${INDEXED_DB.STORE.BOOKINGS.NAME}_k3`,
-            accountId,
-            tx
-        )
-    }
+  async getAllByAccount(
+    accountId: number,
+    tx?: IDBTransaction
+  ): Promise<BookingDb[]> {
+    return this._dbBase.getAllByIndex<BookingDb>(
+      INDEXED_DB.STORE.BOOKINGS.NAME,
+      `${INDEXED_DB.STORE.BOOKINGS.NAME}_k3`,
+      accountId,
+      tx
+    );
+  }
 
-    async deleteByAccount(accountId: number, tx: IDBTransaction): Promise<void> {
-        const store = tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME)
-        const index = store.index(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k3`)
-        return this._dbBase.deleteByCursor(index, IDBKeyRange.only(accountId))
-    }
+  async deleteByAccount(accountId: number, tx: IDBTransaction): Promise<void> {
+    const store = tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME);
+    const index = store.index(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k3`);
+    return this._dbBase.deleteByCursor(index, IDBKeyRange.only(accountId));
+  }
 }

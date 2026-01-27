@@ -1,43 +1,43 @@
 export const INDEXED_DB = Object.freeze({
-    NAME: 'kontenmanager.db',
+    NAME: "kontenmanager.db",
     STORE: {
         ACCOUNTS: {
-            NAME: 'accounts',
+            NAME: "accounts",
             FIELDS: {
-                ID: 'cID',
-                SWIFT: 'cSwift',
-                LOGO_URL: 'cLogoUrl',
-                IBAN: 'cIban',
-                WITH_DEPOT: 'cWithDepot'
+                ID: "cID",
+                SWIFT: "cSwift",
+                LOGO_URL: "cLogoUrl",
+                IBAN: "cIban",
+                WITH_DEPOT: "cWithDepot"
             }
         },
         BOOKINGS: {
-            NAME: 'bookings',
+            NAME: "bookings",
             FIELDS: {
-                ID: 'cID',
-                DATE: 'cDate',
-                EX_DATE: 'cExDate',
-                COUNT: 'cCount',
-                CREDIT: 'cCredit',
-                DEBIT: 'cDebit',
-                DESCRIPTION: 'cDescription',
-                BOOKING_TYPE_ID: 'cBookingTypeID',
-                ACCOUNT_NUMBER_ID: 'cAccountNumberID',
-                STOCK_ID: 'cStockID',
-                SOLI: 'cSoli',
-                MARKET_PLACE: 'cMarketPlace',
-                TAX: 'cTax',
-                FEE: 'cFee',
-                SOURCE_TAX: 'cSourceTax',
-                TRANSACTION_TAX: 'cTransactionTax'
+                ID: "cID",
+                DATE: "cDate",
+                EX_DATE: "cExDate",
+                COUNT: "cCount",
+                CREDIT: "cCredit",
+                DEBIT: "cDebit",
+                DESCRIPTION: "cDescription",
+                BOOKING_TYPE_ID: "cBookingTypeID",
+                ACCOUNT_NUMBER_ID: "cAccountNumberID",
+                STOCK_ID: "cStockID",
+                SOLI: "cSoli",
+                MARKET_PLACE: "cMarketPlace",
+                TAX: "cTax",
+                FEE: "cFee",
+                SOURCE_TAX: "cSourceTax",
+                TRANSACTION_TAX: "cTransactionTax"
             }
         },
         BOOKING_TYPES: {
-            NAME: 'bookingTypes',
+            NAME: "bookingTypes",
             FIELDS: {
-                ID: 'cID',
-                NAME: 'cName',
-                ACCOUNT_NUMBER_ID: 'cAccountNumberID'
+                ID: "cID",
+                NAME: "cName",
+                ACCOUNT_NUMBER_ID: "cAccountNumberID"
             },
             NONE: -1,
             BUY: 1,
@@ -50,18 +50,18 @@ export const INDEXED_DB = Object.freeze({
             TAX: 6
         },
         STOCKS: {
-            NAME: 'stocks',
+            NAME: "stocks",
             FIELDS: {
-                ID: 'cID',
-                ISIN: 'cISIN',
-                SYMBOL: 'cSymbol',
-                FADE_OUT: 'cFadeOut',
-                FIRST_PAGE: 'cFirstPage',
-                URL: 'cURL',
-                MEETING_DAY: 'cMeetingDay',
-                QUARTER_DAY: 'cQuarterDay',
-                COMPANY: 'cCompany',
-                ACCOUNT_NUMBER_ID: 'cAccountNumberID'
+                ID: "cID",
+                ISIN: "cISIN",
+                SYMBOL: "cSymbol",
+                FADE_OUT: "cFadeOut",
+                FIRST_PAGE: "cFirstPage",
+                URL: "cURL",
+                MEETING_DAY: "cMeetingDay",
+                QUARTER_DAY: "cQuarterDay",
+                COMPANY: "cCompany",
+                ACCOUNT_NUMBER_ID: "cAccountNumberID"
             }
         }
     },

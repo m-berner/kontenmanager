@@ -1,6 +1,6 @@
-import { INDEXED_DB } from '@/config/database';
-import { databaseService } from '@/services/database';
-import { DomainValidators } from '@/domains/validation/validators';
+import { INDEXED_DB } from "@/config/database";
+import { databaseService } from "@/services/database";
+import { DomainValidators } from "@/domains/validation/validators";
 function useDBStore(storeName) {
     const dbi = databaseService;
     return {
@@ -40,7 +40,7 @@ export function useBookingsDB() {
         },
         getAll: async (tx) => {
             const records = await store.getAll(tx);
-            return records.map(rec => DomainValidators.validateBooking(rec));
+            return records.map((rec) => DomainValidators.validateBooking(rec));
         }
     };
 }

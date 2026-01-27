@@ -1,15 +1,15 @@
-import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
-import { useSettingsStore } from '@/stores/settings';
-import { fetchService } from '@/services/fetch';
-import { useRuntimeStore } from '@/stores/runtime';
-import { UtilsService } from '@/domains/utils';
-import { DEFAULTS } from '@/config/defaults';
-import { DATE } from '@/domains/config/date';
-import { useStorage } from '@/composables/useStorage';
-import { useBookingsStore } from '@/stores/bookings';
-import { DomainLogic } from '@/domains/logic';
-export const useStocksStore = defineStore('stocks', function () {
+import { defineStore, storeToRefs } from "pinia";
+import { computed, ref } from "vue";
+import { useSettingsStore } from "@/stores/settings";
+import { fetchService } from "@/services/fetch";
+import { useRuntimeStore } from "@/stores/runtime";
+import { UtilsService } from "@/domains/utils";
+import { DEFAULTS } from "@/config/defaults";
+import { DATE } from "@/domains/config/date";
+import { useStorage } from "@/composables/useStorage";
+import { useBookingsStore } from "@/stores/bookings";
+import { DomainLogic } from "@/domains/logic";
+export const useStocksStore = defineStore("stocks", function () {
     const { investByStockId, portfolioByStockId, hasStockID } = useBookingsStore();
     const runtime = useRuntimeStore();
     const { curEur, curUsd } = storeToRefs(runtime);
@@ -17,7 +17,7 @@ export const useStocksStore = defineStore('stocks', function () {
     const { stocksPerPage } = storeToRefs(settings);
     const items = ref([]);
     const getIndexById = computed(() => (id) => {
-        return items.value.findIndex(stock => stock.cID === id);
+        return items.value.findIndex((stock) => stock.cID === id);
     });
     const getItemById = computed(() => (id) => items.value[getIndexById.value(id)]);
     const getById = computed(() => (ident) => {
@@ -25,14 +25,14 @@ export const useStocksStore = defineStore('stocks', function () {
         return stock ? stock : null;
     });
     const passive = computed(() => {
-        return items.value.filter(rec => {
+        return items.value.filter((rec) => {
             return rec.cFadeOut === 1 && rec.cID > 0;
         });
     });
     const active = computed(() => {
         return items.value
-            .filter(rec => rec.cFadeOut === 0 && rec.cID > 0)
-            .map(rec => ({
+            .filter((rec) => rec.cFadeOut === 0 && rec.cID > 0)
+            .map((rec) => ({
             ...rec,
             id: rec.cID,
             mPortfolio: portfolioByStockId(rec.cID),
@@ -41,7 +41,9 @@ export const useStocksStore = defineStore('stocks', function () {
         }))
             .sort((a, b) => {
             const firstPageDiff = b.cFirstPage - a.cFirstPage;
-            return firstPageDiff !== 0 ? firstPageDiff : b.mPortfolio - a.mPortfolio;
+            return firstPageDiff !== 0
+                ? firstPageDiff
+                : b.mPortfolio - a.mPortfolio;
         });
     });
     const sumDepot = computed(() => () => {
@@ -52,7 +54,7 @@ export const useStocksStore = defineStore('stocks', function () {
         return DomainLogic.calculateTotalDepotValue(active.value);
     });
     function add(stock, prepend = false) {
-        UtilsService.log('RECORDS_STOCKS: add');
+        UtilsService.log("RECORDS_STOCKS: add");
         const completeStock = {
             ...stock,
             ...DEFAULTS.STOCK_MEMORY
@@ -65,7 +67,7 @@ export const useStocksStore = defineStore('stocks', function () {
         }
     }
     function update(stockDb) {
-        UtilsService.log('RECORDS_STOCKS: updateStock', stockDb, 'info');
+        UtilsService.log("RECORDS_STOCKS: updateStock", stockDb, "info");
         const index = getIndexById.value(stockDb.cID);
         if (index !== -1) {
             const newItems = [...items.value];
@@ -91,11 +93,11 @@ export const useStocksStore = defineStore('stocks', function () {
         }
     }
     function remove(ident) {
-        UtilsService.log('RECORDS_STOCKS: remove', ident, 'info');
-        items.value = items.value.filter(entry => entry.cID !== ident);
+        UtilsService.log("RECORDS_STOCKS: remove", ident, "info");
+        items.value = items.value.filter((entry) => entry.cID !== ident);
     }
     function clean() {
-        UtilsService.log('RECORDS_STOCKS: clean');
+        UtilsService.log("RECORDS_STOCKS: clean");
         items.value = [];
     }
     async function refreshOnlineData(page) {
@@ -103,7 +105,7 @@ export const useStocksStore = defineStore('stocks', function () {
         await loadOnlineData(page);
     }
     async function loadOnlineData(page) {
-        UtilsService.log('RECORDS: loadOnlineData');
+        UtilsService.log("RECORDS: loadOnlineData");
         const { getStorage } = useStorage();
         const isin = [];
         const isinDates = [];
@@ -117,10 +119,10 @@ export const useStocksStore = defineStore('stocks', function () {
             isin.push({
                 id: stock.cID,
                 isin: stock.cISIN,
-                min: '0',
-                rate: '0',
-                max: '0',
-                cur: ''
+                min: "0",
+                rate: "0",
+                max: "0",
+                cur: ""
             });
             const meetingTime = UtilsService.utcDate(stock.cMeetingDay).getTime();
             const quarterTime = UtilsService.utcDate(stock.cQuarterDay).getTime();
@@ -143,15 +145,22 @@ export const useStocksStore = defineStore('stocks', function () {
             const stockToUpdate = getById.value(stock.id);
             if (!stockToUpdate)
                 return;
-            const divisor = data.cur === 'USD' ? curUsd.value : curEur.value;
+            const divisor = data.cur === "USD" ? curUsd.value : curEur.value;
             stockToUpdate.mMin = UtilsService.toNumber(data.min) / divisor;
             stockToUpdate.mValue = UtilsService.toNumber(data.rate) / divisor;
             stockToUpdate.mMax = UtilsService.toNumber(data.max) / divisor;
-            stockToUpdate.mEuroChange = (stockToUpdate.mValue * (stock.mPortfolio ?? 0)) - (stock.mInvest ?? 0);
-            const dateData = dateResponse.find(d => d.key === stock.id);
+            stockToUpdate.mEuroChange =
+                stockToUpdate.mValue * (stock.mPortfolio ?? 0) - (stock.mInvest ?? 0);
+            const dateData = dateResponse.find((d) => d.key === stock.id);
             if (dateData) {
-                stockToUpdate.cMeetingDay = dateData.value.gm > 0 ? UtilsService.isoDate(dateData.value.gm) : DATE.ISO;
-                stockToUpdate.cQuarterDay = dateData.value.qf > 0 ? UtilsService.isoDate(dateData.value.qf) : DATE.ISO;
+                stockToUpdate.cMeetingDay =
+                    dateData.value.gm > 0
+                        ? UtilsService.isoDate(dateData.value.gm)
+                        : DATE.ISO;
+                stockToUpdate.cQuarterDay =
+                    dateData.value.qf > 0
+                        ? UtilsService.isoDate(dateData.value.qf)
+                        : DATE.ISO;
                 stockToUpdate.cAskDates = UtilsService.isoDate(now + DEFAULTS.ASK_DATE_INTERVAL * 86400000);
             }
         });
@@ -173,4 +182,4 @@ export const useStocksStore = defineStore('stocks', function () {
         refreshOnlineData
     };
 });
-UtilsService.log('--- stores/stocks.ts ---');
+UtilsService.log("--- stores/stocks.ts ---");

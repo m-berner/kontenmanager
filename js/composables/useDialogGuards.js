@@ -1,10 +1,10 @@
-import { ref } from 'vue';
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from '@/domains/errors';
+import { ref } from "vue";
+import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
 export function useDialogGuards() {
     const isLoading = ref(false);
     const loadingOperations = ref(new Set());
     let operationCounter = 0;
-    async function ensureConnected(isConnected, notice, errorMessage = 'Database not connected') {
+    async function ensureConnected(isConnected, notice, errorMessage = "Database not connected") {
         if (!isConnected) {
             await notice([errorMessage]);
             return false;
@@ -26,7 +26,7 @@ export function useDialogGuards() {
     async function validateForm(form) {
         try {
             if (form.value === null) {
-                return { valid: false, errors: ['System error'] };
+                return { valid: false, errors: ["System error"] };
             }
             return form.value.validate();
         }
@@ -45,13 +45,13 @@ export function useDialogGuards() {
                     throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), attempt, maxRetries }, true);
                 }
                 onRetry?.(attempt, err);
-                await new Promise(resolve => setTimeout(resolve, delay * attempt));
+                await new Promise((resolve) => setTimeout(resolve, delay * attempt));
             }
         }
-        throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.C, ERROR_CATEGORY.VALIDATION, { input: 'retry_exhausted' }, false);
+        throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.C, ERROR_CATEGORY.VALIDATION, { input: "retry_exhausted" }, false);
     }
     async function submitGuard(options) {
-        const { formRef, isConnected, connectionErrorMessage = 'Database not connected', notice, operation, onFinally } = options;
+        const { formRef, isConnected, connectionErrorMessage = "Database not connected", notice, operation, onFinally } = options;
         if (formRef) {
             const validation = await validateForm(formRef);
             if (!validation.valid)
@@ -69,7 +69,7 @@ export function useDialogGuards() {
                 if (err instanceof AppError) {
                     throw err;
                 }
-                throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), phase: 'submitGuard' }, true);
+                throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), phase: "submitGuard" }, true);
             }
             finally {
                 onFinally?.();

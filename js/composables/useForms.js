@@ -1,7 +1,7 @@
-import { reactive } from 'vue';
-import { INDEXED_DB } from '@/config/database';
-import { DATE } from '@/domains/config/date';
-import { UtilsService } from '@/domains/utils';
+import { reactive } from "vue";
+import { INDEXED_DB } from "@/config/database";
+import { DATE } from "@/domains/config/date";
+import { UtilsService } from "@/domains/utils";
 let stockFormManagerInstance = null;
 let accountFormManagerInstance = null;
 let bookingFormManagerInstance = null;
@@ -20,19 +20,19 @@ function createFormManager(initialData, mapFn) {
 function createStockFormManager() {
     const initialData = {
         id: -1,
-        isin: '',
-        company: '',
-        symbol: '',
-        meetingDay: '',
-        quarterDay: '',
+        isin: "",
+        company: "",
+        symbol: "",
+        meetingDay: "",
+        quarterDay: "",
         fadeOut: 0,
         firstPage: 0,
-        url: '',
+        url: "",
         askDates: DATE.ISO
     };
     function mapStockFormToDb(data, accountId) {
         const stock = {
-            cISIN: data.isin.replace(/\s/g, '').toUpperCase(),
+            cISIN: data.isin.replace(/\s/g, "").toUpperCase(),
             cCompany: data.company.trim(),
             cSymbol: data.symbol.trim().toUpperCase(),
             cMeetingDay: data.meetingDay,
@@ -58,15 +58,15 @@ function createStockFormManager() {
 function createAccountFormManager() {
     const initialData = {
         id: -1,
-        swift: '',
-        iban: '',
-        logoUrl: '',
+        swift: "",
+        iban: "",
+        logoUrl: "",
         withDepot: false
     };
     function mapAccountFormToDb(data) {
         const account = {
             cSwift: data.swift.trim().toUpperCase(),
-            cIban: data.iban.replace(/\s/g, '').toUpperCase(),
+            cIban: data.iban.replace(/\s/g, "").toUpperCase(),
             cLogoUrl: data.logoUrl.trim(),
             cWithDepot: data.withDepot
         };
@@ -87,11 +87,11 @@ function createBookingFormManager() {
     const initialData = {
         id: -1,
         selected: -1,
-        bookDate: '',
-        exDate: '',
+        bookDate: "",
+        exDate: "",
         credit: 0,
         debit: 0,
-        description: '',
+        description: "",
         count: 0,
         bookingTypeId: 0,
         accountTypeId: 0,
@@ -106,17 +106,25 @@ function createBookingFormManager() {
         feeDebit: 0,
         soliCredit: 0,
         soliDebit: 0,
-        marketPlace: ''
+        marketPlace: ""
     };
     function mapBookingFormToDb(data, accountId, defaultISODate) {
         const isStockRelated = (typeId) => {
-            return [BOOKING_TYPES.BUY, BOOKING_TYPES.SELL, BOOKING_TYPES.DIVIDEND].includes(typeId);
+            return [
+                BOOKING_TYPES.BUY,
+                BOOKING_TYPES.SELL,
+                BOOKING_TYPES.DIVIDEND
+            ].includes(typeId);
         };
         const isDividend = (typeId) => {
             return typeId === BOOKING_TYPES.DIVIDEND;
         };
         const hasMarketplace = (typeId) => {
-            return [BOOKING_TYPES.BUY, BOOKING_TYPES.SELL, BOOKING_TYPES.DIVIDEND].includes(typeId);
+            return [
+                BOOKING_TYPES.BUY,
+                BOOKING_TYPES.SELL,
+                BOOKING_TYPES.DIVIDEND
+            ].includes(typeId);
         };
         const booking = {
             cAccountNumberID: accountId,
@@ -138,7 +146,9 @@ function createBookingFormManager() {
             cStockID: isStockRelated(data.bookingTypeId) ? data.stockId : 0,
             cCount: isStockRelated(data.bookingTypeId) ? data.count : 0,
             cExDate: isDividend(data.bookingTypeId) ? data.exDate : defaultISODate,
-            cMarketPlace: hasMarketplace(data.bookingTypeId) ? data.marketPlace.trim() : ''
+            cMarketPlace: hasMarketplace(data.bookingTypeId)
+                ? data.marketPlace.trim()
+                : ""
         };
         if (data.id > 0) {
             return { cID: data.id, ...booking };
@@ -155,7 +165,7 @@ function createBookingFormManager() {
 function createBookingTypeFormManager() {
     const initialData = {
         id: null,
-        name: ''
+        name: ""
     };
     function mapBookingTypeFormToDb(data, accountId) {
         const bookingType = {

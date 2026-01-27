@@ -6,11 +6,11 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import type {TeleportState, ViewTypeSelection} from '@/types'
-import {computed, ref} from 'vue'
-import {defineStore} from 'pinia'
-import {UtilsService} from '@/domains/utils'
-import {CODES} from '@/config/codes'
+import type { TeleportState, ViewTypeSelection } from "@/types";
+import { computed, ref } from "vue";
+import { defineStore } from "pinia";
+import { UtilsService } from "@/domains/utils";
+import { CODES } from "@/config/codes";
 
 /**
  * Pinia store for runtime and UI state.
@@ -22,136 +22,136 @@ import {CODES} from '@/config/codes'
  * @returns An object containing reactive runtime state and
  * methods to mutate or reset transient UI data.
  */
-export const useRuntimeStore = defineStore('runtime', function () {
-    /**
-     * Currently active entity identifier.
-     *
-     * A value of `-1` indicates that no entity is selected.
-     */
-    const activeId = ref<number>(-1)
+export const useRuntimeStore = defineStore("runtime", function () {
+  /**
+   * Currently active entity identifier.
+   *
+   * A value of `-1` indicates that no entity is selected.
+   */
+  const activeId = ref<number>(-1);
 
-    /** Currently active application view. */
-    const currentView = ref<ViewTypeSelection>(CODES.VIEW_CODES.HOME)
+  /** Currently active application view. */
+  const currentView = ref<ViewTypeSelection>(CODES.VIEW_CODES.HOME);
 
-    /**
-     * Map of color overrides for option menu entries.
-     * Key: Menu item ID (number), Value: CSS color string.
-     */
-    const optionMenuColors = ref<Map<number, string>>(new Map())
+  /**
+   * Map of color overrides for option menu entries.
+   * Key: Menu item ID (number), Value: CSS color string.
+   */
+  const optionMenuColors = ref<Map<number, string>>(new Map());
 
-    /** Name of the currently active dialog/teleport component. */
-    const dialogName = ref<string>()
+  /** Name of the currently active dialog/teleport component. */
+  const dialogName = ref<string>();
 
-    /** Indicates whether the dialog confirmation action is allowed. */
-    const dialogOk = ref<boolean>(true)
+  /** Indicates whether the dialog confirmation action is allowed. */
+  const dialogOk = ref<boolean>(true);
 
-    /** Controls dialog visibility. */
-    const dialogVisibility = ref<boolean>(false)
+  /** Controls dialog visibility. */
+  const dialogVisibility = ref<boolean>(false);
 
-    /** Exchange-related info counters. */
-    const infoExchanges = ref<Map<string, number>>(new Map())
+  /** Exchange-related info counters. */
+  const infoExchanges = ref<Map<string, number>>(new Map());
 
-    /** Index-related info counters. */
-    const infoIndexes = ref<Map<string, number>>(new Map())
+  /** Index-related info counters. */
+  const infoIndexes = ref<Map<string, number>>(new Map());
 
-    /** Material-related info counters. */
-    const infoMaterials = ref<Map<string, number>>(new Map())
+  /** Material-related info counters. */
+  const infoMaterials = ref<Map<string, number>>(new Map());
 
-    /** Current USD conversion factor. */
-    const curUsd = ref<number>(1)
+  /** Current USD conversion factor. */
+  const curUsd = ref<number>(1);
 
-    /** Current EUR conversion factor. */
-    const curEur = ref<number>(1)
+  /** Current EUR conversion factor. */
+  const curEur = ref<number>(1);
 
-    /** Current page index for stocks pagination. */
-    const stocksPage = ref<number>(1)
+  /** Current page index for stocks pagination. */
+  const stocksPage = ref<number>(1);
 
-    /** Global flag indicating if a network download operation is active. */
-    const isDownloading = ref<boolean>(false)
+  /** Global flag indicating if a network download operation is active. */
+  const isDownloading = ref<boolean>(false);
 
-    /** Specific flag indicating if stock data is being fetched or processed. */
-    const isStockLoading = ref<boolean>(false)
+  /** Specific flag indicating if stock data is being fetched or processed. */
+  const isStockLoading = ref<boolean>(false);
 
-    const getCurrentView = computed((): ViewTypeSelection => currentView.value)
+  const getCurrentView = computed((): ViewTypeSelection => currentView.value);
 
-    /**
-     * Set of page numbers that have successfully loaded stock data.
-     * Prevents redundant API calls for the same page.
-     */
-    const loadedStocksPages = new Set<number>()
+  /**
+   * Set of page numbers that have successfully loaded stock data.
+   * Prevents redundant API calls for the same page.
+   */
+  const loadedStocksPages = new Set<number>();
 
-    /**
-     * Clears all tracked loaded stock pages.
-     */
-    function clearStocksPages(): void {
-        loadedStocksPages.clear()
+  /**
+   * Clears all tracked loaded stock pages.
+   */
+  function clearStocksPages(): void {
+    loadedStocksPages.clear();
+  }
+
+  /**
+   * Configures and displays a dialog via the teleport system.
+   *
+   * @param {TeleportState} entry - The dialog configuration details.
+   */
+  function setTeleport(entry: TeleportState): void {
+    dialogName.value = entry.dialogName;
+    dialogOk.value = entry.dialogOk;
+    dialogVisibility.value = entry.dialogVisibility;
+  }
+
+  /**
+   * Resets the teleport dialog state to hidden/default values
+   * and clears any temporary menu color overrides.
+   */
+  function resetTeleport(): void {
+    dialogName.value = undefined;
+    dialogOk.value = true;
+    dialogVisibility.value = false;
+    resetOptionsMenuColors();
+  }
+
+  /**
+   * Clears all color overrides applied to option menu items.
+   */
+  function resetOptionsMenuColors(): void {
+    if (optionMenuColors.value.size > 0) {
+      optionMenuColors.value.clear();
     }
+  }
 
-    /**
-     * Configures and displays a dialog via the teleport system.
-     *
-     * @param {TeleportState} entry - The dialog configuration details.
-     */
-    function setTeleport(entry: TeleportState): void {
-        dialogName.value = entry.dialogName
-        dialogOk.value = entry.dialogOk
-        dialogVisibility.value = entry.dialogVisibility
-    }
+  /**
+   * Updates the active view and performs necessary state resets.
+   *
+   * @param {ViewTypeSelection} view - The target view identifier to switch to.
+   */
+  function setCurrentView(view: ViewTypeSelection): void {
+    currentView.value = view;
 
-    /**
-     * Resets the teleport dialog state to hidden/default values
-     * and clears any temporary menu color overrides.
-     */
-    function resetTeleport(): void {
-        dialogName.value = undefined
-        dialogOk.value = true
-        dialogVisibility.value = false
-        resetOptionsMenuColors()
-    }
+    // Ensure UI the state is clean when navigating
+    resetTeleport();
+  }
 
-    /**
-     * Clears all color overrides applied to option menu items.
-     */
-    function resetOptionsMenuColors(): void {
-        if (optionMenuColors.value.size > 0) {
-            optionMenuColors.value.clear()
-        }
-    }
+  return {
+    activeId,
+    getCurrentView,
+    optionMenuColors,
+    dialogName,
+    dialogOk,
+    dialogVisibility,
+    infoExchanges,
+    infoIndexes,
+    infoMaterials,
+    curUsd,
+    curEur,
+    stocksPage,
+    loadedStocksPages,
+    isDownloading,
+    isStockLoading,
+    setTeleport,
+    resetTeleport,
+    resetOptionsMenuColors,
+    clearStocksPages,
+    setCurrentView
+  };
+});
 
-    /**
-     * Updates the active view and performs necessary state resets.
-     *
-     * @param {ViewTypeSelection} view - The target view identifier to switch to.
-     */
-    function setCurrentView(view: ViewTypeSelection): void {
-        currentView.value = view
-
-        // Ensure UI the state is clean when navigating
-        resetTeleport()
-    }
-
-    return {
-        activeId,
-        getCurrentView,
-        optionMenuColors,
-        dialogName,
-        dialogOk,
-        dialogVisibility,
-        infoExchanges,
-        infoIndexes,
-        infoMaterials,
-        curUsd,
-        curEur,
-        stocksPage,
-        loadedStocksPages,
-        isDownloading,
-        isStockLoading,
-        setTeleport,
-        resetTeleport,
-        resetOptionsMenuColors,
-        clearStocksPages,
-        setCurrentView
-    }
-})
-
-UtilsService.log('--- stores/runtime.ts ---')
+UtilsService.log("--- stores/runtime.ts ---");

@@ -11,30 +11,33 @@
  * @fileoverview CompanyContent component displays a data table of stock holdings
  * with real-time market data, portfolio information, and interactive menu actions.
  */
-import {computed, onBeforeMount, watch} from 'vue'
-import {useI18n} from 'vue-i18n'
-import {storeToRefs} from 'pinia'
-import {useSettingsStore} from '@/stores/settings'
-import {useRecordsStore} from '@/stores/records'
-import {useRuntimeStore} from '@/stores/runtime'
-import {UtilsService} from '@/domains/utils'
-import {DomainLogic} from '@/domains/logic'
-import DotMenu from '@/components/DotMenu.vue'
-import {VIEWS} from '@/config/views'
-import {DATE} from '@/domains/config/date'
-import {createCompanyHeaders, createCompanyMenuItems} from '@/config/views'
+import { computed, onBeforeMount, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
+import { useSettingsStore } from "@/stores/settings";
+import { useRecordsStore } from "@/stores/records";
+import { useRuntimeStore } from "@/stores/runtime";
+import { UtilsService } from "@/domains/utils";
+import { DomainLogic } from "@/domains/logic";
+import DotMenu from "@/components/DotMenu.vue";
+import {
+  createCompanyHeaders,
+  createCompanyMenuItems,
+  VIEWS
+} from "@/config/views";
+import { DATE } from "@/domains/config/date";
 
-const {d, n, t} = useI18n()
-const records = useRecordsStore()
-const {active: activeStockItems} = storeToRefs(records.stocks)
-const settings = useSettingsStore()
-const {stocksPerPage} = storeToRefs(settings)
-const {setStocksPerPage} = settings
-const runtime = useRuntimeStore()
-const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime)
+const { d, n, t } = useI18n();
+const records = useRecordsStore();
+const { active: activeStockItems } = storeToRefs(records.stocks);
+const settings = useSettingsStore();
+const { stocksPerPage } = storeToRefs(settings);
+const { setStocksPerPage } = settings;
+const runtime = useRuntimeStore();
+const { stocksPage, isDownloading, isStockLoading } = storeToRefs(runtime);
 
-const HEADERS = createCompanyHeaders(t)
-const MENU_ITEMS = createCompanyMenuItems(t)
+const HEADERS = createCompanyHeaders(t);
+const MENU_ITEMS = createCompanyMenuItems(t);
 
 /**
  * Computed function that returns CSS classes for profit/loss display.
@@ -47,11 +50,11 @@ const MENU_ITEMS = createCompanyMenuItems(t)
  * winLossClass()(250) // { 'color-black font-weight-bold': true, ... }
  */
 const winLossClass = computed(() => {
-    return (value: number): Record<string, boolean> => ({
-        'color-red font-weight-bold': value < 0,
-        'color-black font-weight-bold': value >= 0
-    })
-})
+  return (value: number): Record<string, boolean> => ({
+    "color-red font-weight-bold": value < 0,
+    "color-black font-weight-bold": value >= 0
+  });
+});
 
 /**
  * Validates whether a date string represents a valid date after the epoch.
@@ -64,8 +67,8 @@ const winLossClass = computed(() => {
  * isValidDate('1970-01-01') // returns false (epoch time)
  */
 const isValidDate = (dateString: string): boolean => {
-    return new Date(dateString).getTime() > DATE.ZERO_TIME
-}
+  return new Date(dateString).getTime() > DATE.ZERO_TIME;
+};
 
 /**
  * Checks if a stock has a meaningful portfolio holding (>= 1 share).
@@ -79,8 +82,8 @@ const isValidDate = (dateString: string): boolean => {
  * hasPortfolio(undefined) // returns false
  */
 const hasPortfolio = (portfolio: number | undefined): boolean => {
-    return (portfolio ?? 0) >= 0.1
-}
+  return (portfolio ?? 0) >= 0.1;
+};
 
 /**
  * Calculates the percentage change between investment and current value.
@@ -95,10 +98,13 @@ const hasPortfolio = (portfolio: number | undefined): boolean => {
  * calculatePercentChange(-50, 500) // returns -0.1 (10% loss)
  * calculatePercentChange(100, 0) // returns 0 (fallback)
  */
-const calculatePercentChange = (euroChange: number | undefined, invest: number | undefined): number => {
-    if (!invest || invest === 0) return 0
-    return (euroChange ?? 0) / invest
-}
+const calculatePercentChange = (
+  euroChange: number | undefined,
+  invest: number | undefined
+): number => {
+  if (!invest || invest === 0) return 0;
+  return (euroChange ?? 0) / invest;
+};
 
 /**
  * Loads online market data for all required pages starting from a given page.
@@ -114,20 +120,24 @@ const calculatePercentChange = (euroChange: number | undefined, invest: number |
  * await loadRequiredPages(3) // Resume loading from page 3
  */
 const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
-    const pagesToLoad: number[] = []
-    const totalPages = Math.ceil(activeStockItems.value.length / stocksPerPage.value)
+  const pagesToLoad: number[] = [];
+  const totalPages = Math.ceil(
+    activeStockItems.value.length / stocksPerPage.value
+  );
 
-    for (let page = startPage; page <= totalPages; page++) {
-        const pageFirstIndex = stocksPerPage.value * (page - 1)
-        const stock = activeStockItems.value[pageFirstIndex]
+  for (let page = startPage; page <= totalPages; page++) {
+    const pageFirstIndex = stocksPerPage.value * (page - 1);
+    const stock = activeStockItems.value[pageFirstIndex];
 
-        if (!stock || !hasPortfolio(stock.mPortfolio)) break
+    if (!stock || !hasPortfolio(stock.mPortfolio)) break;
 
-        pagesToLoad.push(page)
-    }
+    pagesToLoad.push(page);
+  }
 
-    await Promise.all(pagesToLoad.map(page => records.stocks.loadOnlineData(page)))
-}
+  await Promise.all(
+    pagesToLoad.map((page) => records.stocks.loadOnlineData(page))
+  );
+};
 
 /**
  * Event handler for page navigation in the data table.
@@ -142,18 +152,18 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
  * await onUpdatePage(2) // Navigate to page 2 and load data if needed
  */
 const onUpdatePage = async (page: number): Promise<void> => {
-    UtilsService.log('COMPANY_CONTENT: onUpdatePage', page, 'info')
-    stocksPage.value = page
+  UtilsService.log("COMPANY_CONTENT: onUpdatePage", page, "info");
+  stocksPage.value = page;
 
-    if (runtime.loadedStocksPages.has(page)) return
+  if (runtime.loadedStocksPages.has(page)) return;
 
-    isStockLoading.value = true
-    try {
-        await records.stocks.loadOnlineData(page)
-    } finally {
-        isStockLoading.value = false
-    }
-}
+  isStockLoading.value = true;
+  try {
+    await records.stocks.loadOnlineData(page);
+  } finally {
+    isStockLoading.value = false;
+  }
+};
 
 /**
  * Component initialization hook.
@@ -164,121 +174,131 @@ const onUpdatePage = async (page: number): Promise<void> => {
  * @returns {Promise<void>}
  */
 onBeforeMount(async () => {
-    UtilsService.log('COMPANY_CONTENT: onBeforeMount')
+  UtilsService.log("COMPANY_CONTENT: onBeforeMount");
 
-    // Always recalculate portfolio values from bookings upon entry
-    // to ensure RAM-only properties (mPortfolio, mInvest) are up to date.
-    records.stocks.items.forEach(stock => {
-        if (stock.cID > 0) {
-            stock.mPortfolio = DomainLogic.calculatePortfolioByStockId(records.bookings.items, stock.cID)
-            stock.mInvest = DomainLogic.calculateInvestByStockId(records.bookings.items, stock.cID)
-        }
-    })
-
-    if (!runtime.loadedStocksPages.has(stocksPage.value)) {
-        isDownloading.value = true
-        isStockLoading.value = true
-        try {
-            await loadRequiredPages(stocksPage.value)
-        } finally {
-            isStockLoading.value = false
-            isDownloading.value = false
-        }
-    } else {
-        // If the page is already cached, we still need to trigger a recalculation
-        // of RAM-only properties (mEuroChange, etc.) that might have been lost
-        // if the store was partially re-initialized or if we want to ensure UI consistency.
-        // Actually, Pinia store should be persistent, but recalculating derived RAM state is safe.
-        activeStockItems.value.forEach(stock => {
-            if (stock.mValue) {
-                stock.mEuroChange = (stock.mValue * (stock.mPortfolio ?? 0)) - (stock.mInvest ?? 0)
-            }
-        })
+  // Always recalculate portfolio values from bookings upon entry
+  // to ensure RAM-only properties (mPortfolio, mInvest) are up to date.
+  records.stocks.items.forEach((stock) => {
+    if (stock.cID > 0) {
+      stock.mPortfolio = DomainLogic.calculatePortfolioByStockId(
+        records.bookings.items,
+        stock.cID
+      );
+      stock.mInvest = DomainLogic.calculateInvestByStockId(
+        records.bookings.items,
+        stock.cID
+      );
     }
-})
+  });
+
+  if (!runtime.loadedStocksPages.has(stocksPage.value)) {
+    isDownloading.value = true;
+    isStockLoading.value = true;
+    try {
+      await loadRequiredPages(stocksPage.value);
+    } finally {
+      isStockLoading.value = false;
+      isDownloading.value = false;
+    }
+  } else {
+    // If the page is already cached, we still need to trigger a recalculation
+    // of RAM-only properties (mEuroChange, etc.) that might have been lost
+    // if the store was partially re-initialized or if we want to ensure UI consistency.
+    // Actually, Pinia store should be persistent, but recalculating derived RAM state is safe.
+    activeStockItems.value.forEach((stock) => {
+      if (stock.mValue) {
+        stock.mEuroChange =
+          stock.mValue * (stock.mPortfolio ?? 0) - (stock.mInvest ?? 0);
+      }
+    });
+  }
+});
 
 /**
  * Watcher for stocksPerPage.
  * Reloads online market data when the number of items per page changes,
  * as this affects page boundaries and which stocks need loading.
  */
-watch(
-    stocksPerPage,
-    async () => {
-        runtime.clearStocksPages()
-        isDownloading.value = true
-        isStockLoading.value = true
-        try {
-            await loadRequiredPages(stocksPage.value)
-        } finally {
-            isStockLoading.value = false
-            isDownloading.value = false
-        }
-    })
+watch(stocksPerPage, async () => {
+  runtime.clearStocksPages();
+  isDownloading.value = true;
+  isStockLoading.value = true;
+  try {
+    await loadRequiredPages(stocksPage.value);
+  } finally {
+    isStockLoading.value = false;
+    isDownloading.value = false;
+  }
+});
 
-UtilsService.log('--- views/CompanyContent.vue setup ---')
+UtilsService.log("--- views/CompanyContent.vue setup ---");
 </script>
 
 <template>
-    <v-data-table
-        :headers="HEADERS"
-        :hide-no-data="false"
-        :hover="true"
-        :items="activeStockItems"
-        :items-per-page="stocksPerPage"
-        :items-per-page-options="VIEWS.ITEMS_PER_PAGE_OPTIONS"
-        :items-per-page-text="t('views.companyContent.stocksTable.itemsPerPageText')"
-        :loading="isStockLoading"
-        :no-data-text="t('views.companyContent.stocksTable.noDataText')"
-        density="compact"
-        item-key="cID"
-        @update:items-per-page="setStocksPerPage"
-        @update:page="onUpdatePage">
-        <template #item="{ item }">
-            <tr class="table-row">
-                <td class="d-none">{{ item.cID }}</td>
-                <td>
-                    <DotMenu
-                        :items="MENU_ITEMS"
-                        :record-id="item.cID!"/>
-                </td>
-                <td>{{ item.cCompany }}</td>
-                <td>{{ item.cISIN }}</td>
-                <td>
-                    <template v-if="isValidDate(item.cQuarterDay)">
-                        {{ d(new Date(item.cQuarterDay), 'short') }}
-                    </template>
-                </td>
-                <td>
-                    <template v-if="isValidDate(item.cMeetingDay)">
-                        {{ d(new Date(item.cMeetingDay), 'short') }}
-                    </template>
-                </td>
-                <td>
-                    <template v-if="hasPortfolio(item.mPortfolio)">
-                        {{ item.mPortfolio }}
-                    </template>
-                </td>
-                <td>
-                    <v-tooltip
-                        v-if="hasPortfolio(item.mPortfolio)"
-                        :text="n(calculatePercentChange(item.mEuroChange, item.mInvest), 'percent')"
-                        location="left">
-                        <template #activator="{ props }">
-                            <span
-                                :class="winLossClass(item.mEuroChange!)"
-                                v-bind="props">
-                                {{ n(item.mEuroChange ?? 0, 'currency') }}
-                            </span>
-                        </template>
-                    </v-tooltip>
-                </td>
-                <td>{{ n(item.mMin ?? 0, 'currency') }}</td>
-                <td class="font-weight-bold color-black">
-                    {{ n(item.mValue ?? 0, 'currency3') }}
-                </td>
-                <td>{{ n(item.mMax ?? 0, 'currency') }}</td>
-            </tr>
-        </template>
-    </v-data-table>
+  <v-data-table
+    :headers="HEADERS"
+    :hide-no-data="false"
+    :hover="true"
+    :items="activeStockItems"
+    :items-per-page="stocksPerPage"
+    :items-per-page-options="VIEWS.ITEMS_PER_PAGE_OPTIONS"
+    :items-per-page-text="
+      t('views.companyContent.stocksTable.itemsPerPageText')
+    "
+    :loading="isStockLoading"
+    :no-data-text="t('views.companyContent.stocksTable.noDataText')"
+    density="compact"
+    item-key="cID"
+    @update:items-per-page="setStocksPerPage"
+    @update:page="onUpdatePage"
+  >
+    <template #item="{ item }">
+      <tr class="table-row">
+        <td class="d-none">{{ item.cID }}</td>
+        <td>
+          <DotMenu :items="MENU_ITEMS" :record-id="item.cID!" />
+        </td>
+        <td>{{ item.cCompany }}</td>
+        <td>{{ item.cISIN }}</td>
+        <td>
+          <template v-if="isValidDate(item.cQuarterDay)">
+            {{ d(new Date(item.cQuarterDay), "short") }}
+          </template>
+        </td>
+        <td>
+          <template v-if="isValidDate(item.cMeetingDay)">
+            {{ d(new Date(item.cMeetingDay), "short") }}
+          </template>
+        </td>
+        <td>
+          <template v-if="hasPortfolio(item.mPortfolio)">
+            {{ item.mPortfolio }}
+          </template>
+        </td>
+        <td>
+          <v-tooltip
+            v-if="hasPortfolio(item.mPortfolio)"
+            :text="
+              n(
+                calculatePercentChange(item.mEuroChange, item.mInvest),
+                'percent'
+              )
+            "
+            location="left"
+          >
+            <template #activator="{ props }">
+              <span :class="winLossClass(item.mEuroChange!)" v-bind="props">
+                {{ n(item.mEuroChange ?? 0, "currency") }}
+              </span>
+            </template>
+          </v-tooltip>
+        </td>
+        <td>{{ n(item.mMin ?? 0, "currency") }}</td>
+        <td class="font-weight-bold color-black">
+          {{ n(item.mValue ?? 0, "currency3") }}
+        </td>
+        <td>{{ n(item.mMax ?? 0, "currency") }}</td>
+      </tr>
+    </template>
+  </v-data-table>
 </template>
