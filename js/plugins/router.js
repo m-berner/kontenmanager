@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import { UtilsService } from '@/domains/utils';
 import { ROUTES } from '@/config/routes';
 import { CODES } from '@/config/codes';
+import { useRuntimeStore } from '@/stores/runtime';
 const routerInstance = createRouter({
     history: createWebHashHistory(),
     routes: [
@@ -37,6 +38,29 @@ const routerInstance = createRouter({
             }
         }
     ]
+});
+routerInstance.afterEach((to) => {
+    try {
+        const runtime = useRuntimeStore();
+        const routeName = to.name;
+        if (routeName) {
+            runtime.setCurrentView(routeName);
+        }
+    }
+    catch {
+    }
+});
+routerInstance.isReady().then(() => {
+    try {
+        const runtime = useRuntimeStore();
+        const routeName = routerInstance.currentRoute.value
+            .name;
+        if (routeName) {
+            runtime.setCurrentView(routeName);
+        }
+    }
+    catch {
+    }
 });
 const routerConfig = {
     router: routerInstance
