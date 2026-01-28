@@ -7,7 +7,7 @@
   -->
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { onBeforeUnmount, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { UtilsService } from "@/domains/utils";
 
@@ -35,7 +35,12 @@ const swiftLabel = ref<string>("");
 const ibanLabel = ref<string>("");
 
 const onUpdateSwift = (swift: string): void => {
-  if (!swift) return;
+  if (!swift) {
+    swiftLabel.value = "";
+    accountFormData.swift = "";
+    return;
+  }
+
   const clean = swift.replace(/\s/g, "").toUpperCase();
   accountFormData.swift = clean;
   swiftLabel.value =
@@ -45,7 +50,12 @@ const onUpdateSwift = (swift: string): void => {
 };
 
 const onUpdateIban = (iban: string): void => {
-  if (!iban) return;
+  if (!iban) {
+    ibanLabel.value = "";
+    accountFormData.iban = "";
+    return;
+  }
+
   const clean = iban.replace(/\s/g, "").toUpperCase();
   accountFormData.iban = clean;
   ibanLabel.value =
@@ -60,13 +70,15 @@ const { faviconUrl } = useFavicon(domain);
 
 let timeoutId: ReturnType<typeof setTimeout>;
 watch(faviconUrl, (newUrl) => {
-  clearTimeout(timeoutId);
+  if (timeoutId) clearTimeout(timeoutId);
   timeoutId = setTimeout(() => {
     if (newUrl) {
       accountFormData.logoUrl = newUrl;
     }
   }, 400);
 });
+
+onBeforeUnmount(() => { if (timeoutId) clearTimeout(timeoutId); });
 
 UtilsService.log("--- components/dialogs/forms/AccountForm.vue setup ---");
 </script>

@@ -47,7 +47,12 @@ export default [
             'comma-dangle': ['error', 'never'],
             'quotes': ['error', 'double'],
             'semi': ['error', 'always'],
-            'space-before-function-paren': ['error', 'never'],
+            // Allow a space for async arrow functions: `async () => {}`
+            'space-before-function-paren': ['error', {
+                anonymous: 'never',
+                named: 'never',
+                asyncArrow: 'always'
+            }],
             'keyword-spacing': 'error',
             'space-infix-ops': 'error',
             'eol-last': 'error',
@@ -86,7 +91,12 @@ export default [
         files: ['**/*.ts'],
         rules: {
             indent: ['error', 2, { SwitchCase: 1 }],
-            'space-before-function-paren': ['error', 'never']
+            // Keep the same policy for TS files
+            'space-before-function-paren': ['error', {
+                anonymous: 'never',
+                named: 'never',
+                asyncArrow: 'always'
+            }]
         }
     },
 
