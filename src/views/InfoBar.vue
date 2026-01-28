@@ -61,9 +61,9 @@ UtilsService.log("--- views/InfoBar.vue setup ---");
         }}</v-list-item-title>
         <v-list-item-subtitle>
           {{
-            n(materialValues.get(item)!.usd, "currencyUSD") +
+            n(materialValues.get(item)?.usd ?? 0, "currencyUSD") +
             " / " +
-            n(materialValues.get(item)!.local, "currency")
+            n(materialValues.get(item)?.local ?? 0, "currency")
           }}
         </v-list-item-subtitle>
       </v-list-item>

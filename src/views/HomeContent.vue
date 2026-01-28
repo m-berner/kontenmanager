@@ -11,7 +11,7 @@
  * @fileoverview HomeContent component displays the main dashboard with a searchable
  * data table of all bookings, including action menus and keyboard shortcuts.
  */
-import { ref } from "vue";
+import { computed, onUnmounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 import { useSettingsStore } from "@/stores/settings";
@@ -35,8 +35,8 @@ const { bookingsPerPage, skin } = storeToRefs(settings);
 const { setBookingsPerPage } = settings;
 const theme = useTheme();
 
-const HEADERS = createHomeHeaders(t);
-const MENU_ITEMS = createHomeMenuItems(t);
+const HEADERS = computed(() => createHomeHeaders(t));
+const MENU_ITEMS = computed(() => createHomeMenuItems(t));
 
 const search = ref<string>("");
 
@@ -132,6 +132,11 @@ const onToggleDebug = () => {
 
 register("Ctrl+Alt+D", onToggleDebug);
 register("Ctrl+Alt+R", onResetStorage);
+
+onUnmounted(() => {
+  unregister("Ctrl+Alt+D");
+  unregister("Ctrl+Alt+R");
+});
 
 UtilsService.log("--- views/HomeContent.vue setup ---");
 </script>

@@ -23,7 +23,7 @@ const settings = useSettingsStore();
 const { sumsPerPage } = storeToRefs(settings);
 const { setSumsPerPage } = settings;
 
-const HEADERS = createAccountingHeaders(t);
+const HEADERS = computed(() => createAccountingHeaders(t));
 
 const selected = ref<number>(COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID);
 

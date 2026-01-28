@@ -7,6 +7,7 @@
   -->
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
@@ -22,7 +23,7 @@ const { setDividendsPerPage } = settings;
 const { activeId } = useRuntimeStore();
 const records = useRecordsStore();
 
-const HEADERS = createDividendHeaders(t);
+const HEADERS = computed(() => createDividendHeaders(t));
 
 defineExpose({ title: t("components.dialogs.showDividend.title") });
 

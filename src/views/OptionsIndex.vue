@@ -7,7 +7,7 @@
   -->
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { UtilsService } from "@/domains/utils";
 import DynamicList from "@/components/DynamicList.vue";
@@ -19,7 +19,7 @@ import { createTabs } from "@/config/views";
 
 const { t } = useI18n();
 
-const TABS = createTabs(t);
+const TABS = computed(() => createTabs(t));
 
 const tab = ref<number>(0);
 

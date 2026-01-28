@@ -35,9 +35,16 @@ const { items: bookingTypeItems } = storeToRefs(records.bookingTypes);
  */
 const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   updateQuote: async () => {
-    isStockLoading.value = true;
-    await records.stocks.loadOnlineData(runtime.stocksPage);
-    isStockLoading.value = false;
+    try {
+      isStockLoading.value = true;
+      runtime.isDownloading = true;
+      await records.stocks.loadOnlineData(runtime.stocksPage);
+    } catch {
+      // optionally surface an alert
+    } finally {
+      isStockLoading.value = false;
+      runtime.isDownloading = false;
+    }
   },
 
   fadeInStock: async () => {
@@ -71,8 +78,6 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
       dialogVisibility: true
     });
   },
-
-  deleteStock: () => {},
 
   addAccount: () => {
     runtime.setTeleport({
@@ -228,6 +233,8 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   openLink: () => {},
 
+  deleteStock: () => {},
+
   home: () => {
     runtime.setCurrentView(CODES.VIEW_CODES.HOME);
   },
@@ -366,10 +373,6 @@ const dialogValidations: Record<MenuActionType, () => boolean> = {
     return true;
   },
 
-  deleteStock: () => {
-    return true;
-  },
-
   showDividend: () => {
     return true;
   },
@@ -383,6 +386,10 @@ const dialogValidations: Record<MenuActionType, () => boolean> = {
   },
 
   updateQuote: () => {
+    return true;
+  },
+
+  deleteStock: () => {
     return true;
   },
 

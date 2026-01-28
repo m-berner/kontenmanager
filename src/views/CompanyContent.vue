@@ -36,8 +36,8 @@ const { setStocksPerPage } = settings;
 const runtime = useRuntimeStore();
 const { stocksPage, isDownloading, isStockLoading } = storeToRefs(runtime);
 
-const HEADERS = createCompanyHeaders(t);
-const MENU_ITEMS = createCompanyMenuItems(t);
+const HEADERS = computed(() => createCompanyHeaders(t));
+const MENU_ITEMS = computed(() => createCompanyMenuItems(t));
 
 /**
  * Computed function that returns CSS classes for profit/loss display.

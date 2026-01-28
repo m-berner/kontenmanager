@@ -7,7 +7,7 @@
   -->
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import connectionIcon from "@/assets/connection48.png";
@@ -30,12 +30,13 @@ const { n, t } = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
 const runtime = useRuntimeStore();
-const { isDownloading } = storeToRefs(runtime);
 const { notice } = useBrowser();
 const { setStorage } = useStorage();
 const { activeAccountId } = storeToRefs(settings);
 
+let depotTimer: number | undefined;
 const connectionState = ref<"checking" | "online" | "offline">("checking");
+const showDepotChip = ref(false);
 
 const logoUrl = computed((): string => {
   if (connectionState.value === "checking") {
@@ -51,6 +52,7 @@ const logoUrl = computed((): string => {
   );
   return account?.cLogoUrl || defaultIcon;
 });
+/** Mapped balance value formatted as the currency string. */
 const balance = computed((): string => {
   return n(records.bookings.sumBookings(), "currency");
 });
@@ -61,7 +63,7 @@ const depot = computed((): string => {
 
 /**
  * Event handler for account selection changes.
- * Loads records for the newly selected account and navigates to the home.
+ * Loads records for the newly selected account.
  */
 const onUpdateTitleBar = async (): Promise<void> => {
   UtilsService.log("TITLE_BAR onUpdateTitleBar");
@@ -94,6 +96,16 @@ const onUpdateTitleBar = async (): Promise<void> => {
   }
 };
 
+watch([() => runtime.getCurrentView, () => runtime.isDownloading], () => {
+  if (runtime.getCurrentView === CODES.VIEW_CODES.COMPANY && !runtime.isDownloading) {
+    if (depotTimer) clearTimeout(depotTimer);
+    depotTimer = window.setTimeout(() => { showDepotChip.value = true; }, 180);
+  } else {
+    if (depotTimer) clearTimeout(depotTimer);
+    showDepotChip.value = false; // hide instantly
+  }
+}, { immediate: true });
+
 /**
  * Component initialization.
  * Performs a connectivity check to external services.
@@ -119,24 +131,21 @@ UtilsService.log("--- views/TitleBar.vue setup ---");
       />
     </template>
     <v-app-bar-title>{{ t("views.titleBar.title") }}</v-app-bar-title>
-    <v-text-field
-      v-if="
-        runtime.getCurrentView === CODES.VIEW_CODES.COMPANY && !isDownloading
-      "
-      :disabled="true"
-      :label="t('views.titleBar.depotSumLabel')"
-      :model-value="depot"
-      hide-details
-      max-width="150"
-    />
-    <v-text-field
+    <v-spacer />
+    <v-chip
       v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
-      :disabled="true"
-      :label="t('views.titleBar.bookingsSumLabel')"
-      :model-value="balance"
-      hide-details
-      max-width="150"
-    />
+      class="text-h6"
+      color="secondary"
+      variant="flat"
+      >{{ t("views.titleBar.bookingsSumLabel") }} : {{ balance }}</v-chip
+    >
+    <v-chip
+      v-if="showDepotChip"
+      class="text-h6"
+      color="secondary"
+      variant="flat"
+      >{{ t("views.titleBar.depotSumLabel") }} : {{ depot }}</v-chip
+    >
     <v-spacer />
     <v-select
       v-if="activeAccountId > 0"
@@ -149,7 +158,6 @@ UtilsService.log("--- views/TitleBar.vue setup ---");
       density="compact"
       hide-details
       max-width="350"
-      placeholder="WWW"
       variant="outlined"
       @update:model-value="onUpdateTitleBar"
     >

@@ -8,7 +8,6 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
-import { RouterLink } from "vue-router";
 import { UtilsService } from "@/domains/utils";
 import { ROUTES } from "@/config/routes";
 import { DEFAULTS } from "@/config/defaults";
@@ -20,20 +19,13 @@ UtilsService.log("--- views/FooterBar.vue setup ---");
 
 <template>
   <v-bottom-navigation color="primary">
-    <v-btn color="white">
-      <RouterLink :to="ROUTES.HELP" class="router-link-active">
-        <v-icon icon="$help" />
-        <div>{{ t("views.footerBar.help") }}</div>
-      </RouterLink>
+    <v-btn color="white" :to="ROUTES.HELP">
+      <v-icon icon="$help" />
+      <div>{{ t('views.footerBar.help') }}</div>
     </v-btn>
-    <v-btn color="white">
-      <RouterLink :to="ROUTES.PRIVACY" class="router-link-active">
-        <v-icon
-          icon="
-        $privacy"
-        />
-        <div>{{ t("views.footerBar.privacy") }}</div>
-      </RouterLink>
+    <v-btn color="white" :to="ROUTES.PRIVACY">
+      <v-icon icon="$privacy" />
+      <div>{{ t('views.footerBar.privacy') }}</div>
     </v-btn>
     <v-btn :href="DEFAULTS.MAILTO" color="white">
       <v-icon icon="$mail" />

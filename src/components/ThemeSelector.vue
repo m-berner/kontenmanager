@@ -7,7 +7,7 @@
   -->
 
 <script lang="ts" setup>
-import { onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify/framework";
 import { UtilsService } from "@/domains/utils";
@@ -19,7 +19,7 @@ const { t } = useI18n();
 const theme = useTheme();
 const { getStorage, setStorage } = useStorage();
 
-const THEMES = createThemes(t);
+const THEMES = computed(() => createThemes(t));
 
 const skin = ref<string>("");
 

@@ -8,7 +8,6 @@
 
 <script lang="ts" setup>
 import type { ContentItem } from "@/types";
-import type { ComputedRef } from "vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -20,22 +19,15 @@ import { createPrivacyContent } from "@/config/views";
 const { t } = useI18n();
 const router = useRouter();
 
-const PARAGRAPHS = createPrivacyContent(t);
-
-let formatData: ComputedRef;
-if (router.currentRoute.value.path === ROUTES.PRIVACY) {
-  formatData = computed((): ContentItem[] => {
-    const data = [];
-    for (let i = 0; i < PARAGRAPHS.length; i++) {
-      data.push({
-        subTitle: PARAGRAPHS[i].SUBTITLE,
-        content: PARAGRAPHS[i].CONTENT,
-        icon: PARAGRAPHS[i].ICON
-      });
-    }
-    return data;
-  });
-}
+const PARAGRAPHS = computed(() => createPrivacyContent(t));
+const formatData = computed<ContentItem[] | undefined>(() => {
+  if (router.currentRoute.value.path !== ROUTES.PRIVACY) return undefined;
+  return PARAGRAPHS.value.map((p) => ({
+    subTitle: p.SUBTITLE,
+    content: p.CONTENT,
+    icon: p.ICON
+  }));
+});
 
 UtilsService.log("--- views/SheetContent.vue setup ---");
 </script>
@@ -44,6 +36,7 @@ UtilsService.log("--- views/SheetContent.vue setup ---");
   <v-sheet class="sheet" color="surface-light">
     <v-container>
       <ContentCard
+        v-if="formatData"
         :data="formatData"
         :title="t('views.sheetContent.privacyContent.general.title')"
       />

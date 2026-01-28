@@ -377,19 +377,6 @@ export interface StockItem extends StockRamData, StockDb {
   //
 }
 
-// export interface I_Stock_SM {
-//     cID: number
-//     cCompany: string
-//     cISIN: string
-//     cWKN: string
-//     cSym: string
-//     cMeetingDay: number
-//     cQuarterDay: number
-//     cFadeOut: number
-//     cFirstPage: number
-//     cURL: string
-// }
-
 export interface LegacyStockDb {
   cID: number;
   cSym: string;
