@@ -104,6 +104,15 @@ export default [
         }
     },
 
+    // File-specific override: allow spaces before function parentheses in utils.ts
+    // The project intentionally uses a different style in this utility module.
+    {
+        files: ['src/domains/utils.ts'],
+        rules: {
+            'space-before-function-paren': 'off'
+        }
+    },
+
     // Test files (Vitest)
     {
         files: ['**/__tests__/**', '**/*.{test,spec}.{js,ts,vue}'],

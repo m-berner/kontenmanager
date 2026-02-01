@@ -78,7 +78,9 @@ watch(faviconUrl, (newUrl) => {
   }, 400);
 });
 
-onBeforeUnmount(() => { if (timeoutId) clearTimeout(timeoutId); });
+onBeforeUnmount(() => {
+  if (timeoutId) clearTimeout(timeoutId);
+});
 
 UtilsService.log("--- components/dialogs/forms/AccountForm.vue setup ---");
 </script>

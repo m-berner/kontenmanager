@@ -8,7 +8,13 @@
 
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { UtilsService } from "@/domains/utils";
-import type { BookingDb, BookingTypeDb, RecordOperation, RecordsDbData, StockDb } from "@/types";
+import type {
+  BookingDb,
+  BookingTypeDb,
+  RecordOperation,
+  RecordsDbData,
+  StockDb
+} from "@/types";
 import { INDEXED_DB } from "@/config/database";
 import { IndexedDbBase } from "./database/base";
 import { DatabaseMigrator } from "./database/migrator";

@@ -74,7 +74,7 @@ export class UtilsService {
             : str.replace(/,/g, "");
     }
     static normalizeBookingTypeName(name) {
-        return name.trim().replace(/\s+/g, " ").toLowerCase();
+        return name.trim().replace(/\s+/g, " ");
     }
     static log(msg, data, level = "log") {
         const debugLevel = Number.parseInt(localStorage.getItem(LOCAL_STORAGE.DEBUG.key) ?? "0");

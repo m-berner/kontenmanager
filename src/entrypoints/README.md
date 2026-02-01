@@ -27,9 +27,9 @@ The mission of the entrypoints layer is to:
 
 - **`background.html`**: The background page container (standard for manifest v2/v3).
 - **`background.ts`**: The persistent or event-driven background process. It handles:
-    - Extension installation and update logic (`onInstalled`).
-    - Icon click orchestration (opening or focusing the extension tab).
-    - Browser storage initialization.
+  - Extension installation and update logic (`onInstalled`).
+  - Icon click orchestration (opening or focusing the extension tab).
+  - Browser storage initialization.
 
 ### 🛠️ `options` (Options Page)
 

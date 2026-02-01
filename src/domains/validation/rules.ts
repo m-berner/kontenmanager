@@ -7,7 +7,12 @@
  */
 
 import type { DomainValidationResult } from "@/types";
-import { IBAN_LENGTH_CODES, RULE_CODES, VALID_COUNTRY_CODES, VALIDATION_CODES } from "./codes";
+import {
+  IBAN_LENGTH_CODES,
+  RULE_CODES,
+  VALID_COUNTRY_CODES,
+  VALIDATION_CODES
+} from "./codes";
 
 export class ValidationRules {
   static required(value: unknown): DomainValidationResult {

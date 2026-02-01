@@ -6,7 +6,14 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import type { BookingDb, DateConfigType, IndexedDbConfigType, LegacyBookingDb, LegacyStockDb, StockDb } from "@/types";
+import type {
+  BookingDb,
+  DateConfigType,
+  IndexedDbConfigType,
+  LegacyBookingDb,
+  LegacyStockDb,
+  StockDb
+} from "@/types";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 
 /**

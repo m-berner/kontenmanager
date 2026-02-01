@@ -21,11 +21,11 @@ UtilsService.log("--- views/FooterBar.vue setup ---");
   <v-bottom-navigation color="primary">
     <v-btn color="white" :to="ROUTES.HELP">
       <v-icon icon="$help" />
-      <div>{{ t('views.footerBar.help') }}</div>
+      <div>{{ t("views.footerBar.help") }}</div>
     </v-btn>
     <v-btn color="white" :to="ROUTES.PRIVACY">
       <v-icon icon="$privacy" />
-      <div>{{ t('views.footerBar.privacy') }}</div>
+      <div>{{ t("views.footerBar.privacy") }}</div>
     </v-btn>
     <v-btn :href="DEFAULTS.MAILTO" color="white">
       <v-icon icon="$mail" />

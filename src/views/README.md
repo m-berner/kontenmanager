@@ -48,5 +48,5 @@ The mission of the views.is to:
    typically using the `isInitialized` flag or `isLoading` guards to show progress indicators.
 3. **Responsive Composition**: Use Vuetify's grid system (`v-row`, `v-col`) and layout components (`v-main`,
    `v-container`) to ensure the extension remains usable across different popup and window sizes.
-4. **Decoupled Business Logic**: While views.orchestrate logic, they should not *contain* it. Move complex calculations
+4. **Decoupled Business Logic**: While views.orchestrate logic, they should not _contain_ it. Move complex calculations
    to `src/domains/logic.ts` and data transformations to the appropriate services or composables.

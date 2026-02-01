@@ -96,15 +96,24 @@ const onUpdateTitleBar = async (): Promise<void> => {
   }
 };
 
-watch([() => runtime.getCurrentView, () => runtime.isDownloading], () => {
-  if (runtime.getCurrentView === CODES.VIEW_CODES.COMPANY && !runtime.isDownloading) {
-    if (depotTimer) clearTimeout(depotTimer);
-    depotTimer = window.setTimeout(() => { showDepotChip.value = true; }, 180);
-  } else {
-    if (depotTimer) clearTimeout(depotTimer);
-    showDepotChip.value = false; // hide instantly
-  }
-}, { immediate: true });
+watch(
+  [() => runtime.getCurrentView, () => runtime.isDownloading],
+  () => {
+    if (
+      runtime.getCurrentView === CODES.VIEW_CODES.COMPANY &&
+      !runtime.isDownloading
+    ) {
+      if (depotTimer) clearTimeout(depotTimer);
+      depotTimer = window.setTimeout(() => {
+        showDepotChip.value = true;
+      }, 180);
+    } else {
+      if (depotTimer) clearTimeout(depotTimer);
+      showDepotChip.value = false; // hide instantly
+    }
+  },
+  { immediate: true }
+);
 
 /**
  * Component initialization.

@@ -6,7 +6,12 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import type { HeaderItem, MenuItemData, OptionTab, PrivacyParagraph } from "@/types";
+import type {
+  HeaderItem,
+  MenuItemData,
+  OptionTab,
+  PrivacyParagraph
+} from "@/types";
 
 export const VIEWS = Object.freeze({
   ITEMS_PER_PAGE_OPTIONS: [

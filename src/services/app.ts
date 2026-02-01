@@ -14,7 +14,12 @@ import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
 import { databaseService } from "@/services/database";
 import { fetchService } from "@/services/fetch";
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import {
+  AppError,
+  ERROR_CATEGORY,
+  ERROR_CODES,
+  serializeError
+} from "@/domains/errors";
 import { UtilsService } from "@/domains/utils";
 import { CURRENCIES } from "@/domains/config/currencies";
 

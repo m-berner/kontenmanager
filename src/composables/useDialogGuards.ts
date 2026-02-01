@@ -8,7 +8,12 @@
 
 import type { Ref } from "vue";
 import { ref } from "vue";
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import {
+  AppError,
+  ERROR_CATEGORY,
+  ERROR_CODES,
+  serializeError
+} from "@/domains/errors";
 import type { FormInterface, FormValidateResultType } from "@/types";
 
 /**

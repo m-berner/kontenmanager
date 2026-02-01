@@ -7,7 +7,14 @@
  */
 
 /* eslint-disable no-unused-vars */
-import type { AccountDb, BookingDb, BookingTypeDb, RecordOperation, StockDb, StockItem } from "@/types";
+import type {
+  AccountDb,
+  BookingDb,
+  BookingTypeDb,
+  RecordOperation,
+  StockDb,
+  StockItem
+} from "@/types";
 import { INDEXED_DB } from "@/config/database";
 import { databaseService } from "@/services/database";
 import { DomainValidators } from "@/domains/validation/validators";

@@ -10,7 +10,12 @@ import { computed } from "vue";
 import { EVENTS } from "@/config/events";
 import { ENTRYPOINTS } from "@/config/entrypoints";
 import { DEFAULTS } from "@/config/defaults";
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import {
+  AppError,
+  ERROR_CATEGORY,
+  ERROR_CODES,
+  serializeError
+} from "@/domains/errors";
 
 /**
  * Composable providing access to browser extension APIs.

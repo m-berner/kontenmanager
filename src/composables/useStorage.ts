@@ -7,7 +7,12 @@
  */
 
 import type { StorageDataType } from "@/types";
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import {
+  AppError,
+  ERROR_CATEGORY,
+  ERROR_CODES,
+  serializeError
+} from "@/domains/errors";
 import { BROWSER_STORAGE } from "@/config/storage";
 
 /**
