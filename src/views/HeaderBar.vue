@@ -51,7 +51,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
     if (records.stocks.passive.length === 0) {
       info(
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.noRecords"),
+        t("components.dialogs.fadeInStock.messages.noRecords"),
         null
       );
     } else {
@@ -268,7 +268,7 @@ const dialogValidations: Record<MenuActionType, () => boolean> = {
     if (records.stocks.passive.length === 0) {
       info(
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.noRecords"),
+        t("components.dialogs.fadeInStock.messages.noRecords"),
         null
       );
       return false;

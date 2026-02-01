@@ -11,6 +11,10 @@ const i18nInstance = createI18n({
         "de-DE": deDE,
         "en-US": enUS
     },
+    missing(locale, key) {
+        console.error(import.meta.env.VITE_DEV);
+        console.warn(`[i18n:missing] locale=${locale} key=${key}`);
+    },
     datetimeFormats: {
         "de-DE": {
             numeric: {

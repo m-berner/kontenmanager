@@ -75,7 +75,8 @@
         "placeholder": "Enter name",
         "messages": {
           "success": "Booking type has been added",
-          "error": "The booking type already exists"
+          "error": "The booking type already exists",
+          "dbNotConnected": "No database connection"
         }
       },
       "addStock": {
@@ -144,6 +145,12 @@
         "version": "The data file is too old and cannot be recovered!",
         "messageDelete": "All existing data will be deleted!",
         "fileLabel": "from file",
+        "buy": "Stock purchase",
+        "sell": "Stock sale",
+        "dividend": "Dividend",
+        "other": "Other",
+        "fee": "Fee",
+        "tax": "Tax",
         "capitalTax": "Capital gains tax",
         "sourceTax": "Source tax",
         "transactionTax": "Transaction tax",
@@ -218,6 +225,10 @@
         }
       }
     },
+    "checkboxGrid": {
+      "loading": "Loading options...",
+      "saving": "Saving..."
+    },
     "creditDebitFieldset": {
       "creditLabel": "Credit",
       "debitLabel": "Debit",
@@ -230,6 +241,12 @@
       "title": "INFO",
       "message": "KontenManager is an evolution of the former StockManager. Importing StockManager data is only possible directly after installation – that is, before any KontenManager object has been manually created."
     }
+  },
+  "messages": {
+    "exportDatabase": {
+      "noAccounts": "No accounts available to export."
+    },
+    "noStockSelected": "No company selected."
   },
   "views": {
     "appIndex": {

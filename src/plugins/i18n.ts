@@ -22,6 +22,15 @@ const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">({
     "de-DE": deDE,
     "en-US": enUS
   },
+  // Log unknown keys only in development
+  missing(locale, key /*, instance, values */) {
+    console.error(import.meta.env.VITE_DEV);
+    //if (import.meta.env.DEV) {
+    // You can route this to your UtilsService if you prefer
+    // UtilsService.log(`[i18n:missing] locale=${locale} key=${key}`);
+    console.warn(`[i18n:missing] locale=${locale} key=${key}`);
+    //}
+  },
   datetimeFormats: {
     "de-DE": {
       numeric: {

@@ -75,7 +75,8 @@
                 "placeholder": "Name eingeben",
                 "messages": {
                     "success": "Buchungstyp wurde hinzugefügt",
-                    "error": "Der Buchungstyp existiert bereits"
+                    "error": "Der Buchungstyp existiert bereits",
+                    "dbNotConnected": "Keine Datenbank Verbindung"
                 }
             },
             "addStock": {
@@ -144,6 +145,12 @@
                 "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
                 "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
                 "fileLabel": "aus Datei",
+                "buy": "Aktienkauf",
+                "sell": "Aktienverkauf",
+                "dividend": "Dividende",
+                "other": "Sonstiges",
+                "fee": "Gebühr",
+                "tax": "Steuer",
                 "capitalTax": "Kapitalertragssteuer",
                 "sourceTax": "Quellensteuer",
                 "transactionTax": "Transaktionssteuer",
@@ -218,6 +225,10 @@
                 }
             }
         },
+        "checkboxGrid": {
+            "loading": "Optionen werden geladen...",
+            "saving": "Speichern..."
+        },
         "creditDebitFieldset": {
             "creditLabel": "Haben",
             "debitLabel": "Soll",
@@ -230,6 +241,12 @@
             "title": "INFO",
             "message": "KontenManager ist eine Weiterentwicklung des ehemaligen StockManagers. Der Import von StockManager-Daten ist nur direkt nach der Installation möglich – das heißt, bevor manuell ein KontenManager-Objekt angelegt wurde."
         }
+    },
+    "messages": {
+        "exportDatabase": {
+            "noAccounts": "Keine Konten zum Export vorhanden."
+        },
+        "noStockSelected": "Kein Unternehmen ausgewählt."
     },
     "validators": {
         "ibanRules": {
