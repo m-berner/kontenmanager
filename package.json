@@ -42,7 +42,7 @@
     "vuetify": "3.9.5"
   },
   "scripts": {
-    "build": "tsc && vue-tsc --noemit && vite build",
+    "build": "tsc && vue-tsc --noemit && vite build --mode development",
     "verify": "addons-linter ./releases/firefox/kontenmanager@gmx.de.xpi",
     "test": "vitest run",
     "test:watch": "vitest"

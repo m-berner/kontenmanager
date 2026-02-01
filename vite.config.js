@@ -5,8 +5,7 @@
  *
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { fileURLToPath, URL } from "url";
 import vue from "@vitejs/plugin-vue";
 import vuetify from "vite-plugin-vuetify";
@@ -15,13 +14,14 @@ import zipPack from "vite-plugin-zip-pack";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const isTest = mode === "test";
+  const env = loadEnv(mode, process.cwd(), "");
+  const {RELEASE_PATH, RELEASE_XPI, EXTENSIONS_PATH, BUILD_DIR} = env;
 
-  return {
-    plugins: [
-      vue(),
-      vuetify({ autoImport: true }),
-      !isTest &&
+  if (mode === "development") {
+    return {
+      plugins: [
+        vue(),
+        vuetify({ autoImport: true }),
         viteStaticCopy({
           targets: [
             {
@@ -45,63 +45,63 @@ export default defineConfig(({ mode }) => {
               overwrite: true
             },
             {
-              src: "../kontenmanager@gmx.de",
-              dest: "C:/Users/Martin/AppData/Roaming/Mozilla/Firefox/Profiles/developer.mb/extensions/",
+              src: `../${BUILD_DIR}`,
+              dest: EXTENSIONS_PATH,
               overwrite: true
             }
           ]
         }),
-      zipPack({
-        inDir: "./kontenmanager@gmx.de",
-        outDir:
-          "C:/Users/Martin/Projekte/Privat/kontenmanager/releases/firefox",
-        outFileName: "kontenmanager@gmx.de.xpi"
-      })
-    ].filter(Boolean),
-    assetsInclude: ["**/*.svg", "**/*.png"],
-    root: "./src",
-    base: "./",
-    resolve: {
-      alias: [
-        {
-          find: "@",
-          replacement: fileURLToPath(new URL("./src", import.meta.url))
-        }
-      ]
-    },
-    build: {
-      minify: false,
-      sourcemap: false,
-      cssMinify: false,
-      cssCodeSplit: true,
-      target: ["es2022", "firefox140"],
-      assetsDir: "assets",
-      assetsInlineLimit: 0,
-      emptyOutDir: false,
-      outDir: "../kontenmanager@gmx.de",
-      modulePreload: false,
-      css: {
-        devSourcemap: false
+        zipPack({
+          inDir: `./${BUILD_DIR}`,
+          outDir: `${RELEASE_PATH}`,
+          outFileName: `${RELEASE_XPI}`
+        })
+      ].filter(Boolean),
+      assetsInclude: ["**/*.svg", "**/*.png"],
+      root: "./src",
+      base: "./",
+      resolve: {
+        alias: [
+          {
+            find: "@",
+            replacement: fileURLToPath(new URL("./src", import.meta.url))
+          }
+        ]
       },
-      rollupOptions: {
-        input: {
-          background: "src/entrypoints/background.html",
-          app: "src/entrypoints/app.html",
-          options: "src/entrypoints/options.html"
+      build: {
+        minify: false,
+        sourcemap: false,
+        cssMinify: false,
+        cssCodeSplit: true,
+        target: ["es2022", "firefox140"],
+        assetsDir: "assets",
+        assetsInlineLimit: 0,
+        emptyOutDir: false,
+        outDir: `../${BUILD_DIR}`,
+        modulePreload: false,
+        css: {
+          devSourcemap: false
         },
-        output: {
-          entryFileNames: "entrypoints/[name].js",
-          chunkFileNames: "[name].js",
-          assetFileNames: "assets/[name].[ext]",
-          format: "es"
+        rollupOptions: {
+          input: {
+            background: "src/entrypoints/background.html",
+            app: "src/entrypoints/app.html",
+            options: "src/entrypoints/options.html"
+          },
+          output: {
+            entryFileNames: "entrypoints/[name].js",
+            chunkFileNames: "[name].js",
+            assetFileNames: "assets/[name].[ext]",
+            format: "es"
+          }
         }
+      },
+      test: {
+        globals: true,
+        environment: "happy-dom",
+        root: ".",
+        include: ["src/**/*.test.ts"]
       }
-    },
-    test: {
-      globals: true,
-      environment: "happy-dom",
-      root: ".",
-      include: ["src/**/*.test.ts"]
-    }
-  };
+    };
+  }
 });
