@@ -9,12 +9,29 @@
 import type { ComputedRef } from "vue";
 import { computed, ref } from "vue";
 
+/**
+ * Composable that provides a favicon URL with fallback providers and
+ * simple retry logic, along with loading/error state.
+ *
+ * Providers chain:
+ * 1. Google S2 favicons (requested size)
+ * 2. DuckDuckGo IP3 `.ico`
+ * 3. Google S2 16px as final fallback
+ *
+ * @param domain - Computed domain name to fetch the icon for.
+ * @param size - Preferred favicon size in pixels (default: 48).
+ * @returns Reactive favicon URL, loading/error flags, and event handlers.
+ * @module composables/useFavicon
+ */
 export function useFavicon(domain: ComputedRef<string>, size = 48) {
   const error = ref<boolean>(false);
   const loading = ref<boolean>(true);
   const retryCount = ref<number>(0);
   const MAX_RETRIES = 2;
 
+  /**
+   * The best-effort favicon URL based on the current retry stage.
+   */
   const faviconUrl = computed(() => {
     if (domain.value.length <= 4) return "";
 
@@ -27,11 +44,17 @@ export function useFavicon(domain: ComputedRef<string>, size = 48) {
     }
   });
 
+  /**
+   * Image load event handler. Resets state to success.
+   */
   function onLoad() {
     loading.value = false;
     error.value = false;
   }
 
+  /**
+   * Image error event handler. Advances to the next provider or marks error.
+   */
   function onError() {
     if (retryCount.value < MAX_RETRIES) {
       retryCount.value++;
@@ -42,6 +65,9 @@ export function useFavicon(domain: ComputedRef<string>, size = 48) {
     }
   }
 
+  /**
+   * Resets state to retry from the first provider.
+   */
   function reset() {
     error.value = false;
     loading.value = true;

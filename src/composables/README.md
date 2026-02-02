@@ -52,3 +52,11 @@ The mission of the composables is to:
 3. **Cleanup**: Always use `onUnmounted` to remove event listeners (keyboard, storage) to avoid memory leaks.
 4. **Systematic Validation**: Database composables (`useIndexedDB`) must systematically pass data through
    `DomainValidators` before any `add` or `update` operation.
+
+## Testing
+
+- Unit test pure helpers directly (e.g., URL/domain parsing) without Vue.
+- For composables with browser API usage, stub the `browser` global (see tests stubbing `browser.storage` and
+  `browser.notifications`).
+- Favor testing mapping functions from `useForms` to ensure DB-bound data is normalized (e.g., booking type name
+  normalization via `UtilsService.normalizeBookingTypeName`).

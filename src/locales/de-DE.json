@@ -6,7 +6,6 @@
           "swiftLabel": "BIC / SWIFT",
           "searchLabel": "Logo Suche",
           "withDepotLabel": "Depot Verrechnungskonto",
-          "withNoDepotLabel": "Konto",
           "ibanLabel": "IBAN / Kontonummer",
           "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
           "missingLogo": "Kein Logo gefunden"
@@ -24,9 +23,7 @@
           "stockLabel": "Unternehmen",
           "marketPlaceLabel": "Handelsplatz",
           "transactionTaxLabel": "Transaktionssteuer",
-          "sourceTaxLabel": "Quellensteuer",
-          "creditLabel": "Haben",
-          "debitLabel": "Soll"
+          "sourceTaxLabel": "Quellensteuer"
         },
         "stockForm": {
           "isinLabel": "ISIN",
@@ -36,10 +33,7 @@
           "firstPageLabel": "Erste Seite",
           "meetingDayLabel": "Hauptversammlung",
           "quarterDayLabel": "Quartalszahlen",
-          "urlLabel": "URL",
-          "messages": {
-            "onUpdateIsin": "Fehler in 'onUpdateIsin'"
-          }
+          "urlLabel": "URL"
         }
       },
       "cancel": "Abbrechen",
@@ -50,14 +44,10 @@
         "bookingTypes": {
           "buy": "Aktienkauf",
           "sell": "Aktienverkauf",
-          "dividend": "Dividende",
-          "other": "Sonstiges",
-          "fee": "Gebühr",
-          "tax": "Steuer"
+          "dividend": "Dividende"
         },
         "messages": {
           "success": "Konto wurde hinzugefügt",
-          "error": "Das Konto konnte nicht hinzugefügt werden",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
@@ -71,7 +61,6 @@
       },
       "addBookingType": {
         "title": "Buchungstyp hinzufügen",
-        "bookingTypeLabel": "Buchungstyp",
         "placeholder": "Name eingeben",
         "messages": {
           "success": "Buchungstyp wurde hinzugefügt",
@@ -95,46 +84,25 @@
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
-      "deleteBooking": {
-        "title": "Buchung",
-        "ask": "Soll die Buchung jetzt gelöscht werden?",
-        "success": "Buchung wurde entfernt",
-        "error": "Eingabefehler"
-      },
       "deleteBookingType": {
         "title": "Buchungstyp löschen",
-        "bookingTypeLabel": "Buchungstyp",
-        "placeholder": "Buchungstyp zum Löschen auswählen",
         "messages": {
           "success": "Buchungstyp wurde entfernt",
           "error": "Der Buchungstyp wird noch verwendet",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
-      "deleteStock": {
-        "title": "Unternehmen entfernen",
-        "messages": {
-          "success": "Unternehmen wurde entfernt",
-          "error": "Das Unternehmen konnte nicht entfernt werden"
-        }
-      },
       "exportDatabase": {
         "title": "Daten exportieren",
         "largeFileTitle": "Daten Export",
-        "text": "Beim Sichern wird die Datei {filename} erzeugt und im Ordner - heruntergeladene Dateien - des Benutzers gespeichert. (Diese Datei kann zur Datenbank-Wiederherstellung verwendet werden).",
         "continue": "Daten exportieren",
-        "cancel": "Abbrechen",
-        "messages": {
-          "estimatedSize": "Die Sicherungsdatei wird ungefähr {size} KB groß sein.",
-          "verificationFailed": "Die Sicherungsdatei ist ungültig"
-        }
+        "cancel": "Abbrechen"
       },
       "fadeInStock": {
         "title": "Unternehmen einblenden",
         "selectLabel": "Unternehmen",
         "messages": {
           "success": "Unternehmen wurde eingeblendet",
-          "error": "Unternehmen konnte nicht eingeblendet werden",
           "dbNotConnected": "Keine Datenbank Verbindung",
           "noRecords": "Es gibt keine Daten zum Einblenden"
         }
@@ -142,7 +110,6 @@
       "importDatabase": {
         "title": "Daten importieren",
         "invalid": "Die Datendatei ist ungültig!",
-        "version": "Die Datendatei ist zu alt und kann nicht wiederhergestellt werden!",
         "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
         "fileLabel": "aus Datei",
         "buy": "Aktienkauf",
@@ -151,20 +118,11 @@
         "other": "Sonstiges",
         "fee": "Gebühr",
         "tax": "Steuer",
-        "capitalTax": "Kapitalertragssteuer",
-        "sourceTax": "Quellensteuer",
-        "transactionTax": "Transaktionssteuer",
-        "soli": "Soli",
         "confirmImportTitle": "Import starten",
         "confirmOk": "Importieren",
         "confirmCancel": "Abbrechen",
         "messages": {
-          "allStocksVisible": "Es sind keine Unternehmen ausgeblendet.",
-          "dataIntegrity": "{count} Datenbank-Integritätsfehler gefunden.\n\n{errorList}{moreErrors}",
-          "confirmImportWarning": "Alle Datensätze werden gelöscht:\n\n{summary}\n\n importieren. Fortsetzen?",
-          "importSuccess": "Import erfolgreich! {summary} in {duration}s importiert",
           "importFailed": "Import fehlgeschlagen. Alte Daten wiederhergestellt.",
-          "invalidJson": "Ungültiges JSON Format",
           "invalidSuffix": "Ungültiger Dateiname",
           "invalidVersion": "Datenbank Version wird nicht unterstützt",
           "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
@@ -231,9 +189,7 @@
     },
     "creditDebitFieldset": {
       "creditLabel": "Haben",
-      "debitLabel": "Soll",
-      "notNegative": "Nur positive Werte",
-      "onlyOnePositive": "Ein Wert muss 0 sein"
+      "debitLabel": "Soll"
     }
   },
   "mixed": {
@@ -282,8 +238,6 @@
       "required": "Datum ist erforderlich",
       "valid": "Datum ist ungültig"
     },
-    "requiredRules": "Ist erforderlich",
-    "notNegative": "Nur positive Werte",
     "creditDebitFieldset": {
       "onlyOnePositive": "Ein Wert muss 0 der andere > 0 sein"
     },
@@ -292,11 +246,6 @@
     }
   },
   "views": {
-    "appIndex": {
-      "messages": {
-        "onBeforeMount": "Fehler in 'onBeforeMount'"
-      }
-    },
     "titleBar": {
       "title": "KontenManager",
       "bookingsSumLabel": "Kontostand",
@@ -322,15 +271,12 @@
       "deleteAccount": "Bankkonto entfernen",
       "addStock": "Aktien-Unternehmen hinzufügen",
       "fadeInStock": "Unternehmen einblenden",
-      "deleteStock": "Aktien-Unternehmen entfernen",
-      "updateStock": "Aktien-Unternehmen bearbeiten",
       "addBooking": "Buchung hinzufügen",
       "exportToFile": "Datenbank exportieren",
       "importDatabase": "Datenbank importieren",
       "showAccounting": "Jahres-Berechnungen",
       "settings": "Einstellungen",
       "messages": {
-        "allStocksVisible": "Es sind keine Unternehmen ausgeblendet.",
         "createAccount": "Sie müssen zuerst ein Konto anlegen...",
         "noBookings": "Es sind keine Buchungen vorhanden.",
         "noAccount": "Es ist noch kein Konto vorhanden.",
@@ -343,14 +289,12 @@
       "search": "Suchen",
       "bookingsTable": {
         "headers": {
-          "id": "ID",
           "action": "Aktionen",
           "date": "Datum",
           "debit": "Soll",
           "credit": "Haben",
           "description": "Bemerkung",
-          "bookingType": "Buchungstyp",
-          "accountNumberId": "Konto"
+          "bookingType": "Buchungstyp"
         },
         "menuItems": {
           "delete": "Buchung löschen",
@@ -363,14 +307,12 @@
     "companyContent": {
       "stocksTable": {
         "headers": {
-          "id": "ID",
           "action": "Aktionen",
           "company": "Unternehmen",
           "isin": "ISIN",
           "qf": "Quartals-Zahlen",
           "gm": "Hauptversammlung",
           "portfolio": "Portfolio",
-          "buy": "Kaufpreis",
           "winLoss": "Gewinn-Verlust",
           "52low": "52-Wochen-Tief",
           "rate": "Kurs",
@@ -390,10 +332,6 @@
       "help": "Hilfe",
       "privacy": "Datenschutz",
       "mail": "Email"
-    },
-    "checkboxGrid": {
-      "loading": "Optionen werden geladen...",
-      "saving": "Speichern..."
     },
     "optionsIndex": {
       "tabs": {
@@ -435,7 +373,6 @@
     },
     "sheetContent": {
       "privacyContent": {
-        "title": "KontenManager Datenschutz Richtlinien",
         "general": {
           "title": "Allgemein",
           "paragraphs": {

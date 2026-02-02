@@ -10,6 +10,9 @@ import { createPinia } from "pinia";
 import { UtilsService } from "@/domains/utils";
 import type { PiniaWrapper } from "@/types";
 
+/**
+ * Exported wrapper exposing the configured Pinia instance.
+ */
 const piniaConfig: PiniaWrapper = {
   pinia: createPinia()
 };

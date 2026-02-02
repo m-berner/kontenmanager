@@ -68,3 +68,9 @@ Manages the application's notification system.
    actions handle errors gracefully.
 5. **Validation**: Data entering the stores from the UI should ideally be validated via the `ValidationService` before
    reaching the persistence layer.
+
+## Testing
+
+- Unit test getters and critical actions in isolation using Pinia's `setActivePinia(createPinia())`.
+- For cross-store interactions, prefer testing via the `useRecordsStore` orchestrator.
+- When persistence is involved, stub `databaseService` calls and assert that stores send normalized data to services.

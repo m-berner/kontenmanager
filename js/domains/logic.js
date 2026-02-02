@@ -133,7 +133,7 @@ export class DomainLogic {
         ]);
         if (stores.accounts.items.length === 0 &&
             !session[SESSION_STORAGE.HIDE_IMPORT_ALERT.key]) {
-            stores.alerts.info(messages.title, messages.message, null);
+            await stores.handleUserInfo("notice", messages.title, "DomainLogic.initializeRecords", { noticeLines: [messages.message] });
             await storage.setStorage(SESSION_STORAGE.HIDE_IMPORT_ALERT.key, true);
         }
     }

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
-import { useAlertStore } from "@/stores/alerts";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { UtilsService } from "@/domains/utils";
 import { useAccountsStore } from "@/stores/accounts";
 import { useBookingsStore } from "@/stores/bookings";
@@ -23,14 +23,14 @@ export const useRecordsStore = defineStore("records", function () {
     }
     async function init(storesDB, messages, removeAccounts = true) {
         const settings = useSettingsStore();
-        const alerts = useAlertStore();
+        const { handleUserInfo } = useUserInfo();
         await DomainLogic.initializeRecords(storesDB, {
             accounts: accountsStore,
             bookings: bookingsStore,
             bookingTypes: bookingTypesStore,
             stocks: stocksStore,
             settings,
-            alerts
+            handleUserInfo
         }, messages, removeAccounts);
     }
     return {
@@ -42,4 +42,3 @@ export const useRecordsStore = defineStore("records", function () {
         clean
     };
 });
-UtilsService.log("--- stores/records.ts ---");

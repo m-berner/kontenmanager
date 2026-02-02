@@ -10,13 +10,30 @@ import { INDEXED_DB } from "@/config/database";
 import type { AccountDb } from "@/types";
 import { IndexedDbBase } from "../base";
 
+/**
+ * Repository for account-store specific queries.
+ */
 export class AccountRepository {
+  /**
+   * Constructs the repository with a shared `IndexedDbBase` instance.
+   * @param _dbBase - Low-level DB helper used to execute operations.
+   */
   constructor(private _dbBase: IndexedDbBase) {}
 
+  /**
+   * Retrieves all accounts.
+   * @param tx - Optional active transaction.
+   * @returns List of accounts.
+   */
   async getAll(tx?: IDBTransaction): Promise<AccountDb[]> {
     return this._dbBase.getAll<AccountDb>(INDEXED_DB.STORE.ACCOUNTS.NAME, tx);
   }
 
+  /**
+   * Deletes a single account by ID.
+   * @param accountId - Primary key of the account to remove.
+   * @param tx - Optional active transaction.
+   */
   async delete(accountId: number, tx?: IDBTransaction): Promise<void> {
     return this._dbBase.remove(INDEXED_DB.STORE.ACCOUNTS.NAME, accountId, tx);
   }

@@ -15,6 +15,10 @@ import type { I18nWrapper, MessageSchemaType } from "@/types";
 
 const { locale5 } = useBrowser();
 
+/**
+ * Global Vue I18n instance configured with supported locales, number/date
+ * formats and a development-only missing-key logger.
+ */
 const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">({
   locale: locale5.value,
   fallbackLocale: "en-US",
@@ -23,6 +27,12 @@ const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">({
     "en-US": enUS
   },
   // Log unknown keys only in development
+  /**
+   * Missing-translation hook used to surface unknown keys during development.
+   *
+   * @param locale - The active locale.
+   * @param key - The missing translation key.
+   */
   missing(locale, key /*, instance, values */) {
     console.error(import.meta.env.VITE_DEV);
     //if (import.meta.env.DEV) {
@@ -144,6 +154,9 @@ const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">({
   }
 });
 
+/**
+ * Exported wrapper exposing the configured I18n instance for app setup.
+ */
 const i18nConfig: I18nWrapper = {
   i18n: i18nInstance
 };

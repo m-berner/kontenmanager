@@ -15,40 +15,44 @@ import zipPack from "vite-plugin-zip-pack";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const {RELEASE_PATH, RELEASE_XPI, EXTENSIONS_PATH, BUILD_DIR} = env;
+  const { RELEASE_PATH, RELEASE_XPI, EXTENSIONS_PATH, BUILD_DIR } = env;
+
+  // Base config shared across all modes (including test)
+  const baseConfig = {
+    resolve: {
+      alias: [
+        {
+          find: "@",
+          replacement: fileURLToPath(new URL("./src", import.meta.url))
+        }
+      ]
+    },
+    test: {
+      globals: true,
+      environment: "happy-dom",
+      // Let Vitest discover tests in both TS and JS locations used in this repo
+      include: [
+        "src/**/*.test.ts",
+        "src/**/*.spec.ts",
+        "js/**/*.test.js",
+        "js/**/*.spec.js"
+      ]
+    }
+  };
 
   if (mode === "development") {
     return {
+      ...baseConfig,
       plugins: [
         vue(),
         vuetify({ autoImport: true }),
         viteStaticCopy({
           targets: [
-            {
-              src: "manifest.json",
-              dest: "./",
-              overwrite: true
-            },
-            {
-              src: "assets/icon64.png",
-              dest: "assets/",
-              overwrite: true
-            },
-            {
-              src: "assets/icon16.png",
-              dest: "assets/",
-              overwrite: true
-            },
-            {
-              src: "assets/connection48.png",
-              dest: "assets/",
-              overwrite: true
-            },
-            {
-              src: `../${BUILD_DIR}`,
-              dest: EXTENSIONS_PATH,
-              overwrite: true
-            }
+            { src: "manifest.json", dest: "./", overwrite: true },
+            { src: "assets/icon64.png", dest: "assets/", overwrite: true },
+            { src: "assets/icon16.png", dest: "assets/", overwrite: true },
+            { src: "assets/connection48.png", dest: "assets/", overwrite: true },
+            { src: `../${BUILD_DIR}`, dest: EXTENSIONS_PATH, overwrite: true }
           ]
         }),
         zipPack({
@@ -60,14 +64,6 @@ export default defineConfig(({ mode }) => {
       assetsInclude: ["**/*.svg", "**/*.png"],
       root: "./src",
       base: "./",
-      resolve: {
-        alias: [
-          {
-            find: "@",
-            replacement: fileURLToPath(new URL("./src", import.meta.url))
-          }
-        ]
-      },
       build: {
         minify: false,
         sourcemap: false,
@@ -79,9 +75,7 @@ export default defineConfig(({ mode }) => {
         emptyOutDir: false,
         outDir: `../${BUILD_DIR}`,
         modulePreload: false,
-        css: {
-          devSourcemap: false
-        },
+        css: { devSourcemap: false },
         rollupOptions: {
           input: {
             background: "src/entrypoints/background.html",
@@ -95,13 +89,10 @@ export default defineConfig(({ mode }) => {
             format: "es"
           }
         }
-      },
-      test: {
-        globals: true,
-        environment: "happy-dom",
-        root: ".",
-        include: ["src/**/*.test.ts"]
       }
     };
   }
+
+  // For non-development modes (including test), return the base config
+  return baseConfig;
 });

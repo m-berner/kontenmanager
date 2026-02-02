@@ -20,12 +20,12 @@ import {
 } from "@/domains/errors";
 import { UtilsService } from "@/domains/utils";
 import { useStocksDB } from "@/composables/useIndexedDB";
-import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 
 const { t } = useI18n();
-const { notice } = useBrowser();
+const { handleUserInfo } = useUserInfo();
 const { update } = useStocksDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const runtime = useRuntimeStore();
@@ -39,14 +39,16 @@ const onClickOk = async (): Promise<void> => {
   if (
     !(await ensureConnected(
       databaseService.isConnected(),
-      notice,
+      handleUserInfo,
       t("components.dialogs.fadeInStock.messages.dbNotConnected")
     ))
   )
     return;
 
   if (!selected.value) {
-    await notice([t("messages.noStockSelected")]);
+    await handleUserInfo("notice", "FadeInStock", "no stock", {
+      noticeLines: [t("messages.noStockSelected")]
+    });
     return;
   }
 
@@ -57,7 +59,9 @@ const onClickOk = async (): Promise<void> => {
 
       await update(stock);
       records.stocks.update(stock);
-      await notice([t("components.dialogs.fadeInStock.messages.success")]);
+      await handleUserInfo("notice", "FadeInStock", "success", {
+        noticeLines: [t("components.dialogs.fadeInStock.messages.success")]
+      });
       runtime.resetTeleport();
     } catch (err) {
       throw new AppError(

@@ -25,8 +25,25 @@ import ShowAccounting from "@/components/dialogs/ShowAccounting.vue";
 import DeleteAccountConfirmation from "@/components/dialogs/DeleteAccountConfirmation.vue";
 import type { MenuActionType } from "@/types";
 
+/**
+ * Vue plugin that globally registers dialog components by semantic names.
+ *
+ * The names correspond to the dialog identifiers used by the teleport/dialog hub.
+ */
 const ComponentsPlugin: Plugin = {
+  /**
+   * Installs the plugin into a Vue application instance.
+   *
+   * @param app - The Vue application to register components with.
+   */
   install: (app: App) => {
+    /**
+     * Helper to register a single dialog component under a typed menu action name.
+     *
+     * @typeParam K - A union of permitted dialog names.
+     * @param name - Registration name used by the dialog hub.
+     * @param component - The Vue component to register.
+     */
     const registerComponent = <K extends MenuActionType>(
       name: K,
       component: Component

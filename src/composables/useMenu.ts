@@ -8,9 +8,8 @@
 
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
-import { useAlertStore } from "@/stores/alerts";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
-import { useBrowser } from "@/composables/useBrowser";
 import { storeToRefs } from "pinia";
 import type { MenuActionType } from "@/types";
 import { computed, onUnmounted, readonly, ref } from "vue";
@@ -29,15 +28,32 @@ interface HighlightOptionsType {
   duration?: number;
 }
 
+/**
+ * Composable to temporarily highlight rows/items in data tables.
+ *
+ * Provides helpers to set, clear, and auto-clear highlight states per record ID.
+ * Intended for transient visual feedback after actions (e.g., add/update).
+ *
+ * @module composables/useMenuHighlight
+ */
 export function useMenuHighlight() {
   const highlightedItems = ref<Map<number, HighlightColor>>(new Map());
   const timeouts = new Map<number, ReturnType<typeof setTimeout>>();
 
+  /**
+   * Applies a highlight color to a record ID.
+   * @param recordId - Target record identifier.
+   * @param color - Optional color (default: green).
+   */
   const highlight = (recordId: number, color: HighlightColor = "green") => {
     clearHighlight(recordId);
     highlightedItems.value.set(recordId, color);
   };
 
+  /**
+   * Clears the highlight for a specific record ID and cancels any pending auto-clear.
+   * @param recordId - Target record identifier.
+   */
   const clearHighlight = (recordId: number) => {
     highlightedItems.value.delete(recordId);
 
@@ -48,6 +64,9 @@ export function useMenuHighlight() {
     }
   };
 
+  /**
+   * Clears all highlight markers and cancels all pending auto-clear timeouts.
+   */
   const clearAllHighlights = () => {
     highlightedItems.value.clear();
 
@@ -57,6 +76,11 @@ export function useMenuHighlight() {
     timeouts.clear();
   };
 
+  /**
+   * Temporarily highlights a record ID, automatically clearing after a duration.
+   * @param recordId - Target record identifier.
+   * @param options - Optional color and custom duration (ms, default 3000).
+   */
   const highlightTemporary = (
     recordId: number,
     options: HighlightOptionsType = {}
@@ -77,11 +101,21 @@ export function useMenuHighlight() {
     timeouts.set(recordId, timeout);
   };
 
+  /**
+   * Returns whether a record ID is currently highlighted.
+   * @param recordId - Target record identifier.
+   */
   const isHighlighted = (recordId: number): boolean => {
     return highlightedItems.value.has(recordId);
   };
 
-  const getHighlightColor = (recordId: number): HighlightColor | undefined => {
+  /**
+   * Gets the highlight color for a record ID, if present.
+   * @param recordId - Target record identifier.
+   */
+  const getHighlightColor = (
+    recordId: number
+  ): HighlightColor | undefined => {
     return highlightedItems.value.get(recordId);
   };
 
@@ -112,8 +146,7 @@ type ActionHandler = (_recordId: number) => Promise<void>;
 export function useMenuAction() {
   const runtime = useRuntimeStore();
   const records = useRecordsStore();
-  const { info } = useAlertStore();
-  const { notice } = useBrowser();
+  const { handleUserInfo } = useUserInfo();
   const { remove: removeBooking } = useBookingsDB();
   const { remove: removeStock } = useStocksDB();
 
@@ -157,7 +190,12 @@ export function useMenuAction() {
     async deleteBooking(recordId: number) {
       records.bookings.remove(recordId);
       await removeBooking(recordId);
-      await notice(["Booking deleted successfully"]);
+      await handleUserInfo(
+        "notice",
+        "Menu",
+        "deleteBooking",
+        { noticeLines: ["Booking deleted successfully"] }
+      );
     },
 
     // Stock Actions
@@ -171,17 +209,27 @@ export function useMenuAction() {
 
     async deleteStock(recordId: number) {
       if (checkStockHasBookings(recordId)) {
-        info(
+        await handleUserInfo(
+          "notice",
           "Cannot Delete",
-          "This stock has associated bookings. Delete bookings first.",
-          null
+          "deleteStock",
+          {
+            noticeLines: [
+              "This stock has associated bookings. Delete bookings first."
+            ]
+          }
         );
         return;
       }
 
       records.stocks.remove(recordId);
       await removeStock(recordId);
-      await notice(["Stock deleted successfully"]);
+      await handleUserInfo(
+        "notice",
+        "Menu",
+        "deleteStock",
+        { noticeLines: ["Stock deleted successfully"] }
+      );
     },
 
     async fadeInStock() {
@@ -239,7 +287,12 @@ export function useMenuAction() {
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
       } else {
-        await notice(["No URL available for this stock"]);
+        await handleUserInfo(
+          "notice",
+          "Menu",
+          "openLink",
+          { noticeLines: ["No URL available for this stock"] }
+        );
       }
     },
 

@@ -9,7 +9,7 @@
 import type { RecordsDbData } from "@/types";
 import { defineStore } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
-import { useAlertStore } from "@/stores/alerts";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { UtilsService } from "@/domains/utils";
 import { useAccountsStore } from "@/stores/accounts";
 import { useBookingsStore } from "@/stores/bookings";
@@ -35,9 +35,10 @@ export const useRecordsStore = defineStore("records", function () {
   /**
    * Clears all record stores.
    *
-   * @param all - Whether to also clear the accounts store.
+   * @param all - When true, also clears the accounts store (default: true).
+   * @returns Void.
    */
-  function clean(all = true) {
+  function clean(all: boolean = true): void {
     UtilsService.log("RECORDS: clean");
     if (all) {
       accountsStore.clean();
@@ -50,17 +51,18 @@ export const useRecordsStore = defineStore("records", function () {
   /**
    * Initializes all record stores with data from the database.
    *
-   * @param storesDB - Raw data from IndexedDB.
-   * @param messages - Localization messages for alerts.
-   * @param removeAccounts - Whether to clear accounts before loading.
+   * @param storesDB - Raw data from IndexedDB for all entity stores.
+   * @param messages - Localization messages used for user feedback during initialization.
+   * @param removeAccounts - When true, clears existing accounts before loading new ones (default: true).
+   * @returns A promise that resolves when all stores are hydrated.
    */
   async function init(
     storesDB: RecordsDbData,
     messages: Record<string, string>,
-    removeAccounts = true
+    removeAccounts: boolean = true
   ): Promise<void> {
     const settings = useSettingsStore();
-    const alerts = useAlertStore();
+    const { handleUserInfo } = useUserInfo();
 
     await DomainLogic.initializeRecords(
       storesDB,
@@ -70,7 +72,7 @@ export const useRecordsStore = defineStore("records", function () {
         bookingTypes: bookingTypesStore,
         stocks: stocksStore,
         settings,
-        alerts
+        handleUserInfo
       },
       messages,
       removeAccounts
@@ -90,5 +92,3 @@ export const useRecordsStore = defineStore("records", function () {
     clean
   };
 });
-
-UtilsService.log("--- stores/records.ts ---");

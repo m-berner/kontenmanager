@@ -8,10 +8,26 @@
 
 import { computed, onMounted, onUnmounted, ref } from "vue";
 
+/**
+ * Composable providing a simple, declarative API for registering keyboard shortcuts.
+ *
+ * Supports modifier combinations (Ctrl/Alt/Shift/Meta) and normalizes single-character
+ * keys to uppercase to make registrations predictable across layouts.
+ *
+ * @example
+ * const { register, enable, disable } = useKeyboardShortcuts();
+ * register('Ctrl+K', () => openSearch());
+ *
+ * @module composables/useKeyboardShortcuts
+ */
 export function useKeyboardShortcuts() {
   const shortcuts = ref<Map<string, () => void>>(new Map());
   const enabled = ref(true);
 
+  /**
+   * Internal keydown handler that resolves the pressed combination and invokes
+   * a registered shortcut handler when present.
+   */
   const handleKeyDown = (ev: KeyboardEvent) => {
     if (!enabled.value) return;
 
@@ -32,22 +48,41 @@ export function useKeyboardShortcuts() {
     }
   };
 
+  /**
+   * Registers a new keyboard shortcut.
+   *
+   * @param combination - String like `"Ctrl+Shift+K"` or `"Alt+X"`.
+   * @param handler - Callback invoked when the combination is pressed.
+   */
   const register = (combination: string, handler: () => void) => {
     shortcuts.value.set(combination, handler);
   };
 
+  /**
+   * Unregisters a previously registered shortcut.
+   * @param combination - Key combination to remove.
+   */
   const unregister = (combination: string) => {
     shortcuts.value.delete(combination);
   };
 
+  /**
+   * Removes all registered shortcuts.
+   */
   const clear = () => {
     shortcuts.value.clear();
   };
 
+  /**
+   * Disables shortcut handling.
+   */
   const disable = () => {
     enabled.value = false;
   };
 
+  /**
+   * Enables shortcut handling.
+   */
   const enable = () => {
     enabled.value = true;
   };

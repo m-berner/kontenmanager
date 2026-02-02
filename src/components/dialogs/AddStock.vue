@@ -13,7 +13,7 @@ import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { UtilsService } from "@/domains/utils";
-import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useStocksDB } from "@/composables/useIndexedDB";
 import { useStockForm } from "@/composables/useForms";
 import StockForm from "@/components/dialogs/forms/StockForm.vue";
@@ -22,7 +22,7 @@ import { databaseService } from "@/services/database";
 import type { FormInterface } from "@/types";
 
 const { t } = useI18n();
-const { notice } = useBrowser();
+const { handleUserInfo } = useUserInfo();
 const { add } = useStocksDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -40,7 +40,7 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.addStock.messages.dbNotConnected"
     ),
-    notice,
+    handleUserInfo,
     errorContext: "ADD_STOCK",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -52,7 +52,12 @@ const onClickOk = async (): Promise<void> => {
           "ADD_STOCK: onClickOk",
           t("components.dialogs.addStock.messages.error")
         );
-        await notice([t("components.dialogs.addStock.messages.error")]);
+        await handleUserInfo(
+          "notice",
+          "AddStock",
+          "add failed",
+          { noticeLines: [t("components.dialogs.addStock.messages.error")] }
+        );
         return;
       }
 
@@ -61,7 +66,12 @@ const onClickOk = async (): Promise<void> => {
       await records.stocks.refreshOnlineData(runtime.stocksPage);
 
       runtime.resetTeleport();
-      await notice([t("components.dialogs.addStock.messages.success")]);
+      await handleUserInfo(
+        "notice",
+        "AddStock",
+        "success",
+        { noticeLines: [t("components.dialogs.addStock.messages.success")] }
+      );
     }
   });
 };

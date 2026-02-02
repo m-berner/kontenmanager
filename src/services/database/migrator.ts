@@ -13,6 +13,13 @@ import { UtilsService } from "@/domains/utils";
  * Handles database setup, store creation, and migrations.
  */
 export class DatabaseMigrator {
+  /**
+   * Handles IndexedDB `onupgradeneeded` events by creating stores and running
+   * required migrations based on version changes.
+   *
+   * @param db - Opened database instance.
+   * @param ev - Version change event providing old/new versions.
+   */
   setupDatabase(db: IDBDatabase, ev: IDBVersionChangeEvent): void {
     const oldVersion = ev.oldVersion;
     const newVersion = ev.newVersion || INDEXED_DB.VERSION;
@@ -29,6 +36,13 @@ export class DatabaseMigrator {
     this.runMigrations(db, oldVersion, newVersion);
   }
 
+  /**
+   * Creates all required object stores and indices if they do not yet exist.
+   *
+   * Idempotent: Safe to call during upgrades where stores might already exist.
+   *
+   * @param db - Database to create stores in.
+   */
   private createStores(db: IDBDatabase): void {
     // Accounts store
     if (!db.objectStoreNames.contains(INDEXED_DB.STORE.ACCOUNTS.NAME)) {
@@ -118,6 +132,15 @@ export class DatabaseMigrator {
     }
   }
 
+  /**
+   * Executes schema/content migrations between versions.
+   *
+   * Currently a placeholder for future migrations.
+   *
+   * @param _db - Database instance.
+   * @param _oldVersion - Previous schema version.
+   * @param _newVersion - Target schema version.
+   */
   private runMigrations(
     _db: IDBDatabase,
     _oldVersion: number,

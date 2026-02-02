@@ -13,6 +13,12 @@ import { ROUTES } from "@/config/routes";
 import { CODES } from "@/config/codes";
 import { useRuntimeStore } from "@/stores/runtime";
 
+/**
+ * Global router instance configured with hash history suitable for WebExtensions.
+ *
+ * Lazily loads view components and maps them to named views (default, title,
+ * header, info, footer) per route.
+ */
 const routerInstance = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -60,8 +66,13 @@ const routerInstance = createRouter({
   ]
 });
 
-// Keep runtime store's currentView in sync with the active route, including initial load
-// This ensures layout components (e.g., TitleBar) render the correct state after hard reloads.
+/**
+ * After-each navigation hook to keep the runtime store's `currentView` in sync
+ * with the active route. This also covers hard reloads so layout components can
+ * render the correct state.
+ *
+ * @param to - The target route.
+ */
 routerInstance.afterEach((to) => {
   try {
     const runtime = useRuntimeStore();
@@ -76,7 +87,10 @@ routerInstance.afterEach((to) => {
   }
 });
 
-// Also set once when the router becomes ready (covers the first navigation on page load)
+/**
+ * Also synchronize once when the router becomes ready to cover the first
+ * navigation on page load.
+ */
 routerInstance.isReady().then(() => {
   try {
     const runtime = useRuntimeStore();
@@ -91,6 +105,9 @@ routerInstance.isReady().then(() => {
   }
 });
 
+/**
+ * Exported wrapper exposing the configured Router instance for app setup.
+ */
 const routerConfig: RouterWrapper = {
   router: routerInstance
 };

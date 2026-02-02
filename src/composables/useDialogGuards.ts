@@ -14,7 +14,12 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import type { FormInterface, FormValidateResultType } from "@/types";
+import type {
+  FormInterface,
+  FormValidateResultType,
+  HandleUserInfoOptions,
+  Mode
+} from "@/types";
 
 /**
  * Composable providing common guards and wrappers for dialog operations.
@@ -35,17 +40,24 @@ export function useDialogGuards() {
    * Shows a notification if not connected.
    *
    * @param isConnected - Current connection status.
-   * @param handleUserInfo - User info functionality.
+   * @param handleUserInfo - Function to present user information consistently across the app.
    * @param errorMessage - Message to show if disconnected.
    * @returns A promise resolving to true if connected.
    */
   async function ensureConnected(
     isConnected: boolean,
-    handleUserInfo: (_msg: string[]) => Promise<void>,
+    handleUserInfo: (
+      _mode: Mode,
+      _title: string,
+      _message: string,
+      _options?: HandleUserInfoOptions
+    ) => Promise<void | boolean | number>,
     errorMessage = "Database not connected"
   ): Promise<boolean> {
     if (!isConnected) {
-      await handleUserInfo("notice", "useDialogGuards", "ensureConnected", { noticeLines: [errorMessage] });
+      await handleUserInfo("notice", "useDialogGuards", "ensureConnected", {
+        noticeLines: [errorMessage]
+      });
       return false;
     }
     return true;
@@ -153,7 +165,12 @@ export function useDialogGuards() {
     formRef?: Ref<FormInterface | null>;
     isConnected?: boolean;
     connectionErrorMessage?: string;
-    handleUserInfo: (_msg: string[]) => Promise<void>;
+    handleUserInfo: (
+      _mode: Mode,
+      _title: string,
+      _message: string,
+      _options?: HandleUserInfoOptions
+    ) => Promise<void | boolean | number>;
     operation: () => Promise<void>;
     onFinally?: () => void;
     errorContext?: string;

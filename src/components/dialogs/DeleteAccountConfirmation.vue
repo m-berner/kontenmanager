@@ -19,14 +19,14 @@ import {
   serializeError
 } from "@/domains/errors";
 import { UtilsService } from "@/domains/utils";
-import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useStorage } from "@/composables/useStorage";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 import { BROWSER_STORAGE } from "@/config/storage";
 
 const { t } = useI18n();
-const { notice } = useBrowser();
+const { handleUserInfo } = useUserInfo();
 const { setStorage } = useStorage();
 const settings = useSettingsStore();
 const { activeAccountId } = storeToRefs(settings);
@@ -59,7 +59,7 @@ const onClickOk = async (): Promise<void> => {
   if (
     !(await ensureConnected(
       databaseService.isConnected(),
-      notice,
+      handleUserInfo,
       t("components.dialogs.deleteAccountConfirmation.messages.dbNotConnected")
     ))
   )
@@ -74,9 +74,16 @@ const onClickOk = async (): Promise<void> => {
       await switchToNextAccount();
 
       resetTeleport();
-      await notice([
-        t("components.dialogs.deleteAccountConfirmation.messages.success")
-      ]);
+      await handleUserInfo(
+        "notice",
+        "DeleteAccountConfirmation",
+        "success",
+        {
+          noticeLines: [
+            t("components.dialogs.deleteAccountConfirmation.messages.success")
+          ]
+        }
+      );
     } catch (err) {
       throw new AppError(
         ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION,

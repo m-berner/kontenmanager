@@ -53,6 +53,9 @@ import {
 import { UtilsService } from "@/domains/utils";
 import type { VuetifyWrapper } from "@/types";
 
+/**
+ * Global Vuetify instance with custom themes and icon aliases used across the app.
+ */
 const vuetifyInstance = createVuetify({
   theme: {
     defaultTheme: "ocean",
@@ -188,6 +191,9 @@ const vuetifyInstance = createVuetify({
   }
 });
 
+/**
+ * Exported wrapper exposing the configured Vuetify instance for app setup.
+ */
 const vuetifyConfig: VuetifyWrapper = {
   vuetify: vuetifyInstance
 };

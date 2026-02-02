@@ -70,3 +70,9 @@ Centralized constants for the component layer, including:
 4. **Loading States**: Use `isLoading` from `useDialogGuards` to disable buttons and show progress indicators during
    asynchronous operations.
 5. **Clean Setup**: Log component initialization via `UtilsService.log` for easier debugging in the extension's console.
+
+## Testing
+
+- Prefer unit tests at the store/domain level for complex logic; component tests should focus on rendering and dialog
+  flows.
+- Use `happy-dom` (configured in Vitest) for lightweight DOM emulation.

@@ -57,6 +57,15 @@ localized user feedback.
 General-purpose business utilities, such as date normalization and logging wrappers, that are used across multiple
 domain boundaries.
 
+- Notable normalization: `normalizeBookingTypeName` trims, collapses whitespace, and lowercases names to ensure
+  duplicate detection is stable and case-insensitive across the app.
+
+## Testing
+
+- Domain functions are intended to be pure and easy to test with Vitest.
+- Prefer covering edge cases (invalid dates, number formats, portfolio math).
+- Error cases should throw `AppError` with stable codes from `ERROR_CODES`; assert on the code rather than message.
+
 ## Why a Domain Layer in a WebExtension?
 
 WebExtensions often face unique challenges like background script persistence, limited lifecycle, and frequent schema

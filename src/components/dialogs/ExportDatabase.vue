@@ -18,6 +18,7 @@ import {
 } from "@/domains/errors";
 import { UtilsService } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo } from "@/composables/useUserInfo";
 import {
   useAccountsDB,
   useBookingsDB,
@@ -27,19 +28,18 @@ import {
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { ImportExportService } from "@/services/importExport";
 import type { AccountDb, BookingDb, BookingTypeDb, StockDb } from "@/types";
-import { useAlertStore } from "@/stores/alerts";
 import { DEFAULTS } from "@/config/defaults";
 import { INDEXED_DB } from "@/config/database";
 
 const { t } = useI18n();
-const { manifest, notice, writeBufferToFile } = useBrowser();
+const { manifest, writeBufferToFile } = useBrowser();
+const { handleUserInfo } = useUserInfo();
 const { getAll: getAllAccounts } = useAccountsDB();
 const { getAll: getAllBookings } = useBookingsDB();
 const { getAll: getAllBookingTypes } = useBookingTypesDB();
 const { getAll: getAllStocks } = useStocksDB();
 const { isLoading, withLoading } = useDialogGuards();
 const { resetTeleport } = useRuntimeStore();
-const { confirm } = useAlertStore();
 
 const exportService = new ImportExportService();
 
@@ -159,15 +159,22 @@ const onClickOk = async (): Promise<void> => {
       const estimatedSize = estimateExportSize(exportData);
 
       if (estimatedSize > DEFAULTS.LARGE_FILE_THRESHOLD_KB) {
-        const proceed = await confirm(
+        const proceed = await handleUserInfo(
+          "alert",
           t("components.dialogs.exportDatabase.largeFileTitle"),
-          t("components.dialogs.exportDatabase.messages.estimatedSize", {
-            size: estimatedSize.toFixed(2)
-          }),
+          "ExportDatabase",
           {
-            confirmText: t("components.dialogs.exportDatabase.continue"),
-            cancelText: t("components.dialogs.exportDatabase.cancel"),
-            type: "warning"
+            noticeLines: [
+              t("components.dialogs.exportDatabase.messages.estimatedSize", {
+                size: estimatedSize.toFixed(2)
+              })
+            ],
+            confirm: {
+              confirmText: t("components.dialogs.exportDatabase.continue"),
+              cancelText: t("components.dialogs.exportDatabase.cancel"),
+              type: "warning"
+            },
+            alertKind: "confirm"
           }
         );
 
@@ -175,11 +182,18 @@ const onClickOk = async (): Promise<void> => {
           return;
         }
       } else {
-        await notice([
-          t("components.dialogs.exportDatabase.messages.estimatedSize", {
-            size: estimatedSize.toFixed(2)
-          })
-        ]);
+        await handleUserInfo(
+          "notice",
+          t("components.dialogs.exportDatabase.largeFileTitle"),
+          "ExportDatabase",
+          {
+            noticeLines: [
+              t("components.dialogs.exportDatabase.messages.estimatedSize", {
+                size: estimatedSize.toFixed(2)
+              })
+            ]
+          }
+        );
       }
       await writeBufferToFile(exportData, filename.value);
 

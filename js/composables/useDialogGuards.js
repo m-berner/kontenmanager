@@ -4,9 +4,11 @@ export function useDialogGuards() {
     const isLoading = ref(false);
     const loadingOperations = ref(new Set());
     let operationCounter = 0;
-    async function ensureConnected(isConnected, notice, errorMessage = "Database not connected") {
+    async function ensureConnected(isConnected, handleUserInfo, errorMessage = "Database not connected") {
         if (!isConnected) {
-            await notice([errorMessage]);
+            await handleUserInfo("notice", "useDialogGuards", "ensureConnected", {
+                noticeLines: [errorMessage]
+            });
             return false;
         }
         return true;
@@ -51,14 +53,14 @@ export function useDialogGuards() {
         throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.C, ERROR_CATEGORY.VALIDATION, { input: "retry_exhausted" }, false);
     }
     async function submitGuard(options) {
-        const { formRef, isConnected, connectionErrorMessage = "Database not connected", notice, operation, onFinally } = options;
+        const { formRef, isConnected, connectionErrorMessage = "Database not connected", handleUserInfo, operation, onFinally } = options;
         if (formRef) {
             const validation = await validateForm(formRef);
             if (!validation.valid)
                 return;
         }
         if (isConnected !== undefined) {
-            if (!(await ensureConnected(isConnected, notice, connectionErrorMessage)))
+            if (!(await ensureConnected(isConnected, handleUserInfo, connectionErrorMessage)))
                 return;
         }
         await withLoading(async () => {

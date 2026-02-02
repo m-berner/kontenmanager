@@ -59,3 +59,8 @@ A custom plugin that registers dialog components globally. This enables the **Di
    name rather than using MDI constants directly in components.
 4. **Consistency**: Ensure that date and number formats in `i18n.ts` align with the domain rules defined in
    `src/domains/config`.
+
+## Testing
+
+- Plugin files themselves are thin; prefer testing behavior where they are used (components/views).
+- For i18n-dependent tests, set the locale explicitly and assert on formatted output rather than raw numbers/dates.

@@ -47,3 +47,13 @@ The mission of the entrypoints layer is to:
    and Vuetify) to maintain a consistent look and feel.
 4. **Lifecycle Hooks**: Use the background script to manage long-lived state or cross-tab orchestration that doesn't
    belong to a specific UI instance.
+
+## Build Inputs Mapping
+
+The Vite configuration defines explicit Rollup inputs for these HTML entry files:
+
+- `src/entrypoints/background.html`
+- `src/entrypoints/app.html`
+- `src/entrypoints/options.html`
+
+Keep file names stable or update `vite.config.js` accordingly when adding new entry points.

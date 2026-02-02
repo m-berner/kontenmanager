@@ -13,8 +13,21 @@ import i18nPlugin from "@/plugins/i18n";
 import piniaPlugin from "@/plugins/pinia";
 import OptionsIndex from "@/views/OptionsIndex.vue";
 
+/**
+ * Initializes and mounts the Options page application instance.
+ */
 const app = createApp(OptionsIndex);
 
+/**
+ * Global error handler for the Options entrypoint.
+ *
+ * Formats and logs unhandled exceptions to aid diagnostics in the extension
+ * console.
+ *
+ * @param err - The thrown error or unknown value.
+ * @param _instance - Component instance that raised the error (unused).
+ * @param info - Vue lifecycle/handler information string.
+ */
 app.config.errorHandler = (err: unknown, _instance, info): void => {
   const message = err instanceof Error ? err.message : String(err);
   UtilsService.log(
@@ -24,6 +37,13 @@ app.config.errorHandler = (err: unknown, _instance, info): void => {
   );
 };
 
+/**
+ * Global warning handler for the Options entrypoint.
+ *
+ * @param msg - The warning message.
+ * @param _instance - Component instance emitting the warning (unused).
+ * @param trace - Component tree trace for context.
+ */
 app.config.warnHandler = (msg: string, _instance, trace): void => {
   UtilsService.log("PAGE_SCRIPTS options.js", { msg, trace }, "warn");
 };

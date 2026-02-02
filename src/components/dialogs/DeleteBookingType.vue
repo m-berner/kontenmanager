@@ -18,7 +18,7 @@ import {
   serializeError
 } from "@/domains/errors";
 import { UtilsService } from "@/domains/utils";
-import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
@@ -27,7 +27,7 @@ import { useBookingTypeForm } from "@/composables/useForms";
 
 const { bookingTypeFormData, reset } = useBookingTypeForm();
 const { t } = useI18n();
-const { notice } = useBrowser();
+const { handleUserInfo } = useUserInfo();
 const { remove } = useBookingTypesDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const records = useRecordsStore();
@@ -43,7 +43,7 @@ const onClickOk = async (): Promise<void> => {
   if (
     !(await ensureConnected(
       databaseService.isConnected(),
-      notice,
+      handleUserInfo,
       t("components.dialogs.deleteBookingType.messages.dbNotConnected")
     ))
   )
@@ -57,18 +57,24 @@ const onClickOk = async (): Promise<void> => {
   await withLoading(async () => {
     try {
       if (!canDeleteBookingType(bookingTypeFormData.id!)) {
-        await notice([
-          t("components.dialogs.deleteBookingType.messages.error")
-        ]);
+        await handleUserInfo(
+          "notice",
+          "DeleteBookingType",
+          "not deletable",
+          { noticeLines: [t("components.dialogs.deleteBookingType.messages.error")] }
+        );
         return;
       }
 
       records.bookingTypes.remove(bookingTypeFormData.id!);
       await remove(bookingTypeFormData.id!);
       runtime.resetTeleport();
-      await notice([
-        t("components.dialogs.deleteBookingType.messages.success")
-      ]);
+      await handleUserInfo(
+        "notice",
+        "DeleteBookingType",
+        "success",
+        { noticeLines: [t("components.dialogs.deleteBookingType.messages.success")] }
+      );
     } catch (err) {
       throw new AppError(
         ERROR_CODES.DELETE_BOOKING_TYPE,

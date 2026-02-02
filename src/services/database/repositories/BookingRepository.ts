@@ -10,9 +10,21 @@ import { INDEXED_DB } from "@/config/database";
 import type { BookingDb } from "@/types";
 import { IndexedDbBase } from "../base";
 
+/**
+ * Repository for booking-store specific queries.
+ */
 export class BookingRepository {
+  /**
+   * @param _dbBase - Low-level DB helper used to execute operations.
+   */
   constructor(private _dbBase: IndexedDbBase) {}
 
+  /**
+   * Retrieves all bookings for a given account.
+   * @param accountId - Account foreign key.
+   * @param tx - Optional active transaction.
+   * @returns List of bookings.
+   */
   async getAllByAccount(
     accountId: number,
     tx?: IDBTransaction
@@ -25,6 +37,12 @@ export class BookingRepository {
     );
   }
 
+  /**
+   * Deletes all bookings belonging to an account using a cursor on the
+   * account-index.
+   * @param accountId - Account foreign key.
+   * @param tx - Required open readwrite transaction.
+   */
   async deleteByAccount(accountId: number, tx: IDBTransaction): Promise<void> {
     const store = tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME);
     const index = store.index(`${INDEXED_DB.STORE.BOOKINGS.NAME}_k3`);

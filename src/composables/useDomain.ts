@@ -11,7 +11,21 @@ import { computed } from "vue";
 import { UtilsService } from "@/domains/utils";
 import { serializeError } from "@/domains/errors";
 
+/**
+ * Composable that derives URL parts (domain, subdomain, protocol, pathname)
+ * reactively from a bound `Ref<string>`.
+ *
+ * Accepts values with and without protocol, normalizing inputs like
+ * `example.com` to `https://example.com` for parsing.
+ *
+ * @param url - Reactive URL string to parse.
+ * @returns Computed getters for `domain`, `subdomain`, `protocol`, `pathname`.
+ * @module composables/useDomain
+ */
 export function useDomain(url: Ref<string>) {
+  /**
+   * Hostname without the `www.` prefix (e.g., `example.com`).
+   */
   const domain = computed(() => {
     if (!url.value) return "";
     try {
@@ -27,6 +41,10 @@ export function useDomain(url: Ref<string>) {
     }
   });
 
+  /**
+   * The first label of the hostname when present and not `www` (e.g., `app`).
+   * Returns `null` when no subdomain exists.
+   */
   const subdomain = computed(() => {
     if (!url.value) return null;
     try {
@@ -44,6 +62,9 @@ export function useDomain(url: Ref<string>) {
     }
   });
 
+  /**
+   * The URL protocol without trailing colon (e.g., `https`).
+   */
   const protocol = computed(() => {
     if (!url.value) return null;
 
@@ -58,6 +79,9 @@ export function useDomain(url: Ref<string>) {
     }
   });
 
+  /**
+   * The path portion of the URL beginning with `/` (e.g., `/docs`).
+   */
   const pathname = computed(() => {
     if (!url.value) return null;
 

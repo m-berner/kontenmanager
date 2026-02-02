@@ -15,12 +15,34 @@ import routerPlugin from "@/plugins/router";
 import piniaPlugin from "@/plugins/pinia";
 import AppIndex from "@/views/AppIndex.vue";
 
+/**
+ * Initializes and mounts the main application instance for the popup/app view.
+ */
 const app = createApp(AppIndex);
 
+/**
+ * Global error handler for the app entrypoint.
+ *
+ * Captures unhandled exceptions thrown in components and logs them via
+ * `UtilsService.log` for inspection in the browser console.
+ *
+ * @param err - The error thrown by Vue/component code.
+ * @param _instance - The component instance where the error occurred (unused).
+ * @param info - Vue error info string indicating the lifecycle/handler.
+ */
 app.config.errorHandler = (err: unknown, _instance, info): void => {
   UtilsService.log("APP: errorHandler", { err, info }, "error");
 };
 
+/**
+ * Global warning handler for the app entrypoint.
+ *
+ * Captures Vue warnings and logs them for diagnostics.
+ *
+ * @param msg - The warning message.
+ * @param _instance - The component instance emitting the warning (unused).
+ * @param trace - Component trace with hierarchy information.
+ */
 app.config.warnHandler = (msg: string, _instance, trace): void => {
   UtilsService.log("APP: warnHandler", { msg, trace }, "warn");
 };

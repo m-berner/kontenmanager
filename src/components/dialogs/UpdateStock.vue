@@ -14,7 +14,7 @@ import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useStockForm } from "@/composables/useForms";
 import { useStocksDB } from "@/composables/useIndexedDB";
 import { UtilsService } from "@/domains/utils";
@@ -23,7 +23,7 @@ import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 
 const { t } = useI18n();
-const { notice } = useBrowser();
+const { handleUserInfo } = useUserInfo();
 const { update } = useStocksDB();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
@@ -61,7 +61,7 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.updateStock.messages.dbNotConnected"
     ),
-    notice,
+    handleUserInfo,
     errorContext: "UPDATE_STOCK",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -69,7 +69,12 @@ const onClickOk = async (): Promise<void> => {
       records.stocks.update(stock);
       await update(stock as any);
       runtime.resetTeleport();
-      await notice([t("components.dialogs.updateStock.messages.success")]);
+      await handleUserInfo(
+        "notice",
+        "UpdateStock",
+        "success",
+        { noticeLines: [t("components.dialogs.updateStock.messages.success")] }
+      );
     }
   });
 };

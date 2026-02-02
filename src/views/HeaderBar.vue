@@ -12,7 +12,7 @@ import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
-import { useAlertStore } from "@/stores/alerts";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { UtilsService } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import DialogPort from "@/components/DialogPort.vue";
@@ -24,7 +24,7 @@ const { openOptionsPage } = useBrowser();
 const runtime = useRuntimeStore();
 const { isStockLoading } = storeToRefs(runtime);
 const records = useRecordsStore();
-const { info } = useAlertStore();
+const { handleUserInfo } = useUserInfo();
 const { items: accountItems } = storeToRefs(records.accounts);
 const { items: bookingItems } = storeToRefs(records.bookings);
 const { items: bookingTypeItems } = storeToRefs(records.bookingTypes);
@@ -49,10 +49,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   fadeInStock: async () => {
     if (records.stocks.passive.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("components.dialogs.fadeInStock.messages.noRecords"),
-        null
+        "HeaderBar",
+        {
+          noticeLines: [t("components.dialogs.fadeInStock.messages.noRecords")]
+        }
       );
     } else {
       runtime.setTeleport({
@@ -87,12 +90,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
     });
   },
 
-  updateAccount: () => {
+  updateAccount: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.noAccount"),
-        null
+        "HeaderBar",
+        { noticeLines: [t("views.headerBar.messages.noAccount")] }
       );
     } else {
       runtime.setTeleport({
@@ -103,12 +107,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
     }
   },
 
-  deleteAccountConfirmation: () => {
+  deleteAccountConfirmation: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.noAccount"),
-        null
+        "HeaderBar",
+        { noticeLines: [t("views.headerBar.messages.noAccount")] }
       );
     } else {
       runtime.setTeleport({
@@ -119,12 +124,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
     }
   },
 
-  addBookingType: () => {
+  addBookingType: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.createAccount"),
-        null
+        "HeaderBar",
+        { noticeLines: [t("views.headerBar.messages.createAccount")] }
       );
     } else {
       runtime.setTeleport({
@@ -135,12 +141,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
     }
   },
 
-  updateBookingType: () => {
+  updateBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.noBookingTypes"),
-        null
+        "HeaderBar",
+        { noticeLines: [t("views.headerBar.messages.noBookingTypes")] }
       );
     } else {
       runtime.setTeleport({
@@ -150,13 +157,14 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
       });
     }
   },
-
-  deleteBookingType: () => {
+  // TODO replace UtilsService.log with console.log when debugging is done
+  deleteBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.noBookingTypes"),
-        null
+        "HeaderBar",
+        { noticeLines: [t("views.headerBar.messages.noBookingTypes")] }
       );
     } else {
       runtime.setTeleport({
@@ -167,12 +175,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
     }
   },
 
-  addBooking: () => {
+  addBooking: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.createAccount"),
-        null
+        "HeaderBar",
+        { noticeLines: [t("views.headerBar.messages.createAccount")] }
       );
     } else {
       runtime.setTeleport({
@@ -183,12 +192,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
     }
   },
 
-  exportDatabase: () => {
+  exportDatabase: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.nothingToExport"),
-        null
+        "HeaderBar",
+        { noticeLines: [t("views.headerBar.messages.nothingToExport")] }
       );
     } else {
       runtime.setTeleport({
@@ -207,12 +217,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
     });
   },
 
-  showAccounting: () => {
+  showAccounting: async () => {
     if (bookingItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "notice",
         t("views.headerBar.infoTitle"),
-        t("views.headerBar.messages.noBookings"),
-        null
+        "HeaderBar",
+        { noticeLines: [t("views.headerBar.messages.noBookings")] }
       );
     } else {
       runtime.setTeleport({
@@ -252,101 +263,110 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
  * Registry of validations for header bar menu items.
  * Each function returns true if the action is currently permitted.
  */
-const dialogValidations: Record<MenuActionType, () => boolean> = {
-  updateAccount: () => {
+const dialogValidations: Record<MenuActionType, () => boolean | Promise<boolean>> = {
+  updateAccount: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("views.headerBar.messages.noAccount"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }
     return true;
   },
-  fadeInStock: () => {
+  fadeInStock: async () => {
     if (records.stocks.passive.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("components.dialogs.fadeInStock.messages.noRecords"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }
     return true;
   },
-  deleteAccountConfirmation: () => {
+  deleteAccountConfirmation: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("views.headerBar.messages.noAccount"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }
     return true;
   },
-  addBookingType: () => {
+  addBookingType: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("views.headerBar.messages.createAccount"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }
     return true;
   },
-  updateBookingType: () => {
+  updateBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("views.headerBar.messages.noBookingTypes"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }
     return true;
   },
-  deleteBookingType: () => {
+  deleteBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("views.headerBar.messages.noBookingTypes"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }
     return true;
   },
-  addBooking: () => {
+  addBooking: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("views.headerBar.messages.createAccount"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }
     return true;
   },
-  exportDatabase: () => {
+  exportDatabase: async () => {
     if (accountItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("views.headerBar.messages.nothingToExport"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }
     return true;
   },
-  showAccounting: () => {
+  showAccounting: async () => {
     if (bookingItems.value.length === 0) {
-      info(
+      await handleUserInfo(
+        "alert",
         t("views.headerBar.infoTitle"),
         t("views.headerBar.messages.noBookings"),
-        null
+        { alertKind: "info" }
       );
       return false;
     }

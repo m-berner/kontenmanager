@@ -131,6 +131,17 @@ export class UtilsService {
     }
   }
 
+  /**
+   * Detects whether a number-like string is in German (de) or English (en) format.
+   *
+   * Heuristics:
+   * - Only dots present -> assume US/EN.
+   * - Only commas present -> if comma occurs in the last 3–4 chars, assume decimal (DE), otherwise EN.
+   * - Both present -> if the last comma is after the last dot, prefer DE; else EN.
+   *
+   * @param str - Input string containing a number representation.
+   * @returns The detected locale code: `"de"` or `"en"`.
+   */
   static detectNumberFormat(str: string): "de" | "en" {
     const dotCount = (str.match(/\./g) || []).length;
     const commaCount = (str.match(/,/g) || []).length;
@@ -149,6 +160,16 @@ export class UtilsService {
     return lastComma > lastDot ? "de" : "en";
   }
 
+  /**
+   * Normalizes a localized numeric string into a canonical form parseable by `parseFloat`.
+   *
+   * - For `de`, removes thousand separators (.) and replaces decimal comma with dot.
+   * - For `en`, removes thousand separators (,) and keeps dot as decimal.
+   *
+   * @param str - Localized numeric string.
+   * @param locale - Detected locale: `"de"` or `"en"`.
+   * @returns A normalized number string suitable for `Number.parseFloat`.
+   */
   static normalizeNumber(str: string, locale: "de" | "en"): string {
     return locale === "de"
       ? str.replace(/\./g, "").replace(",", ".")
@@ -162,7 +183,7 @@ export class UtilsService {
    * @returns The normalized name.
    */
   static normalizeBookingTypeName(name: string): string {
-    return name.trim().replace(/\s+/g, " ");
+    return name.trim().replace(/\s+/g, " ").toLowerCase();
   }
 
   static log(msg: string, data?: unknown, level: LogLevelType = "log"): void {
@@ -177,6 +198,12 @@ export class UtilsService {
     data !== undefined ? logFn(msg, data) : logFn(msg);
   }
 
+  /**
+   * Computes the arithmetic mean of the provided numbers, ignoring zeros and non-finite values.
+   *
+   * @param numbers - List of numeric values.
+   * @returns The mean of valid, non-zero numbers; returns 0 if none.
+   */
   static mean(numbers: number[]): number {
     if (numbers.length === 0) return 0;
 
@@ -193,6 +220,13 @@ export class UtilsService {
     return count > 0 ? sum / count : 0;
   }
 
+  /**
+   * Checks if two arrays contain exactly the same strings (order-insensitive, no duplicates considered).
+   *
+   * @param arr1 - First array of strings.
+   * @param arr2 - Second array of strings.
+   * @returns True if both arrays contain the same unique set of strings.
+   */
   static haveSameStrings(arr1: string[], arr2: string[]): boolean {
     if (arr1.length !== arr2.length) return false;
 
@@ -211,6 +245,15 @@ export class UtilsService {
   /**
    * Additional utility: debounced function creator
    */
+  /**
+   * Creates a debounced version of a function that delays its execution until after
+   * `delay` milliseconds have elapsed since the last time it was invoked.
+   *
+   * @typeParam T - Function type.
+   * @param fn - Function to debounce.
+   * @param delay - Delay in milliseconds.
+   * @returns Debounced function retaining the original parameters.
+   */
   static debounce<T extends (..._args: any[]) => any>(
     fn: T,
     delay: number
@@ -225,6 +268,15 @@ export class UtilsService {
 
   /**
    * Additional utility: throttled function creator
+   */
+  /**
+   * Creates a throttled version of a function that only invokes `fn` at most once
+   * every `limit` milliseconds.
+   *
+   * @typeParam T - Function type.
+   * @param fn - Function to throttle.
+   * @param limit - Minimum interval between invocations in milliseconds.
+   * @returns Throttled function retaining the original parameters.
    */
   static throttle<T extends (..._args: any[]) => any>(
     fn: T,
@@ -244,6 +296,15 @@ export class UtilsService {
   /**
    * Memoize expensive computations
    */
+  /**
+   * Memoizes a pure function by caching results keyed by the JSON-serialized arguments.
+   *
+   * Note: Suitable only for functions with JSON-serializable arguments and deterministic outputs.
+   *
+   * @typeParam T - Function type.
+   * @param fn - Function to memoize.
+   * @returns A memoized version of the function.
+   */
   static memoize<T extends (..._args: any[]) => any>(fn: T): T {
     const cache = new Map<string, ReturnType<T>>();
 
@@ -262,6 +323,11 @@ export class UtilsService {
 
   /**
    * Create a cleanup function for component unmounting
+   */
+  /**
+   * Creates a simple cleanup aggregator for registering and executing teardown callbacks.
+   *
+   * @returns An object with `add` to register callbacks and `cleanup` to run them.
    */
   static createCleanup() {
     const cleanupFns: (() => void)[] = [];

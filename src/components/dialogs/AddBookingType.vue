@@ -11,7 +11,7 @@ import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { UtilsService } from "@/domains/utils";
-import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
@@ -21,7 +21,7 @@ import type { FormInterface } from "@/types";
 import { useSettingsStore } from "@/stores/settings";
 
 const { t } = useI18n();
-const { notice } = useBrowser();
+const { handleUserInfo } = useUserInfo();
 const { add } = useBookingTypesDB();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
@@ -39,25 +39,40 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.addBookingType.messages.dbNotConnected"
     ),
-    notice,
+    handleUserInfo,
     errorContext: "BOOKING_TYPE",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       if (records.bookingTypes.isDuplicate(bookingTypeFormData.name)) {
-        await notice([t("components.dialogs.addBookingType.messages.error")]);
+        await handleUserInfo(
+          "notice",
+          "AddBookingType",
+          "duplicate",
+          { noticeLines: [t("components.dialogs.addBookingType.messages.error")] }
+        );
         return;
       }
       const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
       const addBookingTypeID = await add(bookingTypeData);
       if (addBookingTypeID === -1) {
         UtilsService.log("ADD_BOOKING_TYPE: Failed to create booking type");
-        await notice([t("components.dialogs.addBookingType.messages.error")]);
+        await handleUserInfo(
+          "notice",
+          "AddBookingType",
+          "add failed",
+          { noticeLines: [t("components.dialogs.addBookingType.messages.error")] }
+        );
         return;
       }
 
       records.bookingTypes.add({ ...bookingTypeData, cID: addBookingTypeID });
       reset();
-      await notice([t("components.dialogs.addBookingType.messages.success")]);
+      await handleUserInfo(
+        "notice",
+        "AddBookingType",
+        "success",
+        { noticeLines: [t("components.dialogs.addBookingType.messages.success")] }
+      );
     }
   });
 };

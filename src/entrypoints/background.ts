@@ -21,12 +21,23 @@ const {
 
 const { installStorageLocal } = useStorage();
 
-// NOTE: onInstall runs at the installation or update of the add-on. And it runs on firefox update.
+/**
+ * Handles extension installation/update lifecycle.
+ *
+ * Initializes default values in browser storage on add-on install, update,
+ * and also after Firefox updates which can trigger this event.
+ */
 async function onInstall(): Promise<void> {
   UtilsService.log("BACKGROUND: onInstall");
   await installStorageLocal();
 }
 
+/**
+ * Handles the browser action (toolbar icon) click.
+ *
+ * Focuses an already open app tab if present; otherwise opens a new one.
+ * Logs errors instead of throwing to avoid breaking the background context.
+ */
 async function onClick(): Promise<void> {
   UtilsService.log("BACKGROUND: onClick");
 

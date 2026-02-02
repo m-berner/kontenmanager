@@ -1,6 +1,6 @@
 # Kontenmanager
 
-A modern web extension for private account management and stock portfolio tracking.
+A modern WebExtension for private account management and stock portfolio tracking.
 
 ## Overview
 
@@ -28,7 +28,7 @@ Key features include:
 - **Node.js:** v24.0.0 or later
 - **Package Manager:** npm v11.3.0 or later
 
-## Setup & Run Commands
+## Quick Start
 
 ### Installation
 
@@ -36,24 +36,39 @@ Key features include:
 npm install
 ```
 
-### Build
-
-To build the extension for production:
+### Build (Development package)
 
 ```powershell
 npm run build
 ```
 
-The build process involves:
-1. Type checking with `tsc`.
-2. Vue template type checking with `vue-tsc`.
-3. Bundling and optimization with `vite`.
+What this does:
+- Runs TypeScript checks (`tsc`) and Vue SFC checks (`vue-tsc --noemit`).
+- Bundles the extension with Vite.
+- Copies static assets and creates a ready-to-load extension under `kontenmanager@gmx.de/`.
+- Produces a zipped `.xpi` in `releases/` when environment variables are provided (see `vite.config.js`).
 
-The production-ready extension will be generated in the `kontenmanager@gmx.de/` directory.
+Load the folder `kontenmanager@gmx.de/` as a temporary addon in Firefox (about:debugging → This Firefox → Load Temporary Add-on... → select any file within that folder).
 
-### Development
+### Test
 
-Currently, use `npm run build` to update the extension files. The project is optimized for a fast build-and-reload workflow in Firefox.
+```powershell
+npm test
+```
+
+Run in watch mode during development:
+
+```powershell
+npm run test:watch
+```
+
+### Lint i18n
+
+```powershell
+npm run i18n:lint
+# Strict mode (fails on unused keys)
+npm run i18n:lint:strict
+```
 
 ## Project Structure
 
@@ -64,9 +79,9 @@ The project follows a modular architecture with a clear separation of concerns:
   - `components/`: Reusable UI components, specialized dialogs, and form fragments.
   - [**`composables/`**](src/composables/README.md): Vue composition functions bridging UI and logic (APIs, Storage, DB).
   - [**`domains/`**](src/domains/README.md): The "Brain" — pure business logic, financial calculations, and validation rules.
-  - `services/`: Business logic orchestration and API/DB connectivity.
-  - `stores/`: Pinia state management (Records, Settings, Runtime, Alerts).
-  - `views/`: Main screen layouts and entry point components.
+  - `services/`: Business logic orchestration and API/DB connectivity. See [services/README.md](src/services/README.md).
+  - `stores/`: Pinia state management (Records, Settings, Runtime, Alerts). See [stores/README.md](src/stores/README.md).
+  - `views/`: Main screen layouts and entry point components. See [views/README.md](src/views/README.md).
   - `config/`: Centralized configuration (Storage keys, Entry points, DB schema).
   - [**`plugins/`**](src/plugins/README.md): Vue plugin configurations (Vuetify, i18n, Router).
   - `entrypoints/`: HTML/TS entry points for the extension (App, Background, Options).
@@ -81,6 +96,16 @@ The project follows a modular architecture with a clear separation of concerns:
 4. **Persistence:** Data is persisted via **Services** (`src/services/`) to **IndexedDB** or **Browser Storage** (`useStorage`).
 5. **Browser Integration:** Interactions with the WebExtension API are abstracted through dedicated **Composables** (`src/composables/useBrowser`).
 
+## Development Workflow
+
+1. Make changes in `src/`.
+2. Run tests locally to validate logic:
+   - Unit tests focus on domain utilities and Pinia stores.
+3. Build the extension with `npm run build`.
+4. Reload the temporary addon in Firefox and verify behavior in the Browser Console.
+
+Tip: Set the debug level in local storage (see `LOCAL_STORAGE.DEBUG`) to enable `UtilsService.log` output.
+
 ## Tests
 
 The project uses [Vitest](https://vitest.dev/) for unit testing, focusing on domain logic and store state.
@@ -91,6 +116,23 @@ To run the tests:
 npm test
 ```
 
+## Linting & Formatting
+
+- ESLint with TypeScript and Vue rules (`eslint.config.js`).
+- Prettier for formatting.
+- i18n dictionaries are verified via custom scripts under `scripts/`.
+
+## Packaging & Verification
+
+- The Vite config supports copying built artifacts into the extension directory and optionally zipping a release.
+- To verify a packaged Firefox extension, run:
+
+```powershell
+npm run verify
+```
+
+This uses Mozilla's `addons-linter` against the latest `.xpi` in `releases/`.
+
 ## Developer Information
 
 - [MDN WebExtensions Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)
@@ -100,3 +142,9 @@ npm test
 ## License
 
 This project is licensed under the **Mozilla Public License 2.0**. See the [LICENSE](LICENSE) file for details.
+
+## Troubleshooting
+
+- Tests cannot resolve `@/...` imports: ensure Vite alias is configured (already set in `vite.config.js`).
+- DOM-related tests: use the `happy-dom` environment provided by Vitest config.
+- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace, lowercased) via `UtilsService.normalizeBookingTypeName`.

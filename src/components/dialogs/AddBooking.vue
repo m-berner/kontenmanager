@@ -12,7 +12,6 @@ import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
 import { useUserInfo } from "@/composables/useUserInfo";
-import { useBrowser } from "@/composables/useBrowser";
 import { useBookingsDB } from "@/composables/useIndexedDB";
 import { useBookingForm } from "@/composables/useForms";
 import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
@@ -22,7 +21,6 @@ import { databaseService } from "@/services/database";
 import type { FormInterface } from "@/types";
 
 const { t } = useI18n();
-const { notice } = useBrowser();
 const { add } = useBookingsDB();
 const { mapBookingFormToDb, reset } = useBookingForm();
 const { isLoading, submitGuard } = useDialogGuards();

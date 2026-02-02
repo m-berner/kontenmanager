@@ -1,8 +1,7 @@
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
-import { useAlertStore } from "@/stores/alerts";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
-import { useBrowser } from "@/composables/useBrowser";
 import { storeToRefs } from "pinia";
 import { computed, onUnmounted, readonly, ref } from "vue";
 import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
@@ -63,8 +62,7 @@ export function useMenuHighlight() {
 export function useMenuAction() {
     const runtime = useRuntimeStore();
     const records = useRecordsStore();
-    const { info } = useAlertStore();
-    const { notice } = useBrowser();
+    const { handleUserInfo } = useUserInfo();
     const { remove: removeBooking } = useBookingsDB();
     const { remove: removeStock } = useStocksDB();
     const openDialog = (dialogName, dialogOk = false) => {
@@ -88,7 +86,7 @@ export function useMenuAction() {
         async deleteBooking(recordId) {
             records.bookings.remove(recordId);
             await removeBooking(recordId);
-            await notice(["Booking deleted successfully"]);
+            await handleUserInfo("notice", "Menu", "deleteBooking", { noticeLines: ["Booking deleted successfully"] });
         },
         async updateStock() {
             openDialog("updateStock", true);
@@ -98,12 +96,16 @@ export function useMenuAction() {
         },
         async deleteStock(recordId) {
             if (checkStockHasBookings(recordId)) {
-                info("Cannot Delete", "This stock has associated bookings. Delete bookings first.", null);
+                await handleUserInfo("notice", "Cannot Delete", "deleteStock", {
+                    noticeLines: [
+                        "This stock has associated bookings. Delete bookings first."
+                    ]
+                });
                 return;
             }
             records.stocks.remove(recordId);
             await removeStock(recordId);
-            await notice(["Stock deleted successfully"]);
+            await handleUserInfo("notice", "Menu", "deleteStock", { noticeLines: ["Stock deleted successfully"] });
         },
         async fadeInStock() {
             openDialog("fadeInStock", true);
@@ -146,7 +148,7 @@ export function useMenuAction() {
                 window.open(url, "_blank", "noopener,noreferrer");
             }
             else {
-                await notice(["No URL available for this stock"]);
+                await handleUserInfo("notice", "Menu", "openLink", { noticeLines: ["No URL available for this stock"] });
             }
         },
         async exportDatabase() {

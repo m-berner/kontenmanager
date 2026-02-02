@@ -53,7 +53,7 @@ onBeforeMount(async () => {
     );
   }
 });
-// TODO reload company page adjust the titlebar to home?
+
 UtilsService.log(
   "--- views/AppIndex.vue setup ---",
   window.location.href,

@@ -6,7 +6,6 @@
                     "swiftLabel": "BIC / SWIFT",
                     "searchLabel": "Logo search",
                     "withDepotLabel": "Depot clearing account",
-                    "withNoDepotLabel": "Account",
                     "ibanLabel": "IBAN / Account number",
                     "ibanPlaceholder": "e.g. DE67 1234 5678 9123 8531 78",
                     "missingLogo": "No logo found"
@@ -24,9 +23,7 @@
                     "stockLabel": "Company",
                     "marketPlaceLabel": "Stock exchange",
                     "transactionTaxLabel": "Transaction tax",
-                    "sourceTaxLabel": "Source tax",
-                    "creditLabel": "Credit",
-                    "debitLabel": "Debit"
+                    "sourceTaxLabel": "Source tax"
                 },
                 "stockForm": {
                     "isinLabel": "ISIN",
@@ -36,10 +33,7 @@
                     "firstPageLabel": "First page",
                     "meetingDayLabel": "Annual General Meeting",
                     "quarterDayLabel": "Quarterly figures",
-                    "urlLabel": "URL",
-                    "messages": {
-                        "onUpdateIsin": "Error in 'onUpdateIsin'"
-                    }
+                    "urlLabel": "URL"
                 }
             },
             "cancel": "Cancel",
@@ -50,14 +44,10 @@
                 "bookingTypes": {
                     "buy": "Stock purchase",
                     "sell": "Stock sale",
-                    "dividend": "Dividend",
-                    "other": "Other",
-                    "fee": "Fee",
-                    "tax": "Tax"
+                    "dividend": "Dividend"
                 },
                 "messages": {
                     "success": "Account has been added",
-                    "error": "The account could not be added",
                     "dbNotConnected": "No database connection"
                 }
             },
@@ -71,7 +61,6 @@
             },
             "addBookingType": {
                 "title": "Add booking type",
-                "bookingTypeLabel": "Booking type",
                 "placeholder": "Enter name",
                 "messages": {
                     "success": "Booking type has been added",
@@ -95,46 +84,25 @@
                     "dbNotConnected": "No database connection"
                 }
             },
-            "deleteBooking": {
-                "title": "Booking",
-                "ask": "Do you want to delete the booking now?",
-                "success": "Booking has been removed",
-                "error": "Input error"
-            },
             "deleteBookingType": {
                 "title": "Delete booking type",
-                "bookingTypeLabel": "Booking type",
-                "placeholder": "Select booking type to delete",
                 "messages": {
                     "success": "Booking type has been removed",
                     "error": "The booking type is still in use",
                     "dbNotConnected": "No database connection"
                 }
             },
-            "deleteStock": {
-                "title": "Remove company",
-                "messages": {
-                    "success": "Company has been removed",
-                    "error": "The company could not be removed"
-                }
-            },
             "exportDatabase": {
                 "title": "Export data",
                 "largeFileTitle": "Data export",
-                "text": "When saving, the file {filename} is created and stored in the user's - downloads - folder. (This file can be used for database recovery).",
                 "continue": "Export data",
-                "cancel": "Cancel",
-                "messages": {
-                    "estimatedSize": "The backup file will be approximately {size} KB.",
-                    "verificationFailed": "The backup file is invalid"
-                }
+                "cancel": "Cancel"
             },
             "fadeInStock": {
                 "title": "Show company",
                 "selectLabel": "Company",
                 "messages": {
                     "success": "Company has been shown",
-                    "error": "Company could not be shown",
                     "dbNotConnected": "No database connection",
                     "noRecords": "There is no data to show"
                 }
@@ -142,7 +110,6 @@
             "importDatabase": {
                 "title": "Import data",
                 "invalid": "The data file is invalid!",
-                "version": "The data file is too old and cannot be recovered!",
                 "messageDelete": "All existing data will be deleted!",
                 "fileLabel": "from file",
                 "buy": "Stock purchase",
@@ -151,20 +118,11 @@
                 "other": "Other",
                 "fee": "Fee",
                 "tax": "Tax",
-                "capitalTax": "Capital gains tax",
-                "sourceTax": "Source tax",
-                "transactionTax": "Transaction tax",
-                "soli": "Soli",
                 "confirmImportTitle": "Start import",
                 "confirmOk": "Import",
                 "confirmCancel": "Cancel",
                 "messages": {
-                    "allStocksVisible": "No companies are hidden.",
-                    "dataIntegrity": "{count} database integrity errors found.\n\n{errorList}{moreErrors}",
-                    "confirmImportWarning": "All records will be deleted:\n\n{summary}\n\n import. Continue?",
-                    "importSuccess": "Import successful! {summary} imported in {duration}s",
                     "importFailed": "Import failed. Old data restored.",
-                    "invalidJson": "Invalid JSON format",
                     "invalidSuffix": "Invalid filename",
                     "invalidVersion": "Database version is not supported",
                     "notEmpty": "KontenManager objects already exist. Therefore, a StockManager backup file cannot be restored!",
@@ -231,9 +189,7 @@
         },
         "creditDebitFieldset": {
             "creditLabel": "Credit",
-            "debitLabel": "Debit",
-            "notNegative": "Only positive values",
-            "onlyOnePositive": "One value must be 0"
+            "debitLabel": "Debit"
         }
     },
     "mixed": {
@@ -249,11 +205,6 @@
         "noStockSelected": "No company selected."
     },
     "views": {
-        "appIndex": {
-            "messages": {
-                "onBeforeMount": "Error in 'onBeforeMount'"
-            }
-        },
         "titleBar": {
             "title": "KontenManager",
             "bookingsSumLabel": "Account balance",
@@ -279,15 +230,12 @@
             "deleteAccount": "Remove bank account",
             "addStock": "Add stock company",
             "fadeInStock": "Show company",
-            "deleteStock": "Remove stock company",
-            "updateStock": "Edit stock company",
             "addBooking": "Add booking",
             "exportToFile": "Export database",
             "importDatabase": "Import database",
             "showAccounting": "Yearly calculations",
             "settings": "Settings",
             "messages": {
-                "allStocksVisible": "No companies are hidden.",
                 "createAccount": "You must create an account first...",
                 "noBookings": "There are no bookings.",
                 "noAccount": "No account exists yet.",
@@ -300,14 +248,12 @@
             "search": "Search",
             "bookingsTable": {
                 "headers": {
-                    "id": "ID",
                     "action": "Actions",
                     "date": "Date",
                     "debit": "Debit",
                     "credit": "Credit",
                     "description": "Remark",
-                    "bookingType": "Booking type",
-                    "accountNumberId": "Account"
+                    "bookingType": "Booking type"
                 },
                 "menuItems": {
                     "delete": "Delete booking",
@@ -320,14 +266,12 @@
         "companyContent": {
             "stocksTable": {
                 "headers": {
-                    "id": "ID",
                     "action": "Actions",
                     "company": "Company",
                     "isin": "ISIN",
                     "qf": "Quarterly figures",
                     "gm": "Annual General Meeting",
                     "portfolio": "Portfolio",
-                    "buy": "Purchase price",
                     "winLoss": "Profit-Loss",
                     "52low": "52-week low",
                     "rate": "Price",
@@ -347,10 +291,6 @@
             "help": "Help",
             "privacy": "Privacy",
             "mail": "Email"
-        },
-        "checkboxGrid": {
-            "loading": "Loading options...",
-            "saving": "Saving..."
         },
         "optionsIndex": {
             "tabs": {
@@ -392,7 +332,6 @@
         },
         "sheetContent": {
             "privacyContent": {
-                "title": "KontenManager Privacy Policy",
                 "general": {
                     "title": "General",
                     "paragraphs": {
@@ -450,8 +389,6 @@
             "required": "Date is required",
             "valid": "Date is invalid"
         },
-        "requiredRules": "Is required",
-        "notNegative": "Only positive values",
         "creditDebitFieldset": {
             "onlyOnePositive": "One value must be 0 and the other > 0"
         },

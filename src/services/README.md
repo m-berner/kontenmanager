@@ -68,3 +68,9 @@ internationalized error messages.
    consistent state across the extension.
 4. **Fail Gracefully**: Infrastructure operations (especially network requests) must handle failures without crashing
    the UI, providing meaningful feedback via the `alerts` system.
+
+## Testing
+
+- Prefer integration-style unit tests that mock network/DB boundaries.
+- Stub IndexedDB and `browser.*` APIs in Vitest where needed.
+- Assert that services translate technical failures into `AppError` instances with stable error codes.

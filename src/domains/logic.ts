@@ -8,7 +8,6 @@
 
 import type {
   AccountStoreInterface,
-  AlertStoreInterface,
   BookingDb,
   BookingStoreInterface,
   BookingTypeStoreInterface,
@@ -16,7 +15,9 @@ import type {
   RecordsDbData,
   SettingsStoreInterface,
   StockItem,
-  StockStoreInterface
+  StockStoreInterface,
+  HandleUserInfoOptions,
+  Mode
 } from "@/types";
 import { UtilsService } from "@/domains/utils";
 import { DEFAULTS } from "@/config/defaults";
@@ -232,7 +233,12 @@ export class DomainLogic {
       bookingTypes: BookingTypeStoreInterface;
       stocks: StockStoreInterface;
       settings: SettingsStoreInterface;
-      alerts: AlertStoreInterface;
+      handleUserInfo: (
+        mode: Mode,
+        title: string,
+        message: string,
+        options?: HandleUserInfoOptions
+      ) => Promise<void | boolean | number>;
     },
     messages: Record<string, string>,
     removeAccounts = true
@@ -287,7 +293,12 @@ export class DomainLogic {
       stores.accounts.items.length === 0 &&
       !session[SESSION_STORAGE.HIDE_IMPORT_ALERT.key]
     ) {
-      stores.alerts.info(messages.title, messages.message, null);
+      await stores.handleUserInfo(
+        "notice",
+        messages.title,
+        "DomainLogic.initializeRecords",
+        { noticeLines: [messages.message] }
+      );
       await storage.setStorage(SESSION_STORAGE.HIDE_IMPORT_ALERT.key, true);
     }
   }

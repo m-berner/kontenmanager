@@ -80,12 +80,22 @@ export const useBookingsStore = defineStore("bookings", function () {
     return findings.length > 0;
   });
 
-  /** Sum of fees for a specific year. */
+  /**
+   * Sum of fees for a specific year.
+   *
+   * @param y - The target year (e.g., 2026).
+   * @returns The aggregated fee sum for that year.
+   */
   const sumFees = computed(() => (y: number) => {
     return DomainLogic.calculateSumFees(items.value, y);
   });
 
-  /** Sum of taxes for a specific year. */
+  /**
+   * Sum of taxes for a specific year.
+   *
+   * @param y - The target year (e.g., 2026).
+   * @returns The aggregated tax sum for that year.
+   */
   const sumTaxes = computed(() => (y: number) => {
     return DomainLogic.calculateSumTaxes(items.value, y);
   });
@@ -100,7 +110,12 @@ export const useBookingsStore = defineStore("bookings", function () {
     return DomainLogic.calculateSumAllTaxes(items.value);
   });
 
-  /** Aggregated booking sums per type for a specific year. */
+  /**
+   * Aggregated booking sums per type for a specific year.
+   *
+   * @param y - The target year to aggregate.
+   * @returns An array of per-type aggregates for the given year.
+   */
   const sumBookingsPerTypeAndYear = computed(() => (y: number) => {
     const bt = useBookingTypesStore();
     return DomainLogic.aggregateBookingsPerType(items.value, bt.items, y);
@@ -112,17 +127,34 @@ export const useBookingsStore = defineStore("bookings", function () {
     return DomainLogic.aggregateBookingsPerType(items.value, bt.items);
   });
 
-  /** Calculates the current portfolio quantity for a stock. */
+  /**
+   * Calculates the current portfolio quantity for a stock.
+   *
+   * Uses FIFO calculations from the domain logic.
+   *
+   * @param ident - The stock ID.
+   * @returns The quantity currently held.
+   */
   const portfolioByStockId = computed(() => (ident: number) => {
     return DomainLogic.calculatePortfolioByStockId(items.value, ident);
   });
 
-  /** Calculates the total investment value still held in a stock (FIFO principle). */
+  /**
+   * Calculates the total investment value still held in a stock (FIFO principle).
+   *
+   * @param ident - The stock ID.
+   * @returns The total invested amount currently bound to the position.
+   */
   const investByStockId = computed(() => (ident: number) => {
     return DomainLogic.calculateInvestByStockId(items.value, ident);
   });
 
-  /** Retrieves all dividend bookings for a specific stock. */
+  /**
+   * Retrieves all dividend bookings for a specific stock.
+   *
+   * @param ident - The stock ID.
+   * @returns A list of dividend entries containing id, year (ex-date), and sum (credit).
+   */
   const dividendsByStockId = computed(() => (ident: number) => {
     return items.value
       .filter((entry: BookingDb) => {

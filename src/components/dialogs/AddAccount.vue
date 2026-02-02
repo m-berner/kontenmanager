@@ -15,7 +15,6 @@ import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { useUserInfo } from "@/composables/useUserInfo";
-import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountForm } from "@/composables/useForms";
 import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
@@ -27,7 +26,6 @@ import { INDEXED_DB } from "@/config/database";
 import { UtilsService } from "@/domains/utils";
 
 const { t } = useI18n();
-const { notice } = useBrowser();
 const { setStorage } = useStorage();
 const { add: addAccountDB } = useAccountsDB();
 const { add: addBookingTypeDB } = useBookingTypesDB();
@@ -46,7 +44,7 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.addAccount.messages.dbNotConnected"
     ),
-    notice,
+    handleUserInfo,
     errorContext: "ADD_ACCOUNT",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -111,7 +109,12 @@ const onClickOk = async (): Promise<void> => {
 
       records.clean(false);
       runtime.resetTeleport();
-      await notice([t("components.dialogs.addAccount.messages.success")]);
+      await handleUserInfo(
+        "notice",
+        "AddAccount",
+        "onClickOk: success",
+        { noticeLines: [t("components.dialogs.addAccount.messages.success")] }
+      );
     }
   });
 };

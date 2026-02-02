@@ -14,7 +14,7 @@ import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { UtilsService } from "@/domains/utils";
-import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useAccountsDB } from "@/composables/useIndexedDB";
 import { useAccountForm } from "@/composables/useForms";
 import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
@@ -23,7 +23,7 @@ import { databaseService } from "@/services/database";
 import type { AccountDb, FormInterface } from "@/types";
 
 const { t } = useI18n();
-const { notice } = useBrowser();
+const { handleUserInfo } = useUserInfo();
 const { update } = useAccountsDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -59,7 +59,7 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.updateAccount.messages.dbNotConnected"
     ),
-    notice,
+    handleUserInfo,
     errorContext: "UPDATE_ACCOUNT",
     errorTitle: t("components.dialogs.updateAccount.title"),
     operation: async () => {
@@ -67,7 +67,12 @@ const onClickOk = async (): Promise<void> => {
       records.accounts.update(account);
       await update(account);
       runtime.resetTeleport();
-      await notice([t("components.dialogs.updateAccount.messages.success")]);
+      await handleUserInfo(
+        "notice",
+        "UpdateAccount",
+        "success",
+        { noticeLines: [t("components.dialogs.updateAccount.messages.success")] }
+      );
     }
   });
 };

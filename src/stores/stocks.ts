@@ -163,6 +163,13 @@ export const useStocksStore = defineStore("stocks", function () {
     items.value = [];
   }
 
+  /**
+   * Forces a reload of online market data for the given page by
+   * invalidating the page cache and delegating to `loadOnlineData`.
+   *
+   * @param page - The 1-based page index to refresh.
+   * @returns A promise that resolves when the refresh is complete.
+   */
   async function refreshOnlineData(page: number): Promise<void> {
     runtime.loadedStocksPages.delete(page);
     await loadOnlineData(page);
@@ -172,6 +179,17 @@ export const useStocksStore = defineStore("stocks", function () {
    * Loads and enriches stock market data for a specific page.
    *
    * @param page - Page index to load
+   */
+  /**
+   * Loads and enriches stock market data for the given page.
+   *
+   * - Uses the current page size from settings to slice active stocks
+   * - Fetches min/rate/max values and next meeting/quarter dates
+   * - Converts to EUR using runtime exchange rates
+   * - Updates in-memory (RAM) fields on the corresponding stock entries
+   *
+   * @param page - The 1-based page index to load.
+   * @returns A promise that resolves when enrichment finishes; returns early if there are no active stocks.
    */
   async function loadOnlineData(page: number) {
     UtilsService.log("RECORDS: loadOnlineData");

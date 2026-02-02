@@ -6,7 +6,7 @@ components, stores, and services.
 
 ## Role and Responsibilities
 
-The mission of the views.is to:
+The mission of the views layer is to:
 
 - **Layout Orchestration**: Define the structural arrangement of the UI (e.g., TitleBar, HeaderBar, FooterBar, and Main
   Content).
@@ -48,5 +48,10 @@ The mission of the views.is to:
    typically using the `isInitialized` flag or `isLoading` guards to show progress indicators.
 3. **Responsive Composition**: Use Vuetify's grid system (`v-row`, `v-col`) and layout components (`v-main`,
    `v-container`) to ensure the extension remains usable across different popup and window sizes.
-4. **Decoupled Business Logic**: While views.orchestrate logic, they should not _contain_ it. Move complex calculations
-   to `src/domains/logic.ts` and data transformations to the appropriate services or composables.
+4. **Decoupled Business Logic**: While views orchestrate logic, they should not contain it. Move complex calculations to
+   `src/domains/logic.ts` and data transformations to the appropriate services or composables.
+
+## Testing
+
+- Prefer testing complex logic at the store/domain level; keep view tests focused on routing and integration.
+- Use the `happy-dom` environment from Vitest for basic rendering when needed.
