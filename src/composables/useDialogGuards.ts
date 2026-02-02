@@ -35,17 +35,17 @@ export function useDialogGuards() {
    * Shows a notification if not connected.
    *
    * @param isConnected - Current connection status.
-   * @param notice - Browser notice function.
+   * @param handleUserInfo - User info functionality.
    * @param errorMessage - Message to show if disconnected.
    * @returns A promise resolving to true if connected.
    */
   async function ensureConnected(
     isConnected: boolean,
-    notice: (_msg: string[]) => Promise<void>,
+    handleUserInfo: (_msg: string[]) => Promise<void>,
     errorMessage = "Database not connected"
   ): Promise<boolean> {
     if (!isConnected) {
-      await notice([errorMessage]);
+      await handleUserInfo("notice", "useDialogGuards", "ensureConnected", { noticeLines: [errorMessage] });
       return false;
     }
     return true;
@@ -153,7 +153,7 @@ export function useDialogGuards() {
     formRef?: Ref<FormInterface | null>;
     isConnected?: boolean;
     connectionErrorMessage?: string;
-    notice: (_msg: string[]) => Promise<void>;
+    handleUserInfo: (_msg: string[]) => Promise<void>;
     operation: () => Promise<void>;
     onFinally?: () => void;
     errorContext?: string;
@@ -163,7 +163,7 @@ export function useDialogGuards() {
       formRef,
       isConnected,
       connectionErrorMessage = "Database not connected",
-      notice,
+      handleUserInfo,
       operation,
       onFinally
       //errorContext = 'USE_DIALOG_GUARD'
@@ -175,7 +175,7 @@ export function useDialogGuards() {
     }
 
     if (isConnected !== undefined) {
-      if (!(await ensureConnected(isConnected, notice, connectionErrorMessage)))
+      if (!(await ensureConnected(isConnected, handleUserInfo, connectionErrorMessage)))
         return;
     }
 

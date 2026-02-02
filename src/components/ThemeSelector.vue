@@ -14,9 +14,11 @@ import { UtilsService } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { BROWSER_STORAGE } from "@/config/storage";
 import { createThemes } from "@/config/views";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 const { t } = useI18n();
 const theme = useTheme();
+const { handleUserInfo } = useUserInfo();
 const { getStorage, setStorage } = useStorage();
 
 const THEMES = computed(() => createThemes(t));
@@ -36,7 +38,9 @@ onBeforeMount(async () => {
     BROWSER_STORAGE.SKIN.value;
 });
 
-UtilsService.log("--- ThemeSelector.vue setup ---");
+await handleUserInfo("console", "ThemeSelector", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

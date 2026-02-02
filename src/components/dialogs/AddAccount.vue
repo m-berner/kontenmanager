@@ -14,7 +14,7 @@ import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountForm } from "@/composables/useForms";
@@ -24,6 +24,7 @@ import { BROWSER_STORAGE } from "@/config/storage";
 import { databaseService } from "@/services/database";
 import { useAccountsDB, useBookingTypesDB } from "@/composables/useIndexedDB";
 import { INDEXED_DB } from "@/config/database";
+import { UtilsService } from "@/domains/utils";
 
 const { t } = useI18n();
 const { notice } = useBrowser();
@@ -32,6 +33,7 @@ const { add: addAccountDB } = useAccountsDB();
 const { add: addBookingTypeDB } = useBookingTypesDB();
 const { accountFormData, mapAccountFormToDb, reset } = useAccountForm();
 const { isLoading, submitGuard } = useDialogGuards();
+const { handleUserInfo } = useUserInfo();
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
 const records = useRecordsStore();
@@ -121,7 +123,9 @@ onBeforeMount(() => {
   reset();
 });
 
-UtilsService.log("--- AddAccount.vue setup ---");
+await handleUserInfo("console", "AddAccount", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

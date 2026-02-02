@@ -11,7 +11,7 @@ import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useBrowser } from "@/composables/useBrowser";
 import { useBookingsDB } from "@/composables/useIndexedDB";
 import { useBookingForm } from "@/composables/useForms";
@@ -26,20 +26,22 @@ const { notice } = useBrowser();
 const { add } = useBookingsDB();
 const { mapBookingFormToDb, reset } = useBookingForm();
 const { isLoading, submitGuard } = useDialogGuards();
+const { handleUserInfo } = useUserInfo();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
 const formRef = ref<FormInterface | null>(null);
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("ADD_BOOKING : onClickOk");
-
+  await handleUserInfo("console", "AddBooking", "onClickOk", {
+    logLevel: "log"
+  });
   await submitGuard({
     formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: t(
       "components.dialogs.addBooking.messages.dbNotConnected"
     ),
-    notice,
+    handleUserInfo,
     errorContext: "ADD_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -47,17 +49,17 @@ const onClickOk = async (): Promise<void> => {
       const addBookingID = await add(bookingData);
 
       if (addBookingID === -1) {
-        UtilsService.log(
-          "ADD_BOOKING: onClickOk: done",
-          t("components.dialogs.addBooking.messages.error")
-        );
-        await notice([t("components.dialogs.addBooking.messages.error")]);
+        await handleUserInfo("notice", "AddBooking", "onClickOk: done", {
+          noticeLines: [t("components.dialogs.addBooking.messages.error")]
+        });
         return;
       }
 
       records.bookings.add({ ...bookingData, cID: addBookingID }, true);
       reset();
-      await notice([t("components.dialogs.addBooking.messages.success")]);
+      await handleUserInfo("notice", "AddBooking", "onClickOk: done", {
+        noticeLines: [t("components.dialogs.addBooking.messages.success")]
+      });
     }
   });
 };
@@ -65,11 +67,15 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.addBooking.title") });
 
 onBeforeMount(() => {
-  UtilsService.log("ADD_BOOKING: onMounted");
+  handleUserInfo("console", "AddBooking", "onBeforeMount", {
+    logLevel: "log"
+  });
   reset();
 });
 
-UtilsService.log("--- AddBooking.vue setup ---");
+handleUserInfo("console", "AddBooking", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

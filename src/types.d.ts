@@ -5,6 +5,7 @@
  *
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+
 export interface AccountDb {
   cID: number;
   cSwift: string;
@@ -230,6 +231,22 @@ export interface CustomEventTarget extends HTMLInputElement {
 export interface ExchangeData {
   key: string;
   value: number;
+}
+
+export interface HandleUserInfoOptions {
+  data?: unknown;
+  logLevel?: LogLevelType;
+  delay?: number | null;
+  // Alert options
+  alertKind?: AlertKind;
+  duration?: number | null;
+  confirm?: {
+    confirmText?: string;
+    cancelText?: string;
+    type?: "error" | "success" | "warning" | "info";
+  };
+  // Notice options
+  noticeLines?: string[]; // Defaults to [title, message]
 }
 
 export interface HeaderItem {
@@ -507,6 +524,10 @@ export interface VisibleAlertData {
 export interface VuetifyWrapper {
   vuetify: ReturnType<typeof createVuetify>;
 }
+
+export type Mode = "console" | "alert" | "notice";
+
+export type AlertKind = "info" | "error" | "confirm";
 
 export type FormModeType = "add" | "update" | "delete";
 
