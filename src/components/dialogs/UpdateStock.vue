@@ -17,7 +17,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useStockForm } from "@/composables/useForms";
 import { useStocksDB } from "@/composables/useIndexedDB";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import StockForm from "@/components/dialogs/forms/StockForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
@@ -34,7 +34,7 @@ const { isLoading, submitGuard } = useDialogGuards();
 const formRef = ref<FormInterface | null>(null);
 
 const loadCurrentStock = (): void => {
-  UtilsService.log("UPDATE_STOCK: loadCurrentStock");
+  DomainUtils.log("UPDATE_STOCK: loadCurrentStock");
   resetForm();
   const currentStock = records.stocks.getById(activeId.value);
 
@@ -53,7 +53,7 @@ const loadCurrentStock = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("UPDATE_STOCK : onClickOk");
+  DomainUtils.log("UPDATE_STOCK : onClickOk");
 
   await submitGuard({
     formRef,
@@ -79,11 +79,13 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.updateStock.title") });
 
 onBeforeMount(() => {
-  UtilsService.log("UPDATE_STOCK: onBeforeMount");
+  DomainUtils.log("UPDATE_STOCK: onBeforeMount");
   loadCurrentStock();
 });
 
-UtilsService.log("--- components/dialogs/UpdateStock.vue setup ---");
+handleUserInfo("console", "UpdateStock", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

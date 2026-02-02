@@ -16,7 +16,7 @@ import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import DotMenu from "@/components/DotMenu.vue";
 import { useTheme } from "vuetify";
 import { useStorage } from "@/composables/useStorage";
@@ -53,7 +53,7 @@ const search = ref<string>("");
 const onChangeHandler = (
   changes: Record<string, browser.storage.StorageChange>
 ): void => {
-  UtilsService.log("APP_INDEX: changeHandler");
+  DomainUtils.log("APP_INDEX: changeHandler");
   const changesKey = Object.keys(changes);
   const { service, indexes, markets, materials, exchanges } =
     storeToRefs(settings);
@@ -92,7 +92,7 @@ const removeStorageChangedListener = addStorageChangedListener(onChangeHandler);
  * Removes storage listeners and disconnects from the database.
  */
 const onBeforeUnload = (): void => {
-  UtilsService.log("APP_INDEX: onBeforeUnload");
+  DomainUtils.log("APP_INDEX: onBeforeUnload");
   removeStorageChangedListener();
   databaseService.disconnect();
 };
@@ -138,7 +138,7 @@ onUnmounted(() => {
   unregister("Ctrl+Alt+R");
 });
 
-UtilsService.log("--- views/HomeContent.vue setup ---");
+DomainUtils.log("--- views/HomeContent.vue setup ---");
 </script>
 
 <template>
@@ -171,7 +171,7 @@ UtilsService.log("--- views/HomeContent.vue setup ---");
         <td>
           <DotMenu :items="MENU_ITEMS" :record-id="item.cID" />
         </td>
-        <td>{{ d(UtilsService.utcDate(item.cBookDate), "short") }}</td>
+        <td>{{ d(DomainUtils.utcDate(item.cBookDate), "short") }}</td>
         <td>{{ n(item.cDebit, "currency") }}</td>
         <td>{{ n(item.cCredit, "currency") }}</td>
         <td>{{ item.cDescription }}</td>

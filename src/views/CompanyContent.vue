@@ -17,7 +17,7 @@ import { storeToRefs } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { DomainLogic } from "@/domains/logic";
 import DotMenu from "@/components/DotMenu.vue";
 import {
@@ -152,7 +152,7 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
  * await onUpdatePage(2) // Navigate to page 2 and load data if needed
  */
 const onUpdatePage = async (page: number): Promise<void> => {
-  UtilsService.log("COMPANY_CONTENT: onUpdatePage", page, "info");
+  DomainUtils.log("COMPANY_CONTENT: onUpdatePage", page, "info");
   stocksPage.value = page;
 
   if (runtime.loadedStocksPages.has(page)) return;
@@ -174,7 +174,7 @@ const onUpdatePage = async (page: number): Promise<void> => {
  * @returns {Promise<void>}
  */
 onBeforeMount(async () => {
-  UtilsService.log("COMPANY_CONTENT: onBeforeMount");
+  DomainUtils.log("COMPANY_CONTENT: onBeforeMount");
 
   // Always recalculate portfolio values from bookings upon entry
   // to ensure RAM-only properties (mPortfolio, mInvest) are up to date.
@@ -231,7 +231,7 @@ watch(stocksPerPage, async () => {
   }
 });
 
-UtilsService.log("--- views/CompanyContent.vue setup ---");
+DomainUtils.log("--- views/CompanyContent.vue setup ---");
 </script>
 
 <template>

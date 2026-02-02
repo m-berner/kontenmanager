@@ -10,7 +10,7 @@
 import { computed, onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify/framework";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { BROWSER_STORAGE } from "@/config/storage";
 import { createThemes } from "@/config/views";
@@ -26,19 +26,19 @@ const THEMES = computed(() => createThemes(t));
 const skin = ref<string>("");
 
 const setSkin = async (): Promise<void> => {
-  UtilsService.log("THEME_SELECTOR: setSkin");
+  DomainUtils.log("THEME_SELECTOR: setSkin");
   await setStorage(BROWSER_STORAGE.SKIN.key, skin.value);
 };
 
 onBeforeMount(async () => {
-  UtilsService.log("THEME_SELECTOR: onBeforeMount");
+  DomainUtils.log("THEME_SELECTOR: onBeforeMount");
   const storageSkin = await getStorage([BROWSER_STORAGE.SKIN.key]);
   skin.value =
     (storageSkin[BROWSER_STORAGE.SKIN.key] as string) ||
     BROWSER_STORAGE.SKIN.value;
 });
 
-await handleUserInfo("console", "ThemeSelector", "--- vue setup ---", {
+handleUserInfo("console", "ThemeSelector", "--- vue setup ---", {
   logLevel: "log"
 });
 </script>

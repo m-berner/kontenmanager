@@ -1,5 +1,5 @@
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { INDEXED_DB } from "@/config/database";
 import { IndexedDbBase } from "./database/base";
 import { DatabaseMigrator } from "./database/migrator";
@@ -107,7 +107,7 @@ export class DatabaseService extends IndexedDbBase {
         });
     }
     async getAccountRecords(accountId) {
-        UtilsService.log("DATABASE: getAccountRecords");
+        DomainUtils.log("DATABASE: getAccountRecords");
         return this.withTransaction([
             INDEXED_DB.STORE.BOOKINGS.NAME,
             INDEXED_DB.STORE.BOOKING_TYPES.NAME,
@@ -206,4 +206,4 @@ export class DatabaseService extends IndexedDbBase {
     }
 }
 export const databaseService = new DatabaseService();
-UtilsService.log("--- services/database.ts ---");
+DomainUtils.log("--- services/database.ts ---");

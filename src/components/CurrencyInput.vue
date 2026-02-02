@@ -10,12 +10,13 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { CurrencyInputProps } from "@/types";
-import { UtilsService } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<CurrencyInputProps>();
-// eslint-disable-next-line vue/define-emits-declaration
+
 const emit = defineEmits(["update:modelValue"]);
 const { n } = useI18n();
+const { handleUserInfo } = useUserInfo();
 const unformattedValue = ref<number>(props.modelValue);
 const formattedValue = ref<string>("");
 const isFocused = ref<boolean>(false);
@@ -75,12 +76,16 @@ const onInput = (ev: Event): void => {
   }
 };
 
-onMounted(() => {
-  UtilsService.log("CURRENCY_INPUT: onMounted");
+onMounted(async () => {
+  void handleUserInfo("console", "CurrencyInput", "onMounted", {
+    logLevel: "log"
+  });
   formattedValue.value = formatCurrency(props.modelValue);
 });
 
-UtilsService.log("--- CurrencyInput.vue ---");
+handleUserInfo("console", "CurrencyInput", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

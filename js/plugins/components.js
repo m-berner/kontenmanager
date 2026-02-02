@@ -1,4 +1,4 @@
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import FadeInStock from "@/components/dialogs/FadeInStock.vue";
 import ShowDividend from "@/components/dialogs/ShowDividend.vue";
 import AddStock from "@/components/dialogs/AddStock.vue";
@@ -37,4 +37,4 @@ const ComponentsPlugin = {
     }
 };
 export default ComponentsPlugin;
-UtilsService.log("--- plugins/components.ts ---");
+DomainUtils.log("--- plugins/components.ts ---");

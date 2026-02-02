@@ -86,7 +86,9 @@ export function useMenuAction() {
         async deleteBooking(recordId) {
             records.bookings.remove(recordId);
             await removeBooking(recordId);
-            await handleUserInfo("notice", "Menu", "deleteBooking", { noticeLines: ["Booking deleted successfully"] });
+            await handleUserInfo("notice", "Menu", "deleteBooking", {
+                noticeLines: ["Booking deleted successfully"]
+            });
         },
         async updateStock() {
             openDialog("updateStock", true);
@@ -105,7 +107,9 @@ export function useMenuAction() {
             }
             records.stocks.remove(recordId);
             await removeStock(recordId);
-            await handleUserInfo("notice", "Menu", "deleteStock", { noticeLines: ["Stock deleted successfully"] });
+            await handleUserInfo("notice", "Menu", "deleteStock", {
+                noticeLines: ["Stock deleted successfully"]
+            });
         },
         async fadeInStock() {
             openDialog("fadeInStock", true);
@@ -148,7 +152,9 @@ export function useMenuAction() {
                 window.open(url, "_blank", "noopener,noreferrer");
             }
             else {
-                await handleUserInfo("notice", "Menu", "openLink", { noticeLines: ["No URL available for this stock"] });
+                await handleUserInfo("notice", "Menu", "openLink", {
+                    noticeLines: ["No URL available for this stock"]
+                });
             }
         },
         async exportDatabase() {

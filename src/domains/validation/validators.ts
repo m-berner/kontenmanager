@@ -7,7 +7,7 @@
  */
 
 import { ValidationRules } from "./rules";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import type { AccountDb, BookingDb, BookingTypeDb, StockDb } from "@/types";
 
@@ -55,7 +55,7 @@ export class DomainValidators {
 
     // Domain rules
     if (normalized.cAccountNumberID === 0) {
-      UtilsService.log(
+      DomainUtils.log(
         "DomainValidators: Booking missing account ID",
         normalized,
         "warn"
@@ -78,7 +78,7 @@ export class DomainValidators {
 
     const ibanRes = ValidationRules.validateIBAN(raw.cIban);
     if (!ibanRes.isValid) {
-      UtilsService.log("DomainValidators: Invalid IBAN", raw.cIban, "warn");
+      DomainUtils.log("DomainValidators: Invalid IBAN", raw.cIban, "warn");
     }
 
     return {
@@ -103,7 +103,7 @@ export class DomainValidators {
 
     const isinRes = ValidationRules.validateISIN(raw.cISIN);
     if (!isinRes.isValid) {
-      UtilsService.log("DomainValidators: Invalid ISIN", raw.cISIN, "warn");
+      DomainUtils.log("DomainValidators: Invalid ISIN", raw.cISIN, "warn");
     }
 
     return {
@@ -133,7 +133,7 @@ export class DomainValidators {
     const raw = data as Record<string, any>;
     return {
       cID: Number(raw.cID ?? 0),
-      cName: UtilsService.normalizeBookingTypeName(
+      cName: DomainUtils.normalizeBookingTypeName(
         this.normalizeString(raw.cName)
       ),
       cAccountNumberID: Number(raw.cAccountNumberID ?? 0)
@@ -146,17 +146,17 @@ export class DomainValidators {
   }
 
   private static normalizeAmount(value: unknown): number {
-    const num = UtilsService.toNumber(value as string | number);
+    const num = DomainUtils.toNumber(value as string | number);
     return isFinite(num) ? num : 0;
   }
 
   private static normalizeDate(value: unknown): string {
-    if (typeof value === "string" && UtilsService.isValidISODate(value)) {
+    if (typeof value === "string" && DomainUtils.isValidISODate(value)) {
       return value;
     }
     if (typeof value === "number") {
       try {
-        return UtilsService.isoDate(value);
+        return DomainUtils.isoDate(value);
       } catch {
         // Fallback
       }

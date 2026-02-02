@@ -10,7 +10,7 @@
 import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
@@ -31,7 +31,7 @@ const { isLoading, submitGuard } = useDialogGuards();
 const formRef = ref<FormInterface | null>(null);
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("ADD_BOOKING_TYPE: onClickOk");
+  DomainUtils.log("ADD_BOOKING_TYPE: onClickOk");
 
   await submitGuard({
     formRef,
@@ -52,7 +52,7 @@ const onClickOk = async (): Promise<void> => {
       const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
       const addBookingTypeID = await add(bookingTypeData);
       if (addBookingTypeID === -1) {
-        UtilsService.log("ADD_BOOKING_TYPE: Failed to create booking type");
+        DomainUtils.log("ADD_BOOKING_TYPE: Failed to create booking type");
         await handleUserInfo("notice", "AddBookingType", "add failed", {
           noticeLines: [t("components.dialogs.addBookingType.messages.error")]
         });
@@ -74,11 +74,13 @@ defineExpose({
 });
 
 onBeforeMount(() => {
-  UtilsService.log("ADD_BOOKING_TYPE: onBeforeMount");
+  DomainUtils.log("ADD_BOOKING_TYPE: onBeforeMount");
   reset();
 });
 
-UtilsService.log("--- AddBookingType.vue setup ---");
+handleUserInfo("console", "AddBookingType", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

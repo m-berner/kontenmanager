@@ -14,7 +14,7 @@ import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useBookingsDB } from "@/composables/useIndexedDB";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingForm } from "@/composables/useForms";
@@ -39,7 +39,7 @@ const { isLoading, submitGuard } = useDialogGuards();
 const formRef = ref<FormInterface | null>(null);
 
 const loadCurrentBooking = (): void => {
-  UtilsService.log("UPDATE_BOOKING: loadCurrentBooking");
+  DomainUtils.log("UPDATE_BOOKING: loadCurrentBooking");
   resetForm();
   const currentBooking = records.bookings.getById(activeId.value);
 
@@ -71,7 +71,7 @@ const loadCurrentBooking = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("UPDATE_BOOKING : onClickOk");
+  DomainUtils.log("UPDATE_BOOKING : onClickOk");
 
   await submitGuard({
     formRef,
@@ -101,11 +101,13 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.updateBooking.title") });
 
 onBeforeMount(() => {
-  UtilsService.log("UPDATE_BOOKING: onMounted");
+  DomainUtils.log("UPDATE_BOOKING: onMounted");
   loadCurrentBooking();
 });
 
-UtilsService.log("--- components/dialogs/UpdateBooking.vue setup ---");
+handleUserInfo("console", "UpdateBooking", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

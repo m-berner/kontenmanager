@@ -7,11 +7,15 @@
   -->
 <script lang="ts" setup>
 import type { ContentCardProps } from "@/types";
-import { UtilsService } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<ContentCardProps>();
 
-UtilsService.log("--- ContentCard.vue setup ---");
+const { handleUserInfo } = useUserInfo();
+
+handleUserInfo("console", "ContentCard", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

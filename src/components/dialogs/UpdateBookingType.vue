@@ -13,7 +13,7 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
@@ -38,7 +38,7 @@ const { activeAccountId } = useSettingsStore();
 const formRef = ref<FormInterface | null>(null);
 
 const loadCurrentBookingType = (): void => {
-  UtilsService.log("UPDATE_BOOKING_TYPE: loadCurrentBookingType");
+  DomainUtils.log("UPDATE_BOOKING_TYPE: loadCurrentBookingType");
   resetForm();
   const currentBookingType = records.bookingTypes.getById(activeId.value);
   if (!currentBookingType) return;
@@ -54,7 +54,7 @@ const loadCurrentBookingType = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("UPDATE_BOOKING_TYPE: onClickOk");
+  DomainUtils.log("UPDATE_BOOKING_TYPE: onClickOk");
 
   await submitGuard({
     formRef,
@@ -109,11 +109,13 @@ defineExpose({
 });
 
 onBeforeMount(() => {
-  UtilsService.log("UPDATE_BOOKING_TYPE: onBeforeMount");
+  DomainUtils.log("UPDATE_BOOKING_TYPE: onBeforeMount");
   loadCurrentBookingType();
 });
 
-UtilsService.log("--- components/dialogs/UpdateBookingType.vue setup ---");
+handleUserInfo("console", "UpdateBookingType", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

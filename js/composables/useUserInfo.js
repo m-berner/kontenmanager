@@ -1,11 +1,11 @@
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useAlertStore } from "@/stores/alerts";
 import { useBrowser } from "@/composables/useBrowser";
 export function useUserInfo() {
     async function handleUserInfo(mode, title, message, options = {}) {
         const { data, logLevel = "log", delay = null } = options;
         if (mode === "console") {
-            UtilsService.log(`${title}: ${message}`.trim(), data, logLevel);
+            DomainUtils.log(`${title}: ${message}`.trim(), data, logLevel);
             return;
         }
         if (mode === "alert") {
@@ -30,7 +30,7 @@ export function useUserInfo() {
             await notice(lines);
             return;
         }
-        UtilsService.log(`${title}: ${message}`.trim(), data ?? null, logLevel);
+        DomainUtils.log(`${title}: ${message}`.trim(), data ?? null, logLevel);
     }
     return {
         handleUserInfo

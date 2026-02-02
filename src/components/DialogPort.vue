@@ -10,16 +10,19 @@
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRuntimeStore } from "@/stores/runtime";
-import { UtilsService } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 
 const { t } = useI18n();
 const runtime = useRuntimeStore();
 const { isLoading } = useDialogGuards();
+const { handleUserInfo } = useUserInfo();
 
 const dialogRef = ref<{ onClickOk: () => Promise<void>; title: string }>();
 
-UtilsService.log("--- DialogPort.vue setup ---");
+handleUserInfo("console", "DialogPort", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

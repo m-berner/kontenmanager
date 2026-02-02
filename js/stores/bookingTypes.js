@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 export const useBookingTypesStore = defineStore("bookingTypes", function () {
     const items = ref([]);
     const getNameById = computed(() => (ident) => {
@@ -16,9 +16,9 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
         return items.value.findIndex((bookingType) => bookingType.cID === id);
     });
     const isDuplicate = computed(() => (name, excludeId) => {
-        const normalizedInput = UtilsService.normalizeBookingTypeName(name);
+        const normalizedInput = DomainUtils.normalizeBookingTypeName(name);
         return items.value.some((entry) => {
-            const isSameName = UtilsService.normalizeBookingTypeName(entry.cName) ===
+            const isSameName = DomainUtils.normalizeBookingTypeName(entry.cName) ===
                 normalizedInput;
             const isNotExcluded = excludeId === undefined || entry.cID !== excludeId;
             return isSameName && isNotExcluded;
@@ -30,7 +30,7 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
         index
     })));
     function add(bookingType, prepend = false) {
-        UtilsService.log("BOOKING_TYPES_STORE: add");
+        DomainUtils.log("BOOKING_TYPES_STORE: add");
         if (prepend) {
             items.value.unshift(bookingType);
         }
@@ -39,21 +39,21 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
         }
     }
     function update(bookingType) {
-        UtilsService.log("BOOKING_TYPES_STORE: update");
+        DomainUtils.log("BOOKING_TYPES_STORE: update");
         const index = getIndexById.value(bookingType.cID);
         if (index !== -1) {
             items.value[index] = { ...bookingType };
         }
     }
     function remove(ident) {
-        UtilsService.log("BOOKING_TYPE_STORE: remove", ident, "info");
+        DomainUtils.log("BOOKING_TYPE_STORE: remove", ident, "info");
         const index = getIndexById.value(ident);
         if (index !== -1) {
             items.value.splice(index, 1);
         }
     }
     function clean() {
-        UtilsService.log("BOOKING_TYPES_STORE: clean");
+        DomainUtils.log("BOOKING_TYPES_STORE: clean");
         items.value = [];
     }
     return {
@@ -71,4 +71,4 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
         clean
     };
 });
-UtilsService.log("--- stores/bookingTypes.ts ---");
+DomainUtils.log("--- stores/bookingTypes.ts ---");

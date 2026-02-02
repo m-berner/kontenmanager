@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 const defaultAlert = {
     id: -1,
     type: undefined,
@@ -64,12 +64,12 @@ export const useAlertStore = defineStore("alert", () => {
     }
     function dismissAlert(id) {
         if (id === undefined) {
-            UtilsService.log("ALERT_STORE: Attempted to dismiss alert with undefined ID", null, "warn");
+            DomainUtils.log("ALERT_STORE: Attempted to dismiss alert with undefined ID", null, "warn");
             return;
         }
         const index = alerts.value.findIndex((alert) => alert.id === id);
         if (index === -1) {
-            UtilsService.log("ALERT_STORE: Alert not found for dismissal", id, "warn");
+            DomainUtils.log("ALERT_STORE: Alert not found for dismissal", id, "warn");
             return;
         }
         clearAlertTimeout(id);
@@ -94,7 +94,7 @@ export const useAlertStore = defineStore("alert", () => {
     function confirm(title, message, options) {
         return new Promise((resolve, reject) => {
             if (confirmationDialog.value.id > -1) {
-                UtilsService.log("ALERT_STORE: Confirmation dialog already active", null, "warn");
+                DomainUtils.log("ALERT_STORE: Confirmation dialog already active", null, "warn");
                 reject(new Error("Confirmation dialog already active"));
                 return;
             }
@@ -123,7 +123,7 @@ export const useAlertStore = defineStore("alert", () => {
                 confirmationDialog.value.resolve();
             }
             catch (err) {
-                UtilsService.log("ALERT_STORE: Error in confirm handler", err, "error");
+                DomainUtils.log("ALERT_STORE: Error in confirm handler", err, "error");
                 confirmationDialog.value = { ...defaultConfirmation };
             }
         }
@@ -134,7 +134,7 @@ export const useAlertStore = defineStore("alert", () => {
                 confirmationDialog.value.reject();
             }
             catch (err) {
-                UtilsService.log("ALERT_STORE: Error in cancel handler", err, "error");
+                DomainUtils.log("ALERT_STORE: Error in cancel handler", err, "error");
                 confirmationDialog.value = { ...defaultConfirmation };
             }
         }
@@ -151,7 +151,7 @@ export const useAlertStore = defineStore("alert", () => {
                 confirmationDialog.value.reject();
             }
             catch (err) {
-                UtilsService.log("ALERT_STORE: Error clearing confirmation dialog", err, "warn");
+                DomainUtils.log("ALERT_STORE: Error clearing confirmation dialog", err, "warn");
             }
         }
         confirmationDialog.value = { ...defaultConfirmation };
@@ -181,4 +181,4 @@ export const useAlertStore = defineStore("alert", () => {
         cleanup
     };
 });
-UtilsService.log("--- stores/alerts.ts ---");
+DomainUtils.log("--- stores/alerts.ts ---");

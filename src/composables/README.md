@@ -59,4 +59,4 @@ The mission of the composables is to:
 - For composables with browser API usage, stub the `browser` global (see tests stubbing `browser.storage` and
   `browser.notifications`).
 - Favor testing mapping functions from `useForms` to ensure DB-bound data is normalized (e.g., booking type name
-  normalization via `UtilsService.normalizeBookingTypeName`).
+  normalization via `DomainUtils.normalizeBookingTypeName`).

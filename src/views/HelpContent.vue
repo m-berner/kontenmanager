@@ -7,9 +7,9 @@
   -->
 
 <script lang="ts" setup>
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 
-UtilsService.log("--- views/HelpContent.vue setup ---");
+DomainUtils.log("--- views/HelpContent.vue setup ---");
 </script>
 
 <template>

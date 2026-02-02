@@ -104,7 +104,7 @@ The project follows a modular architecture with a clear separation of concerns:
 3. Build the extension with `npm run build`.
 4. Reload the temporary addon in Firefox and verify behavior in the Browser Console.
 
-Tip: Set the debug level in local storage (see `LOCAL_STORAGE.DEBUG`) to enable `UtilsService.log` output.
+Tip: Set the debug level in local storage (see `LOCAL_STORAGE.DEBUG`) to enable `DomainUtils.log` output.
 
 ## Tests
 
@@ -147,4 +147,4 @@ This project is licensed under the **Mozilla Public License 2.0**. See the [LICE
 
 - Tests cannot resolve `@/...` imports: ensure Vite alias is configured (already set in `vite.config.js`).
 - DOM-related tests: use the `happy-dom` environment provided by Vitest config.
-- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace, lowercased) via `UtilsService.normalizeBookingTypeName`.
+- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace, lowercased) via `DomainUtils.normalizeBookingTypeName`.

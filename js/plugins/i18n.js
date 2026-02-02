@@ -1,7 +1,7 @@
 import { createI18n } from "vue-i18n";
 import deDE from "@/locales/de-DE.json";
 import enUS from "@/locales/en-US.json";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 const { locale5 } = useBrowser();
 const i18nInstance = createI18n({
@@ -131,4 +131,4 @@ const i18nConfig = {
     i18n: i18nInstance
 };
 export default i18nConfig;
-UtilsService.log("--- plugins/i18n.js ---");
+DomainUtils.log("--- plugins/i18n.js ---");

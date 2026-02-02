@@ -8,17 +8,19 @@
 
 <script lang="ts" setup>
 import { onBeforeMount, ref } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { BROWSER_STORAGE } from "@/config/storage";
 import { FETCH } from "@/config/fetch";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 const { getStorage, setStorage } = useStorage();
+const { handleUserInfo } = useUserInfo();
 
 const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
 
 const setService = async (): Promise<void> => {
-  UtilsService.log("SERVICE_SELECTOR: setService");
+  DomainUtils.log("SERVICE_SELECTOR: setService");
   await setStorage(BROWSER_STORAGE.SERVICE.key, service.value);
 };
 
@@ -32,12 +34,14 @@ const serviceLabels = (item: string): string => {
 };
 
 onBeforeMount(async () => {
-  UtilsService.log("SERVICE_SELECTOR: onBeforeMount");
+  DomainUtils.log("SERVICE_SELECTOR: onBeforeMount");
   const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
   service.value = storageService[BROWSER_STORAGE.SERVICE.key] as string;
 });
 
-UtilsService.log("--- ServiceSelector.vue setup ---");
+handleUserInfo("console", "ServiceSelector", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

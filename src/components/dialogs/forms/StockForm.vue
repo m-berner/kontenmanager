@@ -14,16 +14,18 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useStockForm } from "@/composables/useForms";
 import { fetchService } from "@/services/fetch";
 import type { StockFormProps } from "@/types";
 import { ValidationService } from "@/services/validation";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<StockFormProps>();
 
 const { t } = useI18n();
 const { stockFormData } = useStockForm();
+const { handleUserInfo } = useUserInfo();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -40,7 +42,7 @@ const ISIN_RULES = [
 ];
 
 const onUpdateIsin = async () => {
-  UtilsService.log("STOCK_FORMULAR: onUpdateISIN");
+  DomainUtils.log("STOCK_FORMULAR: onUpdateISIN");
 
   try {
     if (!props.isUpdate && stockFormData.isin.length === 12) {
@@ -63,7 +65,9 @@ const onUpdateIsin = async () => {
   }
 };
 
-UtilsService.log("--- components/dialogs/forms/StockForm.vue setup ---");
+handleUserInfo("console", "StockForm", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

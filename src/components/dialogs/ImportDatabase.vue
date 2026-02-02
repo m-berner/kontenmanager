@@ -27,7 +27,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountsDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
@@ -289,7 +289,7 @@ const createRollbackPoint = async (): Promise<RollbackData | null> => {
         : err instanceof Error
         ? err.message
         : "Unknown error";
-    UtilsService.log(
+    DomainUtils.log(
       "IMPORT_DATABASE: Failed to create rollback point",
       errorMessage
     );
@@ -301,7 +301,7 @@ const restoreFromRollback = async (
   rollbackData: RollbackData
 ): Promise<void> => {
   try {
-    UtilsService.log("IMPORT_DATABASE: Starting rollback");
+    DomainUtils.log("IMPORT_DATABASE: Starting rollback");
 
     await atomicImport([
       {
@@ -352,7 +352,7 @@ const restoreFromRollback = async (
       }
     );
 
-    UtilsService.log("IMPORT_DATABASE: Rollback completed successfully");
+    DomainUtils.log("IMPORT_DATABASE: Rollback completed successfully");
   } catch (err) {
     const errorMessage =
       err instanceof AppError
@@ -360,7 +360,7 @@ const restoreFromRollback = async (
         : err instanceof Error
         ? err.message
         : "Unknown error";
-    UtilsService.log(
+    DomainUtils.log(
       "IMPORT_DATABASE: CRITICAL - Rollback failed",
       errorMessage
     );
@@ -551,7 +551,7 @@ const processBackupFile = async (): Promise<void> => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("IMPORT_DATABASE: onClickOk");
+  DomainUtils.log("IMPORT_DATABASE: onClickOk");
 
   if (!isFileSelected) {
     await handleUserInfo(
@@ -616,7 +616,7 @@ const onClickOk = async (): Promise<void> => {
             ]
           }
         );
-        UtilsService.log(
+        DomainUtils.log(
           "IMPORT_DATABASE: CRITICAL - Rollback failed",
           rollbackErrorMessage
         );
@@ -637,7 +637,9 @@ defineExpose({
   title: t("components.dialogs.importDatabase.title")
 });
 
-UtilsService.log("--- ImportDatabase.vue setup ---");
+handleUserInfo("console", "ImportDatabase", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

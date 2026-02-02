@@ -10,7 +10,7 @@ import type { AccountStoreItem } from "@/types";
 import { defineStore, storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Pinia store managing bank account records.
@@ -61,7 +61,7 @@ export const useAccountsStore = defineStore("accounts", function () {
    * @param prepend - Whether to insert at the beginning of the list.
    */
   function add(account: AccountStoreItem, prepend: boolean = false): void {
-    UtilsService.log("ACCOUNTS_STORE: add");
+    DomainUtils.log("ACCOUNTS_STORE: add");
     if (prepend) {
       items.value = [account, ...items.value];
     } else {
@@ -75,7 +75,7 @@ export const useAccountsStore = defineStore("accounts", function () {
    * @param account - The updated account data.
    */
   function update(account: AccountStoreItem): void {
-    UtilsService.log("ACCOUNTS_STORE: update");
+    DomainUtils.log("ACCOUNTS_STORE: update");
     const index = getIndexById.value(account.cID);
     if (index !== -1) {
       const newItems = [...items.value];
@@ -90,7 +90,7 @@ export const useAccountsStore = defineStore("accounts", function () {
    * @param ident - Account ID to remove.
    */
   function remove(ident: number): void {
-    UtilsService.log("ACCOUNTS_STORE: remove", ident, "info");
+    DomainUtils.log("ACCOUNTS_STORE: remove", ident, "info");
     items.value = items.value.filter((entry) => entry.cID !== ident);
   }
 
@@ -98,7 +98,7 @@ export const useAccountsStore = defineStore("accounts", function () {
    * Clears all account records from the store.
    */
   function clean() {
-    UtilsService.log("ACCOUNTS_STORE: clean");
+    DomainUtils.log("ACCOUNTS_STORE: clean");
     items.value = [];
   }
 
@@ -115,4 +115,4 @@ export const useAccountsStore = defineStore("accounts", function () {
   };
 });
 
-UtilsService.log("--- stores/accounts.ts ---");
+DomainUtils.log("--- stores/accounts.ts ---");

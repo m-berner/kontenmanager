@@ -1,7 +1,7 @@
 import { defineStore, storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 export const useAccountsStore = defineStore("accounts", function () {
     const settings = useSettingsStore();
     const { activeAccountId } = storeToRefs(settings);
@@ -26,7 +26,7 @@ export const useAccountsStore = defineStore("accounts", function () {
         }
     });
     function add(account, prepend = false) {
-        UtilsService.log("ACCOUNTS_STORE: add");
+        DomainUtils.log("ACCOUNTS_STORE: add");
         if (prepend) {
             items.value = [account, ...items.value];
         }
@@ -35,7 +35,7 @@ export const useAccountsStore = defineStore("accounts", function () {
         }
     }
     function update(account) {
-        UtilsService.log("ACCOUNTS_STORE: update");
+        DomainUtils.log("ACCOUNTS_STORE: update");
         const index = getIndexById.value(account.cID);
         if (index !== -1) {
             const newItems = [...items.value];
@@ -44,11 +44,11 @@ export const useAccountsStore = defineStore("accounts", function () {
         }
     }
     function remove(ident) {
-        UtilsService.log("ACCOUNTS_STORE: remove", ident, "info");
+        DomainUtils.log("ACCOUNTS_STORE: remove", ident, "info");
         items.value = items.value.filter((entry) => entry.cID !== ident);
     }
     function clean() {
-        UtilsService.log("ACCOUNTS_STORE: clean");
+        DomainUtils.log("ACCOUNTS_STORE: clean");
         items.value = [];
     }
     return {
@@ -63,4 +63,4 @@ export const useAccountsStore = defineStore("accounts", function () {
         clean
     };
 });
-UtilsService.log("--- stores/accounts.ts ---");
+DomainUtils.log("--- stores/accounts.ts ---");

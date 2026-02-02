@@ -9,7 +9,7 @@
 import type { StorageDataType, StorageValueType } from "@/types";
 import type { Ref } from "vue";
 import { ref } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { defineStore } from "pinia";
 import { useStorage } from "@/composables/useStorage";
 import { BROWSER_STORAGE } from "@/config/storage";
@@ -88,7 +88,7 @@ export const useSettingsStore = defineStore("settings", function () {
    * @param {StorageDataType} storage - Object containing all persisted settings.
    */
   function init(storage: StorageDataType): void {
-    UtilsService.log("SETTINGS: init");
+    DomainUtils.log("SETTINGS: init");
 
     skin.value = storage[BROWSER_STORAGE.SKIN.key] as string;
     bookingsPerPage.value = storage[
@@ -185,4 +185,4 @@ export const useSettingsStore = defineStore("settings", function () {
   };
 });
 
-UtilsService.log("--- stores/settings.ts ---");
+DomainUtils.log("--- stores/settings.ts ---");

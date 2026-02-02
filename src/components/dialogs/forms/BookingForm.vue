@@ -11,7 +11,7 @@ import { useI18n } from "vue-i18n";
 import { computed } from "vue";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 import { useBookingForm } from "@/composables/useForms";
 import CreditDebitFieldset from "@/components/CreditDebitFieldset.vue";
@@ -22,6 +22,7 @@ const { t } = useI18n();
 const { bookingFormData } = useBookingForm();
 const { bookingTypes, stocks } = useRecordsStore();
 const { markets } = useSettingsStore();
+const { handleUserInfo } = useUserInfo();
 
 const DATE_RULES = [
   t("validators.isoDateRules.required"),
@@ -129,7 +130,9 @@ const sortedMarkets = computed(() =>
   [...markets].sort((a, b) => a.localeCompare(b))
 );
 
-UtilsService.log("--- components/dialogs/forms/BookingForm.vue setup ---");
+handleUserInfo("console", "BookingForm", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

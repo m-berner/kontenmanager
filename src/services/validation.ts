@@ -8,7 +8,7 @@
 
 import type { ValidationCode, ValidationRuleType } from "@/types";
 import type { Ref } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { VALIDATION_CODES } from "@/domains/validation/codes";
 import { ValidationRules } from "@/domains/validation/rules";
 
@@ -215,4 +215,4 @@ export class ValidationService {
   }
 }
 
-UtilsService.log("--- services/validation.ts ---");
+DomainUtils.log("--- services/validation.ts ---");

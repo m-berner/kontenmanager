@@ -7,7 +7,7 @@
  */
 
 import { createRouter, createWebHashHistory } from "vue-router";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import type { RouterWrapper } from "@/types";
 import { ROUTES } from "@/config/routes";
 import { CODES } from "@/config/codes";
@@ -114,4 +114,4 @@ const routerConfig: RouterWrapper = {
 
 export default routerConfig;
 
-UtilsService.log("--- plugins/router.js ---");
+DomainUtils.log("--- plugins/router.js ---");

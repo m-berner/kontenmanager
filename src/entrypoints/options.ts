@@ -7,7 +7,7 @@
  */
 
 import { createApp } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import vuetifyPlugin from "@/plugins/vuetify";
 import i18nPlugin from "@/plugins/i18n";
 import piniaPlugin from "@/plugins/pinia";
@@ -30,7 +30,7 @@ const app = createApp(OptionsIndex);
  */
 app.config.errorHandler = (err: unknown, _instance, info): void => {
   const message = err instanceof Error ? err.message : String(err);
-  UtilsService.log(
+  DomainUtils.log(
     "PAGE_SCRIPTS options.js",
     { message, info, stack: (err as Error)?.stack },
     "error"
@@ -45,7 +45,7 @@ app.config.errorHandler = (err: unknown, _instance, info): void => {
  * @param trace - Component tree trace for context.
  */
 app.config.warnHandler = (msg: string, _instance, trace): void => {
-  UtilsService.log("PAGE_SCRIPTS options.js", { msg, trace }, "warn");
+  DomainUtils.log("PAGE_SCRIPTS options.js", { msg, trace }, "warn");
 };
 
 app.use(vuetifyPlugin.vuetify);
@@ -53,7 +53,7 @@ app.use(i18nPlugin.i18n);
 app.use(piniaPlugin.pinia);
 app.mount("#options");
 
-UtilsService.log(
+DomainUtils.log(
   "--- entrypoints/options.js ---",
   window.location.href,
   "info"

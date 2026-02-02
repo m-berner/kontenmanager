@@ -18,7 +18,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useStorage } from "@/composables/useStorage";
 import { useDialogGuards } from "@/composables/useDialogGuards";
@@ -54,7 +54,7 @@ const switchToNextAccount = async (): Promise<void> => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("DELETE_ACCOUNT_CONFIRMATION: onClickOk");
+  DomainUtils.log("DELETE_ACCOUNT_CONFIRMATION: onClickOk");
 
   if (
     !(await ensureConnected(
@@ -95,7 +95,9 @@ defineExpose({
   title: t("components.dialogs.deleteAccountConfirmation.title")
 });
 
-UtilsService.log("--- DeleteAccountConfirmation.vue setup ---");
+handleUserInfo("console", "DeleteAccountConfirmation", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

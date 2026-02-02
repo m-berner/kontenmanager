@@ -13,7 +13,7 @@ import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useAccountsDB } from "@/composables/useIndexedDB";
 import { useAccountForm } from "@/composables/useForms";
@@ -36,7 +36,7 @@ const formRef = ref<FormInterface | null>(null);
 const loadCurrentAccount = (): void => {
   const accountIndex = records.accounts.getIndexById(activeAccountId);
   if (accountIndex === -1) {
-    UtilsService.log("UPDATE_ACCOUNT: Account not found", activeAccountId);
+    DomainUtils.log("UPDATE_ACCOUNT: Account not found", activeAccountId);
     return;
   }
   const currentAccount = accountItems.value[accountIndex];
@@ -51,7 +51,7 @@ const loadCurrentAccount = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("UPDATE_ACCOUNT: onClickOk");
+  DomainUtils.log("UPDATE_ACCOUNT: onClickOk");
 
   await submitGuard({
     formRef,
@@ -77,11 +77,13 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.updateAccount.title") });
 
 onBeforeMount(() => {
-  UtilsService.log("UPDATE_ACCOUNT: onBeforeMount");
+  DomainUtils.log("UPDATE_ACCOUNT: onBeforeMount");
   loadCurrentAccount();
 });
 
-UtilsService.log("--- components/dialogs/UpdateAccount.vue setup ---");
+handleUserInfo("console", "UpdateAccount", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

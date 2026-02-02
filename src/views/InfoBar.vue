@@ -12,7 +12,7 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { STORES } from "@/config/stores";
 
 const { n, t } = useI18n();
@@ -35,7 +35,7 @@ const materialValues = computed(() => {
   return result;
 });
 
-UtilsService.log("--- views/InfoBar.vue setup ---");
+DomainUtils.log("--- views/InfoBar.vue setup ---");
 </script>
 
 <template>

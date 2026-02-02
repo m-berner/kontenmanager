@@ -1,8 +1,8 @@
-import { UtilsService } from "@/domains/utils";
 import { DEFAULTS } from "@/config/defaults";
 import { DATE } from "@/domains/config/date";
 import { SESSION_STORAGE } from "@/config/storage";
 import { useStorage } from "@/composables/useStorage";
+import { DomainUtils } from "@/domains/utils";
 export class DomainLogic {
     static calculateTotalSum(bookings) {
         if (bookings.length === 0)
@@ -103,7 +103,6 @@ export class DomainLogic {
         return Math.round(sum * 100) / 100;
     }
     static async initializeRecords(storesDB, stores, messages, removeAccounts = true) {
-        UtilsService.log("DomainLogic: initializeRecords");
         if (removeAccounts)
             stores.accounts.clean();
         stores.bookings.clean();
@@ -133,9 +132,8 @@ export class DomainLogic {
         ]);
         if (stores.accounts.items.length === 0 &&
             !session[SESSION_STORAGE.HIDE_IMPORT_ALERT.key]) {
-            await stores.handleUserInfo("notice", messages.title, "DomainLogic.initializeRecords", { noticeLines: [messages.message] });
+            DomainUtils.log("DomainLogic.initializeRecords", messages, "info");
             await storage.setStorage(SESSION_STORAGE.HIDE_IMPORT_ALERT.key, true);
         }
     }
 }
-UtilsService.log("--- domain/logic.ts ---");

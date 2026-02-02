@@ -15,15 +15,13 @@ import type {
   RecordsDbData,
   SettingsStoreInterface,
   StockItem,
-  StockStoreInterface,
-  HandleUserInfoOptions,
-  Mode
+  StockStoreInterface
 } from "@/types";
-import { UtilsService } from "@/domains/utils";
 import { DEFAULTS } from "@/config/defaults";
 import { DATE } from "@/domains/config/date";
 import { SESSION_STORAGE } from "@/config/storage";
 import { useStorage } from "@/composables/useStorage";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Service for encapsulating complex domain logic and calculations.
@@ -233,18 +231,10 @@ export class DomainLogic {
       bookingTypes: BookingTypeStoreInterface;
       stocks: StockStoreInterface;
       settings: SettingsStoreInterface;
-      handleUserInfo: (
-        mode: Mode,
-        title: string,
-        message: string,
-        options?: HandleUserInfoOptions
-      ) => Promise<void | boolean | number>;
     },
     messages: Record<string, string>,
     removeAccounts = true
   ): Promise<void> {
-    UtilsService.log("DomainLogic: initializeRecords");
-
     // Clean stores
     if (removeAccounts) stores.accounts.clean();
     stores.bookings.clean();
@@ -293,15 +283,8 @@ export class DomainLogic {
       stores.accounts.items.length === 0 &&
       !session[SESSION_STORAGE.HIDE_IMPORT_ALERT.key]
     ) {
-      await stores.handleUserInfo(
-        "notice",
-        messages.title,
-        "DomainLogic.initializeRecords",
-        { noticeLines: [messages.message] }
-      );
+      DomainUtils.log("DomainLogic.initializeRecords", messages, "info");
       await storage.setStorage(SESSION_STORAGE.HIDE_IMPORT_ALERT.key, true);
     }
   }
 }
-
-UtilsService.log("--- domain/logic.ts ---");

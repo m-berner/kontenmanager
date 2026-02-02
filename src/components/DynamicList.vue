@@ -14,19 +14,22 @@ import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { AppError } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { fetchService } from "@/services/fetch";
 import { BROWSER_STORAGE } from "@/config/storage";
 import { COMPONENTS } from "@/config/components";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<DynamicListProps>();
+
 const { t } = useI18n();
 const { getStorage, setStorage } = useStorage();
 const runtime = useRuntimeStore();
 const { infoExchanges } = storeToRefs(runtime);
 const settings = useSettingsStore();
 const { exchanges, markets } = storeToRefs(settings);
+const { handleUserInfo } = useUserInfo();
 
 const newItem = ref<string>("");
 const list = ref<string[]>([]);
@@ -50,7 +53,7 @@ const label = computed(() => labelMap[props.type] || "Error");
 const title = computed(() => titleMap[props.type] || "Error");
 
 const addItem = async (item: string): Promise<void> => {
-  UtilsService.log("DYNAMIC_LIST: addItem");
+  DomainUtils.log("DYNAMIC_LIST: addItem");
   if (!item.trim()) return; // Validate input
 
   isAdding.value = true; // Start loading
@@ -85,14 +88,14 @@ const addItem = async (item: string): Promise<void> => {
         : err instanceof Error
         ? err.message
         : "Failed to add item";
-    UtilsService.log("DYNAMIC_LIST: addItem error", err);
+    DomainUtils.log("DYNAMIC_LIST: addItem error", err);
   } finally {
     isAdding.value = false; // Stop loading
   }
 };
 
 const removeItem = async (n: number): Promise<void> => {
-  UtilsService.log("DYNAMIC_LIST: removeItem");
+  DomainUtils.log("DYNAMIC_LIST: removeItem");
   if (n < 0) return;
 
   error.value = null;
@@ -116,12 +119,12 @@ const removeItem = async (n: number): Promise<void> => {
         : err instanceof Error
         ? err.message
         : "Failed to remove item";
-    UtilsService.log("DYNAMIC_LIST: removeItem error", err);
+    DomainUtils.log("DYNAMIC_LIST: removeItem error", err);
   }
 };
 
 onBeforeMount(async () => {
-  UtilsService.log("DYNAMIC_LIST: onBeforeMount");
+  DomainUtils.log("DYNAMIC_LIST: onBeforeMount");
   isLoading.value = true;
   error.value = null;
 
@@ -145,13 +148,15 @@ onBeforeMount(async () => {
         : err instanceof Error
         ? err.message
         : "Initialization failed";
-    UtilsService.log("DYNAMIC_LIST: onBeforeMount error", err);
+    DomainUtils.log("DYNAMIC_LIST: onBeforeMount error", err);
   } finally {
     isLoading.value = false;
   }
 });
 
-UtilsService.log("--- DynamicList.vue setup ---");
+handleUserInfo("console", "DynamicList", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

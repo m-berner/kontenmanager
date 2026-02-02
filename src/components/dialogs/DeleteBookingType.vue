@@ -17,7 +17,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
@@ -38,7 +38,7 @@ const canDeleteBookingType = (bookingTypeId: number): boolean => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("DELETE_BOOKING_TYPE : onClickOk");
+  DomainUtils.log("DELETE_BOOKING_TYPE : onClickOk");
 
   if (
     !(await ensureConnected(
@@ -50,7 +50,7 @@ const onClickOk = async (): Promise<void> => {
     return;
 
   if (!bookingTypeFormData.id) {
-    UtilsService.log("DELETE_BOOKING_TYPE: No booking type selected");
+    DomainUtils.log("DELETE_BOOKING_TYPE: No booking type selected");
     return;
   }
 
@@ -94,11 +94,13 @@ defineExpose({
 });
 
 onBeforeMount(() => {
-  UtilsService.log("DELETE_BOOKING_TYPE: onBeforeMount");
+  DomainUtils.log("DELETE_BOOKING_TYPE: onBeforeMount");
   reset();
 });
 
-UtilsService.log("--- DeleteBookingType.vue setup ---");
+handleUserInfo("console", "DeleteBookingType", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

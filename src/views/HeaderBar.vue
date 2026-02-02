@@ -13,7 +13,7 @@ import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
 import { useUserInfo } from "@/composables/useUserInfo";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import DialogPort from "@/components/DialogPort.vue";
 import type { MenuActionType } from "@/types";
@@ -157,10 +157,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
       });
     }
   },
-  // TODO replace UtilsService.log with console.log when debugging is done
+
   deleteBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      await handleUserInfo(
+      void handleUserInfo(
         "notice",
         t("views.headerBar.infoTitle"),
         "HeaderBar",
@@ -177,7 +177,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBooking: async () => {
     if (accountItems.value.length === 0) {
-      await handleUserInfo(
+      void handleUserInfo(
         "notice",
         t("views.headerBar.infoTitle"),
         "HeaderBar",
@@ -447,7 +447,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
   await dialogActions[dialogId]();
 };
 
-UtilsService.log("--- views/HeaderBar.vue setup ---");
+DomainUtils.log("--- views/HeaderBar.vue setup ---");
 </script>
 
 <template>

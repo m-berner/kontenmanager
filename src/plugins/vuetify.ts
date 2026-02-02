@@ -50,7 +50,7 @@ import {
   mdiShieldAccount,
   mdiStoreEdit
 } from "@mdi/js";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import type { VuetifyWrapper } from "@/types";
 
 /**
@@ -200,4 +200,4 @@ const vuetifyConfig: VuetifyWrapper = {
 
 export default vuetifyConfig;
 
-UtilsService.log("--- plugins/vuetify.js ---");
+DomainUtils.log("--- plugins/vuetify.js ---");

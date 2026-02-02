@@ -7,12 +7,13 @@
   -->
 
 <script lang="ts" setup>
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useAlertStore } from "@/stores/alerts";
-import { UtilsService } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 const alertStore = useAlertStore();
+const { handleUserInfo } = useUserInfo();
 const { dismissAlert, handleConfirm, handleCancel } = alertStore;
 const {
   currentAlert,
@@ -37,11 +38,9 @@ const confirmationIcon = computed(() => {
   );
 });
 
-onMounted(async () => {
-  UtilsService.log("ALERT_OVERLAY: onMounted");
+handleUserInfo("console", "AlertOverlay", "--- vue setup ---", {
+  logLevel: "log"
 });
-
-UtilsService.log("--- AlertOverlay.vue setup ---");
 </script>
 
 <template>

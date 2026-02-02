@@ -9,8 +9,7 @@
 <script lang="ts" setup>
 import { onBeforeUnmount, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { UtilsService } from "@/domains/utils";
-
+import { useUserInfo } from "@/composables/useUserInfo";
 import { useFavicon } from "@/composables/useFavicon";
 import { useDomain } from "@/composables/useDomain";
 import { useAccountForm } from "@/composables/useForms";
@@ -26,6 +25,7 @@ const props = defineProps<AccountFormProps>();
 
 const { t } = useI18n();
 const { accountFormData } = useAccountForm();
+const { handleUserInfo } = useUserInfo();
 
 const SWIFT_RULES = createSwiftMessages(t);
 const IBAN_RULES = createIbanMessages(t);
@@ -82,7 +82,9 @@ onBeforeUnmount(() => {
   if (timeoutId) clearTimeout(timeoutId);
 });
 
-UtilsService.log("--- components/dialogs/forms/AccountForm.vue setup ---");
+handleUserInfo("console", "AccountForm", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

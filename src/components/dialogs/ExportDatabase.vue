@@ -16,7 +16,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useUserInfo } from "@/composables/useUserInfo";
 import {
@@ -151,7 +151,7 @@ const estimateExportSize = (data: string): number => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("EXPORT_DATABASE: onClickOk");
+  DomainUtils.log("EXPORT_DATABASE: onClickOk");
 
   await withLoading(async () => {
     try {
@@ -218,7 +218,9 @@ defineExpose({
   title: t("components.dialogs.exportDatabase.title")
 });
 
-UtilsService.log("--- ExportDatabase.vue setup ---");
+handleUserInfo("console", "ExportDatabase", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { FETCH } from "@/config/fetch";
 import { STORES } from "@/config/stores";
 import { BROWSER_STORAGE } from "@/config/storage";
@@ -226,9 +226,9 @@ export class FetchService {
                 const doc = await this.parseHTML(html);
                 const ask = doc.querySelector("#ask")?.textContent || "0";
                 const bid = doc.querySelector("#bid")?.textContent || "0";
-                const quote = UtilsService.mean([
-                    UtilsService.toNumber(bid),
-                    UtilsService.toNumber(ask)
+                const quote = DomainUtils.mean([
+                    DomainUtils.toNumber(bid),
+                    DomainUtils.toNumber(ask)
                 ]);
                 return {
                     id: urlObj.key,
@@ -272,10 +272,10 @@ export class FetchService {
     async fetchWithCache(key, url, ttl = 5 * 60 * 1000) {
         const cached = this.cache.get(key, ttl);
         if (cached) {
-            UtilsService.log(`Cache hit for ${key}`);
+            DomainUtils.log(`Cache hit for ${key}`);
             return cached;
         }
-        UtilsService.log(`Cache miss for ${key}, fetching...`);
+        DomainUtils.log(`Cache miss for ${key}, fetching...`);
         const response = await this.fetchWithRetry(url);
         const text = await response.text();
         this.cache.set(key, text);
@@ -315,7 +315,7 @@ export class FetchService {
         if (storageOnline.length === 0) {
             return [];
         }
-        UtilsService.log("Fetching min/rate/max data", {
+        DomainUtils.log("Fetching min/rate/max data", {
             count: storageOnline.length
         });
         const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
@@ -384,7 +384,7 @@ export class FetchService {
                 }
             }
             catch (error) {
-                UtilsService.log("Failed to fetch date data", { entry, error }, "warn");
+                DomainUtils.log("Failed to fetch date data", { entry, error }, "warn");
             }
             return { key: entry.key, value: gmqf };
         }));
@@ -414,7 +414,7 @@ export class FetchService {
             .map((r) => r.value);
     }
     async fetchIndexData() {
-        UtilsService.log("Fetching index data");
+        DomainUtils.log("Fetching index data");
         const html = await this.fetchWithCache(FETCH.FNET.INDEXES, FETCH.FNET.INDEXES);
         const doc = await this.parseHTML(html);
         const links = doc.querySelectorAll(".index-world-map a");
@@ -426,7 +426,7 @@ export class FetchService {
                 if (indexValue?.includes(title || "") && valueText) {
                     indexes.push({
                         key: property,
-                        value: UtilsService.toNumber(valueText)
+                        value: DomainUtils.toNumber(valueText)
                     });
                     break;
                 }
@@ -435,7 +435,7 @@ export class FetchService {
         return indexes;
     }
     async fetchMaterialData() {
-        UtilsService.log("Fetching material data");
+        DomainUtils.log("Fetching material data");
         const html = await this.fetchWithCache(FETCH.FNET.MATERIALS, FETCH.FNET.MATERIALS);
         const doc = await this.parseHTML(html);
         const rows = doc.querySelectorAll("#commodity_prices > table > tbody tr");
@@ -445,7 +445,7 @@ export class FetchService {
             const valueCell = row.children[1];
             if (nameCell?.tagName === "TD" && valueCell) {
                 const name = nameCell.textContent?.trim();
-                const value = UtilsService.toNumber(valueCell.textContent);
+                const value = DomainUtils.toNumber(valueCell.textContent);
                 if (name) {
                     materials.push({ key: name, value });
                 }
@@ -470,4 +470,4 @@ export class FetchService {
     }
 }
 export const fetchService = new FetchService();
-UtilsService.log("--- services/fetch.ts ---");
+DomainUtils.log("--- services/fetch.ts ---");

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useBookingTypesStore } from "@/stores/bookingTypes";
 import { DomainLogic } from "@/domains/logic";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
@@ -74,7 +74,7 @@ export const useBookingsStore = defineStore("bookings", function () {
         return new Set(years);
     });
     function add(booking, prepend = false) {
-        UtilsService.log("RECORDS_BOOKINGS: add");
+        DomainUtils.log("RECORDS_BOOKINGS: add");
         if (prepend) {
             items.value = [booking, ...items.value];
         }
@@ -83,7 +83,7 @@ export const useBookingsStore = defineStore("bookings", function () {
         }
     }
     function update(booking) {
-        UtilsService.log("RECORDS_BOOKINGS: update");
+        DomainUtils.log("RECORDS_BOOKINGS: update");
         const index = getIndexById.value(booking.cID);
         if (index !== -1) {
             const newItems = [...items.value];
@@ -92,11 +92,11 @@ export const useBookingsStore = defineStore("bookings", function () {
         }
     }
     function remove(ident) {
-        UtilsService.log("RECORDS_BOOKINGS: remove", ident, "info");
+        DomainUtils.log("RECORDS_BOOKINGS: remove", ident, "info");
         items.value = items.value.filter((entry) => entry.cID !== ident);
     }
     function clean() {
-        UtilsService.log("RECORDS_BOOKINGS: clean");
+        DomainUtils.log("RECORDS_BOOKINGS: clean");
         items.value = [];
     }
     function set(bookings) {
@@ -128,4 +128,4 @@ export const useBookingsStore = defineStore("bookings", function () {
         clean
     };
 });
-UtilsService.log("--- stores/bookings.ts ---");
+DomainUtils.log("--- stores/bookings.ts ---");

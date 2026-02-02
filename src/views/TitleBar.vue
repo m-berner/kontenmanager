@@ -18,7 +18,7 @@ import { useRecordsStore } from "@/stores/records";
 import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { AppError } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { fetchService } from "@/services/fetch";
 import { INDEXED_DB } from "@/config/database";
 import { databaseService } from "@/services/database";
@@ -66,7 +66,7 @@ const depot = computed((): string => {
  * Loads records for the newly selected account.
  */
 const onUpdateTitleBar = async (): Promise<void> => {
-  UtilsService.log("TITLE_BAR onUpdateTitleBar");
+  DomainUtils.log("TITLE_BAR onUpdateTitleBar");
 
   try {
     await setStorage(
@@ -87,7 +87,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
         : e instanceof Error
         ? e.message
         : "Unknown error";
-    UtilsService.log(
+    DomainUtils.log(
       t("views.titleBar.messages.onUpdateTitleBar"),
       errorMessage,
       "error"
@@ -128,7 +128,7 @@ onMounted(async () => {
   }
 });
 
-UtilsService.log("--- views/TitleBar.vue setup ---");
+DomainUtils.log("--- views/TitleBar.vue setup ---");
 </script>
 
 <template>

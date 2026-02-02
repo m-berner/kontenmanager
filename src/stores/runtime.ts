@@ -9,7 +9,7 @@
 import type { TeleportState, ViewTypeSelection } from "@/types";
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { CODES } from "@/config/codes";
 
 /**
@@ -154,4 +154,4 @@ export const useRuntimeStore = defineStore("runtime", function () {
   };
 });
 
-UtilsService.log("--- stores/runtime.ts ---");
+DomainUtils.log("--- stores/runtime.ts ---");

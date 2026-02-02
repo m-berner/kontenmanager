@@ -7,7 +7,7 @@
  */
 
 import { createPinia } from "pinia";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import type { PiniaWrapper } from "@/types";
 
 /**
@@ -19,4 +19,4 @@ const piniaConfig: PiniaWrapper = {
 
 export default piniaConfig;
 
-UtilsService.log("--- plugins/pinia.js ---");
+DomainUtils.log("--- plugins/pinia.js ---");

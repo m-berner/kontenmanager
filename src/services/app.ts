@@ -20,7 +20,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { CURRENCIES } from "@/domains/config/currencies";
 
 /**
@@ -51,7 +51,7 @@ export class AppService {
    * @throws AppError if storage or database initialization fails
    */
   async initializeApp(translations: Record<string, string>): Promise<void> {
-    UtilsService.log("Starting application initialization");
+    DomainUtils.log("Starting application initialization");
 
     try {
       // Step 1: Initialize storage (critical - will throw on failure)
@@ -63,9 +63,9 @@ export class AppService {
       // Step 3: Fetch external data (non-critical - fails gracefully)
       await this.fetchExternalData();
 
-      UtilsService.log("Application initialization completed successfully");
+      DomainUtils.log("Application initialization completed successfully");
     } catch (err) {
-      UtilsService.log("Application initialization failed", err, "error");
+      DomainUtils.log("Application initialization failed", err, "error");
 
       if (err instanceof AppError) {
         throw err;
@@ -90,7 +90,7 @@ export class AppService {
    * @returns A promise that resolves when the reset is complete.
    */
   async reset(): Promise<void> {
-    UtilsService.log("Resetting application state");
+    DomainUtils.log("Resetting application state");
 
     // Clear runtime state
     this.runtime.resetTeleport();
@@ -99,7 +99,7 @@ export class AppService {
     // Clear store state
     this.records.$reset();
 
-    UtilsService.log("Application state reset completed");
+    DomainUtils.log("Application state reset completed");
   }
 
   /**
@@ -123,12 +123,12 @@ export class AppService {
    * @returns A promise that resolves when storage is initialized.
    */
   private async initializeStorage(): Promise<void> {
-    UtilsService.log("Initializing storage...");
+    DomainUtils.log("Initializing storage...");
 
     const storageData = await this.storage.getStorage();
     this.settings.init(storageData);
 
-    UtilsService.log("Storage initialized successfully");
+    DomainUtils.log("Storage initialized successfully");
   }
 
   /**
@@ -141,7 +141,7 @@ export class AppService {
   private async initializeDatabase(
     translations: Record<string, string>
   ): Promise<void> {
-    UtilsService.log("Initializing database...");
+    DomainUtils.log("Initializing database...");
 
     const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
     if (!currency) {
@@ -160,18 +160,18 @@ export class AppService {
 
     await this.records.init(databaseStores, translations);
 
-    UtilsService.log("Database initialized successfully");
+    DomainUtils.log("Database initialized successfully");
   }
 
   /**
    * Step 3: Fetch external data (non-critical)
    */
   private async fetchExternalData(): Promise<void> {
-    UtilsService.log("Fetching external data...");
+    DomainUtils.log("Fetching external data...");
 
     const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
     if (!currency) {
-      UtilsService.log(
+      DomainUtils.log(
         "Cannot fetch external data without valid currency",
         null,
         "warn"
@@ -194,7 +194,7 @@ export class AppService {
     if (exchangesBase.status === "fulfilled") {
       this.processExchangeBase(exchangesBase.value);
     } else {
-      UtilsService.log(
+      DomainUtils.log(
         "Failed to fetch base exchange rates",
         exchangesBase.reason,
         "warn"
@@ -204,7 +204,7 @@ export class AppService {
     if (exchangesInfo.status === "fulfilled") {
       this.processExchangeInfo(exchangesInfo.value);
     } else {
-      UtilsService.log(
+      DomainUtils.log(
         "Failed to fetch exchange info",
         exchangesInfo.reason,
         "warn"
@@ -214,7 +214,7 @@ export class AppService {
     if (indexesInfo.status === "fulfilled") {
       this.processIndexesInfo(indexesInfo.value);
     } else {
-      UtilsService.log(
+      DomainUtils.log(
         "Failed to fetch index info",
         indexesInfo.reason,
         "warn"
@@ -224,14 +224,14 @@ export class AppService {
     if (materialsInfo.status === "fulfilled") {
       this.processMaterialsInfo(materialsInfo.value);
     } else {
-      UtilsService.log(
+      DomainUtils.log(
         "Failed to fetch materials info",
         materialsInfo.reason,
         "warn"
       );
     }
 
-    UtilsService.log("External data fetch completed");
+    DomainUtils.log("External data fetch completed");
   }
 
   /**
@@ -239,17 +239,17 @@ export class AppService {
    */
   private processExchangeBase(baseData: ExchangeData[]): void {
     if (!baseData.length) {
-      UtilsService.log("No base exchange data to process", null, "warn");
+      DomainUtils.log("No base exchange data to process", null, "warn");
       return;
     }
 
     baseData.forEach((data) => {
       if (data.key.includes(CURRENCIES.USD)) {
         this.runtime.curUsd = data.value;
-        UtilsService.log(`USD exchange rate: ${data.value}`);
+        DomainUtils.log(`USD exchange rate: ${data.value}`);
       } else if (data.key.includes(CURRENCIES.EUR)) {
         this.runtime.curEur = data.value;
-        UtilsService.log(`EUR exchange rate: ${data.value}`);
+        DomainUtils.log(`EUR exchange rate: ${data.value}`);
       }
     });
   }
@@ -259,7 +259,7 @@ export class AppService {
    */
   private processExchangeInfo(infoData: ExchangeData[]): void {
     if (!infoData.length) {
-      UtilsService.log("No exchange info to process", null, "warn");
+      DomainUtils.log("No exchange info to process", null, "warn");
       return;
     }
 
@@ -267,7 +267,7 @@ export class AppService {
       this.runtime.infoExchanges.set(data.key, data.value);
     });
 
-    UtilsService.log(`Processed ${infoData.length} exchange rates`);
+    DomainUtils.log(`Processed ${infoData.length} exchange rates`);
   }
 
   /**
@@ -275,7 +275,7 @@ export class AppService {
    */
   private processIndexesInfo(indexesData: ExchangeData[]): void {
     if (!indexesData.length) {
-      UtilsService.log("No index info to process", null, "warn");
+      DomainUtils.log("No index info to process", null, "warn");
       return;
     }
 
@@ -283,7 +283,7 @@ export class AppService {
       this.runtime.infoIndexes.set(data.key, data.value);
     });
 
-    UtilsService.log(`Processed ${indexesData.length} indexes`);
+    DomainUtils.log(`Processed ${indexesData.length} indexes`);
   }
 
   /**
@@ -291,7 +291,7 @@ export class AppService {
    */
   private processMaterialsInfo(materialsData: ExchangeData[]): void {
     if (!materialsData.length) {
-      UtilsService.log("No materials info to process", null, "warn");
+      DomainUtils.log("No materials info to process", null, "warn");
       return;
     }
 
@@ -299,7 +299,7 @@ export class AppService {
       this.runtime.infoMaterials.set(data.key, data.value);
     });
 
-    UtilsService.log(`Processed ${materialsData.length} materials`);
+    DomainUtils.log(`Processed ${materialsData.length} materials`);
   }
 }
 
@@ -314,4 +314,4 @@ export async function initializeApp(
   await appService.initializeApp(translations);
 }
 
-UtilsService.log("--- services/app.ts ---");
+DomainUtils.log("--- services/app.ts ---");

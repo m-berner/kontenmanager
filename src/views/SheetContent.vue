@@ -11,7 +11,7 @@ import type { ContentItem } from "@/types";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import ContentCard from "@/components/ContentCard.vue";
 import { ROUTES } from "@/config/routes";
 import { createPrivacyContent } from "@/config/views";
@@ -29,7 +29,7 @@ const formatData = computed<ContentItem[] | undefined>(() => {
   }));
 });
 
-UtilsService.log("--- views/SheetContent.vue setup ---");
+DomainUtils.log("--- views/SheetContent.vue setup ---");
 </script>
 
 <template>

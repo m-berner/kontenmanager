@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { ROUTES } from "@/config/routes";
 import { CODES } from "@/config/codes";
 import { useRuntimeStore } from "@/stores/runtime";
@@ -75,4 +75,4 @@ const routerConfig = {
     router: routerInstance
 };
 export default routerConfig;
-UtilsService.log("--- plugins/router.js ---");
+DomainUtils.log("--- plugins/router.js ---");

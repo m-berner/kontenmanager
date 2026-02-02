@@ -11,11 +11,13 @@ import { computed } from "vue";
 import { useMenuAction, useMenuHighlight } from "@/composables/useMenu";
 import MenuItem from "@/components/MenuItem.vue";
 import type { MenuConfigData, MenuItemData } from "@/types";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<MenuConfigData>();
 
 const { executeAction } = useMenuAction();
+const { handleUserInfo } = useUserInfo();
 const { highlightedItems, highlightTemporary, clearAllHighlights } =
   useMenuHighlight();
 
@@ -24,23 +26,25 @@ const currentColor = computed(
 );
 
 const handleMenuOpen = () => {
-  UtilsService.log("DOT_MENU: handleMenuOpen", props.recordId);
+  DomainUtils.log("DOT_MENU: handleMenuOpen", props.recordId);
   highlightTemporary(props.recordId);
 };
 
 const handleItemClick = async (item: MenuItemData) => {
-  UtilsService.log("DOT_MENU: handleItemClick", [props.recordId, item.action]);
+  DomainUtils.log("DOT_MENU: handleItemClick", [props.recordId, item.action]);
 
   try {
     // Default action handling
     await executeAction(item.action, props.recordId);
     clearAllHighlights();
   } catch (err) {
-    UtilsService.log("DOT_MENU: action failed", err);
+    DomainUtils.log("DOT_MENU: action failed", err);
   }
 };
 
-UtilsService.log("--- DotMenu.vue setup ---");
+handleUserInfo("console", "DotMenu", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

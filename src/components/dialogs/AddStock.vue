@@ -12,7 +12,7 @@ import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useStocksDB } from "@/composables/useIndexedDB";
 import { useStockForm } from "@/composables/useForms";
@@ -32,7 +32,7 @@ const { isLoading, submitGuard } = useDialogGuards();
 const formRef = ref<FormInterface | null>(null);
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("ADD_STOCK : onClickOk");
+  DomainUtils.log("ADD_STOCK : onClickOk");
 
   await submitGuard({
     formRef,
@@ -48,7 +48,7 @@ const onClickOk = async (): Promise<void> => {
       const addStockID = await add(stockData);
 
       if (addStockID === -1) {
-        UtilsService.log(
+        DomainUtils.log(
           "ADD_STOCK: onClickOk",
           t("components.dialogs.addStock.messages.error")
         );
@@ -73,11 +73,13 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.addStock.title") });
 
 onMounted(() => {
-  UtilsService.log("ADD_STOCK: onMounted");
+  DomainUtils.log("ADD_STOCK: onMounted");
   reset();
 });
 
-UtilsService.log("--- AddStock.vue setup ---");
+handleUserInfo("console", "AddStock", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

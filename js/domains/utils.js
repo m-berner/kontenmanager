@@ -1,7 +1,7 @@
 import { DATE } from "@/domains/config/date";
 import { LOCAL_STORAGE } from "@/config/storage";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-export class UtilsService {
+export class DomainUtils {
     constructor() { }
     static utcDate(iso) {
         if (!DATE.ISO_DATE_REGEX.test(iso) && iso !== "") {
@@ -17,7 +17,7 @@ export class UtilsService {
     }
     static isValidISODate(iso) {
         return (DATE.ISO_DATE_REGEX.test(iso) &&
-            !isNaN(UtilsService.utcDate(iso).getTime()));
+            !isNaN(DomainUtils.utcDate(iso).getTime()));
     }
     static toNumber(value, options = {}) {
         const { locale, fallback = 0, throwOnError = false } = options;
@@ -41,8 +41,8 @@ export class UtilsService {
             }
         };
         try {
-            const detectedLocale = locale || UtilsService.detectNumberFormat(cleaned);
-            const normalized = UtilsService.normalizeNumber(cleaned, detectedLocale);
+            const detectedLocale = locale || DomainUtils.detectNumberFormat(cleaned);
+            const normalized = DomainUtils.normalizeNumber(cleaned, detectedLocale);
             const result = Number.parseFloat(normalized);
             if (Number.isNaN(result)) {
                 isParseError();
@@ -126,7 +126,7 @@ export class UtilsService {
             }
         };
     }
-    static memoize(fn) {
+    static memorize(fn) {
         const cache = new Map();
         return ((...args) => {
             const key = JSON.stringify(args);
@@ -146,4 +146,3 @@ export class UtilsService {
         };
     }
 }
-UtilsService.log("--- domain/utils.ts ---");

@@ -30,7 +30,7 @@ const { activeAccountId } = useSettingsStore();
 const formRef = ref<FormInterface | null>(null);
 
 const onClickOk = async (): Promise<void> => {
-  await handleUserInfo("console", "AddBooking", "onClickOk", {
+  void handleUserInfo("console", "AddBooking", "onClickOk", {
     logLevel: "log"
   });
   await submitGuard({

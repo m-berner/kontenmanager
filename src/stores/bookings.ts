@@ -9,7 +9,7 @@
 import type { BookingDb } from "@/types";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useBookingTypesStore } from "@/stores/bookingTypes";
 import { DomainLogic } from "@/domains/logic";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
@@ -180,7 +180,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * @param prepend - Whether to insert at the beginning.
    */
   function add(booking: BookingDb, prepend: boolean = false): void {
-    UtilsService.log("RECORDS_BOOKINGS: add");
+    DomainUtils.log("RECORDS_BOOKINGS: add");
     if (prepend) {
       items.value = [booking, ...items.value];
     } else {
@@ -194,7 +194,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * @param booking - Updated booking data.
    */
   function update(booking: BookingDb): void {
-    UtilsService.log("RECORDS_BOOKINGS: update");
+    DomainUtils.log("RECORDS_BOOKINGS: update");
     const index = getIndexById.value(booking.cID);
     if (index !== -1) {
       const newItems = [...items.value];
@@ -209,7 +209,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * @param ident - Booking ID to remove.
    */
   function remove(ident: number): void {
-    UtilsService.log("RECORDS_BOOKINGS: remove", ident, "info");
+    DomainUtils.log("RECORDS_BOOKINGS: remove", ident, "info");
     items.value = items.value.filter((entry) => entry.cID !== ident);
   }
 
@@ -217,7 +217,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * Clears all bookings.
    */
   function clean(): void {
-    UtilsService.log("RECORDS_BOOKINGS: clean");
+    DomainUtils.log("RECORDS_BOOKINGS: clean");
     items.value = [];
   }
 
@@ -257,4 +257,4 @@ export const useBookingsStore = defineStore("bookings", function () {
   };
 });
 
-UtilsService.log("--- stores/bookings.ts ---");
+DomainUtils.log("--- stores/bookings.ts ---");

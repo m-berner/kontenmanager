@@ -8,7 +8,7 @@
 
 import type { Ref } from "vue";
 import { computed } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { serializeError } from "@/domains/errors";
 
 /**
@@ -36,7 +36,7 @@ export function useDomain(url: Ref<string>) {
       const urlObj = new URL(processedUrl);
       return urlObj.hostname.replace(/^www\./, "");
     } catch (e) {
-      UtilsService.log("useDomain:domain", serializeError(e), "error");
+      DomainUtils.log("useDomain:domain", serializeError(e), "error");
       return "";
     }
   });
@@ -57,7 +57,7 @@ export function useDomain(url: Ref<string>) {
       }
       return null;
     } catch (e) {
-      UtilsService.log("useDomain:subdomain", serializeError(e), "error");
+      DomainUtils.log("useDomain:subdomain", serializeError(e), "error");
       return null;
     }
   });
@@ -74,7 +74,7 @@ export function useDomain(url: Ref<string>) {
       );
       return urlObj.protocol.replace(":", "");
     } catch (e) {
-      UtilsService.log("useDomain:protocol", serializeError(e), "error");
+      DomainUtils.log("useDomain:protocol", serializeError(e), "error");
       return null;
     }
   });
@@ -91,7 +91,7 @@ export function useDomain(url: Ref<string>) {
       );
       return urlObj.pathname;
     } catch (e) {
-      UtilsService.log("useDomain:pathname", serializeError(e), "error");
+      DomainUtils.log("useDomain:pathname", serializeError(e), "error");
       return null;
     }
   });

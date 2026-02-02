@@ -23,7 +23,7 @@ import { BROWSER_STORAGE } from "@/config/storage";
 import { databaseService } from "@/services/database";
 import { useAccountsDB, useBookingTypesDB } from "@/composables/useIndexedDB";
 import { INDEXED_DB } from "@/config/database";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 
 const { t } = useI18n();
 const { setStorage } = useStorage();
@@ -68,19 +68,19 @@ const onClickOk = async (): Promise<void> => {
           if (accountFormData.withDepot) {
             const defaults = [
               {
-                cName: UtilsService.normalizeBookingTypeName(
+                cName: DomainUtils.normalizeBookingTypeName(
                   t("components.dialogs.addAccount.bookingTypes.buy")
                 ),
                 cAccountNumberID: accountId
               },
               {
-                cName: UtilsService.normalizeBookingTypeName(
+                cName: DomainUtils.normalizeBookingTypeName(
                   t("components.dialogs.addAccount.bookingTypes.sell")
                 ),
                 cAccountNumberID: accountId
               },
               {
-                cName: UtilsService.normalizeBookingTypeName(
+                cName: DomainUtils.normalizeBookingTypeName(
                   t("components.dialogs.addAccount.bookingTypes.dividend")
                 ),
                 cAccountNumberID: accountId
@@ -119,11 +119,11 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.addAccount.title") });
 
 onBeforeMount(() => {
-  UtilsService.log("ADD_ACCOUNT: onBeforeMount");
+  DomainUtils.log("ADD_ACCOUNT: onBeforeMount");
   reset();
 });
 
-await handleUserInfo("console", "AddAccount", "--- vue setup ---", {
+handleUserInfo("console", "AddAccount", "--- vue setup ---", {
   logLevel: "log"
 });
 </script>

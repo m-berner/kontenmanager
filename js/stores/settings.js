@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { defineStore } from "pinia";
 import { useStorage } from "@/composables/useStorage";
 import { BROWSER_STORAGE } from "@/config/storage";
@@ -21,7 +21,7 @@ export const useSettingsStore = defineStore("settings", function () {
         await setStorage(storageKey, newValue);
     }
     function init(storage) {
-        UtilsService.log("SETTINGS: init");
+        DomainUtils.log("SETTINGS: init");
         skin.value = storage[BROWSER_STORAGE.SKIN.key];
         bookingsPerPage.value = storage[BROWSER_STORAGE.BOOKINGS_PER_PAGE.key];
         stocksPerPage.value = storage[BROWSER_STORAGE.STOCKS_PER_PAGE.key];
@@ -69,4 +69,4 @@ export const useSettingsStore = defineStore("settings", function () {
         setActiveAccountId
     };
 });
-UtilsService.log("--- stores/settings.ts ---");
+DomainUtils.log("--- stores/settings.ts ---");

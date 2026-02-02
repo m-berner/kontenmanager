@@ -1,7 +1,7 @@
 import { reactive } from "vue";
 import { INDEXED_DB } from "@/config/database";
 import { DATE } from "@/domains/config/date";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 let stockFormManagerInstance = null;
 let accountFormManagerInstance = null;
 let bookingFormManagerInstance = null;
@@ -169,7 +169,7 @@ function createBookingTypeFormManager() {
     };
     function mapBookingTypeFormToDb(data, accountId) {
         const bookingType = {
-            cName: UtilsService.normalizeBookingTypeName(data.name),
+            cName: DomainUtils.normalizeBookingTypeName(data.name),
             cAccountNumberID: accountId
         };
         if (!data.id)

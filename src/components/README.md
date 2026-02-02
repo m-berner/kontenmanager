@@ -69,7 +69,7 @@ Centralized constants for the component layer, including:
    validation behavior.
 4. **Loading States**: Use `isLoading` from `useDialogGuards` to disable buttons and show progress indicators during
    asynchronous operations.
-5. **Clean Setup**: Log component initialization via `UtilsService.log` for easier debugging in the extension's console.
+5. **Clean Setup**: Log component initialization via `DomainUtils.log` for easier debugging in the extension's console.
 
 ## Testing
 

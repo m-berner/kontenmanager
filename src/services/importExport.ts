@@ -18,7 +18,7 @@ import type {
   StockDb
 } from "@/types";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { INDEXED_DB } from "@/config/database";
 
 import { ImportExportValidator } from "@/domains/importExport/validator";
@@ -32,7 +32,7 @@ export class ImportExportService {
     this._transformer = new ImportExportTransformer(
       INDEXED_DB,
       DATE,
-      UtilsService.isoDate
+      DomainUtils.isoDate
     );
   }
 
@@ -216,4 +216,4 @@ export class ImportExportService {
   }
 }
 
-UtilsService.log("--- services/importExport.ts ---");
+DomainUtils.log("--- services/importExport.ts ---");

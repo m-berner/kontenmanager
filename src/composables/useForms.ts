@@ -20,7 +20,7 @@ import type {
 } from "@/types";
 import { INDEXED_DB } from "@/config/database";
 import { DATE } from "@/domains/config/date";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 
 let stockFormManagerInstance: ReturnType<typeof createStockFormManager> | null =
   null;
@@ -253,7 +253,7 @@ function createBookingTypeFormManager() {
     accountId: number
   ): BookingTypeDb | Omit<BookingTypeDb, "cID"> {
     const bookingType = {
-      cName: UtilsService.normalizeBookingTypeName(data.name),
+      cName: DomainUtils.normalizeBookingTypeName(data.name),
       cAccountNumberID: accountId
     };
     if (!data.id) return bookingType;

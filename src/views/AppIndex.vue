@@ -16,7 +16,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import AlertOverlay from "@/components/AlertOverlay.vue";
 import { initializeApp } from "@/services/app";
 import { useTheme } from "vuetify";
@@ -31,7 +31,7 @@ const theme = useTheme();
 const isInitialized = ref(false);
 
 onBeforeMount(async () => {
-  UtilsService.log("APP_INDEX: onBeforeMount");
+  DomainUtils.log("APP_INDEX: onBeforeMount");
 
   try {
     await initializeApp({
@@ -43,7 +43,7 @@ onBeforeMount(async () => {
     theme.global.name.value = skin.value;
     isInitialized.value = true;
 
-    UtilsService.log("APP_INDEX: Initialization successful");
+    DomainUtils.log("APP_INDEX: Initialization successful");
   } catch (err) {
     throw new AppError(
       ERROR_CODES.VIEWS.APP_INDEX.A,
@@ -54,7 +54,7 @@ onBeforeMount(async () => {
   }
 });
 
-UtilsService.log(
+DomainUtils.log(
   "--- views/AppIndex.vue setup ---",
   window.location.href,
   "info"

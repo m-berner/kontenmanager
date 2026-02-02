@@ -14,7 +14,7 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 /**
  * General utility service providing date, number, and string manipulation helpers.
  */
-export class UtilsService {
+export class DomainUtils {
   constructor() {}
 
   /**
@@ -64,7 +64,7 @@ export class UtilsService {
   static isValidISODate(iso: string): boolean {
     return (
       DATE.ISO_DATE_REGEX.test(iso) &&
-      !isNaN(UtilsService.utcDate(iso).getTime())
+      !isNaN(DomainUtils.utcDate(iso).getTime())
     );
   }
 
@@ -115,8 +115,8 @@ export class UtilsService {
 
     try {
       // Auto-detect format if locale not specified
-      const detectedLocale = locale || UtilsService.detectNumberFormat(cleaned);
-      const normalized = UtilsService.normalizeNumber(cleaned, detectedLocale);
+      const detectedLocale = locale || DomainUtils.detectNumberFormat(cleaned);
+      const normalized = DomainUtils.normalizeNumber(cleaned, detectedLocale);
       const result = Number.parseFloat(normalized);
 
       if (Number.isNaN(result)) {
@@ -163,8 +163,8 @@ export class UtilsService {
   /**
    * Normalizes a localized numeric string into a canonical form parseable by `parseFloat`.
    *
-   * - For `de`, removes thousand separators (.) and replaces decimal comma with dot.
-   * - For `en`, removes thousand separators (,) and keeps dot as decimal.
+   * - For `de`, removes a thousand separators `.` and replaces decimal comma with dot.
+   * - For `en`, removes a thousand separators `,` and keeps dot as decimal.
    *
    * @param str - Localized numeric string.
    * @param locale - Detected locale: `"de"` or `"en"`.
@@ -271,7 +271,7 @@ export class UtilsService {
    */
   /**
    * Creates a throttled version of a function that only invokes `fn` at most once
-   * every `limit` milliseconds.
+   * every `limit` millisecond.
    *
    * @typeParam T - Function type.
    * @param fn - Function to throttle.
@@ -297,15 +297,15 @@ export class UtilsService {
    * Memoize expensive computations
    */
   /**
-   * Memoizes a pure function by caching results keyed by the JSON-serialized arguments.
+   * Memorizes a pure function by caching results keyed by the JSON-serialized arguments.
    *
    * Note: Suitable only for functions with JSON-serializable arguments and deterministic outputs.
    *
    * @typeParam T - Function type.
-   * @param fn - Function to memoize.
-   * @returns A memoized version of the function.
+   * @param fn - Function to memorize.
+   * @returns A memorized version of the function.
    */
-  static memoize<T extends (..._args: any[]) => any>(fn: T): T {
+  static memorize<T extends (..._args: any[]) => any>(fn: T): T {
     const cache = new Map<string, ReturnType<T>>();
 
     return ((...args: Parameters<T>) => {
@@ -338,5 +338,3 @@ export class UtilsService {
     };
   }
 }
-
-UtilsService.log("--- domain/utils.ts ---");

@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useAlertStore } from "@/stores/alerts";
 import { useBrowser } from "@/composables/useBrowser";
 import type { AlertKind, HandleUserInfoOptions, Mode } from "@/types";
@@ -14,7 +14,7 @@ import type { AlertKind, HandleUserInfoOptions, Mode } from "@/types";
  * Composable that centralizes user feedback mechanisms across the app.
  *
  * Supports three delivery modes:
- * - `console`: log via `UtilsService.log` with optional data and log level
+ * - `console`: log via `DomainUtils.log` with optional data and log level
  * - `alert`: use the global alert overlay (including confirmation dialogs)
  * - `notice`: native browser notification using the WebExtension API
  *
@@ -27,7 +27,7 @@ export function useUserInfo() {
    * @param mode - Delivery mode: `console`, `alert`, or `notice`.
    * @param title - Contextual title or source of the message.
    * @param message - The main message or description.
-   * @param options - Extended options for alerts, notices, logging and delays.
+   * @param options - Extended options for alerts, notices, logging, and delays.
    * @returns A promise that may resolve to a boolean for `confirm` alerts, a number (alert ID), or void.
    */
   async function handleUserInfo(
@@ -40,7 +40,7 @@ export function useUserInfo() {
 
     if (mode === "console") {
       // Log with optional context data and level
-      UtilsService.log(`${title}: ${message}`.trim(), data, logLevel);
+      DomainUtils.log(`${title}: ${message}`.trim(), data, logLevel);
       return;
     }
 
@@ -75,7 +75,7 @@ export function useUserInfo() {
     }
 
     // Fallback to console if an unknown mode is provided
-    UtilsService.log(`${title}: ${message}`.trim(), data ?? null, logLevel);
+    DomainUtils.log(`${title}: ${message}`.trim(), data ?? null, logLevel);
   }
 
   return {

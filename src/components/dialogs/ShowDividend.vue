@@ -13,7 +13,7 @@ import { storeToRefs } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
-import { UtilsService } from "@/domains/utils";
+import { useUserInfo } from "@/composables/useUserInfo";
 import { createDividendHeaders, VIEWS } from "@/config/views";
 
 const { d, n, t } = useI18n();
@@ -21,13 +21,16 @@ const settings = useSettingsStore();
 const { dividendsPerPage } = storeToRefs(settings);
 const { setDividendsPerPage } = settings;
 const { activeId } = useRuntimeStore();
+const { handleUserInfo } = useUserInfo();
 const records = useRecordsStore();
 
 const HEADERS = computed(() => createDividendHeaders(t));
 
 defineExpose({ title: t("components.dialogs.showDividend.title") });
 
-UtilsService.log("--- ShowDividend.vue setup ---");
+handleUserInfo("console", "ShowDividend", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>

@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import DynamicList from "@/components/DynamicList.vue";
 import ThemeSelector from "@/components/ThemeSelector.vue";
 import ServiceSelector from "@/components/ServiceSelector.vue";
@@ -23,7 +23,7 @@ const TABS = computed(() => createTabs(t));
 
 const tab = ref<number>(0);
 
-UtilsService.log(
+DomainUtils.log(
   "--- views/OptionsIndex.vue setup ---",
   window.location.href,
   "info"

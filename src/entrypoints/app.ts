@@ -7,7 +7,7 @@
  */
 
 import { createApp } from "vue";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import vuetifyPlugin from "@/plugins/vuetify";
 import i18nPlugin from "@/plugins/i18n";
 import componentsPlugin from "@/plugins/components";
@@ -24,14 +24,14 @@ const app = createApp(AppIndex);
  * Global error handler for the app entrypoint.
  *
  * Captures unhandled exceptions thrown in components and logs them via
- * `UtilsService.log` for inspection in the browser console.
+ * `DomainUtils.log` for inspection in the browser console.
  *
  * @param err - The error thrown by Vue/component code.
  * @param _instance - The component instance where the error occurred (unused).
  * @param info - Vue error info string indicating the lifecycle/handler.
  */
 app.config.errorHandler = (err: unknown, _instance, info): void => {
-  UtilsService.log("APP: errorHandler", { err, info }, "error");
+  DomainUtils.log("APP: errorHandler", { err, info }, "error");
 };
 
 /**
@@ -44,7 +44,7 @@ app.config.errorHandler = (err: unknown, _instance, info): void => {
  * @param trace - Component trace with hierarchy information.
  */
 app.config.warnHandler = (msg: string, _instance, trace): void => {
-  UtilsService.log("APP: warnHandler", { msg, trace }, "warn");
+  DomainUtils.log("APP: warnHandler", { msg, trace }, "warn");
 };
 
 app.use(vuetifyPlugin.vuetify);
@@ -54,4 +54,4 @@ app.use(piniaPlugin.pinia);
 app.use(routerPlugin.router);
 app.mount("#app");
 
-UtilsService.log("--- entrypoints/app.js ---");
+DomainUtils.log("--- entrypoints/app.js ---");

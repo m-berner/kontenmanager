@@ -17,7 +17,7 @@ import type {
   StringNumberPair
 } from "@/types";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { FETCH } from "@/config/fetch";
 import { STORES } from "@/config/stores";
 import { BROWSER_STORAGE } from "@/config/storage";
@@ -341,9 +341,9 @@ export class FetchService {
 
           const ask = doc.querySelector("#ask")?.textContent || "0";
           const bid = doc.querySelector("#bid")?.textContent || "0";
-          const quote = UtilsService.mean([
-            UtilsService.toNumber(bid),
-            UtilsService.toNumber(ask)
+          const quote = DomainUtils.mean([
+            DomainUtils.toNumber(bid),
+            DomainUtils.toNumber(ask)
           ]);
 
           return {
@@ -425,11 +425,11 @@ export class FetchService {
   ): Promise<string> {
     const cached = this.cache.get(key, ttl);
     if (cached) {
-      UtilsService.log(`Cache hit for ${key}`);
+      DomainUtils.log(`Cache hit for ${key}`);
       return cached;
     }
 
-    UtilsService.log(`Cache miss for ${key}, fetching...`);
+    DomainUtils.log(`Cache miss for ${key}, fetching...`);
     const response = await this.fetchWithRetry(url);
     const text = await response.text();
 
@@ -522,7 +522,7 @@ export class FetchService {
       return [];
     }
 
-    UtilsService.log("Fetching min/rate/max data", {
+    DomainUtils.log("Fetching min/rate/max data", {
       count: storageOnline.length
     });
 
@@ -627,7 +627,7 @@ export class FetchService {
             if (stopQf && stopGm) break;
           }
         } catch (error) {
-          UtilsService.log(
+          DomainUtils.log(
             "Failed to fetch date data",
             { entry, error },
             "warn"
@@ -690,7 +690,7 @@ export class FetchService {
   }
 
   async fetchIndexData(): Promise<StringNumberPair[]> {
-    UtilsService.log("Fetching index data");
+    DomainUtils.log("Fetching index data");
 
     const html = await this.fetchWithCache(
       FETCH.FNET.INDEXES,
@@ -708,7 +708,7 @@ export class FetchService {
         if (indexValue?.includes(title || "") && valueText) {
           indexes.push({
             key: property,
-            value: UtilsService.toNumber(valueText)
+            value: DomainUtils.toNumber(valueText)
           });
           break;
         }
@@ -719,7 +719,7 @@ export class FetchService {
   }
 
   async fetchMaterialData(): Promise<StringNumberPair[]> {
-    UtilsService.log("Fetching material data");
+    DomainUtils.log("Fetching material data");
 
     const html = await this.fetchWithCache(
       FETCH.FNET.MATERIALS,
@@ -735,7 +735,7 @@ export class FetchService {
 
       if (nameCell?.tagName === "TD" && valueCell) {
         const name = nameCell.textContent?.trim();
-        const value = UtilsService.toNumber(valueCell.textContent);
+        const value = DomainUtils.toNumber(valueCell.textContent);
 
         if (name) {
           materials.push({ key: name, value });
@@ -777,4 +777,4 @@ export class FetchService {
 
 export const fetchService = new FetchService();
 
-UtilsService.log("--- services/fetch.ts ---");
+DomainUtils.log("--- services/fetch.ts ---");

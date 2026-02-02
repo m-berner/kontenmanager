@@ -9,7 +9,7 @@
 import { createI18n } from "vue-i18n";
 import deDE from "@/locales/de-DE.json";
 import enUS from "@/locales/en-US.json";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import type { I18nWrapper, MessageSchemaType } from "@/types";
 
@@ -36,8 +36,8 @@ const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">({
   missing(locale, key /*, instance, values */) {
     console.error(import.meta.env.VITE_DEV);
     //if (import.meta.env.DEV) {
-    // You can route this to your UtilsService if you prefer
-    // UtilsService.log(`[i18n:missing] locale=${locale} key=${key}`);
+    // You can route this to your DomainUtils if you prefer
+    // DomainUtils.log(`[i18n:missing] locale=${locale} key=${key}`);
     console.warn(`[i18n:missing] locale=${locale} key=${key}`);
     //}
   },
@@ -163,4 +163,4 @@ const i18nConfig: I18nWrapper = {
 
 export default i18nConfig;
 
-UtilsService.log("--- plugins/i18n.js ---");
+DomainUtils.log("--- plugins/i18n.js ---");

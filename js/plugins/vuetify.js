@@ -2,7 +2,7 @@ import { createVuetify } from "vuetify";
 import "vuetify/styles";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
 import { mdiAccountEdit, mdiAccountPlus, mdiAccountRemove, mdiBellPlus, mdiBookEdit, mdiBookPlus, mdiBookRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiConnection, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDomainSwitch, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFileUpload, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiFilterSettings, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiStoreEdit } from "@mdi/js";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 const vuetifyInstance = createVuetify({
     theme: {
         defaultTheme: "ocean",
@@ -140,4 +140,4 @@ const vuetifyConfig = {
     vuetify: vuetifyInstance
 };
 export default vuetifyConfig;
-UtilsService.log("--- plugins/vuetify.js ---");
+DomainUtils.log("--- plugins/vuetify.js ---");

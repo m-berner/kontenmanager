@@ -7,7 +7,7 @@
  */
 
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import type {
   BookingDb,
   BookingTypeDb,
@@ -188,7 +188,7 @@ export class DatabaseService extends IndexedDbBase {
   }
 
   async getAccountRecords(accountId: number): Promise<RecordsDbData> {
-    UtilsService.log("DATABASE: getAccountRecords");
+    DomainUtils.log("DATABASE: getAccountRecords");
     return this.withTransaction(
       [
         INDEXED_DB.STORE.BOOKINGS.NAME,
@@ -353,4 +353,4 @@ export class DatabaseService extends IndexedDbBase {
 
 export const databaseService = new DatabaseService();
 
-UtilsService.log("--- services/database.ts ---");
+DomainUtils.log("--- services/database.ts ---");

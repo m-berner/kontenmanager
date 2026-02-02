@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
-import { useUserInfo } from "@/composables/useUserInfo";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useAccountsStore } from "@/stores/accounts";
 import { useBookingsStore } from "@/stores/bookings";
 import { useBookingTypesStore } from "@/stores/bookingTypes";
@@ -13,7 +12,7 @@ export const useRecordsStore = defineStore("records", function () {
     const bookingTypesStore = useBookingTypesStore();
     const stocksStore = useStocksStore();
     function clean(all = true) {
-        UtilsService.log("RECORDS: clean");
+        DomainUtils.log("RECORDS: clean");
         if (all) {
             accountsStore.clean();
         }
@@ -23,14 +22,12 @@ export const useRecordsStore = defineStore("records", function () {
     }
     async function init(storesDB, messages, removeAccounts = true) {
         const settings = useSettingsStore();
-        const { handleUserInfo } = useUserInfo();
         await DomainLogic.initializeRecords(storesDB, {
             accounts: accountsStore,
             bookings: bookingsStore,
             bookingTypes: bookingTypesStore,
             stocks: stocksStore,
-            settings,
-            handleUserInfo
+            settings
         }, messages, removeAccounts);
     }
     return {

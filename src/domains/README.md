@@ -52,7 +52,7 @@ Encapsulates complex calculations and orchestration that don't belong in a singl
 Defines the standardized error structure used throughout the application, facilitating consistent error handling and
 localized user feedback.
 
-### `utils.ts` (`UtilsService`)
+### `utils.ts` (`DomainUtils`)
 
 General-purpose business utilities, such as date normalization and logging wrappers, that are used across multiple
 domain boundaries.

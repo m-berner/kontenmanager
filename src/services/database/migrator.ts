@@ -7,7 +7,7 @@
  */
 
 import { INDEXED_DB } from "@/config/database";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Handles database setup, store creation, and migrations.
@@ -24,7 +24,7 @@ export class DatabaseMigrator {
     const oldVersion = ev.oldVersion;
     const newVersion = ev.newVersion || INDEXED_DB.VERSION;
 
-    UtilsService.log(
+    DomainUtils.log(
       `Database upgrade: ${oldVersion} -> ${newVersion}`,
       "info"
     );

@@ -18,7 +18,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { UtilsService } from "@/domains/utils";
+import { DomainUtils } from "@/domains/utils";
 import { useStocksDB } from "@/composables/useIndexedDB";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useDialogGuards } from "@/composables/useDialogGuards";
@@ -34,7 +34,7 @@ const records = useRecordsStore();
 const selected = ref<StockItem | null>(null);
 
 const onClickOk = async (): Promise<void> => {
-  UtilsService.log("FADE_IN_STOCK: onClickOk");
+  DomainUtils.log("FADE_IN_STOCK: onClickOk");
 
   if (
     !(await ensureConnected(
@@ -81,11 +81,13 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.fadeInStock.title") });
 
 onBeforeMount(() => {
-  UtilsService.log("FADE_IN_STOCK: onBeforeMount");
+  DomainUtils.log("FADE_IN_STOCK: onBeforeMount");
   selected.value = null;
 });
 
-UtilsService.log("--- FadeInStock.vue setup ---");
+handleUserInfo("console", "FadeInStock", "--- vue setup ---", {
+  logLevel: "log"
+});
 </script>
 
 <template>
