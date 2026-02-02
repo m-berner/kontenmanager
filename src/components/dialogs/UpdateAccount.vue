@@ -67,12 +67,9 @@ const onClickOk = async (): Promise<void> => {
       records.accounts.update(account);
       await update(account);
       runtime.resetTeleport();
-      await handleUserInfo(
-        "notice",
-        "UpdateAccount",
-        "success",
-        { noticeLines: [t("components.dialogs.updateAccount.messages.success")] }
-      );
+      await handleUserInfo("notice", "UpdateAccount", "success", {
+        noticeLines: [t("components.dialogs.updateAccount.messages.success")]
+      });
     }
   });
 };

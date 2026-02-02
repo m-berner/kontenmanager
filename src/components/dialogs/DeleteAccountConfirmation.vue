@@ -74,16 +74,11 @@ const onClickOk = async (): Promise<void> => {
       await switchToNextAccount();
 
       resetTeleport();
-      await handleUserInfo(
-        "notice",
-        "DeleteAccountConfirmation",
-        "success",
-        {
-          noticeLines: [
-            t("components.dialogs.deleteAccountConfirmation.messages.success")
-          ]
-        }
-      );
+      await handleUserInfo("notice", "DeleteAccountConfirmation", "success", {
+        noticeLines: [
+          t("components.dialogs.deleteAccountConfirmation.messages.success")
+        ]
+      });
     } catch (err) {
       throw new AppError(
         ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION,

@@ -52,12 +52,9 @@ const onClickOk = async (): Promise<void> => {
           "ADD_STOCK: onClickOk",
           t("components.dialogs.addStock.messages.error")
         );
-        await handleUserInfo(
-          "notice",
-          "AddStock",
-          "add failed",
-          { noticeLines: [t("components.dialogs.addStock.messages.error")] }
-        );
+        await handleUserInfo("notice", "AddStock", "add failed", {
+          noticeLines: [t("components.dialogs.addStock.messages.error")]
+        });
         return;
       }
 
@@ -66,12 +63,9 @@ const onClickOk = async (): Promise<void> => {
       await records.stocks.refreshOnlineData(runtime.stocksPage);
 
       runtime.resetTeleport();
-      await handleUserInfo(
-        "notice",
-        "AddStock",
-        "success",
-        { noticeLines: [t("components.dialogs.addStock.messages.success")] }
-      );
+      await handleUserInfo("notice", "AddStock", "success", {
+        noticeLines: [t("components.dialogs.addStock.messages.success")]
+      });
     }
   });
 };

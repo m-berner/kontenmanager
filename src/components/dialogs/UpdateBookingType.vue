@@ -79,12 +79,11 @@ const onClickOk = async (): Promise<void> => {
           bookingTypeFormData.id as number
         )
       ) {
-        await handleUserInfo(
-          "notice",
-          "UpdateBookingType",
-          "duplicate",
-          { noticeLines: [t("components.dialogs.updateBookingType.messages.error")] }
-        );
+        await handleUserInfo("notice", "UpdateBookingType", "duplicate", {
+          noticeLines: [
+            t("components.dialogs.updateBookingType.messages.error")
+          ]
+        });
         return;
       }
 
@@ -95,12 +94,11 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType);
       await update(bookingType);
       runtime.resetTeleport();
-      await handleUserInfo(
-        "notice",
-        "UpdateBookingType",
-        "success",
-        { noticeLines: [t("components.dialogs.updateBookingType.messages.success")] }
-      );
+      await handleUserInfo("notice", "UpdateBookingType", "success", {
+        noticeLines: [
+          t("components.dialogs.updateBookingType.messages.success")
+        ]
+      });
     }
   });
 };

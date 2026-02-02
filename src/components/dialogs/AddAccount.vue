@@ -109,12 +109,9 @@ const onClickOk = async (): Promise<void> => {
 
       records.clean(false);
       runtime.resetTeleport();
-      await handleUserInfo(
-        "notice",
-        "AddAccount",
-        "onClickOk: success",
-        { noticeLines: [t("components.dialogs.addAccount.messages.success")] }
-      );
+      await handleUserInfo("notice", "AddAccount", "onClickOk: success", {
+        noticeLines: [t("components.dialogs.addAccount.messages.success")]
+      });
     }
   });
 };

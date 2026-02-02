@@ -44,35 +44,26 @@ const onClickOk = async (): Promise<void> => {
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       if (records.bookingTypes.isDuplicate(bookingTypeFormData.name)) {
-        await handleUserInfo(
-          "notice",
-          "AddBookingType",
-          "duplicate",
-          { noticeLines: [t("components.dialogs.addBookingType.messages.error")] }
-        );
+        await handleUserInfo("notice", "AddBookingType", "duplicate", {
+          noticeLines: [t("components.dialogs.addBookingType.messages.error")]
+        });
         return;
       }
       const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
       const addBookingTypeID = await add(bookingTypeData);
       if (addBookingTypeID === -1) {
         UtilsService.log("ADD_BOOKING_TYPE: Failed to create booking type");
-        await handleUserInfo(
-          "notice",
-          "AddBookingType",
-          "add failed",
-          { noticeLines: [t("components.dialogs.addBookingType.messages.error")] }
-        );
+        await handleUserInfo("notice", "AddBookingType", "add failed", {
+          noticeLines: [t("components.dialogs.addBookingType.messages.error")]
+        });
         return;
       }
 
       records.bookingTypes.add({ ...bookingTypeData, cID: addBookingTypeID });
       reset();
-      await handleUserInfo(
-        "notice",
-        "AddBookingType",
-        "success",
-        { noticeLines: [t("components.dialogs.addBookingType.messages.success")] }
-      );
+      await handleUserInfo("notice", "AddBookingType", "success", {
+        noticeLines: [t("components.dialogs.addBookingType.messages.success")]
+      });
     }
   });
 };

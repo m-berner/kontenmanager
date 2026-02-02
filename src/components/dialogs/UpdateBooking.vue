@@ -90,12 +90,9 @@ const onClickOk = async (): Promise<void> => {
       records.bookings.update(booking);
       await update(booking);
       runtime.resetTeleport();
-      await handleUserInfo(
-        "notice",
-        "UpdateBooking",
-        "success",
-        { noticeLines: [t("components.dialogs.updateBooking.messages.success")] }
-      );
+      await handleUserInfo("notice", "UpdateBooking", "success", {
+        noticeLines: [t("components.dialogs.updateBooking.messages.success")]
+      });
       runtime.resetOptionsMenuColors();
     }
   });

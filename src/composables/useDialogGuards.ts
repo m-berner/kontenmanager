@@ -192,7 +192,13 @@ export function useDialogGuards() {
     }
 
     if (isConnected !== undefined) {
-      if (!(await ensureConnected(isConnected, handleUserInfo, connectionErrorMessage)))
+      if (
+        !(await ensureConnected(
+          isConnected,
+          handleUserInfo,
+          connectionErrorMessage
+        ))
+      )
         return;
     }
 

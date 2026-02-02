@@ -113,9 +113,7 @@ export function useMenuHighlight() {
    * Gets the highlight color for a record ID, if present.
    * @param recordId - Target record identifier.
    */
-  const getHighlightColor = (
-    recordId: number
-  ): HighlightColor | undefined => {
+  const getHighlightColor = (recordId: number): HighlightColor | undefined => {
     return highlightedItems.value.get(recordId);
   };
 
@@ -190,12 +188,9 @@ export function useMenuAction() {
     async deleteBooking(recordId: number) {
       records.bookings.remove(recordId);
       await removeBooking(recordId);
-      await handleUserInfo(
-        "notice",
-        "Menu",
-        "deleteBooking",
-        { noticeLines: ["Booking deleted successfully"] }
-      );
+      await handleUserInfo("notice", "Menu", "deleteBooking", {
+        noticeLines: ["Booking deleted successfully"]
+      });
     },
 
     // Stock Actions
@@ -209,27 +204,19 @@ export function useMenuAction() {
 
     async deleteStock(recordId: number) {
       if (checkStockHasBookings(recordId)) {
-        await handleUserInfo(
-          "notice",
-          "Cannot Delete",
-          "deleteStock",
-          {
-            noticeLines: [
-              "This stock has associated bookings. Delete bookings first."
-            ]
-          }
-        );
+        await handleUserInfo("notice", "Cannot Delete", "deleteStock", {
+          noticeLines: [
+            "This stock has associated bookings. Delete bookings first."
+          ]
+        });
         return;
       }
 
       records.stocks.remove(recordId);
       await removeStock(recordId);
-      await handleUserInfo(
-        "notice",
-        "Menu",
-        "deleteStock",
-        { noticeLines: ["Stock deleted successfully"] }
-      );
+      await handleUserInfo("notice", "Menu", "deleteStock", {
+        noticeLines: ["Stock deleted successfully"]
+      });
     },
 
     async fadeInStock() {
@@ -287,12 +274,9 @@ export function useMenuAction() {
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
       } else {
-        await handleUserInfo(
-          "notice",
-          "Menu",
-          "openLink",
-          { noticeLines: ["No URL available for this stock"] }
-        );
+        await handleUserInfo("notice", "Menu", "openLink", {
+          noticeLines: ["No URL available for this stock"]
+        });
       }
     },
 

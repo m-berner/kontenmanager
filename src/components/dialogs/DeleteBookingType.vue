@@ -57,24 +57,22 @@ const onClickOk = async (): Promise<void> => {
   await withLoading(async () => {
     try {
       if (!canDeleteBookingType(bookingTypeFormData.id!)) {
-        await handleUserInfo(
-          "notice",
-          "DeleteBookingType",
-          "not deletable",
-          { noticeLines: [t("components.dialogs.deleteBookingType.messages.error")] }
-        );
+        await handleUserInfo("notice", "DeleteBookingType", "not deletable", {
+          noticeLines: [
+            t("components.dialogs.deleteBookingType.messages.error")
+          ]
+        });
         return;
       }
 
       records.bookingTypes.remove(bookingTypeFormData.id!);
       await remove(bookingTypeFormData.id!);
       runtime.resetTeleport();
-      await handleUserInfo(
-        "notice",
-        "DeleteBookingType",
-        "success",
-        { noticeLines: [t("components.dialogs.deleteBookingType.messages.success")] }
-      );
+      await handleUserInfo("notice", "DeleteBookingType", "success", {
+        noticeLines: [
+          t("components.dialogs.deleteBookingType.messages.success")
+        ]
+      });
     } catch (err) {
       throw new AppError(
         ERROR_CODES.DELETE_BOOKING_TYPE,

@@ -263,7 +263,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
  * Registry of validations for header bar menu items.
  * Each function returns true if the action is currently permitted.
  */
-const dialogValidations: Record<MenuActionType, () => boolean | Promise<boolean>> = {
+const dialogValidations: Record<
+  MenuActionType,
+  () => boolean | Promise<boolean>
+> = {
   updateAccount: async () => {
     if (accountItems.value.length === 0) {
       await handleUserInfo(
