@@ -41,22 +41,7 @@ export const STORES = Object.freeze({
     ["pb", "Bleipreis"],
     ["pd", "Palladiumpreis"]
   ]),
-  STOCK_STORE_MEMORY: STORE_MEMORY
-  // STOCK_STORE_MEMORY: {
-  //   mPortfolio: 0,
-  //   mInvest: 0,
-  //   mChange: 0,
-  //   mBuyValue: 0,
-  //   mEuroChange: 0,
-  //   mMin: 0,
-  //   mValue: 0,
-  //   mMax: 0,
-  //   mDividendYielda: 0,
-  //   mDividendYeara: 0,
-  //   mDividendYieldb: 0,
-  //   mDividendYearb: 0,
-  //   mRealDividend: 0,
-  //   mRealBuyValue: 0,
-  //   mDeleteable: false
-  // }
+  // Default in-memory (RAM-only) fields for stock records
+  // Use the STOCK shape from STORE_MEMORY to flatten RAM fields into stock items
+  STOCK_STORE_MEMORY: STORE_MEMORY.STOCK
 });

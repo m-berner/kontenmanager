@@ -33,5 +33,5 @@ export const STORES = Object.freeze({
         ["pb", "Bleipreis"],
         ["pd", "Palladiumpreis"]
     ]),
-    STOCK_STORE_MEMORY: STORE_MEMORY
+    STOCK_STORE_MEMORY: STORE_MEMORY.STOCK
 });
