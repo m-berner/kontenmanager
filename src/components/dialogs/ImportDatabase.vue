@@ -7,6 +7,11 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview Dialog that imports a JSON backup into IndexedDB.
+ * Validates the file, runs integrity checks, executes an atomic import, and
+ * reports results via the alert overlay. Offers creating defaults when needed.
+ */
 import type {
   BackupData,
   BookingDb,
@@ -32,7 +37,7 @@ import { useStorage } from "@/composables/useStorage";
 import { useAccountsDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { ImportExportService } from "@/services/importExport";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { DEFAULTS } from "@/config/defaults";
 import { INDEXED_DB } from "@/config/database";
 import { DomainValidators } from "@/domains/validation/validators";

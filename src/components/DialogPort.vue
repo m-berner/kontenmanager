@@ -7,6 +7,11 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview Central dialog hub component.
+ * Renders dialog components by name via Vue Teleport, driven by `useRuntimeStore`.
+ * Ensures a single, centralized point for modal orchestration across the app.
+ */
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRuntimeStore } from "@/stores/runtime";

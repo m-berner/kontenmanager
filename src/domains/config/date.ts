@@ -13,5 +13,3 @@ export const DATE = Object.freeze({
   ISO_DATE_REGEX: /^\d{4}-\d{2}-\d{2}$/,
   ZERO_TIME: 0
 });
-
-export type I_DATE = typeof DATE;

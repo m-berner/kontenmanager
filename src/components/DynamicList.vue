@@ -7,6 +7,10 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview Dynamic list component for editing string collections like
+ * markets or exchanges. Provides add/remove actions and emits updated arrays.
+ */
 import type { DynamicListProps, ExchangeData } from "@/types";
 import { computed, onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -17,7 +21,7 @@ import { AppError } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { fetchService } from "@/services/fetch";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { COMPONENTS } from "@/config/components";
 import { useUserInfo } from "@/composables/useUserInfo";
 

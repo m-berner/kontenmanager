@@ -7,6 +7,12 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview AppIndex is the application shell for the popup/app context.
+ * It orchestrates startup initialization, theme application, and renders the
+ * named view outlets (title, header, info, default, footer). Displays a
+ * loading indicator until initialization completes.
+ */
 import { onBeforeMount, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useI18n } from "vue-i18n";

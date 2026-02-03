@@ -1,8 +1,7 @@
-import { DEFAULTS } from "@/config/defaults";
+import { STORE_MEMORY } from "@/domains/config/storeMemory";
 import { DATE } from "@/domains/config/date";
-import { SESSION_STORAGE } from "@/config/storage";
-import { useStorage } from "@/composables/useStorage";
 import { DomainUtils } from "@/domains/utils";
+let hideImportAlert = false;
 export class DomainLogic {
     static calculateTotalSum(bookings) {
         if (bookings.length === 0)
@@ -110,7 +109,7 @@ export class DomainLogic {
         stores.stocks.clean();
         storesDB.accountsDB.forEach((a) => stores.accounts.add(a));
         storesDB.bookingTypesDB.forEach((bt) => stores.bookingTypes.add(bt));
-        storesDB.stocksDB.forEach((s) => stores.stocks.add({ ...s, ...DEFAULTS.STOCK_MEMORY }));
+        storesDB.stocksDB.forEach((s) => stores.stocks.add({ ...s, ...STORE_MEMORY.STOCK }));
         storesDB.bookingsDB.forEach((b) => stores.bookings.add(b));
         stores.bookings.items.sort((a, b) => new Date(b.cBookDate).getTime() - new Date(a.cBookDate).getTime());
         stores.stocks.add({
@@ -126,14 +125,10 @@ export class DomainLogic {
             cAccountNumberID: stores.settings.activeAccountId,
             cAskDates: DATE.ISO
         }, true);
-        const storage = useStorage();
-        const session = await storage.getStorage([
-            SESSION_STORAGE.HIDE_IMPORT_ALERT.key
-        ]);
         if (stores.accounts.items.length === 0 &&
-            !session[SESSION_STORAGE.HIDE_IMPORT_ALERT.key]) {
+            !hideImportAlert) {
             DomainUtils.log("DomainLogic.initializeRecords", messages, "info");
-            await storage.setStorage(SESSION_STORAGE.HIDE_IMPORT_ALERT.key, true);
+            hideImportAlert = true;
         }
     }
 }

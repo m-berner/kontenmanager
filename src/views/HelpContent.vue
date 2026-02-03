@@ -7,6 +7,11 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview HelpContent is a static, localized help page describing the
+ * app’s main areas (Home, Company), basic workflows, and keyboard/menu hints.
+ * Content is intentionally simple HTML rendered via Vuetify components.
+ */
 import { DomainUtils } from "@/domains/utils";
 
 DomainUtils.log("--- views/HelpContent.vue setup ---");

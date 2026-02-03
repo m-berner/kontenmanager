@@ -23,7 +23,3 @@ export const BROWSER_STORAGE = Object.freeze({
 export const LOCAL_STORAGE = Object.freeze({
   DEBUG: { key: "sDebug", value: "0" }
 });
-
-export const SESSION_STORAGE = Object.freeze({
-  HIDE_IMPORT_ALERT: { key: "sHideImportAlert", value: "0" }
-});

@@ -5,6 +5,7 @@
  *
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
+import { STORE_MEMORY } from "@/domains/config/storeMemory";
 
 export const STORES = Object.freeze({
   INDEXES: new Map<string, string>([
@@ -39,5 +40,23 @@ export const STORES = Object.freeze({
     ["sn", "Zinnpreis"],
     ["pb", "Bleipreis"],
     ["pd", "Palladiumpreis"]
-  ])
+  ]),
+  STOCK_STORE_MEMORY: STORE_MEMORY
+  // STOCK_STORE_MEMORY: {
+  //   mPortfolio: 0,
+  //   mInvest: 0,
+  //   mChange: 0,
+  //   mBuyValue: 0,
+  //   mEuroChange: 0,
+  //   mMin: 0,
+  //   mValue: 0,
+  //   mMax: 0,
+  //   mDividendYielda: 0,
+  //   mDividendYeara: 0,
+  //   mDividendYieldb: 0,
+  //   mDividendYearb: 0,
+  //   mRealDividend: 0,
+  //   mRealBuyValue: 0,
+  //   mDeleteable: false
+  // }
 });

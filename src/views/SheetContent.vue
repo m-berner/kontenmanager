@@ -7,6 +7,11 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview SheetContent renders privacy (and similar) static content
+ * sections using a generic `ContentCard` component. It maps configured
+ * paragraphs into a displayable list when the current route matches privacy.
+ */
 import type { ContentItem } from "@/types";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";

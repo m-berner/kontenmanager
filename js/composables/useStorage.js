@@ -1,5 +1,5 @@
 import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 export function useStorage() {
     async function clearStorage() {
         try {
@@ -51,10 +51,28 @@ export function useStorage() {
             throw new AppError(ERROR_CODES.USE_STORAGE.D, ERROR_CATEGORY.VALIDATION, { input: serializeError(err) }, true);
         }
     }
+    async function setStorageSession(key, value) {
+        try {
+            await browser.storage.session.set({ [key]: value });
+        }
+        catch (err) {
+            throw new AppError(ERROR_CODES.USE_STORAGE.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), key }, true);
+        }
+    }
+    async function getStorageSession(keys = null) {
+        try {
+            return await browser.storage.session.get(keys);
+        }
+        catch (err) {
+            throw new AppError(ERROR_CODES.USE_STORAGE.C, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), keys }, true);
+        }
+    }
     return {
         clearStorage,
         getStorage,
         setStorage,
+        getStorageSession,
+        setStorageSession,
         addStorageChangedListener,
         installStorageLocal
     };

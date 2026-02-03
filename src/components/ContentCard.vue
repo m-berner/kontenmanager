@@ -6,6 +6,10 @@
   - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 <script lang="ts" setup>
+/**
+ * @fileoverview Generic content card used to render a list of titled items
+ * with optional icons. Primarily used for privacy/help static sections.
+ */
 import type { ContentCardProps } from "@/types";
 import { useUserInfo } from "@/composables/useUserInfo";
 

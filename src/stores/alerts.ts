@@ -156,11 +156,7 @@ export const useAlertStore = defineStore("alert", () => {
     const index = alerts.value.findIndex((alert) => alert.id === id);
 
     if (index === -1) {
-      DomainUtils.log(
-        "ALERT_STORE: Alert not found for dismissal",
-        id,
-        "warn"
-      );
+      DomainUtils.log("ALERT_STORE: Alert not found for dismissal", id, "warn");
       return;
     }
 

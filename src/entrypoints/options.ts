@@ -53,8 +53,4 @@ app.use(i18nPlugin.i18n);
 app.use(piniaPlugin.pinia);
 app.mount("#options");
 
-DomainUtils.log(
-  "--- entrypoints/options.js ---",
-  window.location.href,
-  "info"
-);
+DomainUtils.log("--- entrypoints/options.js ---", window.location.href, "info");

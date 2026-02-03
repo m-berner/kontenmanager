@@ -1,5 +1,5 @@
 import { DATE } from "@/domains/config/date";
-import { LOCAL_STORAGE } from "@/config/storage";
+import { LOCAL_STORAGE } from "@/domains/config/storage";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 export class DomainUtils {
     constructor() { }
@@ -7,7 +7,17 @@ export class DomainUtils {
         if (!DATE.ISO_DATE_REGEX.test(iso) && iso !== "") {
             throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, { input: iso }, false);
         }
-        return new Date(`${iso}T00:00:00.000`);
+        if (iso === "")
+            return new Date(NaN);
+        const [y, m, d] = iso.split("-").map((v) => Number(v));
+        if (!(m >= 1 && m <= 12)) {
+            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, { input: iso }, false);
+        }
+        const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+        if (!(d >= 1 && d <= daysInMonth)) {
+            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, { input: iso }, false);
+        }
+        return new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
     }
     static isoDate(ms) {
         if (!Number.isFinite(ms)) {
@@ -16,8 +26,15 @@ export class DomainUtils {
         return new Date(ms).toISOString().substring(0, 10);
     }
     static isValidISODate(iso) {
-        return (DATE.ISO_DATE_REGEX.test(iso) &&
-            !isNaN(DomainUtils.utcDate(iso).getTime()));
+        if (!DATE.ISO_DATE_REGEX.test(iso))
+            return false;
+        const [y, m, d] = iso.split("-").map((v) => Number(v));
+        if (!(m >= 1 && m <= 12))
+            return false;
+        const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+        if (!(d >= 1 && d <= daysInMonth))
+            return false;
+        return true;
     }
     static toNumber(value, options = {}) {
         const { locale, fallback = 0, throwOnError = false } = options;

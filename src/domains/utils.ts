@@ -8,7 +8,7 @@
 
 import type { LogLevelType, NumberParseOptions } from "@/types";
 import { DATE } from "@/domains/config/date";
-import { LOCAL_STORAGE } from "@/config/storage";
+import { LOCAL_STORAGE } from "@/domains/config/storage";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 
 /**
@@ -33,7 +33,31 @@ export class DomainUtils {
         false
       );
     }
-    return new Date(`${iso}T00:00:00.000`);
+    // Build a UTC date to avoid timezone-dependent shifts
+    if (iso === "") return new Date(NaN);
+    const [y, m, d] = iso.split("-").map((v) => Number(v));
+
+    // Validate calendar ranges (month/day). If invalid, throw AppError.
+    // Month must be 1..12
+    if (!(m >= 1 && m <= 12)) {
+      throw new AppError(
+        ERROR_CODES.UTILS.A,
+        ERROR_CATEGORY.VALIDATION,
+        { input: iso },
+        false
+      );
+    }
+    // Day must be 1...daysInMonth
+    const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    if (!(d >= 1 && d <= daysInMonth)) {
+      throw new AppError(
+        ERROR_CODES.UTILS.A,
+        ERROR_CATEGORY.VALIDATION,
+        { input: iso },
+        false
+      );
+    }
+    return new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
   }
 
   /**
@@ -62,10 +86,14 @@ export class DomainUtils {
    * @returns True if valid, false otherwise.
    */
   static isValidISODate(iso: string): boolean {
-    return (
-      DATE.ISO_DATE_REGEX.test(iso) &&
-      !isNaN(DomainUtils.utcDate(iso).getTime())
-    );
+    // Must match basic format
+    if (!DATE.ISO_DATE_REGEX.test(iso)) return false;
+    // Parse and validate calendar ranges without throwing
+    const [y, m, d] = iso.split("-").map((v) => Number(v));
+    if (!(m >= 1 && m <= 12)) return false;
+    const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    if (!(d >= 1 && d <= daysInMonth)) return false;
+    return true;
   }
 
   /**

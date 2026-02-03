@@ -19,7 +19,7 @@ import { useStorage } from "@/composables/useStorage";
 import { useAccountForm } from "@/composables/useForms";
 import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { databaseService } from "@/services/database";
 import { useAccountsDB, useBookingTypesDB } from "@/composables/useIndexedDB";
 import { INDEXED_DB } from "@/config/database";

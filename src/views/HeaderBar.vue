@@ -7,6 +7,12 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview HeaderBar component renders the top navigation controls for the
+ * main application view. It exposes a set of dialog actions (via the dialog hub)
+ * and utility commands like updating quotes, opening options, and launching CRUD
+ * dialogs for Accounts, Stocks, Bookings, and Booking Types.
+ */
 import { useI18n } from "vue-i18n";
 import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
@@ -31,10 +37,15 @@ const { items: bookingTypeItems } = storeToRefs(records.bookingTypes);
 
 /**
  * Registry of dialog actions for the header bar menu.
- * Maps action identifiers to functions that trigger component teleports.
+ * Maps action identifiers to functions that trigger component teleports or
+ * perform side effects (like fetching quotes).
+ *
+ * Each action returns either `void` or a `Promise<void>` depending on whether
+ * it performs asynchronous work.
  */
 const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   updateQuote: async () => {
+    // Fetches the latest quotes for the current stocks page with loading flags
     try {
       isStockLoading.value = true;
       runtime.isDownloading = true;
@@ -48,6 +59,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   fadeInStock: async () => {
+    // Opens the fade-in dialog only when passive stocks exist; otherwise informs the user
     if (records.stocks.passive.length === 0) {
       await handleUserInfo(
         "notice",
@@ -67,6 +79,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   addStock: () => {
+    // Open Add Stock dialog
     runtime.setTeleport({
       dialogName: "addStock",
       dialogOk: true,
@@ -75,6 +88,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   updateStock: () => {
+    // Open Update Stock dialog
     runtime.setTeleport({
       dialogName: "updateStock",
       dialogOk: true,
@@ -83,6 +97,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   addAccount: () => {
+    // Open Add Account dialog
     runtime.setTeleport({
       dialogName: "addAccount",
       dialogOk: true,
@@ -91,6 +106,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   updateAccount: async () => {
+    // Open Update Account dialog or inform the user if no accounts exist
     if (accountItems.value.length === 0) {
       await handleUserInfo(
         "notice",

@@ -214,11 +214,7 @@ export class AppService {
     if (indexesInfo.status === "fulfilled") {
       this.processIndexesInfo(indexesInfo.value);
     } else {
-      DomainUtils.log(
-        "Failed to fetch index info",
-        indexesInfo.reason,
-        "warn"
-      );
+      DomainUtils.log("Failed to fetch index info", indexesInfo.reason, "warn");
     }
 
     if (materialsInfo.status === "fulfilled") {

@@ -7,6 +7,11 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview Currency input wrapper around `v-text-field` that provides
+ * localized formatting on blur and raw numeric editing on focus. Emits
+ * `update:modelValue` with a parsed number.
+ */
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { CurrencyInputProps } from "@/types";

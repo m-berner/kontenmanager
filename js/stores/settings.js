@@ -2,7 +2,7 @@ import { ref } from "vue";
 import { DomainUtils } from "@/domains/utils";
 import { defineStore } from "pinia";
 import { useStorage } from "@/composables/useStorage";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 export const useSettingsStore = defineStore("settings", function () {
     const { setStorage } = useStorage();
     const skin = ref(BROWSER_STORAGE.SKIN.value);

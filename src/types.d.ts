@@ -190,15 +190,6 @@ export interface FormsManager<TForm, TDB> {
   mapFormToDb: (_data: UnwrapNestedRefs<TForm>, ..._args: any[]) => TDB;
 }
 
-// export interface DailyChangesData {
-//   key: string;
-//   value: {
-//     percentChange: string;
-//     change: number;
-//     stringChange: string;
-//   };
-// }
-
 export interface DateData {
   key: number | undefined;
   value: {
@@ -206,12 +197,6 @@ export interface DateData {
     gm: number;
   };
 }
-
-// export interface DateUtilsType {
-//   utcDate: (_iso: string) => Date;
-//   isoDate: (_ms: number) => string;
-//   isValidISODate: (_iso: string) => boolean;
-// }
 
 export interface DomainValidationResult {
   isValid: boolean;
@@ -259,28 +244,6 @@ export interface HeaderItem {
 export interface I18nWrapper {
   i18n: I18n<{ "de-DE": MessageSchemaType; "en-US": MessageSchemaType }>;
 }
-
-// export interface ImportExportServiceInterface {
-//   validateDataIntegrity(_backup: BackupData): string[];
-//
-//   validateLegacyDataIntegrity(_backup: BackupData): string[];
-//
-//   transformLegacyStock(_rec: LegacyStockDb, _activeId: number): StockDb;
-//
-//   transformLegacyBooking(
-//     _smTransfer: LegacyBookingDb,
-//     _index: number,
-//     _activeId: number
-//   ): BookingDb;
-//
-//   stringifyDatabase(
-//     _sm: any,
-//     _accounts: AccountDb[],
-//     _stocks: StockDb[],
-//     _bookingTypes: BookingTypeDb[],
-//     _bookings: BookingDb[]
-//   ): string;
-// }
 
 export interface AppMetadata {
   cVersion: number;

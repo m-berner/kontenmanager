@@ -7,6 +7,11 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview Global alert/confirmation overlay component.
+ * Renders queued alerts from `useAlertStore` and a confirmation dialog when requested.
+ * Provides non-blocking, app-wide feedback for success, info, warning, and error messages.
+ */
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useAlertStore } from "@/stores/alerts";

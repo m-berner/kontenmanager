@@ -7,12 +7,16 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview Theme selector component allowing users to switch Vuetify
+ * themes/skins. Writes the selected theme into the settings store.
+ */
 import { computed, onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify/framework";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { createThemes } from "@/config/views";
 import { useUserInfo } from "@/composables/useUserInfo";
 

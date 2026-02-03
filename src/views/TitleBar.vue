@@ -22,7 +22,7 @@ import { DomainUtils } from "@/domains/utils";
 import { fetchService } from "@/services/fetch";
 import { INDEXED_DB } from "@/config/database";
 import { databaseService } from "@/services/database";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { COMPONENTS } from "@/config/components";
 import { CODES } from "@/config/codes";
 

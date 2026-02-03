@@ -22,7 +22,7 @@ import { useTheme } from "vuetify";
 import { useStorage } from "@/composables/useStorage";
 import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts";
 import { databaseService } from "@/services/database";
-import { BROWSER_STORAGE, LOCAL_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE, LOCAL_STORAGE } from "@/domains/config/storage";
 import { createHomeHeaders, createHomeMenuItems, VIEWS } from "@/config/views";
 
 const { d, n, t } = useI18n();

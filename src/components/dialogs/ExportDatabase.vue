@@ -7,6 +7,11 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview Dialog that exports the current database into a JSON backup.
+ * Coordinates with the database service and provides user feedback via alerts
+ * and notices. Closes itself via the dialog hub on success or cancel.
+ */
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRuntimeStore } from "@/stores/runtime";

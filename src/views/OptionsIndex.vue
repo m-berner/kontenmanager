@@ -7,6 +7,12 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview OptionsIndex renders the extension options page. It provides
+ * tabs for theme/service selection and configuration of markets, indexes,
+ * materials, and exchanges. All content is rendered using dedicated components
+ * and localized via Vue I18n.
+ */
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { DomainUtils } from "@/domains/utils";

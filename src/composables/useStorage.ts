@@ -13,7 +13,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 
 /**
  * Composable providing access to browser local storage.
@@ -133,10 +133,53 @@ export function useStorage() {
     }
   }
 
+  /**
+   * Stores a single value in session browser storage.
+   * @param key - The storage key.
+   * @param value - The value to store.
+   */
+  async function setStorageSession(
+    key: string,
+    value: string | number | boolean | string[]
+  ): Promise<void> {
+    try {
+      await browser.storage.session.set({ [key]: value });
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_STORAGE.B,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err), key },
+        true
+      );
+    }
+  }
+
+  /**
+   * Retrieves values from session browser storage.
+   * @param keys - Array of keys to retrieve, or null for all.
+   * @returns A promise resolving to the retrieved data object.
+   */
+  async function getStorageSession(
+    keys: string[] | null = null
+  ): Promise<StorageDataType> {
+    try {
+      return await browser.storage.session.get(keys);
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_STORAGE.C,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err), keys },
+        true
+      );
+    }
+  }
+
   return {
     clearStorage,
     getStorage,
     setStorage,
+    getStorageSession,
+    setStorageSession,
     addStorageChangedListener,
     installStorageLocal
   };

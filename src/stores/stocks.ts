@@ -13,6 +13,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { fetchService } from "@/services/fetch";
 import { useRuntimeStore } from "@/stores/runtime";
 import { DomainUtils } from "@/domains/utils";
+import { STORES } from "@/config/stores";
 import { DEFAULTS } from "@/config/defaults";
 import { DATE } from "@/domains/config/date";
 import { useStorage } from "@/composables/useStorage";
@@ -108,7 +109,7 @@ export const useStocksStore = defineStore("stocks", function () {
     DomainUtils.log("RECORDS_STOCKS: add");
     const completeStock = {
       ...stock,
-      ...DEFAULTS.STOCK_MEMORY
+      ...STORES.STOCK_STORE_MEMORY
     };
     if (prepend) {
       items.value = [completeStock, ...items.value];

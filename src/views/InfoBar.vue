@@ -7,6 +7,12 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview InfoBar component displays contextual market information in a
+ * compact horizontal list: selected exchanges, indexes, and materials with
+ * their current values. It converts USD‑denominated material prices to the
+ * local currency using the runtime exchange rate.
+ */
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";

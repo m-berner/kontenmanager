@@ -1,3 +1,4 @@
+import { STORE_MEMORY } from "@/domains/config/storeMemory";
 export const STORES = Object.freeze({
     INDEXES: new Map([
         ["dax", "DAX"],
@@ -31,5 +32,6 @@ export const STORES = Object.freeze({
         ["sn", "Zinnpreis"],
         ["pb", "Bleipreis"],
         ["pd", "Palladiumpreis"]
-    ])
+    ]),
+    STOCK_STORE_MEMORY: STORE_MEMORY
 });

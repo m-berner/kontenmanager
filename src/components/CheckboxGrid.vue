@@ -7,6 +7,11 @@
   -->
 
 <script lang="ts" setup>
+/**
+ * @fileoverview Checkbox grid for toggling visibility/selection of indexed
+ * options (e.g., materials, indexes). Emits changes back to the parent via
+ * props/model bindings.
+ */
 import { computed, onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { AppError } from "@/domains/errors";
@@ -14,7 +19,7 @@ import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import type { CheckboxGridProps } from "@/types";
 import { STORES } from "@/config/stores";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { COMPONENTS } from "@/config/components";
 import { useUserInfo } from "@/composables/useUserInfo";
 

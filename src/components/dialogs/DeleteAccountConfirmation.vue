@@ -23,7 +23,7 @@ import { useUserInfo } from "@/composables/useUserInfo";
 import { useStorage } from "@/composables/useStorage";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 
 const { t } = useI18n();
 const { handleUserInfo } = useUserInfo();

@@ -10,7 +10,7 @@
 import { onBeforeMount, ref } from "vue";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { FETCH } from "@/config/fetch";
 import { useUserInfo } from "@/composables/useUserInfo";
 

@@ -17,11 +17,11 @@ import type {
   StockItem,
   StockStoreInterface
 } from "@/types";
-import { DEFAULTS } from "@/config/defaults";
+import { STORE_MEMORY } from "@/domains/config/storeMemory";
 import { DATE } from "@/domains/config/date";
-import { SESSION_STORAGE } from "@/config/storage";
-import { useStorage } from "@/composables/useStorage";
 import { DomainUtils } from "@/domains/utils";
+
+let hideImportAlert = false;
 
 /**
  * Service for encapsulating complex domain logic and calculations.
@@ -245,7 +245,7 @@ export class DomainLogic {
     storesDB.accountsDB.forEach((a) => stores.accounts.add(a));
     storesDB.bookingTypesDB.forEach((bt) => stores.bookingTypes.add(bt));
     storesDB.stocksDB.forEach((s) =>
-      stores.stocks.add({ ...s, ...DEFAULTS.STOCK_MEMORY })
+      stores.stocks.add({ ...s, ...STORE_MEMORY.STOCK })
     );
     storesDB.bookingsDB.forEach((b) => stores.bookings.add(b));
 
@@ -274,17 +274,12 @@ export class DomainLogic {
     );
 
     // Check for empty accounts and show alert if necessary
-    const storage = useStorage();
-    const session = await storage.getStorage([
-      SESSION_STORAGE.HIDE_IMPORT_ALERT.key
-    ]);
-
     if (
       stores.accounts.items.length === 0 &&
-      !session[SESSION_STORAGE.HIDE_IMPORT_ALERT.key]
+      !hideImportAlert
     ) {
       DomainUtils.log("DomainLogic.initializeRecords", messages, "info");
-      await storage.setStorage(SESSION_STORAGE.HIDE_IMPORT_ALERT.key, true);
+      hideImportAlert = true;
     }
   }
 }

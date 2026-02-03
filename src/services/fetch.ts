@@ -20,7 +20,7 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { FETCH } from "@/config/fetch";
 import { STORES } from "@/config/stores";
-import { BROWSER_STORAGE } from "@/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 
 class FetchCache {
   private cache = new Map<string, { data: string; timestamp: number }>();
