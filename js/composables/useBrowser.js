@@ -65,6 +65,14 @@ export function useBrowser() {
             throw new AppError(ERROR_CODES.USE_BROWSER.F, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), tabId }, true);
         }
     }
+    async function removeTab(tabId) {
+        try {
+            await browser.tabs.remove(tabId);
+        }
+        catch (err) {
+            throw new AppError(ERROR_CODES.USE_BROWSER.F, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), tabId }, true);
+        }
+    }
     async function openOptionsPage() {
         try {
             await browser.runtime.openOptionsPage();
@@ -116,6 +124,7 @@ export function useBrowser() {
         uiLanguage,
         actionOnClicked,
         runtimeOnInstalled,
+        removeTab,
         notice,
         openOptionsPage,
         tabsCreate,

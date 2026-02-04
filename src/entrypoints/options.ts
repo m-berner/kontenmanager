@@ -14,7 +14,14 @@ import piniaPlugin from "@/plugins/pinia";
 import OptionsIndex from "@/views/OptionsIndex.vue";
 
 /**
- * Initializes and mounts the Options page application instance.
+ * Catch errors not handled by Vue's errorHandler.
+ */
+window.addEventListener("unhandledrejection", (e) => {
+  DomainUtils.log("APP: unhandledrejection", { reason: e.reason }, "error");
+});
+
+/**
+ * Initializes and mounts the options application instance for the options view.
  */
 const app = createApp(OptionsIndex);
 
@@ -31,7 +38,7 @@ const app = createApp(OptionsIndex);
 app.config.errorHandler = (err: unknown, _instance, info): void => {
   const message = err instanceof Error ? err.message : String(err);
   DomainUtils.log(
-    "PAGE_SCRIPTS options.js",
+    "OPTIONS: errorHandler",
     { message, info, stack: (err as Error)?.stack },
     "error"
   );
@@ -45,12 +52,13 @@ app.config.errorHandler = (err: unknown, _instance, info): void => {
  * @param trace - Component tree trace for context.
  */
 app.config.warnHandler = (msg: string, _instance, trace): void => {
-  DomainUtils.log("PAGE_SCRIPTS options.js", { msg, trace }, "warn");
+  DomainUtils.log("OPTIONS: warnHandler", { msg, trace }, "warn");
 };
 
-app.use(vuetifyPlugin.vuetify);
-app.use(i18nPlugin.i18n);
 app.use(piniaPlugin.pinia);
+app.use(i18nPlugin.i18n);
+app.use(vuetifyPlugin.vuetify);
+
 app.mount("#options");
 
-DomainUtils.log("--- entrypoints/options.js ---", window.location.href, "info");
+DomainUtils.log("--- entrypoints/options ---", window.location.href, "info");

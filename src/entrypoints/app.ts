@@ -14,9 +14,19 @@ import componentsPlugin from "@/plugins/components";
 import routerPlugin from "@/plugins/router";
 import piniaPlugin from "@/plugins/pinia";
 import AppIndex from "@/views/AppIndex.vue";
+import { useBrowser } from "@/composables/useBrowser";
+
+const { manifest } = useBrowser();
 
 /**
- * Initializes and mounts the main application instance for the popup/app view.
+ * Catch errors not handled by Vue's errorHandler.
+ */
+window.addEventListener("unhandledrejection", (e) => {
+  DomainUtils.log("APP: unhandledrejection", { reason: e.reason }, "error");
+});
+
+/**
+ * Initializes and mounts the main application instance for the app view.
  */
 const app = createApp(AppIndex);
 
@@ -31,7 +41,8 @@ const app = createApp(AppIndex);
  * @param info - Vue error info string indicating the lifecycle/handler.
  */
 app.config.errorHandler = (err: unknown, _instance, info): void => {
-  DomainUtils.log("APP: errorHandler", { err, info }, "error");
+  const message = err instanceof Error ? err.message : String(err);
+  DomainUtils.log("APP: errorHandler", { message, info, stack: (err as Error)?.stack }, "error");
 };
 
 /**
@@ -47,11 +58,15 @@ app.config.warnHandler = (msg: string, _instance, trace): void => {
   DomainUtils.log("APP: warnHandler", { msg, trace }, "warn");
 };
 
+app.use(piniaPlugin.pinia);
+app.use(i18nPlugin.i18n);
+app.use(routerPlugin.router);
 app.use(vuetifyPlugin.vuetify);
 app.use(componentsPlugin);
-app.use(i18nPlugin.i18n);
-app.use(piniaPlugin.pinia);
-app.use(routerPlugin.router);
 app.mount("#app");
 
-DomainUtils.log("--- entrypoints/app.js ---");
+DomainUtils.log(
+  "--- entrypoints/app ---",
+  { version: manifest.value.version, mode: import.meta.env.MODE },
+  "info"
+);

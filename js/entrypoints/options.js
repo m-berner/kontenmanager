@@ -4,16 +4,19 @@ import vuetifyPlugin from "@/plugins/vuetify";
 import i18nPlugin from "@/plugins/i18n";
 import piniaPlugin from "@/plugins/pinia";
 import OptionsIndex from "@/views/OptionsIndex.vue";
+window.addEventListener("unhandledrejection", (e) => {
+    DomainUtils.log("APP: unhandledrejection", { reason: e.reason }, "error");
+});
 const app = createApp(OptionsIndex);
 app.config.errorHandler = (err, _instance, info) => {
     const message = err instanceof Error ? err.message : String(err);
-    DomainUtils.log("PAGE_SCRIPTS options.js", { message, info, stack: err?.stack }, "error");
+    DomainUtils.log("OPTIONS: errorHandler", { message, info, stack: err?.stack }, "error");
 };
 app.config.warnHandler = (msg, _instance, trace) => {
-    DomainUtils.log("PAGE_SCRIPTS options.js", { msg, trace }, "warn");
+    DomainUtils.log("OPTIONS: warnHandler", { msg, trace }, "warn");
 };
-app.use(vuetifyPlugin.vuetify);
-app.use(i18nPlugin.i18n);
 app.use(piniaPlugin.pinia);
+app.use(i18nPlugin.i18n);
+app.use(vuetifyPlugin.vuetify);
 app.mount("#options");
-DomainUtils.log("--- entrypoints/options.js ---", window.location.href, "info");
+DomainUtils.log("--- entrypoints/options ---", window.location.href, "info");

@@ -215,9 +215,6 @@
         }
     },
     "messages": {
-        "exportDatabase": {
-            "noAccounts": "Keine Konten zum Export vorhanden."
-        },
         "noStockSelected": "Kein Unternehmen ausgewählt."
     },
     "validators": {

@@ -12,6 +12,7 @@ import { useStorage } from "@/composables/useStorage";
 
 const {
   actionOnClicked,
+  removeTab,
   runtimeOnInstalled,
   tabsCreate,
   tabsQuery,
@@ -20,6 +21,7 @@ const {
 } = useBrowser();
 const { installStorageLocal } = useStorage();
 
+// TODO Optional: also register a runtime.onStartup hook if you want a lightweight sanity check on critical defaults after a cold browser start. If your storage init is idempotent, it’s safe.
 /**
  * Handles extension installation/update lifecycle.
  *
@@ -28,7 +30,11 @@ const { installStorageLocal } = useStorage();
  */
 async function onInstall(): Promise<void> {
   DomainUtils.log("BACKGROUND: onInstall");
-  await installStorageLocal();
+  try {
+    await installStorageLocal();
+  } catch (err) {
+    DomainUtils.log("BACKGROUND: install error", err, "error");
+  }
 }
 
 /**
@@ -45,13 +51,19 @@ async function onClick(): Promise<void> {
     // NOTE: An event listener called by an API reloads the background.js script.
     if (foundTabs.length === 0) {
       const extensionTab = await tabsCreate();
-      const extensionTabId = extensionTab.id ?? -1;
-      DomainUtils.log("BACKGROUND: Created new tab", extensionTabId);
+      if (extensionTab.id === undefined) {
+        DomainUtils.log("BACKGROUND: Created new tab error", extensionTab, "error");
+      }
+      DomainUtils.log("BACKGROUND: Created new tab", extensionTab, "info");
     } else {
-      const firstTab = foundTabs[0];
+      const [ firstTab, ...remainingTabs ] = foundTabs;
       await windowsUpdate(firstTab.windowId!);
       await tabsUpdate(firstTab.id!);
       DomainUtils.log("BACKGROUND: Focused existing tab", firstTab.id);
+      // Close other tabs
+      for (const tab of remainingTabs) {
+        await removeTab(tab.id!);
+      }
     }
   } catch (err) {
     DomainUtils.log("BACKGROUND: Error in onClick", err, "error");

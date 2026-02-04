@@ -35,7 +35,7 @@ const { skin } = storeToRefs(settings);
 const theme = useTheme();
 
 const isInitialized = ref(false);
-
+//TODO remove sDebug flag and always log in development mode but not in production mode
 onBeforeMount(async () => {
   DomainUtils.log("APP_INDEX: onBeforeMount");
 

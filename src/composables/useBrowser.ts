@@ -163,6 +163,23 @@ export function useBrowser() {
   }
 
   /**
+   * Removes a specific tab off the UI.
+   * @param tabId - ID of the tab to remove.
+   */
+  async function removeTab(tabId: number): Promise<void> {
+    try {
+      await browser.tabs.remove(tabId);
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.USE_BROWSER.F,
+        ERROR_CATEGORY.VALIDATION,
+        { input: serializeError(err), tabId },
+        true
+      );
+    }
+  }
+
+  /**
    * Opens the extension's options page.
    */
   async function openOptionsPage(): Promise<void> {
@@ -255,6 +272,7 @@ export function useBrowser() {
     uiLanguage,
     actionOnClicked,
     runtimeOnInstalled,
+    removeTab,
     notice,
     openOptionsPage,
     tabsCreate,

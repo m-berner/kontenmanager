@@ -215,9 +215,6 @@
         }
     },
     "messages": {
-        "exportDatabase": {
-            "noAccounts": "No accounts available to export."
-        },
         "noStockSelected": "No company selected."
     },
     "views": {
