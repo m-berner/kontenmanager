@@ -8,7 +8,17 @@
 import { DomainUtils } from "@/domains/utils";
 import { useAlertStore } from "@/stores/alerts";
 import { useBrowser } from "@/composables/useBrowser";
-import type { AlertKind, HandleUserInfoOptions, Mode } from "@/types";
+import { DEFAULTS } from "@/config/defaults";
+import type {
+  AlertKind,
+  HandleUserInfoOptions,
+  Mode,
+  UserInfoAlertConfirmResult,
+  UserInfoAlertErrorResult,
+  UserInfoAlertInfoResult,
+  UserInfoConsoleResult,
+  UserInfoNoticeResult
+} from "@/types";
 
 /**
  * Composable that centralizes user feedback mechanisms across the app.
@@ -20,48 +30,133 @@ import type { AlertKind, HandleUserInfoOptions, Mode } from "@/types";
  *
  * @module composables/useUserInfo
  */
+// Simple in-memory rate-limit tracker
+const recentMessages = new Map<string, number>();
+
 export function useUserInfo() {
   /**
    * Presents a message to the user using the selected mode.
    *
-   * @param mode - Delivery mode: `console`, `alert`, or `notice`.
-   * @param title - Contextual title or source of the message.
-   * @param message - The main message or description.
-   * @param options - Extended options for alerts, notices, logging, and delays.
+   * @param _mode - Delivery mode: `console`, `alert`, or `notice`.
+   * @param _title - Contextual title or source of the message.
+   * @param _messageOrError - The main message or an Error object.
+   * @param _options - Extended options for alerts, notices, logging, and delays.
    * @returns A promise that may resolve to a boolean for `confirm` alerts, a number (alert ID), or void.
    */
+  // Overloads for stronger typing at call-sites
+  async function handleUserInfo(
+    _mode: "console",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions
+  ): Promise<UserInfoConsoleResult>;
+  async function handleUserInfo(
+    _mode: "notice",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions
+  ): Promise<UserInfoNoticeResult>;
+  async function handleUserInfo(
+    _mode: "alert",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions & { alertKind?: "info"; duration?: number | null }
+  ): Promise<UserInfoAlertInfoResult>;
+  async function handleUserInfo(
+    _mode: "alert",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions & { alertKind?: "error"; duration?: number | null }
+  ): Promise<UserInfoAlertErrorResult>;
+  async function handleUserInfo(
+    _mode: "alert",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions & { alertKind: "confirm" }
+  ): Promise<UserInfoAlertConfirmResult>;
   async function handleUserInfo(
     mode: Mode,
     title: string,
-    message: string,
+    messageOrError: string | Error,
     options: HandleUserInfoOptions = {}
   ): Promise<void | boolean | number> {
-    const { data, logLevel = "log", delay = null } = options;
+    const { data, logLevel = "log", delay = null, correlationId } = options;
+
+    // Normalize error input
+    let message = "";
+    let errorStack: string | undefined;
+    if (messageOrError instanceof Error) {
+      message = messageOrError.message || String(messageOrError);
+      errorStack = messageOrError.stack;
+    } else {
+      message = messageOrError;
+    }
+
+    // Rate limit identical messages per mode/kind/title/message
+    const rateLimitMs = options.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
+    const effectiveKind: AlertKind =
+      options.alertKind ?? (logLevel === "error" ? "error" : "info");
+    const key = `${mode}|${effectiveKind}|${title}|${message}`;
+    const now = Date.now();
+    const last = recentMessages.get(key) ?? 0;
+    if (rateLimitMs > 0 && now - last < rateLimitMs) {
+      // Suppressed duplicate
+      return;
+    }
+    recentMessages.set(key, now);
 
     if (mode === "console") {
       // Log with optional context data and level
-      DomainUtils.log(`${title}: ${message}`.trim(), data, logLevel);
+      DomainUtils.log(
+        `${title}: ${message}`.trim(),
+        { ...((data as Record<string, unknown>) || {}), correlationId, errorStack },
+        logLevel
+      );
       return;
     }
 
     if (mode === "alert") {
-      const alerts = useAlertStore();
-      const kind: AlertKind =
-        options.alertKind ?? (logLevel === "error" ? "error" : "info");
+      let alerts: ReturnType<typeof useAlertStore> | null = null;
+      try {
+        alerts = useAlertStore();
+      } catch {
+        // Fallback to console if store not available
+        DomainUtils.log(
+          `ALERT_FALLBACK ${title}: ${message}`.trim(),
+          { ...((data as Record<string, unknown>) || {}), correlationId, errorStack },
+          logLevel
+        );
+        return;
+      }
+      const kind: AlertKind = effectiveKind;
 
       if (kind === "confirm") {
         return await alerts.confirm(title, message, options.confirm);
       }
 
       if (kind === "error") {
-        return alerts.error(title, message, options.duration ?? null);
+        const duration =
+          options.duration ?? DEFAULTS.USER_INFO.DURATION.ERROR ?? null;
+        return alerts.error(title, message, duration);
       }
 
-      return alerts.info(title, message, options.duration ?? null);
+      const duration = options.duration ?? DEFAULTS.USER_INFO.DURATION.INFO;
+      return alerts.info(title, message, duration);
     }
 
     if (mode === "notice") {
-      const { notice } = useBrowser();
+      let notice: ((_lines: string[]) => Promise<void>) | null = null;
+      try {
+        ({ notice } = useBrowser());
+      } catch {
+        // Fallback to console if browser wrapper unavailable
+        DomainUtils.log(
+          `NOTICE_FALLBACK ${title}: ${message}`.trim(),
+          { ...((data as Record<string, unknown>) || {}), correlationId, errorStack },
+          logLevel
+        );
+        return;
+      }
       const lines =
         options.noticeLines && options.noticeLines.length > 0
           ? options.noticeLines
@@ -70,7 +165,9 @@ export function useUserInfo() {
       if (delay && delay > 0) {
         await new Promise<void>((resolve) => setTimeout(resolve, delay));
       }
-      await notice(lines);
+      if (notice) {
+        await notice(lines);
+      }
       return;
     }
 

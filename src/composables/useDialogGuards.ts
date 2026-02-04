@@ -14,12 +14,7 @@ import {
   ERROR_CODES,
   serializeError
 } from "@/domains/errors";
-import type {
-  FormInterface,
-  FormValidateResultType,
-  HandleUserInfoOptions,
-  Mode
-} from "@/types";
+import type { FormInterface, FormValidateResultType } from "@/types";
 
 /**
  * Composable providing common guards and wrappers for dialog operations.
@@ -46,12 +41,7 @@ export function useDialogGuards() {
    */
   async function ensureConnected(
     isConnected: boolean,
-    handleUserInfo: (
-      _mode: Mode,
-      _title: string,
-      _message: string,
-      _options?: HandleUserInfoOptions
-    ) => Promise<void | boolean | number>,
+    handleUserInfo: any,
     errorMessage = "Database not connected"
   ): Promise<boolean> {
     if (!isConnected) {
@@ -165,12 +155,7 @@ export function useDialogGuards() {
     formRef?: Ref<FormInterface | null>;
     isConnected?: boolean;
     connectionErrorMessage?: string;
-    handleUserInfo: (
-      _mode: Mode,
-      _title: string,
-      _message: string,
-      _options?: HandleUserInfoOptions
-    ) => Promise<void | boolean | number>;
+    handleUserInfo: any;
     operation: () => Promise<void>;
     onFinally?: () => void;
     errorContext?: string;

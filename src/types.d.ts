@@ -232,6 +232,10 @@ export interface HandleUserInfoOptions {
   };
   // Notice options
   noticeLines?: string[]; // Defaults to [title, message]
+  // Rate limiting window in ms (identical messages suppressed), default from DEFAULTS.USER_INFO.RATE_LIMIT_MS
+  rateLimitMs?: number;
+  // Optional correlation identifier forwarded to logs
+  correlationId?: string;
 }
 
 export interface HeaderItem {
@@ -491,6 +495,59 @@ export interface VuetifyWrapper {
 export type Mode = "console" | "alert" | "notice";
 
 export type AlertKind = "info" | "error" | "confirm";
+
+// Discriminated result types for useUserInfo
+export type UserInfoConsoleResult = void;
+export type UserInfoNoticeResult = void;
+export type UserInfoAlertInfoResult = number; // alert id
+export type UserInfoAlertErrorResult = number; // alert id
+export type UserInfoAlertConfirmResult = boolean; // user choice
+export type UserInfoResult =
+  | UserInfoConsoleResult
+  | UserInfoNoticeResult
+  | UserInfoAlertInfoResult
+  | UserInfoAlertErrorResult
+  | UserInfoAlertConfirmResult;
+
+// Callable type for the handleUserInfo function used across dialogs/guards (mirrors overloads)
+export interface HandleUserInfoFn {
+  (
+    _mode: "console",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions
+  ): Promise<UserInfoConsoleResult>;
+  (
+    _mode: "notice",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions
+  ): Promise<UserInfoNoticeResult>;
+  (
+    _mode: "alert",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions & { alertKind?: "info"; duration?: number | null }
+  ): Promise<UserInfoAlertInfoResult>;
+  (
+    _mode: "alert",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions & { alertKind?: "error"; duration?: number | null }
+  ): Promise<UserInfoAlertErrorResult>;
+  (
+    _mode: "alert",
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions & { alertKind: "confirm" }
+  ): Promise<UserInfoAlertConfirmResult>;
+  (
+    _mode: Mode,
+    _title: string,
+    _messageOrError: string | Error,
+    _options?: HandleUserInfoOptions
+  ): Promise<UserInfoResult>;
+}
 
 export type FormModeType = "add" | "update" | "delete";
 

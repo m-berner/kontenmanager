@@ -16,5 +16,13 @@ export const DEFAULTS = Object.freeze({
   TITLE: "KontenManager",
   COPYRIGHT: `2025-${new Date().getFullYear()} Martin Berner`,
   MAILTO: "mailto:kontenmanager@gmx.de",
-  HELP_URL: "https://kontenmanager8.wixsite.com/kontenmanager"
+  HELP_URL: "https://kontenmanager8.wixsite.com/kontenmanager",
+  // Defaults for user information/feedback handling
+  USER_INFO: Object.freeze({
+    RATE_LIMIT_MS: 1500,
+    DURATION: Object.freeze({
+      INFO: 4000,
+      ERROR: null as number | null
+    })
+  })
 });

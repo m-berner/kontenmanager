@@ -387,18 +387,21 @@ const getImportSummary = (backup: BackupData): string => {
 
   if (isLegacy) {
     return [
-      "1 account",
-      `${backup.stocks?.length ?? 0} stock(s)`,
-      `${backup.transfers?.length ?? 0} booking(s)`,
-      "6 booking types"
+      `1 ${t("components.dialogs.importDatabase.messages.importInfo.account")}`,
+      `${backup.stocks?.length ?? 0} ${t(
+        "components.dialogs.importDatabase.messages.importInfo.stock"
+      )}`,
+      `${backup.transfers?.length ?? 0} ${t(
+        "components.dialogs.importDatabase.messages.importInfo.booking")}`,
+      `6 ${t("components.dialogs.importDatabase.messages.importInfo.bookingType")}`
     ].join("\n");
   }
 
   return [
-    `${backup.accounts?.length ?? 0} account(s)`,
-    `${backup.stocks?.length ?? 0} stock(s)`,
-    `${backup.bookings?.length ?? 0} booking(s)`,
-    `${backup.bookingTypes?.length ?? 0} booking type(s)`
+    `${backup.accounts?.length ?? 0} ${t("components.dialogs.importDatabase.messages.importInfo.account")}`,
+    `${backup.stocks?.length ?? 0} ${t("components.dialogs.importDatabase.messages.importInfo.stock")}`,
+    `${backup.bookings?.length ?? 0} ${t("components.dialogs.importDatabase.messages.importInfo.booking")}`,
+    `${backup.bookingTypes?.length ?? 0} ${t("components.dialogs.importDatabase.messages.importInfo.bookingType")}`
   ].join("\n");
 };
 
@@ -482,13 +485,8 @@ const processBackupFile = async (): Promise<void> => {
     const shouldProceed = await handleUserInfo(
       "alert",
       t("components.dialogs.importDatabase.confirmImportTitle"),
-      "ImportDatabase",
+      summary,
       {
-        noticeLines: [
-          t("components.dialogs.importDatabase.messages.confirmImportWarning", {
-            summary: summary.replace(/\n/g, ", ")
-          })
-        ],
         confirm: {
           confirmText: t("components.dialogs.importDatabase.confirmOk"),
           cancelText: t("components.dialogs.importDatabase.confirmCancel"),

@@ -96,7 +96,15 @@
         "title": "Export data",
         "largeFileTitle": "Data export",
         "continue": "Export data",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "text": "Test exp",
+        "messages": {
+          "estimatedSize": "Test size",
+          "invalidBookingTypes": "Test BT",
+          "invalidBookings": "Test B",
+          "invalidStocks": "Test S",
+          "noAccounts": "No accounts to export are available"
+        }
       },
       "fadeInStock": {
         "title": "Show company",
@@ -130,7 +138,15 @@
           "noFileSelected": "No file selected",
           "createBackupFailed": "Saving data before import failed.",
           "emptyFile": "The file is empty.",
-          "fileToLarge": "The backup file is too large."
+          "fileToLarge": "The backup file is too large.",
+          "importSuccess": "{ summary } imported in { duration } seconds",
+          "importInfo": {
+            "account": "account(s)",
+            "booking": "booking(s)",
+            "bookingType": "booking type(s)",
+            "stock": "stock(s)"
+          },
+          "dataIntegrity": "Corrupt data"
         }
       },
       "showAccounting": {
@@ -199,9 +215,6 @@
     }
   },
   "messages": {
-    "exportDatabase": {
-      "noAccounts": "No accounts available to export."
-    },
     "noStockSelected": "No company selected."
   },
   "views": {

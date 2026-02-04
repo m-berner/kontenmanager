@@ -62,7 +62,7 @@ const validateExportData = (
   const errors: string[] = [];
 
   if (accounts.length === 0) {
-    errors.push(t("messages.exportDatabase.noAccounts"));
+    errors.push(t("components.dialogs.exportDatabase.messages.noAccounts"));
   }
 
   // Check for data consistency
@@ -73,7 +73,7 @@ const validateExportData = (
   );
   if (invalidBookings.length > 0) {
     errors.push(
-      t("messages.exportDatabase.invalidBookings", {
+      t("components.dialogs.exportDatabase.messages.invalidBookings", {
         count: invalidBookings.length
       })
     );
@@ -84,7 +84,7 @@ const validateExportData = (
   );
   if (invalidStocks.length > 0) {
     errors.push(
-      t("messages.exportDatabase.invalidStocks", {
+      t("components.dialogs.exportDatabase.messages.invalidStocks", {
         count: invalidStocks.length
       })
     );
@@ -95,7 +95,7 @@ const validateExportData = (
   );
   if (invalidBookingTypes.length > 0) {
     errors.push(
-      t("messages.exportDatabase.invalidBookingTypes", {
+      t("components.dialogs.exportDatabase.messages.invalidBookingTypes", {
         count: invalidBookingTypes.length
       })
     );
