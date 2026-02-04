@@ -69,17 +69,27 @@ export const useSettingsStore = defineStore("settings", function () {
   /**
    * Internal helper to update a state property and its corresponding browser storage entry.
    *
-   * @param {Ref<StorageValueType>} stateRef - The reactive reference to update.
-   * @param {string} storageKey - The key used in browser storage.
-   * @param {StorageValueType} newValue - The new value to apply.
+   * @param {Ref<StorageValueType>} refVar - The reactive reference to update.
+   * @param {string} key - The key used in browser storage.
+   * @param {StorageValueType} value - The new value to apply.
    */
-  async function updateSetting(
-    stateRef: Ref<StorageValueType>,
-    storageKey: string,
-    newValue: StorageValueType
-  ): Promise<void> {
-    stateRef.value = newValue;
-    await setStorage(storageKey, newValue);
+  // async function updateSetting(
+  //   stateRef: Ref<StorageValueType>,
+  //   storageKey: string,
+  //   newValue: StorageValueType
+  // ): Promise<void> {
+  //   stateRef.value = newValue;
+  //   await setStorage(storageKey, newValue);
+  // }
+  async function updateSetting(refVar: Ref<StorageValueType>, key: string, value: StorageValueType) {
+    const prev = refVar.value;
+    refVar.value = value;
+    try {
+      await setStorage(key, value);
+    } catch (err) {
+      refVar.value = prev;
+      DomainUtils.log("SETTINGS: setStorage failed", { key, value, err }, "error");
+    }
   }
 
   /**
@@ -91,25 +101,17 @@ export const useSettingsStore = defineStore("settings", function () {
     DomainUtils.log("SETTINGS: init");
 
     skin.value = storage[BROWSER_STORAGE.SKIN.key] as string;
-    bookingsPerPage.value = storage[
-      BROWSER_STORAGE.BOOKINGS_PER_PAGE.key
-    ] as number;
-    stocksPerPage.value = storage[
-      BROWSER_STORAGE.STOCKS_PER_PAGE.key
-    ] as number;
-    dividendsPerPage.value = storage[
-      BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key
-    ] as number;
+    bookingsPerPage.value = storage[BROWSER_STORAGE.BOOKINGS_PER_PAGE.key] as number;
+    stocksPerPage.value = storage[BROWSER_STORAGE.STOCKS_PER_PAGE.key] as number;
+    dividendsPerPage.value = storage[BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key] as number;
     sumsPerPage.value = storage[BROWSER_STORAGE.SUMS_PER_PAGE.key] as number;
-    activeAccountId.value = storage[
-      BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key
-    ] as number;
+    activeAccountId.value = storage[BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key] as number;
     service.value = storage[BROWSER_STORAGE.SERVICE.key] as string;
 
-    materials.value = [...(storage[BROWSER_STORAGE.MATERIALS.key] as string[])];
-    markets.value = [...(storage[BROWSER_STORAGE.MARKETS.key] as string[])];
-    indexes.value = [...(storage[BROWSER_STORAGE.INDEXES.key] as string[])];
-    exchanges.value = [...(storage[BROWSER_STORAGE.EXCHANGES.key] as string[])];
+    materials.value = [...storage[BROWSER_STORAGE.MATERIALS.key] as string[]];
+    markets.value = [...storage[BROWSER_STORAGE.MARKETS.key] as string[]];
+    indexes.value = [...storage[BROWSER_STORAGE.INDEXES.key] as string[]];
+    exchanges.value = [...storage[BROWSER_STORAGE.EXCHANGES.key] as string[]];
   }
 
   /**

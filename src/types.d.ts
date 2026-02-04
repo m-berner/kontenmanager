@@ -562,11 +562,21 @@ export type MessageSchemaType = typeof deDE;
 // Rule builder type
 export type RuleBuilderType = (..._args: any[]) => ValidationRuleType;
 
+// Strongly typed browser storage snapshot derived from BROWSER_STORAGE config
+// We map the runtime schema entries to a type whose keys are the literal
+// storage keys (e.g., "sSkin") and whose values are the corresponding default
+// value types (string | number | boolean | string[]).
+type __BrowserStorageSchema = typeof import("@/domains/config/storage").BROWSER_STORAGE;
+type __BrowserStorageEntryUnion = __BrowserStorageSchema[keyof __BrowserStorageSchema];
+
 export type StorageDataType = {
-  [p: string]: string | number | boolean | string[];
+  [P in __BrowserStorageEntryUnion["key"]]: Extract<
+    __BrowserStorageEntryUnion,
+    { key: P }
+  >["value"];
 };
 
-export type StorageValueType = string | number | boolean | string[];
+export type StorageValueType = StorageDataType[keyof StorageDataType];
 
 export type MenuActionType =
   | "updateBooking"

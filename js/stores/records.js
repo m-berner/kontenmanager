@@ -11,9 +11,9 @@ export const useRecordsStore = defineStore("records", function () {
     const bookingsStore = useBookingsStore();
     const bookingTypesStore = useBookingTypesStore();
     const stocksStore = useStocksStore();
-    function clean(all = true) {
+    function clean(withAccounts = true) {
         DomainUtils.log("RECORDS: clean");
-        if (all) {
+        if (withAccounts) {
             accountsStore.clean();
         }
         bookingsStore.clean();

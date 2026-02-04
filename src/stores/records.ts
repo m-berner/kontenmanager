@@ -34,12 +34,12 @@ export const useRecordsStore = defineStore("records", function () {
   /**
    * Clears all record stores.
    *
-   * @param all - When true, also clears the accounts store (default: true).
+   * @param withAccounts - When true, also clears the accounts store (default: true).
    * @returns Void.
    */
-  function clean(all: boolean = true): void {
+  function clean(withAccounts: boolean = true): void {
     DomainUtils.log("RECORDS: clean");
-    if (all) {
+    if (withAccounts) {
       accountsStore.clean();
     }
     bookingsStore.clean();

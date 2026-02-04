@@ -24,6 +24,16 @@ The orchestrator for all domain-specific data stores.
 - Acts as a central hub for `accounts`, `bookings`, `bookingTypes`, and `stocks`.
 - Manages the bulk initialization and cleanup of the entire data set.
 
+#### Cross-store dependency policy
+
+- Leaf stores (e.g., `accounts`, `bookings`, `bookingTypes`, `stocks`, `settings`, `runtime`, `alerts`) must avoid importing each other directly to minimize coupling and prevent import cycles.
+- When coordination between record stores is required, use the `records` hub to access sibling stores.
+
+#### Single hydration entrypoint
+
+- `records.init(...)` is the only place where record stores are hydrated from persistence (IndexedDB, etc.).
+- Any sequencing or enrichment that depends on multiple record stores must be performed within `records.init(...)` (see `src/stores/records.ts`).
+
 ### 🏦 Domain Data Stores
 
 - **`accounts.ts`**: Manages the list of bank accounts and their metadata.
@@ -68,6 +78,27 @@ Manages the application's notification system.
    actions handle errors gracefully.
 5. **Validation**: Data entering the stores from the UI should ideally be validated via the `ValidationService` before
    reaching the persistence layer.
+
+6. **No leaf-to-leaf imports**: Leaf stores do not import other leaf stores. Use `useRecordsStore()` as the boundary for orchestration.
+7. **Single hydration entrypoint**: Always hydrate record data through `records.init(...)`. Do not partially hydrate leaf stores from random locations.
+
+### Example usage
+
+```ts
+import { useRecordsStore } from "@/stores/records";
+import type { RecordsDbData } from "@/types";
+
+const records = useRecordsStore();
+
+// Hydration (single entrypoint)
+async function boot(storesDB: RecordsDbData, messages: Record<string, string>) {
+  await records.init(storesDB, messages, /* removeAccounts */ true);
+}
+
+// Coordinated cleanup
+records.clean(true); // also clears accounts
+records.clean(false); // keeps accounts
+```
 
 ## Testing
 

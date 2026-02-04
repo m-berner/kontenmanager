@@ -51,7 +51,7 @@ function generateUniqueId(): number {
  * @returns Reactive and non-reactive alert state, computed aggregations,
  * and methods to mutate and enrich alerts.
  */
-export const useAlertStore = defineStore("alert", () => {
+export const useAlertStore = defineStore("alerts", () => {
   /** Queue of all pending alerts. */
   const alerts = ref<VisibleAlertData[]>([]);
   /** The alert currently being displayed. */

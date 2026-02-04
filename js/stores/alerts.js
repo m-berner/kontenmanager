@@ -21,7 +21,7 @@ let alertIdCounter = 0;
 function generateUniqueId() {
     return ++alertIdCounter;
 }
-export const useAlertStore = defineStore("alert", () => {
+export const useAlertStore = defineStore("alerts", () => {
     const alerts = ref([]);
     const currentAlert = ref(defaultAlert);
     const confirmationDialog = ref(defaultConfirmation);

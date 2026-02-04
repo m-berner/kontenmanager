@@ -16,9 +16,16 @@ export const useSettingsStore = defineStore("settings", function () {
     const markets = ref(BROWSER_STORAGE.MARKETS.value);
     const indexes = ref(BROWSER_STORAGE.INDEXES.value);
     const exchanges = ref(BROWSER_STORAGE.EXCHANGES.value);
-    async function updateSetting(stateRef, storageKey, newValue) {
-        stateRef.value = newValue;
-        await setStorage(storageKey, newValue);
+    async function updateSetting(refVar, key, value) {
+        const prev = refVar.value;
+        refVar.value = value;
+        try {
+            await setStorage(key, value);
+        }
+        catch (err) {
+            refVar.value = prev;
+            DomainUtils.log("SETTINGS: setStorage failed", { key, value, err }, "error");
+        }
     }
     function init(storage) {
         DomainUtils.log("SETTINGS: init");
