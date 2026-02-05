@@ -26,7 +26,12 @@ describe("Alert Store", () => {
   it("showAlert should enqueue and set current alert", () => {
     const store = useAlertStore();
 
-    const id = store.showAlert("success", "Saved", "Your changes were saved", null);
+    const id = store.showAlert(
+      "success",
+      "Saved",
+      "Your changes were saved",
+      null
+    );
 
     expect(id).toBeGreaterThan(0);
     expect(store.showOverlay).toBe(true);

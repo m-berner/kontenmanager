@@ -392,16 +392,27 @@ const getImportSummary = (backup: BackupData): string => {
         "components.dialogs.importDatabase.messages.importInfo.stock"
       )}`,
       `${backup.transfers?.length ?? 0} ${t(
-        "components.dialogs.importDatabase.messages.importInfo.booking")}`,
-      `6 ${t("components.dialogs.importDatabase.messages.importInfo.bookingType")}`
+        "components.dialogs.importDatabase.messages.importInfo.booking"
+      )}`,
+      `6 ${t(
+        "components.dialogs.importDatabase.messages.importInfo.bookingType"
+      )}`
     ].join("\n");
   }
 
   return [
-    `${backup.accounts?.length ?? 0} ${t("components.dialogs.importDatabase.messages.importInfo.account")}`,
-    `${backup.stocks?.length ?? 0} ${t("components.dialogs.importDatabase.messages.importInfo.stock")}`,
-    `${backup.bookings?.length ?? 0} ${t("components.dialogs.importDatabase.messages.importInfo.booking")}`,
-    `${backup.bookingTypes?.length ?? 0} ${t("components.dialogs.importDatabase.messages.importInfo.bookingType")}`
+    `${backup.accounts?.length ?? 0} ${t(
+      "components.dialogs.importDatabase.messages.importInfo.account"
+    )}`,
+    `${backup.stocks?.length ?? 0} ${t(
+      "components.dialogs.importDatabase.messages.importInfo.stock"
+    )}`,
+    `${backup.bookings?.length ?? 0} ${t(
+      "components.dialogs.importDatabase.messages.importInfo.booking"
+    )}`,
+    `${backup.bookingTypes?.length ?? 0} ${t(
+      "components.dialogs.importDatabase.messages.importInfo.bookingType"
+    )}`
   ].join("\n");
 };
 

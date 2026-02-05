@@ -60,13 +60,19 @@ export function useUserInfo() {
     _mode: "alert",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions & { alertKind?: "info"; duration?: number | null }
+    _options?: HandleUserInfoOptions & {
+      alertKind?: "info";
+      duration?: number | null;
+    }
   ): Promise<UserInfoAlertInfoResult>;
   async function handleUserInfo(
     _mode: "alert",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions & { alertKind?: "error"; duration?: number | null }
+    _options?: HandleUserInfoOptions & {
+      alertKind?: "error";
+      duration?: number | null;
+    }
   ): Promise<UserInfoAlertErrorResult>;
   async function handleUserInfo(
     _mode: "alert",
@@ -109,7 +115,11 @@ export function useUserInfo() {
       // Log with optional context data and level
       DomainUtils.log(
         `${title}: ${message}`.trim(),
-        { ...((data as Record<string, unknown>) || {}), correlationId, errorStack },
+        {
+          ...((data as Record<string, unknown>) || {}),
+          correlationId,
+          errorStack
+        },
         logLevel
       );
       return;
@@ -123,7 +133,11 @@ export function useUserInfo() {
         // Fallback to console if store not available
         DomainUtils.log(
           `ALERT_FALLBACK ${title}: ${message}`.trim(),
-          { ...((data as Record<string, unknown>) || {}), correlationId, errorStack },
+          {
+            ...((data as Record<string, unknown>) || {}),
+            correlationId,
+            errorStack
+          },
           logLevel
         );
         return;
@@ -152,7 +166,11 @@ export function useUserInfo() {
         // Fallback to console if browser wrapper unavailable
         DomainUtils.log(
           `NOTICE_FALLBACK ${title}: ${message}`.trim(),
-          { ...((data as Record<string, unknown>) || {}), correlationId, errorStack },
+          {
+            ...((data as Record<string, unknown>) || {}),
+            correlationId,
+            errorStack
+          },
           logLevel
         );
         return;

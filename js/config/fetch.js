@@ -111,5 +111,10 @@ export const FETCH = Object.freeze({
         NAME: "fx-rate",
         HOME: "https://fx-rate.net/qwsaq",
         QUOTE: "https://fx-rate.net/calculator/?c_input="
-    }
+    },
+    DEFAULT_TTL: 5 * 60 * 1000,
+    DEFAULT_VALUE: "0",
+    DEFAULT_CURRENCY: "EUR",
+    TARGET_PERIOD: "1 Jahr",
+    DEFAULT_CURRENCY_SYMBOL: "€"
 });

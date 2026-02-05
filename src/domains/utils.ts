@@ -92,8 +92,7 @@ export class DomainUtils {
     const [y, m, d] = iso.split("-").map((v) => Number(v));
     if (!(m >= 1 && m <= 12)) return false;
     const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
-    if (!(d >= 1 && d <= daysInMonth)) return false;
-    return true;
+    return d >= 1 && d <= daysInMonth;
   }
 
   /**

@@ -1,18 +1,17 @@
 # Stores Layer
 
-This directory contains the **Pinia State Stores** that manage the application's reactive state. The Stores Layer serves
-as a central repository for data, coordinating between the [Services Layer](../services/README.md) for persistence and
-the [Components Layer](../components/README.md) for presentation.
+**Pinia State Stores** manage the application’s reactive state. The Stores Layer serves
+as a central repository for data and coordinates between the [Services Layer](/services/README.md) for persistence, and
+the [Components Layer](/components/README.md) for presentation.
 
 ## Role and Responsibilities
 
-The mission of the stores layer is to:
+The mission of the stores layer pays in to:
 
 - **Reactive State Management**: Provide a single source of truth for UI and domain data that components can react to.
 - **Data Coordination**: Synchronize state across different parts of the application (e.g., updating balances when a
   booking is added).
-- **Business Logic Integration**: Utilize [Domain Logic](../domains/README.md) to provide calculated properties (
-  getters) for the UI.
+- **Business Logic Integration**: Utilize [Domain Logic](/domains/README.md) to provide calculated properties (getters) for the UI.
 - **Persistence Sync**: Coordinate with `DatabaseService` and browser storage to ensure data survives sessions.
 
 ## Key Stores
@@ -38,7 +37,7 @@ The orchestrator for all domain-specific data stores.
 
 - **`accounts.ts`**: Manages the list of bank accounts and their metadata.
 - **`stocks.ts`**: Manages stock holdings, including real-time market data and portfolio calculations.
-- **`bookings.ts`**: Manages financial transactions, providing complex aggregations for sums, taxes, and fees.
+- **`bookings.ts`**: Manages financial transactions, providing complex aggregations for sums, taxes and fees.
 - **`bookingTypes.ts`**: Manages categories for bookings (e.g., Buy, Sell, Dividend).
 
 ### ⚙️ `settings.ts` (`useSettingsStore`)
@@ -46,7 +45,7 @@ The orchestrator for all domain-specific data stores.
 Manages persistent user preferences.
 
 - Handles UI themes (skins), pagination limits, and active account selection.
-- Automatically synchronizes changes with browser persistent storage.
+- Automatically synchronizes changes with the browser persistent storage.
 
 ### ⚡ `runtime.ts` (`useRuntimeStore`)
 
@@ -57,15 +56,15 @@ Manages volatile, non-persistent UI state.
 
 ### 🔔 `alerts.ts` (`useAlertStore`)
 
-Manages the application's notification system.
+Manages the application’s notification system.
 
-- Provides a queue-based system for success, error, warning, and info messages.
+- Provides a queue-based system for success, error, warning and info messages.
 - Implements asynchronous confirmation dialogs (promises).
 
 ## Directory Structure
 
 - `stores.ts`: Contains store-specific constants (e.g., pagination defaults).
-- `*.ts`: Individual store implementations using the Pinia "setup" syntax.
+- `*.ts`: Individual store implementations using the Pinia “setup” syntax.
 - `*.test.ts`: Unit tests for store logic and state transitions.
 
 ## Development Principles
@@ -102,6 +101,6 @@ records.clean(false); // keeps accounts
 
 ## Testing
 
-- Unit test getters and critical actions in isolation using Pinia's `setActivePinia(createPinia())`.
+- Unit test getters and critical actions in isolation using Pinia’s `setActivePinia(createPinia())`.
 - For cross-store interactions, prefer testing via the `useRecordsStore` orchestrator.
 - When persistence is involved, stub `databaseService` calls and assert that stores send normalized data to services.

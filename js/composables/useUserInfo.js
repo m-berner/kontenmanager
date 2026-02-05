@@ -25,7 +25,11 @@ export function useUserInfo() {
         }
         recentMessages.set(key, now);
         if (mode === "console") {
-            DomainUtils.log(`${title}: ${message}`.trim(), { ...(data || {}), correlationId, errorStack }, logLevel);
+            DomainUtils.log(`${title}: ${message}`.trim(), {
+                ...(data || {}),
+                correlationId,
+                errorStack
+            }, logLevel);
             return;
         }
         if (mode === "alert") {
@@ -34,7 +38,11 @@ export function useUserInfo() {
                 alerts = useAlertStore();
             }
             catch {
-                DomainUtils.log(`ALERT_FALLBACK ${title}: ${message}`.trim(), { ...(data || {}), correlationId, errorStack }, logLevel);
+                DomainUtils.log(`ALERT_FALLBACK ${title}: ${message}`.trim(), {
+                    ...(data || {}),
+                    correlationId,
+                    errorStack
+                }, logLevel);
                 return;
             }
             const kind = effectiveKind;
@@ -54,7 +62,11 @@ export function useUserInfo() {
                 ({ notice } = useBrowser());
             }
             catch {
-                DomainUtils.log(`NOTICE_FALLBACK ${title}: ${message}`.trim(), { ...(data || {}), correlationId, errorStack }, logLevel);
+                DomainUtils.log(`NOTICE_FALLBACK ${title}: ${message}`.trim(), {
+                    ...(data || {}),
+                    correlationId,
+                    errorStack
+                }, logLevel);
                 return;
             }
             const lines = options.noticeLines && options.noticeLines.length > 0

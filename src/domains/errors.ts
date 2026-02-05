@@ -77,6 +77,18 @@ export const ERROR_CODES = {
   },
   APP_SERVICE: "#gxl",
   SERVICES: {
+    APP: {
+      // Storage initialization failed
+      STORAGE: "#aps",
+      // Missing or unsupported UI language/currency
+      CURRENCY: "#apc",
+      // Database initialization failure (connect/get/hydrate)
+      DB: "#apd",
+      // External fetch orchestration failure (non-critical) – used for wrapping/logging
+      FETCH: "#apf",
+      // Overall initializeApp failure
+      OVERALL: "#apo"
+    },
     DATABASE: {
       A: "#dbx",
       B: "#dbz",
@@ -177,6 +189,14 @@ const ERRORS: Record<string, string> = {
 
   [ERROR_CODES.VIEWS.APP_INDEX.A]: "App initialization failed",
   [ERROR_CODES.STORES.BOOKINGS.A]: "No booking found for ID",
+
+  // Services/App specific
+  [ERROR_CODES.SERVICES.APP.STORAGE]: "Failed to initialize storage",
+  [ERROR_CODES.SERVICES.APP.CURRENCY]:
+    "Unsupported or missing currency configuration",
+  [ERROR_CODES.SERVICES.APP.DB]: "Failed to initialize database",
+  [ERROR_CODES.SERVICES.APP.FETCH]: "Failed to fetch external data",
+  [ERROR_CODES.SERVICES.APP.OVERALL]: "Application initialization failed",
 
   [ERROR_CODES.SERVICES.DATABASE.BASE.A]: "Failed to delete by cursor",
   [ERROR_CODES.SERVICES.DATABASE.BASE.B]: "Failed to add record",

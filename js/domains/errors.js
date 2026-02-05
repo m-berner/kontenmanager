@@ -67,6 +67,13 @@ export const ERROR_CODES = {
     },
     APP_SERVICE: "#gxl",
     SERVICES: {
+        APP: {
+            STORAGE: "#aps",
+            CURRENCY: "#apc",
+            DB: "#apd",
+            FETCH: "#apf",
+            OVERALL: "#apo"
+        },
         DATABASE: {
             A: "#dbx",
             B: "#dbz",
@@ -157,6 +164,11 @@ const ERRORS = {
     [ERROR_CODES.IMPORT_EXPORT_SERVICE.H]: "Failed to verify export integrity",
     [ERROR_CODES.VIEWS.APP_INDEX.A]: "App initialization failed",
     [ERROR_CODES.STORES.BOOKINGS.A]: "No booking found for ID",
+    [ERROR_CODES.SERVICES.APP.STORAGE]: "Failed to initialize storage",
+    [ERROR_CODES.SERVICES.APP.CURRENCY]: "Unsupported or missing currency configuration",
+    [ERROR_CODES.SERVICES.APP.DB]: "Failed to initialize database",
+    [ERROR_CODES.SERVICES.APP.FETCH]: "Failed to fetch external data",
+    [ERROR_CODES.SERVICES.APP.OVERALL]: "Application initialization failed",
     [ERROR_CODES.SERVICES.DATABASE.BASE.A]: "Failed to delete by cursor",
     [ERROR_CODES.SERVICES.DATABASE.BASE.B]: "Failed to add record",
     [ERROR_CODES.SERVICES.DATABASE.BASE.C]: "Failed to get record",

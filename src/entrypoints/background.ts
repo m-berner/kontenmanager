@@ -52,11 +52,15 @@ async function onClick(): Promise<void> {
     if (foundTabs.length === 0) {
       const extensionTab = await tabsCreate();
       if (extensionTab.id === undefined) {
-        DomainUtils.log("BACKGROUND: Created new tab error", extensionTab, "error");
+        DomainUtils.log(
+          "BACKGROUND: Created new tab error",
+          extensionTab,
+          "error"
+        );
       }
       DomainUtils.log("BACKGROUND: Created new tab", extensionTab, "info");
     } else {
-      const [ firstTab, ...remainingTabs ] = foundTabs;
+      const [firstTab, ...remainingTabs] = foundTabs;
       await windowsUpdate(firstTab.windowId!);
       await tabsUpdate(firstTab.id!);
       DomainUtils.log("BACKGROUND: Focused existing tab", firstTab.id);

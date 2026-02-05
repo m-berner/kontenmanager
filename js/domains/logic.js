@@ -125,8 +125,7 @@ export class DomainLogic {
             cAccountNumberID: stores.settings.activeAccountId,
             cAskDates: DATE.ISO
         }, true);
-        if (stores.accounts.items.length === 0 &&
-            !hideImportAlert) {
+        if (stores.accounts.items.length === 0 && !hideImportAlert) {
             DomainUtils.log("DomainLogic.initializeRecords", messages, "info");
             hideImportAlert = true;
         }

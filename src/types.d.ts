@@ -36,6 +36,12 @@ export interface AccountFormProps {
 
 export interface AccountStoreItem extends AccountDb {}
 
+export interface AppStatus  {
+  storage: "ok" | "aborted" | "error";
+  db: "ok" | "aborted" | "error";
+  fetch: { exchanges: boolean; indexes: boolean; materials: boolean };
+}
+
 export interface BackupData {
   sm: {
     cVersion: number;
@@ -182,6 +188,13 @@ export interface CurrencyInputProps {
   disabled?: boolean;
   label: string;
   rules?: Array<(_v: number) => boolean | string>;
+}
+
+export interface FetchResult {
+  rate: string;
+  min: string;
+  max: string;
+  currency: string;
 }
 
 export interface FormsManager<TForm, TDB> {
@@ -527,13 +540,19 @@ export interface HandleUserInfoFn {
     _mode: "alert",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions & { alertKind?: "info"; duration?: number | null }
+    _options?: HandleUserInfoOptions & {
+      alertKind?: "info";
+      duration?: number | null;
+    }
   ): Promise<UserInfoAlertInfoResult>;
   (
     _mode: "alert",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions & { alertKind?: "error"; duration?: number | null }
+    _options?: HandleUserInfoOptions & {
+      alertKind?: "error";
+      duration?: number | null;
+    }
   ): Promise<UserInfoAlertErrorResult>;
   (
     _mode: "alert",
@@ -566,8 +585,10 @@ export type RuleBuilderType = (..._args: any[]) => ValidationRuleType;
 // We map the runtime schema entries to a type whose keys are the literal
 // storage keys (e.g., "sSkin") and whose values are the corresponding default
 // value types (string | number | boolean | string[]).
-type __BrowserStorageSchema = typeof import("@/domains/config/storage").BROWSER_STORAGE;
-type __BrowserStorageEntryUnion = __BrowserStorageSchema[keyof __BrowserStorageSchema];
+type __BrowserStorageSchema =
+  typeof import("@/domains/config/storage").BROWSER_STORAGE;
+type __BrowserStorageEntryUnion =
+  __BrowserStorageSchema[keyof __BrowserStorageSchema];
 
 export type StorageDataType = {
   [P in __BrowserStorageEntryUnion["key"]]: Extract<

@@ -24,14 +24,22 @@ describe("Runtime Store", () => {
     });
     it("setTeleport should configure dialog state", () => {
         const runtime = useRuntimeStore();
-        runtime.setTeleport({ dialogName: "DeleteBookingType", dialogOk: false, dialogVisibility: true });
+        runtime.setTeleport({
+            dialogName: "DeleteBookingType",
+            dialogOk: false,
+            dialogVisibility: true
+        });
         expect(runtime.dialogName).toBe("DeleteBookingType");
         expect(runtime.dialogOk).toBe(false);
         expect(runtime.dialogVisibility).toBe(true);
     });
     it("resetTeleport should hide dialog and clear option menu colors", () => {
         const runtime = useRuntimeStore();
-        runtime.setTeleport({ dialogName: "AnyDialog", dialogOk: false, dialogVisibility: true });
+        runtime.setTeleport({
+            dialogName: "AnyDialog",
+            dialogOk: false,
+            dialogVisibility: true
+        });
         runtime.optionMenuColors.set(1, "red");
         runtime.optionMenuColors.set(2, "blue");
         expect(runtime.dialogVisibility).toBe(true);
@@ -44,7 +52,11 @@ describe("Runtime Store", () => {
     });
     it("resetOptionsMenuColors should clear colors without touching dialog state", () => {
         const runtime = useRuntimeStore();
-        runtime.setTeleport({ dialogName: "StayOpen", dialogOk: true, dialogVisibility: true });
+        runtime.setTeleport({
+            dialogName: "StayOpen",
+            dialogOk: true,
+            dialogVisibility: true
+        });
         runtime.optionMenuColors.set(3, "green");
         runtime.resetOptionsMenuColors();
         expect(runtime.optionMenuColors.size).toBe(0);
@@ -53,7 +65,11 @@ describe("Runtime Store", () => {
     });
     it("setCurrentView should change view and reset teleport state", () => {
         const runtime = useRuntimeStore();
-        runtime.setTeleport({ dialogName: "Open", dialogOk: true, dialogVisibility: true });
+        runtime.setTeleport({
+            dialogName: "Open",
+            dialogOk: true,
+            dialogVisibility: true
+        });
         const someOtherView = 999;
         runtime.setCurrentView(someOtherView);
         expect(runtime.getCurrentView).toBe(someOtherView);

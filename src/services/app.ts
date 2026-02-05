@@ -6,7 +6,7 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import type { ExchangeData } from "@/types";
+import type { AppStatus, ExchangeData } from "@/types";
 import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { useRecordsStore } from "@/stores/records";
@@ -43,36 +43,125 @@ export class AppService {
   }
 
   /**
+   * Application initialization status shape returned by initializeApp.
+   */
+  private _lastStatus: AppStatus = {
+    storage: "error",
+    db: "error",
+    fetch: { exchanges: false, indexes: false, materials: false }
+  };
+
+  /**
    * Initialize the application by loading data from storage, database, and external APIs.
-   * Critical operations (storage, database) will throw on failure.
-   * Non-critical operations (exchange rates, indexes) fail gracefully.
+   * Critical operations (storage, database) will throw on failure unless aborted.
+   * Non-critical operations (exchange rates, indexes, materials) fail gracefully.
    *
    * @param translations - Translation object for initializing records
-   * @throws AppError if storage or database initialization fails
+   * @param signal - Optional AbortSignal to cancel initialization steps
+   * @returns Status object indicating the outcome of each phase
+   * @throws AppError if storage or database initialization fails (when not aborted)
    */
-  async initializeApp(translations: Record<string, string>): Promise<void> {
-    DomainUtils.log("Starting application initialization");
+  async initializeApp(
+    translations: Record<string, string>,
+    signal?: AbortSignal
+  ): Promise<{
+    storage: "ok" | "aborted" | "error";
+    db: "ok" | "aborted" | "error";
+    fetch: { exchanges: boolean; indexes: boolean; materials: boolean };
+  }> {
+    const tAppStart = performance.now();
+    DomainUtils.log("SERVICES app", { phase: "initializeApp", event: "start" });
+
+    // local mutable status we also persist to _lastStatus at the end
+    const status: {
+      storage: "ok" | "aborted" | "error";
+      db: "ok" | "aborted" | "error";
+      fetch: { exchanges: boolean; indexes: boolean; materials: boolean };
+    } = {
+      storage: "error",
+      db: "error",
+      fetch: { exchanges: false, indexes: false, materials: false }
+    };
 
     try {
+      // Abort guard before any work
+      if (signal?.aborted) {
+        status.storage = "aborted";
+        status.db = "aborted";
+        this._lastStatus = status;
+        return status;
+      }
+
       // Step 1: Initialize storage (critical - will throw on failure)
-      await this.initializeStorage();
+      const tStorageStart = performance.now();
+      await this.initializeStorage(signal);
+      status.storage = signal?.aborted ? "aborted" : "ok";
+      const storageDuration = Math.round(performance.now() - tStorageStart);
+      DomainUtils.log("SERVICES app", {
+        phase: "initializeStorage",
+        durationMs: storageDuration
+      });
+      if (signal?.aborted) {
+        status.db = "aborted";
+        this._lastStatus = status;
+        return status;
+      }
 
       // Step 2: Initialize the database (critical - will throw on failure)
-      await this.initializeDatabase(translations);
+      const tDbStart = performance.now();
+      await this.initializeDatabase(translations, signal);
+      status.db = signal?.aborted ? "aborted" : "ok";
+      const dbDuration = Math.round(performance.now() - tDbStart);
+      DomainUtils.log("SERVICES app", {
+        phase: "initializeDatabase",
+        durationMs: dbDuration
+      });
+      if (signal?.aborted) {
+        this._lastStatus = status;
+        return status;
+      }
 
       // Step 3: Fetch external data (non-critical - fails gracefully)
-      await this.fetchExternalData();
+      const tFetchStart = performance.now();
+      status.fetch = await this.fetchExternalData(signal);
+      const fetchDuration = Math.round(performance.now() - tFetchStart);
+      DomainUtils.log("SERVICES app", {
+        phase: "fetchExternalData",
+        durationMs: fetchDuration
+      });
 
-      DomainUtils.log("Application initialization completed successfully");
+      const appDuration = Math.round(performance.now() - tAppStart);
+      DomainUtils.log("SERVICES app", {
+        phase: "initializeApp",
+        durationMs: appDuration
+      });
+      this._lastStatus = status;
+      return status;
     } catch (err) {
-      DomainUtils.log("Application initialization failed", err, "error");
+      const appDuration = Math.round(performance.now() - tAppStart);
+      DomainUtils.log(
+        "SERVICES app",
+        { phase: "initializeApp", durationMs: appDuration, error: err },
+        "error"
+      );
+
+      // Persist whatever partial status we have before throwing
+      this._lastStatus = status;
+
+      if (signal?.aborted) {
+        // Treat as aborted without throwing an AppError
+        status.storage =
+          status.storage === "error" ? "aborted" : status.storage;
+        status.db = "aborted";
+        return status;
+      }
 
       if (err instanceof AppError) {
         throw err;
       }
 
       throw new AppError(
-        ERROR_CODES.APP_SERVICE,
+        ERROR_CODES.SERVICES.APP.OVERALL,
         ERROR_CATEGORY.BUSINESS,
         {
           input: serializeError(err),
@@ -108,12 +197,17 @@ export class AppService {
    * @returns An object with boolean status flags for various subsystems.
    */
   getStatus() {
-    return {
-      storageInitialized: this.settings.activeAccountId > 0,
-      databaseConnected: databaseService.isConnected(),
-      recordsLoaded: this.records.stocks.items.length > 0,
-      exchangeRatesLoaded: this.runtime.curUsd > 0 && this.runtime.curEur > 0
-    };
+    // Reuse last known initializeApp status if present, otherwise derive a snapshot
+    const derived = {
+      storage: this.settings.activeAccountId > 0 ? "ok" : "error",
+      db: databaseService.isConnected() ? "ok" : "error",
+      fetch: {
+        exchanges: this.runtime.infoExchanges.size > 0,
+        indexes: this.runtime.infoIndexes.size > 0,
+        materials: this.runtime.infoMaterials.size > 0
+      }
+    } as const;
+    return this._lastStatus ?? derived;
   }
 
   /**
@@ -122,13 +216,35 @@ export class AppService {
    *
    * @returns A promise that resolves when storage is initialized.
    */
-  private async initializeStorage(): Promise<void> {
-    DomainUtils.log("Initializing storage...");
+  private async initializeStorage(signal?: AbortSignal): Promise<void> {
+    DomainUtils.log("SERVICES app", {
+      phase: "initializeStorage",
+      event: "start"
+    });
 
-    const storageData = await this.storage.getStorage();
-    this.settings.init(storageData);
+    if (signal?.aborted) return;
 
-    DomainUtils.log("Storage initialized successfully");
+    try {
+      const storageData = await this.storage.getStorage();
+      if (signal?.aborted) return;
+      this.settings.init(storageData);
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.SERVICES.APP.STORAGE,
+        ERROR_CATEGORY.BUSINESS,
+        {
+          input: serializeError(err),
+          entity: "AppService",
+          phase: "initializeStorage"
+        },
+        false
+      );
+    }
+
+    DomainUtils.log("SERVICES app", {
+      phase: "initializeStorage",
+      event: "done"
+    });
   }
 
   /**
@@ -136,51 +252,88 @@ export class AppService {
    * Connects to IndexedDB and initializes record stores.
    *
    * @param translations - Translation messages for initialization alerts.
+   * @param signal - An optional abort signal.
    * @returns A promise that resolves when the database is initialized.
    */
   private async initializeDatabase(
-    translations: Record<string, string>
+    translations: Record<string, string>,
+    signal?: AbortSignal
   ): Promise<void> {
-    DomainUtils.log("Initializing database...");
+    DomainUtils.log("SERVICES app", {
+      phase: "initializeDatabase",
+      event: "start"
+    });
 
     const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
     if (!currency) {
       throw new AppError(
-        ERROR_CODES.APP_SERVICE,
+        ERROR_CODES.SERVICES.APP.CURRENCY,
         ERROR_CATEGORY.BUSINESS,
-        { input: this.browser.uiLanguage.value, entity: "AppService" },
+        {
+          input: this.browser.uiLanguage.value,
+          entity: "AppService",
+          phase: "initializeDatabase"
+        },
         false
       );
     }
 
-    await databaseService.connect();
-    const databaseStores = await databaseService.getAccountRecords(
-      this.settings.activeAccountId
-    );
+    if (signal?.aborted) return;
+    try {
+      await databaseService.connect();
+      if (signal?.aborted) return;
+      const databaseStores = await databaseService.getAccountRecords(
+        this.settings.activeAccountId
+      );
 
-    await this.records.init(databaseStores, translations);
+      if (signal?.aborted) return;
+      await this.records.init(databaseStores, translations);
+    } catch (err) {
+      throw new AppError(
+        ERROR_CODES.SERVICES.APP.DB,
+        ERROR_CATEGORY.DATABASE,
+        {
+          input: serializeError(err),
+          entity: "AppService",
+          phase: "initializeDatabase"
+        },
+        false
+      );
+    }
 
-    DomainUtils.log("Database initialized successfully");
+    DomainUtils.log("SERVICES app", {
+      phase: "initializeDatabase",
+      event: "done"
+    });
   }
 
   /**
    * Step 3: Fetch external data (non-critical)
    */
-  private async fetchExternalData(): Promise<void> {
-    DomainUtils.log("Fetching external data...");
+  private async fetchExternalData(
+    signal?: AbortSignal
+  ): Promise<{ exchanges: boolean; indexes: boolean; materials: boolean }> {
+    DomainUtils.log("SERVICES app", {
+      phase: "fetchExternalData",
+      event: "start"
+    });
 
     const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
     if (!currency) {
       DomainUtils.log(
-        "Cannot fetch external data without valid currency",
-        null,
+        "SERVICES app",
+        { phase: "fetchExternalData", warning: "missing currency" },
         "warn"
       );
-      return;
+      return { exchanges: false, indexes: false, materials: false };
     }
 
     const currencyEUR = `${currency}${CURRENCIES.EUR}`;
     const currencyUSD = `${currency}${CURRENCIES.USD}`;
+
+    if (signal?.aborted) {
+      return { exchanges: false, indexes: false, materials: false };
+    }
 
     const [exchangesBase, exchangesInfo, indexesInfo, materialsInfo] =
       await Promise.allSettled([
@@ -190,44 +343,116 @@ export class AppService {
         this.fetch.fetchMaterialData()
       ]);
 
+    if (signal?.aborted) {
+      return { exchanges: false, indexes: false, materials: false };
+    }
+
+    let exchangesOk = false;
+    let indexesOk = false;
+    let materialsOk = false;
+
     // Process successful fetches
     if (exchangesBase.status === "fulfilled") {
       this.processExchangeBase(exchangesBase.value);
+      exchangesOk = true;
     } else {
+      const wrapped = new AppError(
+        ERROR_CODES.SERVICES.APP.FETCH,
+        ERROR_CATEGORY.NETWORK,
+        {
+          input: serializeError(exchangesBase.reason as any),
+          entity: "AppService",
+          section: "baseExchanges",
+          phase: "fetchExternalData"
+        },
+        true
+      );
       DomainUtils.log(
-        "Failed to fetch base exchange rates",
-        exchangesBase.reason,
+        "SERVICES app",
+        {
+          phase: "fetchExternalData",
+          section: "baseExchanges",
+          error: wrapped
+        },
         "warn"
       );
     }
 
     if (exchangesInfo.status === "fulfilled") {
       this.processExchangeInfo(exchangesInfo.value);
+      exchangesOk = true;
     } else {
+      const wrapped = new AppError(
+        ERROR_CODES.SERVICES.APP.FETCH,
+        ERROR_CATEGORY.NETWORK,
+        {
+          input: serializeError(exchangesInfo.reason as any),
+          entity: "AppService",
+          section: "exchanges",
+          phase: "fetchExternalData"
+        },
+        true
+      );
       DomainUtils.log(
-        "Failed to fetch exchange info",
-        exchangesInfo.reason,
+        "SERVICES app",
+        { phase: "fetchExternalData", section: "exchanges", error: wrapped },
         "warn"
       );
     }
 
     if (indexesInfo.status === "fulfilled") {
       this.processIndexesInfo(indexesInfo.value);
+      indexesOk = true;
     } else {
-      DomainUtils.log("Failed to fetch index info", indexesInfo.reason, "warn");
-    }
-
-    if (materialsInfo.status === "fulfilled") {
-      this.processMaterialsInfo(materialsInfo.value);
-    } else {
+      const wrapped = new AppError(
+        ERROR_CODES.SERVICES.APP.FETCH,
+        ERROR_CATEGORY.NETWORK,
+        {
+          input: serializeError(indexesInfo.reason as any),
+          entity: "AppService",
+          section: "indexes",
+          phase: "fetchExternalData"
+        },
+        true
+      );
       DomainUtils.log(
-        "Failed to fetch materials info",
-        materialsInfo.reason,
+        "SERVICES app",
+        { phase: "fetchExternalData", section: "indexes", error: wrapped },
         "warn"
       );
     }
 
-    DomainUtils.log("External data fetch completed");
+    if (materialsInfo.status === "fulfilled") {
+      this.processMaterialsInfo(materialsInfo.value);
+      materialsOk = true;
+    } else {
+      const wrapped = new AppError(
+        ERROR_CODES.SERVICES.APP.FETCH,
+        ERROR_CATEGORY.NETWORK,
+        {
+          input: serializeError(materialsInfo.reason as any),
+          entity: "AppService",
+          section: "materials",
+          phase: "fetchExternalData"
+        },
+        true
+      );
+      DomainUtils.log(
+        "SERVICES app",
+        { phase: "fetchExternalData", section: "materials", error: wrapped },
+        "warn"
+      );
+    }
+
+    DomainUtils.log("SERVICES app", {
+      phase: "fetchExternalData",
+      event: "done"
+    });
+    return {
+      exchanges: exchangesOk,
+      indexes: indexesOk,
+      materials: materialsOk
+    };
   }
 
   /**
@@ -242,10 +467,18 @@ export class AppService {
     baseData.forEach((data) => {
       if (data.key.includes(CURRENCIES.USD)) {
         this.runtime.curUsd = data.value;
-        DomainUtils.log(`USD exchange rate: ${data.value}`);
+        DomainUtils.log("SERVICES app", {
+          phase: "processExchangeBase",
+          key: "USD",
+          value: data.value
+        });
       } else if (data.key.includes(CURRENCIES.EUR)) {
         this.runtime.curEur = data.value;
-        DomainUtils.log(`EUR exchange rate: ${data.value}`);
+        DomainUtils.log("SERVICES app", {
+          phase: "processExchangeBase",
+          key: "EUR",
+          value: data.value
+        });
       }
     });
   }
@@ -255,7 +488,11 @@ export class AppService {
    */
   private processExchangeInfo(infoData: ExchangeData[]): void {
     if (!infoData.length) {
-      DomainUtils.log("No exchange info to process", null, "warn");
+      DomainUtils.log(
+        "SERVICES app",
+        { phase: "processExchangeInfo", warning: "no data" },
+        "warn"
+      );
       return;
     }
 
@@ -263,7 +500,10 @@ export class AppService {
       this.runtime.infoExchanges.set(data.key, data.value);
     });
 
-    DomainUtils.log(`Processed ${infoData.length} exchange rates`);
+    DomainUtils.log("SERVICES app", {
+      phase: "processExchangeInfo",
+      count: infoData.length
+    });
   }
 
   /**
@@ -271,7 +511,11 @@ export class AppService {
    */
   private processIndexesInfo(indexesData: ExchangeData[]): void {
     if (!indexesData.length) {
-      DomainUtils.log("No index info to process", null, "warn");
+      DomainUtils.log(
+        "SERVICES app",
+        { phase: "processIndexesInfo", warning: "no data" },
+        "warn"
+      );
       return;
     }
 
@@ -279,7 +523,10 @@ export class AppService {
       this.runtime.infoIndexes.set(data.key, data.value);
     });
 
-    DomainUtils.log(`Processed ${indexesData.length} indexes`);
+    DomainUtils.log("SERVICES app", {
+      phase: "processIndexesInfo",
+      count: indexesData.length
+    });
   }
 
   /**
@@ -287,7 +534,11 @@ export class AppService {
    */
   private processMaterialsInfo(materialsData: ExchangeData[]): void {
     if (!materialsData.length) {
-      DomainUtils.log("No materials info to process", null, "warn");
+      DomainUtils.log(
+        "SERVICES app",
+        { phase: "processMaterialsInfo", warning: "no data" },
+        "warn"
+      );
       return;
     }
 
@@ -295,7 +546,10 @@ export class AppService {
       this.runtime.infoMaterials.set(data.key, data.value);
     });
 
-    DomainUtils.log(`Processed ${materialsData.length} materials`);
+    DomainUtils.log("SERVICES app", {
+      phase: "processMaterialsInfo",
+      count: materialsData.length
+    });
   }
 }
 
@@ -304,10 +558,15 @@ export class AppService {
  * Use this in your main.ts or app setup
  */
 export async function initializeApp(
-  translations: Record<string, string>
-): Promise<void> {
+  translations: Record<string, string>,
+  signal?: AbortSignal
+): Promise<{
+  storage: "ok" | "aborted" | "error";
+  db: "ok" | "aborted" | "error";
+  fetch: { exchanges: boolean; indexes: boolean; materials: boolean };
+}> {
   const appService = new AppService();
-  await appService.initializeApp(translations);
+  return appService.initializeApp(translations, signal);
 }
 
-DomainUtils.log("--- services/app.ts ---");
+DomainUtils.log("SERVICES app", { phase: "module", event: "loaded" });

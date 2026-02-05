@@ -42,7 +42,11 @@ const app = createApp(AppIndex);
  */
 app.config.errorHandler = (err: unknown, _instance, info): void => {
   const message = err instanceof Error ? err.message : String(err);
-  DomainUtils.log("APP: errorHandler", { message, info, stack: (err as Error)?.stack }, "error");
+  DomainUtils.log(
+    "APP: errorHandler",
+    { message, info, stack: (err as Error)?.stack },
+    "error"
+  );
 };
 
 /**

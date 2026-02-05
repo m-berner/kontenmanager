@@ -40,16 +40,20 @@ onBeforeMount(async () => {
   DomainUtils.log("APP_INDEX: onBeforeMount");
 
   try {
-    await initializeApp({
-      title: t("mixed.smImportOnly.title"),
-      message: t("mixed.smImportOnly.message")
-    });
-
+    const controller = new AbortController();
+    const status = await initializeApp(
+      {
+        title: t("mixed.smImportOnly.title"),
+        message: t("mixed.smImportOnly.message")
+      },
+      controller.signal
+    );
+    DomainUtils.log("APP_INDEX: Initialization successful", status, "info");
+    // Abort if the user navigates away or cancels
+    controller.abort();
     // Apply theme after successful initialization
     theme.global.name.value = skin.value;
     isInitialized.value = true;
-
-    DomainUtils.log("APP_INDEX: Initialization successful");
   } catch (err) {
     throw new AppError(
       ERROR_CODES.VIEWS.APP_INDEX.A,

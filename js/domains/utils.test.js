@@ -78,12 +78,9 @@ describe("DomainUtils: strings and collections", () => {
         expect(DomainUtils.mean([0, 1, 2, Number.NaN, Number.POSITIVE_INFINITY, 3])).toBeCloseTo(2, 6);
     });
     it("haveSameStrings should compare sets regardless of order", () => {
-        expect(DomainUtils.haveSameStrings(["a", "b"], ["b", "a"]))
-            .toBeTruthy();
-        expect(DomainUtils.haveSameStrings(["a", "b"], ["a", "c"]))
-            .toBeFalsy();
-        expect(DomainUtils.haveSameStrings(["a"], ["a", "a"]))
-            .toBeFalsy();
+        expect(DomainUtils.haveSameStrings(["a", "b"], ["b", "a"])).toBeTruthy();
+        expect(DomainUtils.haveSameStrings(["a", "b"], ["a", "c"])).toBeFalsy();
+        expect(DomainUtils.haveSameStrings(["a"], ["a", "a"])).toBeFalsy();
     });
 });
 describe("DomainUtils: helpers (debounce/throttle/memorize/cleanup)", () => {

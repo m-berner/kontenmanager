@@ -5,13 +5,13 @@ import { STORES } from "@/config/stores";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 class FetchCache {
     cache = new Map();
-    DEFAULT_TTL = 5 * 60 * 1000;
+    constructor() { }
     set(key, data) {
         this.cache.set(key, { data, timestamp: Date.now() });
         if (this.cache.size > 100)
             this.cleanup();
     }
-    get(key, ttl = this.DEFAULT_TTL) {
+    get(key, ttl = FETCH.DEFAULT_TTL) {
         const entry = this.cache.get(key);
         if (!entry)
             return null;
@@ -34,13 +34,13 @@ class FetchCache {
     cleanup() {
         const now = Date.now();
         for (const [key, entry] of this.cache.entries()) {
-            if (now - entry.timestamp > this.DEFAULT_TTL) {
+            if (now - entry.timestamp > FETCH.DEFAULT_TTL) {
                 this.cache.delete(key);
             }
         }
     }
 }
-export class FetchService {
+class FetchService {
     cache;
     serviceFetchers = {
         fnet: async (urls) => {
@@ -48,195 +48,104 @@ export class FetchService {
                 const response = await this.fetchWithRetry(urlObj.value);
                 const html = await this.fetchWithCache(response.url, response.url);
                 const doc = await this.parseHTML(html);
-                const nodes = doc.querySelectorAll("#snapshot-value-fst-current-0 > span");
-                const articleNodes = doc.querySelectorAll("main div[class=accordion__content]");
-                let min = "0", max = "0", currency = "EUR", rate = "0";
-                if (articleNodes.length > 0) {
-                    const mmNodes = articleNodes[0].querySelectorAll("table > tbody > tr");
-                    for (const row of mmNodes) {
-                        if (row.textContent?.includes("1 Jahr")) {
-                            const cells = row.querySelectorAll("td");
-                            min = cells[3]?.textContent?.trim() || "0";
-                            max = cells[4]?.textContent?.trim() || "0";
-                            break;
-                        }
-                    }
-                }
-                if (nodes.length > 1) {
-                    currency = nodes[1]?.textContent?.trim() || "EUR";
-                    rate = nodes[0]?.textContent?.trim() || "0";
-                }
+                const { rate, currency } = this.extractFnetRateAndCurrency(doc);
+                const { min, max } = this.extractFnetMinMax(doc);
                 return {
                     id: urlObj.key,
                     isin: "",
-                    rate: rate.replace(/,/, "."),
-                    min: min.replace(/,/, "."),
-                    max: max.replace(/,/, "."),
+                    rate: this.normalizeNumber(rate),
+                    min: this.normalizeNumber(min),
+                    max: this.normalizeNumber(max),
                     cur: currency
                 };
             }));
         },
         ard: async (urls) => {
-            return await Promise.all(urls.map(async (urlObj) => {
+            return Promise.all(urls.map(async (urlObj) => {
                 const html = await this.fetchWithCache(urlObj.value, urlObj.value);
                 const doc = await this.parseHTML(html);
-                const rows = doc.querySelectorAll("#desktopSearchResult > table > tbody > tr");
-                let min = "0", max = "0", currency = "EUR", rate = "0";
-                if (rows.length > 0) {
-                    const attr = rows[0].getAttribute("onclick") ?? "";
-                    const url = attr
-                        .replace("document.location='", "")
-                        .replace("';", "");
-                    const html2 = await this.fetchWithCache(url, url);
-                    const doc2 = await this.parseHTML(html2);
-                    currency = "EUR";
-                    const ardRows = doc2.querySelectorAll("#USFkursdaten table > tbody tr");
-                    rate = (ardRows[0].cells[1].textContent ?? "0").replace("â‚¬", "");
-                    min = (ardRows[6].cells[1].textContent ?? "0").replace("â‚¬", "");
-                    max = (ardRows[7].cells[1].textContent ?? "0").replace("â‚¬", "");
-                    return {
-                        id: urlObj.key,
-                        isin: "",
-                        rate: rate.replace(/,/, "."),
-                        min: min.replace(/,/, "."),
-                        max: max.replace(/,/, "."),
-                        cur: currency
-                    };
+                const detailUrl = this.extractArdDetailUrl(doc);
+                if (!detailUrl) {
+                    return this.createDefaultStockData(urlObj.key);
                 }
-                else {
-                    return {
-                        id: urlObj.key,
-                        isin: "",
-                        rate: "0",
-                        min: "0",
-                        max: "0",
-                        cur: "EUR"
-                    };
-                }
+                const detailHtml = await this.fetchWithCache(detailUrl, detailUrl);
+                const detailDoc = await this.parseHTML(detailHtml);
+                const { rate, min, max, currency } = this.extractArdStockData(detailDoc);
+                return {
+                    id: urlObj.key,
+                    isin: "",
+                    rate: this.normalizeNumber(rate),
+                    min: this.normalizeNumber(min),
+                    max: this.normalizeNumber(max),
+                    cur: currency
+                };
             }));
         },
         wstreet: async (urls) => {
-            return await Promise.all(urls.map(async (urlObj) => {
+            return Promise.all(urls.map(async (urlObj) => {
                 const response = await this.fetchWithRetry(urlObj.value);
                 const responseJson = await response.json();
-                const html = await this.fetchWithCache(responseJson.result[0].link, FETCH.MAP.get("wstreet")?.HOME + responseJson.result[0].link);
+                const detailUrl = this.buildWStreetDetailUrl(responseJson);
+                const html = await this.fetchWithCache(detailUrl, detailUrl);
                 const doc = await this.parseHTML(html);
-                const nodes = doc.querySelectorAll("div.c2 table");
-                const articleNodes = doc.querySelectorAll("div.fundamental > div > div.float-start");
-                let min = "0", max = "0", currency = "EUR", rate = "0";
-                rate =
-                    nodes[0]?.querySelectorAll("tr")[1]?.querySelectorAll("td")[1]
-                        .textContent ?? "0";
-                max = articleNodes[1]?.textContent?.split("Hoch")[1] ?? "0";
-                min =
-                    articleNodes[1]?.textContent
-                        ?.split("Hoch")[0]
-                        .split("WochenTief")[1] ?? "0";
-                if (rate.includes("USD")) {
-                    currency = "USD";
-                }
-                else if (rate.includes("EUR")) {
-                    currency = "EUR";
-                }
+                const { rate, min, max, currency } = this.extractWStreetStockData(doc);
                 return {
                     id: urlObj.key ?? 0,
                     isin: "",
-                    rate: rate.replace(/,/, "."),
-                    min: min.replace(/,/, ".") ?? "",
-                    max: max.replace(/,/, ".") ?? "",
+                    rate: this.normalizeNumber(rate),
+                    min: this.normalizeNumber(min),
+                    max: this.normalizeNumber(max),
                     cur: currency
                 };
             }));
         },
         goyax: async (urls) => {
-            return await Promise.all(urls.map(async (urlObj) => {
+            return Promise.all(urls.map(async (urlObj) => {
                 const response = await this.fetchWithRetry(urlObj.value);
                 const html = await this.fetchWithCache(response.url, response.url);
                 const doc = await this.parseHTML(html);
-                const nodes = doc.querySelectorAll("div#instrument-ueberblick > div");
-                const listRows = nodes[1].querySelectorAll("ul.list-rows");
-                const rateAll = listRows[1].querySelectorAll("li")[3].textContent ?? "0";
-                const rows = nodes[0]
-                    .querySelectorAll("table")[1]
-                    .querySelectorAll("tr");
-                let min = "0", max = "0", rate = "0";
-                rate = rateAll.split(")")[1] ?? "0";
-                max = rows[4].querySelectorAll("td")[3].textContent ?? "0";
-                min = rows[5].querySelectorAll("td")[3].textContent ?? "0";
+                const { rate, min, max } = this.extractGoyaxStockData(doc);
                 return {
                     id: urlObj.key,
                     isin: "",
-                    rate: rate.replace(/,/, "."),
-                    min: min.replace(/,/, "."),
-                    max: max.replace(/,/, "."),
-                    cur: "EUR"
+                    rate: this.normalizeNumber(rate),
+                    min: this.normalizeNumber(min),
+                    max: this.normalizeNumber(max),
+                    cur: FETCH.DEFAULT_CURRENCY
                 };
             }));
         },
         acheck: async (urls) => {
-            return await Promise.all(urls.map(async (urlObj) => {
-                let onlineCurrency = "";
+            return Promise.all(urls.map(async (urlObj) => {
                 const response = await this.fetchWithRetry(urlObj.value);
                 const html = await this.fetchWithCache(response.url, response.url);
                 const doc = await this.parseHTML(html);
-                const onlineTables = doc.querySelectorAll("#content table");
-                if (onlineTables.length > 1) {
-                    const onlineRate = onlineTables[0]
-                        .querySelectorAll("tr")[1]
-                        .querySelectorAll("td")[1].textContent ?? "0";
-                    const findCurrency = onlineTables[0]
-                        .querySelectorAll("tr")[1]
-                        .querySelectorAll("td")[2].textContent ?? "0";
-                    const onlineMin = onlineTables[2]
-                        .querySelectorAll("tr")[3]
-                        .querySelectorAll("td")[2].textContent ?? "0";
-                    const onlineMax = onlineTables[2]
-                        .querySelectorAll("tr")[3]
-                        .querySelectorAll("td")[1].textContent ?? "0";
-                    if (findCurrency.includes("$")) {
-                        onlineCurrency = "USD";
-                    }
-                    else if (findCurrency.includes("â‚¬")) {
-                        onlineCurrency = "EUR";
-                    }
-                    return {
-                        id: urlObj.key,
-                        isin: "",
-                        rate: onlineRate,
-                        min: onlineMin,
-                        max: onlineMax,
-                        cur: onlineCurrency
-                    };
+                const stockData = this.extractAcheckStockData(doc);
+                if (!stockData) {
+                    return this.createDefaultStockData(-1);
                 }
-                else {
-                    return {
-                        id: -1,
-                        isin: "",
-                        rate: "0",
-                        min: "0",
-                        max: "0",
-                        cur: "EUR"
-                    };
-                }
+                return {
+                    id: urlObj.key,
+                    isin: "",
+                    rate: this.normalizeNumber(stockData.rate),
+                    min: this.normalizeNumber(stockData.min),
+                    max: this.normalizeNumber(stockData.max),
+                    cur: stockData.currency
+                };
             }));
         },
         tgate: async (urls) => {
             return Promise.all(urls.map(async (urlObj) => {
                 const html = await this.fetchWithCache(urlObj.value, urlObj.value);
                 const doc = await this.parseHTML(html);
-                const ask = doc.querySelector("#ask")?.textContent || "0";
-                const bid = doc.querySelector("#bid")?.textContent || "0";
-                const quote = DomainUtils.mean([
-                    DomainUtils.toNumber(bid),
-                    DomainUtils.toNumber(ask)
-                ]);
+                const { rate } = this.extractTgateStockData(doc);
                 return {
                     id: urlObj.key,
                     isin: "",
-                    rate: quote.toString(),
-                    min: "0",
-                    max: "0",
-                    cur: "EUR"
+                    rate,
+                    min: FETCH.DEFAULT_VALUE,
+                    max: FETCH.DEFAULT_VALUE,
+                    cur: FETCH.DEFAULT_CURRENCY
                 };
             }));
         }
@@ -468,6 +377,287 @@ export class FetchService {
     delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
+    normalizeNumber(value) {
+        return value.replace(/,/g, ".");
+    }
+    parseCurrency(code) {
+        if (code.includes("USD") || code.includes("$")) {
+            return "USD";
+        }
+        if (code.includes("EUR") || code.includes("€") || code.includes("â‚¬")) {
+            return "EUR";
+        }
+        return FETCH.DEFAULT_CURRENCY;
+    }
+    extractFnetRateAndCurrency(doc) {
+        const SEARCH_RESULT_SELECTOR = "#snapshot-value-fst-current-0 > span";
+        const nodes = doc.querySelectorAll(SEARCH_RESULT_SELECTOR);
+        if (nodes.length < 2) {
+            return { rate: FETCH.DEFAULT_VALUE, currency: FETCH.DEFAULT_CURRENCY };
+        }
+        return {
+            rate: nodes[0]?.textContent?.trim() || FETCH.DEFAULT_VALUE,
+            currency: nodes[1]?.textContent?.trim() || FETCH.DEFAULT_CURRENCY
+        };
+    }
+    extractFnetMinMax(doc) {
+        const SEARCH_RESULT_SELECTOR = "main div[class=accordion__content]";
+        const nodes = doc.querySelectorAll(SEARCH_RESULT_SELECTOR);
+        if (nodes.length === 0) {
+            return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+        }
+        const rows = nodes[0].querySelectorAll("table > tbody > tr");
+        for (const row of rows) {
+            if (row.textContent?.includes(FETCH.TARGET_PERIOD)) {
+                const cells = row.querySelectorAll("td");
+                return {
+                    min: cells[3]?.textContent?.trim() || FETCH.DEFAULT_VALUE,
+                    max: cells[4]?.textContent?.trim() || FETCH.DEFAULT_VALUE
+                };
+            }
+        }
+        return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+    }
+    extractArdDetailUrl(doc) {
+        const DATA_TABLE_SELECTOR = "#desktopSearchResult > table > tbody > tr";
+        const rows = doc.querySelectorAll(DATA_TABLE_SELECTOR);
+        if (rows.length === 0) {
+            return null;
+        }
+        const onclickAttr = rows[0].getAttribute("onclick");
+        if (!onclickAttr) {
+            return null;
+        }
+        return onclickAttr.replace("document.location='", "").replace("';", "");
+    }
+    extractArdStockData(doc) {
+        const DATA_TABLE_SELECTOR = "#USFkursdaten table > tbody tr";
+        const rows = doc.querySelectorAll(DATA_TABLE_SELECTOR);
+        if (rows.length < 8) {
+            return {
+                rate: FETCH.DEFAULT_VALUE,
+                min: FETCH.DEFAULT_VALUE,
+                max: FETCH.DEFAULT_VALUE,
+                currency: FETCH.DEFAULT_CURRENCY
+            };
+        }
+        const cleanCell = (row, cellIndex) => {
+            return (row.cells[cellIndex]?.textContent ?? FETCH.DEFAULT_VALUE).replace(FETCH.DEFAULT_CURRENCY_SYMBOL, "");
+        };
+        return {
+            rate: cleanCell(rows[0], 1),
+            min: cleanCell(rows[6], 1),
+            max: cleanCell(rows[7], 1),
+            currency: FETCH.DEFAULT_CURRENCY
+        };
+    }
+    createDefaultStockData(id) {
+        return {
+            id,
+            isin: "",
+            rate: FETCH.DEFAULT_VALUE,
+            min: FETCH.DEFAULT_VALUE,
+            max: FETCH.DEFAULT_VALUE,
+            cur: FETCH.DEFAULT_CURRENCY
+        };
+    }
+    buildWStreetDetailUrl(responseJson) {
+        const detailPath = responseJson.result?.[0]?.link ?? "";
+        const baseUrl = FETCH.MAP.get("wstreet")?.HOME ?? "";
+        return baseUrl + detailPath;
+    }
+    extractWStreetStockData(doc) {
+        const rate = this.extractWStreetRate(doc);
+        const { min, max } = this.extractWStreetMinMax(doc);
+        const currency = this.parseCurrency(rate);
+        return {
+            rate,
+            min,
+            max,
+            currency
+        };
+    }
+    extractWStreetRate(doc) {
+        const RATE_TABLE_SELECTOR = "div.c2 table";
+        const tables = doc.querySelectorAll(RATE_TABLE_SELECTOR);
+        if (tables.length === 0) {
+            return FETCH.DEFAULT_VALUE;
+        }
+        const rows = tables[0].querySelectorAll("tr");
+        if (rows.length < 2) {
+            return FETCH.DEFAULT_VALUE;
+        }
+        const cells = rows[1].querySelectorAll("td");
+        return cells[1]?.textContent?.trim() ?? FETCH.DEFAULT_VALUE;
+    }
+    extractWStreetMinMax(doc) {
+        const FUNDAMENTAL_SELECTOR = "div.fundamental > div > div.float-start";
+        const nodes = doc.querySelectorAll(FUNDAMENTAL_SELECTOR);
+        if (nodes.length < 2) {
+            return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+        }
+        const text = nodes[1]?.textContent ?? "";
+        const parts = text.split("Hoch");
+        if (parts.length < 2) {
+            return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+        }
+        const max = parts[1]?.trim() ?? FETCH.DEFAULT_VALUE;
+        const minParts = parts[0].split("WochenTief");
+        const min = minParts.length > 1
+            ? minParts[1]?.trim() ?? FETCH.DEFAULT_VALUE
+            : FETCH.DEFAULT_VALUE;
+        return { min, max };
+    }
+    extractGoyaxStockData(doc) {
+        const rate = this.extractGoyaxRate(doc);
+        const { min, max } = this.extractGoyaxMinMax(doc);
+        return {
+            rate,
+            min,
+            max,
+            currency: FETCH.DEFAULT_CURRENCY
+        };
+    }
+    extractGoyaxRate(doc) {
+        const OVERVIEW_SELECTOR = "div#instrument-ueberblick > div";
+        try {
+            const nodes = doc.querySelectorAll(OVERVIEW_SELECTOR);
+            if (nodes.length < 2) {
+                return FETCH.DEFAULT_VALUE;
+            }
+            const listRows = nodes[1].querySelectorAll("ul.list-rows");
+            if (listRows.length < 2) {
+                return FETCH.DEFAULT_VALUE;
+            }
+            const listItems = listRows[1].querySelectorAll("li");
+            if (listItems.length < 4) {
+                return FETCH.DEFAULT_VALUE;
+            }
+            const rateText = listItems[3].textContent ?? FETCH.DEFAULT_VALUE;
+            const parts = rateText.split(")");
+            return parts.length > 1
+                ? parts[1]?.trim() ?? FETCH.DEFAULT_VALUE
+                : FETCH.DEFAULT_VALUE;
+        }
+        catch {
+            return FETCH.DEFAULT_VALUE;
+        }
+    }
+    extractGoyaxMinMax(doc) {
+        const OVERVIEW_SELECTOR = "div#instrument-ueberblick > div";
+        try {
+            const nodes = doc.querySelectorAll(OVERVIEW_SELECTOR);
+            if (nodes.length === 0) {
+                return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+            }
+            const tables = nodes[0].querySelectorAll("table");
+            if (tables.length < 2) {
+                return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+            }
+            const rows = tables[1].querySelectorAll("tr");
+            if (rows.length < 6) {
+                return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+            }
+            const maxCells = rows[4].querySelectorAll("td");
+            const minCells = rows[5].querySelectorAll("td");
+            const max = maxCells[3]?.textContent?.trim() ?? FETCH.DEFAULT_VALUE;
+            const min = minCells[3]?.textContent?.trim() ?? FETCH.DEFAULT_VALUE;
+            return { min, max };
+        }
+        catch {
+            return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+        }
+    }
+    extractAcheckStockData(doc) {
+        const CONTENT_TABLE_SELECTOR = "#content table";
+        const MIN_REQUIRED_TABLES = 3;
+        const tables = doc.querySelectorAll(CONTENT_TABLE_SELECTOR);
+        if (tables.length < MIN_REQUIRED_TABLES) {
+            return {
+                rate: FETCH.DEFAULT_VALUE,
+                min: FETCH.DEFAULT_VALUE,
+                max: FETCH.DEFAULT_VALUE,
+                currency: FETCH.DEFAULT_CURRENCY
+            };
+        }
+        const rate = this.extractAcheckRate(tables[0]);
+        const currencySymbol = this.extractAcheckCurrencySymbol(tables[0]);
+        const { min, max } = this.extractAcheckMinMax(tables[2]);
+        const currency = this.parseCurrency(currencySymbol);
+        return { rate, min, max, currency };
+    }
+    extractAcheckRate(table) {
+        const RATE_ROW = 1;
+        const RATE_CELL = 1;
+        try {
+            const rows = table.querySelectorAll("tr");
+            if (rows.length < RATE_ROW + 1) {
+                return FETCH.DEFAULT_VALUE;
+            }
+            const cells = rows[RATE_ROW].querySelectorAll("td");
+            return cells[RATE_CELL]?.textContent?.trim() ?? FETCH.DEFAULT_VALUE;
+        }
+        catch {
+            return FETCH.DEFAULT_VALUE;
+        }
+    }
+    extractAcheckCurrencySymbol(table) {
+        const CURRENCY_ROW = 1;
+        const CURRENCY_CELL = 2;
+        try {
+            const rows = table.querySelectorAll("tr");
+            if (rows.length < CURRENCY_ROW + 1) {
+                return FETCH.DEFAULT_VALUE;
+            }
+            const cells = rows[CURRENCY_ROW].querySelectorAll("td");
+            return cells[CURRENCY_CELL]?.textContent?.trim() ?? FETCH.DEFAULT_VALUE;
+        }
+        catch {
+            return FETCH.DEFAULT_VALUE;
+        }
+    }
+    extractAcheckMinMax(table) {
+        const MINMAX_ROW = 3;
+        const MAX_CELL = 1;
+        const MIN_CELL = 2;
+        try {
+            const rows = table.querySelectorAll("tr");
+            if (rows.length < MINMAX_ROW + 1) {
+                return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+            }
+            const cells = rows[MINMAX_ROW].querySelectorAll("td");
+            const max = cells[MAX_CELL]?.textContent?.trim() ?? FETCH.DEFAULT_VALUE;
+            const min = cells[MIN_CELL]?.textContent?.trim() ?? FETCH.DEFAULT_VALUE;
+            return { min, max };
+        }
+        catch {
+            return { min: FETCH.DEFAULT_VALUE, max: FETCH.DEFAULT_VALUE };
+        }
+    }
+    extractTgateStockData(doc) {
+        const ASK_SELECTOR = "#ask";
+        const BID_SELECTOR = "#bid";
+        const ask = doc.querySelector(ASK_SELECTOR)?.textContent?.trim() ??
+            FETCH.DEFAULT_VALUE;
+        const bid = doc.querySelector(BID_SELECTOR)?.textContent?.trim() ??
+            FETCH.DEFAULT_VALUE;
+        const rate = this.calculateMidQuote(bid, ask);
+        return { rate };
+    }
+    calculateMidQuote(bid, ask) {
+        try {
+            const bidNumber = DomainUtils.toNumber(bid);
+            const askNumber = DomainUtils.toNumber(ask);
+            if (isNaN(bidNumber) || isNaN(askNumber)) {
+                return FETCH.DEFAULT_VALUE;
+            }
+            const midQuote = DomainUtils.mean([bidNumber, askNumber]);
+            return midQuote.toString();
+        }
+        catch {
+            return FETCH.DEFAULT_VALUE;
+        }
+    }
 }
 export const fetchService = new FetchService();
-DomainUtils.log("--- services/fetch.ts ---");
+DomainUtils.log("SERVICES fetch: loaded");

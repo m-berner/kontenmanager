@@ -75,9 +75,9 @@ describe("DomainUtils: numbers and parsing", () => {
 
   it("toNumber should return fallback and optionally throw on error", () => {
     expect(DomainUtils.toNumber("xx", { fallback: 7 })).toBe(7);
-    expect(() =>
-      DomainUtils.toNumber("xx", { throwOnError: true })
-    ).toThrow(AppError);
+    expect(() => DomainUtils.toNumber("xx", { throwOnError: true })).toThrow(
+      AppError
+    );
     try {
       DomainUtils.toNumber("xx", { throwOnError: true });
     } catch (e) {
@@ -112,12 +112,9 @@ describe("DomainUtils: strings and collections", () => {
   });
 
   it("haveSameStrings should compare sets regardless of order", () => {
-    expect(DomainUtils.haveSameStrings(["a", "b"], ["b", "a"]))
-      .toBeTruthy();
-    expect(DomainUtils.haveSameStrings(["a", "b"], ["a", "c"]))
-      .toBeFalsy();
-    expect(DomainUtils.haveSameStrings(["a"], ["a", "a"]))
-      .toBeFalsy();
+    expect(DomainUtils.haveSameStrings(["a", "b"], ["b", "a"])).toBeTruthy();
+    expect(DomainUtils.haveSameStrings(["a", "b"], ["a", "c"])).toBeFalsy();
+    expect(DomainUtils.haveSameStrings(["a"], ["a", "a"])).toBeFalsy();
   });
 });
 

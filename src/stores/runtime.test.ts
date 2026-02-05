@@ -39,7 +39,11 @@ describe("Runtime Store", () => {
   it("setTeleport should configure dialog state", () => {
     const runtime = useRuntimeStore();
 
-    runtime.setTeleport({ dialogName: "DeleteBookingType", dialogOk: false, dialogVisibility: true });
+    runtime.setTeleport({
+      dialogName: "DeleteBookingType",
+      dialogOk: false,
+      dialogVisibility: true
+    });
 
     expect(runtime.dialogName).toBe("DeleteBookingType");
     expect(runtime.dialogOk).toBe(false);
@@ -50,7 +54,11 @@ describe("Runtime Store", () => {
     const runtime = useRuntimeStore();
 
     // Prepare state
-    runtime.setTeleport({ dialogName: "AnyDialog", dialogOk: false, dialogVisibility: true });
+    runtime.setTeleport({
+      dialogName: "AnyDialog",
+      dialogOk: false,
+      dialogVisibility: true
+    });
     runtime.optionMenuColors.set(1, "red");
     runtime.optionMenuColors.set(2, "blue");
 
@@ -68,7 +76,11 @@ describe("Runtime Store", () => {
 
   it("resetOptionsMenuColors should clear colors without touching dialog state", () => {
     const runtime = useRuntimeStore();
-    runtime.setTeleport({ dialogName: "StayOpen", dialogOk: true, dialogVisibility: true });
+    runtime.setTeleport({
+      dialogName: "StayOpen",
+      dialogOk: true,
+      dialogVisibility: true
+    });
     runtime.optionMenuColors.set(3, "green");
 
     runtime.resetOptionsMenuColors();
@@ -83,7 +95,11 @@ describe("Runtime Store", () => {
     const runtime = useRuntimeStore();
 
     // Open a dialog first
-    runtime.setTeleport({ dialogName: "Open", dialogOk: true, dialogVisibility: true });
+    runtime.setTeleport({
+      dialogName: "Open",
+      dialogOk: true,
+      dialogVisibility: true
+    });
 
     // Switch to a different view (HOME already default; use a different one)
     // Use a number cast because ViewTypeSelection is a union from config

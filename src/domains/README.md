@@ -18,6 +18,7 @@ Domain-scoped constants used by the business logic. These values are framework-a
 (`Object.freeze`) to guarantee predictable behavior across the app. Current modules:
 
 - `date.ts` — `DATE`
+
   - Canonical date defaults and helpers used by domain logic. Notable fields:
     - `ISO`: Baseline ISO date string `"1970-01-01"` used for initialization.
     - `MILLI_PER_DAY`, `MILLI_PER_MIN`: Time constants in milliseconds.
@@ -31,6 +32,7 @@ Domain-scoped constants used by the business logic. These values are framework-a
     ```
 
 - `storeMemory.ts` — `STORE_MEMORY`
+
   - Default in-memory fields that do not come from persistence but are required for runtime calculations.
     Currently focused on stock calculations. These values are merged into stock items when stores are
     initialized to keep computed fields present and typed.

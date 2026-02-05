@@ -46,7 +46,7 @@ export class DatabaseService extends IndexedDbBase {
                 this.db.close();
             }
             catch (err) {
-                throw new AppError(ERROR_CODES.SERVICES.DATABASE.B, ERROR_CATEGORY.DATABASE, { input: err, entity: "database service (disconnect)" }, true);
+                DomainUtils.log("SERVICES database", err, "error");
             }
             finally {
                 this.db = null;
@@ -55,6 +55,16 @@ export class DatabaseService extends IndexedDbBase {
         }
     }
     async atomicImport(stores) {
+        stores.forEach((store) => {
+            if (![
+                INDEXED_DB.STORE.ACCOUNTS.NAME,
+                INDEXED_DB.STORE.BOOKINGS.NAME,
+                INDEXED_DB.STORE.STOCKS.NAME,
+                INDEXED_DB.STORE.BOOKING_TYPES.NAME
+            ].includes(store.storeName)) {
+                throw new AppError(ERROR_CODES.SERVICES.DATABASE.D, ERROR_CATEGORY.DATABASE, { entity: store.storeName }, false);
+            }
+        });
         return this.withTransaction(stores.map((s) => s.storeName), "readwrite", async (tx) => {
             for (const { storeName, operations } of stores) {
                 const store = tx.objectStore(storeName);
