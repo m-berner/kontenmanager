@@ -17,8 +17,9 @@ import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
-import type { FormInterface } from "@/types";
+import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useSettingsStore } from "@/stores/settings";
+import { INDEXED_DB } from "@/config/database";
 
 const { t } = useI18n();
 const { handleUserInfo } = useUserInfo();
@@ -27,14 +28,14 @@ const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
 const { bookingTypeFormData, mapBookingTypeFormToDb, reset } =
   useBookingTypeForm();
-const { isLoading, submitGuard } = useDialogGuards();
-const formRef = ref<FormInterface | null>(null);
+const { submitGuard } = useDialogGuards();
+const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
   DomainUtils.log("ADD_BOOKING_TYPE: onClickOk");
 
   await submitGuard({
-    formRef,
+    formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: t(
       "components.dialogs.addBookingType.messages.dbNotConnected"
@@ -51,7 +52,7 @@ const onClickOk = async (): Promise<void> => {
       }
       const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
       const addBookingTypeID = await add(bookingTypeData);
-      if (addBookingTypeID === -1) {
+      if (addBookingTypeID === INDEXED_DB.INVALID_ID) {
         DomainUtils.log("ADD_BOOKING_TYPE: Failed to create booking type");
         await handleUserInfo("notice", "AddBookingType", "add failed", {
           noticeLines: [t("components.dialogs.addBookingType.messages.error")]
@@ -78,20 +79,11 @@ onBeforeMount(() => {
   reset();
 });
 
-handleUserInfo("console", "AddBookingType", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/AddBookingType.vue setup ---");
 </script>
 
 <template>
-  <v-form ref="formRef" validate-on="submit" @submit.prevent>
+  <BaseDialogForm ref="baseDialogRef">
     <BookingTypeForm :mode="'add'" />
-    <v-overlay
-      v-model="isLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular color="primary" indeterminate size="64" />
-    </v-overlay>
-  </v-form>
+  </BaseDialogForm>
 </template>

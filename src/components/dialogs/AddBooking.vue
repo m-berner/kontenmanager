@@ -11,80 +11,52 @@ import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { DomainUtils } from "@/domains/utils";
 import { useBookingsDB } from "@/composables/useIndexedDB";
 import { useBookingForm } from "@/composables/useForms";
+import { useDialogSubmit } from "@/composables/useDialogSubmit";
 import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
-import { useDialogGuards } from "@/composables/useDialogGuards";
+import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { DATE } from "@/domains/config/date";
-import { databaseService } from "@/services/database";
-import type { FormInterface } from "@/types";
+import { INDEXED_DB } from "@/config/database";
 
 const { t } = useI18n();
 const { add } = useBookingsDB();
 const { mapBookingFormToDb, reset } = useBookingForm();
-const { isLoading, submitGuard } = useDialogGuards();
-const { handleUserInfo } = useUserInfo();
+const { createAddHandler } = useDialogSubmit();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
-const formRef = ref<FormInterface | null>(null);
+const baseDialogRef = ref<InstanceType<typeof BaseDialogForm> | null>(null);
 
-const onClickOk = async (): Promise<void> => {
-  void handleUserInfo("console", "AddBooking", "onClickOk", {
-    logLevel: "log"
-  });
-  await submitGuard({
-    formRef,
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: t(
-      "components.dialogs.addBooking.messages.dbNotConnected"
-    ),
-    handleUserInfo,
-    errorContext: "ADD_BOOKING",
-    errorTitle: t("components.dialogs.onClickOk"),
-    operation: async () => {
-      const bookingData = mapBookingFormToDb(activeAccountId, DATE.ISO);
-      const addBookingID = await add(bookingData);
+const onClickOk = createAddHandler({
+  dialogRef: baseDialogRef,
+  componentName: "AddBooking",
+  i18nPrefix: "components.dialogs.addBooking",
+  reset,
+  operation: async () => {
+    const bookingData = mapBookingFormToDb(activeAccountId, DATE.ISO);
+    const addBookingID = await add(bookingData);
 
-      if (addBookingID === -1) {
-        await handleUserInfo("notice", "AddBooking", "onClickOk: done", {
-          noticeLines: [t("components.dialogs.addBooking.messages.error")]
-        });
-        return;
-      }
-
-      records.bookings.add({ ...bookingData, cID: addBookingID }, true);
-      reset();
-      await handleUserInfo("notice", "AddBooking", "onClickOk: done", {
-        noticeLines: [t("components.dialogs.addBooking.messages.success")]
-      });
+    if (addBookingID === INDEXED_DB.INVALID_ID) {
+      throw new Error(t("components.dialogs.addBooking.messages.error"));
     }
-  });
-};
+
+    records.bookings.add({ ...bookingData, cID: addBookingID }, true);
+  }
+});
 
 defineExpose({ onClickOk, title: t("components.dialogs.addBooking.title") });
 
 onBeforeMount(() => {
-  handleUserInfo("console", "AddBooking", "onBeforeMount", {
-    logLevel: "log"
-  });
+  DomainUtils.log("ADD_BOOKING: onBeforeMount");
   reset();
 });
 
-handleUserInfo("console", "AddBooking", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/AddBooking.vue setup ---");
 </script>
 
 <template>
-  <v-form ref="formRef" validate-on="submit" @submit.prevent>
+  <BaseDialogForm ref="baseDialogRef">
     <BookingForm />
-    <v-overlay
-      v-model="isLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular color="primary" indeterminate size="64" />
-    </v-overlay>
-  </v-form>
+  </BaseDialogForm>
 </template>

@@ -7,7 +7,7 @@
   -->
 
 <script lang="ts" setup>
-import type { BookingDb, FormInterface } from "@/types";
+import type { BookingDb } from "@/types";
 import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
@@ -19,6 +19,7 @@ import { useBookingsDB } from "@/composables/useIndexedDB";
 import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingForm } from "@/composables/useForms";
 import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
+import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { DATE } from "@/domains/config/date";
 import { databaseService } from "@/services/database";
@@ -35,8 +36,8 @@ const {
   reset: resetForm
 } = useBookingForm();
 const records = useRecordsStore();
-const { isLoading, submitGuard } = useDialogGuards();
-const formRef = ref<FormInterface | null>(null);
+const { submitGuard } = useDialogGuards();
+const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentBooking = (): void => {
   DomainUtils.log("UPDATE_BOOKING: loadCurrentBooking");
@@ -74,7 +75,7 @@ const onClickOk = async (): Promise<void> => {
   DomainUtils.log("UPDATE_BOOKING : onClickOk");
 
   await submitGuard({
-    formRef,
+    formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: t(
       "components.dialogs.updateBooking.messages.dbNotConnected"
@@ -101,24 +102,15 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.updateBooking.title") });
 
 onBeforeMount(() => {
-  DomainUtils.log("UPDATE_BOOKING: onMounted");
+  DomainUtils.log("UPDATE_BOOKING: onBeforeMount");
   loadCurrentBooking();
 });
 
-handleUserInfo("console", "UpdateBooking", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/UpdateBooking.vue setup ---");
 </script>
 
 <template>
-  <v-form ref="formRef" validate-on="submit" @submit.prevent>
+  <BaseDialogForm ref="baseDialogRef">
     <BookingForm :isUpdate="true" />
-    <v-overlay
-      v-model="isLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular color="primary" indeterminate size="64" />
-    </v-overlay>
-  </v-form>
+  </BaseDialogForm>
 </template>

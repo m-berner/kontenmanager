@@ -15,10 +15,9 @@
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useAlertStore } from "@/stores/alerts";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { DomainUtils } from "@/domains/utils";
 
 const alertStore = useAlertStore();
-const { handleUserInfo } = useUserInfo();
 const { dismissAlert, handleConfirm, handleCancel } = alertStore;
 const {
   currentAlert,
@@ -35,9 +34,7 @@ const confirmationIcon = computed(() => {
   return `$${confirmationDialog.value.type}`;
 });
 
-handleUserInfo("console", "AlertOverlay", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("COMPONENTS ALERT_OVERLAY: setup");
 </script>
 
 <template>
@@ -72,7 +69,12 @@ handleUserInfo("console", "AlertOverlay", "--- vue setup ---", {
   <v-dialog :model-value="showConfirmation" max-width="500" persistent>
     <v-card>
       <v-card-title class="d-flex align-center pa-4">
-        <v-icon :icon="confirmationIcon" :color="confirmationDialog.type" class="mr-3" size="large">
+        <v-icon
+          :icon="confirmationIcon"
+          :color="confirmationDialog.type"
+          class="mr-3"
+          size="large"
+        >
         </v-icon>
         <span>{{ confirmationDialog.title }}</span>
       </v-card-title>

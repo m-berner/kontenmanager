@@ -21,12 +21,10 @@ import type { CheckboxGridProps } from "@/types";
 import { STORES } from "@/config/stores";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { COMPONENTS } from "@/config/components";
-import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<CheckboxGridProps>();
 const { t } = useI18n();
 const { getStorage, setStorage } = useStorage();
-const { handleUserInfo } = useUserInfo();
 
 const checked = ref<string[]>([]);
 const isLoading = ref<boolean>(true);
@@ -83,9 +81,7 @@ const setChecked = async (): Promise<void> => {
 };
 
 onBeforeMount(async () => {
-  void handleUserInfo("console", "CheckboxGrid", "onBeforeMount", {
-    logLevel: "log"
-  });
+  DomainUtils.log("CHECKBOX_GRID: onBeforeMount");
   isLoading.value = true;
   error.value = null;
 
@@ -105,9 +101,7 @@ onBeforeMount(async () => {
   }
 });
 
-handleUserInfo("console", "CheckboxGrid", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/CheckboxGrid.vue setup ---");
 </script>
 
 <template>

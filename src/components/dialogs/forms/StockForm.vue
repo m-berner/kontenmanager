@@ -19,13 +19,13 @@ import { useStockForm } from "@/composables/useForms";
 import { fetchService } from "@/services/fetch";
 import type { StockFormProps } from "@/types";
 import { ValidationService } from "@/services/validation";
-import { useUserInfo } from "@/composables/useUserInfo";
+//import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<StockFormProps>();
 
 const { t } = useI18n();
 const { stockFormData } = useStockForm();
-const { handleUserInfo } = useUserInfo();
+//const { handleUserInfo } = useUserInfo();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -65,9 +65,7 @@ const onUpdateIsin = async () => {
   }
 };
 
-handleUserInfo("console", "StockForm", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/forms/StockForm.vue setup ---");
 </script>
 
 <template>

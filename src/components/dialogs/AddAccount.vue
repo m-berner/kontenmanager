@@ -7,7 +7,7 @@
   -->
 
 <script lang="ts" setup>
-import type { FormInterface } from "@/types";
+//import type { FormInterface } from "@/types";
 import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
@@ -18,6 +18,7 @@ import { useUserInfo } from "@/composables/useUserInfo";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountForm } from "@/composables/useForms";
 import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
+import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { databaseService } from "@/services/database";
@@ -30,16 +31,16 @@ const { setStorage } = useStorage();
 const { add: addAccountDB } = useAccountsDB();
 const { add: addBookingTypeDB } = useBookingTypesDB();
 const { accountFormData, mapAccountFormToDb, reset } = useAccountForm();
-const { isLoading, submitGuard } = useDialogGuards();
+const { submitGuard } = useDialogGuards();
 const { handleUserInfo } = useUserInfo();
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
 const records = useRecordsStore();
-const formRef = ref<FormInterface | null>(null);
+const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
   await submitGuard({
-    formRef,
+    formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: t(
       "components.dialogs.addAccount.messages.dbNotConnected"
@@ -57,7 +58,8 @@ const onClickOk = async (): Promise<void> => {
         async (tx) => {
           // Add the account, get the generated ID
           const accountId = await addAccountDB(accountData, tx);
-          if (accountId === -1) throw new Error("Failed to add account");
+          if (accountId === INDEXED_DB.INVALID_ID)
+            throw new Error("Failed to add account");
 
           // Optionally add default booking types
           const createdTypes: {
@@ -89,7 +91,8 @@ const onClickOk = async (): Promise<void> => {
 
             for (const bt of defaults) {
               const id = await addBookingTypeDB(bt, tx);
-              if (id === -1) throw new Error("Failed to add booking type");
+              if (id === INDEXED_DB.INVALID_ID)
+                throw new Error("Failed to add booking type");
               createdTypes.push({ cID: id, ...bt });
             }
           }
@@ -123,20 +126,11 @@ onBeforeMount(() => {
   reset();
 });
 
-handleUserInfo("console", "AddAccount", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/AddAccount.vue setup ---");
 </script>
 
 <template>
-  <v-form ref="formRef" validate-on="submit" @submit.prevent>
+  <BaseDialogForm ref="baseDialogRef">
     <AccountForm :isUpdate="false" />
-    <v-overlay
-      v-model="isLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular color="primary" indeterminate size="64" />
-    </v-overlay>
-  </v-form>
+  </BaseDialogForm>
 </template>

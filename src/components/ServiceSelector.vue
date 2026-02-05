@@ -12,10 +12,8 @@ import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { FETCH } from "@/config/fetch";
-import { useUserInfo } from "@/composables/useUserInfo";
 
 const { getStorage, setStorage } = useStorage();
-const { handleUserInfo } = useUserInfo();
 
 const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
 
@@ -39,9 +37,7 @@ onBeforeMount(async () => {
   service.value = storageService[BROWSER_STORAGE.SERVICE.key] as string;
 });
 
-handleUserInfo("console", "ServiceSelector", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/ServiceSelector.vue setup ---");
 </script>
 
 <template>

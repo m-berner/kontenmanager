@@ -12,12 +12,12 @@ import { useMenuAction, useMenuHighlight } from "@/composables/useMenu";
 import MenuItem from "@/components/MenuItem.vue";
 import type { MenuConfigData, MenuItemData } from "@/types";
 import { DomainUtils } from "@/domains/utils";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useAlertStore } from "@/stores/alerts";
 
 const props = defineProps<MenuConfigData>();
 
+const alertStore = useAlertStore();
 const { executeAction } = useMenuAction();
-const { handleUserInfo } = useUserInfo();
 const { highlightedItems, highlightTemporary, clearAllHighlights } =
   useMenuHighlight();
 
@@ -34,17 +34,18 @@ const handleItemClick = async (item: MenuItemData) => {
   DomainUtils.log("DOT_MENU: handleItemClick", [props.recordId, item.action]);
 
   try {
-    // Default action handling
     await executeAction(item.action, props.recordId);
     clearAllHighlights();
   } catch (err) {
-    DomainUtils.log("DOT_MENU: action failed", err);
+    DomainUtils.log("DOT_MENU: action failed", err, "error");
+    alertStore.error(
+      "Menu Action Failed",
+      err instanceof Error ? err.message : "An unknown error occurred"
+    );
   }
 };
 
-handleUserInfo("console", "DotMenu", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/DotMenu.vue setup ---");
 </script>
 
 <template>

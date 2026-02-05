@@ -123,8 +123,9 @@ export class DomainUtils {
         return true;
     }
     static winLossClass(value) {
-        return value < 0 ? "color-red font-weight-bold" :
-            "color-black font-weight-bold";
+        return value < 0
+            ? "color-red font-weight-bold"
+            : "color-black font-weight-bold";
     }
     static debounce(fn, delay) {
         let timeoutId;

@@ -21,7 +21,6 @@ const {
 } = useBrowser();
 const { installStorageLocal } = useStorage();
 
-// TODO Optional: also register a runtime.onStartup hook if you want a lightweight sanity check on critical defaults after a cold browser start. If your storage init is idempotent, it’s safe.
 /**
  * Handles extension installation/update lifecycle.
  *
@@ -29,11 +28,11 @@ const { installStorageLocal } = useStorage();
  * and also after Firefox updates which can trigger this event.
  */
 async function onInstall(): Promise<void> {
-  DomainUtils.log("BACKGROUND: onInstall");
+  DomainUtils.log("ENTRYPOINTS BACKGROUND: onInstall");
   try {
     await installStorageLocal();
   } catch (err) {
-    DomainUtils.log("BACKGROUND: install error", err, "error");
+    DomainUtils.log("ENTRYPOINTS BACKGROUND: install error", err, "error");
   }
 }
 
@@ -44,7 +43,7 @@ async function onInstall(): Promise<void> {
  * Logs errors instead of throwing to avoid breaking the background context.
  */
 async function onClick(): Promise<void> {
-  DomainUtils.log("BACKGROUND: onClick");
+  DomainUtils.log("ENTRYPOINTS BACKGROUND: onClick");
 
   try {
     const foundTabs = await tabsQuery();
@@ -53,24 +52,31 @@ async function onClick(): Promise<void> {
       const extensionTab = await tabsCreate();
       if (extensionTab.id === undefined) {
         DomainUtils.log(
-          "BACKGROUND: Created new tab error",
+          "ENTRYPOINTS BACKGROUND: Created new tab error",
           extensionTab,
           "error"
         );
       }
-      DomainUtils.log("BACKGROUND: Created new tab", extensionTab, "info");
+      DomainUtils.log(
+        "ENTRYPOINTS BACKGROUND: Created new tab",
+        extensionTab,
+        "info"
+      );
     } else {
       const [firstTab, ...remainingTabs] = foundTabs;
       await windowsUpdate(firstTab.windowId!);
       await tabsUpdate(firstTab.id!);
-      DomainUtils.log("BACKGROUND: Focused existing tab", firstTab.id);
+      DomainUtils.log(
+        "ENTRYPOINTS BACKGROUND: Focused existing tab",
+        firstTab.id
+      );
       // Close other tabs
       for (const tab of remainingTabs) {
         await removeTab(tab.id!);
       }
     }
   } catch (err) {
-    DomainUtils.log("BACKGROUND: Error in onClick", err, "error");
+    DomainUtils.log("ENTRYPOINTS BACKGROUND: Error in onClick", err, "error");
   }
 }
 

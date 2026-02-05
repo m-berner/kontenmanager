@@ -24,14 +24,6 @@ export function useUserInfo() {
             return;
         }
         recentMessages.set(key, now);
-        if (mode === "console") {
-            DomainUtils.log(`${title}: ${message}`.trim(), {
-                ...(data || {}),
-                correlationId,
-                errorStack
-            }, logLevel);
-            return;
-        }
         if (mode === "alert") {
             let alerts = null;
             try {

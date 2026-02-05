@@ -15,14 +15,12 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { CurrencyInputProps } from "@/types";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { DomainUtils } from "@/domains/utils";
 
 const props = defineProps<CurrencyInputProps>();
 
 const emit = defineEmits(["update:modelValue"]);
 const { n } = useI18n();
-const { handleUserInfo } = useUserInfo();
-const unformattedValue = ref<number>(props.modelValue);
 const formattedValue = ref<string>("");
 const isFocused = ref<boolean>(false);
 
@@ -36,7 +34,7 @@ const wrappedRules = computed(() => {
   });
 });
 
-// Watch für prop changes
+// Watch for prop changes
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -53,7 +51,8 @@ const formatCurrency = (value: number): string => {
 
 const parseCurrency = (value: string): number => {
   if (!value) return 0;
-  const normalized = value.replace(",", ".");
+  // Remove all spaces and replace comma with period for parsing
+  const normalized = value.replace(/\s/g, "").replace(",", ".");
   const match = normalized.match(/-?\d+(\.\d*)?/);
   return match ? Number.parseFloat(match[0]) : 0;
 };
@@ -61,10 +60,10 @@ const parseCurrency = (value: string): number => {
 const onFocus = (): void => {
   isFocused.value = true;
   // Show raw number for editing
-  if (unformattedValue.value === 0) {
+  if (props.modelValue === 0) {
     formattedValue.value = "";
   } else {
-    formattedValue.value = unformattedValue.value.toString();
+    formattedValue.value = props.modelValue.toString();
   }
 };
 
@@ -82,15 +81,11 @@ const onInput = (ev: Event): void => {
 };
 
 onMounted(async () => {
-  void handleUserInfo("console", "CurrencyInput", "onMounted", {
-    logLevel: "log"
-  });
+  DomainUtils.log("CURRENCY_INPUT: onMounted");
   formattedValue.value = formatCurrency(props.modelValue);
 });
 
-handleUserInfo("console", "CurrencyInput", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/CurrencyInput.vue setup ---");
 </script>
 
 <template>

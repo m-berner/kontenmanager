@@ -1,5 +1,6 @@
 export const INDEXED_DB = Object.freeze({
     NAME: "kontenmanager.db",
+    INVALID_ID: -1,
     STORE: {
         ACCOUNTS: {
             NAME: "accounts",

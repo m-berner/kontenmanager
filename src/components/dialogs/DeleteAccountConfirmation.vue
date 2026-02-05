@@ -95,9 +95,9 @@ defineExpose({
   title: t("components.dialogs.deleteAccountConfirmation.title")
 });
 
-handleUserInfo("console", "DeleteAccountConfirmation", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log(
+  "--- components/dialogs/DeleteAccountConfirmation.vue setup ---"
+);
 </script>
 
 <template>

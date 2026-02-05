@@ -11,15 +11,11 @@
  * with optional icons. Primarily used for privacy/help static sections.
  */
 import type { ContentCardProps } from "@/types";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { DomainUtils } from "@/domains/utils";
 
 const props = defineProps<ContentCardProps>();
 
-const { handleUserInfo } = useUserInfo();
-
-handleUserInfo("console", "ContentCard", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/ContentCard.vue setup ---");
 </script>
 
 <template>

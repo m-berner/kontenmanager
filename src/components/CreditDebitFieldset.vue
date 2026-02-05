@@ -11,12 +11,11 @@ import { useI18n } from "vue-i18n";
 import { computed } from "vue";
 import CurrencyInput from "@/components/CurrencyInput.vue";
 import type { CreditDebitFieldsetProps } from "@/types";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { DomainUtils } from "@/domains/utils";
 
 const props = defineProps<CreditDebitFieldsetProps>();
 const emit = defineEmits(["update:modelValue"]);
 const { t } = useI18n();
-const { handleUserInfo } = useUserInfo();
 
 const creditValue = computed({
   get: () => props.modelValue.credit,
@@ -39,9 +38,7 @@ const debitValue = computed({
 const cRules = computed(() => props.rules[0](props.modelValue.debit));
 const dRules = computed(() => props.rules[1](props.modelValue.credit));
 
-handleUserInfo("console", "CreditDebitFieldset", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/CreditDebitFieldset.vue setup ---");
 </script>
 
 <template>

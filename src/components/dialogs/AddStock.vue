@@ -17,9 +17,10 @@ import { useUserInfo } from "@/composables/useUserInfo";
 import { useStocksDB } from "@/composables/useIndexedDB";
 import { useStockForm } from "@/composables/useForms";
 import StockForm from "@/components/dialogs/forms/StockForm.vue";
+import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
-import type { FormInterface } from "@/types";
+import { INDEXED_DB } from "@/config/database";
 
 const { t } = useI18n();
 const { handleUserInfo } = useUserInfo();
@@ -28,14 +29,14 @@ const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
 const records = useRecordsStore();
 const { mapStockFormToDb, reset } = useStockForm();
-const { isLoading, submitGuard } = useDialogGuards();
-const formRef = ref<FormInterface | null>(null);
+const { submitGuard } = useDialogGuards();
+const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
   DomainUtils.log("ADD_STOCK : onClickOk");
 
   await submitGuard({
-    formRef,
+    formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: t(
       "components.dialogs.addStock.messages.dbNotConnected"
@@ -47,7 +48,7 @@ const onClickOk = async (): Promise<void> => {
       const stockData = mapStockFormToDb(activeAccountId);
       const addStockID = await add(stockData);
 
-      if (addStockID === -1) {
+      if (addStockID === INDEXED_DB.INVALID_ID) {
         DomainUtils.log(
           "ADD_STOCK: onClickOk",
           t("components.dialogs.addStock.messages.error")
@@ -77,20 +78,11 @@ onMounted(() => {
   reset();
 });
 
-handleUserInfo("console", "AddStock", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/AddStock.vue setup ---");
 </script>
 
 <template>
-  <v-form ref="formRef" validate-on="submit" @submit.prevent>
+  <BaseDialogForm ref="baseDialogRef">
     <StockForm :isUpdate="false" />
-    <v-overlay
-      v-model="isLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular color="primary" indeterminate size="64" />
-    </v-overlay>
-  </v-form>
+  </BaseDialogForm>
 </template>

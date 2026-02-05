@@ -23,7 +23,6 @@ import { useStorage } from "@/composables/useStorage";
 import { fetchService } from "@/services/fetch";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { COMPONENTS } from "@/config/components";
-import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<DynamicListProps>();
 
@@ -33,7 +32,6 @@ const runtime = useRuntimeStore();
 const { infoExchanges } = storeToRefs(runtime);
 const settings = useSettingsStore();
 const { exchanges, markets } = storeToRefs(settings);
-const { handleUserInfo } = useUserInfo();
 
 const newItem = ref<string>("");
 const list = ref<string[]>([]);
@@ -158,9 +156,7 @@ onBeforeMount(async () => {
   }
 });
 
-handleUserInfo("console", "DynamicList", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/DynamicList.vue setup ---");
 </script>
 
 <template>

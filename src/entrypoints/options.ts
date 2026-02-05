@@ -17,7 +17,11 @@ import OptionsIndex from "@/views/OptionsIndex.vue";
  * Catch errors not handled by Vue's errorHandler.
  */
 window.addEventListener("unhandledrejection", (e) => {
-  DomainUtils.log("APP: unhandledrejection", { reason: e.reason }, "error");
+  DomainUtils.log(
+    "ENTRYPOINTS OPTIONS: unhandledrejection",
+    { reason: e.reason },
+    "error"
+  );
 });
 
 /**
@@ -38,7 +42,7 @@ const app = createApp(OptionsIndex);
 app.config.errorHandler = (err: unknown, _instance, info): void => {
   const message = err instanceof Error ? err.message : String(err);
   DomainUtils.log(
-    "OPTIONS: errorHandler",
+    "ENTRYPOINTS OPTIONS: errorHandler",
     { message, info, stack: (err as Error)?.stack },
     "error"
   );
@@ -52,7 +56,7 @@ app.config.errorHandler = (err: unknown, _instance, info): void => {
  * @param trace - Component tree trace for context.
  */
 app.config.warnHandler = (msg: string, _instance, trace): void => {
-  DomainUtils.log("OPTIONS: warnHandler", { msg, trace }, "warn");
+  DomainUtils.log("ENTRYPOINTS OPTIONS: warnHandler", { msg, trace }, "warn");
 };
 
 app.use(piniaPlugin.pinia);
@@ -61,4 +65,4 @@ app.use(vuetifyPlugin.vuetify);
 
 app.mount("#options");
 
-DomainUtils.log("--- entrypoints/options ---", window.location.href, "info");
+DomainUtils.log("ENTRYPOINTS OPTIONS", window.location.href, "info");

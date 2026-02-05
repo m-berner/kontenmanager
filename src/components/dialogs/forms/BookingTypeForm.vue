@@ -14,14 +14,15 @@ import { useBookingTypeForm } from "@/composables/useForms";
 import { ValidationService } from "@/services/validation";
 import { INDEXED_DB } from "@/config/database";
 import type { BookingTypeFormProps } from "@/types";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { DomainUtils } from "@/domains/utils";
+//import { useUserInfo } from "@/composables/useUserInfo";
 
 const props = defineProps<BookingTypeFormProps>();
 
 const { t } = useI18n();
 const records = useRecordsStore();
 const { bookingTypeFormData } = useBookingTypeForm();
-const { handleUserInfo } = useUserInfo();
+//const { handleUserInfo } = useUserInfo();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -49,9 +50,7 @@ const onClear = (): void => {
   edit.value = false;
 };
 
-handleUserInfo("console", "BookingTypeForm", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/forms/BookingTypeForm.vue setup ---");
 </script>
 
 <template>

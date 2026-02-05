@@ -15,19 +15,17 @@
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRuntimeStore } from "@/stores/runtime";
-import { useUserInfo } from "@/composables/useUserInfo";
 import { useDialogGuards } from "@/composables/useDialogGuards";
+import { DomainUtils } from "@/domains/utils";
+import type { DialogComponent } from "@/types";
 
 const { t } = useI18n();
 const runtime = useRuntimeStore();
 const { isLoading } = useDialogGuards();
-const { handleUserInfo } = useUserInfo();
 
-const dialogRef = ref<{ onClickOk: () => Promise<void>; title: string }>();
+const dialogRef = ref<DialogComponent>();
 
-handleUserInfo("console", "DialogPort", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/DialogPort.vue setup ---");
 </script>
 
 <template>

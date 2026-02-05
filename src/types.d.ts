@@ -36,7 +36,7 @@ export interface AccountFormProps {
 
 export interface AccountStoreItem extends AccountDb {}
 
-export interface AppStatus  {
+export interface AppStatus {
   storage: "ok" | "aborted" | "error";
   db: "ok" | "aborted" | "error";
   fetch: { exchanges: boolean; indexes: boolean; materials: boolean };
@@ -51,7 +51,7 @@ export interface BackupData {
   accounts: AccountDb[];
   bookings: BookingDb[];
   bookingTypes: BookingTypeDb[];
-  stocks: StockItem[] & LegacyStockDb[];
+  stocks: StocksDb[] & StockItem[] & LegacyStockDb[];
   transfers?: LegacyBookingDb[];
 }
 
@@ -160,6 +160,16 @@ export interface ConfirmationDialogData {
   type: "error" | "success" | "warning" | "info";
   resolve: () => void;
   reject: () => void;
+}
+
+export interface DialogComponent {
+  onClickOk: () => Promise<void>;
+  title: string;
+}
+
+export interface BaseDialogForm {
+  formRef: Ref<FormInterface | null>; //FormInterface | null;
+  validateForm: () => Promise<boolean>;
 }
 
 export interface ContentItem {

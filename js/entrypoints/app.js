@@ -14,10 +14,10 @@ window.addEventListener("unhandledrejection", (e) => {
 const app = createApp(AppIndex);
 app.config.errorHandler = (err, _instance, info) => {
     const message = err instanceof Error ? err.message : String(err);
-    DomainUtils.log("APP: errorHandler", { message, info, stack: err?.stack }, "error");
+    DomainUtils.log("ENTRYPOINTS APP: errorHandler", { message, info, stack: err?.stack }, "error");
 };
 app.config.warnHandler = (msg, _instance, trace) => {
-    DomainUtils.log("APP: warnHandler", { msg, trace }, "warn");
+    DomainUtils.log("ENTRYPOINTS APP: warnHandler", { msg, trace }, "warn");
 };
 app.use(piniaPlugin.pinia);
 app.use(i18nPlugin.i18n);
@@ -25,4 +25,4 @@ app.use(routerPlugin.router);
 app.use(vuetifyPlugin.vuetify);
 app.use(componentsPlugin);
 app.mount("#app");
-DomainUtils.log("--- entrypoints/app ---", { version: manifest.value.version, mode: import.meta.env.MODE }, "info");
+DomainUtils.log("ENTRYPOINTS APP", { version: manifest.value.version, mode: import.meta.env.MODE }, "info");

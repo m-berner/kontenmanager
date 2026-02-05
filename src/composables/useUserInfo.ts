@@ -16,7 +16,6 @@ import type {
   UserInfoAlertConfirmResult,
   UserInfoAlertErrorResult,
   UserInfoAlertInfoResult,
-  UserInfoConsoleResult,
   UserInfoNoticeResult
 } from "@/types";
 
@@ -37,19 +36,13 @@ export function useUserInfo() {
   /**
    * Presents a message to the user using the selected mode.
    *
-   * @param _mode - Delivery mode: `console`, `alert`, or `notice`.
+   * @param _mode - Delivery mode: `alert`, or `notice`.
    * @param _title - Contextual title or source of the message.
    * @param _messageOrError - The main message or an Error object.
    * @param _options - Extended options for alerts, notices, logging, and delays.
    * @returns A promise that may resolve to a boolean for `confirm` alerts, a number (alert ID), or void.
    */
   // Overloads for stronger typing at call-sites
-  async function handleUserInfo(
-    _mode: "console",
-    _title: string,
-    _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions
-  ): Promise<UserInfoConsoleResult>;
   async function handleUserInfo(
     _mode: "notice",
     _title: string,
@@ -110,20 +103,6 @@ export function useUserInfo() {
       return;
     }
     recentMessages.set(key, now);
-
-    if (mode === "console") {
-      // Log with optional context data and level
-      DomainUtils.log(
-        `${title}: ${message}`.trim(),
-        {
-          ...((data as Record<string, unknown>) || {}),
-          correlationId,
-          errorStack
-        },
-        logLevel
-      );
-      return;
-    }
 
     if (mode === "alert") {
       let alerts: ReturnType<typeof useAlertStore> | null = null;

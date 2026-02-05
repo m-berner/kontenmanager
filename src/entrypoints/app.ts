@@ -43,7 +43,7 @@ const app = createApp(AppIndex);
 app.config.errorHandler = (err: unknown, _instance, info): void => {
   const message = err instanceof Error ? err.message : String(err);
   DomainUtils.log(
-    "APP: errorHandler",
+    "ENTRYPOINTS APP: errorHandler",
     { message, info, stack: (err as Error)?.stack },
     "error"
   );
@@ -59,7 +59,7 @@ app.config.errorHandler = (err: unknown, _instance, info): void => {
  * @param trace - Component trace with hierarchy information.
  */
 app.config.warnHandler = (msg: string, _instance, trace): void => {
-  DomainUtils.log("APP: warnHandler", { msg, trace }, "warn");
+  DomainUtils.log("ENTRYPOINTS APP: warnHandler", { msg, trace }, "warn");
 };
 
 app.use(piniaPlugin.pinia);
@@ -70,7 +70,7 @@ app.use(componentsPlugin);
 app.mount("#app");
 
 DomainUtils.log(
-  "--- entrypoints/app ---",
+  "ENTRYPOINTS APP",
   { version: manifest.value.version, mode: import.meta.env.MODE },
   "info"
 );

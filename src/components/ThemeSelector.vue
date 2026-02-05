@@ -18,11 +18,9 @@ import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { createThemes } from "@/config/views";
-import { useUserInfo } from "@/composables/useUserInfo";
 
 const { t } = useI18n();
 const theme = useTheme();
-const { handleUserInfo } = useUserInfo();
 const { getStorage, setStorage } = useStorage();
 
 const THEMES = computed(() => createThemes(t));
@@ -30,21 +28,19 @@ const THEMES = computed(() => createThemes(t));
 const skin = ref<string>("");
 
 const setSkin = async (): Promise<void> => {
-  DomainUtils.log("THEME_SELECTOR: setSkin");
+  DomainUtils.log("COMPONENTS THEME_SELECTOR: setSkin");
   await setStorage(BROWSER_STORAGE.SKIN.key, skin.value);
 };
 
 onBeforeMount(async () => {
-  DomainUtils.log("THEME_SELECTOR: onBeforeMount");
+  DomainUtils.log("COMPONENTS THEME_SELECTOR: onBeforeMount");
   const storageSkin = await getStorage([BROWSER_STORAGE.SKIN.key]);
   skin.value =
     (storageSkin[BROWSER_STORAGE.SKIN.key] as string) ||
     BROWSER_STORAGE.SKIN.value;
 });
 
-handleUserInfo("console", "ThemeSelector", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("COMPONENTS THEME_SELECTOR: setup");
 </script>
 
 <template>

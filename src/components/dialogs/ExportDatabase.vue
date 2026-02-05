@@ -223,9 +223,7 @@ defineExpose({
   title: t("components.dialogs.exportDatabase.title")
 });
 
-handleUserInfo("console", "ExportDatabase", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/ExportDatabase.vue setup ---");
 </script>
 
 <template>

@@ -85,9 +85,7 @@ onBeforeMount(() => {
   selected.value = null;
 });
 
-handleUserInfo("console", "FadeInStock", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/FadeInStock.vue setup ---");
 </script>
 
 <template>

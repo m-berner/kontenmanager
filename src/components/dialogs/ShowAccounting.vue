@@ -12,15 +12,16 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
-import { useUserInfo } from "@/composables/useUserInfo";
+//import { useUserInfo } from "@/composables/useUserInfo";
 import type { AccountEntry } from "@/types";
 import { createAccountingHeaders, VIEWS } from "@/config/views";
 import { COMPONENTS } from "@/config/components";
+import { DomainUtils } from "@/domains/utils";
 
 const { n, t } = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
-const { handleUserInfo } = useUserInfo();
+//const { handleUserInfo } = useUserInfo();
 const { sumsPerPage } = storeToRefs(settings);
 const { setSumsPerPage } = settings;
 
@@ -111,9 +112,7 @@ const getAccountData = (year: number) => {
 
 defineExpose({ title: t("components.dialogs.showAccounting.title") });
 
-handleUserInfo("console", "ShowAccounting", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/ShowAccounting.vue setup ---");
 </script>
 
 <template>

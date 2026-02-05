@@ -11,11 +11,11 @@ import path from "node:path";
 import fg from "fast-glob";
 
 const ROOT = process.cwd();
-const SRC_DIR = path.join(ROOT, "src");
+const SRC_DIR = path.join(ROOT, "../src");
 const LOCALES_DIR = path.join(SRC_DIR, "locales");
 
 // Add patterns for files where translations are referenced
-const SOURCE_PATTERNS = ["src/**/*.{ts,tsx,js,jsx,vue}"];
+const SOURCE_PATTERNS = ["../src/**/*.{ts,tsx,js,jsx,vue}"];
 
 // Ignore dynamic/computed keys that the tool can’t resolve reliably
 const IGNORE_KEYS = new Set([
@@ -44,7 +44,7 @@ function extractUsedKeysFromText(text) {
   const found = new Set();
 
   // t('key') or t("key")
-  const reT = /\b\$?t\(\s*(['"])([^'"\\]+)\1\s*(?:\)|,)/g;
+  const reT = /\b\$?t\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
   // <i18n-t keypath="key"> in templates
   const reI18nT = /<i18n-t[^>]*\skeypath=(["'])([^"']+)\1/gi;
 

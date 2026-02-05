@@ -98,9 +98,7 @@ onBeforeMount(() => {
   reset();
 });
 
-handleUserInfo("console", "DeleteBookingType", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/DeleteBookingType.vue setup ---");
 </script>
 
 <template>

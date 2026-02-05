@@ -651,9 +651,7 @@ defineExpose({
   title: t("components.dialogs.importDatabase.title")
 });
 
-handleUserInfo("console", "ImportDatabase", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/ImportDatabase.vue setup ---");
 </script>
 
 <template>

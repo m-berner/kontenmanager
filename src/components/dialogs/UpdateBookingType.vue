@@ -113,9 +113,7 @@ onBeforeMount(() => {
   loadCurrentBookingType();
 });
 
-handleUserInfo("console", "UpdateBookingType", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/UpdateBookingType.vue setup ---");
 </script>
 
 <template>

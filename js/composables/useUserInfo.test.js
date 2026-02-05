@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUserInfo } from "@/composables/useUserInfo";
-import { DomainUtils } from "@/domains/utils";
 import { DEFAULTS } from "@/config/defaults";
 const alertStoreMock = {
     info: vi.fn().mockReturnValue(101),
@@ -17,18 +16,6 @@ vi.mock("@/composables/useBrowser", () => ({
 describe("useUserInfo", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-    });
-    it("logs to console mode with Error normalization and correlationId", async () => {
-        const spy = vi.spyOn(DomainUtils, "log").mockImplementation(() => { });
-        const { handleUserInfo } = useUserInfo();
-        const err = new Error("Boom");
-        await handleUserInfo("console", "Test", err, { correlationId: "cid-1" });
-        expect(spy).toHaveBeenCalledTimes(1);
-        const [msg, data, level] = spy.mock.calls[0];
-        expect(msg).toContain("Test: Boom");
-        expect(level).toBe("log");
-        expect(data).toMatchObject({ correlationId: "cid-1" });
-        spy.mockRestore();
     });
     it("shows info alert with default duration and returns alert id", async () => {
         const { handleUserInfo } = useUserInfo();

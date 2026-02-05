@@ -18,9 +18,11 @@ import { useUserInfo } from "@/composables/useUserInfo";
 import { useAccountsDB } from "@/composables/useIndexedDB";
 import { useAccountForm } from "@/composables/useForms";
 import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
+import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
-import type { AccountDb, FormInterface } from "@/types";
+import { INDEXED_DB } from "@/config/database";
+import type { AccountDb } from "@/types";
 
 const { t } = useI18n();
 const { handleUserInfo } = useUserInfo();
@@ -30,12 +32,12 @@ const runtime = useRuntimeStore();
 const { accountFormData, mapAccountFormToDb } = useAccountForm();
 const records = useRecordsStore();
 const { items: accountItems } = storeToRefs(records.accounts);
-const { isLoading, submitGuard } = useDialogGuards();
-const formRef = ref<FormInterface | null>(null);
+const { submitGuard } = useDialogGuards();
+const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentAccount = (): void => {
   const accountIndex = records.accounts.getIndexById(activeAccountId);
-  if (accountIndex === -1) {
+  if (accountIndex === INDEXED_DB.INVALID_ID) {
     DomainUtils.log("UPDATE_ACCOUNT: Account not found", activeAccountId);
     return;
   }
@@ -54,7 +56,7 @@ const onClickOk = async (): Promise<void> => {
   DomainUtils.log("UPDATE_ACCOUNT: onClickOk");
 
   await submitGuard({
-    formRef,
+    formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: t(
       "components.dialogs.updateAccount.messages.dbNotConnected"
@@ -81,20 +83,11 @@ onBeforeMount(() => {
   loadCurrentAccount();
 });
 
-handleUserInfo("console", "UpdateAccount", "--- vue setup ---", {
-  logLevel: "log"
-});
+DomainUtils.log("--- components/dialogs/UpdateAccount.vue setup ---");
 </script>
 
 <template>
-  <v-form ref="formRef" validate-on="submit" @submit.prevent>
+  <BaseDialogForm ref="baseDialogRef">
     <AccountForm :isUpdate="true" />
-    <v-overlay
-      v-model="isLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular color="primary" indeterminate size="64" />
-    </v-overlay>
-  </v-form>
+  </BaseDialogForm>
 </template>

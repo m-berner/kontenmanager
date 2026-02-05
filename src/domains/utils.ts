@@ -271,8 +271,9 @@ export class DomainUtils {
    * @param value - Value to determine CSS class for.
    */
   static winLossClass(value: number): string {
-    return value < 0 ? "color-red font-weight-bold" :
-      "color-black font-weight-bold";
+    return value < 0
+      ? "color-red font-weight-bold"
+      : "color-black font-weight-bold";
   }
 
   /**

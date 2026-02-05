@@ -54,9 +54,7 @@
       "addBooking": {
         "title": "Add booking",
         "messages": {
-          "success": "Booking has been added",
-          "error": "Booking could not be added",
-          "dbNotConnected": "No database connection"
+          "error": "Booking could not be added"
         }
       },
       "addBookingType": {
