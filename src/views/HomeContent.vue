@@ -57,32 +57,31 @@ const onChangeHandler = (
   const changesKey = Object.keys(changes);
   const { service, indexes, markets, materials, exchanges } =
     storeToRefs(settings);
-
-  switch (changesKey[0]) {
-    case BROWSER_STORAGE.SKIN.key:
+  const sync = {
+    [BROWSER_STORAGE.SKIN.key]: () => {
       if (theme?.global?.name) {
         theme.global.name.value = changes[BROWSER_STORAGE.SKIN.key].newValue;
       }
       skin.value = changes[BROWSER_STORAGE.SKIN.key].newValue;
-      break;
-    case BROWSER_STORAGE.SERVICE.key:
+    },
+    [BROWSER_STORAGE.SERVICE.key]: () => {
       service.value = changes[BROWSER_STORAGE.SERVICE.key].newValue;
-      break;
-    case BROWSER_STORAGE.INDEXES.key:
+    },
+    [BROWSER_STORAGE.INDEXES.key]: () => {
       indexes.value = changes[BROWSER_STORAGE.INDEXES.key].newValue;
-      break;
-    case BROWSER_STORAGE.MARKETS.key:
+    },
+    [BROWSER_STORAGE.MARKETS.key]: () => {
       markets.value = changes[BROWSER_STORAGE.MARKETS.key].newValue;
-      break;
-    case BROWSER_STORAGE.MATERIALS.key:
+    },
+    [BROWSER_STORAGE.MATERIALS.key]: () => {
       materials.value = changes[BROWSER_STORAGE.MATERIALS.key].newValue;
-      break;
-    case BROWSER_STORAGE.EXCHANGES.key:
+    },
+    [BROWSER_STORAGE.EXCHANGES.key]: () => {
       exchanges.value = changes[BROWSER_STORAGE.EXCHANGES.key].newValue;
-      break;
-    default:
-      break;
-  }
+    }
+  };
+
+  sync[changesKey[0]]?.();
 };
 
 const removeStorageChangedListener = addStorageChangedListener(onChangeHandler);

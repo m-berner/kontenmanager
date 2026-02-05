@@ -1,7 +1,7 @@
 import { createVuetify } from "vuetify";
 import "vuetify/styles";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
-import { mdiAccountEdit, mdiAccountPlus, mdiAccountRemove, mdiBellPlus, mdiBookEdit, mdiBookPlus, mdiBookRemove, mdiCalculator, mdiCheck, mdiClose, mdiCog, mdiConnection, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDomainSwitch, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFileUpload, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiFilterSettings, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiStoreEdit } from "@mdi/js";
+import { mdiAccountEdit, mdiAccountPlus, mdiAccountRemove, mdiAlert, mdiAlertCircle, mdiBellPlus, mdiBookEdit, mdiBookPlus, mdiBookRemove, mdiCalculator, mdiCheck, mdiCheckCircle, mdiClose, mdiCog, mdiConnection, mdiCopyright, mdiCurrencyEur, mdiDatabaseExport, mdiDatabaseImport, mdiDelete, mdiDomain, mdiDomainPlus, mdiDomainRemove, mdiDomainSwitch, mdiDotsVertical, mdiEmail, mdiFileDocumentEdit, mdiFileDocumentMinus, mdiFileUpload, mdiFilterCog, mdiFilterPlus, mdiFilterRemove, mdiFilterSettings, mdiHelpCircle, mdiHome, mdiImage, mdiInfinity, mdiInformation, mdiMagnify, mdiPlus, mdiReload, mdiShieldAccount, mdiStoreEdit } from "@mdi/js";
 import { DomainUtils } from "@/domains/utils";
 const vuetifyInstance = createVuetify({
     theme: {
@@ -132,7 +132,11 @@ const vuetifyInstance = createVuetify({
             addAccount: mdiAccountPlus,
             updateAccount: mdiAccountEdit,
             deleteAccount: mdiAccountRemove,
-            showDividend: mdiBellPlus
+            showDividend: mdiBellPlus,
+            error: mdiAlertCircle,
+            warning: mdiAlert,
+            success: mdiCheckCircle,
+            info: mdiInformation
         }
     }
 });

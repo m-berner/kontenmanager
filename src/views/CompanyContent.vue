@@ -26,6 +26,7 @@ import {
   VIEWS
 } from "@/config/views";
 import { DATE } from "@/domains/config/date";
+import { AppError } from "@/domains/errors";
 
 const { d, n, t } = useI18n();
 const records = useRecordsStore();
@@ -38,23 +39,6 @@ const { stocksPage, isDownloading, isStockLoading } = storeToRefs(runtime);
 
 const HEADERS = computed(() => createCompanyHeaders(t));
 const MENU_ITEMS = computed(() => createCompanyMenuItems(t));
-
-/**
- * Computed function that returns CSS classes for profit/loss display.
- * Applies red color for negative values and black for positive/zero values.
- *
- * @returns {Function} Function that takes a value and returns CSS class map
- *
- * @example
- * winLossClass()(-100) // { 'color-red font-weight-bold': true, ... }
- * winLossClass()(250) // { 'color-black font-weight-bold': true, ... }
- */
-const winLossClass = computed(() => {
-  return (value: number): Record<string, boolean> => ({
-    "color-red font-weight-bold": value < 0,
-    "color-black font-weight-bold": value >= 0
-  });
-});
 
 /**
  * Validates whether a date string represents a valid date after the epoch.
@@ -75,14 +59,9 @@ const isValidDate = (dateString: string): boolean => {
  *
  * @param {number | undefined} portfolio - Number of shares held
  * @returns {boolean} True if portfolio contains at least 0.1 share
- *
- * @example
- * hasPortfolio(10) // returns true
- * hasPortfolio(0.5) // returns true
- * hasPortfolio(undefined) // returns false
  */
 const hasPortfolio = (portfolio: number | undefined): boolean => {
-  return (portfolio ?? 0) >= 0.1;
+  return (portfolio ?? 0) >= VIEWS.MINIMUM_PORTFOLIO_THRESHOLD;
 };
 
 /**
@@ -92,11 +71,6 @@ const hasPortfolio = (portfolio: number | undefined): boolean => {
  * @param {number | undefined} euroChange - Absolute change in euros
  * @param {number | undefined} invest - Original investment amount
  * @returns {number} Percentage change as decimal (0.15 = 15%)
- *
- * @example
- * calculatePercentChange(150, 1000) // returns 0.15 (15% gain)
- * calculatePercentChange(-50, 500) // returns -0.1 (10% loss)
- * calculatePercentChange(100, 0) // returns 0 (fallback)
  */
 const calculatePercentChange = (
   euroChange: number | undefined,
@@ -114,10 +88,6 @@ const calculatePercentChange = (
  * @async
  * @param {number} [startPage=1] - First page index to load (1-based)
  * @returns {Promise<void>}
- *
- * @example
- * await loadRequiredPages(1) // Load from page 1 until portfolios drop below 0.1
- * await loadRequiredPages(3) // Resume loading from page 3
  */
 const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
   const pagesToLoad: number[] = [];
@@ -134,9 +104,17 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
     pagesToLoad.push(page);
   }
 
-  await Promise.all(
-    pagesToLoad.map((page) => records.stocks.loadOnlineData(page))
-  );
+  try {
+    await Promise.all(
+      pagesToLoad.map((page) => records.stocks.loadOnlineData(page))
+    );
+  } catch (err) {
+    throw new AppError(
+      "COMPANY_CONTENT: loadRequiredPages",
+      "Failed to load online market data for required pages.",
+      { error: err }
+    );
+  }
 };
 
 /**
@@ -147,9 +125,6 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
  * @async
  * @param {number} page - Target page number (1-based index)
  * @returns {Promise<void>}
- *
- * @example
- * await onUpdatePage(2) // Navigate to page 2 and load data if needed
  */
 const onUpdatePage = async (page: number): Promise<void> => {
   DomainUtils.log("COMPANY_CONTENT: onUpdatePage", page, "info");
@@ -160,6 +135,12 @@ const onUpdatePage = async (page: number): Promise<void> => {
   isStockLoading.value = true;
   try {
     await records.stocks.loadOnlineData(page);
+  } catch (err) {
+    throw new AppError(
+      "COMPANY_CONTENT: onUpdatePage",
+      "Failed to load online market data for required page.",
+      { error: err }
+    );
   } finally {
     isStockLoading.value = false;
   }
@@ -287,7 +268,10 @@ DomainUtils.log("--- views/CompanyContent.vue setup ---");
             location="left"
           >
             <template #activator="{ props }">
-              <span :class="winLossClass(item.mEuroChange!)" v-bind="props">
+              <span
+                :class="DomainUtils.winLossClass(item.mEuroChange!)"
+                v-bind="props"
+              >
                 {{ n(item.mEuroChange ?? 0, "currency") }}
               </span>
             </template>

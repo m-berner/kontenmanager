@@ -265,6 +265,17 @@ export class DomainUtils {
   }
 
   /**
+   * Computed function that returns CSS classes for profit/loss display.
+   * Applies red color for negative values and black for positive/zero values.
+   *
+   * @param value - Value to determine CSS class for.
+   */
+  static winLossClass(value: number): string {
+    return value < 0 ? "color-red font-weight-bold" :
+      "color-black font-weight-bold";
+  }
+
+  /**
    * Additional utility: debounced function creator
    */
   /**

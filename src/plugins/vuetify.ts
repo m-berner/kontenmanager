@@ -13,12 +13,15 @@ import {
   mdiAccountEdit,
   mdiAccountPlus,
   mdiAccountRemove,
+  mdiAlert,
+  mdiAlertCircle,
   mdiBellPlus,
   mdiBookEdit,
   mdiBookPlus,
   mdiBookRemove,
   mdiCalculator,
   mdiCheck,
+  mdiCheckCircle,
   mdiClose,
   mdiCog,
   mdiConnection,
@@ -44,6 +47,7 @@ import {
   mdiHome,
   mdiImage,
   mdiInfinity,
+  mdiInformation,
   mdiMagnify,
   mdiPlus,
   mdiReload,
@@ -186,7 +190,11 @@ const vuetifyInstance = createVuetify({
       addAccount: mdiAccountPlus,
       updateAccount: mdiAccountEdit,
       deleteAccount: mdiAccountRemove,
-      showDividend: mdiBellPlus
+      showDividend: mdiBellPlus,
+      error: mdiAlertCircle,
+      warning: mdiAlert,
+      success: mdiCheckCircle,
+      info: mdiInformation
     }
   }
 });

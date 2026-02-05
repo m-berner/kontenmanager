@@ -32,15 +32,7 @@ const {
 } = storeToRefs(alertStore);
 
 const confirmationIcon = computed(() => {
-  const icons = {
-    error: "mdi-alert-circle",
-    warning: "mdi-alert",
-    success: "mdi-check-circle",
-    info: "mdi-information"
-  };
-  return (
-    icons[confirmationDialog.value.type as keyof typeof icons] || icons.info
-  );
+  return `$${confirmationDialog.value.type}`;
 });
 
 handleUserInfo("console", "AlertOverlay", "--- vue setup ---", {
@@ -80,8 +72,7 @@ handleUserInfo("console", "AlertOverlay", "--- vue setup ---", {
   <v-dialog :model-value="showConfirmation" max-width="500" persistent>
     <v-card>
       <v-card-title class="d-flex align-center pa-4">
-        <v-icon :color="confirmationDialog.type" class="mr-3" size="large">
-          {{ confirmationIcon }}
+        <v-icon :icon="confirmationIcon" :color="confirmationDialog.type" class="mr-3" size="large">
         </v-icon>
         <span>{{ confirmationDialog.title }}</span>
       </v-card-title>

@@ -31,7 +31,8 @@ export const VIEWS = Object.freeze({
       value: 11,
       title: "11"
     }
-  ]
+  ],
+  MINIMUM_PORTFOLIO_THRESHOLD: 0.1
 });
 
 /**
