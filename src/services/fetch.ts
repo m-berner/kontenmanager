@@ -369,7 +369,7 @@ class FetchService {
   async fetchWithCache(
     key: string,
     url: string,
-    ttl = 5 * 60 * 1000
+    ttl = FETCH.DEFAULT_TTL
   ): Promise<string> {
     const cached = this.cache.get(key, ttl);
     if (cached) {
@@ -794,7 +794,7 @@ class FetchService {
   }
 
   /**
-   * Extracts rate and currency from finanzen.net document.
+   * Extracts rate and currency from the finanzen.net document.
    * @private
    */
   private extractFnetRateAndCurrency(doc: Document): {

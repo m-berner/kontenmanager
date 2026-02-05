@@ -26,7 +26,60 @@ export default defineConfig(({ mode }) => {
           replacement: fileURLToPath(new URL("./src", import.meta.url))
         }
       ]
-    },
+    }
+  };
+
+  const prodConfig = {
+    plugins: [
+      vue(),
+      vuetify({ autoImport: true }),
+      viteStaticCopy({
+        targets: [
+          { src: "manifest.json", dest: "./", overwrite: true },
+          { src: "assets/icon64.png", dest: "assets/", overwrite: true },
+          { src: "assets/icon16.png", dest: "assets/", overwrite: true },
+          { src: "assets/connection48.png", dest: "assets/", overwrite: true },
+          { src: `../${BUILD_DIR}`, dest: EXTENSIONS_PATH, overwrite: true }
+        ]
+      }),
+      zipPack({
+        inDir: `./${BUILD_DIR}`,
+        outDir: `${RELEASE_PATH}`,
+        outFileName: `${RELEASE_XPI}`
+      })
+    ].filter(Boolean),
+    assetsInclude: ["**/*.svg", "**/*.png"],
+    root: "./src",
+    base: "./",
+    build: {
+      minify: false,
+      sourcemap: false,
+      cssMinify: false,
+      cssCodeSplit: true,
+      target: ["es2022", "firefox140"],
+      assetsDir: "assets",
+      assetsInlineLimit: 0,
+      emptyOutDir: false,
+      outDir: `../${BUILD_DIR}`,
+      modulePreload: false,
+      css: { devSourcemap: false },
+      rollupOptions: {
+        input: {
+          background: "src/entrypoints/background.html",
+          app: "src/entrypoints/app.html",
+          options: "src/entrypoints/options.html"
+        },
+        output: {
+          entryFileNames: "entrypoints/[name].js",
+          chunkFileNames: "[name].js",
+          assetFileNames: "assets/[name].[ext]",
+          format: "es"
+        }
+      }
+    }
+  };
+
+  const devConfig = {
     test: {
       globals: true,
       environment: "happy-dom",
@@ -37,62 +90,62 @@ export default defineConfig(({ mode }) => {
         "js/**/*.test.js",
         "js/**/*.spec.js"
       ]
+    },
+    plugins: [
+      vue(),
+      vuetify({ autoImport: true }),
+      viteStaticCopy({
+        targets: [
+          { src: "manifest.json", dest: "./", overwrite: true },
+          { src: "assets/icon64.png", dest: "assets/", overwrite: true },
+          { src: "assets/icon16.png", dest: "assets/", overwrite: true },
+          { src: "assets/connection48.png", dest: "assets/", overwrite: true },
+          { src: `../${BUILD_DIR}`, dest: EXTENSIONS_PATH, overwrite: true }
+        ]
+      })
+      // zipPack({
+      //   inDir: `./${BUILD_DIR}`,
+      //   outDir: `${RELEASE_PATH}`,
+      //   outFileName: `${RELEASE_XPI}`
+      // })
+    ].filter(Boolean),
+    assetsInclude: ["**/*.svg", "**/*.png"],
+    root: "./src",
+    base: "./",
+    build: {
+      minify: false,
+      sourcemap: true,
+      cssMinify: false,
+      cssCodeSplit: true,
+      target: ["es2022", "firefox140"],
+      assetsDir: "assets",
+      assetsInlineLimit: 0,
+      emptyOutDir: false,
+      outDir: `../${BUILD_DIR}`,
+      modulePreload: false,
+      css: { devSourcemap: false },
+      rollupOptions: {
+        input: {
+          background: "src/entrypoints/background.html",
+          app: "src/entrypoints/app.html",
+          options: "src/entrypoints/options.html"
+        },
+        output: {
+          entryFileNames: "entrypoints/[name].js",
+          chunkFileNames: "[name].js",
+          assetFileNames: "assets/[name].[ext]",
+          format: "es"
+        }
+      }
     }
   };
 
   if (mode === "development") {
     return {
       ...baseConfig,
-      plugins: [
-        vue(),
-        vuetify({ autoImport: true }),
-        viteStaticCopy({
-          targets: [
-            { src: "manifest.json", dest: "./", overwrite: true },
-            { src: "assets/icon64.png", dest: "assets/", overwrite: true },
-            { src: "assets/icon16.png", dest: "assets/", overwrite: true },
-            { src: "assets/connection48.png", dest: "assets/", overwrite: true },
-            { src: `../${BUILD_DIR}`, dest: EXTENSIONS_PATH, overwrite: true }
-          ]
-        }),
-        zipPack({
-          inDir: `./${BUILD_DIR}`,
-          outDir: `${RELEASE_PATH}`,
-          outFileName: `${RELEASE_XPI}`
-        })
-      ].filter(Boolean),
-      assetsInclude: ["**/*.svg", "**/*.png"],
-      root: "./src",
-      base: "./",
-      build: {
-        minify: false,
-        sourcemap: false,
-        cssMinify: false,
-        cssCodeSplit: true,
-        target: ["es2022", "firefox140"],
-        assetsDir: "assets",
-        assetsInlineLimit: 0,
-        emptyOutDir: false,
-        outDir: `../${BUILD_DIR}`,
-        modulePreload: false,
-        css: { devSourcemap: false },
-        rollupOptions: {
-          input: {
-            background: "src/entrypoints/background.html",
-            app: "src/entrypoints/app.html",
-            options: "src/entrypoints/options.html"
-          },
-          output: {
-            entryFileNames: "entrypoints/[name].js",
-            chunkFileNames: "[name].js",
-            assetFileNames: "assets/[name].[ext]",
-            format: "es"
-          }
-        }
-      }
+      ...devConfig
     };
   }
 
-  // For non-development modes (including test), return the base config
-  return baseConfig;
+  return { ...baseConfig, ...prodConfig };
 });

@@ -64,20 +64,12 @@ export class AppService {
   async initializeApp(
     translations: Record<string, string>,
     signal?: AbortSignal
-  ): Promise<{
-    storage: "ok" | "aborted" | "error";
-    db: "ok" | "aborted" | "error";
-    fetch: { exchanges: boolean; indexes: boolean; materials: boolean };
-  }> {
+  ): Promise<AppStatus> {
     const tAppStart = performance.now();
     DomainUtils.log("SERVICES app", { phase: "initializeApp", event: "start" });
 
     // local mutable status we also persist to _lastStatus at the end
-    const status: {
-      storage: "ok" | "aborted" | "error";
-      db: "ok" | "aborted" | "error";
-      fetch: { exchanges: boolean; indexes: boolean; materials: boolean };
-    } = {
+    const status: AppStatus = {
       storage: "error",
       db: "error",
       fetch: { exchanges: false, indexes: false, materials: false }

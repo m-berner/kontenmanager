@@ -178,7 +178,7 @@ class FetchService {
         }
         throw new AppError(ERROR_CODES.SERVICES.FETCH.A, ERROR_CATEGORY.NETWORK, { input: lastError?.message, entity: "fetch service" }, true);
     }
-    async fetchWithCache(key, url, ttl = 5 * 60 * 1000) {
+    async fetchWithCache(key, url, ttl = FETCH.DEFAULT_TTL) {
         const cached = this.cache.get(key, ttl);
         if (cached) {
             DomainUtils.log(`Cache hit for ${key}`);

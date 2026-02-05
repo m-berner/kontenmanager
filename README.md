@@ -104,8 +104,6 @@ The project follows a modular architecture with a clear separation of concerns:
 3. Build the extension with `npm run build`.
 4. Reload the temporary addon in Firefox and verify behavior in the Browser Console.
 
-Tip: Set the debug level in local storage (see `LOCAL_STORAGE.DEBUG`) to enable `DomainUtils.log` output.
-
 ## Tests
 
 The project uses [Vitest](https://vitest.dev/) for unit testing, focusing on domain logic and store state.

@@ -19,7 +19,3 @@ export const BROWSER_STORAGE = Object.freeze({
   MARKETS: { key: "sMarkets", value: ["Frankfurt", "XETRA"] },
   MATERIALS: { key: "sMaterials", value: ["au", "brent"] }
 });
-
-export const LOCAL_STORAGE = Object.freeze({
-  DEBUG: { key: "sDebug", value: "0" }
-});

@@ -43,11 +43,10 @@
     "vuetify": "3.9.5"
   },
   "scripts": {
-    "build": "tsc && vue-tsc --noemit && vite build --mode development",
+    "build:dev": "tsc && vue-tsc --noemit && vite build --mode development",
+    "build:prod": "tsc && vue-tsc --noemit && vite build --mode production",
     "verify": "addons-linter ./releases/firefox/kontenmanager@gmx.de.xpi",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "i18n:lint": "node scripts/i18n-lint.mjs",
-    "i18n:lint:strict": "node scripts/i18n-lint.mjs && git diff --quiet || (echo \"\nNote: Some unused keys detected.\" && exit 1)"
+    "i18n:lint": "node scripts/i18n-lint.mjs"
   }
 }

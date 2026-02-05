@@ -46,17 +46,16 @@ Domain-scoped constants used by the business logic. These values are framework-a
     const enriched = { ...stockFromDB, ...STORE_MEMORY.STOCK };
     ```
 
-- `storage.ts` — `BROWSER_STORAGE`, `LOCAL_STORAGE`
+- `storage.ts` — `BROWSER_STORAGE`
   - Canonical keys and defaults for simple settings stored outside IndexedDB.
     These constants define both the storage key and a sane default value, keeping the domain layer
     free from hard-coded strings.
   - Examples:
     ```ts
-    import { BROWSER_STORAGE, LOCAL_STORAGE } from "@/domains/config/storage";
+    import { BROWSER_STORAGE } from "@/domains/config/storage";
     // Use stable keys in adapter code (outside the domain layer)
     const k = BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key; // "sActiveAccountId"
     const def = BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.value; // -1
-    const debugKey = LOCAL_STORAGE.DEBUG.key; // "sDebug"
     ```
 
 ### `importExport/`

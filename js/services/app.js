@@ -63,8 +63,7 @@ export class AppService {
                 return status;
             }
             const tFetchStart = performance.now();
-            const fetchStatus = await this.fetchExternalData(signal);
-            status.fetch = fetchStatus;
+            status.fetch = await this.fetchExternalData(signal);
             const fetchDuration = Math.round(performance.now() - tFetchStart);
             DomainUtils.log("SERVICES app", {
                 phase: "fetchExternalData",

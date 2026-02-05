@@ -252,7 +252,7 @@ DomainUtils.log("--- views/CompanyContent.vue setup ---");
     @update:items-per-page="setStocksPerPage"
     @update:page="onUpdatePage"
   >
-    <template #item="{ item }">
+    <template v-slot:[`item`]="{ item }">
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>
         <td>

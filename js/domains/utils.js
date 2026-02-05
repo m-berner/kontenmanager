@@ -1,5 +1,4 @@
 import { DATE } from "@/domains/config/date";
-import { LOCAL_STORAGE } from "@/domains/config/storage";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 export class DomainUtils {
     constructor() { }
@@ -92,8 +91,7 @@ export class DomainUtils {
         return name.trim().replace(/\s+/g, " ").toLowerCase();
     }
     static log(msg, data, level = "log") {
-        const debugLevel = Number.parseInt(localStorage.getItem(LOCAL_STORAGE.DEBUG.key) ?? "0");
-        if (debugLevel <= 0)
+        if (import.meta.env.MODE !== "development")
             return;
         const logFn = console[level] || console.log;
         data !== undefined ? logFn(msg, data) : logFn(msg);

@@ -22,7 +22,7 @@ import { useTheme } from "vuetify";
 import { useStorage } from "@/composables/useStorage";
 import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts";
 import { databaseService } from "@/services/database";
-import { BROWSER_STORAGE, LOCAL_STORAGE } from "@/domains/config/storage";
+import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { createHomeHeaders, createHomeMenuItems, VIEWS } from "@/config/views";
 
 const { d, n, t } = useI18n();
@@ -117,24 +117,9 @@ const onResetStorage = async (): Promise<void> => {
   await installStorageLocal();
 };
 
-/**
- * Toggles the debug mode in local storage and manages shortcut registration.
- */
-const onToggleDebug = () => {
-  const debugValue = localStorage.getItem(LOCAL_STORAGE.DEBUG.key);
-  if (debugValue !== "1") {
-    localStorage.setItem(LOCAL_STORAGE.DEBUG.key, "1");
-  } else {
-    localStorage.setItem(LOCAL_STORAGE.DEBUG.key, "0");
-    unregister("Ctrl+Alt+D");
-  }
-};
-
-register("Ctrl+Alt+D", onToggleDebug);
 register("Ctrl+Alt+R", onResetStorage);
 
 onUnmounted(() => {
-  unregister("Ctrl+Alt+D");
   unregister("Ctrl+Alt+R");
 });
 

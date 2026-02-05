@@ -8,7 +8,6 @@
 
 import type { LogLevelType, NumberParseOptions } from "@/types";
 import { DATE } from "@/domains/config/date";
-import { LOCAL_STORAGE } from "@/domains/config/storage";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 
 /**
@@ -86,7 +85,7 @@ export class DomainUtils {
    * @returns True if valid, false otherwise.
    */
   static isValidISODate(iso: string): boolean {
-    // Must match basic format
+    // Must match the basic format
     if (!DATE.ISO_DATE_REGEX.test(iso)) return false;
     // Parse and validate calendar ranges without throwing
     const [y, m, d] = iso.split("-").map((v) => Number(v));
@@ -214,11 +213,7 @@ export class DomainUtils {
   }
 
   static log(msg: string, data?: unknown, level: LogLevelType = "log"): void {
-    const debugLevel = Number.parseInt(
-      localStorage.getItem(LOCAL_STORAGE.DEBUG.key) ?? "0"
-    );
-
-    if (debugLevel <= 0) return;
+    if (import.meta.env.MODE !== "development") return;
 
     // eslint-disable-next-line no-console
     const logFn = console[level] || console.log;
