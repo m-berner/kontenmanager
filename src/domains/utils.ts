@@ -28,7 +28,6 @@ export class DomainUtils {
       throw new AppError(
         ERROR_CODES.UTILS.A,
         ERROR_CATEGORY.VALIDATION,
-        { input: iso },
         false
       );
     }
@@ -42,7 +41,6 @@ export class DomainUtils {
       throw new AppError(
         ERROR_CODES.UTILS.A,
         ERROR_CATEGORY.VALIDATION,
-        { input: iso },
         false
       );
     }
@@ -52,7 +50,6 @@ export class DomainUtils {
       throw new AppError(
         ERROR_CODES.UTILS.A,
         ERROR_CATEGORY.VALIDATION,
-        { input: iso },
         false
       );
     }
@@ -71,7 +68,6 @@ export class DomainUtils {
       throw new AppError(
         ERROR_CODES.UTILS.B,
         ERROR_CATEGORY.VALIDATION,
-        { input: ms },
         false
       );
     }
@@ -133,7 +129,6 @@ export class DomainUtils {
         throw new AppError(
           ERROR_CODES.UTILS.C,
           ERROR_CATEGORY.VALIDATION,
-          { input: value },
           false
         );
       }
@@ -193,7 +188,7 @@ export class DomainUtils {
    * - For `en`, removes a thousand separators `,` and keeps dot as decimal.
    *
    * @param str - Localized numeric string.
-   * @param locale - Detected locale: `"de"` or `"en"`.
+   * @param locale - Locale: `"de"` or `"en"`.
    * @returns A normalized number string suitable for `Number.parseFloat`.
    */
   static normalizeNumber(str: string, locale: "de" | "en"): string {
@@ -277,9 +272,6 @@ export class DomainUtils {
   }
 
   /**
-   * Additional utility: debounced function creator
-   */
-  /**
    * Creates a debounced version of a function that delays its execution until after
    * `delay` milliseconds have elapsed since the last time it was invoked.
    *
@@ -300,9 +292,6 @@ export class DomainUtils {
     };
   }
 
-  /**
-   * Additional utility: throttled function creator
-   */
   /**
    * Creates a throttled version of a function that only invokes `fn` at most once
    * every `limit` millisecond.
@@ -328,9 +317,6 @@ export class DomainUtils {
   }
 
   /**
-   * Memoize expensive computations
-   */
-  /**
    * Memorizes a pure function by caching results keyed by the JSON-serialized arguments.
    *
    * Note: Suitable only for functions with JSON-serializable arguments and deterministic outputs.
@@ -355,9 +341,6 @@ export class DomainUtils {
     }) as T;
   }
 
-  /**
-   * Create a cleanup function for component unmounting
-   */
   /**
    * Creates a simple cleanup aggregator for registering and executing teardown callbacks.
    *

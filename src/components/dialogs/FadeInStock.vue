@@ -15,17 +15,16 @@ import { useRuntimeStore } from "@/stores/runtime";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStocksDB } from "@/composables/useIndexedDB";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useBrowser } from "@/composables/useBrowser";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 
 const { t } = useI18n();
-const { handleUserInfo } = useUserInfo();
+const { handleUserNotice } = useBrowser();
 const { update } = useStocksDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const runtime = useRuntimeStore();
@@ -39,16 +38,13 @@ const onClickOk = async (): Promise<void> => {
   if (
     !(await ensureConnected(
       databaseService.isConnected(),
-      handleUserInfo,
-      t("components.dialogs.fadeInStock.messages.dbNotConnected")
+      handleUserNotice
     ))
   )
     return;
 
   if (!selected.value) {
-    await handleUserInfo("notice", "FadeInStock", "no stock", {
-      noticeLines: [t("messages.noStockSelected")]
-    });
+    await handleUserNotice("FadeInStock", "no stock");
     return;
   }
 
@@ -59,19 +55,12 @@ const onClickOk = async (): Promise<void> => {
 
       await update(stock);
       records.stocks.update(stock);
-      await handleUserInfo("notice", "FadeInStock", "success", {
-        noticeLines: [t("components.dialogs.fadeInStock.messages.success")]
-      });
+      await handleUserNotice("FadeInStock", "success");
       runtime.resetTeleport();
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.FADE_IN_STOCK,
         ERROR_CATEGORY.VALIDATION,
-        {
-          input: serializeError(err),
-          entity: "FadeInStock",
-          stockId: selected.value!.cID as number
-        },
         true
       );
     }

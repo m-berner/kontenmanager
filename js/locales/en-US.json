@@ -406,5 +406,11 @@
         "bookingTypeRules": {
             "required": "Booking type is required"
         }
+    },
+    "notifications": {
+        "#hzt": "Invalid browser language"
+    },
+    "test": {
+        "message": "wAAA"
     }
 }

@@ -108,11 +108,11 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
     await Promise.all(
       pagesToLoad.map((page) => records.stocks.loadOnlineData(page))
     );
-  } catch (err) {
+  } catch {
     throw new AppError(
       "COMPANY_CONTENT: loadRequiredPages",
       "Failed to load online market data for required pages.",
-      { error: err }
+      true
     );
   }
 };
@@ -135,11 +135,11 @@ const onUpdatePage = async (page: number): Promise<void> => {
   isStockLoading.value = true;
   try {
     await records.stocks.loadOnlineData(page);
-  } catch (err) {
+  } catch {
     throw new AppError(
       "COMPANY_CONTENT: onUpdatePage",
       "Failed to load online market data for required page.",
-      { error: err }
+      true
     );
   } finally {
     isStockLoading.value = false;

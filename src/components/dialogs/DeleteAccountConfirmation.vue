@@ -15,18 +15,17 @@ import { useRecordsStore } from "@/stores/records";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 
 const { t } = useI18n();
-const { handleUserInfo } = useUserInfo();
+const { handleUserNotice } = useBrowser();
 const { setStorage } = useStorage();
 const settings = useSettingsStore();
 const { activeAccountId } = storeToRefs(settings);
@@ -59,7 +58,7 @@ const onClickOk = async (): Promise<void> => {
   if (
     !(await ensureConnected(
       databaseService.isConnected(),
-      handleUserInfo,
+      handleUserNotice,
       t("components.dialogs.deleteAccountConfirmation.messages.dbNotConnected")
     ))
   )
@@ -74,16 +73,11 @@ const onClickOk = async (): Promise<void> => {
       await switchToNextAccount();
 
       resetTeleport();
-      await handleUserInfo("notice", "DeleteAccountConfirmation", "success", {
-        noticeLines: [
-          t("components.dialogs.deleteAccountConfirmation.messages.success")
-        ]
-      });
-    } catch (err) {
+      await handleUserNotice("DeleteAccountConfirmation", "success");
+    } catch {
       throw new AppError(
         ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), entity: "DeleteAccountConfirmation" },
         true
       );
     }

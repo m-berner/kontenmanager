@@ -26,7 +26,7 @@ import { BROWSER_STORAGE } from "@/domains/config/storage";
 /**
  * Simple in-memory cache with TTL (time-to-live) expiration.
  *
- * Automatically cleans up expired entries when cache exceeds 100 items.
+ * Automatically cleans up expired entries when the cache exceeds 100 items.
  * Used primarily for caching HTTP responses to reduce network requests.
  */
 class FetchCache {
@@ -40,7 +40,7 @@ class FetchCache {
 
   /**
    * Stores data in cache with current timestamp.
-   * Triggers cleanup if cache size exceeds 100 entries.
+   * Triggers cleanup if the cache size exceeds 100 entries.
    *
    * @param key - Unique identifier for cached data
    * @param data - String data to cache
@@ -72,7 +72,7 @@ class FetchCache {
   }
 
   /**
-   * Removes all entries from cache.
+   * Removes all entries from the cache.
    */
   clear(): void {
     this.cache.clear();
@@ -91,7 +91,7 @@ class FetchCache {
   }
 
   /**
-   * Removes expired entries from cache.
+   * Removes expired entries from the cache.
    * Called automatically when cache size exceeds 100 items.
    *
    * @private
@@ -116,7 +116,7 @@ class FetchService {
   private cache: FetchCache;
 
   /**
-   * Service-specific fetchers (refactored with shared logic)
+   * Service-specific fetchers Map (refactored with shared logic)
    * Maps service identifiers to their respective fetching implementations.
    * @private
    */
@@ -140,9 +140,9 @@ class FetchService {
           return {
             id: urlObj.key!,
             isin: "",
-            rate: this.normalizeNumber(rate),
-            min: this.normalizeNumber(min),
-            max: this.normalizeNumber(max),
+            rate: DomainUtils.normalizeNumber(rate, "de"),
+            min: DomainUtils.normalizeNumber(min, "de"),
+            max: DomainUtils.normalizeNumber(max, "de"),
             cur: currency
           };
         })
@@ -156,7 +156,7 @@ class FetchService {
     ard: async (urls: NumberStringPair[]): Promise<StockMarketData[]> => {
       return Promise.all(
         urls.map(async (urlObj: NumberStringPair): Promise<StockMarketData> => {
-          // Fetch and parse initial page
+          // Fetch and parse the initial page
           const html = await this.fetchWithCache(urlObj.value, urlObj.value);
           const doc = await this.parseHTML(html);
 
@@ -178,9 +178,9 @@ class FetchService {
           return {
             id: urlObj.key!,
             isin: "",
-            rate: this.normalizeNumber(rate),
-            min: this.normalizeNumber(min),
-            max: this.normalizeNumber(max),
+            rate: DomainUtils.normalizeNumber(rate, "de"),
+            min: DomainUtils.normalizeNumber(min, "de"),
+            max: DomainUtils.normalizeNumber(max, "de"),
             cur: currency
           };
         })
@@ -210,9 +210,9 @@ class FetchService {
           return {
             id: urlObj.key ?? 0,
             isin: "",
-            rate: this.normalizeNumber(rate),
-            min: this.normalizeNumber(min),
-            max: this.normalizeNumber(max),
+            rate: DomainUtils.normalizeNumber(rate, "de"),
+            min: DomainUtils.normalizeNumber(min, "de"),
+            max: DomainUtils.normalizeNumber(max, "de"),
             cur: currency
           };
         })
@@ -236,9 +236,9 @@ class FetchService {
           return {
             id: urlObj.key!,
             isin: "",
-            rate: this.normalizeNumber(rate),
-            min: this.normalizeNumber(min),
-            max: this.normalizeNumber(max),
+            rate: DomainUtils.normalizeNumber(rate, "de"),
+            min: DomainUtils.normalizeNumber(min, "de"),
+            max: DomainUtils.normalizeNumber(max, "de"),
             cur: FETCH.DEFAULT_CURRENCY
           };
         })
@@ -268,9 +268,9 @@ class FetchService {
           return {
             id: urlObj.key!,
             isin: "",
-            rate: this.normalizeNumber(stockData.rate),
-            min: this.normalizeNumber(stockData.min),
-            max: this.normalizeNumber(stockData.max),
+            rate: DomainUtils.normalizeNumber(stockData.rate, "de"),
+            min: DomainUtils.normalizeNumber(stockData.min, "de"),
+            max: DomainUtils.normalizeNumber(stockData.max, "de"),
             cur: stockData.currency
           };
         })
@@ -327,7 +327,7 @@ class FetchService {
     options: RequestInit = {},
     maxRetries = 3
   ): Promise<Response> {
-    let lastError: Error | null = null;
+    //let lastError: Error | null = null;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
@@ -338,8 +338,8 @@ class FetchService {
             ...options,
             signal: options.signal || controller.signal
           });
-        } catch (error) {
-          lastError = error as Error;
+        } catch {
+          //lastError = error as Error;
           if (attempt < maxRetries) {
             await this.delay(1000 * attempt);
           }
@@ -352,7 +352,6 @@ class FetchService {
     throw new AppError(
       ERROR_CODES.SERVICES.FETCH.A,
       ERROR_CATEGORY.NETWORK,
-      { input: lastError?.message, entity: "fetch service" },
       true
     );
   }
@@ -397,7 +396,6 @@ class FetchService {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.B,
         ERROR_CATEGORY.VALIDATION,
-        { input: text, entity: "fetch service" },
         false
       );
     }
@@ -417,7 +415,6 @@ class FetchService {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.C,
         ERROR_CATEGORY.VALIDATION,
-        { isin },
         false
       );
     }
@@ -427,7 +424,6 @@ class FetchService {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.D,
         ERROR_CATEGORY.VALIDATION,
-        { service: "tgate" },
         false
       );
     }
@@ -444,7 +440,6 @@ class FetchService {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.E,
         ERROR_CATEGORY.VALIDATION,
-        { url: firstResponse.url },
         false
       );
     }
@@ -457,7 +452,6 @@ class FetchService {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.F,
         ERROR_CATEGORY.VALIDATION,
-        { url: firstResponse.url },
         false
       );
     }
@@ -494,7 +488,6 @@ class FetchService {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.G,
         ERROR_CATEGORY.VALIDATION,
-        { serviceName },
         false
       );
     }
@@ -504,7 +497,6 @@ class FetchService {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.H,
         ERROR_CATEGORY.NETWORK,
-        { serviceName },
         false
       );
     }
@@ -617,7 +609,6 @@ class FetchService {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.I,
         ERROR_CATEGORY.NETWORK,
-        { input: exchangeCodes },
         false
       );
     }
@@ -638,7 +629,6 @@ class FetchService {
           throw new AppError(
             ERROR_CODES.SERVICES.FETCH.J,
             ERROR_CATEGORY.NETWORK,
-            { url },
             false
           );
         }
@@ -766,16 +756,6 @@ class FetchService {
   }
 
   /**
-   * Normalizes European number format (comma decimals) to standard format (dot decimals).
-   * @private
-   * @param value - Number string with comma decimal separator
-   * @returns Normalized number string with dot decimal separator
-   */
-  private normalizeNumber(value: string): string {
-    return value.replace(/,/g, ".");
-  }
-
-  /**
    * Parses currency code or symbol from text into standardized currency code.
    * @private
    * @param code - Text containing currency information
@@ -816,7 +796,7 @@ class FetchService {
   }
 
   /**
-   * Extracts min and max from finanzen.net document.
+   * Extracts min and max from the finanzen.net document.
    * @private
    */
   private extractFnetMinMax(doc: Document): { min: string; max: string } {
@@ -862,12 +842,12 @@ class FetchService {
       return null;
     }
 
-    // Extract URL from onclick attribute
+    // Extract URL from the onclick attribute
     return onclickAttr.replace("document.location='", "").replace("';", "");
   }
 
   /**
-   * Extracts rate, min, max and currency from tagesschau.de document.
+   * Extracts rate, min, max, and currency from the tagesschau.de document.
    * @private
    */
   private extractArdStockData(doc: Document): FetchResult {

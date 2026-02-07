@@ -14,11 +14,10 @@ import { useRuntimeStore } from "@/stores/runtime";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useBrowser } from "@/composables/useBrowser";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
@@ -27,7 +26,7 @@ import { useBookingTypeForm } from "@/composables/useForms";
 
 const { bookingTypeFormData, reset } = useBookingTypeForm();
 const { t } = useI18n();
-const { handleUserInfo } = useUserInfo();
+const { handleUserNotice } = useBrowser();
 const { remove } = useBookingTypesDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const records = useRecordsStore();
@@ -43,7 +42,7 @@ const onClickOk = async (): Promise<void> => {
   if (
     !(await ensureConnected(
       databaseService.isConnected(),
-      handleUserInfo,
+      handleUserNotice,
       t("components.dialogs.deleteBookingType.messages.dbNotConnected")
     ))
   )
@@ -57,31 +56,18 @@ const onClickOk = async (): Promise<void> => {
   await withLoading(async () => {
     try {
       if (!canDeleteBookingType(bookingTypeFormData.id!)) {
-        await handleUserInfo("notice", "DeleteBookingType", "not deletable", {
-          noticeLines: [
-            t("components.dialogs.deleteBookingType.messages.error")
-          ]
-        });
+        await handleUserNotice("DeleteBookingType", "not deletable");
         return;
       }
 
       records.bookingTypes.remove(bookingTypeFormData.id!);
       await remove(bookingTypeFormData.id!);
       runtime.resetTeleport();
-      await handleUserInfo("notice", "DeleteBookingType", "success", {
-        noticeLines: [
-          t("components.dialogs.deleteBookingType.messages.success")
-        ]
-      });
-    } catch (err) {
+      await handleUserNotice("DeleteBookingType", "success");
+    } catch {
       throw new AppError(
         ERROR_CODES.DELETE_BOOKING_TYPE,
         ERROR_CATEGORY.VALIDATION,
-        {
-          input: serializeError(err),
-          entity: "DeleteBookingType",
-          bookingTypeId: bookingTypeFormData.id! as number
-        },
         true
       );
     }

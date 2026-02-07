@@ -4,23 +4,23 @@ export class DomainUtils {
     constructor() { }
     static utcDate(iso) {
         if (!DATE.ISO_DATE_REGEX.test(iso) && iso !== "") {
-            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, { input: iso }, false);
+            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, false);
         }
         if (iso === "")
             return new Date(NaN);
         const [y, m, d] = iso.split("-").map((v) => Number(v));
         if (!(m >= 1 && m <= 12)) {
-            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, { input: iso }, false);
+            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, false);
         }
         const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
         if (!(d >= 1 && d <= daysInMonth)) {
-            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, { input: iso }, false);
+            throw new AppError(ERROR_CODES.UTILS.A, ERROR_CATEGORY.VALIDATION, false);
         }
         return new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
     }
     static isoDate(ms) {
         if (!Number.isFinite(ms)) {
-            throw new AppError(ERROR_CODES.UTILS.B, ERROR_CATEGORY.VALIDATION, { input: ms }, false);
+            throw new AppError(ERROR_CODES.UTILS.B, ERROR_CATEGORY.VALIDATION, false);
         }
         return new Date(ms).toISOString().substring(0, 10);
     }
@@ -51,7 +51,7 @@ export class DomainUtils {
             return fallback;
         const isParseError = () => {
             if (throwOnError) {
-                throw new AppError(ERROR_CODES.UTILS.C, ERROR_CATEGORY.VALIDATION, { input: value }, false);
+                throw new AppError(ERROR_CODES.UTILS.C, ERROR_CATEGORY.VALIDATION, false);
             }
         };
         try {

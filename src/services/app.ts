@@ -17,12 +17,12 @@ import { fetchService } from "@/services/fetch";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { CURRENCIES } from "@/domains/config/currencies";
 
+const {getUserLocale} = useBrowser();
 /**
  * Application initialization and bootstrapping service
  * Handles app startup, data loading, and external API coordination
@@ -34,7 +34,6 @@ export class AppService {
   private runtime = useRuntimeStore();
 
   // Composable references
-  private browser = useBrowser();
   private storage = useStorage();
   private fetch = fetchService;
 
@@ -155,11 +154,6 @@ export class AppService {
       throw new AppError(
         ERROR_CODES.SERVICES.APP.OVERALL,
         ERROR_CATEGORY.BUSINESS,
-        {
-          input: serializeError(err),
-          entity: "AppService",
-          phase: "initializeApp"
-        },
         true
       );
     }
@@ -220,15 +214,10 @@ export class AppService {
       const storageData = await this.storage.getStorage();
       if (signal?.aborted) return;
       this.settings.init(storageData);
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.SERVICES.APP.STORAGE,
         ERROR_CATEGORY.BUSINESS,
-        {
-          input: serializeError(err),
-          entity: "AppService",
-          phase: "initializeStorage"
-        },
         false
       );
     }
@@ -256,16 +245,11 @@ export class AppService {
       event: "start"
     });
 
-    const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
+    const currency = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3,5));
     if (!currency) {
       throw new AppError(
         ERROR_CODES.SERVICES.APP.CURRENCY,
         ERROR_CATEGORY.BUSINESS,
-        {
-          input: this.browser.uiLanguage.value,
-          entity: "AppService",
-          phase: "initializeDatabase"
-        },
         false
       );
     }
@@ -280,15 +264,10 @@ export class AppService {
 
       if (signal?.aborted) return;
       await this.records.init(databaseStores, translations);
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.SERVICES.APP.DB,
         ERROR_CATEGORY.DATABASE,
-        {
-          input: serializeError(err),
-          entity: "AppService",
-          phase: "initializeDatabase"
-        },
         false
       );
     }
@@ -310,7 +289,7 @@ export class AppService {
       event: "start"
     });
 
-    const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
+    const currency = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3,5));
     if (!currency) {
       DomainUtils.log(
         "SERVICES app",
@@ -351,12 +330,6 @@ export class AppService {
       const wrapped = new AppError(
         ERROR_CODES.SERVICES.APP.FETCH,
         ERROR_CATEGORY.NETWORK,
-        {
-          input: serializeError(exchangesBase.reason as any),
-          entity: "AppService",
-          section: "baseExchanges",
-          phase: "fetchExternalData"
-        },
         true
       );
       DomainUtils.log(
@@ -377,12 +350,6 @@ export class AppService {
       const wrapped = new AppError(
         ERROR_CODES.SERVICES.APP.FETCH,
         ERROR_CATEGORY.NETWORK,
-        {
-          input: serializeError(exchangesInfo.reason as any),
-          entity: "AppService",
-          section: "exchanges",
-          phase: "fetchExternalData"
-        },
         true
       );
       DomainUtils.log(
@@ -399,12 +366,6 @@ export class AppService {
       const wrapped = new AppError(
         ERROR_CODES.SERVICES.APP.FETCH,
         ERROR_CATEGORY.NETWORK,
-        {
-          input: serializeError(indexesInfo.reason as any),
-          entity: "AppService",
-          section: "indexes",
-          phase: "fetchExternalData"
-        },
         true
       );
       DomainUtils.log(
@@ -421,12 +382,6 @@ export class AppService {
       const wrapped = new AppError(
         ERROR_CODES.SERVICES.APP.FETCH,
         ERROR_CATEGORY.NETWORK,
-        {
-          input: serializeError(materialsInfo.reason as any),
-          entity: "AppService",
-          section: "materials",
-          phase: "fetchExternalData"
-        },
         true
       );
       DomainUtils.log(

@@ -7,14 +7,13 @@
   -->
 
 <script lang="ts" setup>
-//import type { FormInterface } from "@/types";
 import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { useUserInfo } from "@/composables/useUserInfo";
+//import { useUserInfo } from "@/composables/useUserInfo";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountForm } from "@/composables/useForms";
 import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
@@ -25,6 +24,7 @@ import { databaseService } from "@/services/database";
 import { useAccountsDB, useBookingTypesDB } from "@/composables/useIndexedDB";
 import { INDEXED_DB } from "@/config/database";
 import { DomainUtils } from "@/domains/utils";
+import { useBrowser} from "@/composables/useBrowser";
 
 const { t } = useI18n();
 const { setStorage } = useStorage();
@@ -32,7 +32,8 @@ const { add: addAccountDB } = useAccountsDB();
 const { add: addBookingTypeDB } = useBookingTypesDB();
 const { accountFormData, mapAccountFormToDb, reset } = useAccountForm();
 const { submitGuard } = useDialogGuards();
-const { handleUserInfo } = useUserInfo();
+//const { handleUserInfo } = useUserInfo();
+const { handleUserNotice } = useBrowser();
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
 const records = useRecordsStore();
@@ -45,7 +46,7 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.addAccount.messages.dbNotConnected"
     ),
-    handleUserInfo,
+    handleUserNotice,
     errorContext: "ADD_ACCOUNT",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -112,9 +113,7 @@ const onClickOk = async (): Promise<void> => {
 
       records.clean(false);
       runtime.resetTeleport();
-      await handleUserInfo("notice", "AddAccount", "onClickOk: success", {
-        noticeLines: [t("components.dialogs.addAccount.messages.success")]
-      });
+      await handleUserNotice("components/AddAccount", t("components.dialogs.addAccount.messages.success"));
     }
   });
 };

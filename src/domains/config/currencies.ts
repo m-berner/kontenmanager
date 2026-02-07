@@ -33,6 +33,7 @@ export const CURRENCIES = Object.freeze({
     ["ec", "USD"],
     ["ee", "EUR"],
     ["el", "EUR"],
+    ["en", "GBP"],
     ["es", "EUR"],
     ["et", "EUR"],
     ["fi", "EUR"],
@@ -80,6 +81,7 @@ export const CURRENCIES = Object.freeze({
     ["tt", "TTD"],
     ["tw", "TWD"],
     ["uy", "UYU"],
+    ["us", "USD"],
     ["ve", "VES"],
     ["za", "ZAR"],
     ["zw", "ZWD"]

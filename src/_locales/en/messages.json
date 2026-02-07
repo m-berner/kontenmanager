@@ -1,0 +1,14 @@
+{
+  "browser_language": {
+    "message": "Invalid browser language\nFallback to English"
+  },
+  "install_storage": {
+    "message": "Failed to save to local browser storage"
+  },
+  "xx_error_code": {
+    "message": "Invalid error code"
+  },
+  "xx_missing_translation": {
+    "message": "Missing translation"
+  }
+}

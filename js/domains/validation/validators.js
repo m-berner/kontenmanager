@@ -4,7 +4,7 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 export class DomainValidators {
     static validateBooking(data) {
         if (typeof data !== "object" || data === null) {
-            throw new AppError(ERROR_CODES.VALIDATION.A, ERROR_CATEGORY.VALIDATION, { input: data, entity: "booking" }, false);
+            throw new AppError(ERROR_CODES.VALIDATION.A, ERROR_CATEGORY.VALIDATION, false);
         }
         const raw = data;
         const normalized = {
@@ -37,7 +37,7 @@ export class DomainValidators {
     }
     static validateAccount(data) {
         if (typeof data !== "object" || data === null) {
-            throw new AppError(ERROR_CODES.VALIDATION.B, ERROR_CATEGORY.VALIDATION, { input: data, entity: "account" }, false);
+            throw new AppError(ERROR_CODES.VALIDATION.B, ERROR_CATEGORY.VALIDATION, false);
         }
         const raw = data;
         const ibanRes = ValidationRules.validateIBAN(raw.cIban);
@@ -54,7 +54,7 @@ export class DomainValidators {
     }
     static validateStock(data) {
         if (typeof data !== "object" || data === null) {
-            throw new AppError(ERROR_CODES.VALIDATION.C, ERROR_CATEGORY.VALIDATION, { input: data, entity: "stock" }, false);
+            throw new AppError(ERROR_CODES.VALIDATION.C, ERROR_CATEGORY.VALIDATION, false);
         }
         const raw = data;
         const isinRes = ValidationRules.validateISIN(raw.cISIN);
@@ -77,7 +77,7 @@ export class DomainValidators {
     }
     static validateBookingType(data) {
         if (typeof data !== "object" || data === null) {
-            throw new AppError(ERROR_CODES.VALIDATION.D, ERROR_CATEGORY.VALIDATION, { input: data, entity: "bookingType" }, false);
+            throw new AppError(ERROR_CODES.VALIDATION.D, ERROR_CATEGORY.VALIDATION, false);
         }
         const raw = data;
         return {

@@ -17,7 +17,7 @@ import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
 import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
-import { AppError } from "@/domains/errors";
+//import { AppError } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { fetchService } from "@/services/fetch";
 import { INDEXED_DB } from "@/config/database";
@@ -30,7 +30,7 @@ const { n, t } = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
 const runtime = useRuntimeStore();
-const { notice } = useBrowser();
+const { handleUserNotice } = useBrowser();
 const { setStorage } = useStorage();
 const { activeAccountId } = storeToRefs(settings);
 
@@ -81,18 +81,18 @@ const onUpdateTitleBar = async (): Promise<void> => {
       message: t("mixed.smImportOnly.message")
     });
   } catch (e) {
-    const errorMessage =
-      e instanceof AppError
-        ? e.message
-        : e instanceof Error
-        ? e.message
-        : "Unknown error";
-    DomainUtils.log(
-      t("views.titleBar.messages.onUpdateTitleBar"),
-      errorMessage,
-      "error"
-    );
-    await notice([t("views.titleBar.messages.onUpdateTitleBar"), errorMessage]);
+    // const errorMessage =
+    //   e instanceof AppError
+    //     ? e.message
+    //     : e instanceof Error
+    //     ? e.message
+    //     : "Unknown error";
+    // DomainUtils.log(
+    //   t("views.titleBar.messages.onUpdateTitleBar"),
+    //   errorMessage,
+    //   "error"
+    // );
+    await handleUserNotice(t("views.titleBar.messages.onUpdateTitleBar"), e);
   }
 };
 
@@ -128,7 +128,7 @@ onMounted(async () => {
   }
 });
 
-DomainUtils.log("--- views/TitleBar.vue setup ---");
+DomainUtils.log("Views TitleBar: setup");
 </script>
 
 <template>

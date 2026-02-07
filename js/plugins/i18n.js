@@ -3,17 +3,13 @@ import deDE from "@/locales/de-DE.json";
 import enUS from "@/locales/en-US.json";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
-const { locale5 } = useBrowser();
-const i18nInstance = createI18n({
-    locale: locale5.value,
+const { getUserLocale } = useBrowser();
+const i18nConfig = {
+    locale: getUserLocale(),
     fallbackLocale: "en-US",
     messages: {
         "de-DE": deDE,
         "en-US": enUS
-    },
-    missing(locale, key) {
-        console.error(import.meta.env.VITE_DEV);
-        console.warn(`[i18n:missing] locale=${locale} key=${key}`);
     },
     datetimeFormats: {
         "de-DE": {
@@ -110,9 +106,28 @@ const i18nInstance = createI18n({
             }
         },
         "en-US": {
+            currency5: {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 5,
+                maximumFractionDigits: 5,
+                notation: "standard"
+            },
+            currency3: {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 3,
+                notation: "standard"
+            },
             currency: {
                 style: "currency",
                 currency: "USD",
+                notation: "standard"
+            },
+            currencyEUR: {
+                style: "currency",
+                currency: "EUR",
                 notation: "standard"
             },
             decimal: {
@@ -120,15 +135,32 @@ const i18nInstance = createI18n({
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             },
+            decimal3: {
+                style: "decimal",
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 3
+            },
+            integer: {
+                style: "decimal",
+                maximumFractionDigits: 0
+            },
+            year: {
+                style: "decimal",
+                maximumFractionDigits: 0,
+                useGrouping: false
+            },
             percent: {
                 style: "percent",
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 2,
                 useGrouping: false
             }
         }
     }
-});
-const i18nConfig = {
+};
+const i18nInstance = createI18n(i18nConfig);
+const i18nWrapper = {
     i18n: i18nInstance
 };
-export default i18nConfig;
-DomainUtils.log("--- plugins/i18n.js ---");
+export default i18nWrapper;
+DomainUtils.log("PLUGINS I18N: loaded");

@@ -45,7 +45,6 @@ export class ImportExportService {
       throw new AppError(
         ERROR_CODES.IMPORT_EXPORT_SERVICE.A,
         ERROR_CATEGORY.VALIDATION,
-        {},
         false
       );
     }
@@ -56,7 +55,6 @@ export class ImportExportService {
       throw new AppError(
         ERROR_CODES.IMPORT_EXPORT_SERVICE.B,
         ERROR_CATEGORY.VALIDATION,
-        { size: blob.size, maxSize: MAX_SIZE },
         false
       );
     }
@@ -64,11 +62,10 @@ export class ImportExportService {
     let text: string;
     try {
       text = await blob.text();
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.IMPORT_EXPORT_SERVICE.C,
         ERROR_CATEGORY.VALIDATION,
-        { input: err },
         true
       );
     }
@@ -77,7 +74,6 @@ export class ImportExportService {
       throw new AppError(
         ERROR_CODES.IMPORT_EXPORT_SERVICE.D,
         ERROR_CATEGORY.VALIDATION,
-        {},
         false
       );
     }
@@ -90,7 +86,6 @@ export class ImportExportService {
         throw new AppError(
           ERROR_CODES.IMPORT_EXPORT_SERVICE.E,
           ERROR_CATEGORY.VALIDATION,
-          { input: err },
           true
         );
       }
@@ -101,7 +96,6 @@ export class ImportExportService {
       throw new AppError(
         ERROR_CODES.IMPORT_EXPORT_SERVICE.F,
         ERROR_CATEGORY.VALIDATION,
-        {},
         false
       );
     }
@@ -127,11 +121,10 @@ export class ImportExportService {
     };
     try {
       return JSON.stringify(exportData, null, 2);
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.IMPORT_EXPORT_SERVICE.G,
         ERROR_CATEGORY.VALIDATION,
-        { originalError: err },
         true
       );
     }
@@ -209,7 +202,6 @@ export class ImportExportService {
       throw new AppError(
         ERROR_CODES.IMPORT_EXPORT_SERVICE.H,
         ERROR_CATEGORY.VALIDATION,
-        { ieError: errors },
         false
       );
     }

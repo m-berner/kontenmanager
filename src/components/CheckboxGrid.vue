@@ -14,7 +14,10 @@
  */
 import { computed, onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { AppError } from "@/domains/errors";
+import {
+  AppError,
+  ERROR_CATEGORY
+} from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import type { CheckboxGridProps } from "@/types";
@@ -67,14 +70,12 @@ const setChecked = async (): Promise<void> => {
 
   try {
     await setStorage(config.value.storageKey, [...checked.value]);
-  } catch (err) {
-    error.value =
-      err instanceof AppError
-        ? err.message
-        : err instanceof Error
-        ? err.message
-        : "Failed to save selection";
-    DomainUtils.log("CHECKBOX_GRID: setChecked error", err);
+  } catch {
+    throw new AppError(
+      "xx_install_storage",
+      ERROR_CATEGORY.VALIDATION,
+      true
+    );
   } finally {
     isSaving.value = false;
   }

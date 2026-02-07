@@ -64,7 +64,6 @@ export class DatabaseService extends IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.A,
             ERROR_CATEGORY.DATABASE,
-            { input: request.error, entity: "database service (connect)" },
             false
           )
         );
@@ -114,7 +113,6 @@ export class DatabaseService extends IndexedDbBase {
         throw new AppError(
           ERROR_CODES.SERVICES.DATABASE.D,
           ERROR_CATEGORY.DATABASE,
-          { entity: store.storeName },
           false
         );
       }
@@ -139,7 +137,6 @@ export class DatabaseService extends IndexedDbBase {
                   throw new AppError(
                     ERROR_CODES.SERVICES.DATABASE.C,
                     ERROR_CATEGORY.DATABASE,
-                    { operation: op, storeName },
                     false
                   );
                 store.delete(op.key);
@@ -151,7 +148,6 @@ export class DatabaseService extends IndexedDbBase {
                 throw new AppError(
                   ERROR_CODES.SERVICES.DATABASE.D,
                   ERROR_CATEGORY.DATABASE,
-                  { input: op, entity: storeName },
                   false
                 );
             }
@@ -180,7 +176,6 @@ export class DatabaseService extends IndexedDbBase {
               throw new AppError(
                 ERROR_CODES.SERVICES.DATABASE.E,
                 ERROR_CATEGORY.DATABASE,
-                { input: op, entity: storeName },
                 false
               );
             store.delete(op.key);
@@ -192,7 +187,6 @@ export class DatabaseService extends IndexedDbBase {
             throw new AppError(
               ERROR_CODES.SERVICES.DATABASE.F,
               ERROR_CATEGORY.DATABASE,
-              { operation: op, entity: storeName },
               false
             );
         }

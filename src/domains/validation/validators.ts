@@ -21,7 +21,6 @@ export class DomainValidators {
       throw new AppError(
         ERROR_CODES.VALIDATION.A,
         ERROR_CATEGORY.VALIDATION,
-        { input: data, entity: "booking" },
         false
       );
     }
@@ -70,7 +69,6 @@ export class DomainValidators {
       throw new AppError(
         ERROR_CODES.VALIDATION.B,
         ERROR_CATEGORY.VALIDATION,
-        { input: data, entity: "account" },
         false
       );
     }
@@ -95,7 +93,6 @@ export class DomainValidators {
       throw new AppError(
         ERROR_CODES.VALIDATION.C,
         ERROR_CATEGORY.VALIDATION,
-        { input: data, entity: "stock" },
         false
       );
     }
@@ -126,7 +123,6 @@ export class DomainValidators {
       throw new AppError(
         ERROR_CODES.VALIDATION.D,
         ERROR_CATEGORY.VALIDATION,
-        { input: data, entity: "bookingType" },
         false
       );
     }

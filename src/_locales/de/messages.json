@@ -1,0 +1,14 @@
+{
+  "xx_browser_language": {
+    "message": "Unbekannte Browser Sprache\nEnglisch wird verwendet"
+  },
+  "xx_install_storage": {
+    "message": "Speichern im lokalen Browser Speicher fehlgeschlagen"
+  },
+  "xx_error_code": {
+    "message": "Ungültiger Fehlercode"
+  },
+  "xx_missing_translation": {
+    "message": "Keine Übersetzung gefunden"
+  }
+}

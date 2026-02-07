@@ -1,12 +1,12 @@
 import { ref } from "vue";
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 export function useDialogGuards() {
     const isLoading = ref(false);
     const loadingOperations = ref(new Set());
     let operationCounter = 0;
-    async function ensureConnected(isConnected, handleUserInfo, errorMessage = "Database not connected") {
+    async function ensureConnected(isConnected, handleUserNotice, errorMessage = "Database not connected") {
         if (!isConnected) {
-            await handleUserInfo("notice", "useDialogGuards", "ensureConnected", {
+            await handleUserNotice("useDialogGuards", "ensureConnected", {
                 noticeLines: [errorMessage]
             });
             return false;
@@ -32,8 +32,8 @@ export function useDialogGuards() {
             }
             return form.value.validate();
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.A, ERROR_CATEGORY.VALIDATION, { input: serializeError(err) }, true);
+        catch {
+            throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.A, ERROR_CATEGORY.VALIDATION, true);
         }
     }
     async function withRetry(operation, options = {}) {
@@ -44,23 +44,23 @@ export function useDialogGuards() {
             }
             catch (err) {
                 if (attempt === maxRetries) {
-                    throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), attempt, maxRetries }, true);
+                    throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, true);
                 }
                 onRetry?.(attempt, err);
                 await new Promise((resolve) => setTimeout(resolve, delay * attempt));
             }
         }
-        throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.C, ERROR_CATEGORY.VALIDATION, { input: "retry_exhausted" }, false);
+        throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.C, ERROR_CATEGORY.VALIDATION, false);
     }
     async function submitGuard(options) {
-        const { formRef, isConnected, connectionErrorMessage = "Database not connected", handleUserInfo, operation, onFinally } = options;
+        const { formRef, isConnected, connectionErrorMessage = "Database not connected", handleUserNotice, operation, onFinally } = options;
         if (formRef) {
             const validation = await validateForm(formRef);
             if (!validation.valid)
                 return;
         }
         if (isConnected !== undefined) {
-            if (!(await ensureConnected(isConnected, handleUserInfo, connectionErrorMessage)))
+            if (!(await ensureConnected(isConnected, handleUserNotice, connectionErrorMessage)))
                 return;
         }
         await withLoading(async () => {
@@ -71,7 +71,7 @@ export function useDialogGuards() {
                 if (err instanceof AppError) {
                     throw err;
                 }
-                throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), phase: "submitGuard" }, true);
+                throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, true);
             }
             finally {
                 onFinally?.();

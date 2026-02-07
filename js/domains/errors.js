@@ -1,5 +1,7 @@
+import deNotifications from "@/_locales/de/messages.json";
 export const ERROR_CODES = {
     ADD_ACCOUNT: "#olt",
+    CHECKBOX_GRID: "#rzg",
     DELETE_ACCOUNT_CONFIRMATION: "#khi",
     DELETE_BOOKING_TYPE: "#pol",
     EXPORT_DATABASE: {
@@ -122,10 +124,12 @@ export const ERROR_CATEGORY = {
     DATABASE: "database",
     NETWORK: "network",
     VALIDATION: "validation",
-    BUSINESS: "business"
+    BUSINESS: "business",
+    BROWSER_API: "Browser API"
 };
 const ERRORS = {
     [ERROR_CODES.ADD_ACCOUNT]: "Failed to add account",
+    [ERROR_CODES.CHECKBOX_GRID]: "Failed to save selection",
     [ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION]: "Failed to delete account",
     [ERROR_CODES.DELETE_BOOKING_TYPE]: "Failed to delete booking type",
     [ERROR_CODES.FADE_IN_STOCK]: "Failed to reactivate stock",
@@ -207,32 +211,34 @@ const ERRORS = {
     [ERROR_CODES.USE_BROWSER.J]: "Failed to download export file"
 };
 export function serializeError(err) {
-    if (err instanceof AppError) {
-        return {
-            name: err.name,
-            code: err.code,
-            category: err._category,
-            recoverable: err._recoverable,
-            message: err.message,
-            context: err._context
-        };
+    if (err instanceof AppError || err instanceof Error) {
+        return { name: err.name, message: err.message };
     }
-    if (err instanceof Error) {
-        return { name: err.name, message: err.message, stack: err.stack };
-    }
-    return { value: err };
+    return { name: "AppError", message: "unknown" };
 }
 export class AppError extends Error {
     code;
     _category;
-    _context;
     _recoverable;
-    constructor(code, _category, _context, _recoverable = true) {
-        super(ERRORS[code] ?? `Unknown error (${code})`);
+    _context;
+    constructor(code, _category, _recoverable = true, _context) {
+        let message;
+        if (code in deNotifications) {
+            message =
+                browser.i18n.getMessage(code) ||
+                    `${browser.i18n.getMessage("xx_missing_translation")}: ${code}`;
+        }
+        else if (code in ERRORS) {
+            message = ERRORS[code];
+        }
+        else {
+            message = `${browser.i18n.getMessage("xx_error_code")}: ${code}`;
+        }
+        super(message);
         this.code = code;
         this._category = _category;
-        this._context = _context;
         this._recoverable = _recoverable;
+        this._context = _context;
         this.name = "AppError";
     }
 }

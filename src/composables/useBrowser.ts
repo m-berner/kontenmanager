@@ -10,12 +10,8 @@ import { computed } from "vue";
 import { EVENTS } from "@/config/events";
 import { ENTRYPOINTS } from "@/config/entrypoints";
 import { DEFAULTS } from "@/config/defaults";
-import {
-  AppError,
-  ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
-} from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Composable providing access to browser extension APIs.
@@ -29,20 +25,9 @@ export function useBrowser() {
   const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
   /** The current extension manifest. */
   const manifest = computed(() => browser.runtime.getManifest());
-  /** The user's UI language. */
-  const uiLanguage = computed(() => browser.i18n.getUILanguage());
   /** The 5-character locale code (e.g., 'en-US', 'de-DE'). */
   const locale5 = computed(() => {
-    const defaultLanguage = navigator.languages[0];
-
-    if (!defaultLanguage) {
-      throw new AppError(
-        ERROR_CODES.USE_BROWSER.A,
-        ERROR_CATEGORY.VALIDATION,
-        {},
-        false
-      );
-    }
+    const defaultLanguage = `${navigator.languages[0]}`;
 
     if (defaultLanguage.length === 5) {
       return defaultLanguage;
@@ -53,12 +38,28 @@ export function useBrowser() {
     }
 
     throw new AppError(
-      ERROR_CODES.USE_BROWSER.B,
-      ERROR_CATEGORY.VALIDATION,
-      { input: "invalid_lang_format" },
-      false
+      "xx_browser_language",
+      ERROR_CATEGORY.BROWSER_API,
+      true
     );
   });
+
+  /**
+   * Gets the user locale with fallback to en-US on error
+   */
+  function getUserLocale(): "de-DE" | "en-US" {
+    try {
+      const userLocale = locale5.value;
+
+      if (userLocale === "de-DE" || userLocale === "en-US") {
+        return userLocale;
+      }
+      return "en-US";
+    } catch (err) {
+      handleUserNotice("Plugins i18n", err).then();
+      return "en-US";
+    }
+  }
 
   /**
    * Registers a listener for the extension action button click.
@@ -95,11 +96,10 @@ export function useBrowser() {
         url: indexUrl.value,
         active: true
       });
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_BROWSER.C,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err) },
         true
       );
     }
@@ -112,11 +112,10 @@ export function useBrowser() {
   async function tabsQuery(): Promise<browser.tabs.Tab[]> {
     try {
       return await browser.tabs.query({ url: indexUrl.value });
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_BROWSER.D,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err) },
         true
       );
     }
@@ -133,11 +132,10 @@ export function useBrowser() {
       return await browser.windows.update(windowId, {
         focused: true
       });
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_BROWSER.E,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), windowId },
         true
       );
     }
@@ -152,11 +150,10 @@ export function useBrowser() {
       return await browser.tabs.update(tabId, {
         active: true
       });
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_BROWSER.F,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), tabId },
         true
       );
     }
@@ -169,11 +166,10 @@ export function useBrowser() {
   async function removeTab(tabId: number): Promise<void> {
     try {
       await browser.tabs.remove(tabId);
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_BROWSER.F,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), tabId },
         true
       );
     }
@@ -185,11 +181,10 @@ export function useBrowser() {
   async function openOptionsPage(): Promise<void> {
     try {
       await browser.runtime.openOptionsPage();
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_BROWSER.G,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err) },
         true
       );
     }
@@ -197,25 +192,39 @@ export function useBrowser() {
 
   /**
    * Displays a browser notification.
-   * @param messages - Array of message lines.
+   *
+   * @param mod - Module name that catch the error.
+   * @param messageOrError - Array of message lines.
    */
-  async function notice(messages: string[]): Promise<void> {
+  async function handleUserNotice(
+    mod: string,
+    messageOrError: string | Error | unknown
+  ): Promise<void> {
     try {
+      let messages: string[] = [];
+      if (messageOrError instanceof AppError) {
+        let msg = browser.i18n.getMessage(messageOrError.code);
+        if (msg === "") {
+          msg = messageOrError.message;
+        }
+        messages = [`${mod}: ${messageOrError._category}`, msg];
+      } else if (messageOrError instanceof Error) {
+        messages = [mod, messageOrError.name, messageOrError.message];
+      } else if (typeof messageOrError === "string") {
+        messages = [mod, messageOrError];
+      } else {
+        messages = [mod, "Unknown user message"];
+      }
       const notificationOption: browser.notifications.CreateNotificationOptions =
         {
           type: "basic",
-          iconUrl: "assets/icon16.png",
+          iconUrl: "assets/icon64.png",
           title: DEFAULTS.TITLE,
           message: messages.join("\n")
         };
       await browser.notifications.create(notificationOption);
-    } catch (err) {
-      throw new AppError(
-        ERROR_CODES.USE_BROWSER.H,
-        ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), messages },
-        true
-      );
+    } catch {
+      DomainUtils.log("Notification failed", {}, "error");
     }
   }
 
@@ -232,7 +241,6 @@ export function useBrowser() {
       throw new AppError(
         ERROR_CODES.USE_BROWSER.I,
         ERROR_CATEGORY.VALIDATION,
-        { input: filename },
         false
       );
     }
@@ -256,24 +264,22 @@ export function useBrowser() {
       };
 
       browser.downloads.onChanged.addListener(onDownloadChange);
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_BROWSER.J,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), filename },
         true
       );
     }
   }
 
   return {
-    locale5,
     manifest,
-    uiLanguage,
     actionOnClicked,
+    getUserLocale,
     runtimeOnInstalled,
     removeTab,
-    notice,
+    handleUserNotice,
     openOptionsPage,
     tabsCreate,
     tabsQuery,

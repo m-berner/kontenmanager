@@ -13,33 +13,17 @@ import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import type { I18nWrapper, MessageSchemaType } from "@/types";
 
-const { locale5 } = useBrowser();
+const { getUserLocale } = useBrowser();
 
 /**
- * Global Vue I18n instance configured with supported locales, number/date
- * formats and a development-only missing-key logger.
+ * I18n configuration object (extracted to avoid duplication)
  */
-const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">({
-  locale: locale5.value,
+const i18nConfig: MessageSchemaType = {
+  locale: getUserLocale(),
   fallbackLocale: "en-US",
   messages: {
     "de-DE": deDE,
     "en-US": enUS
-  },
-  // Log unknown keys only in development
-  /**
-   * Missing-translation hook used to surface unknown keys during development.
-   *
-   * @param locale - The active locale.
-   * @param key - The missing translation key.
-   */
-  missing(locale, key /*, instance, values */) {
-    console.error(import.meta.env.VITE_DEV);
-    //if (import.meta.env.DEV) {
-    // You can route this to your DomainUtils if you prefer
-    // DomainUtils.log(`[i18n:missing] locale=${locale} key=${key}`);
-    console.warn(`[i18n:missing] locale=${locale} key=${key}`);
-    //}
   },
   datetimeFormats: {
     "de-DE": {
@@ -136,9 +120,28 @@ const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">({
       }
     },
     "en-US": {
+      currency5: {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 5,
+        maximumFractionDigits: 5,
+        notation: "standard"
+      },
+      currency3: {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3,
+        notation: "standard"
+      },
       currency: {
         style: "currency",
         currency: "USD",
+        notation: "standard"
+      },
+      currencyEUR: {
+        style: "currency",
+        currency: "EUR",
         notation: "standard"
       },
       decimal: {
@@ -146,21 +149,45 @@ const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">({
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       },
+      decimal3: {
+        style: "decimal",
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3
+      },
+      integer: {
+        style: "decimal",
+        maximumFractionDigits: 0
+      },
+      year: {
+        style: "decimal",
+        maximumFractionDigits: 0,
+        useGrouping: false
+      },
       percent: {
         style: "percent",
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 2,
         useGrouping: false
       }
     }
   }
-});
+};
+
+/**
+ * Global Vue I18n instance configured with supported locales, number/date
+ * formats, and a development-only missing-key logger.
+ */
+const i18nInstance = createI18n<[MessageSchemaType], "de-DE" | "en-US">(
+  i18nConfig
+);
 
 /**
  * Exported wrapper exposing the configured I18n instance for app setup.
  */
-const i18nConfig: I18nWrapper = {
+const i18nWrapper: I18nWrapper = {
   i18n: i18nInstance
 };
 
-export default i18nConfig;
+export default i18nWrapper;
 
-DomainUtils.log("--- plugins/i18n.js ---");
+DomainUtils.log("PLUGINS I18N: loaded");

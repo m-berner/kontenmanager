@@ -72,7 +72,7 @@ export class ImportExportTransformer {
                 booking.cDebit = creditDebit.value;
                 break;
             default:
-                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, { input: { type: smTransfer.cType } }, false);
+                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, false);
         }
         return booking;
     }
@@ -126,7 +126,7 @@ export class ImportExportTransformer {
                         rec.cSoli;
                 return result;
             default:
-                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, { input: { type: rec.cType } }, false);
+                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, false);
         }
     }
     resetTaxesAndFees(booking) {

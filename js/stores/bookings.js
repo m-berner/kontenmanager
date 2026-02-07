@@ -20,7 +20,7 @@ export const useBookingsStore = defineStore("bookings", function () {
             return `${booking.cBookDate} : ${booking.cDebit} : ${booking.cCredit}`;
         }
         else {
-            throw new AppError(ERROR_CODES.STORES.BOOKINGS.A, ERROR_CATEGORY.DATABASE, { input: ident, entity: "getTextById" }, false);
+            throw new AppError(ERROR_CODES.STORES.BOOKINGS.A, ERROR_CATEGORY.DATABASE, false);
         }
     });
     const sumBookings = computed(() => () => {

@@ -39,6 +39,7 @@ export default defineConfig(({ mode }) => {
           { src: "assets/icon64.png", dest: "assets/", overwrite: true },
           { src: "assets/icon16.png", dest: "assets/", overwrite: true },
           { src: "assets/connection48.png", dest: "assets/", overwrite: true },
+          { src: "_locales/", dest: "./", overwrite: true },
           { src: `../${BUILD_DIR}`, dest: EXTENSIONS_PATH, overwrite: true }
         ]
       }),
@@ -86,9 +87,9 @@ export default defineConfig(({ mode }) => {
       // Let Vitest discover tests in both TS and JS locations used in this repo
       include: [
         "src/**/*.test.ts",
-        "src/**/*.spec.ts",
-        "js/**/*.test.js",
-        "js/**/*.spec.js"
+        "src/**/*.spec.ts"
+        //"js/**/*.test.js",
+        //"js/**/*.spec.js"
       ]
     },
     plugins: [
@@ -100,6 +101,7 @@ export default defineConfig(({ mode }) => {
           { src: "assets/icon64.png", dest: "assets/", overwrite: true },
           { src: "assets/icon16.png", dest: "assets/", overwrite: true },
           { src: "assets/connection48.png", dest: "assets/", overwrite: true },
+          { src: "_locales/", dest: "./", overwrite: true },
           { src: `../${BUILD_DIR}`, dest: EXTENSIONS_PATH, overwrite: true }
         ]
       })
@@ -114,7 +116,7 @@ export default defineConfig(({ mode }) => {
     base: "./",
     build: {
       minify: false,
-      sourcemap: true,
+      sourcemap: false, // if enabled, one has to change outDir as well
       cssMinify: false,
       cssCodeSplit: true,
       target: ["es2022", "firefox140"],

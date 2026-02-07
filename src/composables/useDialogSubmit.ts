@@ -9,10 +9,10 @@
 import type { Ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { useUserInfo } from "@/composables/useUserInfo";
 import { useRuntimeStore } from "@/stores/runtime";
 import { databaseService } from "@/services/database";
 import { DomainUtils } from "@/domains/utils";
+import { useBrowser } from "@/composables/useBrowser";
 import type { BaseDialogForm } from "@/types";
 
 /**
@@ -64,7 +64,7 @@ export interface DialogSubmitConfig {
 export function useDialogSubmit() {
   const { t } = useI18n();
   const { submitGuard } = useDialogGuards();
-  const { handleUserInfo } = useUserInfo();
+  const { handleUserNotice } = useBrowser();
   const runtime = useRuntimeStore();
 
   /**
@@ -81,7 +81,7 @@ export function useDialogSubmit() {
       i18nPrefix,
       checkConnection = true,
       closeOnSuccess = true,
-      successMessage,
+      //successMessage,
       errorMessage,
       onSuccess,
       onError
@@ -97,7 +97,7 @@ export function useDialogSubmit() {
           : undefined,
         connectionErrorMessage:
           errorMessage || t(`${i18nPrefix}.messages.dbNotConnected`),
-        handleUserInfo,
+        handleUserNotice,
         errorContext: componentName.toUpperCase().replace(/\s/g, "_"),
         errorTitle: t("components.dialogs.onClickOk"),
         operation: async () => {
@@ -115,11 +115,7 @@ export function useDialogSubmit() {
             }
 
             // Show success notification
-            await handleUserInfo("notice", componentName, "success", {
-              noticeLines: [
-                successMessage || t(`${i18nPrefix}.messages.success`)
-              ]
-            });
+            await handleUserNotice("success", componentName);
           } catch (error) {
             const err =
               error instanceof Error ? error : new Error(String(error));
@@ -129,9 +125,7 @@ export function useDialogSubmit() {
             }
 
             // Show error notification
-            await handleUserInfo("notice", componentName, "error", {
-              noticeLines: [errorMessage || t(`${i18nPrefix}.messages.error`)]
-            });
+            await handleUserNotice("error", componentName);
 
             throw err;
           }

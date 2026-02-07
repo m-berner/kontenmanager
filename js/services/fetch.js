@@ -53,9 +53,9 @@ class FetchService {
                 return {
                     id: urlObj.key,
                     isin: "",
-                    rate: this.normalizeNumber(rate),
-                    min: this.normalizeNumber(min),
-                    max: this.normalizeNumber(max),
+                    rate: DomainUtils.normalizeNumber(rate, "de"),
+                    min: DomainUtils.normalizeNumber(min, "de"),
+                    max: DomainUtils.normalizeNumber(max, "de"),
                     cur: currency
                 };
             }));
@@ -74,9 +74,9 @@ class FetchService {
                 return {
                     id: urlObj.key,
                     isin: "",
-                    rate: this.normalizeNumber(rate),
-                    min: this.normalizeNumber(min),
-                    max: this.normalizeNumber(max),
+                    rate: DomainUtils.normalizeNumber(rate, "de"),
+                    min: DomainUtils.normalizeNumber(min, "de"),
+                    max: DomainUtils.normalizeNumber(max, "de"),
                     cur: currency
                 };
             }));
@@ -92,9 +92,9 @@ class FetchService {
                 return {
                     id: urlObj.key ?? 0,
                     isin: "",
-                    rate: this.normalizeNumber(rate),
-                    min: this.normalizeNumber(min),
-                    max: this.normalizeNumber(max),
+                    rate: DomainUtils.normalizeNumber(rate, "de"),
+                    min: DomainUtils.normalizeNumber(min, "de"),
+                    max: DomainUtils.normalizeNumber(max, "de"),
                     cur: currency
                 };
             }));
@@ -108,9 +108,9 @@ class FetchService {
                 return {
                     id: urlObj.key,
                     isin: "",
-                    rate: this.normalizeNumber(rate),
-                    min: this.normalizeNumber(min),
-                    max: this.normalizeNumber(max),
+                    rate: DomainUtils.normalizeNumber(rate, "de"),
+                    min: DomainUtils.normalizeNumber(min, "de"),
+                    max: DomainUtils.normalizeNumber(max, "de"),
                     cur: FETCH.DEFAULT_CURRENCY
                 };
             }));
@@ -127,9 +127,9 @@ class FetchService {
                 return {
                     id: urlObj.key,
                     isin: "",
-                    rate: this.normalizeNumber(stockData.rate),
-                    min: this.normalizeNumber(stockData.min),
-                    max: this.normalizeNumber(stockData.max),
+                    rate: DomainUtils.normalizeNumber(stockData.rate, "de"),
+                    min: DomainUtils.normalizeNumber(stockData.min, "de"),
+                    max: DomainUtils.normalizeNumber(stockData.max, "de"),
                     cur: stockData.currency
                 };
             }));
@@ -154,7 +154,6 @@ class FetchService {
         this.cache = new FetchCache();
     }
     async fetchWithRetry(url, options = {}, maxRetries = 3) {
-        let lastError = null;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
         try {
@@ -165,8 +164,7 @@ class FetchService {
                         signal: options.signal || controller.signal
                     });
                 }
-                catch (error) {
-                    lastError = error;
+                catch {
                     if (attempt < maxRetries) {
                         await this.delay(1000 * attempt);
                     }
@@ -176,7 +174,7 @@ class FetchService {
         finally {
             clearTimeout(timeoutId);
         }
-        throw new AppError(ERROR_CODES.SERVICES.FETCH.A, ERROR_CATEGORY.NETWORK, { input: lastError?.message, entity: "fetch service" }, true);
+        throw new AppError(ERROR_CODES.SERVICES.FETCH.A, ERROR_CATEGORY.NETWORK, true);
     }
     async fetchWithCache(key, url, ttl = FETCH.DEFAULT_TTL) {
         const cached = this.cache.get(key, ttl);
@@ -192,17 +190,17 @@ class FetchService {
     }
     async parseHTML(text) {
         if (!text) {
-            throw new AppError(ERROR_CODES.SERVICES.FETCH.B, ERROR_CATEGORY.VALIDATION, { input: text, entity: "fetch service" }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.B, ERROR_CATEGORY.VALIDATION, false);
         }
         return new DOMParser().parseFromString(text, "text/html");
     }
     async fetchCompanyData(isin) {
         if (!isin || isin.length !== 12) {
-            throw new AppError(ERROR_CODES.SERVICES.FETCH.C, ERROR_CATEGORY.VALIDATION, { isin }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.C, ERROR_CATEGORY.VALIDATION, false);
         }
         const service = FETCH.MAP.get("tgate");
         if (!service) {
-            throw new AppError(ERROR_CODES.SERVICES.FETCH.D, ERROR_CATEGORY.VALIDATION, { service: "tgate" }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.D, ERROR_CATEGORY.VALIDATION, false);
         }
         const firstResponse = await this.fetchWithRetry(service.QUOTE + isin);
         const secondResponse = await this.fetchWithRetry(firstResponse.url);
@@ -211,12 +209,12 @@ class FetchService {
         const nameNode = doc.querySelector("#col1_content")?.childNodes[1];
         const company = nameNode?.textContent?.split(",")[0].trim() || "";
         if (!company || company.includes("Die Gattung wird")) {
-            throw new AppError(ERROR_CODES.SERVICES.FETCH.E, ERROR_CATEGORY.VALIDATION, { url: firstResponse.url }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.E, ERROR_CATEGORY.VALIDATION, false);
         }
         const tables = doc.querySelectorAll("table > tbody tr");
         const symbol = tables[1]?.cells[1]?.textContent?.trim() || "";
         if (!symbol) {
-            throw new AppError(ERROR_CODES.SERVICES.FETCH.F, ERROR_CATEGORY.VALIDATION, { url: firstResponse.url }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.F, ERROR_CATEGORY.VALIDATION, false);
         }
         return { company, symbol };
     }
@@ -231,11 +229,11 @@ class FetchService {
         const serviceName = storageService[BROWSER_STORAGE.SERVICE.key];
         const service = FETCH.MAP.get(serviceName);
         if (!service) {
-            throw new AppError(ERROR_CODES.SERVICES.FETCH.G, ERROR_CATEGORY.VALIDATION, { serviceName }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.G, ERROR_CATEGORY.VALIDATION, false);
         }
         const fetcher = this.serviceFetchers[serviceName];
         if (!fetcher) {
-            throw new AppError(ERROR_CODES.SERVICES.FETCH.H, ERROR_CATEGORY.NETWORK, { serviceName }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.H, ERROR_CATEGORY.NETWORK, false);
         }
         const urls = storageOnline.map((item) => ({
             value: service.QUOTE + item.isin,
@@ -303,7 +301,7 @@ class FetchService {
             return [];
         const service = FETCH.FX;
         if (!service) {
-            throw new AppError(ERROR_CODES.SERVICES.FETCH.I, ERROR_CATEGORY.NETWORK, { input: exchangeCodes }, false);
+            throw new AppError(ERROR_CODES.SERVICES.FETCH.I, ERROR_CATEGORY.NETWORK, false);
         }
         const results = await Promise.allSettled(exchangeCodes.map(async (code) => {
             const url = `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`;
@@ -311,7 +309,7 @@ class FetchService {
             const doc = await this.parseHTML(html);
             const rateElement = doc.querySelector("form#formcalculator.formcalculator > div");
             if (!rateElement) {
-                throw new AppError(ERROR_CODES.SERVICES.FETCH.J, ERROR_CATEGORY.NETWORK, { url }, false);
+                throw new AppError(ERROR_CODES.SERVICES.FETCH.J, ERROR_CATEGORY.NETWORK, false);
             }
             const rateString = rateElement.getAttribute("data-rate");
             const rateMatch = rateString?.match(/[0-9]*\.?[0-9]+/g);
@@ -376,9 +374,6 @@ class FetchService {
     }
     delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-    normalizeNumber(value) {
-        return value.replace(/,/g, ".");
     }
     parseCurrency(code) {
         if (code.includes("USD") || code.includes("$")) {

@@ -10,8 +10,7 @@ import type { StorageDataType } from "@/types";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 
@@ -28,11 +27,10 @@ export function useStorage() {
   async function clearStorage(): Promise<void> {
     try {
       await browser.storage.local.clear();
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_STORAGE.A,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err) },
         true
       );
     }
@@ -49,11 +47,10 @@ export function useStorage() {
   ): Promise<void> {
     try {
       await browser.storage.local.set({ [key]: value });
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_STORAGE.B,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), key },
         true
       );
     }
@@ -69,11 +66,10 @@ export function useStorage() {
   ): Promise<StorageDataType> {
     try {
       return await browser.storage.local.get(keys);
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_STORAGE.C,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), keys },
         true
       );
     }
@@ -123,11 +119,10 @@ export function useStorage() {
       if (Object.keys(updates).length > 0) {
         await browser.storage.local.set(updates);
       }
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_STORAGE.D,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err) },
         true
       );
     }
@@ -138,48 +133,46 @@ export function useStorage() {
    * @param key - The storage key.
    * @param value - The value to store.
    */
-  async function setStorageSession(
-    key: string,
-    value: string | number | boolean | string[]
-  ): Promise<void> {
-    try {
-      await browser.storage.session.set({ [key]: value });
-    } catch (err) {
-      throw new AppError(
-        ERROR_CODES.USE_STORAGE.B,
-        ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), key },
-        true
-      );
-    }
-  }
-
-  /**
-   * Retrieves values from session browser storage.
-   * @param keys - Array of keys to retrieve, or null for all.
-   * @returns A promise resolving to the retrieved data object.
-   */
-  async function getStorageSession(
-    keys: string[] | null = null
-  ): Promise<StorageDataType> {
-    try {
-      return await browser.storage.session.get(keys);
-    } catch (err) {
-      throw new AppError(
-        ERROR_CODES.USE_STORAGE.C,
-        ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), keys },
-        true
-      );
-    }
-  }
+  // async function setStorageSession(
+  //   key: string,
+  //   value: string | number | boolean | string[]
+  // ): Promise<void> {
+  //   try {
+  //     await browser.storage.session.set({ [key]: value });
+  //   } catch {
+  //     throw new AppError(
+  //       ERROR_CODES.USE_STORAGE.B,
+  //       ERROR_CATEGORY.VALIDATION,
+  //       true
+  //     );
+  //   }
+  // }
+  //
+  // /**
+  //  * Retrieves values from session browser storage.
+  //  * @param keys - Array of keys to retrieve, or null for all.
+  //  * @returns A promise resolving to the retrieved data object.
+  //  */
+  // async function getStorageSession(
+  //   keys: string[] | null = null
+  // ): Promise<StorageDataType> {
+  //   try {
+  //     return await browser.storage.session.get(keys);
+  //   } catch {
+  //     throw new AppError(
+  //       ERROR_CODES.USE_STORAGE.C,
+  //       ERROR_CATEGORY.VALIDATION,
+  //       true
+  //     );
+  //   }
+  // }
 
   return {
     clearStorage,
     getStorage,
     setStorage,
-    getStorageSession,
-    setStorageSession,
+    //getStorageSession,
+    //setStorageSession,
     addStorageChangedListener,
     installStorageLocal
   };

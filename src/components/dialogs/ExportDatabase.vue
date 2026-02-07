@@ -18,8 +18,7 @@ import { useRuntimeStore } from "@/stores/runtime";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
@@ -37,7 +36,7 @@ import { DEFAULTS } from "@/config/defaults";
 import { INDEXED_DB } from "@/config/database";
 
 const { t } = useI18n();
-const { manifest, writeBufferToFile } = useBrowser();
+const { handleUserNotice, manifest, writeBufferToFile } = useBrowser();
 const { handleUserInfo } = useUserInfo();
 const { getAll: getAllAccounts } = useAccountsDB();
 const { getAll: getAllBookings } = useBookingsDB();
@@ -122,7 +121,6 @@ const createExportData = async (): Promise<string> => {
     throw new AppError(
       ERROR_CODES.EXPORT_DATABASE.A,
       ERROR_CATEGORY.DATABASE,
-      { input: validationErrors.join("\n") },
       false
     );
   }
@@ -143,7 +141,6 @@ const createExportData = async (): Promise<string> => {
     throw new AppError(
       ERROR_CODES.EXPORT_DATABASE.B,
       ERROR_CATEGORY.DATABASE,
-      { input: verification.errors.join("\n") },
       false
     );
   }
@@ -167,7 +164,7 @@ const onClickOk = async (): Promise<void> => {
         const proceed = await handleUserInfo(
           "alert",
           t("components.dialogs.exportDatabase.largeFileTitle"),
-          "ExportDatabase",
+          new Error("ExportDatabase"),
           {
             noticeLines: [
               t("components.dialogs.exportDatabase.messages.estimatedSize", {
@@ -187,17 +184,9 @@ const onClickOk = async (): Promise<void> => {
           return;
         }
       } else {
-        await handleUserInfo(
-          "notice",
+        await handleUserNotice(
           t("components.dialogs.exportDatabase.largeFileTitle"),
-          "ExportDatabase",
-          {
-            noticeLines: [
-              t("components.dialogs.exportDatabase.messages.estimatedSize", {
-                size: estimatedSize.toFixed(2)
-              })
-            ]
-          }
+          "ExportDatabase"
         );
       }
       await writeBufferToFile(exportData, filename.value);
@@ -211,7 +200,6 @@ const onClickOk = async (): Promise<void> => {
       throw new AppError(
         ERROR_CODES.EXPORT_DATABASE.C,
         ERROR_CATEGORY.DATABASE,
-        { input: serializeError(err), phase: "onClickOk" },
         true
       );
     }

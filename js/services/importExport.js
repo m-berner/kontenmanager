@@ -14,21 +14,21 @@ export class ImportExportService {
     }
     static async readJsonFile(blob) {
         if (!blob || blob.size === 0) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.A, ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.A, ERROR_CATEGORY.VALIDATION, false);
         }
         const MAX_SIZE = 100 * 1024 * 1024;
         if (blob.size > MAX_SIZE) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.B, ERROR_CATEGORY.VALIDATION, { size: blob.size, maxSize: MAX_SIZE }, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.B, ERROR_CATEGORY.VALIDATION, false);
         }
         let text;
         try {
             text = await blob.text();
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.C, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+        catch {
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.C, ERROR_CATEGORY.VALIDATION, true);
         }
         if (!text || text.trim().length === 0) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.D, ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.D, ERROR_CATEGORY.VALIDATION, false);
         }
         let parsed;
         try {
@@ -36,12 +36,12 @@ export class ImportExportService {
         }
         catch (err) {
             if (err instanceof SyntaxError) {
-                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.E, ERROR_CATEGORY.VALIDATION, { input: err }, true);
+                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.E, ERROR_CATEGORY.VALIDATION, true);
             }
             throw err;
         }
         if (!parsed || typeof parsed !== "object") {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, {}, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, false);
         }
         return parsed;
     }
@@ -57,8 +57,8 @@ export class ImportExportService {
         try {
             return JSON.stringify(exportData, null, 2);
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.G, ERROR_CATEGORY.VALIDATION, { originalError: err }, true);
+        catch {
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.G, ERROR_CATEGORY.VALIDATION, true);
         }
     }
     verifyExportIntegrity(exportedData) {
@@ -107,7 +107,7 @@ export class ImportExportService {
         if (!Array.isArray(bookings))
             errors.push("Invalid bookings data");
         if (errors.length > 0) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.H, ERROR_CATEGORY.VALIDATION, { ieError: errors }, false);
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.H, ERROR_CATEGORY.VALIDATION, false);
         }
     }
 }

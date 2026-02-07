@@ -11,8 +11,7 @@ import { ref } from "vue";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import type { FormInterface, FormValidateResultType } from "@/types";
 
@@ -35,17 +34,17 @@ export function useDialogGuards() {
    * Shows a notification if not connected.
    *
    * @param isConnected - Current connection status.
-   * @param handleUserInfo - Function to present user information consistently across the app.
+   * @param handleUserNotice - Function to present user information consistently across the app.
    * @param errorMessage - Message to show if disconnected.
    * @returns A promise resolving to true if connected.
    */
   async function ensureConnected(
     isConnected: boolean,
-    handleUserInfo: any,
+    handleUserNotice: any,
     errorMessage = "Database not connected"
   ): Promise<boolean> {
     if (!isConnected) {
-      await handleUserInfo("notice", "useDialogGuards", "ensureConnected", {
+      await handleUserNotice("useDialogGuards", "ensureConnected", {
         noticeLines: [errorMessage]
       });
       return false;
@@ -91,11 +90,10 @@ export function useDialogGuards() {
         return { valid: false, errors: ["System error"] };
       }
       return form.value.validate();
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_DIALOG_GUARDS.A,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err) },
         true
       );
     }
@@ -127,7 +125,6 @@ export function useDialogGuards() {
           throw new AppError(
             ERROR_CODES.USE_DIALOG_GUARDS.B,
             ERROR_CATEGORY.VALIDATION,
-            { input: serializeError(err), attempt, maxRetries },
             true
           );
         }
@@ -140,7 +137,6 @@ export function useDialogGuards() {
     throw new AppError(
       ERROR_CODES.USE_DIALOG_GUARDS.C,
       ERROR_CATEGORY.VALIDATION,
-      { input: "retry_exhausted" },
       false
     );
   }
@@ -155,7 +151,7 @@ export function useDialogGuards() {
     formRef?: Ref<FormInterface | null>;
     isConnected?: boolean;
     connectionErrorMessage?: string;
-    handleUserInfo: any;
+    handleUserNotice: any;
     operation: () => Promise<void>;
     onFinally?: () => void;
     errorContext?: string;
@@ -165,7 +161,7 @@ export function useDialogGuards() {
       formRef,
       isConnected,
       connectionErrorMessage = "Database not connected",
-      handleUserInfo,
+      handleUserNotice,
       operation,
       onFinally
       //errorContext = 'USE_DIALOG_GUARD'
@@ -180,7 +176,7 @@ export function useDialogGuards() {
       if (
         !(await ensureConnected(
           isConnected,
-          handleUserInfo,
+          handleUserNotice,
           connectionErrorMessage
         ))
       )
@@ -198,7 +194,6 @@ export function useDialogGuards() {
         throw new AppError(
           ERROR_CODES.USE_DIALOG_GUARDS.B,
           ERROR_CATEGORY.VALIDATION,
-          { input: serializeError(err), phase: "submitGuard" },
           true
         );
       } finally {

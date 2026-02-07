@@ -406,5 +406,11 @@
         }
       }
     }
+  },
+  "notifications": {
+    "#hzt": "Ungültige Browser Sprache"
+  },
+  "test": {
+    "message": "TH"
   }
 }

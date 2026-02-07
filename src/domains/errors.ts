@@ -7,9 +7,11 @@
  */
 
 import type { AppErrorCategoryType } from "@/types";
+import deNotifications from "@/_locales/de/messages.json";
 
 export const ERROR_CODES = {
   ADD_ACCOUNT: "#olt",
+  CHECKBOX_GRID: "#rzg",
   DELETE_ACCOUNT_CONFIRMATION: "#khi",
   DELETE_BOOKING_TYPE: "#pol",
   EXPORT_DATABASE: {
@@ -137,10 +139,12 @@ export const ERROR_CATEGORY = {
   DATABASE: "database",
   NETWORK: "network",
   VALIDATION: "validation",
-  BUSINESS: "business"
+  BUSINESS: "business",
+  BROWSER_API: "Browser API"
 };
 const ERRORS: Record<string, string> = {
   [ERROR_CODES.ADD_ACCOUNT]: "Failed to add account",
+  [ERROR_CODES.CHECKBOX_GRID]: "Failed to save selection",
   [ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION]: "Failed to delete account",
   [ERROR_CODES.DELETE_BOOKING_TYPE]: "Failed to delete booking type",
   [ERROR_CODES.FADE_IN_STOCK]: "Failed to reactivate stock",
@@ -242,21 +246,11 @@ const ERRORS: Record<string, string> = {
 /**
  * Convert unknown thrown values into a safe, serializable structure for AppError context.
  */
-export function serializeError(err: unknown): Record<string, unknown> {
-  if (err instanceof AppError) {
-    return {
-      name: err.name,
-      code: err.code,
-      category: err._category,
-      recoverable: err._recoverable,
-      message: err.message,
-      context: err._context
-    };
+export function serializeError(err: unknown): Record<string, string> {
+  if (err instanceof AppError || err instanceof Error) {
+    return { name: err.name, message: err.message };
   }
-  if (err instanceof Error) {
-    return { name: err.name, message: err.message, stack: err.stack };
-  }
-  return { value: err };
+  return { name: "AppError", message: "unknown" };
 }
 
 /**
@@ -271,12 +265,28 @@ export class AppError extends Error {
    * @param _recoverable - Whether the application can continue after this error.
    */
   constructor(
-    public readonly code: string,
+    public readonly code: keyof typeof deNotifications | keyof typeof ERRORS,
     public readonly _category: AppErrorCategoryType,
-    public readonly _context?: Record<string, unknown>,
-    public readonly _recoverable: boolean = true
+    public readonly _recoverable: boolean = true,
+    public readonly _context?: Record<string, unknown>
   ) {
-    super(ERRORS[code] ?? `Unknown error (${code})`);
+    let message: string;
+
+    // Check if it's in messages.json
+    if (code in deNotifications) {
+      message =
+        browser.i18n.getMessage(code) ||
+        `${browser.i18n.getMessage("xx_missing_translation")}: ${code}`;
+    }
+    // Check if it's in ERRORS
+    else if (code in ERRORS) {
+      message = ERRORS[code];
+    }
+    // Invalid code
+    else {
+      message = `${browser.i18n.getMessage("xx_error_code")}: ${code}`;
+    }
+    super(message);
     this.name = "AppError";
   }
 }

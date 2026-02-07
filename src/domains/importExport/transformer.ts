@@ -107,7 +107,6 @@ export class ImportExportTransformer {
         throw new AppError(
           ERROR_CODES.IMPORT_EXPORT_SERVICE.F,
           ERROR_CATEGORY.VALIDATION,
-          { input: { type: smTransfer.cType } },
           false
         );
     }
@@ -173,7 +172,6 @@ export class ImportExportTransformer {
         throw new AppError(
           ERROR_CODES.IMPORT_EXPORT_SERVICE.F,
           ERROR_CATEGORY.VALIDATION,
-          { input: { type: rec.cType } },
           false
         );
     }

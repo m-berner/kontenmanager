@@ -13,7 +13,6 @@ import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { DomainUtils } from "@/domains/utils";
-import { useUserInfo } from "@/composables/useUserInfo";
 import { useStocksDB } from "@/composables/useIndexedDB";
 import { useStockForm } from "@/composables/useForms";
 import StockForm from "@/components/dialogs/forms/StockForm.vue";
@@ -21,9 +20,10 @@ import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 import { INDEXED_DB } from "@/config/database";
+import { useBrowser } from "@/composables/useBrowser";
 
 const { t } = useI18n();
-const { handleUserInfo } = useUserInfo();
+const { handleUserNotice } = useBrowser();
 const { add } = useStocksDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -41,7 +41,7 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.addStock.messages.dbNotConnected"
     ),
-    handleUserInfo,
+    handleUserNotice,
     errorContext: "ADD_STOCK",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -53,9 +53,10 @@ const onClickOk = async (): Promise<void> => {
           "ADD_STOCK: onClickOk",
           t("components.dialogs.addStock.messages.error")
         );
-        await handleUserInfo("notice", "AddStock", "add failed", {
-          noticeLines: [t("components.dialogs.addStock.messages.error")]
-        });
+        await handleUserNotice(
+          "AddStock",
+          "add failed"
+        );
         return;
       }
 
@@ -64,9 +65,10 @@ const onClickOk = async (): Promise<void> => {
       await records.stocks.refreshOnlineData(runtime.stocksPage);
 
       runtime.resetTeleport();
-      await handleUserInfo("notice", "AddStock", "success", {
-        noticeLines: [t("components.dialogs.addStock.messages.success")]
-      });
+      await handleUserNotice(
+        "AddStock",
+        "success"
+      );
     }
   });
 };

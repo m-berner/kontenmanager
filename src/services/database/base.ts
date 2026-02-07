@@ -81,10 +81,6 @@ export class IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.BASE.B,
             ERROR_CATEGORY.DATABASE,
-            {
-              input: `${storeName}: ${request.error?.message}`,
-              entity: "database service (base)"
-            },
             false
           )
         );
@@ -116,10 +112,6 @@ export class IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.BASE.C,
             ERROR_CATEGORY.DATABASE,
-            {
-              input: `${storeName}: ${request.error?.message}`,
-              entity: "database service (base)"
-            },
             false
           )
         );
@@ -146,10 +138,6 @@ export class IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.BASE.D,
             ERROR_CATEGORY.DATABASE,
-            {
-              input: `${storeName}: ${request.error?.message}`,
-              entity: "database service (base)"
-            },
             false
           )
         );
@@ -181,10 +169,6 @@ export class IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.BASE.E,
             ERROR_CATEGORY.DATABASE,
-            {
-              input: `${storeName}: ${request.error?.message}`,
-              entity: "database service (base)"
-            },
             false
           )
         );
@@ -215,10 +199,6 @@ export class IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.BASE.F,
             ERROR_CATEGORY.DATABASE,
-            {
-              input: `${storeName}: ${request.error?.message}`,
-              entity: "database service (base)"
-            },
             false
           )
         );
@@ -244,10 +224,6 @@ export class IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.BASE.G,
             ERROR_CATEGORY.DATABASE,
-            {
-              input: `${storeName}: ${request.error?.message}`,
-              entity: "database service (base)"
-            },
             false
           )
         );
@@ -282,10 +258,6 @@ export class IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.BASE.H,
             ERROR_CATEGORY.DATABASE,
-            {
-              input: request.error?.message,
-              entity: "database service (base)"
-            },
             false
           )
         );
@@ -318,7 +290,6 @@ export class IndexedDbBase {
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.BASE.A,
             ERROR_CATEGORY.DATABASE,
-            { input: req.error?.message, entity: "database service" },
             false
           )
         );
@@ -333,7 +304,6 @@ export class IndexedDbBase {
       throw new AppError(
         ERROR_CODES.SERVICES.DATABASE.BASE.I,
         ERROR_CATEGORY.DATABASE,
-        { input: "Database not connected", entity: "database service (base)" },
         false
       );
     }

@@ -5,7 +5,6 @@
  *
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-
 export interface AccountDb {
   cID: number;
   cSwift: string;
@@ -255,7 +254,7 @@ export interface HandleUserInfoOptions {
   };
   // Notice options
   noticeLines?: string[]; // Defaults to [title, message]
-  // Rate limiting window in ms (identical messages suppressed), default from DEFAULTS.USER_INFO.RATE_LIMIT_MS
+  // Rate limiting the window in ms (identical messages suppressed), default from DEFAULTS.USER_INFO.RATE_LIMIT_MS
   rateLimitMs?: number;
   // Optional correlation identifier forwarded to logs
   correlationId?: string;
@@ -515,7 +514,7 @@ export interface VuetifyWrapper {
   vuetify: ReturnType<typeof createVuetify>;
 }
 
-export type Mode = "console" | "alert" | "notice";
+export type Mode = "notice" | "alert";
 
 export type AlertKind = "info" | "error" | "confirm";
 

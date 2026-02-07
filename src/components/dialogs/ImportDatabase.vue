@@ -23,14 +23,14 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useBrowser } from "@/composables/useBrowser";
+import { useUserInfo} from "@/composables/useUserInfo";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
@@ -43,6 +43,7 @@ import { INDEXED_DB } from "@/config/database";
 import { DomainValidators } from "@/domains/validation/validators";
 
 const { t } = useI18n();
+const { handleUserNotice } = useBrowser();
 const { handleUserInfo } = useUserInfo();
 const { setStorage } = useStorage();
 const { atomicImport } = useAccountsDB();
@@ -84,11 +85,9 @@ const onChange = async (selectedFile: File | File[] | null): Promise<any> => {
   const validationError = validateFile(selectedFile as File);
 
   if (validationError) {
-    await handleUserInfo(
-      "notice",
+    await handleUserNotice(
       t("components.dialogs.importDatabase.title"),
-      "ImportDatabase",
-      { noticeLines: [validationError] }
+      "ImportDatabase"
     );
     resetFileInput();
     return;
@@ -369,15 +368,9 @@ const restoreFromRollback = async (
       "IMPORT_DATABASE: CRITICAL - Rollback failed",
       errorMessage
     );
-    await handleUserInfo(
-      "notice",
+    await handleUserNotice(
       t("components.dialogs.importDatabase.title"),
-      "ImportDatabase",
-      {
-        noticeLines: [
-          "Critical error during rollback. Please refresh the page."
-        ]
-      }
+      "ImportDatabase"
     );
   }
 };
@@ -417,7 +410,7 @@ const getImportSummary = (backup: BackupData): string => {
 };
 
 const processBackupFile = async (): Promise<void> => {
-  const startTime = Date.now();
+  //const startTime = Date.now();
   const { activeAccountId } = storeToRefs(settings);
   const originalActiveId = activeAccountId.value;
 
@@ -426,15 +419,9 @@ const processBackupFile = async (): Promise<void> => {
     const validation = ImportExportService.validateBackup(backup);
     // Use type guard
     if (!validation.isValid) {
-      await handleUserInfo(
-        "notice",
+      await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase",
-        {
-          noticeLines: [
-            validation.error || t("components.dialogs.importDatabase.invalid")
-          ]
-        }
+        "ImportDatabase"
       );
       return;
     }
@@ -443,15 +430,9 @@ const processBackupFile = async (): Promise<void> => {
       validation.version === INDEXED_DB.SM_IMPORT_VERSION &&
       accountItems.value.length > 0
     ) {
-      await handleUserInfo(
-        "notice",
+      await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase",
-        {
-          noticeLines: [
-            t("components.dialogs.importDatabase.messages.notEmpty")
-          ]
-        }
+        "ImportDatabase"
       );
       return;
     }
@@ -465,25 +446,15 @@ const processBackupFile = async (): Promise<void> => {
     }
 
     if (dataIntegrityErrors.length > 0) {
-      const errorList = dataIntegrityErrors.slice(0, 5).join("\n");
-      const moreErrors =
-        dataIntegrityErrors.length > 5
-          ? `\n...and ${dataIntegrityErrors.length - 5} more`
-          : "";
+      // const errorList = dataIntegrityErrors.slice(0, 5).join("\n");
+      // const moreErrors =
+      //   dataIntegrityErrors.length > 5
+      //     ? `\n...and ${dataIntegrityErrors.length - 5} more`
+      //     : "";
 
-      await handleUserInfo(
-        "notice",
+      await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase",
-        {
-          noticeLines: [
-            t("components.dialogs.importDatabase.messages.dataIntegrity", {
-              count: dataIntegrityErrors.length,
-              errorList,
-              moreErrors
-            })
-          ]
-        }
+        "ImportDatabase"
       );
 
       resetTeleport();
@@ -496,7 +467,7 @@ const processBackupFile = async (): Promise<void> => {
     const shouldProceed = await handleUserInfo(
       "alert",
       t("components.dialogs.importDatabase.confirmImportTitle"),
-      summary,
+      new Error(summary),
       {
         confirm: {
           confirmText: t("components.dialogs.importDatabase.confirmOk"),
@@ -520,15 +491,9 @@ const processBackupFile = async (): Promise<void> => {
     } else if (backup.sm.cDBVersion > INDEXED_DB.SM_IMPORT_VERSION) {
       await importModernData(backup, activeId);
     } else {
-      await handleUserInfo(
-        "notice",
+      await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase",
-        {
-          noticeLines: [
-            t("components.dialogs.importDatabase.messages.invalidVersion")
-          ]
-        }
+        "ImportDatabase"
       );
       activeAccountId.value = originalActiveId;
       await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
@@ -536,29 +501,19 @@ const processBackupFile = async (): Promise<void> => {
     }
     resetTeleport();
     // At the end of the processBackupFile, after successful import
-    const duration = Date.now() - startTime;
+    //const duration = Date.now() - startTime;
 
-    await handleUserInfo(
-      "notice",
+    await handleUserNotice(
       t("components.dialogs.importDatabase.title"),
-      "ImportDatabase",
-      {
-        noticeLines: [
-          t("components.dialogs.importDatabase.messages.importSuccess", {
-            summary: summary.replace(/\n/g, ", "),
-            duration: (duration / 1000).toFixed(1)
-          })
-        ]
-      }
+      "ImportDatabase"
     );
     resetFileInput();
-  } catch (err) {
+  } catch {
     activeAccountId.value = originalActiveId;
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
     throw new AppError(
       ERROR_CODES.IMPORT_DATABASE.A,
       ERROR_CATEGORY.DATABASE,
-      { input: serializeError(err) },
       true
     );
   }
@@ -568,15 +523,9 @@ const onClickOk = async (): Promise<void> => {
   DomainUtils.log("IMPORT_DATABASE: onClickOk");
 
   if (!isFileSelected) {
-    await handleUserInfo(
-      "notice",
+    await handleUserNotice(
       t("components.dialogs.importDatabase.title"),
-      "ImportDatabase",
-      {
-        noticeLines: [
-          t("components.dialogs.importDatabase.messages.noFileSelected")
-        ]
-      }
+      "ImportDatabase"
     );
     return;
   }
@@ -585,33 +534,21 @@ const onClickOk = async (): Promise<void> => {
     const rollbackData = await createRollbackPoint();
 
     if (!rollbackData) {
-      await handleUserInfo(
-        "notice",
+      await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase",
-        {
-          noticeLines: [
-            t("components.dialogs.importDatabase.messages.createBackupFailed")
-          ]
-        }
+        "ImportDatabase"
       );
       return;
     }
 
     try {
       await processBackupFile();
-    } catch (err) {
+    } catch {
       try {
         await restoreFromRollback(rollbackData);
-        await handleUserInfo(
-          "notice",
+        await handleUserNotice(
           t("components.dialogs.importDatabase.title"),
-          "ImportDatabase",
-          {
-            noticeLines: [
-              t("components.dialogs.importDatabase.messages.importFailed")
-            ]
-          }
+          "ImportDatabase"
         );
       } catch (rollbackErr) {
         const rollbackErrorMessage =
@@ -620,15 +557,9 @@ const onClickOk = async (): Promise<void> => {
             : rollbackErr instanceof Error
             ? rollbackErr.message
             : "Unknown error";
-        await handleUserInfo(
-          "notice",
+        await handleUserNotice(
           t("components.dialogs.importDatabase.title"),
-          "ImportDatabase",
-          {
-            noticeLines: [
-              t("components.dialogs.importDatabase.messages.rollbackFailed")
-            ]
-          }
+          "ImportDatabase"
         );
         DomainUtils.log(
           "IMPORT_DATABASE: CRITICAL - Rollback failed",
@@ -639,7 +570,6 @@ const onClickOk = async (): Promise<void> => {
       throw new AppError(
         ERROR_CODES.IMPORT_DATABASE.B,
         ERROR_CATEGORY.DATABASE,
-        { input: serializeError(err) },
         true
       );
     }

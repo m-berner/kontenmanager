@@ -19,8 +19,7 @@ import { useI18n } from "vue-i18n";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import AlertOverlay from "@/components/AlertOverlay.vue";
@@ -37,7 +36,7 @@ const theme = useTheme();
 const isInitialized = ref(false);
 
 onBeforeMount(async () => {
-  DomainUtils.log("APP_INDEX: onBeforeMount");
+  DomainUtils.log("VIEWS APP_INDEX: onBeforeMount");
 
   try {
     const controller = new AbortController();
@@ -48,24 +47,23 @@ onBeforeMount(async () => {
       },
       controller.signal
     );
-    DomainUtils.log("APP_INDEX: Initialization successful", status, "info");
+    DomainUtils.log("VIEWS APP_INDEX: Initialization successful", status, "info");
     // Abort if the user navigates away or cancels
     controller.abort();
     // Apply theme after successful initialization
     theme.global.name.value = skin.value;
     isInitialized.value = true;
-  } catch (err) {
+  } catch {
     throw new AppError(
       ERROR_CODES.VIEWS.APP_INDEX.A,
       ERROR_CATEGORY.VALIDATION,
-      { input: serializeError(err), entity: "AppIndex" },
       true
     );
   }
 });
 
 DomainUtils.log(
-  "--- views/AppIndex.vue setup ---",
+  "VIEWS APP_INDEX: setup",
   window.location.href,
   "info"
 );

@@ -11,8 +11,7 @@ import { useI18n } from "vue-i18n";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStockForm } from "@/composables/useForms";
@@ -53,13 +52,12 @@ const onUpdateIsin = async () => {
       stockFormData.company = companyData.company;
       stockFormData.symbol = companyData.symbol;
     }
-  } catch (err) {
+  } catch {
     stockFormData.company = "";
     stockFormData.symbol = "";
     throw new AppError(
       ERROR_CODES.STOCK_FORM,
       ERROR_CATEGORY.VALIDATION,
-      { input: serializeError(err) },
       true
     );
   }

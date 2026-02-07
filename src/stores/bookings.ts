@@ -53,7 +53,6 @@ export const useBookingsStore = defineStore("bookings", function () {
       throw new AppError(
         ERROR_CODES.STORES.BOOKINGS.A,
         ERROR_CATEGORY.DATABASE,
-        { input: ident, entity: "getTextById" },
         false
       );
     }

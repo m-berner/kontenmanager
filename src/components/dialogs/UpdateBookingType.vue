@@ -14,7 +14,7 @@ import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { DomainUtils } from "@/domains/utils";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useBrowser } from "@/composables/useBrowser";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
@@ -23,7 +23,7 @@ import { useSettingsStore } from "@/stores/settings";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 
 const { t } = useI18n();
-const { handleUserInfo } = useUserInfo();
+const { handleUserNotice } = useBrowser();
 const { update } = useBookingTypesDB();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
@@ -62,14 +62,12 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.updateBookingType.messages.dbNotConnected"
     ),
-    handleUserInfo,
+    handleUserNotice,
     errorContext: "UPDATE_BOOKING_TYPE",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       if (!bookingTypeFormData.id) {
-        await handleUserInfo("notice", "UpdateBookingType", "no id", {
-          noticeLines: ["No booking type selected"]
-        });
+        await handleUserNotice("UpdateBookingType", "no id");
         return;
       }
 
@@ -79,11 +77,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypeFormData.id as number
         )
       ) {
-        await handleUserInfo("notice", "UpdateBookingType", "duplicate", {
-          noticeLines: [
-            t("components.dialogs.updateBookingType.messages.error")
-          ]
-        });
+        await handleUserNotice("UpdateBookingType", "duplicate");
         return;
       }
 
@@ -94,11 +88,7 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType);
       await update(bookingType);
       runtime.resetTeleport();
-      await handleUserInfo("notice", "UpdateBookingType", "success", {
-        noticeLines: [
-          t("components.dialogs.updateBookingType.messages.success")
-        ]
-      });
+      await handleUserNotice("UpdateBookingType", "success");
     }
   });
 };

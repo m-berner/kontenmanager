@@ -8,12 +8,14 @@ import { STORES } from "@/config/stores";
 import { DEFAULTS } from "@/config/defaults";
 import { DATE } from "@/domains/config/date";
 import { useStorage } from "@/composables/useStorage";
+import { useBrowser } from "@/composables/useBrowser";
 import { useBookingsStore } from "@/stores/bookings";
 import { DomainLogic } from "@/domains/logic";
+import { CURRENCIES } from "@/domains/config/currencies";
+const { getUserLocale } = useBrowser();
 export const useStocksStore = defineStore("stocks", function () {
     const { investByStockId, portfolioByStockId, hasStockID } = useBookingsStore();
     const runtime = useRuntimeStore();
-    const { curEur, curUsd } = storeToRefs(runtime);
     const settings = useSettingsStore();
     const { stocksPerPage } = storeToRefs(settings);
     const items = ref([]);
@@ -146,7 +148,8 @@ export const useStocksStore = defineStore("stocks", function () {
             const stockToUpdate = getById.value(stock.id);
             if (!stockToUpdate)
                 return;
-            const divisor = data.cur === "USD" ? curUsd.value : curEur.value;
+            const uiCur = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3, 5));
+            const divisor = data.cur === uiCur ? 1 : data.cur === "EUR" ? runtime.curUsd : runtime.curEur;
             stockToUpdate.mMin = DomainUtils.toNumber(data.min) / divisor;
             stockToUpdate.mValue = DomainUtils.toNumber(data.rate) / divisor;
             stockToUpdate.mMax = DomainUtils.toNumber(data.max) / divisor;

@@ -8,7 +8,6 @@
 
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
-import { useUserInfo } from "@/composables/useUserInfo";
 import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
 import { storeToRefs } from "pinia";
 import type { MenuActionType } from "@/types";
@@ -16,10 +15,10 @@ import { computed, onUnmounted, readonly, ref } from "vue";
 import {
   AppError,
   ERROR_CATEGORY,
-  ERROR_CODES,
-  serializeError
+  ERROR_CODES
 } from "@/domains/errors";
 import { CODES } from "@/config/codes";
+import { useBrowser } from "@/composables/useBrowser";
 
 type HighlightColor = "green" | "red" | "yellow" | "blue";
 
@@ -144,7 +143,7 @@ type ActionHandler = (_recordId: number) => Promise<void>;
 export function useMenuAction() {
   const runtime = useRuntimeStore();
   const records = useRecordsStore();
-  const { handleUserInfo } = useUserInfo();
+  const { handleUserNotice } = useBrowser();
   const { remove: removeBooking } = useBookingsDB();
   const { remove: removeStock } = useStocksDB();
 
@@ -188,9 +187,7 @@ export function useMenuAction() {
     async deleteBooking(recordId: number) {
       records.bookings.remove(recordId);
       await removeBooking(recordId);
-      await handleUserInfo("notice", "Menu", "deleteBooking", {
-        noticeLines: ["Booking deleted successfully"]
-      });
+      await handleUserNotice("Menu", "deleteBooking");
     },
 
     // Stock Actions
@@ -204,19 +201,13 @@ export function useMenuAction() {
 
     async deleteStock(recordId: number) {
       if (checkStockHasBookings(recordId)) {
-        await handleUserInfo("notice", "Cannot Delete", "deleteStock", {
-          noticeLines: [
-            "This stock has associated bookings. Delete bookings first."
-          ]
-        });
+        await handleUserNotice("Cannot Delete", "deleteStock");
         return;
       }
 
       records.stocks.remove(recordId);
       await removeStock(recordId);
-      await handleUserInfo("notice", "Menu", "deleteStock", {
-        noticeLines: ["Stock deleted successfully"]
-      });
+      await handleUserNotice("Menu", "deleteStock");
     },
 
     async fadeInStock() {
@@ -274,9 +265,7 @@ export function useMenuAction() {
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
       } else {
-        await handleUserInfo("notice", "Menu", "openLink", {
-          noticeLines: ["No URL available for this stock"]
-        });
+        await handleUserNotice("Menu", "openLink");
       }
     },
 
@@ -321,18 +310,16 @@ export function useMenuAction() {
       throw new AppError(
         ERROR_CODES.USE_MENU.A,
         ERROR_CATEGORY.VALIDATION,
-        { input: { actionType } },
         false
       );
     }
 
     try {
       await handler(recordId);
-    } catch (err) {
+    } catch {
       throw new AppError(
         ERROR_CODES.USE_MENU.B,
         ERROR_CATEGORY.VALIDATION,
-        { input: serializeError(err), actionType, recordId },
         true
       );
     }

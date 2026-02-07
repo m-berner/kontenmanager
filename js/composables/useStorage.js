@@ -1,28 +1,28 @@
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 export function useStorage() {
     async function clearStorage() {
         try {
             await browser.storage.local.clear();
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.USE_STORAGE.A, ERROR_CATEGORY.VALIDATION, { input: serializeError(err) }, true);
+        catch {
+            throw new AppError(ERROR_CODES.USE_STORAGE.A, ERROR_CATEGORY.VALIDATION, true);
         }
     }
     async function setStorage(key, value) {
         try {
             await browser.storage.local.set({ [key]: value });
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.USE_STORAGE.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), key }, true);
+        catch {
+            throw new AppError(ERROR_CODES.USE_STORAGE.B, ERROR_CATEGORY.VALIDATION, true);
         }
     }
     async function getStorage(keys = null) {
         try {
             return await browser.storage.local.get(keys);
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.USE_STORAGE.C, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), keys }, true);
+        catch {
+            throw new AppError(ERROR_CODES.USE_STORAGE.C, ERROR_CATEGORY.VALIDATION, true);
         }
     }
     function addStorageChangedListener(callback) {
@@ -47,32 +47,14 @@ export function useStorage() {
                 await browser.storage.local.set(updates);
             }
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.USE_STORAGE.D, ERROR_CATEGORY.VALIDATION, { input: serializeError(err) }, true);
-        }
-    }
-    async function setStorageSession(key, value) {
-        try {
-            await browser.storage.session.set({ [key]: value });
-        }
-        catch (err) {
-            throw new AppError(ERROR_CODES.USE_STORAGE.B, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), key }, true);
-        }
-    }
-    async function getStorageSession(keys = null) {
-        try {
-            return await browser.storage.session.get(keys);
-        }
-        catch (err) {
-            throw new AppError(ERROR_CODES.USE_STORAGE.C, ERROR_CATEGORY.VALIDATION, { input: serializeError(err), keys }, true);
+        catch {
+            throw new AppError(ERROR_CODES.USE_STORAGE.D, ERROR_CATEGORY.VALIDATION, true);
         }
     }
     return {
         clearStorage,
         getStorage,
         setStorage,
-        getStorageSession,
-        setStorageSession,
         addStorageChangedListener,
         installStorageLocal
     };

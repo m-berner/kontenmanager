@@ -5,14 +5,14 @@ import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
 import { databaseService } from "@/services/database";
 import { fetchService } from "@/services/fetch";
-import { AppError, ERROR_CATEGORY, ERROR_CODES, serializeError } from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { CURRENCIES } from "@/domains/config/currencies";
+const { getUserLocale } = useBrowser();
 export class AppService {
     records = useRecordsStore();
     settings = useSettingsStore();
     runtime = useRuntimeStore();
-    browser = useBrowser();
     storage = useStorage();
     fetch = fetchService;
     constructor() {
@@ -90,11 +90,7 @@ export class AppService {
             if (err instanceof AppError) {
                 throw err;
             }
-            throw new AppError(ERROR_CODES.SERVICES.APP.OVERALL, ERROR_CATEGORY.BUSINESS, {
-                input: serializeError(err),
-                entity: "AppService",
-                phase: "initializeApp"
-            }, true);
+            throw new AppError(ERROR_CODES.SERVICES.APP.OVERALL, ERROR_CATEGORY.BUSINESS, true);
         }
     }
     async reset() {
@@ -129,12 +125,8 @@ export class AppService {
                 return;
             this.settings.init(storageData);
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.SERVICES.APP.STORAGE, ERROR_CATEGORY.BUSINESS, {
-                input: serializeError(err),
-                entity: "AppService",
-                phase: "initializeStorage"
-            }, false);
+        catch {
+            throw new AppError(ERROR_CODES.SERVICES.APP.STORAGE, ERROR_CATEGORY.BUSINESS, false);
         }
         DomainUtils.log("SERVICES app", {
             phase: "initializeStorage",
@@ -146,13 +138,9 @@ export class AppService {
             phase: "initializeDatabase",
             event: "start"
         });
-        const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
+        const currency = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3, 5));
         if (!currency) {
-            throw new AppError(ERROR_CODES.SERVICES.APP.CURRENCY, ERROR_CATEGORY.BUSINESS, {
-                input: this.browser.uiLanguage.value,
-                entity: "AppService",
-                phase: "initializeDatabase"
-            }, false);
+            throw new AppError(ERROR_CODES.SERVICES.APP.CURRENCY, ERROR_CATEGORY.BUSINESS, false);
         }
         if (signal?.aborted)
             return;
@@ -165,12 +153,8 @@ export class AppService {
                 return;
             await this.records.init(databaseStores, translations);
         }
-        catch (err) {
-            throw new AppError(ERROR_CODES.SERVICES.APP.DB, ERROR_CATEGORY.DATABASE, {
-                input: serializeError(err),
-                entity: "AppService",
-                phase: "initializeDatabase"
-            }, false);
+        catch {
+            throw new AppError(ERROR_CODES.SERVICES.APP.DB, ERROR_CATEGORY.DATABASE, false);
         }
         DomainUtils.log("SERVICES app", {
             phase: "initializeDatabase",
@@ -182,7 +166,7 @@ export class AppService {
             phase: "fetchExternalData",
             event: "start"
         });
-        const currency = CURRENCIES.CODE.get(this.browser.uiLanguage.value);
+        const currency = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3, 5));
         if (!currency) {
             DomainUtils.log("SERVICES app", { phase: "fetchExternalData", warning: "missing currency" }, "warn");
             return { exchanges: false, indexes: false, materials: false };
@@ -209,12 +193,7 @@ export class AppService {
             exchangesOk = true;
         }
         else {
-            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, {
-                input: serializeError(exchangesBase.reason),
-                entity: "AppService",
-                section: "baseExchanges",
-                phase: "fetchExternalData"
-            }, true);
+            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
             DomainUtils.log("SERVICES app", {
                 phase: "fetchExternalData",
                 section: "baseExchanges",
@@ -226,12 +205,7 @@ export class AppService {
             exchangesOk = true;
         }
         else {
-            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, {
-                input: serializeError(exchangesInfo.reason),
-                entity: "AppService",
-                section: "exchanges",
-                phase: "fetchExternalData"
-            }, true);
+            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
             DomainUtils.log("SERVICES app", { phase: "fetchExternalData", section: "exchanges", error: wrapped }, "warn");
         }
         if (indexesInfo.status === "fulfilled") {
@@ -239,12 +213,7 @@ export class AppService {
             indexesOk = true;
         }
         else {
-            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, {
-                input: serializeError(indexesInfo.reason),
-                entity: "AppService",
-                section: "indexes",
-                phase: "fetchExternalData"
-            }, true);
+            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
             DomainUtils.log("SERVICES app", { phase: "fetchExternalData", section: "indexes", error: wrapped }, "warn");
         }
         if (materialsInfo.status === "fulfilled") {
@@ -252,12 +221,7 @@ export class AppService {
             materialsOk = true;
         }
         else {
-            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, {
-                input: serializeError(materialsInfo.reason),
-                entity: "AppService",
-                section: "materials",
-                phase: "fetchExternalData"
-            }, true);
+            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
             DomainUtils.log("SERVICES app", { phase: "fetchExternalData", section: "materials", error: wrapped }, "warn");
         }
         DomainUtils.log("SERVICES app", {

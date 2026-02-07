@@ -16,7 +16,7 @@ import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { DomainUtils } from "@/domains/utils";
 import { useBookingsDB } from "@/composables/useIndexedDB";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useBrowser } from "@/composables/useBrowser";
 import { useBookingForm } from "@/composables/useForms";
 import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
@@ -25,7 +25,7 @@ import { DATE } from "@/domains/config/date";
 import { databaseService } from "@/services/database";
 
 const { t } = useI18n();
-const { handleUserInfo } = useUserInfo();
+const { handleUserNotice } = useBrowser();
 const { update } = useBookingsDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -80,7 +80,7 @@ const onClickOk = async (): Promise<void> => {
     connectionErrorMessage: t(
       "components.dialogs.updateBooking.messages.dbNotConnected"
     ),
-    handleUserInfo,
+    handleUserNotice,
     errorContext: "UPDATE_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -91,9 +91,7 @@ const onClickOk = async (): Promise<void> => {
       records.bookings.update(booking);
       await update(booking);
       runtime.resetTeleport();
-      await handleUserInfo("notice", "UpdateBooking", "success", {
-        noticeLines: [t("components.dialogs.updateBooking.messages.success")]
-      });
+      await handleUserNotice("UpdateBooking", "success");
       runtime.resetOptionsMenuColors();
     }
   });

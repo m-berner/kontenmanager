@@ -1,16 +1,16 @@
 import { useI18n } from "vue-i18n";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { useUserInfo } from "@/composables/useUserInfo";
 import { useRuntimeStore } from "@/stores/runtime";
 import { databaseService } from "@/services/database";
 import { DomainUtils } from "@/domains/utils";
+import { useBrowser } from "@/composables/useBrowser";
 export function useDialogSubmit() {
     const { t } = useI18n();
     const { submitGuard } = useDialogGuards();
-    const { handleUserInfo } = useUserInfo();
+    const { handleUserNotice } = useBrowser();
     const runtime = useRuntimeStore();
     function createSubmitHandler(config) {
-        const { dialogRef, operation, componentName, i18nPrefix, checkConnection = true, closeOnSuccess = true, successMessage, errorMessage, onSuccess, onError } = config;
+        const { dialogRef, operation, componentName, i18nPrefix, checkConnection = true, closeOnSuccess = true, errorMessage, onSuccess, onError } = config;
         return async () => {
             DomainUtils.log(`${componentName.toUpperCase()}: onClickOk`);
             await submitGuard({
@@ -19,7 +19,7 @@ export function useDialogSubmit() {
                     ? databaseService.isConnected()
                     : undefined,
                 connectionErrorMessage: errorMessage || t(`${i18nPrefix}.messages.dbNotConnected`),
-                handleUserInfo,
+                handleUserNotice,
                 errorContext: componentName.toUpperCase().replace(/\s/g, "_"),
                 errorTitle: t("components.dialogs.onClickOk"),
                 operation: async () => {
@@ -31,20 +31,14 @@ export function useDialogSubmit() {
                         if (closeOnSuccess) {
                             runtime.resetTeleport();
                         }
-                        await handleUserInfo("notice", componentName, "success", {
-                            noticeLines: [
-                                successMessage || t(`${i18nPrefix}.messages.success`)
-                            ]
-                        });
+                        await handleUserNotice("success", componentName);
                     }
                     catch (error) {
                         const err = error instanceof Error ? error : new Error(String(error));
                         if (onError) {
                             await onError(err);
                         }
-                        await handleUserInfo("notice", componentName, "error", {
-                            noticeLines: [errorMessage || t(`${i18nPrefix}.messages.error`)]
-                        });
+                        await handleUserNotice("error", componentName);
                         throw err;
                     }
                 }

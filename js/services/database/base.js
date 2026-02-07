@@ -28,10 +28,7 @@ export class IndexedDbBase {
         const request = store.add(addData);
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.B, ERROR_CATEGORY.DATABASE, {
-                input: `${storeName}: ${request.error?.message}`,
-                entity: "database service (base)"
-            }, false));
+            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.B, ERROR_CATEGORY.DATABASE, false));
         });
     }
     async get(storeName, key, tx) {
@@ -40,10 +37,7 @@ export class IndexedDbBase {
         const request = store.get(key);
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result || null);
-            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.C, ERROR_CATEGORY.DATABASE, {
-                input: `${storeName}: ${request.error?.message}`,
-                entity: "database service (base)"
-            }, false));
+            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.C, ERROR_CATEGORY.DATABASE, false));
         });
     }
     async getAll(storeName, tx) {
@@ -52,10 +46,7 @@ export class IndexedDbBase {
         const request = store.getAll();
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.D, ERROR_CATEGORY.DATABASE, {
-                input: `${storeName}: ${request.error?.message}`,
-                entity: "database service (base)"
-            }, false));
+            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.D, ERROR_CATEGORY.DATABASE, false));
         });
     }
     async update(storeName, data, tx) {
@@ -64,10 +55,7 @@ export class IndexedDbBase {
         const request = store.put(data);
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.E, ERROR_CATEGORY.DATABASE, {
-                input: `${storeName}: ${request.error?.message}`,
-                entity: "database service (base)"
-            }, false));
+            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.E, ERROR_CATEGORY.DATABASE, false));
         });
     }
     async remove(storeName, key, tx) {
@@ -76,10 +64,7 @@ export class IndexedDbBase {
         const request = store.delete(key);
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve();
-            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.F, ERROR_CATEGORY.DATABASE, {
-                input: `${storeName}: ${request.error?.message}`,
-                entity: "database service (base)"
-            }, false));
+            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.F, ERROR_CATEGORY.DATABASE, false));
         });
     }
     async clear(storeName, tx) {
@@ -88,10 +73,7 @@ export class IndexedDbBase {
         const request = store.clear();
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve();
-            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.G, ERROR_CATEGORY.DATABASE, {
-                input: `${storeName}: ${request.error?.message}`,
-                entity: "database service (base)"
-            }, false));
+            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.G, ERROR_CATEGORY.DATABASE, false));
         });
     }
     async getAllByIndex(storeName, indexName, query, tx) {
@@ -101,10 +83,7 @@ export class IndexedDbBase {
         const request = index.getAll(query);
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.H, ERROR_CATEGORY.DATABASE, {
-                input: request.error?.message,
-                entity: "database service (base)"
-            }, false));
+            request.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.H, ERROR_CATEGORY.DATABASE, false));
         });
     }
     async deleteByCursor(index, query) {
@@ -120,12 +99,12 @@ export class IndexedDbBase {
                     resolve();
                 }
             };
-            req.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.A, ERROR_CATEGORY.DATABASE, { input: req.error?.message, entity: "database service" }, false));
+            req.onerror = () => reject(new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.A, ERROR_CATEGORY.DATABASE, false));
         });
     }
     async ensureConnected() {
         if (!this.db) {
-            throw new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.I, ERROR_CATEGORY.DATABASE, { input: "Database not connected", entity: "database service (base)" }, false);
+            throw new AppError(ERROR_CODES.SERVICES.DATABASE.BASE.I, ERROR_CATEGORY.DATABASE, false);
         }
     }
     async getAutoTransaction(storeName, mode) {
