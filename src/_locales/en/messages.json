@@ -2,8 +2,11 @@
   "browser_language": {
     "message": "Invalid browser language\nFallback to English"
   },
-  "install_storage": {
+  "xx_set_local_storage": {
     "message": "Failed to save to local browser storage"
+  },
+  "xx_get_local_storage": {
+    "message": "Abfragen vom lokalen Browser Speicher fehlgeschlagen"
   },
   "xx_error_code": {
     "message": "Invalid error code"

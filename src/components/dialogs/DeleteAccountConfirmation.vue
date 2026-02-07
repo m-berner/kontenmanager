@@ -35,17 +35,21 @@ const { items: accountItems } = storeToRefs(records.accounts);
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 
 const switchToNextAccount = async (): Promise<void> => {
+  try {
   if (accountItems.value.length === 0) {
     activeAccountId.value = -1;
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, -1);
     return;
   }
 
-  const newActiveId = accountItems.value[0].cID;
-  activeAccountId.value = newActiveId!;
-  await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, newActiveId!);
+  //const newActiveId = accountItems.value[0].cID;
+  activeAccountId.value = accountItems.value[0].cID; //newActiveId!;
+  await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeAccountId.value);
+} catch (err) {
+    await handleUserNotice("DeleteAccountConfirmation", err);
+  }
 
-  const storesDB = await databaseService.getAccountRecords(newActiveId!);
+  const storesDB = await databaseService.getAccountRecords(activeAccountId.value);
   await records.init(storesDB, {
     title: t("mixed.smImportOnly.title"),
     message: t("mixed.smImportOnly.message")
@@ -89,8 +93,7 @@ defineExpose({
   title: t("components.dialogs.deleteAccountConfirmation.title")
 });
 
-DomainUtils.log(
-  "--- components/dialogs/DeleteAccountConfirmation.vue setup ---"
+DomainUtils.log("COMPONENTS DIALOGS DeleteAccountConfirmation"
 );
 </script>
 

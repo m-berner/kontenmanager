@@ -80,19 +80,8 @@ const onUpdateTitleBar = async (): Promise<void> => {
       title: t("mixed.smImportOnly.title"),
       message: t("mixed.smImportOnly.message")
     });
-  } catch (e) {
-    // const errorMessage =
-    //   e instanceof AppError
-    //     ? e.message
-    //     : e instanceof Error
-    //     ? e.message
-    //     : "Unknown error";
-    // DomainUtils.log(
-    //   t("views.titleBar.messages.onUpdateTitleBar"),
-    //   errorMessage,
-    //   "error"
-    // );
-    await handleUserNotice(t("views.titleBar.messages.onUpdateTitleBar"), e);
+  } catch (err) {
+    await handleUserNotice("VIEWS TitleBar", err);
   }
 };
 

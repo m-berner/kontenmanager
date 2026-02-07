@@ -17,9 +17,9 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { AppError } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
+import { useBrowser } from "@/composables/useBrowser";
 import { fetchService } from "@/services/fetch";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { COMPONENTS } from "@/config/components";
@@ -28,6 +28,7 @@ const props = defineProps<DynamicListProps>();
 
 const { t } = useI18n();
 const { getStorage, setStorage } = useStorage();
+const { handleUserNotice } = useBrowser();
 const runtime = useRuntimeStore();
 const { infoExchanges } = storeToRefs(runtime);
 const settings = useSettingsStore();
@@ -84,13 +85,7 @@ const addItem = async (item: string): Promise<void> => {
       newItem.value = "";
     }
   } catch (err) {
-    error.value =
-      err instanceof AppError
-        ? err.message
-        : err instanceof Error
-        ? err.message
-        : "Failed to add item";
-    DomainUtils.log("DYNAMIC_LIST: addItem error", err);
+    await handleUserNotice("Components DynamicList", err);
   } finally {
     isAdding.value = false; // Stop loading
   }
@@ -115,13 +110,7 @@ const removeItem = async (n: number): Promise<void> => {
       default:
     }
   } catch (err) {
-    error.value =
-      err instanceof AppError
-        ? err.message
-        : err instanceof Error
-        ? err.message
-        : "Failed to remove item";
-    DomainUtils.log("DYNAMIC_LIST: removeItem error", err);
+    await handleUserNotice("Components DynamicList", err);
   }
 };
 
@@ -144,19 +133,13 @@ onBeforeMount(async () => {
         break;
     }
   } catch (err) {
-    error.value =
-      err instanceof AppError
-        ? err.message
-        : err instanceof Error
-        ? err.message
-        : "Initialization failed";
-    DomainUtils.log("DYNAMIC_LIST: onBeforeMount error", err);
+    await handleUserNotice("Components DynamicList", err);
   } finally {
     isLoading.value = false;
   }
 });
 
-DomainUtils.log("--- components/DynamicList.vue setup ---");
+DomainUtils.log("Components DynamicList");
 </script>
 
 <template>
@@ -167,7 +150,7 @@ DomainUtils.log("--- components/DynamicList.vue setup ---");
       <p class="mt-3">Loading...</p>
     </v-card-text>
 
-    <!-- Error State -->
+    <!-- Error State
     <v-alert
       v-if="error && !isLoading"
       class="ma-4"
@@ -176,7 +159,7 @@ DomainUtils.log("--- components/DynamicList.vue setup ---");
       @click:close="error = null"
     >
       {{ error }}
-    </v-alert>
+    </v-alert>-->
 
     <!-- Content State -->
     <template v-if="!isLoading">

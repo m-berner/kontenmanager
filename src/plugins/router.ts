@@ -88,7 +88,7 @@ routerInstance.afterEach((to) => {
 });
 
 /**
- * Also synchronize once when the router becomes ready to cover the first
+ * Synchronize once when the router becomes ready to cover the first
  * navigation on page load.
  */
 routerInstance.isReady().then(() => {
@@ -114,4 +114,4 @@ const routerConfig: RouterWrapper = {
 
 export default routerConfig;
 
-DomainUtils.log("--- plugins/router.js ---");
+DomainUtils.log("PLUGINS Router");

@@ -75,4 +75,4 @@ const routerConfig = {
     router: routerInstance
 };
 export default routerConfig;
-DomainUtils.log("--- plugins/router.js ---");
+DomainUtils.log("PLUGINS Router");

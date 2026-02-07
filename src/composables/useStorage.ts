@@ -49,8 +49,8 @@ export function useStorage() {
       await browser.storage.local.set({ [key]: value });
     } catch {
       throw new AppError(
-        ERROR_CODES.USE_STORAGE.B,
-        ERROR_CATEGORY.VALIDATION,
+        "xx_set_local_storage",
+        ERROR_CATEGORY.STORAGE_API,
         true
       );
     }
@@ -68,8 +68,8 @@ export function useStorage() {
       return await browser.storage.local.get(keys);
     } catch {
       throw new AppError(
-        ERROR_CODES.USE_STORAGE.C,
-        ERROR_CATEGORY.VALIDATION,
+        "xx_get_local_storage",
+        ERROR_CATEGORY.STORAGE_API,
         true
       );
     }
@@ -133,46 +133,11 @@ export function useStorage() {
    * @param key - The storage key.
    * @param value - The value to store.
    */
-  // async function setStorageSession(
-  //   key: string,
-  //   value: string | number | boolean | string[]
-  // ): Promise<void> {
-  //   try {
-  //     await browser.storage.session.set({ [key]: value });
-  //   } catch {
-  //     throw new AppError(
-  //       ERROR_CODES.USE_STORAGE.B,
-  //       ERROR_CATEGORY.VALIDATION,
-  //       true
-  //     );
-  //   }
-  // }
-  //
-  // /**
-  //  * Retrieves values from session browser storage.
-  //  * @param keys - Array of keys to retrieve, or null for all.
-  //  * @returns A promise resolving to the retrieved data object.
-  //  */
-  // async function getStorageSession(
-  //   keys: string[] | null = null
-  // ): Promise<StorageDataType> {
-  //   try {
-  //     return await browser.storage.session.get(keys);
-  //   } catch {
-  //     throw new AppError(
-  //       ERROR_CODES.USE_STORAGE.C,
-  //       ERROR_CATEGORY.VALIDATION,
-  //       true
-  //     );
-  //   }
-  // }
 
   return {
     clearStorage,
     getStorage,
     setStorage,
-    //getStorageSession,
-    //setStorageSession,
     addStorageChangedListener,
     installStorageLocal
   };

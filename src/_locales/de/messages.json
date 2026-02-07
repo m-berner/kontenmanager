@@ -2,8 +2,11 @@
   "xx_browser_language": {
     "message": "Unbekannte Browser Sprache\nEnglisch wird verwendet"
   },
-  "xx_install_storage": {
+  "xx_set_local_storage": {
     "message": "Speichern im lokalen Browser Speicher fehlgeschlagen"
+  },
+  "xx_get_local_storage": {
+    "message": "Abfragen vom lokalen Browser Speicher fehlgeschlagen"
   },
   "xx_error_code": {
     "message": "Ungültiger Fehlercode"

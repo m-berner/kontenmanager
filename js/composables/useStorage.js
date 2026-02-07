@@ -14,7 +14,7 @@ export function useStorage() {
             await browser.storage.local.set({ [key]: value });
         }
         catch {
-            throw new AppError(ERROR_CODES.USE_STORAGE.B, ERROR_CATEGORY.VALIDATION, true);
+            throw new AppError("xx_set_local_storage", ERROR_CATEGORY.STORAGE_API, true);
         }
     }
     async function getStorage(keys = null) {
@@ -22,7 +22,7 @@ export function useStorage() {
             return await browser.storage.local.get(keys);
         }
         catch {
-            throw new AppError(ERROR_CODES.USE_STORAGE.C, ERROR_CATEGORY.VALIDATION, true);
+            throw new AppError("xx_get_local_storage", ERROR_CATEGORY.STORAGE_API, true);
         }
     }
     function addStorageChangedListener(callback) {

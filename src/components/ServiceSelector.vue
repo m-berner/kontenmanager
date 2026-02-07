@@ -10,16 +10,22 @@
 import { onBeforeMount, ref } from "vue";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
+import { useBrowser } from "@/composables/useBrowser";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { FETCH } from "@/config/fetch";
 
 const { getStorage, setStorage } = useStorage();
+const { handleUserNotice } = useBrowser();
 
 const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
 
 const setService = async (): Promise<void> => {
   DomainUtils.log("SERVICE_SELECTOR: setService");
+  try {
   await setStorage(BROWSER_STORAGE.SERVICE.key, service.value);
+  } catch (err) {
+    await handleUserNotice("Components ServiceSelector", err);
+  }
 };
 
 const serviceLabels = (item: string): string => {
@@ -33,8 +39,12 @@ const serviceLabels = (item: string): string => {
 
 onBeforeMount(async () => {
   DomainUtils.log("SERVICE_SELECTOR: onBeforeMount");
+  try {
   const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
   service.value = storageService[BROWSER_STORAGE.SERVICE.key] as string;
+  } catch (err) {
+    await handleUserNotice("Components ServiceSelector", err);
+  }
 });
 
 DomainUtils.log("--- components/ServiceSelector.vue setup ---");

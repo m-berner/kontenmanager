@@ -2,9 +2,11 @@ import { ref } from "vue";
 import { DomainUtils } from "@/domains/utils";
 import { defineStore } from "pinia";
 import { useStorage } from "@/composables/useStorage";
+import { useBrowser } from "@/composables/useBrowser";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 export const useSettingsStore = defineStore("settings", function () {
     const { setStorage } = useStorage();
+    const { handleUserNotice } = useBrowser();
     const skin = ref(BROWSER_STORAGE.SKIN.value);
     const bookingsPerPage = ref(BROWSER_STORAGE.BOOKINGS_PER_PAGE.value);
     const stocksPerPage = ref(BROWSER_STORAGE.STOCKS_PER_PAGE.value);
@@ -24,7 +26,7 @@ export const useSettingsStore = defineStore("settings", function () {
         }
         catch (err) {
             refVar.value = prev;
-            DomainUtils.log("SETTINGS: setStorage failed", { key, value, err }, "error");
+            handleUserNotice("STORES Settings", err);
         }
     }
     function init(storage) {

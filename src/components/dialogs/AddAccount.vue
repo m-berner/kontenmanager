@@ -109,11 +109,13 @@ const onClickOk = async (): Promise<void> => {
       for (const bt of createdTypes) records.bookingTypes.add(bt);
 
       activeAccountId.value = accountId;
-      await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, accountId);
-
+      try {
+        await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, accountId);
+      } catch (err) {
+        await handleUserNotice("COMPONENTS DIALOGS AddAccount", err);
+      }
       records.clean(false);
       runtime.resetTeleport();
-      await handleUserNotice("components/AddAccount", t("components.dialogs.addAccount.messages.success"));
     }
   });
 };
