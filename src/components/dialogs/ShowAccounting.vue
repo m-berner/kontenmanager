@@ -12,7 +12,7 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
-//import { useUserInfo } from "@/composables/useUserInfo";
+//import { useAlert } from "@/composables/useAlert";
 import type { AccountEntry } from "@/types";
 import { createAccountingHeaders, VIEWS } from "@/config/views";
 import { COMPONENTS } from "@/config/components";
@@ -21,7 +21,7 @@ import { DomainUtils } from "@/domains/utils";
 const { n, t } = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
-//const { handleUserInfo } = useUserInfo();
+//const { handleUserInfo } = useAlert();
 const { sumsPerPage } = storeToRefs(settings);
 const { setSumsPerPage } = settings;
 

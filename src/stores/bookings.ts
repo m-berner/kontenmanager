@@ -12,7 +12,7 @@ import { computed, ref } from "vue";
 import { DomainUtils } from "@/domains/utils";
 import { useBookingTypesStore } from "@/stores/bookingTypes";
 import { DomainLogic } from "@/domains/logic";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { AppError, ERROR_CATEGORY } from "@/domains/errors";
 
 /**
  * Pinia store managing financial booking records.
@@ -51,8 +51,8 @@ export const useBookingsStore = defineStore("bookings", function () {
       return `${booking.cBookDate} : ${booking.cDebit} : ${booking.cCredit}`;
     } else {
       throw new AppError(
-        ERROR_CODES.STORES.BOOKINGS.A,
-        ERROR_CATEGORY.DATABASE,
+        "xx_missing_record",
+        ERROR_CATEGORY.STORE,
         false
       );
     }

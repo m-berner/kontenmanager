@@ -7,7 +7,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useAlert } from "@/composables/useAlert";
 import { DEFAULTS } from "@/config/defaults";
 import { useBrowser } from "@/composables/useBrowser";
 
@@ -27,14 +27,14 @@ vi.mock("@/composables/useBrowser", () => ({
   useBrowser: () => ({ handleUserNotice: noticeFn })
 }));
 
-describe("useUserInfo", () => {
+describe("useAlert", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("shows info alert with default duration and returns alert id", async () => {
-    const { handleUserInfo } = useUserInfo();
-    const id = await handleUserInfo("alert", "Title", new Error("Message"), {
+    const { handleUserInfo } = useAlert();
+    const id = await handleUserInfo("Title", new Error("Message"), {
       alertKind: "info"
     });
     expect(id).toBe(101);
@@ -46,8 +46,8 @@ describe("useUserInfo", () => {
   });
 
   it("shows error alert with default null duration and returns alert id", async () => {
-    const { handleUserInfo } = useUserInfo();
-    const id = await handleUserInfo("alert", "Title", new Error("Oops"), {
+    const { handleUserError } = useAlert();
+    const id = await handleUserError("Title", new Error("Oops"), {
       alertKind: "error"
     });
     expect(id).toBe(202);
@@ -59,9 +59,8 @@ describe("useUserInfo", () => {
   });
 
   it("shows confirm dialog and returns boolean", async () => {
-    const { handleUserInfo } = useUserInfo();
-    const res = await handleUserInfo(
-      "alert",
+    const { handleUserConfirm } = useAlert();
+    const res = await handleUserConfirm(
       "Confirm?",
       new Error("Are you sure?"),
       {
@@ -74,15 +73,15 @@ describe("useUserInfo", () => {
 
   it("sends notice via useBrowser", async () => {
     const { handleUserNotice } = useBrowser();
-    await handleUserNotice("Title",  "OK");
+    await handleUserNotice("Title", "OK");
     expect(noticeFn).toHaveBeenCalledWith("Title", "OK");
   });
 
   it("rate-limits duplicate messages within window", async () => {
-    const { handleUserInfo } = useUserInfo();
+    const { handleUserInfo } = useAlert();
     const opts = { alertKind: "info" as const, rateLimitMs: 10_000 };
-    await handleUserInfo("alert", "RL", new Error("Same"), opts);
-    await handleUserInfo("alert", "RL", new Error("Same"), opts);
+    await handleUserInfo("RL", new Error("Same"), opts);
+    await handleUserInfo("RL", new Error("Same"), opts);
     // first call handled once
     expect(alertStoreMock.info).toHaveBeenCalledTimes(1);
   });

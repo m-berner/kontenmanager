@@ -18,7 +18,7 @@ import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useAlert } from "@/composables/useAlert";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import DialogPort from "@/components/DialogPort.vue";
@@ -30,7 +30,7 @@ const { handleUserNotice, openOptionsPage } = useBrowser();
 const runtime = useRuntimeStore();
 const { isStockLoading } = storeToRefs(runtime);
 const records = useRecordsStore();
-const { handleUserInfo } = useUserInfo();
+const { handleUserInfo } = useAlert();
 const { items: accountItems } = storeToRefs(records.accounts);
 const { items: bookingItems } = storeToRefs(records.bookings);
 const { items: bookingTypeItems } = storeToRefs(records.bookingTypes);
@@ -266,10 +266,8 @@ const dialogValidations: Record<
   updateAccount: async () => {
     if (accountItems.value.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noAccount")),
-        { alertKind: "info" }
+        new Error(t("views.headerBar.messages.noAccount"))
       );
       return false;
     }
@@ -278,10 +276,8 @@ const dialogValidations: Record<
   fadeInStock: async () => {
     if (records.stocks.passive.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("components.dialogs.fadeInStock.messages.noRecords")),
-        { alertKind: "info" }
+        new Error(t("components.dialogs.fadeInStock.messages.noRecords"))
       );
       return false;
     }
@@ -290,10 +286,8 @@ const dialogValidations: Record<
   deleteAccountConfirmation: async () => {
     if (accountItems.value.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noAccount")),
-        { alertKind: "info" }
+        new Error(t("views.headerBar.messages.noAccount"))
       );
       return false;
     }
@@ -302,10 +296,8 @@ const dialogValidations: Record<
   addBookingType: async () => {
     if (accountItems.value.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.createAccount")),
-        { alertKind: "info" }
+        new Error(t("views.headerBar.messages.createAccount"))
       );
       return false;
     }
@@ -314,10 +306,8 @@ const dialogValidations: Record<
   updateBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noBookingTypes")),
-        { alertKind: "info" }
+        new Error(t("views.headerBar.messages.noBookingTypes"))
       );
       return false;
     }
@@ -326,10 +316,8 @@ const dialogValidations: Record<
   deleteBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noBookingTypes")),
-        { alertKind: "info" }
+        new Error(t("views.headerBar.messages.noBookingTypes"))
       );
       return false;
     }
@@ -338,10 +326,8 @@ const dialogValidations: Record<
   addBooking: async () => {
     if (accountItems.value.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.createAccount")),
-        { alertKind: "info" }
+        new Error(t("views.headerBar.messages.createAccount"))
       );
       return false;
     }
@@ -350,10 +336,8 @@ const dialogValidations: Record<
   exportDatabase: async () => {
     if (accountItems.value.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.nothingToExport")),
-        { alertKind: "info" }
+        new Error(t("views.headerBar.messages.nothingToExport"))
       );
       return false;
     }
@@ -362,10 +346,8 @@ const dialogValidations: Record<
   showAccounting: async () => {
     if (bookingItems.value.length === 0) {
       await handleUserInfo(
-        "alert",
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noBookings")),
-        { alertKind: "info" }
+        new Error(t("views.headerBar.messages.noBookings"))
       );
       return false;
     }

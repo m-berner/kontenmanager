@@ -15,14 +15,14 @@ import { ValidationService } from "@/services/validation";
 import { INDEXED_DB } from "@/config/database";
 import type { BookingTypeFormProps } from "@/types";
 import { DomainUtils } from "@/domains/utils";
-//import { useUserInfo } from "@/composables/useUserInfo";
+//import { useAlert } from "@/composables/useAlert";
 
 const props = defineProps<BookingTypeFormProps>();
 
 const { t } = useI18n();
 const records = useRecordsStore();
 const { bookingTypeFormData } = useBookingTypeForm();
-//const { handleUserInfo } = useUserInfo();
+//const { handleUserInfo } = useAlert();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),

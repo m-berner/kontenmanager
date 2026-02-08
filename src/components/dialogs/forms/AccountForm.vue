@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import { onBeforeUnmount, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-//import { useUserInfo } from "@/composables/useUserInfo";
+//import { useAlert } from "@/composables/useAlert";
 import { useFavicon } from "@/composables/useFavicon";
 import { useDomain } from "@/composables/useDomain";
 import { useAccountForm } from "@/composables/useForms";
@@ -26,7 +26,7 @@ const props = defineProps<AccountFormProps>();
 
 const { t } = useI18n();
 const { accountFormData } = useAccountForm();
-//const { handleUserInfo } = useUserInfo();
+//const { handleUserInfo } = useAlert();
 
 const SWIFT_RULES = createSwiftMessages(t);
 const IBAN_RULES = createIbanMessages(t);

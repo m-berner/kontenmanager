@@ -12,6 +12,7 @@ import { ENTRYPOINTS } from "@/config/entrypoints";
 import { DEFAULTS } from "@/config/defaults";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
+import deNotifications from "@/_locales/de/messages.json";
 
 /**
  * Composable providing access to browser extension APIs.
@@ -37,11 +38,7 @@ export function useBrowser() {
       return `${defaultLanguage}-${defaultLanguage.toUpperCase()}`;
     }
 
-    throw new AppError(
-      "xx_browser_language",
-      ERROR_CATEGORY.BROWSER_API,
-      true
-    );
+    throw new AppError("xx_browser_language", ERROR_CATEGORY.BROWSER_API, true);
   });
 
   /**
@@ -191,6 +188,16 @@ export function useBrowser() {
   }
 
   /**
+   * Gets a translated message.
+   *
+   * @param code string - Message code.
+   * @returns A promise resolving to the translated message.
+   */
+  function getMessage(code: keyof typeof deNotifications): string {
+    return code in deNotifications ? browser.i18n.getMessage(code) : browser.i18n.getMessage("xx_error_code");
+  }
+
+  /**
    * Displays a browser notification.
    *
    * @param mod - Module name that catch the error.
@@ -276,6 +283,7 @@ export function useBrowser() {
   return {
     manifest,
     actionOnClicked,
+    getMessage,
     getUserLocale,
     runtimeOnInstalled,
     removeTab,

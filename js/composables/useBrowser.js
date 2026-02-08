@@ -4,6 +4,7 @@ import { ENTRYPOINTS } from "@/config/entrypoints";
 import { DEFAULTS } from "@/config/defaults";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
+import deNotifications from "@/_locales/de/messages.json";
 export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
     const manifest = computed(() => browser.runtime.getManifest());
@@ -91,6 +92,9 @@ export function useBrowser() {
             throw new AppError(ERROR_CODES.USE_BROWSER.G, ERROR_CATEGORY.VALIDATION, true);
         }
     }
+    function getMessage(code) {
+        return code in deNotifications ? browser.i18n.getMessage(code) : browser.i18n.getMessage("xx_error_code");
+    }
     async function handleUserNotice(mod, messageOrError) {
         try {
             let messages = [];
@@ -148,6 +152,7 @@ export function useBrowser() {
     return {
         manifest,
         actionOnClicked,
+        getMessage,
         getUserLocale,
         runtimeOnInstalled,
         removeTab,

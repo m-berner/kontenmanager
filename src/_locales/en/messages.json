@@ -13,5 +13,11 @@
   },
   "xx_missing_translation": {
     "message": "Missing translation"
+  },
+  "xx_missing_record": {
+    "message": "Record not found"
+  },
+  "xx_invalid_backup": {
+    "message": "Corrupt backup"
   }
 }

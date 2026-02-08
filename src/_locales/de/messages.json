@@ -13,5 +13,11 @@
   },
   "xx_missing_translation": {
     "message": "Keine Übersetzung gefunden"
+  },
+  "xx_missing_record": {
+    "message": "Datensatz nicht gefunden"
+  },
+  "xx_invalid_backup": {
+    "message": "Korrupte Wiederherstellungsdatei"
   }
 }

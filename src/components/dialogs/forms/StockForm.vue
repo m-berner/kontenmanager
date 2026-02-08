@@ -18,13 +18,13 @@ import { useStockForm } from "@/composables/useForms";
 import { fetchService } from "@/services/fetch";
 import type { StockFormProps } from "@/types";
 import { ValidationService } from "@/services/validation";
-//import { useUserInfo } from "@/composables/useUserInfo";
+//import { useAlert } from "@/composables/useAlert";
 
 const props = defineProps<StockFormProps>();
 
 const { t } = useI18n();
 const { stockFormData } = useStockForm();
-//const { handleUserInfo } = useUserInfo();
+//const { handleUserInfo } = useAlert();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),

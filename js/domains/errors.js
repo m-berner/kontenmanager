@@ -127,7 +127,8 @@ export const ERROR_CATEGORY = {
     BUSINESS: "business",
     BROWSER_API: "Browser API",
     NOTIFICATION_API: "Notification API",
-    STORAGE_API: "Storage API"
+    STORAGE_API: "Storage API",
+    STORE: "Memory store"
 };
 const ERRORS = {
     [ERROR_CODES.ADD_ACCOUNT]: "Failed to add account",

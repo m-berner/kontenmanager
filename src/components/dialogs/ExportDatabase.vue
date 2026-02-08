@@ -15,14 +15,10 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRuntimeStore } from "@/stores/runtime";
-import {
-  AppError,
-  ERROR_CATEGORY,
-  ERROR_CODES
-} from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
-import { useUserInfo } from "@/composables/useUserInfo";
+import { useAlert } from "@/composables/useAlert";
 import {
   useAccountsDB,
   useBookingsDB,
@@ -37,7 +33,7 @@ import { INDEXED_DB } from "@/config/database";
 
 const { t } = useI18n();
 const { handleUserNotice, manifest, writeBufferToFile } = useBrowser();
-const { handleUserInfo } = useUserInfo();
+const { handleUserConfirm } = useAlert();
 const { getAll: getAllAccounts } = useAccountsDB();
 const { getAll: getAllBookings } = useBookingsDB();
 const { getAll: getAllBookingTypes } = useBookingTypesDB();
@@ -161,10 +157,9 @@ const onClickOk = async (): Promise<void> => {
       const estimatedSize = estimateExportSize(exportData);
 
       if (estimatedSize > DEFAULTS.LARGE_FILE_THRESHOLD_KB) {
-        const proceed = await handleUserInfo(
-          "alert",
+        const proceed = await handleUserConfirm(
           t("components.dialogs.exportDatabase.largeFileTitle"),
-          new Error("ExportDatabase"),
+          {},
           {
             noticeLines: [
               t("components.dialogs.exportDatabase.messages.estimatedSize", {
@@ -175,8 +170,7 @@ const onClickOk = async (): Promise<void> => {
               confirmText: t("components.dialogs.exportDatabase.continue"),
               cancelText: t("components.dialogs.exportDatabase.cancel"),
               type: "warning"
-            },
-            alertKind: "confirm"
+            }
           }
         );
 
@@ -211,7 +205,7 @@ defineExpose({
   title: t("components.dialogs.exportDatabase.title")
 });
 
-DomainUtils.log("--- components/dialogs/ExportDatabase.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS ExportDatabase");
 </script>
 
 <template>

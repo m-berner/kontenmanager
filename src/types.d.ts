@@ -240,7 +240,7 @@ export interface ExchangeData {
   value: number;
 }
 
-export interface HandleUserInfoOptions {
+export interface HandleUserAlertOptions {
   data?: unknown;
   logLevel?: LogLevelType;
   delay?: number | null;
@@ -518,7 +518,7 @@ export type Mode = "notice" | "alert";
 
 export type AlertKind = "info" | "error" | "confirm";
 
-// Discriminated result types for useUserInfo
+// Discriminated result types for useAlert
 export type UserInfoConsoleResult = void;
 export type UserInfoNoticeResult = void;
 export type UserInfoAlertInfoResult = number; // alert id
@@ -537,19 +537,19 @@ export interface HandleUserInfoFn {
     _mode: "console",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions
+    _options?: HandleUserAlertOptions
   ): Promise<UserInfoConsoleResult>;
   (
     _mode: "notice",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions
+    _options?: HandleUserAlertOptions
   ): Promise<UserInfoNoticeResult>;
   (
     _mode: "alert",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions & {
+    _options?: HandleUserAlertOptions & {
       alertKind?: "info";
       duration?: number | null;
     }
@@ -558,7 +558,7 @@ export interface HandleUserInfoFn {
     _mode: "alert",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions & {
+    _options?: HandleUserAlertOptions & {
       alertKind?: "error";
       duration?: number | null;
     }
@@ -567,13 +567,13 @@ export interface HandleUserInfoFn {
     _mode: "alert",
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions & { alertKind: "confirm" }
+    _options?: HandleUserAlertOptions & { alertKind: "confirm" }
   ): Promise<UserInfoAlertConfirmResult>;
   (
     _mode: Mode,
     _title: string,
     _messageOrError: string | Error,
-    _options?: HandleUserInfoOptions
+    _options?: HandleUserAlertOptions
   ): Promise<UserInfoResult>;
 }
 

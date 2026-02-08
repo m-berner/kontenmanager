@@ -24,7 +24,7 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useBrowser } from "@/composables/useBrowser";
-import { useUserInfo} from "@/composables/useUserInfo";
+import { useAlert} from "@/composables/useAlert";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import {
@@ -43,8 +43,8 @@ import { INDEXED_DB } from "@/config/database";
 import { DomainValidators } from "@/domains/validation/validators";
 
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
-const { handleUserInfo } = useUserInfo();
+const { getMessage, handleUserNotice } = useBrowser();
+const { handleUserConfirm } = useAlert();
 const { setStorage } = useStorage();
 const { atomicImport } = useAccountsDB();
 const { isLoading, withLoading } = useDialogGuards();
@@ -420,8 +420,8 @@ const processBackupFile = async (): Promise<void> => {
     // Use type guard
     if (!validation.isValid) {
       await handleUserNotice(
-        t("components.dialogs.importDatabase.title"),
-        "ImportDatabase"
+        "COMPONENTS DIALOGS ImportDatabase",
+        getMessage("xx_invalid_backup")
       );
       return;
     }
@@ -430,6 +430,7 @@ const processBackupFile = async (): Promise<void> => {
       validation.version === INDEXED_DB.SM_IMPORT_VERSION &&
       accountItems.value.length > 0
     ) {
+      // TODO alert here
       await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
         "ImportDatabase"
@@ -464,17 +465,15 @@ const processBackupFile = async (): Promise<void> => {
     // Show confirmation before import
     const summary = getImportSummary(backup);
 
-    const shouldProceed = await handleUserInfo(
-      "alert",
+    const shouldProceed = await handleUserConfirm(
       t("components.dialogs.importDatabase.confirmImportTitle"),
-      new Error(summary),
+      summary,
       {
         confirm: {
           confirmText: t("components.dialogs.importDatabase.confirmOk"),
           cancelText: t("components.dialogs.importDatabase.confirmCancel"),
           type: "warning"
-        },
-        alertKind: "confirm"
+        }
       }
     );
 
