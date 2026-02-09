@@ -245,15 +245,12 @@ export interface HandleUserAlertOptions {
   logLevel?: LogLevelType;
   delay?: number | null;
   // Alert options
-  alertKind?: AlertKind;
   duration?: number | null;
   confirm?: {
     confirmText?: string;
     cancelText?: string;
     type?: "error" | "success" | "warning" | "info";
   };
-  // Notice options
-  noticeLines?: string[]; // Defaults to [title, message]
   // Rate limiting the window in ms (identical messages suppressed), default from DEFAULTS.USER_INFO.RATE_LIMIT_MS
   rateLimitMs?: number;
   // Optional correlation identifier forwarded to logs

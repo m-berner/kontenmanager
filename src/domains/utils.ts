@@ -207,11 +207,11 @@ export class DomainUtils {
     return name.trim().replace(/\s+/g, " ").toLowerCase();
   }
 
-  static log(msg: string, data?: unknown, level: LogLevelType = "log"): void {
+  static log(msg: string, data?: unknown, level?: LogLevelType): void {
     if (import.meta.env.MODE !== "development") return;
 
     // eslint-disable-next-line no-console
-    const logFn = console[level] || console.log;
+    const logFn = level === undefined ? console.log : console[level];
     data !== undefined ? logFn(msg, data) : logFn(msg);
   }
 

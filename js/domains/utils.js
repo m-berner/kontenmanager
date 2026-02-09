@@ -90,10 +90,10 @@ export class DomainUtils {
     static normalizeBookingTypeName(name) {
         return name.trim().replace(/\s+/g, " ").toLowerCase();
     }
-    static log(msg, data, level = "log") {
+    static log(msg, data, level) {
         if (import.meta.env.MODE !== "development")
             return;
-        const logFn = console[level] || console.log;
+        const logFn = level === undefined ? console.log : console[level];
         data !== undefined ? logFn(msg, data) : logFn(msg);
     }
     static mean(numbers) {

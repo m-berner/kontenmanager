@@ -24,14 +24,10 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useBrowser } from "@/composables/useBrowser";
-import { useAlert} from "@/composables/useAlert";
+import { useAlert } from "@/composables/useAlert";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import {
-  AppError,
-  ERROR_CATEGORY,
-  ERROR_CODES
-} from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountsDB } from "@/composables/useIndexedDB";
@@ -44,7 +40,7 @@ import { DomainValidators } from "@/domains/validation/validators";
 
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();
-const { handleUserConfirm } = useAlert();
+const { handleUserConfirm, handleUserError } = useAlert();
 const { setStorage } = useStorage();
 const { atomicImport } = useAccountsDB();
 const { isLoading, withLoading } = useDialogGuards();
@@ -87,7 +83,7 @@ const onChange = async (selectedFile: File | File[] | null): Promise<any> => {
   if (validationError) {
     await handleUserNotice(
       t("components.dialogs.importDatabase.title"),
-      "ImportDatabase"
+      "Corrupt import file"
     );
     resetFileInput();
     return;
@@ -356,22 +352,13 @@ const restoreFromRollback = async (
       }
     );
 
-    DomainUtils.log("IMPORT_DATABASE: Rollback completed successfully");
-  } catch (err) {
-    const errorMessage =
-      err instanceof AppError
-        ? err.message
-        : err instanceof Error
-        ? err.message
-        : "Unknown error";
     DomainUtils.log(
-      "IMPORT_DATABASE: CRITICAL - Rollback failed",
-      errorMessage
+      "COMPONENTS DIALOGS ImportDatabase: Rollback completed successfully"
     );
-    await handleUserNotice(
-      t("components.dialogs.importDatabase.title"),
-      "ImportDatabase"
-    );
+  } catch (err) {
+    await handleUserError(t("components.dialogs.importDatabase.title"), err, {
+      data: "Rollback failed"
+    });
   }
 };
 
@@ -433,7 +420,7 @@ const processBackupFile = async (): Promise<void> => {
       // TODO alert here
       await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase"
+        "Database imported"
       );
       return;
     }
@@ -502,10 +489,7 @@ const processBackupFile = async (): Promise<void> => {
     // At the end of the processBackupFile, after successful import
     //const duration = Date.now() - startTime;
 
-    await handleUserNotice(
-      t("components.dialogs.importDatabase.title"),
-      "ImportDatabase"
-    );
+    await handleUserNotice("", summary);
     resetFileInput();
   } catch {
     activeAccountId.value = originalActiveId;

@@ -1,6 +1,6 @@
 import { createI18n } from "vue-i18n";
-import deDE from "@/locales/de-DE.json";
-import enUS from "@/locales/en-US.json";
+import deDE from "@/_locales/de-DE.json";
+import enUS from "@/_locales/en-US.json";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 const { getUserLocale } = useBrowser();

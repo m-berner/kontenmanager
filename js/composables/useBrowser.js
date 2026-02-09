@@ -93,7 +93,9 @@ export function useBrowser() {
         }
     }
     function getMessage(code) {
-        return code in deNotifications ? browser.i18n.getMessage(code) : browser.i18n.getMessage("xx_error_code");
+        return code in deNotifications
+            ? browser.i18n.getMessage(code)
+            : browser.i18n.getMessage("xx_error_code");
     }
     async function handleUserNotice(mod, messageOrError) {
         try {
@@ -110,6 +112,9 @@ export function useBrowser() {
             }
             else if (typeof messageOrError === "string") {
                 messages = [mod, messageOrError];
+            }
+            else if (Array.isArray(messageOrError)) {
+                messages = [mod, ...messageOrError];
             }
             else {
                 messages = [mod, "Unknown user message"];

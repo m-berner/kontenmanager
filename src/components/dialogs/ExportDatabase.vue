@@ -159,13 +159,12 @@ const onClickOk = async (): Promise<void> => {
       if (estimatedSize > DEFAULTS.LARGE_FILE_THRESHOLD_KB) {
         const proceed = await handleUserConfirm(
           t("components.dialogs.exportDatabase.largeFileTitle"),
-          {},
+          [
+            t("components.dialogs.exportDatabase.messages.estimatedSize", {
+              size: estimatedSize.toFixed(2)
+            })
+          ],
           {
-            noticeLines: [
-              t("components.dialogs.exportDatabase.messages.estimatedSize", {
-                size: estimatedSize.toFixed(2)
-              })
-            ],
             confirm: {
               confirmText: t("components.dialogs.exportDatabase.continue"),
               cancelText: t("components.dialogs.exportDatabase.cancel"),

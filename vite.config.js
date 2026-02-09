@@ -80,7 +80,8 @@ export default defineConfig(({ mode }) => {
     }
   };
 
-  const devConfig = {
+  const testConfig = {
+    cacheDir: "../node_modules/.vite",
     test: {
       globals: true,
       environment: "happy-dom",
@@ -91,7 +92,10 @@ export default defineConfig(({ mode }) => {
         //"js/**/*.test.js",
         //"js/**/*.spec.js"
       ]
-    },
+    }
+  };
+
+  const devConfig = {
     plugins: [
       vue(),
       vuetify({ autoImport: true }),
@@ -143,11 +147,10 @@ export default defineConfig(({ mode }) => {
   };
 
   if (mode === "development") {
-    return {
-      ...baseConfig,
-      ...devConfig
-    };
+    return { ...baseConfig, ...devConfig };
+  } else if (mode === "test") {
+    return { ...baseConfig, ...testConfig };
+  } else {
+    return { ...baseConfig, ...prodConfig };
   }
-
-  return { ...baseConfig, ...prodConfig };
 });

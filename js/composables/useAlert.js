@@ -1,18 +1,36 @@
 import { useAlertStore } from "@/stores/alerts";
 import { DEFAULTS } from "@/config/defaults";
 import { DomainUtils } from "@/domains/utils";
+import { AppError } from "@/domains/errors";
 const recentMessages = new Map();
+const normalizedParams = (title, error) => {
+    let messages = [];
+    if (error instanceof AppError) {
+        let msg = browser.i18n.getMessage(error.code);
+        if (msg === "") {
+            msg = error.message;
+        }
+        messages = [`${title}: ${error._category}`, msg];
+    }
+    else if (error instanceof Error) {
+        messages = [title, error.name, error.message];
+    }
+    else if (typeof error === "string") {
+        messages = [title, error];
+    }
+    else if (Array.isArray(error)) {
+        messages = [title, ...error];
+    }
+    else {
+        messages = [title, "Unknown error"];
+    }
+    return messages.join("\n");
+};
 export function useAlert() {
-    async function handleUserInfo(_title, _error, _options) {
-        let message = "";
-        if (_error instanceof Error) {
-            message = _error.message;
-        }
-        else {
-            message = "Missing error";
-        }
-        const rateLimitMs = _options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
-        const key = `info|${_title}|${message}`;
+    async function handleUserInfo(title, error, options) {
+        const message = normalizedParams(title, error);
+        const rateLimitMs = options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
+        const key = `info|${title}|${message}`;
         const now = Date.now();
         const last = recentMessages.get(key) ?? 0;
         if (rateLimitMs > 0 && now - last < rateLimitMs) {
@@ -20,22 +38,13 @@ export function useAlert() {
         }
         recentMessages.set(key, now);
         const alerts = useAlertStore();
-        const duration = _options?.duration ?? DEFAULTS.USER_INFO.DURATION.INFO;
-        return alerts.info(_title, message, duration);
+        const duration = options?.duration ?? DEFAULTS.USER_INFO.DURATION.INFO;
+        return alerts.info(title, message, duration);
     }
-    async function handleUserConfirm(_title, _error, _options) {
-        let message = "";
-        if (_error instanceof Error) {
-            message = _error.message;
-        }
-        else if (_options?.noticeLines !== undefined) {
-            message = _options.noticeLines.join("\n");
-        }
-        else {
-            message = "Missing error";
-        }
-        const rateLimitMs = _options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
-        const key = `confirm|${_title}|${message}`;
+    async function handleUserConfirm(title, error, options) {
+        const message = normalizedParams(title, error);
+        const rateLimitMs = options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
+        const key = `confirm|${title}|${message}`;
         const now = Date.now();
         const last = recentMessages.get(key) ?? 0;
         if (rateLimitMs > 0 && now - last < rateLimitMs) {
@@ -43,21 +52,17 @@ export function useAlert() {
         }
         recentMessages.set(key, now);
         const alerts = useAlertStore();
-        return await alerts.confirm(_title, message, _options?.confirm);
+        return await alerts.confirm(title, message, options?.confirm);
     }
-    async function handleUserError(_title, _error, _options) {
-        const { data, logLevel = "log", correlationId } = _options;
-        let message = "";
+    async function handleUserError(title, error, options) {
+        const { data, logLevel = "log", correlationId } = options;
         let errorStack;
-        if (_error instanceof Error) {
-            message = _error.message;
-            errorStack = _error.stack;
+        if (error instanceof Error) {
+            errorStack = error.stack;
         }
-        else {
-            message = "Missing error";
-        }
-        const rateLimitMs = _options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
-        const key = `error|${_title}|${message}`;
+        const message = normalizedParams(title, error);
+        const rateLimitMs = options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
+        const key = `error|${title}|${message}`;
         const now = Date.now();
         const last = recentMessages.get(key) ?? 0;
         if (rateLimitMs > 0 && now - last < rateLimitMs) {
@@ -65,13 +70,13 @@ export function useAlert() {
         }
         recentMessages.set(key, now);
         const alerts = useAlertStore();
-        DomainUtils.log(`USE_ALERT ${_title}: ${message}`.trim(), {
+        DomainUtils.log(`USE_ALERT ${title}: ${message}`.trim(), {
             ...(data || {}),
             correlationId,
             errorStack
         }, logLevel);
-        const duration = _options?.duration ?? DEFAULTS.USER_INFO.DURATION.ERROR ?? null;
-        return alerts.error(_title, message, duration);
+        const duration = options?.duration ?? DEFAULTS.USER_INFO.DURATION.ERROR ?? null;
+        return alerts.error(title, message, duration);
     }
     return {
         handleUserInfo,

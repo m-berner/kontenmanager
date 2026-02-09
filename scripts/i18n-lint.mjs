@@ -12,7 +12,7 @@ import fg from "fast-glob";
 
 const ROOT = process.cwd();
 const SRC_DIR = path.join(ROOT, "../src");
-const LOCALES_DIR = path.join(SRC_DIR, "locales");
+const LOCALES_DIR = path.join(SRC_DIR, "_locales");
 
 // Add patterns for files where translations are referenced
 const SOURCE_PATTERNS = ["../src/**/*.{ts,tsx,js,jsx,vue}"];

@@ -194,7 +194,9 @@ export function useBrowser() {
    * @returns A promise resolving to the translated message.
    */
   function getMessage(code: keyof typeof deNotifications): string {
-    return code in deNotifications ? browser.i18n.getMessage(code) : browser.i18n.getMessage("xx_error_code");
+    return code in deNotifications
+      ? browser.i18n.getMessage(code)
+      : browser.i18n.getMessage("xx_error_code");
   }
 
   /**
@@ -205,7 +207,7 @@ export function useBrowser() {
    */
   async function handleUserNotice(
     mod: string,
-    messageOrError: string | Error | unknown
+    messageOrError: string | string[] | Error | unknown
   ): Promise<void> {
     try {
       let messages: string[] = [];
@@ -219,9 +221,12 @@ export function useBrowser() {
         messages = [mod, messageOrError.name, messageOrError.message];
       } else if (typeof messageOrError === "string") {
         messages = [mod, messageOrError];
+      } else if (Array.isArray(messageOrError)) {
+        messages = [mod, ...messageOrError];
       } else {
         messages = [mod, "Unknown user message"];
       }
+
       const notificationOption: browser.notifications.CreateNotificationOptions =
         {
           type: "basic",
