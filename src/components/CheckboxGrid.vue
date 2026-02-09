@@ -14,10 +14,9 @@
  */
 import { computed, onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { AppError } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
-import { useBrowser } from "@/composables/useBrowser";
+import {useAlert} from "@/composables/useAlert";
 import type { CheckboxGridProps } from "@/types";
 import { STORES } from "@/config/stores";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
@@ -26,7 +25,7 @@ import { COMPONENTS } from "@/config/components";
 const props = defineProps<CheckboxGridProps>();
 const { t } = useI18n();
 const { getStorage, setStorage } = useStorage();
-const { handleUserNotice } = useBrowser();
+const { handleUserError } = useAlert();
 
 const checked = ref<string[]>([]);
 const isLoading = ref<boolean>(true);
@@ -70,7 +69,7 @@ const setChecked = async (): Promise<void> => {
   try {
     await setStorage(config.value.storageKey, [...checked.value]);
   } catch (err) {
-    await handleUserNotice("Components CheckboxGrid", err);
+    await handleUserError("Components CheckboxGrid", err, {});
   } finally {
     isSaving.value = false;
   }
@@ -85,19 +84,13 @@ onBeforeMount(async () => {
     const storage = await getStorage([config.value.storageKey]);
     checked.value = (storage[config.value.storageKey] as string[]) || [];
   } catch (err) {
-    error.value =
-      err instanceof AppError
-        ? err.message
-        : err instanceof Error
-        ? err.message
-        : "Failed to load selections";
-    DomainUtils.log("CHECKBOX_GRID: onBeforeMount error", err);
+    await handleUserError("Components CheckboxGrid", err, {});
   } finally {
     isLoading.value = false;
   }
 });
 
-DomainUtils.log("--- components/CheckboxGrid.vue setup ---");
+DomainUtils.log("COMPONENTS CheckboxGrid");
 </script>
 
 <template>

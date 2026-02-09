@@ -12,7 +12,7 @@ import { ref } from "vue";
 import { DomainUtils } from "@/domains/utils";
 import { defineStore } from "pinia";
 import { useStorage } from "@/composables/useStorage";
-import { useBrowser } from "@/composables/useBrowser";
+import { useAlert } from "@/composables/useAlert";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 
 /**
@@ -28,7 +28,7 @@ import { BROWSER_STORAGE } from "@/domains/config/storage";
  */
 export const useSettingsStore = defineStore("settings", function () {
   const { setStorage } = useStorage();
-  const { handleUserNotice } = useBrowser();
+  const { handleUserError } = useAlert();
 
   /** Currently active UI skin or theme name. */
   const skin = ref<string>(BROWSER_STORAGE.SKIN.value);
@@ -94,7 +94,7 @@ export const useSettingsStore = defineStore("settings", function () {
       await setStorage(key, value);
     } catch (err) {
       refVar.value = prev;
-      handleUserNotice("STORES Settings", err);
+      await handleUserError("STORES Settings", err, {});
     }
   }
 

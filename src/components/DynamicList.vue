@@ -19,7 +19,7 @@ import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
-import { useBrowser } from "@/composables/useBrowser";
+import { useAlert } from "@/composables/useAlert";
 import { fetchService } from "@/services/fetch";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { COMPONENTS } from "@/config/components";
@@ -28,7 +28,7 @@ const props = defineProps<DynamicListProps>();
 
 const { t } = useI18n();
 const { getStorage, setStorage } = useStorage();
-const { handleUserNotice } = useBrowser();
+const { handleUserError } = useAlert();
 const runtime = useRuntimeStore();
 const { infoExchanges } = storeToRefs(runtime);
 const settings = useSettingsStore();
@@ -61,6 +61,7 @@ const addItem = async (item: string): Promise<void> => {
 
   isAdding.value = true; // Start loading
   error.value = null; // Clear previous errors
+
   try {
     if (!list.value?.includes(item)) {
       switch (props.type) {
@@ -85,7 +86,7 @@ const addItem = async (item: string): Promise<void> => {
       newItem.value = "";
     }
   } catch (err) {
-    await handleUserNotice("Components DynamicList", err);
+    await handleUserError("Components DynamicList", err, {});
   } finally {
     isAdding.value = false; // Stop loading
   }
@@ -110,7 +111,7 @@ const removeItem = async (n: number): Promise<void> => {
       default:
     }
   } catch (err) {
-    await handleUserNotice("Components DynamicList", err);
+    await handleUserError("Components DynamicList", err, {});
   }
 };
 
@@ -133,7 +134,7 @@ onBeforeMount(async () => {
         break;
     }
   } catch (err) {
-    await handleUserNotice("Components DynamicList", err);
+    await handleUserError("Components DynamicList", err, {});
   } finally {
     isLoading.value = false;
   }

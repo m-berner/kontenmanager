@@ -15,9 +15,7 @@ import defaultIcon from "@/assets/icon48.png";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
-import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
-//import { AppError } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { fetchService } from "@/services/fetch";
 import { INDEXED_DB } from "@/config/database";
@@ -25,12 +23,13 @@ import { databaseService } from "@/services/database";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { COMPONENTS } from "@/config/components";
 import { CODES } from "@/config/codes";
+import { useAlert } from "@/composables/useAlert";
 
 const { n, t } = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
 const runtime = useRuntimeStore();
-const { handleUserNotice } = useBrowser();
+const { handleUserError } = useAlert();
 const { setStorage } = useStorage();
 const { activeAccountId } = storeToRefs(settings);
 
@@ -81,7 +80,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
       message: t("mixed.smImportOnly.message")
     });
   } catch (err) {
-    await handleUserNotice("VIEWS TitleBar", err);
+    await handleUserError("VIEWS TitleBar", err, {});
   }
 };
 

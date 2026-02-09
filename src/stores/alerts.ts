@@ -53,7 +53,7 @@ function generateUniqueId(): number {
  */
 export const useAlertStore = defineStore("alerts", () => {
   /** Queue of all pending alerts. */
-  const alerts = ref<VisibleAlertData[]>([]);
+  const alertQueue = ref<VisibleAlertData[]>([]);
   /** The alert currently being displayed. */
   const currentAlert = ref<VisibleAlertData>(defaultAlert);
   /** The active confirmation dialog configuration. */
@@ -63,7 +63,7 @@ export const useAlertStore = defineStore("alerts", () => {
 
   /** Number of alerts waiting in the queue. */
   const pendingCount = computed(() =>
-    alerts.value.length < 1 ? 0 : alerts.value.length - 1
+    alertQueue.value.length < 1 ? 0 : alertQueue.value.length - 1
   );
   /** Whether the alert overlay should be visible. */
   const showOverlay = computed(() => currentAlert.value.id > -1);
@@ -107,7 +107,7 @@ export const useAlertStore = defineStore("alerts", () => {
     const id = generateUniqueId();
     const alert: VisibleAlertData = { id, type, title, message };
 
-    alerts.value.push(alert);
+    alertQueue.value.push(alert);
 
     // Show immediately if no alert is currently displayed
     if (currentAlert.value.id === -1) {
@@ -130,8 +130,8 @@ export const useAlertStore = defineStore("alerts", () => {
    * Sets currentAlert to the first queued or resets to default if the queue is empty.
    */
   function showNext(): void {
-    if (alerts.value.length > 0) {
-      currentAlert.value = { ...alerts.value[0] };
+    if (alertQueue.value.length > 0) {
+      currentAlert.value = { ...alertQueue.value[0] };
     } else {
       currentAlert.value = { ...defaultAlert };
     }
@@ -153,7 +153,7 @@ export const useAlertStore = defineStore("alerts", () => {
       return;
     }
 
-    const index = alerts.value.findIndex((alert) => alert.id === id);
+    const index = alertQueue.value.findIndex((alert) => alert.id === id);
 
     if (index === -1) {
       DomainUtils.log("ALERT_STORE: Alert not found for dismissal", id, "warn");
@@ -164,7 +164,7 @@ export const useAlertStore = defineStore("alerts", () => {
     clearAlertTimeout(id);
 
     const wasCurrentAlert = index === 0;
-    alerts.value.splice(index, 1);
+    alertQueue.value.splice(index, 1);
 
     // If the dismissed alert was currently displayed, show the next one
     if (wasCurrentAlert) {
@@ -325,7 +325,7 @@ export const useAlertStore = defineStore("alerts", () => {
     timeouts.value.clear();
 
     // Clear alerts
-    alerts.value = [];
+    alertQueue.value = [];
     currentAlert.value = { ...defaultAlert };
 
     // Cancel confirmation dialog if active
@@ -374,4 +374,4 @@ export const useAlertStore = defineStore("alerts", () => {
   };
 });
 
-DomainUtils.log("--- stores/alerts.ts ---");
+DomainUtils.log("STORES alerts");

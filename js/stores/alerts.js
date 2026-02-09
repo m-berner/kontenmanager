@@ -22,11 +22,11 @@ function generateUniqueId() {
     return ++alertIdCounter;
 }
 export const useAlertStore = defineStore("alerts", () => {
-    const alerts = ref([]);
+    const alertQueue = ref([]);
     const currentAlert = ref(defaultAlert);
     const confirmationDialog = ref(defaultConfirmation);
     const timeouts = ref(new Map());
-    const pendingCount = computed(() => alerts.value.length < 1 ? 0 : alerts.value.length - 1);
+    const pendingCount = computed(() => alertQueue.value.length < 1 ? 0 : alertQueue.value.length - 1);
     const showOverlay = computed(() => currentAlert.value.id > -1);
     const showConfirmation = computed(() => confirmationDialog.value.id > -1);
     const alertType = computed(() => currentAlert.value?.type || "info");
@@ -42,7 +42,7 @@ export const useAlertStore = defineStore("alerts", () => {
     function showAlert(type, title, message, duration = null) {
         const id = generateUniqueId();
         const alert = { id, type, title, message };
-        alerts.value.push(alert);
+        alertQueue.value.push(alert);
         if (currentAlert.value.id === -1) {
             showNext();
         }
@@ -55,8 +55,8 @@ export const useAlertStore = defineStore("alerts", () => {
         return id;
     }
     function showNext() {
-        if (alerts.value.length > 0) {
-            currentAlert.value = { ...alerts.value[0] };
+        if (alertQueue.value.length > 0) {
+            currentAlert.value = { ...alertQueue.value[0] };
         }
         else {
             currentAlert.value = { ...defaultAlert };
@@ -67,14 +67,14 @@ export const useAlertStore = defineStore("alerts", () => {
             DomainUtils.log("ALERT_STORE: Attempted to dismiss alert with undefined ID", null, "warn");
             return;
         }
-        const index = alerts.value.findIndex((alert) => alert.id === id);
+        const index = alertQueue.value.findIndex((alert) => alert.id === id);
         if (index === -1) {
             DomainUtils.log("ALERT_STORE: Alert not found for dismissal", id, "warn");
             return;
         }
         clearAlertTimeout(id);
         const wasCurrentAlert = index === 0;
-        alerts.value.splice(index, 1);
+        alertQueue.value.splice(index, 1);
         if (wasCurrentAlert) {
             showNext();
         }
@@ -144,7 +144,7 @@ export const useAlertStore = defineStore("alerts", () => {
             clearTimeout(timeoutId);
         });
         timeouts.value.clear();
-        alerts.value = [];
+        alertQueue.value = [];
         currentAlert.value = { ...defaultAlert };
         if (confirmationDialog.value.id > -1 && confirmationDialog.value.reject) {
             try {
@@ -181,4 +181,4 @@ export const useAlertStore = defineStore("alerts", () => {
         cleanup
     };
 });
-DomainUtils.log("--- stores/alerts.ts ---");
+DomainUtils.log("STORES alerts");

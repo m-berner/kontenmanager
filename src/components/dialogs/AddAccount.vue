@@ -13,7 +13,6 @@ import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-//import { useAlert } from "@/composables/useAlert";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountForm } from "@/composables/useForms";
 import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
@@ -25,6 +24,7 @@ import { useAccountsDB, useBookingTypesDB } from "@/composables/useIndexedDB";
 import { INDEXED_DB } from "@/config/database";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser} from "@/composables/useBrowser";
+import { useAlert } from "@/composables/useAlert";
 
 const { t } = useI18n();
 const { setStorage } = useStorage();
@@ -32,7 +32,7 @@ const { add: addAccountDB } = useAccountsDB();
 const { add: addBookingTypeDB } = useBookingTypesDB();
 const { accountFormData, mapAccountFormToDb, reset } = useAccountForm();
 const { submitGuard } = useDialogGuards();
-//const { handleUserInfo } = useAlert();
+const { handleUserError } = useAlert();
 const { handleUserNotice } = useBrowser();
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
@@ -112,7 +112,7 @@ const onClickOk = async (): Promise<void> => {
       try {
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, accountId);
       } catch (err) {
-        await handleUserNotice("COMPONENTS DIALOGS AddAccount", err);
+        await handleUserError("COMPONENTS DIALOGS AddAccount", err, {});
       }
       records.clean(false);
       runtime.resetTeleport();

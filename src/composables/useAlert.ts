@@ -24,11 +24,7 @@ const recentMessages = new Map<string, number>();
 const normalizedParams = (title: string, error: string | Error | unknown) => {
   let messages: string[] = [];
   if (error instanceof AppError) {
-    let msg = browser.i18n.getMessage(error.code);
-    if (msg === "") {
-      msg = error.message;
-    }
-    messages = [`${title}: ${error._category}`, msg];
+    messages = [`${title}: ${error._category}`, error.message];
   } else if (error instanceof Error) {
     messages = [title, error.name, error.message];
   } else if (typeof error === "string") {
@@ -152,7 +148,7 @@ export function useAlert() {
       logLevel
     );
     const duration =
-      options?.duration ?? DEFAULTS.USER_INFO.DURATION.ERROR ?? null;
+      options?.duration ?? DEFAULTS.USER_INFO.DURATION.ERROR;
     return alerts.error(title, message, duration);
   }
 

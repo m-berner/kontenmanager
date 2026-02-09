@@ -406,9 +406,9 @@ const processBackupFile = async (): Promise<void> => {
     const validation = ImportExportService.validateBackup(backup);
     // Use type guard
     if (!validation.isValid) {
-      await handleUserNotice(
+      await handleUserError(
         "COMPONENTS DIALOGS ImportDatabase",
-        getMessage("xx_invalid_backup")
+        getMessage("xx_invalid_backup"), {}
       );
       return;
     }
@@ -540,9 +540,9 @@ const onClickOk = async (): Promise<void> => {
             : rollbackErr instanceof Error
             ? rollbackErr.message
             : "Unknown error";
-        await handleUserNotice(
+        await handleUserError(
           t("components.dialogs.importDatabase.title"),
-          "ImportDatabase"
+          rollbackErr, {}
         );
         DomainUtils.log(
           "IMPORT_DATABASE: CRITICAL - Rollback failed",

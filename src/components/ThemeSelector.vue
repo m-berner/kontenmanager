@@ -16,14 +16,14 @@ import { useI18n } from "vue-i18n";
 import { useTheme } from "vuetify/framework";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
-import { useBrowser } from "@/composables/useBrowser";
+import { useAlert } from "@/composables/useAlert";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
 import { createThemes } from "@/config/views";
 
 const { t } = useI18n();
 const theme = useTheme();
 const { getStorage, setStorage } = useStorage();
-const { handleUserNotice } = useBrowser();
+const { handleUserError } = useAlert();
 
 const THEMES = computed(() => createThemes(t));
 
@@ -32,9 +32,9 @@ const skin = ref<string>("");
 const setSkin = async (): Promise<void> => {
   DomainUtils.log("COMPONENTS THEME_SELECTOR: setSkin");
   try {
-  await setStorage(BROWSER_STORAGE.SKIN.key, skin.value);
+    await setStorage(BROWSER_STORAGE.SKIN.key, skin.value);
   } catch (err) {
-    await handleUserNotice("Components ThemeSelector", err);
+    await handleUserError("Components ThemeSelector", err, {});
   }
 };
 
