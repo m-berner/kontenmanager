@@ -15,7 +15,7 @@ import { DomainUtils } from "@/domains/utils";
 
 const props = defineProps<ContentCardProps>();
 
-DomainUtils.log("--- components/ContentCard.vue setup ---");
+DomainUtils.log("COMPONENTS ContentCard: setup");
 </script>
 
 <template>

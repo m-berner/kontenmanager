@@ -8,6 +8,7 @@
 
 import type { ComputedRef } from "vue";
 import { computed, ref } from "vue";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Composable that provides a favicon URL with fallback providers and
@@ -83,3 +84,5 @@ export function useFavicon(domain: ComputedRef<string>, size = 48) {
     reset
   };
 }
+
+DomainUtils.log("COMPOSABLE useFavicon");

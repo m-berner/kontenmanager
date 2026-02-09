@@ -74,7 +74,7 @@ onBeforeMount(() => {
   selected.value = null;
 });
 
-DomainUtils.log("--- components/dialogs/FadeInStock.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS FadeInStock: setup");
 </script>
 
 <template>

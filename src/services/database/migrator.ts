@@ -146,3 +146,5 @@ export class DatabaseMigrator {
     // Placeholder for future migrations
   }
 }
+
+DomainUtils.log("SERVICES DATABASE migrator");

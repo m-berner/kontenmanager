@@ -128,4 +128,4 @@ export const useBookingsStore = defineStore("bookings", function () {
         clean
     };
 });
-DomainUtils.log("--- stores/bookings.ts ---");
+DomainUtils.log("STORES bookings");

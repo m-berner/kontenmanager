@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { DomainUtils } from "@/domains/utils";
 export function useDialogGuards() {
     const isLoading = ref(false);
     const loadingOperations = ref(new Set());
@@ -88,3 +89,4 @@ export function useDialogGuards() {
         submitGuard
     };
 }
+DomainUtils.log("COMPOSABLE useDialogGuards");

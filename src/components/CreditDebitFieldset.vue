@@ -38,7 +38,7 @@ const debitValue = computed({
 const cRules = computed(() => props.rules[0](props.modelValue.debit));
 const dRules = computed(() => props.rules[1](props.modelValue.credit));
 
-DomainUtils.log("--- components/CreditDebitFieldset.vue setup ---");
+DomainUtils.log("COMPONENTS CreditDebitFieldset: setup");
 </script>
 
 <template>

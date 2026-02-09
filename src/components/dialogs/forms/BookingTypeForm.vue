@@ -50,7 +50,7 @@ const onClear = (): void => {
   edit.value = false;
 };
 
-DomainUtils.log("--- components/dialogs/forms/BookingTypeForm.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS FORMS BookingTypeForm: setup");
 </script>
 
 <template>

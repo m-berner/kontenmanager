@@ -7,6 +7,7 @@
  */
 
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Composable providing a simple, declarative API for registering keyboard shortcuts.
@@ -105,3 +106,5 @@ export function useKeyboardShortcuts() {
     enabled
   };
 }
+
+DomainUtils.log("COMPOSABLE useKeyboardShortcuts");

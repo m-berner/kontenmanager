@@ -83,7 +83,7 @@ onBeforeUnmount(() => {
   if (timeoutId) clearTimeout(timeoutId);
 });
 
-DomainUtils.log("--- components/dialogs/forms/AccountForm.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS FORMS AccountForm: setup");
 </script>
 
 <template>

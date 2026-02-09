@@ -204,7 +204,7 @@ defineExpose({
   title: t("components.dialogs.exportDatabase.title")
 });
 
-DomainUtils.log("COMPONENTS DIALOGS ExportDatabase");
+DomainUtils.log("COMPONENTS DIALOGS ExportDatabase: setup");
 </script>
 
 <template>

@@ -9,6 +9,7 @@
 import { INDEXED_DB } from "@/config/database";
 import type { StockDb } from "@/types";
 import { IndexedDbBase } from "../base";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Repository for stock-store specific queries.
@@ -49,3 +50,5 @@ export class StockRepository {
     return this._dbBase.deleteByCursor(index, IDBKeyRange.only(accountId));
   }
 }
+
+DomainUtils.log("SERVICES DATABASE REPOSITORIES StockRepository");

@@ -74,3 +74,4 @@ export function useDialogSubmit() {
         createUpdateHandler
     };
 }
+DomainUtils.log("COMPOSABLE useDialogSubmit");

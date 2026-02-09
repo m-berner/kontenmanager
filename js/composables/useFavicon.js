@@ -1,4 +1,5 @@
 import { computed, ref } from "vue";
+import { DomainUtils } from "@/domains/utils";
 export function useFavicon(domain, size = 48) {
     const error = ref(false);
     const loading = ref(true);
@@ -45,3 +46,4 @@ export function useFavicon(domain, size = 48) {
         reset
     };
 }
+DomainUtils.log("COMPOSABLE useFavicon");

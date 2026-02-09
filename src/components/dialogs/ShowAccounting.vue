@@ -112,7 +112,7 @@ const getAccountData = (year: number) => {
 
 defineExpose({ title: t("components.dialogs.showAccounting.title") });
 
-DomainUtils.log("--- components/dialogs/ShowAccounting.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS ShowAccounting: setup");
 </script>
 
 <template>

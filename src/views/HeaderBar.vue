@@ -398,7 +398,7 @@ const onIconClick = async (ev: Event): Promise<void> => {
   await dialogActions[dialogId]();
 };
 
-DomainUtils.log("--- views/HeaderBar.vue setup ---");
+DomainUtils.log("VIEWS HeaderBar: setup");
 </script>
 
 <template>

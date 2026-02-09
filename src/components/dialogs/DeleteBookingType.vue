@@ -84,7 +84,7 @@ onBeforeMount(() => {
   reset();
 });
 
-DomainUtils.log("--- components/dialogs/DeleteBookingType.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: setup");
 </script>
 
 <template>

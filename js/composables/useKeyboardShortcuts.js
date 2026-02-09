@@ -1,4 +1,5 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import { DomainUtils } from "@/domains/utils";
 export function useKeyboardShortcuts() {
     const shortcuts = ref(new Map());
     const enabled = ref(true);
@@ -53,3 +54,4 @@ export function useKeyboardShortcuts() {
         enabled
     };
 }
+DomainUtils.log("COMPOSABLE useKeyboardShortcuts");

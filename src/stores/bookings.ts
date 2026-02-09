@@ -256,4 +256,4 @@ export const useBookingsStore = defineStore("bookings", function () {
   };
 });
 
-DomainUtils.log("--- stores/bookings.ts ---");
+DomainUtils.log("STORES bookings");

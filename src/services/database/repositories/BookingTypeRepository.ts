@@ -9,6 +9,7 @@
 import { INDEXED_DB } from "@/config/database";
 import type { BookingTypeDb } from "@/types";
 import { IndexedDbBase } from "../base";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Repository for booking-type store specific queries.
@@ -49,3 +50,5 @@ export class BookingTypeRepository {
     return this._dbBase.deleteByCursor(index, IDBKeyRange.only(accountId));
   }
 }
+
+DomainUtils.log("SERVICES DATABASE REPOSITORIES BookingTypeRepository");

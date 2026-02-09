@@ -9,6 +9,7 @@
 import { INDEXED_DB } from "@/config/database";
 import type { AccountDb } from "@/types";
 import { IndexedDbBase } from "../base";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Repository for account-store specific queries.
@@ -38,3 +39,5 @@ export class AccountRepository {
     return this._dbBase.remove(INDEXED_DB.STORE.ACCOUNTS.NAME, accountId, tx);
   }
 }
+
+DomainUtils.log("SERVICES DATABASE REPOSITORIES AccountRepository");

@@ -7,6 +7,7 @@
  */
 
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Low-level base class for IndexedDB operations.
@@ -324,3 +325,5 @@ export class IndexedDbBase {
     return this.db!.transaction(storeName, mode);
   }
 }
+
+DomainUtils.log("SERVICES DATABASE base");

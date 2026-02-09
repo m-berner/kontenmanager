@@ -140,7 +140,7 @@ onBeforeMount(async () => {
   }
 });
 
-DomainUtils.log("Components DynamicList");
+DomainUtils.log("Components DynamicList: setup");
 </script>
 
 <template>

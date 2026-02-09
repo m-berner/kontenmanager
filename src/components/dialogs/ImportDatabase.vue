@@ -564,7 +564,7 @@ defineExpose({
   title: t("components.dialogs.importDatabase.title")
 });
 
-DomainUtils.log("--- components/dialogs/ImportDatabase.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: setup");
 </script>
 
 <template>

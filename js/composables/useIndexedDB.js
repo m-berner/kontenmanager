@@ -1,6 +1,7 @@
 import { INDEXED_DB } from "@/config/database";
 import { databaseService } from "@/services/database";
 import { DomainValidators } from "@/domains/validation/validators";
+import { DomainUtils } from "@/domains/utils";
 function useDBStore(storeName) {
     const dbi = databaseService;
     return {
@@ -69,3 +70,4 @@ export function useStocksDB() {
         }
     };
 }
+DomainUtils.log("COMPOSABLE useIndexedDB");

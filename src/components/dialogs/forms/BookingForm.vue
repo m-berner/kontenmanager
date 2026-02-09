@@ -131,7 +131,7 @@ const sortedMarkets = computed(() =>
   [...markets].sort((a, b) => a.localeCompare(b))
 );
 
-DomainUtils.log("--- components/dialogs/forms/BookingForm.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
 </script>
 
 <template>

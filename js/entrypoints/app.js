@@ -25,4 +25,4 @@ app.use(routerPlugin.router);
 app.use(vuetifyPlugin.vuetify);
 app.use(componentsPlugin);
 app.mount("#app");
-DomainUtils.log("ENTRYPOINTS APP", { version: manifest.value.version, mode: import.meta.env.MODE }, "info");
+DomainUtils.log("ENTRYPOINTS app", { version: manifest.value.version, mode: import.meta.env.MODE }, "info");

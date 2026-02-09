@@ -14,6 +14,7 @@ import {
   ERROR_CODES
 } from "@/domains/errors";
 import type { FormInterface, FormValidateResultType } from "@/types";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Composable providing common guards and wrappers for dialog operations.
@@ -212,3 +213,5 @@ export function useDialogGuards() {
     submitGuard
   };
 }
+
+DomainUtils.log("COMPOSABLE useDialogGuards");

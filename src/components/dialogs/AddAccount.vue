@@ -127,7 +127,7 @@ onBeforeMount(() => {
   reset();
 });
 
-DomainUtils.log("--- components/dialogs/AddAccount.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS AddAccount: setup");
 </script>
 
 <template>

@@ -39,3 +39,4 @@ export const useRecordsStore = defineStore("records", function () {
         clean
     };
 });
+DomainUtils.log("STORES records");

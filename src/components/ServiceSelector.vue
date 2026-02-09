@@ -47,7 +47,7 @@ onBeforeMount(async () => {
   }
 });
 
-DomainUtils.log("--- components/ServiceSelector.vue setup ---");
+DomainUtils.log("COMPONENTS ServiceSelector: setup");
 </script>
 
 <template>

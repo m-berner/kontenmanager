@@ -80,7 +80,7 @@ onMounted(() => {
   reset();
 });
 
-DomainUtils.log("--- components/dialogs/AddStock.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS AddStock: setup");
 </script>
 
 <template>

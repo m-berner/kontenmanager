@@ -81,7 +81,7 @@ onBeforeMount(() => {
   loadCurrentAccount();
 });
 
-DomainUtils.log("--- components/dialogs/UpdateAccount.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS UpdateAccount: setup");
 </script>
 
 <template>

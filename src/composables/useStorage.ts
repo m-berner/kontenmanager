@@ -13,6 +13,7 @@ import {
   ERROR_CODES
 } from "@/domains/errors";
 import { BROWSER_STORAGE } from "@/domains/config/storage";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Composable providing access to browser local storage.
@@ -142,3 +143,5 @@ export function useStorage() {
     installStorageLocal
   };
 }
+
+DomainUtils.log("COMPOSABLE useStorage");

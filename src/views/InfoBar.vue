@@ -41,7 +41,7 @@ const materialValues = computed(() => {
   return result;
 });
 
-DomainUtils.log("--- views/InfoBar.vue setup ---");
+DomainUtils.log("VIEWS InfoBar: setup");
 </script>
 
 <template>

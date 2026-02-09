@@ -122,7 +122,7 @@ onUnmounted(() => {
   unregister("Ctrl+Alt+R");
 });
 
-DomainUtils.log("--- views/HomeContent.vue setup ---");
+DomainUtils.log("VIEWS HomeContent: setup");
 </script>
 
 <template>

@@ -96,7 +96,7 @@ defineExpose({
   title: t("components.dialogs.deleteAccountConfirmation.title")
 });
 
-DomainUtils.log("COMPONENTS DIALOGS DeleteAccountConfirmation");
+DomainUtils.log("COMPONENTS DIALOGS DeleteAccountConfirmation: setup");
 </script>
 
 <template>

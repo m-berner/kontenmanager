@@ -65,3 +65,4 @@ export function useDomain(url) {
         pathname
     };
 }
+DomainUtils.log("COMPOSABLE useDomain");

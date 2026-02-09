@@ -201,4 +201,4 @@ export const useSettingsStore = defineStore("settings", function () {
   };
 });
 
-DomainUtils.log("--- stores/settings.ts ---");
+DomainUtils.log("STORES settings");

@@ -209,3 +209,4 @@ export function useBookingTypeForm() {
     }
     return bookingTypeFormManagerInstance;
 }
+DomainUtils.log("COMPOSABLE useForms");

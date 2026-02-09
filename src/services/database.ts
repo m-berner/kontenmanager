@@ -360,4 +360,4 @@ export class DatabaseService extends IndexedDbBase {
 
 export const databaseService = new DatabaseService();
 
-DomainUtils.log("--- services/database.ts ---");
+DomainUtils.log("SERVICES database");

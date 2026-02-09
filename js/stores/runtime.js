@@ -65,4 +65,4 @@ export const useRuntimeStore = defineStore("runtime", function () {
         setCurrentView
     };
 });
-DomainUtils.log("--- stores/runtime.ts ---");
+DomainUtils.log("STORES runtime");

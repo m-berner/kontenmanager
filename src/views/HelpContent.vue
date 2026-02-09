@@ -14,7 +14,7 @@
  */
 import { DomainUtils } from "@/domains/utils";
 
-DomainUtils.log("--- views/HelpContent.vue setup ---");
+DomainUtils.log("VIEWS HelpContent: setup");
 </script>
 
 <template>

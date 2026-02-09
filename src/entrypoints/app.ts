@@ -70,7 +70,7 @@ app.use(componentsPlugin);
 app.mount("#app");
 
 DomainUtils.log(
-  "ENTRYPOINTS APP",
+  "ENTRYPOINTS app",
   { version: manifest.value.version, mode: import.meta.env.MODE },
   "info"
 );

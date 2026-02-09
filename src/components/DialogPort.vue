@@ -25,7 +25,7 @@ const { isLoading } = useDialogGuards();
 
 const dialogRef = ref<DialogComponent>();
 
-DomainUtils.log("--- components/DialogPort.vue setup ---");
+DomainUtils.log("COMPONENTS DialogPort: setup");
 </script>
 
 <template>

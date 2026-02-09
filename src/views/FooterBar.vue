@@ -14,7 +14,7 @@ import { DEFAULTS } from "@/config/defaults";
 
 const { t } = useI18n();
 
-DomainUtils.log("--- views/FooterBar.vue setup ---");
+DomainUtils.log("VIEWS FooterBar: setup");
 </script>
 
 <template>

@@ -90,7 +90,7 @@ onBeforeMount(async () => {
   }
 });
 
-DomainUtils.log("COMPONENTS CheckboxGrid");
+DomainUtils.log("COMPONENTS CheckboxGrid: setup");
 </script>
 
 <template>

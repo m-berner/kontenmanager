@@ -516,4 +516,4 @@ export async function initializeApp(
   return appService.initializeApp(translations, signal);
 }
 
-DomainUtils.log("SERVICES app", { phase: "module", event: "loaded" });
+DomainUtils.log("SERVICES app", { phase: "module", event: "loaded" }, "info");

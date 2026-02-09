@@ -186,4 +186,4 @@ export const useStocksStore = defineStore("stocks", function () {
         refreshOnlineData
     };
 });
-DomainUtils.log("--- stores/stocks.ts ---");
+DomainUtils.log("STORES stocks");

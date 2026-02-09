@@ -34,7 +34,7 @@ const formatData = computed<ContentItem[] | undefined>(() => {
   }));
 });
 
-DomainUtils.log("--- views/SheetContent.vue setup ---");
+DomainUtils.log("VIEW SheetContent: setup");
 </script>
 
 <template>

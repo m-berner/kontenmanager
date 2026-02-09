@@ -81,7 +81,7 @@ onBeforeMount(() => {
   loadCurrentStock();
 });
 
-DomainUtils.log("--- components/dialogs/UpdateStock.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS UpdateStock: setup");
 </script>
 
 <template>

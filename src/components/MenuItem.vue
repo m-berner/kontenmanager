@@ -9,6 +9,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import type { MenuItemData } from "@/types";
+import { DomainUtils } from "@/domains/utils";
 
 const props = defineProps<{
   item: MenuItemData;
@@ -23,6 +24,8 @@ const itemClass = computed(() => ({
   "menu-item--danger": props.item.variant === "danger",
   "menu-item--highlighted": props.isHighlighted
 }));
+
+DomainUtils.log("COMPONENTS MenuItem: setup");
 </script>
 
 <template>

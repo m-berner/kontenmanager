@@ -39,3 +39,4 @@ async function onClick() {
 }
 runtimeOnInstalled(onInstall);
 actionOnClicked(onClick);
+DomainUtils.log("ENTRYPOINTS background");

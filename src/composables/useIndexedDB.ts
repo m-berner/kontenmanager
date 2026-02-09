@@ -18,6 +18,7 @@ import type {
 import { INDEXED_DB } from "@/config/database";
 import { databaseService } from "@/services/database";
 import { DomainValidators } from "@/domains/validation/validators";
+import { DomainUtils } from "@/domains/utils";
 
 /**
  * Generic internal helper to create store-specific IndexedDB wrappers.
@@ -156,3 +157,5 @@ export function useStocksDB() {
     }
   };
 }
+
+DomainUtils.log("COMPOSABLE useIndexedDB");

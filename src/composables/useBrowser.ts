@@ -301,3 +301,6 @@ export function useBrowser() {
     writeBufferToFile
   };
 }
+
+DomainUtils.log("COMPOSABLE useBrowser");
+

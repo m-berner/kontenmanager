@@ -212,7 +212,7 @@ watch(stocksPerPage, async () => {
   }
 });
 
-DomainUtils.log("--- views/CompanyContent.vue setup ---");
+DomainUtils.log("VIEWS CompanyContent: setup");
 </script>
 
 <template>

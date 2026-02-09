@@ -85,7 +85,7 @@ onMounted(async () => {
   formattedValue.value = formatCurrency(props.modelValue);
 });
 
-DomainUtils.log("--- components/CurrencyInput.vue setup ---");
+DomainUtils.log("COMPONENTS CurrencyInput: setup");
 </script>
 
 <template>

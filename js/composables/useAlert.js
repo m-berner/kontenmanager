@@ -80,3 +80,4 @@ export function useAlert() {
         handleUserError
     };
 }
+DomainUtils.log("COMPOSABLE useAlert");

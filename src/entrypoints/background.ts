@@ -82,3 +82,5 @@ async function onClick(): Promise<void> {
 
 runtimeOnInstalled(onInstall);
 actionOnClicked(onClick);
+
+DomainUtils.log("ENTRYPOINTS background");

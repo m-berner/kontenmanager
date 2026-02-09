@@ -6,6 +6,7 @@ import { computed, onUnmounted, readonly, ref } from "vue";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { CODES } from "@/config/codes";
 import { useBrowser } from "@/composables/useBrowser";
+import { DomainUtils } from "@/domains/utils";
 export function useMenuHighlight() {
     const highlightedItems = ref(new Map());
     const timeouts = new Map();
@@ -184,3 +185,4 @@ export function useMenuAction() {
         hasAction
     };
 }
+DomainUtils.log("COMPOSABLE useMenu");

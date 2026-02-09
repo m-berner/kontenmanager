@@ -103,3 +103,5 @@ export function useDomain(url: Ref<string>) {
     pathname
   };
 }
+
+DomainUtils.log("COMPOSABLE useDomain");

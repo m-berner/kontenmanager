@@ -31,7 +31,7 @@ const TABS = computed(() => createTabs(t));
 const tab = ref<number>(0);
 
 DomainUtils.log(
-  "--- views/OptionsIndex.vue setup ---",
+  "VIES OptionsIndex: setup",
   window.location.href,
   "info"
 );

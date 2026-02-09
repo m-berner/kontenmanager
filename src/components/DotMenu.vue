@@ -45,7 +45,7 @@ const handleItemClick = async (item: MenuItemData) => {
   }
 };
 
-DomainUtils.log("--- components/DotMenu.vue setup ---");
+DomainUtils.log("COMPONENTS DotMenu: setup");
 </script>
 
 <template>

@@ -78,4 +78,4 @@ export const useSettingsStore = defineStore("settings", function () {
         setActiveAccountId
     };
 });
-DomainUtils.log("--- stores/settings.ts ---");
+DomainUtils.log("STORES settings");

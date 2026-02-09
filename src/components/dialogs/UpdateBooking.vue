@@ -104,7 +104,7 @@ onBeforeMount(() => {
   loadCurrentBooking();
 });
 
-DomainUtils.log("--- components/dialogs/UpdateBooking.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS UpdateBooking: setup");
 </script>
 
 <template>

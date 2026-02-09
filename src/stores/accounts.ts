@@ -115,4 +115,4 @@ export const useAccountsStore = defineStore("accounts", function () {
   };
 });
 
-DomainUtils.log("--- stores/accounts.ts ---");
+DomainUtils.log("STORES accounts");

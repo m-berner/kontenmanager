@@ -68,6 +68,8 @@ const validateForm = async (): Promise<boolean> => {
 };
 
 defineExpose({ formRef, validateForm });
+
+DomainUtils.log("COMPONENTS DIALOGS FORMS BaseDialogForm: setup");
 </script>
 
 <template>

@@ -19,6 +19,7 @@ import {
 } from "@/domains/errors";
 import { CODES } from "@/config/codes";
 import { useBrowser } from "@/composables/useBrowser";
+import { DomainUtils } from "@/domains/utils";
 
 type HighlightColor = "green" | "red" | "yellow" | "blue";
 
@@ -334,3 +335,5 @@ export function useMenuAction() {
     hasAction
   };
 }
+
+DomainUtils.log("COMPOSABLE useMenu");

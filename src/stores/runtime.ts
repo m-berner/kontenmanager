@@ -154,4 +154,4 @@ export const useRuntimeStore = defineStore("runtime", function () {
   };
 });
 
-DomainUtils.log("--- stores/runtime.ts ---");
+DomainUtils.log("STORES runtime");

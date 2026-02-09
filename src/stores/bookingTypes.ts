@@ -142,4 +142,4 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
   };
 });
 
-DomainUtils.log("--- stores/bookingTypes.ts ---");
+DomainUtils.log("STORES bookingTypes");

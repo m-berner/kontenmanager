@@ -83,7 +83,7 @@ onBeforeMount(() => {
   reset();
 });
 
-DomainUtils.log("--- components/dialogs/AddBookingType.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS AddBookingType: setup");
 </script>
 
 <template>

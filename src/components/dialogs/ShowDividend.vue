@@ -27,7 +27,7 @@ const HEADERS = computed(() => createDividendHeaders(t));
 
 defineExpose({ title: t("components.dialogs.showDividend.title") });
 
-DomainUtils.log("--- components/dialogs/ShowDividend.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS ShowDividend: setup");
 </script>
 
 <template>

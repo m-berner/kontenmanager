@@ -63,7 +63,7 @@ const onUpdateIsin = async () => {
   }
 };
 
-DomainUtils.log("--- components/dialogs/forms/StockForm.vue setup ---");
+DomainUtils.log("COMPONENTS DIALOGS FORMS StockForm: setup");
 </script>
 
 <template>

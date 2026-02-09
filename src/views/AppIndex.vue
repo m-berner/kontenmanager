@@ -63,7 +63,7 @@ onBeforeMount(async () => {
 });
 
 DomainUtils.log(
-  "VIEWS APP_INDEX: setup",
+  "VIEWS AppIndex: setup",
   window.location.href,
   "info"
 );
