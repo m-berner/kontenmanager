@@ -1,0 +1,155 @@
+import { onBeforeMount, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRecordsStore } from "@/stores/records";
+import { useRuntimeStore } from "@/stores/runtime";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { DomainUtils } from "@/domains/utils";
+import { useStocksDB } from "@/composables/useIndexedDB";
+import { useBrowser } from "@/composables/useBrowser";
+import { useDialogGuards } from "@/composables/useDialogGuards";
+import { databaseService } from "@/services/database";
+const { t } = useI18n();
+const { handleUserNotice } = useBrowser();
+const { update } = useStocksDB();
+const { isLoading, ensureConnected, withLoading } = useDialogGuards();
+const runtime = useRuntimeStore();
+const records = useRecordsStore();
+const selected = ref(null);
+const onClickOk = async () => {
+    DomainUtils.log("FADE_IN_STOCK: onClickOk");
+    if (!(await ensureConnected(databaseService.isConnected(), handleUserNotice)))
+        return;
+    if (!selected.value) {
+        await handleUserNotice("FadeInStock", "no stock");
+        return;
+    }
+    await withLoading(async () => {
+        try {
+            const stock = selected.value;
+            stock.cFadeOut = 0;
+            await update(stock);
+            records.stocks.update(stock);
+            await handleUserNotice("FadeInStock", "success");
+            runtime.resetTeleport();
+        }
+        catch {
+            throw new AppError(ERROR_CODES.FADE_IN_STOCK, ERROR_CATEGORY.VALIDATION, true);
+        }
+    });
+};
+const __VLS_exposed = { onClickOk, title: t("components.dialogs.fadeInStock.title") };
+defineExpose(__VLS_exposed);
+onBeforeMount(() => {
+    DomainUtils.log("FADE_IN_STOCK: onBeforeMount");
+    selected.value = null;
+});
+DomainUtils.log("COMPONENTS DIALOGS FadeInStock: setup");
+debugger;
+const __VLS_ctx = {};
+let __VLS_elements;
+let __VLS_components;
+let __VLS_directives;
+const __VLS_0 = {}.VForm;
+;
+VForm;
+const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+    ...{ 'onSubmit': {} },
+    validateOn: "submit",
+}));
+const __VLS_2 = __VLS_1({
+    ...{ 'onSubmit': {} },
+    validateOn: "submit",
+}, ...__VLS_functionalComponentArgsRest(__VLS_1));
+let __VLS_4;
+let __VLS_5;
+const __VLS_6 = ({ submit: {} },
+    { onSubmit: () => { } });
+var __VLS_7 = {};
+const { default: __VLS_8 } = __VLS_3.slots;
+const __VLS_9 = {}.VCardText;
+;
+VCardText;
+const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
+    ...{ class: "pa-5" },
+}));
+const __VLS_11 = __VLS_10({
+    ...{ class: "pa-5" },
+}, ...__VLS_functionalComponentArgsRest(__VLS_10));
+const { default: __VLS_13 } = __VLS_12.slots;
+const __VLS_14 = {}.VSelect;
+;
+VSelect;
+const __VLS_15 = __VLS_asFunctionalComponent(__VLS_14, new __VLS_14({
+    modelValue: (__VLS_ctx.selected),
+    density: "compact",
+    itemKey: "cID",
+    itemTitle: "cCompany",
+    clearable: (true),
+    items: (__VLS_ctx.records.stocks.passive),
+    label: (__VLS_ctx.t('components.dialogs.fadeInStock.selectLabel')),
+    returnObject: (true),
+    variant: "outlined",
+}));
+const __VLS_16 = __VLS_15({
+    modelValue: (__VLS_ctx.selected),
+    density: "compact",
+    itemKey: "cID",
+    itemTitle: "cCompany",
+    clearable: (true),
+    items: (__VLS_ctx.records.stocks.passive),
+    label: (__VLS_ctx.t('components.dialogs.fadeInStock.selectLabel')),
+    returnObject: (true),
+    variant: "outlined",
+}, ...__VLS_functionalComponentArgsRest(__VLS_15));
+[selected, records, t,];
+var __VLS_12;
+const __VLS_19 = {}.VOverlay;
+;
+VOverlay;
+const __VLS_20 = __VLS_asFunctionalComponent(__VLS_19, new __VLS_19({
+    modelValue: (__VLS_ctx.isLoading),
+    ...{ class: "align-center justify-center" },
+    contained: true,
+}));
+const __VLS_21 = __VLS_20({
+    modelValue: (__VLS_ctx.isLoading),
+    ...{ class: "align-center justify-center" },
+    contained: true,
+}, ...__VLS_functionalComponentArgsRest(__VLS_20));
+const { default: __VLS_23 } = __VLS_22.slots;
+[isLoading,];
+const __VLS_24 = {}.VProgressCircular;
+;
+VProgressCircular;
+const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}));
+const __VLS_26 = __VLS_25({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}, ...__VLS_functionalComponentArgsRest(__VLS_25));
+var __VLS_22;
+var __VLS_3;
+;
+;
+;
+var __VLS_dollars;
+const __VLS_self = (await import('vue')).defineComponent({
+    setup() {
+        return {
+            t: t,
+            isLoading: isLoading,
+            records: records,
+            selected: selected,
+        };
+    },
+});
+export default (await import('vue')).defineComponent({
+    setup() {
+        return {};
+    },
+});
+;

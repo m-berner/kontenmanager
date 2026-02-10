@@ -655,4 +655,4 @@ class FetchService {
     }
 }
 export const fetchService = new FetchService();
-DomainUtils.log("SERVICES fetch: loaded");
+DomainUtils.log("SERVICES fetch");

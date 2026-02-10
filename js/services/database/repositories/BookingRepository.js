@@ -1,5 +1,6 @@
 import { INDEXED_DB } from "@/config/database";
 import { IndexedDbBase } from "../base";
+import { DomainUtils } from "@/domains/utils";
 export class BookingRepository {
     _dbBase;
     constructor(_dbBase) {
@@ -14,3 +15,4 @@ export class BookingRepository {
         return this._dbBase.deleteByCursor(index, IDBKeyRange.only(accountId));
     }
 }
+DomainUtils.log("SERVICES DATABASE REPOSITORIES BookingRepository");

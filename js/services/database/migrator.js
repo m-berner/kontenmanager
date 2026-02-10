@@ -50,3 +50,4 @@ export class DatabaseMigrator {
     runMigrations(_db, _oldVersion, _newVersion) {
     }
 }
+DomainUtils.log("SERVICES DATABASE migrator");

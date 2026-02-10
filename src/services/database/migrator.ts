@@ -132,8 +132,6 @@ export class DatabaseMigrator {
   /**
    * Executes schema/content migrations between versions.
    *
-   * Currently a placeholder for future migrations.
-   *
    * @param _db - Database instance.
    * @param _oldVersion - Previous schema version.
    * @param _newVersion - Target schema version.

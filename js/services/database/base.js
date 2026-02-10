@@ -1,4 +1,5 @@
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { DomainUtils } from "@/domains/utils";
 export class IndexedDbBase {
     db = null;
     connected = false;
@@ -112,3 +113,4 @@ export class IndexedDbBase {
         return this.db.transaction(storeName, mode);
     }
 }
+DomainUtils.log("SERVICES DATABASE base");

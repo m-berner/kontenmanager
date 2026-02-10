@@ -1,5 +1,6 @@
 import { INDEXED_DB } from "@/config/database";
 import { IndexedDbBase } from "../base";
+import { DomainUtils } from "@/domains/utils";
 export class AccountRepository {
     _dbBase;
     constructor(_dbBase) {
@@ -12,3 +13,4 @@ export class AccountRepository {
         return this._dbBase.remove(INDEXED_DB.STORE.ACCOUNTS.NAME, accountId, tx);
     }
 }
+DomainUtils.log("SERVICES DATABASE REPOSITORIES AccountRepository");

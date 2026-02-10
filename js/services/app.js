@@ -302,4 +302,4 @@ export async function initializeApp(translations, signal) {
     const appService = new AppService();
     return appService.initializeApp(translations, signal);
 }
-DomainUtils.log("SERVICES app", { phase: "module", event: "loaded" });
+DomainUtils.log("SERVICES app", { phase: "module", event: "loaded" }, "info");
