@@ -12,7 +12,7 @@ import StockForm from "@/components/dialogs/forms/StockForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { update } = useStocksDB();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
@@ -43,7 +43,7 @@ const onClickOk = async () => {
     await submitGuard({
         formRef,
         isConnected: databaseService.isConnected(),
-        connectionErrorMessage: t("components.dialogs.updateStock.messages.dbNotConnected"),
+        connectionErrorMessage: getMessage("xx_db_connection_err"),
         handleUserNotice,
         errorContext: "UPDATE_STOCK",
         errorTitle: t("components.dialogs.onClickOk"),

@@ -13,7 +13,7 @@ import { databaseService } from "@/services/database";
 import { INDEXED_DB } from "@/config/database";
 import { useBrowser } from "@/composables/useBrowser";
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { add } = useStocksDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -26,7 +26,7 @@ const onClickOk = async () => {
     await submitGuard({
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
-        connectionErrorMessage: t("components.dialogs.addStock.messages.dbNotConnected"),
+        connectionErrorMessage: getMessage("xx_db_connection_err"),
         handleUserNotice,
         errorContext: "ADD_STOCK",
         errorTitle: t("components.dialogs.onClickOk"),

@@ -25,7 +25,7 @@ import { DATE } from "@/domains/config/date";
 import { databaseService } from "@/services/database";
 
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { update } = useBookingsDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -77,9 +77,7 @@ const onClickOk = async (): Promise<void> => {
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
-    connectionErrorMessage: t(
-      "components.dialogs.updateBooking.messages.dbNotConnected"
-    ),
+    connectionErrorMessage: getMessage("xx_db_connection_err"),
     handleUserNotice,
     errorContext: "UPDATE_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),

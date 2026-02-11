@@ -12,7 +12,7 @@ import { useBookingTypeForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { update } = useBookingTypesDB();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
@@ -40,7 +40,7 @@ const onClickOk = async () => {
     await submitGuard({
         formRef,
         isConnected: databaseService.isConnected(),
-        connectionErrorMessage: t("components.dialogs.updateBookingType.messages.dbNotConnected"),
+        connectionErrorMessage: getMessage("xx_db_connection_err"),
         handleUserNotice,
         errorContext: "UPDATE_BOOKING_TYPE",
         errorTitle: t("components.dialogs.onClickOk"),

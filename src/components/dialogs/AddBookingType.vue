@@ -11,7 +11,6 @@ import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { DomainUtils } from "@/domains/utils";
-//import { useAlert } from "@/composables/useAlert";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
@@ -23,7 +22,7 @@ import { INDEXED_DB } from "@/config/database";
 import { useBrowser } from "@/composables/useBrowser";
 
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { add } = useBookingTypesDB();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
@@ -38,9 +37,7 @@ const onClickOk = async (): Promise<void> => {
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
-    connectionErrorMessage: t(
-      "components.dialogs.addBookingType.messages.dbNotConnected"
-    ),
+    connectionErrorMessage: getMessage("xx_db_connection_err"),
     handleUserNotice,
     errorContext: "BOOKING_TYPE",
     errorTitle: t("components.dialogs.onClickOk"),

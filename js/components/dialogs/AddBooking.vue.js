@@ -16,7 +16,7 @@ const { t } = useI18n();
 const { add } = useBookingsDB();
 const { mapBookingFormToDb, reset } = useBookingForm();
 const { submitGuard } = useDialogGuards();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
 const baseDialogRef = ref(null);
@@ -24,7 +24,7 @@ const onClickOk = async () => {
     await submitGuard({
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
-        connectionErrorMessage: t("components.dialogs.addBooking.messages.dbNotConnected"),
+        connectionErrorMessage: getMessage("xx_db_connection_err"),
         handleUserNotice,
         errorContext: "ADD_BOOKING",
         errorTitle: t("components.dialogs.onClickOk"),

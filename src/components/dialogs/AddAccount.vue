@@ -33,7 +33,7 @@ const { add: addBookingTypeDB } = useBookingTypesDB();
 const { accountFormData, mapAccountFormToDb, reset } = useAccountForm();
 const { submitGuard } = useDialogGuards();
 const { handleUserError } = useAlert();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
 const records = useRecordsStore();
@@ -43,9 +43,7 @@ const onClickOk = async (): Promise<void> => {
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
-    connectionErrorMessage: t(
-      "components.dialogs.addAccount.messages.dbNotConnected"
-    ),
+    connectionErrorMessage: getMessage("xx_db_connection_err"),
     handleUserNotice,
     errorContext: "ADD_ACCOUNT",
     errorTitle: t("components.dialogs.onClickOk"),

@@ -19,5 +19,8 @@
   },
   "xx_invalid_backup": {
     "message": "Corrupt backup"
+  },
+  "xx_db_connection_err": {
+    "message": "Database not connected"
   }
 }

@@ -14,7 +14,7 @@ import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 import { INDEXED_DB } from "@/config/database";
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { update } = useAccountsDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -43,7 +43,7 @@ const onClickOk = async () => {
     await submitGuard({
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
-        connectionErrorMessage: t("components.dialogs.updateAccount.messages.dbNotConnected"),
+        connectionErrorMessage: getMessage("xx_db_connection_err"),
         handleUserNotice,
         errorContext: "UPDATE_ACCOUNT",
         errorTitle: t("components.dialogs.updateAccount.title"),

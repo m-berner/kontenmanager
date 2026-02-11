@@ -1,6 +1,8 @@
 import { ref } from "vue";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
+import { useAlert } from "@/composables/useAlert";
+const { handleUserError } = useAlert();
 export function useDialogGuards() {
     const isLoading = ref(false);
     const loadingOperations = ref(new Set());
@@ -54,7 +56,7 @@ export function useDialogGuards() {
         throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.C, ERROR_CATEGORY.VALIDATION, false);
     }
     async function submitGuard(options) {
-        const { formRef, isConnected, connectionErrorMessage = "Database not connected", handleUserNotice, operation, onFinally } = options;
+        const { formRef, isConnected, connectionErrorMessage, handleUserNotice, operation, onFinally, errorContext, errorTitle } = options;
         if (formRef) {
             const validation = await validateForm(formRef);
             if (!validation.valid)
@@ -69,10 +71,7 @@ export function useDialogGuards() {
                 await operation();
             }
             catch (err) {
-                if (err instanceof AppError) {
-                    throw err;
-                }
-                throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.B, ERROR_CATEGORY.VALIDATION, true);
+                await handleUserError(errorTitle ?? "", err, { data: errorContext });
             }
             finally {
                 onFinally?.();

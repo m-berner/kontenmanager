@@ -25,7 +25,7 @@ import { INDEXED_DB } from "@/config/database";
 import type { AccountDb } from "@/types";
 
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { update } = useAccountsDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -58,9 +58,7 @@ const onClickOk = async (): Promise<void> => {
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
-    connectionErrorMessage: t(
-      "components.dialogs.updateAccount.messages.dbNotConnected"
-    ),
+    connectionErrorMessage: getMessage("xx_db_connection_err"),
     handleUserNotice,
     errorContext: "UPDATE_ACCOUNT",
     errorTitle: t("components.dialogs.updateAccount.title"),

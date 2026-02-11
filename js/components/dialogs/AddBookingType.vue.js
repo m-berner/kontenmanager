@@ -12,7 +12,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { INDEXED_DB } from "@/config/database";
 import { useBrowser } from "@/composables/useBrowser";
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { add } = useBookingTypesDB();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
@@ -24,7 +24,7 @@ const onClickOk = async () => {
     await submitGuard({
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
-        connectionErrorMessage: t("components.dialogs.addBookingType.messages.dbNotConnected"),
+        connectionErrorMessage: getMessage("xx_db_connection_err"),
         handleUserNotice,
         errorContext: "BOOKING_TYPE",
         errorTitle: t("components.dialogs.onClickOk"),

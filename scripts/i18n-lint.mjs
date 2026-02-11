@@ -62,10 +62,10 @@ function extractUsedKeysFromText(text) {
 }
 
 async function collectUsedKeys() {
-  const files = await fg(SOURCE_PATTERNS, { dot: false });
+  const files = await fg(SOURCE_PATTERNS, { dot: false, cwd: ROOT });
   const used = new Set();
   for (const f of files) {
-    const text = fs.readFileSync(f, "utf-8");
+    const text = fs.readFileSync(`${ROOT}/${f}`, "utf-8");
     const keys = extractUsedKeysFromText(text);
     keys.forEach((k) => used.add(k));
   }

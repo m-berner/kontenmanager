@@ -15,6 +15,9 @@ import {
 } from "@/domains/errors";
 import type { FormInterface, FormValidateResultType } from "@/types";
 import { DomainUtils } from "@/domains/utils";
+import { useAlert } from "@/composables/useAlert";
+
+const { handleUserError } = useAlert();
 
 /**
  * Composable providing common guards and wrappers for dialog operations.
@@ -161,11 +164,12 @@ export function useDialogGuards() {
     const {
       formRef,
       isConnected,
-      connectionErrorMessage = "Database not connected",
+      connectionErrorMessage,
       handleUserNotice,
       operation,
-      onFinally
-      //errorContext = 'USE_DIALOG_GUARD'
+      onFinally,
+      errorContext,
+      errorTitle
     } = options;
 
     if (formRef) {
@@ -188,15 +192,7 @@ export function useDialogGuards() {
       try {
         await operation();
       } catch (err) {
-        if (err instanceof AppError) {
-          throw err;
-        }
-
-        throw new AppError(
-          ERROR_CODES.USE_DIALOG_GUARDS.B,
-          ERROR_CATEGORY.VALIDATION,
-          true
-        );
+        await handleUserError(errorTitle ?? "", err, { data: errorContext });
       } finally {
         onFinally?.();
       }
