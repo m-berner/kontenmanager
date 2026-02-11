@@ -8,11 +8,7 @@
 
 import type { Ref } from "vue";
 import { ref } from "vue";
-import {
-  AppError,
-  ERROR_CATEGORY,
-  ERROR_CODES
-} from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import type { FormInterface, FormValidateResultType } from "@/types";
 import { DomainUtils } from "@/domains/utils";
 import { useAlert } from "@/composables/useAlert";
@@ -172,7 +168,7 @@ export function useDialogGuards() {
       errorTitle
     } = options;
 
-    if (formRef) {
+    if (formRef && formRef.value) {
       const validation = await validateForm(formRef);
       if (!validation.valid) return;
     }

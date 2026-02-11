@@ -32,6 +32,10 @@ const onSelect = (id) => {
 const onClear = () => {
     edit.value = false;
 };
+const __VLS_exposed = {
+    edit
+};
+defineExpose(__VLS_exposed);
 DomainUtils.log("COMPONENTS DIALOGS FORMS BookingTypeForm: setup");
 const __VLS_ctx = {
     ...{},
@@ -113,6 +117,7 @@ if ((__VLS_ctx.edit && props.mode !== 'delete') || props.mode === 'add') {
 var __VLS_14 = __VLS_13;
 [bookingTypeFormData, bookingTypeFormData, INDEXED_DB, INDEXED_DB, records, t, t, t, onClear, onSelect, edit, ValidationService, NAME_RULES,];
 const __VLS_export = (await import('vue')).defineComponent({
+    setup: () => (__VLS_exposed),
     __typeProps: {},
 });
 export default {};

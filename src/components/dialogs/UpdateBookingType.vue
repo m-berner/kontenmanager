@@ -7,7 +7,7 @@
   -->
 
 <script lang="ts" setup>
-import type { BookingTypeDb, FormInterface } from "@/types";
+import type { BookingTypeDb } from "@/types";
 import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
@@ -21,6 +21,7 @@ import { databaseService } from "@/services/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
+import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();
@@ -33,9 +34,10 @@ const {
   mapBookingTypeFormToDb,
   reset: resetForm
 } = useBookingTypeForm();
-const { isLoading, submitGuard } = useDialogGuards();
+const { submitGuard } = useDialogGuards();
 const { activeAccountId } = useSettingsStore();
-const formRef = ref<FormInterface | null>(null);
+const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
+const bookingTypeRef = ref<typeof BookingTypeForm | null>(null);
 
 const loadCurrentBookingType = (): void => {
   DomainUtils.log("UPDATE_BOOKING_TYPE: loadCurrentBookingType");
@@ -56,8 +58,14 @@ const loadCurrentBookingType = (): void => {
 const onClickOk = async (): Promise<void> => {
   DomainUtils.log("UPDATE_BOOKING_TYPE: onClickOk");
 
+  // Check if a booking type is selected for editing
+  if (!bookingTypeRef.value?.edit) {
+    await handleUserNotice("UpdateBookingType", "no id");
+    return;
+  }
+
   await submitGuard({
-    formRef,
+    formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
     handleUserNotice,
@@ -101,18 +109,11 @@ onBeforeMount(() => {
   loadCurrentBookingType();
 });
 
-DomainUtils.log("COMPONENTS DIALGOS UpdateBookingType: setup");
+DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: setup");
 </script>
 
 <template>
-  <v-form ref="formRef" validate-on="submit" @submit.prevent>
-    <BookingTypeForm :mode="'update'" />
-    <v-overlay
-      v-model="isLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular color="primary" indeterminate size="64" />
-    </v-overlay>
-  </v-form>
+  <BaseDialogForm ref="baseDialogRef">
+    <BookingTypeForm ref="bookingTypeRef" :mode="'update'" />
+  </BaseDialogForm>
 </template>

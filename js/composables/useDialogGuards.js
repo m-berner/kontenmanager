@@ -57,7 +57,7 @@ export function useDialogGuards() {
     }
     async function submitGuard(options) {
         const { formRef, isConnected, connectionErrorMessage, handleUserNotice, operation, onFinally, errorContext, errorTitle } = options;
-        if (formRef) {
+        if (formRef && formRef.value) {
             const validation = await validateForm(formRef);
             if (!validation.valid)
                 return;

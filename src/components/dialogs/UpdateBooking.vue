@@ -89,7 +89,7 @@ const onClickOk = async (): Promise<void> => {
       records.bookings.update(booking);
       await update(booking);
       runtime.resetTeleport();
-      await handleUserNotice("UpdateBooking", "success");
+      await handleUserNotice("UpdateBooking", getMessage("xx_db_update_success"));
       runtime.resetOptionsMenuColors();
     }
   });

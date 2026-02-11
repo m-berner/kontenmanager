@@ -15,14 +15,12 @@ import { ValidationService } from "@/services/validation";
 import { INDEXED_DB } from "@/config/database";
 import type { BookingTypeFormProps } from "@/types";
 import { DomainUtils } from "@/domains/utils";
-//import { useAlert } from "@/composables/useAlert";
 
 const props = defineProps<BookingTypeFormProps>();
 
 const { t } = useI18n();
 const records = useRecordsStore();
 const { bookingTypeFormData } = useBookingTypeForm();
-//const { handleUserInfo } = useAlert();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -49,6 +47,10 @@ const onSelect = (id: number | null) => {
 const onClear = (): void => {
   edit.value = false;
 };
+
+defineExpose({
+  edit
+});
 
 DomainUtils.log("COMPONENTS DIALOGS FORMS BookingTypeForm: setup");
 </script>

@@ -11,19 +11,19 @@ import { useI18n } from "vue-i18n";
 import { computed } from "vue";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
-//import { useAlert } from "@/composables/useAlert";
-
 import { useBookingForm } from "@/composables/useForms";
 import CreditDebitFieldset from "@/components/CreditDebitFieldset.vue";
 import { INDEXED_DB } from "@/config/database";
 import { ValidationService } from "@/services/validation";
 import { DomainUtils } from "@/domains/utils";
+//import type { BookingFormProps } from "@/types";
+
+//const props = defineProps<BookingFormProps>();
 
 const { t } = useI18n();
 const { bookingFormData } = useBookingForm();
 const { bookingTypes, stocks } = useRecordsStore();
 const { markets } = useSettingsStore();
-//const { handleUserInfo } = useAlert();
 
 const DATE_RULES = [
   t("validators.isoDateRules.required"),

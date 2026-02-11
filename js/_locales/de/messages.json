@@ -22,5 +22,8 @@
     },
     "xx_db_connection_err": {
         "message": "Datenbankverbindung fehlgeschlagen"
+    },
+    "xx_db_update_success": {
+        "message": "Datensatz erfolgreich aktualisiert"
     }
 }

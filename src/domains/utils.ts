@@ -204,7 +204,7 @@ export class DomainUtils {
    * @returns The normalized name.
    */
   static normalizeBookingTypeName(name: string): string {
-    return name.trim().replace(/\s+/g, " ").toLowerCase();
+    return name.trim().replace(/\s+/g, " ");
   }
 
   static log(msg: string, data?: unknown, level?: LogLevelType): void {

@@ -88,7 +88,7 @@ export class DomainUtils {
             : str.replace(/,/g, "");
     }
     static normalizeBookingTypeName(name) {
-        return name.trim().replace(/\s+/g, " ").toLowerCase();
+        return name.trim().replace(/\s+/g, " ");
     }
     static log(msg, data, level) {
         if (import.meta.env.MODE !== "development")

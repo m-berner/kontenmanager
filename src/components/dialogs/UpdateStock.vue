@@ -7,7 +7,7 @@
   -->
 
 <script lang="ts" setup>
-import type { FormInterface, StockDb } from "@/types";
+import type { StockDb } from "@/types";
 import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
@@ -21,6 +21,7 @@ import { DomainUtils } from "@/domains/utils";
 import StockForm from "@/components/dialogs/forms/StockForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
+import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();
@@ -30,8 +31,8 @@ const runtime = useRuntimeStore();
 const { activeAccountId } = useSettingsStore();
 const { activeId } = storeToRefs(runtime);
 const { stockFormData, mapStockFormToDb, reset: resetForm } = useStockForm();
-const { isLoading, submitGuard } = useDialogGuards();
-const formRef = ref<FormInterface | null>(null);
+const { submitGuard } = useDialogGuards();
+const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentStock = (): void => {
   DomainUtils.log("UPDATE_STOCK: loadCurrentStock");
@@ -53,10 +54,10 @@ const loadCurrentStock = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("UPDATE_STOCK : onClickOk");
+  DomainUtils.log("UPDATE_STOCK: onClickOk");
 
   await submitGuard({
-    formRef,
+    formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
     handleUserNotice,
@@ -83,14 +84,7 @@ DomainUtils.log("COMPONENTS DIALOGS UpdateStock: setup");
 </script>
 
 <template>
-  <v-form ref="formRef" validate-on="submit" @submit.prevent>
+  <BaseDialogForm ref="baseDialogRef">
     <StockForm :isUpdate="true" />
-    <v-overlay
-      v-model="isLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular color="primary" indeterminate size="64" />
-    </v-overlay>
-  </v-form>
+  </BaseDialogForm>
 </template>
