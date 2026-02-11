@@ -26,70 +26,57 @@ const debitValue = computed({
 const cRules = computed(() => props.rules[0](props.modelValue.debit));
 const dRules = computed(() => props.rules[1](props.modelValue.credit));
 DomainUtils.log("COMPONENTS CreditDebitFieldset: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+    ...{},
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
 ;
 ;
-__VLS_asFunctionalElement(__VLS_elements.fieldset, __VLS_elements.fieldset)({
+__VLS_asFunctionalElement1(__VLS_intrinsics.fieldset, __VLS_intrinsics.fieldset)({
     ...{ class: "horizontal-fieldset" },
 });
-__VLS_asFunctionalElement(__VLS_elements.legend, __VLS_elements.legend)({});
+;
+__VLS_asFunctionalElement1(__VLS_intrinsics.legend, __VLS_intrinsics.legend)({});
 (props.legend);
-__VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "fields-container" },
 });
 ;
-const __VLS_0 = __VLS_asFunctionalComponent(CurrencyInput, new CurrencyInput({
+const __VLS_0 = CurrencyInput;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     modelValue: (__VLS_ctx.creditValue),
     disabled: (props.disabled),
     label: (__VLS_ctx.t('components.creditDebitFieldset.creditLabel')),
     rules: (__VLS_ctx.cRules),
 }));
-const __VLS_1 = __VLS_0({
+const __VLS_2 = __VLS_1({
     modelValue: (__VLS_ctx.creditValue),
     disabled: (props.disabled),
     label: (__VLS_ctx.t('components.creditDebitFieldset.creditLabel')),
     rules: (__VLS_ctx.cRules),
-}, ...__VLS_functionalComponentArgsRest(__VLS_0));
-[creditValue, t, cRules,];
-;
-const __VLS_4 = __VLS_asFunctionalComponent(CurrencyInput, new CurrencyInput({
+}, ...__VLS_functionalComponentArgsRest(__VLS_1));
+const __VLS_5 = CurrencyInput;
+const __VLS_6 = __VLS_asFunctionalComponent1(__VLS_5, new __VLS_5({
     modelValue: (__VLS_ctx.debitValue),
     disabled: (props.disabled),
     label: (__VLS_ctx.t('components.creditDebitFieldset.debitLabel')),
     rules: (__VLS_ctx.dRules),
 }));
-const __VLS_5 = __VLS_4({
+const __VLS_7 = __VLS_6({
     modelValue: (__VLS_ctx.debitValue),
     disabled: (props.disabled),
     label: (__VLS_ctx.t('components.creditDebitFieldset.debitLabel')),
     rules: (__VLS_ctx.dRules),
-}, ...__VLS_functionalComponentArgsRest(__VLS_4));
-[t, debitValue, dRules,];
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            CurrencyInput: CurrencyInput,
-            t: t,
-            creditValue: creditValue,
-            debitValue: debitValue,
-            cRules: cRules,
-            dRules: dRules,
-        };
-    },
+}, ...__VLS_functionalComponentArgsRest(__VLS_6));
+[creditValue, t, t, cRules, debitValue, dRules,];
+const __VLS_export = (await import('vue')).defineComponent({
     emits: {},
     __typeProps: {},
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-    emits: {},
-    __typeProps: {},
-});
-;
+export default {};

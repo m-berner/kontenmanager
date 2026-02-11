@@ -16,15 +16,16 @@ const HEADERS = computed(() => createDividendHeaders(t));
 const __VLS_exposed = { title: t("components.dialogs.showDividend.title") };
 defineExpose(__VLS_exposed);
 DomainUtils.log("COMPONENTS DIALOGS ShowDividend: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VForm;
-;
-VForm;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vForm;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }));
@@ -32,32 +33,29 @@ const __VLS_2 = __VLS_1({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
 const __VLS_6 = ({ submit: {} },
     { onSubmit: () => { } });
 var __VLS_7 = {};
 const { default: __VLS_8 } = __VLS_3.slots;
-const __VLS_9 = {}.VCard;
-;
-VCard;
-const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({}));
+let __VLS_9;
+vCard;
+const __VLS_10 = __VLS_asFunctionalComponent1(__VLS_9, new __VLS_9({}));
 const __VLS_11 = __VLS_10({}, ...__VLS_functionalComponentArgsRest(__VLS_10));
-const { default: __VLS_13 } = __VLS_12.slots;
-const __VLS_14 = {}.VCardText;
-;
-VCardText;
-const __VLS_15 = __VLS_asFunctionalComponent(__VLS_14, new __VLS_14({
+const { default: __VLS_14 } = __VLS_12.slots;
+let __VLS_15;
+vCardText;
+const __VLS_16 = __VLS_asFunctionalComponent1(__VLS_15, new __VLS_15({
     ...{ class: "pa-5" },
 }));
-const __VLS_16 = __VLS_15({
+const __VLS_17 = __VLS_16({
     ...{ class: "pa-5" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_15));
-const { default: __VLS_18 } = __VLS_17.slots;
-const __VLS_19 = {}.VDataTable;
+}, ...__VLS_functionalComponentArgsRest(__VLS_16));
 ;
-VDataTable;
-const __VLS_20 = __VLS_asFunctionalComponent(__VLS_19, new __VLS_19({
+const { default: __VLS_20 } = __VLS_18.slots;
+let __VLS_21;
+vDataTable;
+const __VLS_22 = __VLS_asFunctionalComponent1(__VLS_21, new __VLS_21({
     ...{ 'onUpdate:itemsPerPage': {} },
     headers: (__VLS_ctx.HEADERS),
     hideNoData: (false),
@@ -70,7 +68,7 @@ const __VLS_20 = __VLS_asFunctionalComponent(__VLS_19, new __VLS_19({
     density: "compact",
     itemKey: "id",
 }));
-const __VLS_21 = __VLS_20({
+const __VLS_23 = __VLS_22({
     ...{ 'onUpdate:itemsPerPage': {} },
     headers: (__VLS_ctx.HEADERS),
     hideNoData: (false),
@@ -82,56 +80,41 @@ const __VLS_21 = __VLS_20({
     noDataText: (__VLS_ctx.t('components.dialogs.showDividend.noDataText')),
     density: "compact",
     itemKey: "id",
-}, ...__VLS_functionalComponentArgsRest(__VLS_20));
-let __VLS_23;
-let __VLS_24;
-const __VLS_25 = ({ 'update:itemsPerPage': {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_22));
+let __VLS_26;
+const __VLS_27 = ({ 'update:itemsPerPage': {} },
     { 'onUpdate:itemsPerPage': (__VLS_ctx.setDividendsPerPage) });
-const { default: __VLS_26 } = __VLS_22.slots;
-[HEADERS, records, activeId, dividendsPerPage, VIEWS, t, t, setDividendsPerPage,];
+const { default: __VLS_28 } = __VLS_24.slots;
 {
-    const { [__VLS_tryAsConstant(`item`)]: __VLS_27 } = __VLS_22.slots;
-    const [{ item }] = __VLS_getSlotParameters(__VLS_27);
-    __VLS_asFunctionalElement(__VLS_elements.tr, __VLS_elements.tr)({
+    const { [__VLS_tryAsConstant(`item`)]: __VLS_29 } = __VLS_24.slots;
+    const [{ item }] = __VLS_vSlot(__VLS_29);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.tr, __VLS_intrinsics.tr)({
         ...{ class: "table-row" },
     });
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({
+    ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({
         ...{ class: "d-none" },
     });
+    ;
     (item.id);
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (__VLS_ctx.d(item.year, "short"));
-    [d,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (__VLS_ctx.n(item.sum, "currency"));
-    [n,];
+    [HEADERS, records, activeId, dividendsPerPage, VIEWS, t, t, setDividendsPerPage, d, n,];
 }
-var __VLS_22;
-var __VLS_17;
+[];
+var __VLS_24;
+var __VLS_25;
+[];
+var __VLS_18;
+[];
 var __VLS_12;
+[];
 var __VLS_3;
-;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            VIEWS: VIEWS,
-            d: d,
-            n: n,
-            t: t,
-            dividendsPerPage: dividendsPerPage,
-            setDividendsPerPage: setDividendsPerPage,
-            activeId: activeId,
-            records: records,
-            HEADERS: HEADERS,
-        };
-    },
+var __VLS_4;
+[];
+const __VLS_export = (await import('vue')).defineComponent({
+    setup: () => (__VLS_exposed),
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-        return {};
-    },
-});
-;
+export default {};

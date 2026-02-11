@@ -58,15 +58,19 @@ onMounted(async () => {
     formattedValue.value = formatCurrency(props.modelValue);
 });
 DomainUtils.log("COMPONENTS CurrencyInput: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+    ...{},
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VTextField;
-;
-VTextField;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vTextField;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onBlur': {} },
     ...{ 'onFocus': {} },
     ...{ 'onInput': {} },
@@ -88,7 +92,6 @@ const __VLS_2 = __VLS_1({
     density: "compact",
     variant: "solo-filled",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
 const __VLS_6 = ({ blur: {} },
     { onBlur: (__VLS_ctx.onBlur) });
@@ -97,26 +100,11 @@ const __VLS_7 = ({ focus: {} },
 const __VLS_8 = ({ input: {} },
     { onInput: (__VLS_ctx.onInput) });
 var __VLS_9 = {};
-[formattedValue, wrappedRules, onBlur, onFocus, onInput,];
 var __VLS_3;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            formattedValue: formattedValue,
-            wrappedRules: wrappedRules,
-            onFocus: onFocus,
-            onBlur: onBlur,
-            onInput: onInput,
-        };
-    },
+var __VLS_4;
+[formattedValue, wrappedRules, onBlur, onFocus, onInput,];
+const __VLS_export = (await import('vue')).defineComponent({
     emits: {},
     __typeProps: {},
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-    emits: {},
-    __typeProps: {},
-});
-;
+export default {};

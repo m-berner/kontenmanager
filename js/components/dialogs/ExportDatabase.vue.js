@@ -118,15 +118,16 @@ const __VLS_exposed = {
 };
 defineExpose(__VLS_exposed);
 DomainUtils.log("COMPONENTS DIALOGS ExportDatabase: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VForm;
-;
-VForm;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vForm;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }));
@@ -134,90 +135,76 @@ const __VLS_2 = __VLS_1({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
 const __VLS_6 = ({ submit: {} },
     { onSubmit: () => { } });
 var __VLS_7 = {};
 const { default: __VLS_8 } = __VLS_3.slots;
-const __VLS_9 = {}.VCard;
-;
-VCard;
-const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({}));
+let __VLS_9;
+vCard;
+const __VLS_10 = __VLS_asFunctionalComponent1(__VLS_9, new __VLS_9({}));
 const __VLS_11 = __VLS_10({}, ...__VLS_functionalComponentArgsRest(__VLS_10));
-const { default: __VLS_13 } = __VLS_12.slots;
-const __VLS_14 = {}.VCardText;
-;
-VCardText;
-const __VLS_15 = __VLS_asFunctionalComponent(__VLS_14, new __VLS_14({
+const { default: __VLS_14 } = __VLS_12.slots;
+let __VLS_15;
+vCardText;
+const __VLS_16 = __VLS_asFunctionalComponent1(__VLS_15, new __VLS_15({
     ...{ class: "pa-5" },
 }));
-const __VLS_16 = __VLS_15({
+const __VLS_17 = __VLS_16({
     ...{ class: "pa-5" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_15));
-const { default: __VLS_18 } = __VLS_17.slots;
-const __VLS_19 = {}.VTextarea;
+}, ...__VLS_functionalComponentArgsRest(__VLS_16));
 ;
-VTextarea;
-const __VLS_20 = __VLS_asFunctionalComponent(__VLS_19, new __VLS_19({
+const { default: __VLS_20 } = __VLS_18.slots;
+let __VLS_21;
+vTextarea;
+const __VLS_22 = __VLS_asFunctionalComponent1(__VLS_21, new __VLS_21({
     disabled: (true),
     modelValue: (__VLS_ctx.t('components.dialogs.exportDatabase.text', { filename: __VLS_ctx.filename })),
     variant: "outlined",
 }));
-const __VLS_21 = __VLS_20({
+const __VLS_23 = __VLS_22({
     disabled: (true),
     modelValue: (__VLS_ctx.t('components.dialogs.exportDatabase.text', { filename: __VLS_ctx.filename })),
     variant: "outlined",
-}, ...__VLS_functionalComponentArgsRest(__VLS_20));
+}, ...__VLS_functionalComponentArgsRest(__VLS_22));
 [t, filename,];
-var __VLS_17;
+var __VLS_18;
+[];
 var __VLS_12;
-const __VLS_24 = {}.VOverlay;
-;
-VOverlay;
-const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
+let __VLS_26;
+vOverlay;
+const __VLS_27 = __VLS_asFunctionalComponent1(__VLS_26, new __VLS_26({
     modelValue: (__VLS_ctx.isLoading),
     ...{ class: "align-center justify-center" },
     contained: true,
 }));
-const __VLS_26 = __VLS_25({
+const __VLS_28 = __VLS_27({
     modelValue: (__VLS_ctx.isLoading),
     ...{ class: "align-center justify-center" },
     contained: true,
-}, ...__VLS_functionalComponentArgsRest(__VLS_25));
-const { default: __VLS_28 } = __VLS_27.slots;
+}, ...__VLS_functionalComponentArgsRest(__VLS_27));
+;
+;
+const { default: __VLS_31 } = __VLS_29.slots;
+let __VLS_32;
+vProgressCircular;
+const __VLS_33 = __VLS_asFunctionalComponent1(__VLS_32, new __VLS_32({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}));
+const __VLS_34 = __VLS_33({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}, ...__VLS_functionalComponentArgsRest(__VLS_33));
 [isLoading,];
-const __VLS_29 = {}.VProgressCircular;
-;
-VProgressCircular;
-const __VLS_30 = __VLS_asFunctionalComponent(__VLS_29, new __VLS_29({
-    color: "primary",
-    indeterminate: true,
-    size: "64",
-}));
-const __VLS_31 = __VLS_30({
-    color: "primary",
-    indeterminate: true,
-    size: "64",
-}, ...__VLS_functionalComponentArgsRest(__VLS_30));
-var __VLS_27;
+var __VLS_29;
+[];
 var __VLS_3;
-;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            t: t,
-            isLoading: isLoading,
-            filename: filename,
-        };
-    },
+var __VLS_4;
+[];
+const __VLS_export = (await import('vue')).defineComponent({
+    setup: () => (__VLS_exposed),
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-        return {};
-    },
-});
-;
+export default {};

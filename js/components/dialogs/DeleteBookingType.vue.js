@@ -54,15 +54,16 @@ onBeforeMount(() => {
     reset();
 });
 DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VForm;
-;
-VForm;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vForm;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }));
@@ -70,63 +71,52 @@ const __VLS_2 = __VLS_1({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
 const __VLS_6 = ({ submit: {} },
     { onSubmit: () => { } });
 var __VLS_7 = {};
 const { default: __VLS_8 } = __VLS_3.slots;
-;
-const __VLS_9 = __VLS_asFunctionalComponent(BookingTypeForm, new BookingTypeForm({
+const __VLS_9 = BookingTypeForm;
+const __VLS_10 = __VLS_asFunctionalComponent1(__VLS_9, new __VLS_9({
     mode: ('delete'),
 }));
-const __VLS_10 = __VLS_9({
+const __VLS_11 = __VLS_10({
     mode: ('delete'),
-}, ...__VLS_functionalComponentArgsRest(__VLS_9));
-const __VLS_13 = {}.VOverlay;
-;
-VOverlay;
-const __VLS_14 = __VLS_asFunctionalComponent(__VLS_13, new __VLS_13({
+}, ...__VLS_functionalComponentArgsRest(__VLS_10));
+let __VLS_14;
+vOverlay;
+const __VLS_15 = __VLS_asFunctionalComponent1(__VLS_14, new __VLS_14({
     modelValue: (__VLS_ctx.isLoading),
     ...{ class: "align-center justify-center" },
     contained: true,
 }));
-const __VLS_15 = __VLS_14({
+const __VLS_16 = __VLS_15({
     modelValue: (__VLS_ctx.isLoading),
     ...{ class: "align-center justify-center" },
     contained: true,
-}, ...__VLS_functionalComponentArgsRest(__VLS_14));
-const { default: __VLS_17 } = __VLS_16.slots;
+}, ...__VLS_functionalComponentArgsRest(__VLS_15));
+;
+;
+const { default: __VLS_19 } = __VLS_17.slots;
+let __VLS_20;
+vProgressCircular;
+const __VLS_21 = __VLS_asFunctionalComponent1(__VLS_20, new __VLS_20({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}));
+const __VLS_22 = __VLS_21({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}, ...__VLS_functionalComponentArgsRest(__VLS_21));
 [isLoading,];
-const __VLS_18 = {}.VProgressCircular;
-;
-VProgressCircular;
-const __VLS_19 = __VLS_asFunctionalComponent(__VLS_18, new __VLS_18({
-    color: "primary",
-    indeterminate: true,
-    size: "64",
-}));
-const __VLS_20 = __VLS_19({
-    color: "primary",
-    indeterminate: true,
-    size: "64",
-}, ...__VLS_functionalComponentArgsRest(__VLS_19));
-var __VLS_16;
+var __VLS_17;
+[];
 var __VLS_3;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            BookingTypeForm: BookingTypeForm,
-            isLoading: isLoading,
-        };
-    },
+var __VLS_4;
+[];
+const __VLS_export = (await import('vue')).defineComponent({
+    setup: () => (__VLS_exposed),
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-        return {};
-    },
-});
-;
+export default {};

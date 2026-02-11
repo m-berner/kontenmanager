@@ -301,15 +301,16 @@ const onIconClick = async (ev) => {
     await dialogActions[dialogId]();
 };
 DomainUtils.log("VIEWS HeaderBar: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VAppBar;
-;
-VAppBar;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vAppBar;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     app: true,
     flat: true,
     height: "75",
@@ -319,738 +320,687 @@ const __VLS_2 = __VLS_1({
     flat: true,
     height: "75",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-const { default: __VLS_4 } = __VLS_3.slots;
-const __VLS_5 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_6 = __VLS_asFunctionalComponent(__VLS_5, new __VLS_5({}));
-const __VLS_7 = __VLS_6({}, ...__VLS_functionalComponentArgsRest(__VLS_6));
-const __VLS_10 = {}.RouterLink;
-;
+const { default: __VLS_5 } = __VLS_3.slots;
+let __VLS_6;
+vSpacer;
+const __VLS_7 = __VLS_asFunctionalComponent1(__VLS_6, new __VLS_6({}));
+const __VLS_8 = __VLS_7({}, ...__VLS_functionalComponentArgsRest(__VLS_7));
+let __VLS_11;
 RouterLink;
-const __VLS_11 = __VLS_asFunctionalComponent(__VLS_10, new __VLS_10({
+const __VLS_12 = __VLS_asFunctionalComponent1(__VLS_11, new __VLS_11({
     ...{ 'onClick': {} },
     id: "home",
     ...{ class: "router-link-active" },
     to: "/",
 }));
-const __VLS_12 = __VLS_11({
+const __VLS_13 = __VLS_12({
     ...{ 'onClick': {} },
     id: "home",
     ...{ class: "router-link-active" },
     to: "/",
-}, ...__VLS_functionalComponentArgsRest(__VLS_11));
-let __VLS_14;
-let __VLS_15;
-const __VLS_16 = ({ click: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_12));
+let __VLS_16;
+const __VLS_17 = ({ click: {} },
     { onClick: (__VLS_ctx.onIconClick) });
-const { default: __VLS_17 } = __VLS_13.slots;
-[onIconClick,];
-const __VLS_18 = {}.VTooltip;
 ;
-VTooltip;
-const __VLS_19 = __VLS_asFunctionalComponent(__VLS_18, new __VLS_18({
+const { default: __VLS_18 } = __VLS_14.slots;
+let __VLS_19;
+vTooltip;
+const __VLS_20 = __VLS_asFunctionalComponent1(__VLS_19, new __VLS_19({
     text: (__VLS_ctx.t('views.headerBar.home')),
     location: "top",
 }));
-const __VLS_20 = __VLS_19({
+const __VLS_21 = __VLS_20({
     text: (__VLS_ctx.t('views.headerBar.home')),
     location: "top",
-}, ...__VLS_functionalComponentArgsRest(__VLS_19));
-const { default: __VLS_22 } = __VLS_21.slots;
-[t,];
+}, ...__VLS_functionalComponentArgsRest(__VLS_20));
+const { default: __VLS_24 } = __VLS_22.slots;
 {
-    const { activator: __VLS_23 } = __VLS_21.slots;
-    const [{ props }] = __VLS_getSlotParameters(__VLS_23);
-    const __VLS_24 = {}.VAppBarNavIcon;
-    ;
-    VAppBarNavIcon;
-    const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
+    const { activator: __VLS_25 } = __VLS_22.slots;
+    const [{ props }] = __VLS_vSlot(__VLS_25);
+    let __VLS_26;
+    vAppBarNavIcon;
+    const __VLS_27 = __VLS_asFunctionalComponent1(__VLS_26, new __VLS_26({
         color: "grey",
         icon: "$home",
         size: "large",
         ...(props),
         variant: "tonal",
     }));
-    const __VLS_26 = __VLS_25({
+    const __VLS_28 = __VLS_27({
         color: "grey",
         icon: "$home",
         size: "large",
         ...(props),
         variant: "tonal",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_25));
+    }, ...__VLS_functionalComponentArgsRest(__VLS_27));
+    [onIconClick, t,];
 }
-var __VLS_21;
-var __VLS_13;
+[];
+var __VLS_22;
+[];
+var __VLS_14;
+var __VLS_15;
 if (__VLS_ctx.records.accounts.isDepot) {
-    [records,];
-    const __VLS_29 = {}.RouterLink;
-    ;
+    let __VLS_31;
     RouterLink;
-    const __VLS_30 = __VLS_asFunctionalComponent(__VLS_29, new __VLS_29({
+    const __VLS_32 = __VLS_asFunctionalComponent1(__VLS_31, new __VLS_31({
         ...{ 'onClick': {} },
         id: "company",
         ...{ class: "router-link-active" },
         to: "/company",
     }));
-    const __VLS_31 = __VLS_30({
+    const __VLS_33 = __VLS_32({
         ...{ 'onClick': {} },
         id: "company",
         ...{ class: "router-link-active" },
         to: "/company",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_30));
-    let __VLS_33;
-    let __VLS_34;
-    const __VLS_35 = ({ click: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_32));
+    let __VLS_36;
+    const __VLS_37 = ({ click: {} },
         { onClick: (__VLS_ctx.onIconClick) });
-    const { default: __VLS_36 } = __VLS_32.slots;
-    [onIconClick,];
-    const __VLS_37 = {}.VTooltip;
     ;
-    VTooltip;
-    const __VLS_38 = __VLS_asFunctionalComponent(__VLS_37, new __VLS_37({
+    const { default: __VLS_38 } = __VLS_34.slots;
+    let __VLS_39;
+    vTooltip;
+    const __VLS_40 = __VLS_asFunctionalComponent1(__VLS_39, new __VLS_39({
         text: (__VLS_ctx.t('views.headerBar.company')),
         location: "top",
     }));
-    const __VLS_39 = __VLS_38({
+    const __VLS_41 = __VLS_40({
         text: (__VLS_ctx.t('views.headerBar.company')),
         location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_38));
-    const { default: __VLS_41 } = __VLS_40.slots;
-    [t,];
+    }, ...__VLS_functionalComponentArgsRest(__VLS_40));
+    const { default: __VLS_44 } = __VLS_42.slots;
     {
-        const { activator: __VLS_42 } = __VLS_40.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_42);
-        const __VLS_43 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_44 = __VLS_asFunctionalComponent(__VLS_43, new __VLS_43({
+        const { activator: __VLS_45 } = __VLS_42.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_45);
+        let __VLS_46;
+        vAppBarNavIcon;
+        const __VLS_47 = __VLS_asFunctionalComponent1(__VLS_46, new __VLS_46({
             color: "grey",
             icon: "$showCompany",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_45 = __VLS_44({
+        const __VLS_48 = __VLS_47({
             color: "grey",
             icon: "$showCompany",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_44));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_47));
+        [onIconClick, t, records,];
     }
-    var __VLS_40;
-    var __VLS_32;
+    [];
+    var __VLS_42;
+    [];
+    var __VLS_34;
+    var __VLS_35;
 }
-const __VLS_48 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_49 = __VLS_asFunctionalComponent(__VLS_48, new __VLS_48({}));
-const __VLS_50 = __VLS_49({}, ...__VLS_functionalComponentArgsRest(__VLS_49));
+let __VLS_51;
+vSpacer;
+const __VLS_52 = __VLS_asFunctionalComponent1(__VLS_51, new __VLS_51({}));
+const __VLS_53 = __VLS_52({}, ...__VLS_functionalComponentArgsRest(__VLS_52));
 if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
-    [runtime, CODES,];
-    const __VLS_53 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_54 = __VLS_asFunctionalComponent(__VLS_53, new __VLS_53({
+    let __VLS_56;
+    vTooltip;
+    const __VLS_57 = __VLS_asFunctionalComponent1(__VLS_56, new __VLS_56({
         text: (__VLS_ctx.t('views.headerBar.updateQuote')),
         location: "top",
     }));
-    const __VLS_55 = __VLS_54({
+    const __VLS_58 = __VLS_57({
         text: (__VLS_ctx.t('views.headerBar.updateQuote')),
         location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_54));
-    const { default: __VLS_57 } = __VLS_56.slots;
-    [t,];
+    }, ...__VLS_functionalComponentArgsRest(__VLS_57));
+    const { default: __VLS_61 } = __VLS_59.slots;
     {
-        const { activator: __VLS_58 } = __VLS_56.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_58);
-        const __VLS_59 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_60 = __VLS_asFunctionalComponent(__VLS_59, new __VLS_59({
-            ...{ 'onClick': {} },
-            id: "updateQuote",
-            icon: "$reload",
-            size: "large",
-            ...(props),
-            variant: "tonal",
-        }));
-        const __VLS_61 = __VLS_60({
-            ...{ 'onClick': {} },
-            id: "updateQuote",
-            icon: "$reload",
-            size: "large",
-            ...(props),
-            variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_60));
+        const { activator: __VLS_62 } = __VLS_59.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_62);
         let __VLS_63;
-        let __VLS_64;
-        const __VLS_65 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_62;
-    }
-    var __VLS_56;
-}
-const __VLS_67 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_68 = __VLS_asFunctionalComponent(__VLS_67, new __VLS_67({}));
-const __VLS_69 = __VLS_68({}, ...__VLS_functionalComponentArgsRest(__VLS_68));
-if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
-    [runtime, CODES,];
-    const __VLS_72 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_73 = __VLS_asFunctionalComponent(__VLS_72, new __VLS_72({
-        text: (__VLS_ctx.t('views.headerBar.addStock')),
-        location: "top",
-    }));
-    const __VLS_74 = __VLS_73({
-        text: (__VLS_ctx.t('views.headerBar.addStock')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_73));
-    const { default: __VLS_76 } = __VLS_75.slots;
-    [t,];
-    {
-        const { activator: __VLS_77 } = __VLS_75.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_77);
-        const __VLS_78 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_79 = __VLS_asFunctionalComponent(__VLS_78, new __VLS_78({
+        vAppBarNavIcon;
+        const __VLS_64 = __VLS_asFunctionalComponent1(__VLS_63, new __VLS_63({
             ...{ 'onClick': {} },
-            id: "addStock",
-            icon: "$addCompany",
+            id: "updateQuote",
+            icon: "$reload",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_80 = __VLS_79({
+        const __VLS_65 = __VLS_64({
             ...{ 'onClick': {} },
-            id: "addStock",
-            icon: "$addCompany",
+            id: "updateQuote",
+            icon: "$reload",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_79));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_64));
+        let __VLS_68;
+        const __VLS_69 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_66;
+        var __VLS_67;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_59;
+}
+let __VLS_70;
+vSpacer;
+const __VLS_71 = __VLS_asFunctionalComponent1(__VLS_70, new __VLS_70({}));
+const __VLS_72 = __VLS_71({}, ...__VLS_functionalComponentArgsRest(__VLS_71));
+if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
+    let __VLS_75;
+    vTooltip;
+    const __VLS_76 = __VLS_asFunctionalComponent1(__VLS_75, new __VLS_75({
+        text: (__VLS_ctx.t('views.headerBar.addStock')),
+        location: "top",
+    }));
+    const __VLS_77 = __VLS_76({
+        text: (__VLS_ctx.t('views.headerBar.addStock')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_76));
+    const { default: __VLS_80 } = __VLS_78.slots;
+    {
+        const { activator: __VLS_81 } = __VLS_78.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_81);
         let __VLS_82;
-        let __VLS_83;
-        const __VLS_84 = ({ click: {} },
+        vAppBarNavIcon;
+        const __VLS_83 = __VLS_asFunctionalComponent1(__VLS_82, new __VLS_82({
+            ...{ 'onClick': {} },
+            id: "addStock",
+            icon: "$addCompany",
+            size: "large",
+            ...(props),
+            variant: "tonal",
+        }));
+        const __VLS_84 = __VLS_83({
+            ...{ 'onClick': {} },
+            id: "addStock",
+            icon: "$addCompany",
+            size: "large",
+            ...(props),
+            variant: "tonal",
+        }, ...__VLS_functionalComponentArgsRest(__VLS_83));
+        let __VLS_87;
+        const __VLS_88 = ({ click: {} },
             { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_81;
+        var __VLS_85;
+        var __VLS_86;
+        [onIconClick, t, runtime, CODES,];
     }
-    var __VLS_75;
+    [];
+    var __VLS_78;
 }
 if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
-    [runtime, CODES,];
-    const __VLS_86 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_87 = __VLS_asFunctionalComponent(__VLS_86, new __VLS_86({
+    let __VLS_89;
+    vTooltip;
+    const __VLS_90 = __VLS_asFunctionalComponent1(__VLS_89, new __VLS_89({
         text: (__VLS_ctx.t('views.headerBar.fadeInStock')),
         location: "top",
     }));
-    const __VLS_88 = __VLS_87({
+    const __VLS_91 = __VLS_90({
         text: (__VLS_ctx.t('views.headerBar.fadeInStock')),
         location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_87));
-    const { default: __VLS_90 } = __VLS_89.slots;
-    [t,];
+    }, ...__VLS_functionalComponentArgsRest(__VLS_90));
+    const { default: __VLS_94 } = __VLS_92.slots;
     {
-        const { activator: __VLS_91 } = __VLS_89.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_91);
-        const __VLS_92 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_93 = __VLS_asFunctionalComponent(__VLS_92, new __VLS_92({
-            ...{ 'onClick': {} },
-            id: "fadeInStock",
-            icon: "$fadeInCompany",
-            size: "large",
-            ...(props),
-            variant: "tonal",
-        }));
-        const __VLS_94 = __VLS_93({
-            ...{ 'onClick': {} },
-            id: "fadeInStock",
-            icon: "$fadeInCompany",
-            size: "large",
-            ...(props),
-            variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_93));
+        const { activator: __VLS_95 } = __VLS_92.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_95);
         let __VLS_96;
-        let __VLS_97;
-        const __VLS_98 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_95;
-    }
-    var __VLS_89;
-}
-const __VLS_100 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_101 = __VLS_asFunctionalComponent(__VLS_100, new __VLS_100({}));
-const __VLS_102 = __VLS_101({}, ...__VLS_functionalComponentArgsRest(__VLS_101));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_105 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_106 = __VLS_asFunctionalComponent(__VLS_105, new __VLS_105({
-        text: (__VLS_ctx.t('views.headerBar.addAccount')),
-        location: "top",
-    }));
-    const __VLS_107 = __VLS_106({
-        text: (__VLS_ctx.t('views.headerBar.addAccount')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_106));
-    const { default: __VLS_109 } = __VLS_108.slots;
-    [t,];
-    {
-        const { activator: __VLS_110 } = __VLS_108.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_110);
-        const __VLS_111 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_112 = __VLS_asFunctionalComponent(__VLS_111, new __VLS_111({
+        vAppBarNavIcon;
+        const __VLS_97 = __VLS_asFunctionalComponent1(__VLS_96, new __VLS_96({
             ...{ 'onClick': {} },
-            id: "addAccount",
-            icon: "$addAccount",
+            id: "fadeInStock",
+            icon: "$fadeInCompany",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_113 = __VLS_112({
+        const __VLS_98 = __VLS_97({
             ...{ 'onClick': {} },
-            id: "addAccount",
-            icon: "$addAccount",
+            id: "fadeInStock",
+            icon: "$fadeInCompany",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_112));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_97));
+        let __VLS_101;
+        const __VLS_102 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_99;
+        var __VLS_100;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_92;
+}
+let __VLS_103;
+vSpacer;
+const __VLS_104 = __VLS_asFunctionalComponent1(__VLS_103, new __VLS_103({}));
+const __VLS_105 = __VLS_104({}, ...__VLS_functionalComponentArgsRest(__VLS_104));
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_108;
+    vTooltip;
+    const __VLS_109 = __VLS_asFunctionalComponent1(__VLS_108, new __VLS_108({
+        text: (__VLS_ctx.t('views.headerBar.addAccount')),
+        location: "top",
+    }));
+    const __VLS_110 = __VLS_109({
+        text: (__VLS_ctx.t('views.headerBar.addAccount')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_109));
+    const { default: __VLS_113 } = __VLS_111.slots;
+    {
+        const { activator: __VLS_114 } = __VLS_111.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_114);
         let __VLS_115;
-        let __VLS_116;
-        const __VLS_117 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_114;
-    }
-    var __VLS_108;
-}
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_119 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_120 = __VLS_asFunctionalComponent(__VLS_119, new __VLS_119({
-        text: (__VLS_ctx.t('views.headerBar.updateAccount')),
-        location: "top",
-    }));
-    const __VLS_121 = __VLS_120({
-        text: (__VLS_ctx.t('views.headerBar.updateAccount')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_120));
-    const { default: __VLS_123 } = __VLS_122.slots;
-    [t,];
-    {
-        const { activator: __VLS_124 } = __VLS_122.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_124);
-        const __VLS_125 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_126 = __VLS_asFunctionalComponent(__VLS_125, new __VLS_125({
+        vAppBarNavIcon;
+        const __VLS_116 = __VLS_asFunctionalComponent1(__VLS_115, new __VLS_115({
             ...{ 'onClick': {} },
-            id: "updateAccount",
-            icon: "$updateAccount",
+            id: "addAccount",
+            icon: "$addAccount",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_127 = __VLS_126({
+        const __VLS_117 = __VLS_116({
             ...{ 'onClick': {} },
-            id: "updateAccount",
-            icon: "$updateAccount",
+            id: "addAccount",
+            icon: "$addAccount",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_126));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_116));
+        let __VLS_120;
+        const __VLS_121 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_118;
+        var __VLS_119;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_111;
+}
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_122;
+    vTooltip;
+    const __VLS_123 = __VLS_asFunctionalComponent1(__VLS_122, new __VLS_122({
+        text: (__VLS_ctx.t('views.headerBar.updateAccount')),
+        location: "top",
+    }));
+    const __VLS_124 = __VLS_123({
+        text: (__VLS_ctx.t('views.headerBar.updateAccount')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_123));
+    const { default: __VLS_127 } = __VLS_125.slots;
+    {
+        const { activator: __VLS_128 } = __VLS_125.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_128);
         let __VLS_129;
-        let __VLS_130;
-        const __VLS_131 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_128;
-    }
-    var __VLS_122;
-}
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_133 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_134 = __VLS_asFunctionalComponent(__VLS_133, new __VLS_133({
-        text: (__VLS_ctx.t('views.headerBar.deleteAccount')),
-        location: "top",
-    }));
-    const __VLS_135 = __VLS_134({
-        text: (__VLS_ctx.t('views.headerBar.deleteAccount')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_134));
-    const { default: __VLS_137 } = __VLS_136.slots;
-    [t,];
-    {
-        const { activator: __VLS_138 } = __VLS_136.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_138);
-        const __VLS_139 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_140 = __VLS_asFunctionalComponent(__VLS_139, new __VLS_139({
+        vAppBarNavIcon;
+        const __VLS_130 = __VLS_asFunctionalComponent1(__VLS_129, new __VLS_129({
             ...{ 'onClick': {} },
-            id: "deleteAccountConfirmation",
-            icon: "$deleteAccount",
+            id: "updateAccount",
+            icon: "$updateAccount",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_141 = __VLS_140({
+        const __VLS_131 = __VLS_130({
             ...{ 'onClick': {} },
-            id: "deleteAccountConfirmation",
-            icon: "$deleteAccount",
+            id: "updateAccount",
+            icon: "$updateAccount",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_140));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_130));
+        let __VLS_134;
+        const __VLS_135 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_132;
+        var __VLS_133;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_125;
+}
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_136;
+    vTooltip;
+    const __VLS_137 = __VLS_asFunctionalComponent1(__VLS_136, new __VLS_136({
+        text: (__VLS_ctx.t('views.headerBar.deleteAccount')),
+        location: "top",
+    }));
+    const __VLS_138 = __VLS_137({
+        text: (__VLS_ctx.t('views.headerBar.deleteAccount')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_137));
+    const { default: __VLS_141 } = __VLS_139.slots;
+    {
+        const { activator: __VLS_142 } = __VLS_139.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_142);
         let __VLS_143;
-        let __VLS_144;
-        const __VLS_145 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_142;
-    }
-    var __VLS_136;
-}
-const __VLS_147 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_148 = __VLS_asFunctionalComponent(__VLS_147, new __VLS_147({}));
-const __VLS_149 = __VLS_148({}, ...__VLS_functionalComponentArgsRest(__VLS_148));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_152 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_153 = __VLS_asFunctionalComponent(__VLS_152, new __VLS_152({
-        text: (__VLS_ctx.t('views.headerBar.addBooking')),
-        location: "top",
-    }));
-    const __VLS_154 = __VLS_153({
-        text: (__VLS_ctx.t('views.headerBar.addBooking')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_153));
-    const { default: __VLS_156 } = __VLS_155.slots;
-    [t,];
-    {
-        const { activator: __VLS_157 } = __VLS_155.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_157);
-        const __VLS_158 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_159 = __VLS_asFunctionalComponent(__VLS_158, new __VLS_158({
+        vAppBarNavIcon;
+        const __VLS_144 = __VLS_asFunctionalComponent1(__VLS_143, new __VLS_143({
             ...{ 'onClick': {} },
-            id: "addBooking",
-            icon: "$addBooking",
+            id: "deleteAccountConfirmation",
+            icon: "$deleteAccount",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_160 = __VLS_159({
+        const __VLS_145 = __VLS_144({
             ...{ 'onClick': {} },
-            id: "addBooking",
-            icon: "$addBooking",
+            id: "deleteAccountConfirmation",
+            icon: "$deleteAccount",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_159));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_144));
+        let __VLS_148;
+        const __VLS_149 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_146;
+        var __VLS_147;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_139;
+}
+let __VLS_150;
+vSpacer;
+const __VLS_151 = __VLS_asFunctionalComponent1(__VLS_150, new __VLS_150({}));
+const __VLS_152 = __VLS_151({}, ...__VLS_functionalComponentArgsRest(__VLS_151));
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_155;
+    vTooltip;
+    const __VLS_156 = __VLS_asFunctionalComponent1(__VLS_155, new __VLS_155({
+        text: (__VLS_ctx.t('views.headerBar.addBooking')),
+        location: "top",
+    }));
+    const __VLS_157 = __VLS_156({
+        text: (__VLS_ctx.t('views.headerBar.addBooking')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_156));
+    const { default: __VLS_160 } = __VLS_158.slots;
+    {
+        const { activator: __VLS_161 } = __VLS_158.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_161);
         let __VLS_162;
-        let __VLS_163;
-        const __VLS_164 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_161;
-    }
-    var __VLS_155;
-}
-const __VLS_166 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_167 = __VLS_asFunctionalComponent(__VLS_166, new __VLS_166({}));
-const __VLS_168 = __VLS_167({}, ...__VLS_functionalComponentArgsRest(__VLS_167));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_171 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_172 = __VLS_asFunctionalComponent(__VLS_171, new __VLS_171({
-        text: (__VLS_ctx.t('views.headerBar.addBookingType')),
-        location: "top",
-    }));
-    const __VLS_173 = __VLS_172({
-        text: (__VLS_ctx.t('views.headerBar.addBookingType')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_172));
-    const { default: __VLS_175 } = __VLS_174.slots;
-    [t,];
-    {
-        const { activator: __VLS_176 } = __VLS_174.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_176);
-        const __VLS_177 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_178 = __VLS_asFunctionalComponent(__VLS_177, new __VLS_177({
+        vAppBarNavIcon;
+        const __VLS_163 = __VLS_asFunctionalComponent1(__VLS_162, new __VLS_162({
             ...{ 'onClick': {} },
-            id: "addBookingType",
-            icon: "$addBookingType",
+            id: "addBooking",
+            icon: "$addBooking",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_179 = __VLS_178({
+        const __VLS_164 = __VLS_163({
             ...{ 'onClick': {} },
-            id: "addBookingType",
-            icon: "$addBookingType",
+            id: "addBooking",
+            icon: "$addBooking",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_178));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_163));
+        let __VLS_167;
+        const __VLS_168 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_165;
+        var __VLS_166;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_158;
+}
+let __VLS_169;
+vSpacer;
+const __VLS_170 = __VLS_asFunctionalComponent1(__VLS_169, new __VLS_169({}));
+const __VLS_171 = __VLS_170({}, ...__VLS_functionalComponentArgsRest(__VLS_170));
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_174;
+    vTooltip;
+    const __VLS_175 = __VLS_asFunctionalComponent1(__VLS_174, new __VLS_174({
+        text: (__VLS_ctx.t('views.headerBar.addBookingType')),
+        location: "top",
+    }));
+    const __VLS_176 = __VLS_175({
+        text: (__VLS_ctx.t('views.headerBar.addBookingType')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_175));
+    const { default: __VLS_179 } = __VLS_177.slots;
+    {
+        const { activator: __VLS_180 } = __VLS_177.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_180);
         let __VLS_181;
-        let __VLS_182;
-        const __VLS_183 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_180;
-    }
-    var __VLS_174;
-}
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_185 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_186 = __VLS_asFunctionalComponent(__VLS_185, new __VLS_185({
-        text: (__VLS_ctx.t('views.headerBar.updateBookingType')),
-        location: "top",
-    }));
-    const __VLS_187 = __VLS_186({
-        text: (__VLS_ctx.t('views.headerBar.updateBookingType')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_186));
-    const { default: __VLS_189 } = __VLS_188.slots;
-    [t,];
-    {
-        const { activator: __VLS_190 } = __VLS_188.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_190);
-        const __VLS_191 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_192 = __VLS_asFunctionalComponent(__VLS_191, new __VLS_191({
+        vAppBarNavIcon;
+        const __VLS_182 = __VLS_asFunctionalComponent1(__VLS_181, new __VLS_181({
             ...{ 'onClick': {} },
-            id: "updateBookingType",
-            icon: "$updateBookingType",
+            id: "addBookingType",
+            icon: "$addBookingType",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_193 = __VLS_192({
+        const __VLS_183 = __VLS_182({
             ...{ 'onClick': {} },
-            id: "updateBookingType",
-            icon: "$updateBookingType",
+            id: "addBookingType",
+            icon: "$addBookingType",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_192));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_182));
+        let __VLS_186;
+        const __VLS_187 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_184;
+        var __VLS_185;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_177;
+}
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_188;
+    vTooltip;
+    const __VLS_189 = __VLS_asFunctionalComponent1(__VLS_188, new __VLS_188({
+        text: (__VLS_ctx.t('views.headerBar.updateBookingType')),
+        location: "top",
+    }));
+    const __VLS_190 = __VLS_189({
+        text: (__VLS_ctx.t('views.headerBar.updateBookingType')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_189));
+    const { default: __VLS_193 } = __VLS_191.slots;
+    {
+        const { activator: __VLS_194 } = __VLS_191.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_194);
         let __VLS_195;
-        let __VLS_196;
-        const __VLS_197 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_194;
-    }
-    var __VLS_188;
-}
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_199 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_200 = __VLS_asFunctionalComponent(__VLS_199, new __VLS_199({
-        text: (__VLS_ctx.t('views.headerBar.deleteBookingType')),
-        location: "top",
-    }));
-    const __VLS_201 = __VLS_200({
-        text: (__VLS_ctx.t('views.headerBar.deleteBookingType')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_200));
-    const { default: __VLS_203 } = __VLS_202.slots;
-    [t,];
-    {
-        const { activator: __VLS_204 } = __VLS_202.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_204);
-        const __VLS_205 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_206 = __VLS_asFunctionalComponent(__VLS_205, new __VLS_205({
+        vAppBarNavIcon;
+        const __VLS_196 = __VLS_asFunctionalComponent1(__VLS_195, new __VLS_195({
             ...{ 'onClick': {} },
-            id: "deleteBookingType",
-            icon: "$deleteBookingType",
+            id: "updateBookingType",
+            icon: "$updateBookingType",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_207 = __VLS_206({
+        const __VLS_197 = __VLS_196({
             ...{ 'onClick': {} },
-            id: "deleteBookingType",
-            icon: "$deleteBookingType",
+            id: "updateBookingType",
+            icon: "$updateBookingType",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_206));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_196));
+        let __VLS_200;
+        const __VLS_201 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_198;
+        var __VLS_199;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_191;
+}
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_202;
+    vTooltip;
+    const __VLS_203 = __VLS_asFunctionalComponent1(__VLS_202, new __VLS_202({
+        text: (__VLS_ctx.t('views.headerBar.deleteBookingType')),
+        location: "top",
+    }));
+    const __VLS_204 = __VLS_203({
+        text: (__VLS_ctx.t('views.headerBar.deleteBookingType')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_203));
+    const { default: __VLS_207 } = __VLS_205.slots;
+    {
+        const { activator: __VLS_208 } = __VLS_205.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_208);
         let __VLS_209;
-        let __VLS_210;
-        const __VLS_211 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_208;
-    }
-    var __VLS_202;
-}
-const __VLS_213 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_214 = __VLS_asFunctionalComponent(__VLS_213, new __VLS_213({}));
-const __VLS_215 = __VLS_214({}, ...__VLS_functionalComponentArgsRest(__VLS_214));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_218 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_219 = __VLS_asFunctionalComponent(__VLS_218, new __VLS_218({
-        text: (__VLS_ctx.t('views.headerBar.exportToFile')),
-        location: "top",
-    }));
-    const __VLS_220 = __VLS_219({
-        text: (__VLS_ctx.t('views.headerBar.exportToFile')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_219));
-    const { default: __VLS_222 } = __VLS_221.slots;
-    [t,];
-    {
-        const { activator: __VLS_223 } = __VLS_221.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_223);
-        const __VLS_224 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_225 = __VLS_asFunctionalComponent(__VLS_224, new __VLS_224({
+        vAppBarNavIcon;
+        const __VLS_210 = __VLS_asFunctionalComponent1(__VLS_209, new __VLS_209({
             ...{ 'onClick': {} },
-            id: "exportDatabase",
-            icon: "$exportToFile",
+            id: "deleteBookingType",
+            icon: "$deleteBookingType",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_226 = __VLS_225({
+        const __VLS_211 = __VLS_210({
             ...{ 'onClick': {} },
-            id: "exportDatabase",
-            icon: "$exportToFile",
+            id: "deleteBookingType",
+            icon: "$deleteBookingType",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_225));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_210));
+        let __VLS_214;
+        const __VLS_215 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_212;
+        var __VLS_213;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_205;
+}
+let __VLS_216;
+vSpacer;
+const __VLS_217 = __VLS_asFunctionalComponent1(__VLS_216, new __VLS_216({}));
+const __VLS_218 = __VLS_217({}, ...__VLS_functionalComponentArgsRest(__VLS_217));
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_221;
+    vTooltip;
+    const __VLS_222 = __VLS_asFunctionalComponent1(__VLS_221, new __VLS_221({
+        text: (__VLS_ctx.t('views.headerBar.exportToFile')),
+        location: "top",
+    }));
+    const __VLS_223 = __VLS_222({
+        text: (__VLS_ctx.t('views.headerBar.exportToFile')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_222));
+    const { default: __VLS_226 } = __VLS_224.slots;
+    {
+        const { activator: __VLS_227 } = __VLS_224.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_227);
         let __VLS_228;
-        let __VLS_229;
-        const __VLS_230 = ({ click: {} },
-            { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_227;
-    }
-    var __VLS_221;
-}
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_232 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_233 = __VLS_asFunctionalComponent(__VLS_232, new __VLS_232({
-        text: (__VLS_ctx.t('views.headerBar.importDatabase')),
-        location: "top",
-    }));
-    const __VLS_234 = __VLS_233({
-        text: (__VLS_ctx.t('views.headerBar.importDatabase')),
-        location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_233));
-    const { default: __VLS_236 } = __VLS_235.slots;
-    [t,];
-    {
-        const { activator: __VLS_237 } = __VLS_235.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_237);
-        const __VLS_238 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_239 = __VLS_asFunctionalComponent(__VLS_238, new __VLS_238({
+        vAppBarNavIcon;
+        const __VLS_229 = __VLS_asFunctionalComponent1(__VLS_228, new __VLS_228({
             ...{ 'onClick': {} },
-            id: "importDatabase",
-            icon: "$importDatabase",
+            id: "exportDatabase",
+            icon: "$exportToFile",
             size: "large",
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_240 = __VLS_239({
+        const __VLS_230 = __VLS_229({
             ...{ 'onClick': {} },
-            id: "importDatabase",
-            icon: "$importDatabase",
+            id: "exportDatabase",
+            icon: "$exportToFile",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_239));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_229));
+        let __VLS_233;
+        const __VLS_234 = ({ click: {} },
+            { onClick: (__VLS_ctx.onIconClick) });
+        var __VLS_231;
+        var __VLS_232;
+        [onIconClick, t, runtime, CODES,];
+    }
+    [];
+    var __VLS_224;
+}
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+    let __VLS_235;
+    vTooltip;
+    const __VLS_236 = __VLS_asFunctionalComponent1(__VLS_235, new __VLS_235({
+        text: (__VLS_ctx.t('views.headerBar.importDatabase')),
+        location: "top",
+    }));
+    const __VLS_237 = __VLS_236({
+        text: (__VLS_ctx.t('views.headerBar.importDatabase')),
+        location: "top",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_236));
+    const { default: __VLS_240 } = __VLS_238.slots;
+    {
+        const { activator: __VLS_241 } = __VLS_238.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_241);
         let __VLS_242;
-        let __VLS_243;
-        const __VLS_244 = ({ click: {} },
+        vAppBarNavIcon;
+        const __VLS_243 = __VLS_asFunctionalComponent1(__VLS_242, new __VLS_242({
+            ...{ 'onClick': {} },
+            id: "importDatabase",
+            icon: "$importDatabase",
+            size: "large",
+            ...(props),
+            variant: "tonal",
+        }));
+        const __VLS_244 = __VLS_243({
+            ...{ 'onClick': {} },
+            id: "importDatabase",
+            icon: "$importDatabase",
+            size: "large",
+            ...(props),
+            variant: "tonal",
+        }, ...__VLS_functionalComponentArgsRest(__VLS_243));
+        let __VLS_247;
+        const __VLS_248 = ({ click: {} },
             { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_241;
+        var __VLS_245;
+        var __VLS_246;
+        [onIconClick, t, runtime, CODES,];
     }
-    var __VLS_235;
+    [];
+    var __VLS_238;
 }
-const __VLS_246 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_247 = __VLS_asFunctionalComponent(__VLS_246, new __VLS_246({}));
-const __VLS_248 = __VLS_247({}, ...__VLS_functionalComponentArgsRest(__VLS_247));
+let __VLS_249;
+vSpacer;
+const __VLS_250 = __VLS_asFunctionalComponent1(__VLS_249, new __VLS_249({}));
+const __VLS_251 = __VLS_250({}, ...__VLS_functionalComponentArgsRest(__VLS_250));
 if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
-    [runtime, CODES,];
-    const __VLS_251 = {}.VTooltip;
-    ;
-    VTooltip;
-    const __VLS_252 = __VLS_asFunctionalComponent(__VLS_251, new __VLS_251({
+    let __VLS_254;
+    vTooltip;
+    const __VLS_255 = __VLS_asFunctionalComponent1(__VLS_254, new __VLS_254({
         text: (__VLS_ctx.t('views.headerBar.showAccounting')),
         location: "top",
     }));
-    const __VLS_253 = __VLS_252({
+    const __VLS_256 = __VLS_255({
         text: (__VLS_ctx.t('views.headerBar.showAccounting')),
         location: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_252));
-    const { default: __VLS_255 } = __VLS_254.slots;
-    [t,];
+    }, ...__VLS_functionalComponentArgsRest(__VLS_255));
+    const { default: __VLS_259 } = __VLS_257.slots;
     {
-        const { activator: __VLS_256 } = __VLS_254.slots;
-        const [{ props }] = __VLS_getSlotParameters(__VLS_256);
-        const __VLS_257 = {}.VAppBarNavIcon;
-        ;
-        VAppBarNavIcon;
-        const __VLS_258 = __VLS_asFunctionalComponent(__VLS_257, new __VLS_257({
+        const { activator: __VLS_260 } = __VLS_257.slots;
+        const [{ props }] = __VLS_vSlot(__VLS_260);
+        let __VLS_261;
+        vAppBarNavIcon;
+        const __VLS_262 = __VLS_asFunctionalComponent1(__VLS_261, new __VLS_261({
             ...{ 'onClick': {} },
             id: "showAccounting",
             icon: "$showAccounting",
@@ -1058,48 +1008,45 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             ...(props),
             variant: "tonal",
         }));
-        const __VLS_259 = __VLS_258({
+        const __VLS_263 = __VLS_262({
             ...{ 'onClick': {} },
             id: "showAccounting",
             icon: "$showAccounting",
             size: "large",
             ...(props),
             variant: "tonal",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_258));
-        let __VLS_261;
-        let __VLS_262;
-        const __VLS_263 = ({ click: {} },
+        }, ...__VLS_functionalComponentArgsRest(__VLS_262));
+        let __VLS_266;
+        const __VLS_267 = ({ click: {} },
             { onClick: (__VLS_ctx.onIconClick) });
-        [onIconClick,];
-        var __VLS_260;
+        var __VLS_264;
+        var __VLS_265;
+        [onIconClick, t, runtime, CODES,];
     }
-    var __VLS_254;
+    [];
+    var __VLS_257;
 }
-const __VLS_265 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_266 = __VLS_asFunctionalComponent(__VLS_265, new __VLS_265({}));
-const __VLS_267 = __VLS_266({}, ...__VLS_functionalComponentArgsRest(__VLS_266));
-const __VLS_270 = {}.VTooltip;
-;
-VTooltip;
-const __VLS_271 = __VLS_asFunctionalComponent(__VLS_270, new __VLS_270({
+let __VLS_268;
+vSpacer;
+const __VLS_269 = __VLS_asFunctionalComponent1(__VLS_268, new __VLS_268({}));
+const __VLS_270 = __VLS_269({}, ...__VLS_functionalComponentArgsRest(__VLS_269));
+let __VLS_273;
+vTooltip;
+const __VLS_274 = __VLS_asFunctionalComponent1(__VLS_273, new __VLS_273({
     text: (__VLS_ctx.t('views.headerBar.settings')),
     location: "top",
 }));
-const __VLS_272 = __VLS_271({
+const __VLS_275 = __VLS_274({
     text: (__VLS_ctx.t('views.headerBar.settings')),
     location: "top",
-}, ...__VLS_functionalComponentArgsRest(__VLS_271));
-const { default: __VLS_274 } = __VLS_273.slots;
-[t,];
+}, ...__VLS_functionalComponentArgsRest(__VLS_274));
+const { default: __VLS_278 } = __VLS_276.slots;
 {
-    const { activator: __VLS_275 } = __VLS_273.slots;
-    const [{ props }] = __VLS_getSlotParameters(__VLS_275);
-    const __VLS_276 = {}.VAppBarNavIcon;
-    ;
-    VAppBarNavIcon;
-    const __VLS_277 = __VLS_asFunctionalComponent(__VLS_276, new __VLS_276({
+    const { activator: __VLS_279 } = __VLS_276.slots;
+    const [{ props }] = __VLS_vSlot(__VLS_279);
+    let __VLS_280;
+    vAppBarNavIcon;
+    const __VLS_281 = __VLS_asFunctionalComponent1(__VLS_280, new __VLS_280({
         ...{ 'onClick': {} },
         id: "setting",
         color: "grey",
@@ -1108,7 +1055,7 @@ const { default: __VLS_274 } = __VLS_273.slots;
         ...(props),
         variant: "tonal",
     }));
-    const __VLS_278 = __VLS_277({
+    const __VLS_282 = __VLS_281({
         ...{ 'onClick': {} },
         id: "setting",
         color: "grey",
@@ -1116,42 +1063,25 @@ const { default: __VLS_274 } = __VLS_273.slots;
         size: "large",
         ...(props),
         variant: "tonal",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_277));
-    let __VLS_280;
-    let __VLS_281;
-    const __VLS_282 = ({ click: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_281));
+    let __VLS_285;
+    const __VLS_286 = ({ click: {} },
         { onClick: (__VLS_ctx.onIconClick) });
-    [onIconClick,];
-    var __VLS_279;
+    var __VLS_283;
+    var __VLS_284;
+    [onIconClick, t,];
 }
-var __VLS_273;
-const __VLS_284 = {}.VSpacer;
-;
-VSpacer;
-const __VLS_285 = __VLS_asFunctionalComponent(__VLS_284, new __VLS_284({}));
-const __VLS_286 = __VLS_285({}, ...__VLS_functionalComponentArgsRest(__VLS_285));
+[];
+var __VLS_276;
+let __VLS_287;
+vSpacer;
+const __VLS_288 = __VLS_asFunctionalComponent1(__VLS_287, new __VLS_287({}));
+const __VLS_289 = __VLS_288({}, ...__VLS_functionalComponentArgsRest(__VLS_288));
+[];
 var __VLS_3;
-;
-const __VLS_289 = __VLS_asFunctionalComponent(DialogPort, new DialogPort({}));
-const __VLS_290 = __VLS_289({}, ...__VLS_functionalComponentArgsRest(__VLS_289));
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            RouterLink: RouterLink,
-            DialogPort: DialogPort,
-            CODES: CODES,
-            t: t,
-            runtime: runtime,
-            records: records,
-            onIconClick: onIconClick,
-        };
-    },
-});
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-});
-;
+const __VLS_292 = DialogPort;
+const __VLS_293 = __VLS_asFunctionalComponent1(__VLS_292, new __VLS_292({}));
+const __VLS_294 = __VLS_293({}, ...__VLS_functionalComponentArgsRest(__VLS_293));
+[];
+const __VLS_export = (await import('vue')).defineComponent({});
+export default {};

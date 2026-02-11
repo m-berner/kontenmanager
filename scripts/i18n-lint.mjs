@@ -10,12 +10,12 @@ import fs from "node:fs";
 import path from "node:path";
 import fg from "fast-glob";
 
-const ROOT = process.cwd();
-const SRC_DIR = path.join(ROOT, "../src");
+const ROOT = path.resolve(import.meta.dirname, "..");
+const SRC_DIR = path.join(ROOT, "src");
 const LOCALES_DIR = path.join(SRC_DIR, "_locales");
 
 // Add patterns for files where translations are referenced
-const SOURCE_PATTERNS = ["../src/**/*.{ts,tsx,js,jsx,vue}"];
+const SOURCE_PATTERNS = ["src/**/*.{ts,tsx,js,jsx,vue}"];
 
 // Ignore dynamic/computed keys that the tool can’t resolve reliably
 const IGNORE_KEYS = new Set([
@@ -75,12 +75,16 @@ async function collectUsedKeys() {
 }
 
 function loadLocales() {
-  const files = fs.readdirSync(LOCALES_DIR).filter((f) => f.endsWith(".json"));
+  const localeDirs = fs.readdirSync(LOCALES_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory());
   const locales = {};
-  for (const f of files) {
-    const locale = path.basename(f, ".json"); // e.g., de-DE
-    const data = readJson(path.join(LOCALES_DIR, f));
-    locales[locale] = flatten(data);
+  for (const dir of localeDirs) {
+    const locale = dir.name; // e.g., de or en
+    const guiFile = path.join(LOCALES_DIR, locale, "gui.json");
+    if (fs.existsSync(guiFile)) {
+      const data = readJson(guiFile);
+      locales[locale] = flatten(data);
+    }
   }
   return locales;
 }

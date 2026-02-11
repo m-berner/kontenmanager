@@ -33,16 +33,19 @@ const onClear = () => {
     edit.value = false;
 };
 DomainUtils.log("COMPONENTS DIALOGS FORMS BookingTypeForm: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
 if (props.mode !== 'add') {
-    const __VLS_0 = {}.VSelect;
-    ;
-    VSelect;
-    const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+    let __VLS_0;
+    vSelect;
+    const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
         ...{ 'onClick:clear': {} },
         ...{ 'onUpdate:modelValue': {} },
         modelValue: (__VLS_ctx.bookingTypeFormData.id),
@@ -70,21 +73,19 @@ if (props.mode !== 'add') {
         density: "compact",
         variant: "outlined",
     }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-    let __VLS_4;
     let __VLS_5;
     const __VLS_6 = ({ 'click:clear': {} },
         { 'onClick:clear': (__VLS_ctx.onClear) });
     const __VLS_7 = ({ 'update:modelValue': {} },
         { 'onUpdate:modelValue': (__VLS_ctx.onSelect) });
-    [bookingTypeFormData, INDEXED_DB, INDEXED_DB, records, t, onClear, onSelect,];
+    ;
     var __VLS_3;
+    var __VLS_4;
 }
 if ((__VLS_ctx.edit && props.mode !== 'delete') || props.mode === 'add') {
-    [edit,];
-    const __VLS_9 = {}.VTextField;
-    ;
-    VTextField;
-    const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
+    let __VLS_8;
+    vTextField;
+    const __VLS_9 = __VLS_asFunctionalComponent1(__VLS_8, new __VLS_8({
         ref: "nameInput",
         modelValue: (__VLS_ctx.bookingTypeFormData.name),
         autofocus: (props.mode === 'add'),
@@ -95,7 +96,7 @@ if ((__VLS_ctx.edit && props.mode !== 'delete') || props.mode === 'add') {
         density: "compact",
         variant: "outlined",
     }));
-    const __VLS_11 = __VLS_10({
+    const __VLS_10 = __VLS_9({
         ref: "nameInput",
         modelValue: (__VLS_ctx.bookingTypeFormData.name),
         autofocus: (props.mode === 'add'),
@@ -105,35 +106,13 @@ if ((__VLS_ctx.edit && props.mode !== 'delete') || props.mode === 'add') {
         rules: (__VLS_ctx.ValidationService.nameRules(__VLS_ctx.NAME_RULES)),
         density: "compact",
         variant: "outlined",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_10));
-    ;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_9));
     var __VLS_13 = {};
-    [bookingTypeFormData, t, t, ValidationService, NAME_RULES, nameInput,];
-    var __VLS_12;
+    var __VLS_11;
 }
-;
 var __VLS_14 = __VLS_13;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            ValidationService: ValidationService,
-            INDEXED_DB: INDEXED_DB,
-            t: t,
-            records: records,
-            bookingTypeFormData: bookingTypeFormData,
-            NAME_RULES: NAME_RULES,
-            edit: edit,
-            nameInput: nameInput,
-            onSelect: onSelect,
-            onClear: onClear,
-        };
-    },
+[bookingTypeFormData, bookingTypeFormData, INDEXED_DB, INDEXED_DB, records, t, t, t, onClear, onSelect, edit, ValidationService, NAME_RULES,];
+const __VLS_export = (await import('vue')).defineComponent({
     __typeProps: {},
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-    __typeProps: {},
-});
-;
+export default {};

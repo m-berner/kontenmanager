@@ -71,17 +71,19 @@ onBeforeMount(async () => {
     }
 });
 DomainUtils.log("COMPONENTS CheckboxGrid: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
 if (__VLS_ctx.isLoading) {
-    [isLoading,];
-    const __VLS_0 = {}.VCol;
-    ;
-    VCol;
-    const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+    let __VLS_0;
+    vCol;
+    const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
         ...{ class: "text-center" },
         cols: "12",
     }));
@@ -89,97 +91,91 @@ if (__VLS_ctx.isLoading) {
         ...{ class: "text-center" },
         cols: "12",
     }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-    const { default: __VLS_4 } = __VLS_3.slots;
-    const __VLS_5 = {}.VProgressCircular;
     ;
-    VProgressCircular;
-    const __VLS_6 = __VLS_asFunctionalComponent(__VLS_5, new __VLS_5({
+    const { default: __VLS_5 } = __VLS_3.slots;
+    let __VLS_6;
+    vProgressCircular;
+    const __VLS_7 = __VLS_asFunctionalComponent1(__VLS_6, new __VLS_6({
         color: "primary",
         indeterminate: true,
     }));
-    const __VLS_7 = __VLS_6({
+    const __VLS_8 = __VLS_7({
         color: "primary",
         indeterminate: true,
-    }, ...__VLS_functionalComponentArgsRest(__VLS_6));
-    __VLS_asFunctionalElement(__VLS_elements.p, __VLS_elements.p)({
+    }, ...__VLS_functionalComponentArgsRest(__VLS_7));
+    __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({
         ...{ class: "mt-3" },
     });
+    ;
     (__VLS_ctx.t("components.checkboxGrid.loading"));
-    [t,];
+    [isLoading, t,];
     var __VLS_3;
 }
 if (__VLS_ctx.error && !__VLS_ctx.isLoading) {
-    [isLoading, error,];
-    const __VLS_10 = {}.VCol;
-    ;
-    VCol;
-    const __VLS_11 = __VLS_asFunctionalComponent(__VLS_10, new __VLS_10({
+    let __VLS_11;
+    vCol;
+    const __VLS_12 = __VLS_asFunctionalComponent1(__VLS_11, new __VLS_11({
         cols: "12",
     }));
-    const __VLS_12 = __VLS_11({
+    const __VLS_13 = __VLS_12({
         cols: "12",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_11));
-    const { default: __VLS_14 } = __VLS_13.slots;
-    const __VLS_15 = {}.VAlert;
-    ;
-    VAlert;
-    const __VLS_16 = __VLS_asFunctionalComponent(__VLS_15, new __VLS_15({
+    }, ...__VLS_functionalComponentArgsRest(__VLS_12));
+    const { default: __VLS_16 } = __VLS_14.slots;
+    let __VLS_17;
+    vAlert;
+    const __VLS_18 = __VLS_asFunctionalComponent1(__VLS_17, new __VLS_17({
         ...{ 'onClick:close': {} },
         dismissible: true,
         type: "error",
     }));
-    const __VLS_17 = __VLS_16({
+    const __VLS_19 = __VLS_18({
         ...{ 'onClick:close': {} },
         dismissible: true,
         type: "error",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_16));
-    let __VLS_19;
-    let __VLS_20;
-    const __VLS_21 = ({ 'click:close': {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_18));
+    let __VLS_22;
+    const __VLS_23 = ({ 'click:close': {} },
         { 'onClick:close': (...[$event]) => {
                 if (!(__VLS_ctx.error && !__VLS_ctx.isLoading))
                     return;
                 __VLS_ctx.error = null;
-                [error,];
+                [isLoading, error, error,];
             } });
-    const { default: __VLS_22 } = __VLS_18.slots;
+    const { default: __VLS_24 } = __VLS_20.slots;
     (__VLS_ctx.error);
     [error,];
-    var __VLS_18;
-    var __VLS_13;
+    var __VLS_20;
+    var __VLS_21;
+    [];
+    var __VLS_14;
 }
 if (!__VLS_ctx.isLoading) {
-    [isLoading,];
-    const __VLS_23 = {}.VRow;
-    ;
-    VRow;
-    const __VLS_24 = __VLS_asFunctionalComponent(__VLS_23, new __VLS_23({
+    let __VLS_25;
+    vRow;
+    const __VLS_26 = __VLS_asFunctionalComponent1(__VLS_25, new __VLS_25({
         noGutters: true,
     }));
-    const __VLS_25 = __VLS_24({
+    const __VLS_27 = __VLS_26({
         noGutters: true,
-    }, ...__VLS_functionalComponentArgsRest(__VLS_24));
-    const { default: __VLS_27 } = __VLS_26.slots;
-    for (const [items, key] of __VLS_getVForSourceType((__VLS_ctx.boxes))) {
-        [boxes,];
-        const __VLS_28 = {}.VCol;
-        ;
-        VCol;
-        const __VLS_29 = __VLS_asFunctionalComponent(__VLS_28, new __VLS_28({
+    }, ...__VLS_functionalComponentArgsRest(__VLS_26));
+    const { default: __VLS_30 } = __VLS_28.slots;
+    for (const [items, key] of __VLS_vFor((__VLS_ctx.boxes))) {
+        let __VLS_31;
+        vCol;
+        const __VLS_32 = __VLS_asFunctionalComponent1(__VLS_31, new __VLS_31({
             key: (key),
             ...{ class: ({ 'opacity-50': __VLS_ctx.isSaving }) },
         }));
-        const __VLS_30 = __VLS_29({
+        const __VLS_33 = __VLS_32({
             key: (key),
             ...{ class: ({ 'opacity-50': __VLS_ctx.isSaving }) },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_29));
-        const { default: __VLS_32 } = __VLS_31.slots;
-        [isSaving,];
-        for (const [item] of __VLS_getVForSourceType((items))) {
-            const __VLS_33 = {}.VCheckbox;
-            ;
-            VCheckbox;
-            const __VLS_34 = __VLS_asFunctionalComponent(__VLS_33, new __VLS_33({
+        }, ...__VLS_functionalComponentArgsRest(__VLS_32));
+        ;
+        const { default: __VLS_36 } = __VLS_34.slots;
+        for (const [item] of __VLS_vFor((items))) {
+            let __VLS_37;
+            vCheckbox;
+            const __VLS_38 = __VLS_asFunctionalComponent1(__VLS_37, new __VLS_37({
                 ...{ 'onChange': {} },
                 key: (item),
                 modelValue: (__VLS_ctx.checked),
@@ -188,7 +184,7 @@ if (!__VLS_ctx.isLoading) {
                 value: (item),
                 hideDetails: true,
             }));
-            const __VLS_35 = __VLS_34({
+            const __VLS_39 = __VLS_38({
                 ...{ 'onChange': {} },
                 key: (item),
                 modelValue: (__VLS_ctx.checked),
@@ -196,87 +192,68 @@ if (!__VLS_ctx.isLoading) {
                 label: (__VLS_ctx.getLabel(item)),
                 value: (item),
                 hideDetails: true,
-            }, ...__VLS_functionalComponentArgsRest(__VLS_34));
-            let __VLS_37;
-            let __VLS_38;
-            const __VLS_39 = ({ change: {} },
+            }, ...__VLS_functionalComponentArgsRest(__VLS_38));
+            let __VLS_42;
+            const __VLS_43 = ({ change: {} },
                 { onChange: (__VLS_ctx.setChecked) });
-            [isSaving, checked, getLabel, setChecked,];
-            var __VLS_36;
+            var __VLS_40;
+            var __VLS_41;
+            [isLoading, boxes, isSaving, isSaving, checked, getLabel, setChecked,];
         }
-        var __VLS_31;
+        [];
+        var __VLS_34;
+        [];
     }
-    var __VLS_26;
+    [];
+    var __VLS_28;
     if (__VLS_ctx.isSaving) {
-        [isSaving,];
-        const __VLS_41 = {}.VCol;
-        ;
-        VCol;
-        const __VLS_42 = __VLS_asFunctionalComponent(__VLS_41, new __VLS_41({
+        let __VLS_44;
+        vCol;
+        const __VLS_45 = __VLS_asFunctionalComponent1(__VLS_44, new __VLS_44({
             ...{ class: "text-center" },
             cols: "12",
         }));
-        const __VLS_43 = __VLS_42({
+        const __VLS_46 = __VLS_45({
             ...{ class: "text-center" },
             cols: "12",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_42));
-        const { default: __VLS_45 } = __VLS_44.slots;
-        const __VLS_46 = {}.VChip;
+        }, ...__VLS_functionalComponentArgsRest(__VLS_45));
         ;
-        VChip;
-        const __VLS_47 = __VLS_asFunctionalComponent(__VLS_46, new __VLS_46({
+        const { default: __VLS_49 } = __VLS_47.slots;
+        let __VLS_50;
+        vChip;
+        const __VLS_51 = __VLS_asFunctionalComponent1(__VLS_50, new __VLS_50({
             color: "primary",
             size: "small",
         }));
-        const __VLS_48 = __VLS_47({
+        const __VLS_52 = __VLS_51({
             color: "primary",
             size: "small",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_47));
-        const { default: __VLS_50 } = __VLS_49.slots;
-        const __VLS_51 = {}.VProgressCircular;
-        ;
-        VProgressCircular;
-        const __VLS_52 = __VLS_asFunctionalComponent(__VLS_51, new __VLS_51({
+        }, ...__VLS_functionalComponentArgsRest(__VLS_51));
+        const { default: __VLS_55 } = __VLS_53.slots;
+        let __VLS_56;
+        vProgressCircular;
+        const __VLS_57 = __VLS_asFunctionalComponent1(__VLS_56, new __VLS_56({
             ...{ class: "mr-2" },
             indeterminate: true,
             size: "16",
             width: "2",
         }));
-        const __VLS_53 = __VLS_52({
+        const __VLS_58 = __VLS_57({
             ...{ class: "mr-2" },
             indeterminate: true,
             size: "16",
             width: "2",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_52));
+        }, ...__VLS_functionalComponentArgsRest(__VLS_57));
+        ;
         (__VLS_ctx.t("components.checkboxGrid.saving"));
-        [t,];
-        var __VLS_49;
-        var __VLS_44;
+        [t, isSaving,];
+        var __VLS_53;
+        [];
+        var __VLS_47;
     }
 }
-;
-;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            t: t,
-            checked: checked,
-            isLoading: isLoading,
-            isSaving: isSaving,
-            error: error,
-            boxes: boxes,
-            getLabel: getLabel,
-            setChecked: setChecked,
-        };
-    },
+[];
+const __VLS_export = (await import('vue')).defineComponent({
     __typeProps: {},
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-    __typeProps: {},
-});
-;
+export default {};

@@ -36,15 +36,16 @@ onBeforeMount(async () => {
     }
 });
 DomainUtils.log("COMPONENTS ServiceSelector: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VRadioGroup;
-;
-VRadioGroup;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vRadioGroup;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onUpdate:modelValue': {} },
     modelValue: (__VLS_ctx.service),
     column: true,
@@ -54,7 +55,6 @@ const __VLS_2 = __VLS_1({
     modelValue: (__VLS_ctx.service),
     column: true,
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
 const __VLS_6 = ({ 'update:modelValue': {} },
     { 'onUpdate:modelValue': (async () => {
@@ -62,13 +62,10 @@ const __VLS_6 = ({ 'update:modelValue': {} },
         }) });
 var __VLS_7 = {};
 const { default: __VLS_8 } = __VLS_3.slots;
-[service, setService,];
-for (const [item] of __VLS_getVForSourceType(([...__VLS_ctx.FETCH.MAP.keys()]))) {
-    [FETCH,];
-    const __VLS_9 = {}.VRadio;
-    ;
-    VRadio;
-    const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
+for (const [item] of __VLS_vFor(([...__VLS_ctx.FETCH.MAP.keys()]))) {
+    let __VLS_9;
+    vRadio;
+    const __VLS_10 = __VLS_asFunctionalComponent1(__VLS_9, new __VLS_9({
         key: (item),
         label: (__VLS_ctx.serviceLabels(item)),
         value: (item),
@@ -78,22 +75,11 @@ for (const [item] of __VLS_getVForSourceType(([...__VLS_ctx.FETCH.MAP.keys()])))
         label: (__VLS_ctx.serviceLabels(item)),
         value: (item),
     }, ...__VLS_functionalComponentArgsRest(__VLS_10));
-    [serviceLabels,];
+    [service, setService, FETCH, serviceLabels,];
 }
+[];
 var __VLS_3;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            FETCH: FETCH,
-            service: service,
-            setService: setService,
-            serviceLabels: serviceLabels,
-        };
-    },
-});
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-});
-;
+var __VLS_4;
+[];
+const __VLS_export = (await import('vue')).defineComponent({});
+export default {};

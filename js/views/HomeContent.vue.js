@@ -68,15 +68,16 @@ onUnmounted(() => {
     unregister("Ctrl+Alt+R");
 });
 DomainUtils.log("VIEWS HomeContent: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VTextField;
-;
-VTextField;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vTextField;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     modelValue: (__VLS_ctx.search),
     label: (__VLS_ctx.t('views.homeContent.search')),
     density: "compact",
@@ -94,11 +95,9 @@ const __VLS_2 = __VLS_1({
     singleLine: true,
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-[search, t,];
-const __VLS_5 = {}.VDataTable;
-;
-VDataTable;
-const __VLS_6 = __VLS_asFunctionalComponent(__VLS_5, new __VLS_5({
+let __VLS_5;
+vDataTable;
+const __VLS_6 = __VLS_asFunctionalComponent1(__VLS_5, new __VLS_5({
     ...{ 'onUpdate:itemsPerPage': {} },
     headers: (__VLS_ctx.HEADERS),
     hideNoData: (false),
@@ -126,78 +125,52 @@ const __VLS_7 = __VLS_6({
     density: "compact",
     itemKey: "cID",
 }, ...__VLS_functionalComponentArgsRest(__VLS_6));
-let __VLS_9;
 let __VLS_10;
 const __VLS_11 = ({ 'update:itemsPerPage': {} },
     { 'onUpdate:itemsPerPage': (__VLS_ctx.setBookingsPerPage) });
 const { default: __VLS_12 } = __VLS_8.slots;
-[search, t, t, HEADERS, bookingItems, bookingsPerPage, VIEWS, setBookingsPerPage,];
 {
     const { [__VLS_tryAsConstant(`item`)]: __VLS_13 } = __VLS_8.slots;
-    const [{ item }] = __VLS_getSlotParameters(__VLS_13);
-    __VLS_asFunctionalElement(__VLS_elements.tr, __VLS_elements.tr)({
+    const [{ item }] = __VLS_vSlot(__VLS_13);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.tr, __VLS_intrinsics.tr)({
         ...{ class: "table-row" },
     });
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({
+    ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({
         ...{ class: "d-none" },
     });
-    (item.cID);
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
     ;
-    const __VLS_14 = __VLS_asFunctionalComponent(DotMenu, new DotMenu({
+    (item.cID);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
+    const __VLS_14 = DotMenu;
+    const __VLS_15 = __VLS_asFunctionalComponent1(__VLS_14, new __VLS_14({
         items: (__VLS_ctx.MENU_ITEMS),
         recordId: (item.cID),
     }));
-    const __VLS_15 = __VLS_14({
+    const __VLS_16 = __VLS_15({
         items: (__VLS_ctx.MENU_ITEMS),
         recordId: (item.cID),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_14));
-    [MENU_ITEMS,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    }, ...__VLS_functionalComponentArgsRest(__VLS_15));
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (__VLS_ctx.d(__VLS_ctx.DomainUtils.utcDate(item.cBookDate), "short"));
-    [d, DomainUtils,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (__VLS_ctx.n(item.cDebit, "currency"));
-    [n,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (__VLS_ctx.n(item.cCredit, "currency"));
-    [n,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (item.cDescription);
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (__VLS_ctx.records.bookingTypes.getNameById(item.cBookingTypeID));
-    [records,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({
         ...{ class: "d-none" },
     });
+    ;
     (item.cAccountNumberID);
+    [search, search, t, t, t, HEADERS, bookingItems, bookingsPerPage, VIEWS, setBookingsPerPage, MENU_ITEMS, d, DomainUtils, n, n, records,];
 }
+[];
 var __VLS_8;
-;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            DomainUtils: DomainUtils,
-            DotMenu: DotMenu,
-            VIEWS: VIEWS,
-            d: d,
-            n: n,
-            t: t,
-            records: records,
-            bookingItems: bookingItems,
-            bookingsPerPage: bookingsPerPage,
-            setBookingsPerPage: setBookingsPerPage,
-            HEADERS: HEADERS,
-            MENU_ITEMS: MENU_ITEMS,
-            search: search,
-        };
-    },
-});
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-});
-;
+var __VLS_9;
+[];
+const __VLS_export = (await import('vue')).defineComponent({});
+export default {};

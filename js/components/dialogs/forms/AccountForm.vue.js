@@ -58,15 +58,18 @@ onBeforeUnmount(() => {
         clearTimeout(timeoutId);
 });
 DomainUtils.log("COMPONENTS DIALOGS FORMS AccountForm: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VSwitch;
-;
-VSwitch;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vSwitch;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     modelValue: (__VLS_ctx.accountFormData.withDepot),
     label: (__VLS_ctx.t('components.dialogs.forms.accountForm.withDepotLabel')),
     color: "red",
@@ -78,11 +81,9 @@ const __VLS_2 = __VLS_1({
     color: "red",
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-[accountFormData, t,];
-const __VLS_5 = {}.VTextField;
-;
-VTextField;
-const __VLS_6 = __VLS_asFunctionalComponent(__VLS_5, new __VLS_5({
+let __VLS_5;
+vTextField;
+const __VLS_6 = __VLS_asFunctionalComponent1(__VLS_5, new __VLS_5({
     ...{ 'onUpdate:modelValue': {} },
     modelValue: (__VLS_ctx.accountFormData.swift),
     counter: (11),
@@ -100,16 +101,14 @@ const __VLS_7 = __VLS_6({
     autofocus: true,
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_6));
-let __VLS_9;
 let __VLS_10;
 const __VLS_11 = ({ 'update:modelValue': {} },
     { 'onUpdate:modelValue': (__VLS_ctx.onUpdateSwift) });
-[accountFormData, t, swiftLabel, ValidationService, SWIFT_RULES, onUpdateSwift,];
 var __VLS_8;
-const __VLS_13 = {}.VTextField;
-;
-VTextField;
-const __VLS_14 = __VLS_asFunctionalComponent(__VLS_13, new __VLS_13({
+var __VLS_9;
+let __VLS_12;
+vTextField;
+const __VLS_13 = __VLS_asFunctionalComponent1(__VLS_12, new __VLS_12({
     ...{ 'onUpdate:modelValue': {} },
     modelValue: (__VLS_ctx.accountFormData.iban),
     disabled: (props.isUpdate),
@@ -118,7 +117,7 @@ const __VLS_14 = __VLS_asFunctionalComponent(__VLS_13, new __VLS_13({
     rules: (__VLS_ctx.ValidationService.ibanRules(__VLS_ctx.IBAN_RULES)),
     variant: "outlined",
 }));
-const __VLS_15 = __VLS_14({
+const __VLS_14 = __VLS_13({
     ...{ 'onUpdate:modelValue': {} },
     modelValue: (__VLS_ctx.accountFormData.iban),
     disabled: (props.isUpdate),
@@ -126,83 +125,58 @@ const __VLS_15 = __VLS_14({
     placeholder: (__VLS_ctx.t('components.dialogs.forms.accountForm.ibanPlaceholder')),
     rules: (__VLS_ctx.ValidationService.ibanRules(__VLS_ctx.IBAN_RULES)),
     variant: "outlined",
-}, ...__VLS_functionalComponentArgsRest(__VLS_14));
+}, ...__VLS_functionalComponentArgsRest(__VLS_13));
 let __VLS_17;
-let __VLS_18;
-const __VLS_19 = ({ 'update:modelValue': {} },
+const __VLS_18 = ({ 'update:modelValue': {} },
     { 'onUpdate:modelValue': (__VLS_ctx.onUpdateIban) });
-[accountFormData, t, t, ValidationService, ibanLabel, IBAN_RULES, onUpdateIban,];
+var __VLS_15;
 var __VLS_16;
-const __VLS_21 = {}.VTextField;
-;
-VTextField;
-const __VLS_22 = __VLS_asFunctionalComponent(__VLS_21, new __VLS_21({
+let __VLS_19;
+vTextField;
+const __VLS_20 = __VLS_asFunctionalComponent1(__VLS_19, new __VLS_19({
     modelValue: (__VLS_ctx.search),
     label: (__VLS_ctx.t('components.dialogs.forms.accountForm.searchLabel')),
     placeholder: (__VLS_ctx.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL),
     variant: "outlined",
 }));
-const __VLS_23 = __VLS_22({
+const __VLS_21 = __VLS_20({
     modelValue: (__VLS_ctx.search),
     label: (__VLS_ctx.t('components.dialogs.forms.accountForm.searchLabel')),
     placeholder: (__VLS_ctx.COMPONENTS.DIALOGS.PLACEHOLDER.ACCOUNT_LOGO_URL),
     variant: "outlined",
-}, ...__VLS_functionalComponentArgsRest(__VLS_22));
-[t, search, COMPONENTS,];
-__VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
+}, ...__VLS_functionalComponentArgsRest(__VLS_20));
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "mb-4" },
 });
-const __VLS_26 = {}.VAvatar;
 ;
-VAvatar;
-const __VLS_27 = __VLS_asFunctionalComponent(__VLS_26, new __VLS_26({
+let __VLS_24;
+vAvatar;
+const __VLS_25 = __VLS_asFunctionalComponent1(__VLS_24, new __VLS_24({
     ...{ class: "me-3" },
     color: "white",
     size: "48",
 }));
-const __VLS_28 = __VLS_27({
+const __VLS_26 = __VLS_25({
     ...{ class: "me-3" },
     color: "white",
     size: "48",
-}, ...__VLS_functionalComponentArgsRest(__VLS_27));
-const { default: __VLS_30 } = __VLS_29.slots;
-const __VLS_31 = {}.VImg;
+}, ...__VLS_functionalComponentArgsRest(__VLS_25));
 ;
-VImg;
-const __VLS_32 = __VLS_asFunctionalComponent(__VLS_31, new __VLS_31({
+const { default: __VLS_29 } = __VLS_27.slots;
+let __VLS_30;
+vImg;
+const __VLS_31 = __VLS_asFunctionalComponent1(__VLS_30, new __VLS_30({
     alt: (__VLS_ctx.t('components.dialogs.forms.accountForm.missingLogo')),
     src: (__VLS_ctx.accountFormData.logoUrl),
 }));
-const __VLS_33 = __VLS_32({
+const __VLS_32 = __VLS_31({
     alt: (__VLS_ctx.t('components.dialogs.forms.accountForm.missingLogo')),
     src: (__VLS_ctx.accountFormData.logoUrl),
-}, ...__VLS_functionalComponentArgsRest(__VLS_32));
-[accountFormData, t,];
-var __VLS_29;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            COMPONENTS: COMPONENTS,
-            ValidationService: ValidationService,
-            t: t,
-            accountFormData: accountFormData,
-            SWIFT_RULES: SWIFT_RULES,
-            IBAN_RULES: IBAN_RULES,
-            search: search,
-            swiftLabel: swiftLabel,
-            ibanLabel: ibanLabel,
-            onUpdateSwift: onUpdateSwift,
-            onUpdateIban: onUpdateIban,
-        };
-    },
+}, ...__VLS_functionalComponentArgsRest(__VLS_31));
+[accountFormData, accountFormData, accountFormData, accountFormData, t, t, t, t, t, t, swiftLabel, ValidationService, ValidationService, SWIFT_RULES, onUpdateSwift, ibanLabel, IBAN_RULES, onUpdateIban, search, COMPONENTS,];
+var __VLS_27;
+[];
+const __VLS_export = (await import('vue')).defineComponent({
     __typeProps: {},
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-    __typeProps: {},
-});
-;
+export default {};

@@ -84,15 +84,16 @@ const getAccountData = (year) => {
 const __VLS_exposed = { title: t("components.dialogs.showAccounting.title") };
 defineExpose(__VLS_exposed);
 DomainUtils.log("COMPONENTS DIALOGS ShowAccounting: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VForm;
-;
-VForm;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vForm;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }));
@@ -100,16 +101,14 @@ const __VLS_2 = __VLS_1({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
 const __VLS_6 = ({ submit: {} },
     { onSubmit: () => { } });
 var __VLS_7 = {};
 const { default: __VLS_8 } = __VLS_3.slots;
-const __VLS_9 = {}.VSelect;
-;
-VSelect;
-const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
+let __VLS_9;
+vSelect;
+const __VLS_10 = __VLS_asFunctionalComponent1(__VLS_9, new __VLS_9({
     modelValue: (__VLS_ctx.selected),
     items: (__VLS_ctx.yearEntries),
     label: (__VLS_ctx.t('components.dialogs.showAccounting.year')),
@@ -131,27 +130,24 @@ const __VLS_11 = __VLS_10({
     maxWidth: "300",
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_10));
-[selected, yearEntries, t,];
-const __VLS_14 = {}.VCard;
-;
-VCard;
-const __VLS_15 = __VLS_asFunctionalComponent(__VLS_14, new __VLS_14({}));
+let __VLS_14;
+vCard;
+const __VLS_15 = __VLS_asFunctionalComponent1(__VLS_14, new __VLS_14({}));
 const __VLS_16 = __VLS_15({}, ...__VLS_functionalComponentArgsRest(__VLS_15));
-const { default: __VLS_18 } = __VLS_17.slots;
-const __VLS_19 = {}.VCardText;
-;
-VCardText;
-const __VLS_20 = __VLS_asFunctionalComponent(__VLS_19, new __VLS_19({
+const { default: __VLS_19 } = __VLS_17.slots;
+let __VLS_20;
+vCardText;
+const __VLS_21 = __VLS_asFunctionalComponent1(__VLS_20, new __VLS_20({
     ...{ class: "pa-5" },
 }));
-const __VLS_21 = __VLS_20({
+const __VLS_22 = __VLS_21({
     ...{ class: "pa-5" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_20));
-const { default: __VLS_23 } = __VLS_22.slots;
-const __VLS_24 = {}.VDataTable;
+}, ...__VLS_functionalComponentArgsRest(__VLS_21));
 ;
-VDataTable;
-const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
+const { default: __VLS_25 } = __VLS_23.slots;
+let __VLS_26;
+vDataTable;
+const __VLS_27 = __VLS_asFunctionalComponent1(__VLS_26, new __VLS_26({
     ...{ 'onUpdate:itemsPerPage': {} },
     headers: (__VLS_ctx.HEADERS),
     hideNoData: (false),
@@ -164,7 +160,7 @@ const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
     density: "compact",
     itemKey: "id",
 }));
-const __VLS_26 = __VLS_25({
+const __VLS_28 = __VLS_27({
     ...{ 'onUpdate:itemsPerPage': {} },
     headers: (__VLS_ctx.HEADERS),
     hideNoData: (false),
@@ -176,59 +172,45 @@ const __VLS_26 = __VLS_25({
     noDataText: (__VLS_ctx.t('components.dialogs.showAccounting.noDataText')),
     density: "compact",
     itemKey: "id",
-}, ...__VLS_functionalComponentArgsRest(__VLS_25));
-let __VLS_28;
-let __VLS_29;
-const __VLS_30 = ({ 'update:itemsPerPage': {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_27));
+let __VLS_31;
+const __VLS_32 = ({ 'update:itemsPerPage': {} },
     { 'onUpdate:itemsPerPage': (__VLS_ctx.setSumsPerPage) });
-const { default: __VLS_31 } = __VLS_27.slots;
-[t, t, HEADERS, accountEntries, sumsPerPage, VIEWS, setSumsPerPage,];
+const { default: __VLS_33 } = __VLS_29.slots;
 {
-    const { [__VLS_tryAsConstant(`item`)]: __VLS_32 } = __VLS_27.slots;
-    const [{ item }] = __VLS_getSlotParameters(__VLS_32);
-    __VLS_asFunctionalElement(__VLS_elements.tr, __VLS_elements.tr)({
+    const { [__VLS_tryAsConstant(`item`)]: __VLS_34 } = __VLS_29.slots;
+    const [{ item }] = __VLS_vSlot(__VLS_34);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.tr, __VLS_intrinsics.tr)({
         ...{ class: "table-row" },
     });
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({
+    ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({
         ...{ class: "d-none" },
     });
+    ;
     (item.id);
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({
         ...{ class: (item.nameClass) },
     });
     (item.name);
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({
         ...{ class: (item.sumClass) },
     });
     (__VLS_ctx.n(item.sum, "currency"));
-    [n,];
+    [selected, yearEntries, t, t, t, HEADERS, accountEntries, sumsPerPage, VIEWS, setSumsPerPage, n,];
 }
-var __VLS_27;
-var __VLS_22;
+[];
+var __VLS_29;
+var __VLS_30;
+[];
+var __VLS_23;
+[];
 var __VLS_17;
+[];
 var __VLS_3;
-;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            VIEWS: VIEWS,
-            n: n,
-            t: t,
-            sumsPerPage: sumsPerPage,
-            setSumsPerPage: setSumsPerPage,
-            HEADERS: HEADERS,
-            selected: selected,
-            yearEntries: yearEntries,
-            accountEntries: accountEntries,
-        };
-    },
+var __VLS_4;
+[];
+const __VLS_export = (await import('vue')).defineComponent({
+    setup: () => (__VLS_exposed),
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-        return {};
-    },
-});
-;
+export default {};

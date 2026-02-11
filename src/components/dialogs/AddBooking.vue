@@ -14,36 +14,45 @@ import { useSettingsStore } from "@/stores/settings";
 import { DomainUtils } from "@/domains/utils";
 import { useBookingsDB } from "@/composables/useIndexedDB";
 import { useBookingForm } from "@/composables/useForms";
-import { useDialogSubmit } from "@/composables/useDialogSubmit";
+import { useDialogGuards } from "@/composables/useDialogGuards";
 import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { DATE } from "@/domains/config/date";
 import { INDEXED_DB } from "@/config/database";
+import { databaseService } from "@/services/database";
+import { useBrowser } from "@/composables/useBrowser";
 
 const { t } = useI18n();
 const { add } = useBookingsDB();
 const { mapBookingFormToDb, reset } = useBookingForm();
-const { createAddHandler } = useDialogSubmit();
+const { submitGuard } = useDialogGuards();
+const { handleUserNotice } = useBrowser();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
-const baseDialogRef = ref<InstanceType<typeof BaseDialogForm> | null>(null);
+const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
-const onClickOk = createAddHandler({
-  dialogRef: baseDialogRef,
-  componentName: "AddBooking",
-  i18nPrefix: "components.dialogs.addBooking",
-  reset,
-  operation: async () => {
-    const bookingData = mapBookingFormToDb(activeAccountId, DATE.ISO);
-    const addBookingID = await add(bookingData);
+const onClickOk = async (): Promise<void> => {
+  await submitGuard({
+    formRef: baseDialogRef.value?.formRef,
+    isConnected: databaseService.isConnected(),
+    connectionErrorMessage: t(
+      "components.dialogs.addBooking.messages.dbNotConnected"
+    ),
+    handleUserNotice,
+    errorContext: "ADD_BOOKING",
+    errorTitle: t("components.dialogs.onClickOk"),
+    operation: async () => {
+      const bookingData = mapBookingFormToDb(activeAccountId, DATE.ISO);
+      const addBookingID = await add(bookingData);
 
-    if (addBookingID === INDEXED_DB.INVALID_ID) {
-      throw new Error(t("components.dialogs.addBooking.messages.error"));
+      if (addBookingID === INDEXED_DB.INVALID_ID) {
+        throw new Error(t("components.dialogs.addBooking.messages.error"));
+      }
+
+      records.bookings.add({ ...bookingData, cID: addBookingID }, true);
     }
-
-    records.bookings.add({ ...bookingData, cID: addBookingID }, true);
-  }
-});
+  });
+};
 
 defineExpose({ onClickOk, title: t("components.dialogs.addBooking.title") });
 

@@ -1,11 +1,9 @@
-import { useI18n } from "vue-i18n";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { useRuntimeStore } from "@/stores/runtime";
 import { databaseService } from "@/services/database";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 export function useDialogSubmit() {
-    const { t } = useI18n();
     const { submitGuard } = useDialogGuards();
     const { handleUserNotice } = useBrowser();
     const runtime = useRuntimeStore();
@@ -18,10 +16,10 @@ export function useDialogSubmit() {
                 isConnected: checkConnection
                     ? databaseService.isConnected()
                     : undefined,
-                connectionErrorMessage: errorMessage || t(`${i18nPrefix}.messages.dbNotConnected`),
+                connectionErrorMessage: errorMessage || `${i18nPrefix}: no database connected`,
                 handleUserNotice,
                 errorContext: componentName.toUpperCase().replace(/\s/g, "_"),
-                errorTitle: t("components.dialogs.onClickOk"),
+                errorTitle: "Guard OK",
                 operation: async () => {
                     try {
                         await operation();

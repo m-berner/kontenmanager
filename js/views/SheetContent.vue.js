@@ -18,15 +18,16 @@ const formatData = computed(() => {
     }));
 });
 DomainUtils.log("VIEW SheetContent: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VSheet;
-;
-VSheet;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vSheet;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ class: "sheet" },
     color: "surface-light",
 }));
@@ -34,42 +35,29 @@ const __VLS_2 = __VLS_1({
     ...{ class: "sheet" },
     color: "surface-light",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-var __VLS_4 = {};
-const { default: __VLS_5 } = __VLS_3.slots;
-const __VLS_6 = {}.VContainer;
+var __VLS_5 = {};
 ;
-VContainer;
-const __VLS_7 = __VLS_asFunctionalComponent(__VLS_6, new __VLS_6({}));
-const __VLS_8 = __VLS_7({}, ...__VLS_functionalComponentArgsRest(__VLS_7));
-const { default: __VLS_10 } = __VLS_9.slots;
+const { default: __VLS_6 } = __VLS_3.slots;
+let __VLS_7;
+vContainer;
+const __VLS_8 = __VLS_asFunctionalComponent1(__VLS_7, new __VLS_7({}));
+const __VLS_9 = __VLS_8({}, ...__VLS_functionalComponentArgsRest(__VLS_8));
+const { default: __VLS_12 } = __VLS_10.slots;
 if (__VLS_ctx.formatData) {
-    [formatData,];
-    ;
-    const __VLS_11 = __VLS_asFunctionalComponent(ContentCard, new ContentCard({
+    const __VLS_13 = ContentCard;
+    const __VLS_14 = __VLS_asFunctionalComponent1(__VLS_13, new __VLS_13({
         data: (__VLS_ctx.formatData),
         title: (__VLS_ctx.t('views.sheetContent.privacyContent.general.title')),
     }));
-    const __VLS_12 = __VLS_11({
+    const __VLS_15 = __VLS_14({
         data: (__VLS_ctx.formatData),
         title: (__VLS_ctx.t('views.sheetContent.privacyContent.general.title')),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_11));
-    [formatData, t,];
+    }, ...__VLS_functionalComponentArgsRest(__VLS_14));
 }
-var __VLS_9;
+[formatData, formatData, t,];
+var __VLS_10;
+[];
 var __VLS_3;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            ContentCard: ContentCard,
-            t: t,
-            formatData: formatData,
-        };
-    },
-});
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-});
-;
+[];
+const __VLS_export = (await import('vue')).defineComponent({});
+export default {};

@@ -64,82 +64,68 @@ const __VLS_exposed = {
 };
 defineExpose(__VLS_exposed);
 DomainUtils.log("COMPONENTS DIALOGS DeleteAccountConfirmation: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
 if (__VLS_ctx.records.accounts.items.length === 0) {
-    [records,];
-    const __VLS_0 = {}.VAlert;
-    ;
-    VAlert;
-    const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({}));
+    let __VLS_0;
+    vAlert;
+    const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({}));
     const __VLS_2 = __VLS_1({}, ...__VLS_functionalComponentArgsRest(__VLS_1));
-    const { default: __VLS_4 } = __VLS_3.slots;
+    const { default: __VLS_5 } = __VLS_3.slots;
     (__VLS_ctx.t("views.headerBar.messages.noAccount"));
-    [t,];
+    [records, t,];
     var __VLS_3;
 }
 else {
-    const __VLS_5 = {}.VAlert;
-    ;
-    VAlert;
-    const __VLS_6 = __VLS_asFunctionalComponent(__VLS_5, new __VLS_5({
+    let __VLS_6;
+    vAlert;
+    const __VLS_7 = __VLS_asFunctionalComponent1(__VLS_6, new __VLS_6({
         type: "warning",
     }));
-    const __VLS_7 = __VLS_6({
+    const __VLS_8 = __VLS_7({
         type: "warning",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_6));
-    const { default: __VLS_9 } = __VLS_8.slots;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_7));
+    const { default: __VLS_11 } = __VLS_9.slots;
     (__VLS_ctx.t("components.dialogs.deleteAccountConfirmation.messages.confirm"));
     [t,];
-    var __VLS_8;
+    var __VLS_9;
 }
-const __VLS_10 = {}.VOverlay;
-;
-VOverlay;
-const __VLS_11 = __VLS_asFunctionalComponent(__VLS_10, new __VLS_10({
+let __VLS_12;
+vOverlay;
+const __VLS_13 = __VLS_asFunctionalComponent1(__VLS_12, new __VLS_12({
     modelValue: (__VLS_ctx.isLoading),
     ...{ class: "align-center justify-center" },
     contained: true,
 }));
-const __VLS_12 = __VLS_11({
+const __VLS_14 = __VLS_13({
     modelValue: (__VLS_ctx.isLoading),
     ...{ class: "align-center justify-center" },
     contained: true,
-}, ...__VLS_functionalComponentArgsRest(__VLS_11));
-const { default: __VLS_14 } = __VLS_13.slots;
+}, ...__VLS_functionalComponentArgsRest(__VLS_13));
+;
+;
+const { default: __VLS_17 } = __VLS_15.slots;
+let __VLS_18;
+vProgressCircular;
+const __VLS_19 = __VLS_asFunctionalComponent1(__VLS_18, new __VLS_18({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}));
+const __VLS_20 = __VLS_19({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}, ...__VLS_functionalComponentArgsRest(__VLS_19));
 [isLoading,];
-const __VLS_15 = {}.VProgressCircular;
-;
-VProgressCircular;
-const __VLS_16 = __VLS_asFunctionalComponent(__VLS_15, new __VLS_15({
-    color: "primary",
-    indeterminate: true,
-    size: "64",
-}));
-const __VLS_17 = __VLS_16({
-    color: "primary",
-    indeterminate: true,
-    size: "64",
-}, ...__VLS_functionalComponentArgsRest(__VLS_16));
-var __VLS_13;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            t: t,
-            records: records,
-            isLoading: isLoading,
-        };
-    },
+var __VLS_15;
+[];
+const __VLS_export = (await import('vue')).defineComponent({
+    setup: () => (__VLS_exposed),
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-        return {};
-    },
-});
-;
+export default {};

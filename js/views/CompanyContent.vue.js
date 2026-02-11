@@ -105,15 +105,16 @@ watch(stocksPerPage, async () => {
     }
 });
 DomainUtils.log("VIEWS CompanyContent: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VDataTable;
-;
-VDataTable;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vDataTable;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onUpdate:itemsPerPage': {} },
     ...{ 'onUpdate:page': {} },
     headers: (__VLS_ctx.HEADERS),
@@ -143,7 +144,6 @@ const __VLS_2 = __VLS_1({
     density: "compact",
     itemKey: "cID",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
 const __VLS_6 = ({ 'update:itemsPerPage': {} },
     { 'onUpdate:itemsPerPage': (__VLS_ctx.setStocksPerPage) });
@@ -151,120 +151,85 @@ const __VLS_7 = ({ 'update:page': {} },
     { 'onUpdate:page': (__VLS_ctx.onUpdatePage) });
 var __VLS_8 = {};
 const { default: __VLS_9 } = __VLS_3.slots;
-[HEADERS, activeStockItems, stocksPerPage, VIEWS, t, t, isStockLoading, setStocksPerPage, onUpdatePage,];
 {
     const { [__VLS_tryAsConstant(`item`)]: __VLS_10 } = __VLS_3.slots;
-    const [{ item }] = __VLS_getSlotParameters(__VLS_10);
-    __VLS_asFunctionalElement(__VLS_elements.tr, __VLS_elements.tr)({
+    const [{ item }] = __VLS_vSlot(__VLS_10);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.tr, __VLS_intrinsics.tr)({
         ...{ class: "table-row" },
     });
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({
+    ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({
         ...{ class: "d-none" },
     });
-    (item.cID);
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
     ;
-    const __VLS_11 = __VLS_asFunctionalComponent(DotMenu, new DotMenu({
+    (item.cID);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
+    const __VLS_11 = DotMenu;
+    const __VLS_12 = __VLS_asFunctionalComponent1(__VLS_11, new __VLS_11({
         items: (__VLS_ctx.MENU_ITEMS),
         recordId: (item.cID),
     }));
-    const __VLS_12 = __VLS_11({
+    const __VLS_13 = __VLS_12({
         items: (__VLS_ctx.MENU_ITEMS),
         recordId: (item.cID),
-    }, ...__VLS_functionalComponentArgsRest(__VLS_11));
-    [MENU_ITEMS,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    }, ...__VLS_functionalComponentArgsRest(__VLS_12));
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (item.cCompany);
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (item.cISIN);
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     if (__VLS_ctx.isValidDate(item.cQuarterDay)) {
-        [isValidDate,];
         (__VLS_ctx.d(new Date(item.cQuarterDay), "short"));
-        [d,];
     }
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     if (__VLS_ctx.isValidDate(item.cMeetingDay)) {
-        [isValidDate,];
         (__VLS_ctx.d(new Date(item.cMeetingDay), "short"));
-        [d,];
     }
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     if (__VLS_ctx.hasPortfolio(item.mPortfolio)) {
-        [hasPortfolio,];
         (item.mPortfolio);
     }
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     if (__VLS_ctx.hasPortfolio(item.mPortfolio)) {
-        [hasPortfolio,];
-        const __VLS_15 = {}.VTooltip;
-        ;
-        VTooltip;
-        const __VLS_16 = __VLS_asFunctionalComponent(__VLS_15, new __VLS_15({
+        let __VLS_16;
+        vTooltip;
+        const __VLS_17 = __VLS_asFunctionalComponent1(__VLS_16, new __VLS_16({
             text: (__VLS_ctx.n(__VLS_ctx.calculatePercentChange(item.mEuroChange, item.mInvest), 'percent')),
             location: "left",
         }));
-        const __VLS_17 = __VLS_16({
+        const __VLS_18 = __VLS_17({
             text: (__VLS_ctx.n(__VLS_ctx.calculatePercentChange(item.mEuroChange, item.mInvest), 'percent')),
             location: "left",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_16));
-        const { default: __VLS_19 } = __VLS_18.slots;
-        [n, calculatePercentChange,];
+        }, ...__VLS_functionalComponentArgsRest(__VLS_17));
+        const { default: __VLS_21 } = __VLS_19.slots;
         {
-            const { activator: __VLS_20 } = __VLS_18.slots;
-            const [{ props }] = __VLS_getSlotParameters(__VLS_20);
-            __VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({
+            const { activator: __VLS_22 } = __VLS_19.slots;
+            const [{ props }] = __VLS_vSlot(__VLS_22);
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
                 ...{ class: (__VLS_ctx.DomainUtils.winLossClass(item.mEuroChange)) },
                 ...(props),
             });
-            [DomainUtils,];
             (__VLS_ctx.n(item.mEuroChange ?? 0, "currency"));
-            [n,];
+            [HEADERS, activeStockItems, stocksPerPage, VIEWS, t, t, isStockLoading, setStocksPerPage, onUpdatePage, MENU_ITEMS, isValidDate, isValidDate, d, d, hasPortfolio, hasPortfolio, n, n, calculatePercentChange, DomainUtils,];
         }
-        var __VLS_18;
+        [];
+        var __VLS_19;
     }
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (__VLS_ctx.n(item.mMin ?? 0, "currency"));
-    [n,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({
         ...{ class: "font-weight-bold color-black" },
     });
+    ;
+    ;
     (__VLS_ctx.n(item.mValue ?? 0, "currency3"));
-    [n,];
-    __VLS_asFunctionalElement(__VLS_elements.td, __VLS_elements.td)({});
+    __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (__VLS_ctx.n(item.mMax ?? 0, "currency"));
-    [n,];
+    [n, n, n,];
 }
+[];
 var __VLS_3;
-;
-;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            DomainUtils: DomainUtils,
-            DotMenu: DotMenu,
-            VIEWS: VIEWS,
-            d: d,
-            n: n,
-            t: t,
-            activeStockItems: activeStockItems,
-            stocksPerPage: stocksPerPage,
-            setStocksPerPage: setStocksPerPage,
-            isStockLoading: isStockLoading,
-            HEADERS: HEADERS,
-            MENU_ITEMS: MENU_ITEMS,
-            isValidDate: isValidDate,
-            hasPortfolio: hasPortfolio,
-            calculatePercentChange: calculatePercentChange,
-            onUpdatePage: onUpdatePage,
-        };
-    },
-});
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-});
-;
+var __VLS_4;
+[];
+const __VLS_export = (await import('vue')).defineComponent({});
+export default {};

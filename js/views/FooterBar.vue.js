@@ -4,141 +4,120 @@ import { ROUTES } from "@/config/routes";
 import { DEFAULTS } from "@/config/defaults";
 const { t } = useI18n();
 DomainUtils.log("VIEWS FooterBar: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VBottomNavigation;
-;
-VBottomNavigation;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vBottomNavigation;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     color: "primary",
 }));
 const __VLS_2 = __VLS_1({
     color: "primary",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-var __VLS_4 = {};
-const { default: __VLS_5 } = __VLS_3.slots;
-const __VLS_6 = {}.VBtn;
-;
-VBtn;
-const __VLS_7 = __VLS_asFunctionalComponent(__VLS_6, new __VLS_6({
+var __VLS_5 = {};
+const { default: __VLS_6 } = __VLS_3.slots;
+let __VLS_7;
+vBtn;
+const __VLS_8 = __VLS_asFunctionalComponent1(__VLS_7, new __VLS_7({
     color: "white",
     to: (__VLS_ctx.ROUTES.HELP),
 }));
-const __VLS_8 = __VLS_7({
+const __VLS_9 = __VLS_8({
     color: "white",
     to: (__VLS_ctx.ROUTES.HELP),
-}, ...__VLS_functionalComponentArgsRest(__VLS_7));
-const { default: __VLS_10 } = __VLS_9.slots;
-[ROUTES,];
-const __VLS_11 = {}.VIcon;
-;
-VIcon;
-const __VLS_12 = __VLS_asFunctionalComponent(__VLS_11, new __VLS_11({
+}, ...__VLS_functionalComponentArgsRest(__VLS_8));
+const { default: __VLS_12 } = __VLS_10.slots;
+let __VLS_13;
+vIcon;
+const __VLS_14 = __VLS_asFunctionalComponent1(__VLS_13, new __VLS_13({
     icon: "$help",
 }));
-const __VLS_13 = __VLS_12({
+const __VLS_15 = __VLS_14({
     icon: "$help",
-}, ...__VLS_functionalComponentArgsRest(__VLS_12));
-__VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({});
+}, ...__VLS_functionalComponentArgsRest(__VLS_14));
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({});
 (__VLS_ctx.t("views.footerBar.help"));
-[t,];
-var __VLS_9;
-const __VLS_16 = {}.VBtn;
-;
-VBtn;
-const __VLS_17 = __VLS_asFunctionalComponent(__VLS_16, new __VLS_16({
+[ROUTES, t,];
+var __VLS_10;
+let __VLS_18;
+vBtn;
+const __VLS_19 = __VLS_asFunctionalComponent1(__VLS_18, new __VLS_18({
     color: "white",
     to: (__VLS_ctx.ROUTES.PRIVACY),
 }));
-const __VLS_18 = __VLS_17({
+const __VLS_20 = __VLS_19({
     color: "white",
     to: (__VLS_ctx.ROUTES.PRIVACY),
-}, ...__VLS_functionalComponentArgsRest(__VLS_17));
-const { default: __VLS_20 } = __VLS_19.slots;
-[ROUTES,];
-const __VLS_21 = {}.VIcon;
-;
-VIcon;
-const __VLS_22 = __VLS_asFunctionalComponent(__VLS_21, new __VLS_21({
+}, ...__VLS_functionalComponentArgsRest(__VLS_19));
+const { default: __VLS_23 } = __VLS_21.slots;
+let __VLS_24;
+vIcon;
+const __VLS_25 = __VLS_asFunctionalComponent1(__VLS_24, new __VLS_24({
     icon: "$privacy",
 }));
-const __VLS_23 = __VLS_22({
+const __VLS_26 = __VLS_25({
     icon: "$privacy",
-}, ...__VLS_functionalComponentArgsRest(__VLS_22));
-__VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({});
+}, ...__VLS_functionalComponentArgsRest(__VLS_25));
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({});
 (__VLS_ctx.t("views.footerBar.privacy"));
-[t,];
-var __VLS_19;
-const __VLS_26 = {}.VBtn;
-;
-VBtn;
-const __VLS_27 = __VLS_asFunctionalComponent(__VLS_26, new __VLS_26({
+[ROUTES, t,];
+var __VLS_21;
+let __VLS_29;
+vBtn;
+const __VLS_30 = __VLS_asFunctionalComponent1(__VLS_29, new __VLS_29({
     href: (__VLS_ctx.DEFAULTS.MAILTO),
     color: "white",
 }));
-const __VLS_28 = __VLS_27({
+const __VLS_31 = __VLS_30({
     href: (__VLS_ctx.DEFAULTS.MAILTO),
     color: "white",
-}, ...__VLS_functionalComponentArgsRest(__VLS_27));
-const { default: __VLS_30 } = __VLS_29.slots;
-[DEFAULTS,];
-const __VLS_31 = {}.VIcon;
-;
-VIcon;
-const __VLS_32 = __VLS_asFunctionalComponent(__VLS_31, new __VLS_31({
+}, ...__VLS_functionalComponentArgsRest(__VLS_30));
+const { default: __VLS_34 } = __VLS_32.slots;
+let __VLS_35;
+vIcon;
+const __VLS_36 = __VLS_asFunctionalComponent1(__VLS_35, new __VLS_35({
     icon: "$mail",
 }));
-const __VLS_33 = __VLS_32({
+const __VLS_37 = __VLS_36({
     icon: "$mail",
-}, ...__VLS_functionalComponentArgsRest(__VLS_32));
-__VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({});
+}, ...__VLS_functionalComponentArgsRest(__VLS_36));
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({});
 (__VLS_ctx.t("views.footerBar.mail"));
-[t,];
-var __VLS_29;
-const __VLS_36 = {}.VBtn;
-;
-VBtn;
-const __VLS_37 = __VLS_asFunctionalComponent(__VLS_36, new __VLS_36({
+[t, DEFAULTS,];
+var __VLS_32;
+let __VLS_40;
+vBtn;
+const __VLS_41 = __VLS_asFunctionalComponent1(__VLS_40, new __VLS_40({
     disabled: (true),
     color: "white",
 }));
-const __VLS_38 = __VLS_37({
+const __VLS_42 = __VLS_41({
     disabled: (true),
     color: "white",
-}, ...__VLS_functionalComponentArgsRest(__VLS_37));
-const { default: __VLS_40 } = __VLS_39.slots;
-const __VLS_41 = {}.VIcon;
-;
-VIcon;
-const __VLS_42 = __VLS_asFunctionalComponent(__VLS_41, new __VLS_41({
+}, ...__VLS_functionalComponentArgsRest(__VLS_41));
+const { default: __VLS_45 } = __VLS_43.slots;
+let __VLS_46;
+vIcon;
+const __VLS_47 = __VLS_asFunctionalComponent1(__VLS_46, new __VLS_46({
     icon: "$mdiCopyright",
 }));
-const __VLS_43 = __VLS_42({
+const __VLS_48 = __VLS_47({
     icon: "$mdiCopyright",
-}, ...__VLS_functionalComponentArgsRest(__VLS_42));
-__VLS_asFunctionalElement(__VLS_elements.div, __VLS_elements.div)({
+}, ...__VLS_functionalComponentArgsRest(__VLS_47));
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "nowrap" },
 });
+;
 (__VLS_ctx.DEFAULTS.COPYRIGHT);
 [DEFAULTS,];
-var __VLS_39;
+var __VLS_43;
+[];
 var __VLS_3;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            ROUTES: ROUTES,
-            DEFAULTS: DEFAULTS,
-            t: t,
-        };
-    },
-});
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-});
-;
+[];
+const __VLS_export = (await import('vue')).defineComponent({});
+export default {};

@@ -9,15 +9,16 @@ const confirmationIcon = computed(() => {
     return `$${confirmationDialog.value.type}`;
 });
 DomainUtils.log("COMPONENTS ALERT_OVERLAY: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VOverlay;
-;
-VOverlay;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vOverlay;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     modelValue: (__VLS_ctx.showOverlay),
     ...{ class: "align-center justify-center" },
     persistent: true,
@@ -27,236 +28,202 @@ const __VLS_2 = __VLS_1({
     ...{ class: "align-center justify-center" },
     persistent: true,
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-const { default: __VLS_4 } = __VLS_3.slots;
-[showOverlay,];
-const __VLS_5 = {}.VCard;
 ;
-VCard;
-const __VLS_6 = __VLS_asFunctionalComponent(__VLS_5, new __VLS_5({
+;
+const { default: __VLS_5 } = __VLS_3.slots;
+let __VLS_6;
+vCard;
+const __VLS_7 = __VLS_asFunctionalComponent1(__VLS_6, new __VLS_6({
     ...{ class: "mx-auto" },
     maxWidth: "500",
 }));
-const __VLS_7 = __VLS_6({
+const __VLS_8 = __VLS_7({
     ...{ class: "mx-auto" },
     maxWidth: "500",
-}, ...__VLS_functionalComponentArgsRest(__VLS_6));
-const { default: __VLS_9 } = __VLS_8.slots;
-const __VLS_10 = {}.VCardText;
+}, ...__VLS_functionalComponentArgsRest(__VLS_7));
 ;
-VCardText;
-const __VLS_11 = __VLS_asFunctionalComponent(__VLS_10, new __VLS_10({
+const { default: __VLS_11 } = __VLS_9.slots;
+let __VLS_12;
+vCardText;
+const __VLS_13 = __VLS_asFunctionalComponent1(__VLS_12, new __VLS_12({
     ...{ class: "pa-6" },
 }));
-const __VLS_12 = __VLS_11({
+const __VLS_14 = __VLS_13({
     ...{ class: "pa-6" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_11));
-const { default: __VLS_14 } = __VLS_13.slots;
-const __VLS_15 = {}.VAlert;
+}, ...__VLS_functionalComponentArgsRest(__VLS_13));
 ;
-VAlert;
-const __VLS_16 = __VLS_asFunctionalComponent(__VLS_15, new __VLS_15({
+const { default: __VLS_17 } = __VLS_15.slots;
+let __VLS_18;
+vAlert;
+const __VLS_19 = __VLS_asFunctionalComponent1(__VLS_18, new __VLS_18({
     ...{ 'onClick:close': {} },
     title: (__VLS_ctx.alertTitle),
     type: (__VLS_ctx.alertType),
     closable: true,
     variant: "tonal",
 }));
-const __VLS_17 = __VLS_16({
+const __VLS_20 = __VLS_19({
     ...{ 'onClick:close': {} },
     title: (__VLS_ctx.alertTitle),
     type: (__VLS_ctx.alertType),
     closable: true,
     variant: "tonal",
-}, ...__VLS_functionalComponentArgsRest(__VLS_16));
-let __VLS_19;
-let __VLS_20;
-const __VLS_21 = ({ 'click:close': {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_19));
+let __VLS_23;
+const __VLS_24 = ({ 'click:close': {} },
     { 'onClick:close': (...[$event]) => {
             __VLS_ctx.dismissAlert(__VLS_ctx.currentAlert?.id);
-            [alertTitle, alertType, dismissAlert, currentAlert,];
+            [showOverlay, alertTitle, alertType, dismissAlert, currentAlert,];
         } });
-const { default: __VLS_22 } = __VLS_18.slots;
+const { default: __VLS_25 } = __VLS_21.slots;
 (__VLS_ctx.alertMessage);
 [alertMessage,];
-var __VLS_18;
-var __VLS_13;
+var __VLS_21;
+var __VLS_22;
+[];
+var __VLS_15;
 if (__VLS_ctx.pendingCount > 0) {
-    [pendingCount,];
-    const __VLS_23 = {}.VCardText;
-    ;
-    VCardText;
-    const __VLS_24 = __VLS_asFunctionalComponent(__VLS_23, new __VLS_23({
+    let __VLS_26;
+    vCardText;
+    const __VLS_27 = __VLS_asFunctionalComponent1(__VLS_26, new __VLS_26({
         ...{ class: "text-center text-caption pb-4" },
     }));
-    const __VLS_25 = __VLS_24({
+    const __VLS_28 = __VLS_27({
         ...{ class: "text-center text-caption pb-4" },
-    }, ...__VLS_functionalComponentArgsRest(__VLS_24));
-    const { default: __VLS_27 } = __VLS_26.slots;
+    }, ...__VLS_functionalComponentArgsRest(__VLS_27));
+    ;
+    ;
+    ;
+    const { default: __VLS_31 } = __VLS_29.slots;
     (__VLS_ctx.pendingCount);
     (__VLS_ctx.pendingCount !== 1 ? "s" : "");
-    [pendingCount, pendingCount,];
-    var __VLS_26;
+    [pendingCount, pendingCount, pendingCount,];
+    var __VLS_29;
 }
-var __VLS_8;
+[];
+var __VLS_9;
+[];
 var __VLS_3;
-const __VLS_28 = {}.VDialog;
-;
-VDialog;
-const __VLS_29 = __VLS_asFunctionalComponent(__VLS_28, new __VLS_28({
+let __VLS_32;
+vDialog;
+const __VLS_33 = __VLS_asFunctionalComponent1(__VLS_32, new __VLS_32({
     modelValue: (__VLS_ctx.showConfirmation),
     maxWidth: "500",
     persistent: true,
 }));
-const __VLS_30 = __VLS_29({
+const __VLS_34 = __VLS_33({
     modelValue: (__VLS_ctx.showConfirmation),
     maxWidth: "500",
     persistent: true,
-}, ...__VLS_functionalComponentArgsRest(__VLS_29));
-const { default: __VLS_32 } = __VLS_31.slots;
-[showConfirmation,];
-const __VLS_33 = {}.VCard;
-;
-VCard;
-const __VLS_34 = __VLS_asFunctionalComponent(__VLS_33, new __VLS_33({}));
-const __VLS_35 = __VLS_34({}, ...__VLS_functionalComponentArgsRest(__VLS_34));
-const { default: __VLS_37 } = __VLS_36.slots;
-const __VLS_38 = {}.VCardTitle;
-;
-VCardTitle;
-const __VLS_39 = __VLS_asFunctionalComponent(__VLS_38, new __VLS_38({
+}, ...__VLS_functionalComponentArgsRest(__VLS_33));
+const { default: __VLS_37 } = __VLS_35.slots;
+let __VLS_38;
+vCard;
+const __VLS_39 = __VLS_asFunctionalComponent1(__VLS_38, new __VLS_38({}));
+const __VLS_40 = __VLS_39({}, ...__VLS_functionalComponentArgsRest(__VLS_39));
+const { default: __VLS_43 } = __VLS_41.slots;
+let __VLS_44;
+vCardTitle;
+const __VLS_45 = __VLS_asFunctionalComponent1(__VLS_44, new __VLS_44({
     ...{ class: "d-flex align-center pa-4" },
 }));
-const __VLS_40 = __VLS_39({
+const __VLS_46 = __VLS_45({
     ...{ class: "d-flex align-center pa-4" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_39));
-const { default: __VLS_42 } = __VLS_41.slots;
-const __VLS_43 = {}.VIcon;
+}, ...__VLS_functionalComponentArgsRest(__VLS_45));
 ;
-VIcon;
-const __VLS_44 = __VLS_asFunctionalComponent(__VLS_43, new __VLS_43({
+;
+;
+const { default: __VLS_49 } = __VLS_47.slots;
+let __VLS_50;
+vIcon;
+const __VLS_51 = __VLS_asFunctionalComponent1(__VLS_50, new __VLS_50({
     icon: (__VLS_ctx.confirmationIcon),
     color: (__VLS_ctx.confirmationDialog.type),
     ...{ class: "mr-3" },
     size: "large",
 }));
-const __VLS_45 = __VLS_44({
+const __VLS_52 = __VLS_51({
     icon: (__VLS_ctx.confirmationIcon),
     color: (__VLS_ctx.confirmationDialog.type),
     ...{ class: "mr-3" },
     size: "large",
-}, ...__VLS_functionalComponentArgsRest(__VLS_44));
-[confirmationIcon, confirmationDialog,];
-__VLS_asFunctionalElement(__VLS_elements.span, __VLS_elements.span)({});
+}, ...__VLS_functionalComponentArgsRest(__VLS_51));
+;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
 (__VLS_ctx.confirmationDialog.title);
-[confirmationDialog,];
-var __VLS_41;
-const __VLS_48 = {}.VCardText;
-;
-VCardText;
-const __VLS_49 = __VLS_asFunctionalComponent(__VLS_48, new __VLS_48({
+[showConfirmation, confirmationIcon, confirmationDialog, confirmationDialog,];
+var __VLS_47;
+let __VLS_55;
+vCardText;
+const __VLS_56 = __VLS_asFunctionalComponent1(__VLS_55, new __VLS_55({
     ...{ class: "pa-4" },
 }));
-const __VLS_50 = __VLS_49({
+const __VLS_57 = __VLS_56({
     ...{ class: "pa-4" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_49));
-const { default: __VLS_52 } = __VLS_51.slots;
+}, ...__VLS_functionalComponentArgsRest(__VLS_56));
+;
+const { default: __VLS_60 } = __VLS_58.slots;
 (__VLS_ctx.confirmationDialog.message);
 [confirmationDialog,];
-var __VLS_51;
-const __VLS_53 = {}.VCardActions;
-;
-VCardActions;
-const __VLS_54 = __VLS_asFunctionalComponent(__VLS_53, new __VLS_53({
+var __VLS_58;
+let __VLS_61;
+vCardActions;
+const __VLS_62 = __VLS_asFunctionalComponent1(__VLS_61, new __VLS_61({
     ...{ class: "pa-4" },
 }));
-const __VLS_55 = __VLS_54({
+const __VLS_63 = __VLS_62({
     ...{ class: "pa-4" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_54));
-const { default: __VLS_57 } = __VLS_56.slots;
-const __VLS_58 = {}.VSpacer;
+}, ...__VLS_functionalComponentArgsRest(__VLS_62));
 ;
-VSpacer;
-const __VLS_59 = __VLS_asFunctionalComponent(__VLS_58, new __VLS_58({}));
-const __VLS_60 = __VLS_59({}, ...__VLS_functionalComponentArgsRest(__VLS_59));
-const __VLS_63 = {}.VBtn;
-;
-VBtn;
-const __VLS_64 = __VLS_asFunctionalComponent(__VLS_63, new __VLS_63({
-    ...{ 'onClick': {} },
-    variant: "text",
-}));
-const __VLS_65 = __VLS_64({
-    ...{ 'onClick': {} },
-    variant: "text",
-}, ...__VLS_functionalComponentArgsRest(__VLS_64));
+const { default: __VLS_66 } = __VLS_64.slots;
 let __VLS_67;
-let __VLS_68;
-const __VLS_69 = ({ click: {} },
+vSpacer;
+const __VLS_68 = __VLS_asFunctionalComponent1(__VLS_67, new __VLS_67({}));
+const __VLS_69 = __VLS_68({}, ...__VLS_functionalComponentArgsRest(__VLS_68));
+let __VLS_72;
+vBtn;
+const __VLS_73 = __VLS_asFunctionalComponent1(__VLS_72, new __VLS_72({
+    ...{ 'onClick': {} },
+    variant: "text",
+}));
+const __VLS_74 = __VLS_73({
+    ...{ 'onClick': {} },
+    variant: "text",
+}, ...__VLS_functionalComponentArgsRest(__VLS_73));
+let __VLS_77;
+const __VLS_78 = ({ click: {} },
     { onClick: (__VLS_ctx.handleCancel) });
-const { default: __VLS_70 } = __VLS_66.slots;
-[handleCancel,];
+const { default: __VLS_79 } = __VLS_75.slots;
 (__VLS_ctx.confirmationDialog.cancelText);
-[confirmationDialog,];
-var __VLS_66;
-const __VLS_71 = {}.VBtn;
-;
-VBtn;
-const __VLS_72 = __VLS_asFunctionalComponent(__VLS_71, new __VLS_71({
+[confirmationDialog, handleCancel,];
+var __VLS_75;
+var __VLS_76;
+let __VLS_80;
+vBtn;
+const __VLS_81 = __VLS_asFunctionalComponent1(__VLS_80, new __VLS_80({
     ...{ 'onClick': {} },
     color: (__VLS_ctx.confirmationDialog.type),
     variant: "elevated",
 }));
-const __VLS_73 = __VLS_72({
+const __VLS_82 = __VLS_81({
     ...{ 'onClick': {} },
     color: (__VLS_ctx.confirmationDialog.type),
     variant: "elevated",
-}, ...__VLS_functionalComponentArgsRest(__VLS_72));
-let __VLS_75;
-let __VLS_76;
-const __VLS_77 = ({ click: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_81));
+let __VLS_85;
+const __VLS_86 = ({ click: {} },
     { onClick: (__VLS_ctx.handleConfirm) });
-const { default: __VLS_78 } = __VLS_74.slots;
-[confirmationDialog, handleConfirm,];
+const { default: __VLS_87 } = __VLS_83.slots;
 (__VLS_ctx.confirmationDialog.confirmText);
-[confirmationDialog,];
-var __VLS_74;
-var __VLS_56;
-var __VLS_36;
-var __VLS_31;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            dismissAlert: dismissAlert,
-            handleConfirm: handleConfirm,
-            handleCancel: handleCancel,
-            currentAlert: currentAlert,
-            confirmationDialog: confirmationDialog,
-            showOverlay: showOverlay,
-            showConfirmation: showConfirmation,
-            alertMessage: alertMessage,
-            alertTitle: alertTitle,
-            alertType: alertType,
-            pendingCount: pendingCount,
-            confirmationIcon: confirmationIcon,
-        };
-    },
-});
-export default (await import('vue')).defineComponent({
-    setup() {
-    },
-});
-;
+[confirmationDialog, confirmationDialog, handleConfirm,];
+var __VLS_83;
+var __VLS_84;
+[];
+var __VLS_64;
+[];
+var __VLS_41;
+[];
+var __VLS_35;
+[];
+const __VLS_export = (await import('vue')).defineComponent({});
+export default {};

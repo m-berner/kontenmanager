@@ -44,15 +44,16 @@ onBeforeMount(() => {
     selected.value = null;
 });
 DomainUtils.log("COMPONENTS DIALOGS FadeInStock: setup");
-debugger;
-const __VLS_ctx = {};
-let __VLS_elements;
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
-const __VLS_0 = {}.VForm;
-;
-VForm;
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+let __VLS_0;
+vForm;
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }));
@@ -60,26 +61,24 @@ const __VLS_2 = __VLS_1({
     ...{ 'onSubmit': {} },
     validateOn: "submit",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
 const __VLS_6 = ({ submit: {} },
     { onSubmit: () => { } });
 var __VLS_7 = {};
 const { default: __VLS_8 } = __VLS_3.slots;
-const __VLS_9 = {}.VCardText;
-;
-VCardText;
-const __VLS_10 = __VLS_asFunctionalComponent(__VLS_9, new __VLS_9({
+let __VLS_9;
+vCardText;
+const __VLS_10 = __VLS_asFunctionalComponent1(__VLS_9, new __VLS_9({
     ...{ class: "pa-5" },
 }));
 const __VLS_11 = __VLS_10({
     ...{ class: "pa-5" },
 }, ...__VLS_functionalComponentArgsRest(__VLS_10));
-const { default: __VLS_13 } = __VLS_12.slots;
-const __VLS_14 = {}.VSelect;
 ;
-VSelect;
-const __VLS_15 = __VLS_asFunctionalComponent(__VLS_14, new __VLS_14({
+const { default: __VLS_14 } = __VLS_12.slots;
+let __VLS_15;
+vSelect;
+const __VLS_16 = __VLS_asFunctionalComponent1(__VLS_15, new __VLS_15({
     modelValue: (__VLS_ctx.selected),
     density: "compact",
     itemKey: "cID",
@@ -90,7 +89,7 @@ const __VLS_15 = __VLS_asFunctionalComponent(__VLS_14, new __VLS_14({
     returnObject: (true),
     variant: "outlined",
 }));
-const __VLS_16 = __VLS_15({
+const __VLS_17 = __VLS_16({
     modelValue: (__VLS_ctx.selected),
     density: "compact",
     itemKey: "cID",
@@ -100,56 +99,43 @@ const __VLS_16 = __VLS_15({
     label: (__VLS_ctx.t('components.dialogs.fadeInStock.selectLabel')),
     returnObject: (true),
     variant: "outlined",
-}, ...__VLS_functionalComponentArgsRest(__VLS_15));
+}, ...__VLS_functionalComponentArgsRest(__VLS_16));
 [selected, records, t,];
 var __VLS_12;
-const __VLS_19 = {}.VOverlay;
-;
-VOverlay;
-const __VLS_20 = __VLS_asFunctionalComponent(__VLS_19, new __VLS_19({
+let __VLS_20;
+vOverlay;
+const __VLS_21 = __VLS_asFunctionalComponent1(__VLS_20, new __VLS_20({
     modelValue: (__VLS_ctx.isLoading),
     ...{ class: "align-center justify-center" },
     contained: true,
 }));
-const __VLS_21 = __VLS_20({
+const __VLS_22 = __VLS_21({
     modelValue: (__VLS_ctx.isLoading),
     ...{ class: "align-center justify-center" },
     contained: true,
-}, ...__VLS_functionalComponentArgsRest(__VLS_20));
-const { default: __VLS_23 } = __VLS_22.slots;
+}, ...__VLS_functionalComponentArgsRest(__VLS_21));
+;
+;
+const { default: __VLS_25 } = __VLS_23.slots;
+let __VLS_26;
+vProgressCircular;
+const __VLS_27 = __VLS_asFunctionalComponent1(__VLS_26, new __VLS_26({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}));
+const __VLS_28 = __VLS_27({
+    color: "primary",
+    indeterminate: true,
+    size: "64",
+}, ...__VLS_functionalComponentArgsRest(__VLS_27));
 [isLoading,];
-const __VLS_24 = {}.VProgressCircular;
-;
-VProgressCircular;
-const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
-    color: "primary",
-    indeterminate: true,
-    size: "64",
-}));
-const __VLS_26 = __VLS_25({
-    color: "primary",
-    indeterminate: true,
-    size: "64",
-}, ...__VLS_functionalComponentArgsRest(__VLS_25));
-var __VLS_22;
+var __VLS_23;
+[];
 var __VLS_3;
-;
-;
-;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            t: t,
-            isLoading: isLoading,
-            records: records,
-            selected: selected,
-        };
-    },
+var __VLS_4;
+[];
+const __VLS_export = (await import('vue')).defineComponent({
+    setup: () => (__VLS_exposed),
 });
-export default (await import('vue')).defineComponent({
-    setup() {
-        return {};
-    },
-});
-;
+export default {};
