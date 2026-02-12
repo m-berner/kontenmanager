@@ -90,4 +90,4 @@ export function useDialogGuards() {
         submitGuard
     };
 }
-DomainUtils.log("COMPOSABLE useDialogGuards");
+DomainUtils.log("COMPOSABLES useDialogGuards");

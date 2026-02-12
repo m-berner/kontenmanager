@@ -146,7 +146,7 @@ export const useAlertStore = defineStore("alerts", () => {
   function dismissAlert(id: number | undefined): void {
     if (id === undefined) {
       DomainUtils.log(
-        "ALERT_STORE: Attempted to dismiss alert with undefined ID",
+        "STORES alert: Attempted to dismiss alert with undefined ID",
         null,
         "warn"
       );
@@ -156,7 +156,7 @@ export const useAlertStore = defineStore("alerts", () => {
     const index = alertQueue.value.findIndex((alert) => alert.id === id);
 
     if (index === -1) {
-      DomainUtils.log("ALERT_STORE: Alert not found for dismissal", id, "warn");
+      DomainUtils.log("STORES alert: Alert not found for dismissal", id, "warn");
       return;
     }
 
@@ -257,7 +257,7 @@ export const useAlertStore = defineStore("alerts", () => {
       // Check if a confirmation dialog is already active
       if (confirmationDialog.value.id > -1) {
         DomainUtils.log(
-          "ALERT_STORE: Confirmation dialog already active",
+          "STORES alert: Confirmation dialog already active",
           null,
           "warn"
         );
@@ -293,7 +293,7 @@ export const useAlertStore = defineStore("alerts", () => {
       try {
         confirmationDialog.value.resolve();
       } catch (err) {
-        DomainUtils.log("ALERT_STORE: Error in confirm handler", err, "error");
+        DomainUtils.log("STORES alert: Error in confirm handler", err, "error");
         confirmationDialog.value = { ...defaultConfirmation };
       }
     }
@@ -307,7 +307,7 @@ export const useAlertStore = defineStore("alerts", () => {
       try {
         confirmationDialog.value.reject();
       } catch (err) {
-        DomainUtils.log("ALERT_STORE: Error in cancel handler", err, "error");
+        DomainUtils.log("STORES alert: Error in cancel handler", err, "error");
         confirmationDialog.value = { ...defaultConfirmation };
       }
     }
@@ -334,7 +334,7 @@ export const useAlertStore = defineStore("alerts", () => {
         confirmationDialog.value.reject();
       } catch (err) {
         DomainUtils.log(
-          "ALERT_STORE: Error clearing confirmation dialog",
+          "STORES alert: Error clearing confirmation dialog",
           err,
           "warn"
         );

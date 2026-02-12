@@ -38,7 +38,7 @@ const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 const loadCurrentAccount = (): void => {
   const accountIndex = records.accounts.getIndexById(activeAccountId);
   if (accountIndex === INDEXED_DB.INVALID_ID) {
-    DomainUtils.log("UPDATE_ACCOUNT: Account not found", activeAccountId);
+    DomainUtils.log("COMPONENTS DIALOGS UpdateAcount: Account not found", activeAccountId);
     return;
   }
   const currentAccount = accountItems.value[accountIndex];
@@ -53,7 +53,7 @@ const loadCurrentAccount = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("UPDATE_ACCOUNT: onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateAccount: onClickOk");
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
@@ -75,7 +75,7 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.updateAccount.title") });
 
 onBeforeMount(() => {
-  DomainUtils.log("UPDATE_ACCOUNT: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateAccount: onBeforeMount");
   loadCurrentAccount();
 });
 

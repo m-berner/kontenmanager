@@ -20,7 +20,7 @@ const { handleUserError } = useAlert();
 const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
 
 const setService = async (): Promise<void> => {
-  DomainUtils.log("SERVICE_SELECTOR: setService");
+  DomainUtils.log("COMPONENTS ServiceSelector: setService");
   try {
     await setStorage(BROWSER_STORAGE.SERVICE.key, service.value);
   } catch (err) {
@@ -38,7 +38,7 @@ const serviceLabels = (item: string): string => {
 };
 
 onBeforeMount(async () => {
-  DomainUtils.log("SERVICE_SELECTOR: onBeforeMount");
+  DomainUtils.log("COMPONENTS ServiceSelector: onBeforeMount");
   try {
     const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
     service.value = storageService[BROWSER_STORAGE.SERVICE.key] as string;

@@ -85,4 +85,4 @@ export function useFavicon(domain: ComputedRef<string>, size = 48) {
   };
 }
 
-DomainUtils.log("COMPOSABLE useFavicon");
+DomainUtils.log("COMPOSABLES useFavicon");

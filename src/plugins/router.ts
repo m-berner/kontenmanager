@@ -114,4 +114,4 @@ const routerConfig: RouterWrapper = {
 
 export default routerConfig;
 
-DomainUtils.log("PLUGINS Router");
+DomainUtils.log("PLUGINS router");

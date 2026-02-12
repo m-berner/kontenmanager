@@ -33,7 +33,7 @@ const { submitGuard } = useDialogGuards();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("ADD_STOCK : onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS AddStock: onClickOk");
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
@@ -48,7 +48,7 @@ const onClickOk = async (): Promise<void> => {
 
       if (addStockID === INDEXED_DB.INVALID_ID) {
         DomainUtils.log(
-          "ADD_STOCK: onClickOk",
+          "COMPONENTS DIALOGS AddStock: onClickOk",
           t("components.dialogs.addStock.messages.error")
         );
         await handleUserNotice(
@@ -74,7 +74,7 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.addStock.title") });
 
 onMounted(() => {
-  DomainUtils.log("ADD_STOCK: onMounted");
+  DomainUtils.log("COMPONENTS DIALOGS AddStock: onMounted");
   reset();
 });
 

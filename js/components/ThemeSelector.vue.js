@@ -13,7 +13,7 @@ const { handleUserError } = useAlert();
 const THEMES = computed(() => createThemes(t));
 const skin = ref("");
 const setSkin = async () => {
-    DomainUtils.log("COMPONENTS THEME_SELECTOR: setSkin");
+    DomainUtils.log("COMPONENTS ThemeSelector: setSkin");
     try {
         await setStorage(BROWSER_STORAGE.SKIN.key, skin.value);
     }
@@ -22,13 +22,13 @@ const setSkin = async () => {
     }
 };
 onBeforeMount(async () => {
-    DomainUtils.log("COMPONENTS THEME_SELECTOR: onBeforeMount");
+    DomainUtils.log("COMPONENTS ThemeSelector: onBeforeMount");
     const storageSkin = await getStorage([BROWSER_STORAGE.SKIN.key]);
     skin.value =
         storageSkin[BROWSER_STORAGE.SKIN.key] ||
             BROWSER_STORAGE.SKIN.value;
 });
-DomainUtils.log("COMPONENTS THEME_SELECTOR: setup");
+DomainUtils.log("COMPONENTS ThemeSelector: setup");
 const __VLS_ctx = {
     ...{},
     ...{},

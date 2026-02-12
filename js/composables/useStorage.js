@@ -60,4 +60,4 @@ export function useStorage() {
         installStorageLocal
     };
 }
-DomainUtils.log("COMPOSABLE useStorage");
+DomainUtils.log("COMPOSABLES useStorage");

@@ -75,4 +75,4 @@ const routerConfig = {
     router: routerInstance
 };
 export default routerConfig;
-DomainUtils.log("PLUGINS Router");
+DomainUtils.log("PLUGINS router");

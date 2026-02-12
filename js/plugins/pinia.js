@@ -4,4 +4,4 @@ const piniaConfig = {
     pinia: createPinia()
 };
 export default piniaConfig;
-DomainUtils.log("PLUGINS Pinia");
+DomainUtils.log("PLUGINS pinia");

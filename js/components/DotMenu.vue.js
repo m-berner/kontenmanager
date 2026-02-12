@@ -9,17 +9,17 @@ const { executeAction } = useMenuAction();
 const { highlightedItems, highlightTemporary, clearAllHighlights } = useMenuHighlight();
 const currentColor = computed(() => highlightedItems.value.get(props.recordId) || "");
 const handleMenuOpen = () => {
-    DomainUtils.log("DOT_MENU: handleMenuOpen", props.recordId);
+    DomainUtils.log("COMPONENTS DotMenu: handleMenuOpen", props.recordId);
     highlightTemporary(props.recordId);
 };
 const handleItemClick = async (item) => {
-    DomainUtils.log("DOT_MENU: handleItemClick", [props.recordId, item.action]);
+    DomainUtils.log("COMPONENTS DotMenu: handleItemClick", [props.recordId, item.action]);
     try {
         await executeAction(item.action, props.recordId);
         clearAllHighlights();
     }
     catch (err) {
-        DomainUtils.log("DOT_MENU: action failed", err, "error");
+        DomainUtils.log("COMPONENTS DotMenu: action failed", err, "error");
         alertStore.error("Menu Action Failed", err instanceof Error ? err.message : "An unknown error occurred");
     }
 };

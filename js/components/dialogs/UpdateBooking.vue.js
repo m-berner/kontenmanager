@@ -24,7 +24,7 @@ const records = useRecordsStore();
 const { submitGuard } = useDialogGuards();
 const baseDialogRef = ref(null);
 const loadCurrentBooking = () => {
-    DomainUtils.log("UPDATE_BOOKING: loadCurrentBooking");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateBooking: loadCurrentBooking");
     resetForm();
     const currentBooking = records.bookings.getById(activeId.value);
     bookingFormData.selected = currentBooking?.cBookingTypeID || -1;
@@ -53,7 +53,7 @@ const loadCurrentBooking = () => {
     });
 };
 const onClickOk = async () => {
-    DomainUtils.log("UPDATE_BOOKING : onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateBooking: onClickOk");
     await submitGuard({
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
@@ -74,7 +74,7 @@ const onClickOk = async () => {
 const __VLS_exposed = { onClickOk, title: t("components.dialogs.updateBooking.title") };
 defineExpose(__VLS_exposed);
 onBeforeMount(() => {
-    DomainUtils.log("UPDATE_BOOKING: onBeforeMount");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateBooking: onBeforeMount");
     loadCurrentBooking();
 });
 DomainUtils.log("COMPONENTS DIALOGS UpdateBooking: setup");

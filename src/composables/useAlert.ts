@@ -139,7 +139,7 @@ export function useAlert() {
     const alerts = useAlertStore();
     // Also report to the console
     DomainUtils.log(
-      `USE_ALERT ${title}: ${message}`.trim(),
+      `COMPOSABLES useAlert ${title}: ${message}`.trim(),
       {
         ...((data as Record<string, unknown>) || {}),
         correlationId,
@@ -159,4 +159,4 @@ export function useAlert() {
   };
 }
 
-DomainUtils.log("COMPOSABLE useAlert");
+DomainUtils.log("COMPOSABLES useAlert");

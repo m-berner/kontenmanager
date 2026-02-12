@@ -40,7 +40,7 @@ const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 const bookingTypeRef = ref<typeof BookingTypeForm | null>(null);
 
 const loadCurrentBookingType = (): void => {
-  DomainUtils.log("UPDATE_BOOKING_TYPE: loadCurrentBookingType");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: loadCurrentBookingType");
   resetForm();
   const currentBookingType = records.bookingTypes.getById(activeId.value);
   if (!currentBookingType) return;
@@ -56,7 +56,7 @@ const loadCurrentBookingType = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("UPDATE_BOOKING_TYPE: onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: onClickOk");
 
   // Check if a booking type is selected for editing
   if (!bookingTypeRef.value?.edit) {
@@ -105,7 +105,7 @@ defineExpose({
 });
 
 onBeforeMount(() => {
-  DomainUtils.log("UPDATE_BOOKING_TYPE: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: onBeforeMount");
   loadCurrentBookingType();
 });
 

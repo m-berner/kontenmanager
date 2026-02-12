@@ -110,7 +110,7 @@ export const useStocksStore = defineStore("stocks", function () {
    * @param prepend - Whether to insert at the beginning
    */
   function add(stock: StockDb, prepend: boolean = false): void {
-    DomainUtils.log("RECORDS_STOCKS: add");
+    DomainUtils.log("STORES stocks: add");
     const completeStock = {
       ...stock,
       ...STORES.STOCK_STORE_MEMORY
@@ -128,7 +128,7 @@ export const useStocksStore = defineStore("stocks", function () {
    * @param stockDb - Updated stock database record
    */
   function update(stockDb: StockDb): void {
-    DomainUtils.log("RECORDS_STOCKS: updateStock", stockDb, "info");
+    DomainUtils.log("STORES stocks: updateStock", stockDb, "info");
 
     const index = getIndexById.value(stockDb.cID);
 
@@ -158,13 +158,13 @@ export const useStocksStore = defineStore("stocks", function () {
 
   /** Removes a stock by ID. */
   function remove(ident: number): void {
-    DomainUtils.log("RECORDS_STOCKS: remove", ident, "info");
+    DomainUtils.log("STORES stocks: remove", ident, "info");
     items.value = items.value.filter((entry) => entry.cID !== ident);
   }
 
   /** Clears all stock records. */
   function clean(): void {
-    DomainUtils.log("RECORDS_STOCKS: clean");
+    DomainUtils.log("STORES stocks: clean");
     items.value = [];
   }
 
@@ -192,7 +192,7 @@ export const useStocksStore = defineStore("stocks", function () {
    * @returns A promise that resolves when enrichment finishes; returns early if there are no active stocks.
    */
   async function loadOnlineData(page: number) {
-    DomainUtils.log("RECORDS: loadOnlineData");
+    DomainUtils.log("STORES stocks: loadOnlineData");
     const { getStorage } = useStorage();
 
     const isin = [];

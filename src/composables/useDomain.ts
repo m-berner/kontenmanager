@@ -36,7 +36,7 @@ export function useDomain(url: Ref<string>) {
       const urlObj = new URL(processedUrl);
       return urlObj.hostname.replace(/^www\./, "");
     } catch (e) {
-      DomainUtils.log("useDomain:domain", serializeError(e), "error");
+      DomainUtils.log("COMPOSABLES useDomain: domain", serializeError(e), "error");
       return "";
     }
   });
@@ -57,7 +57,7 @@ export function useDomain(url: Ref<string>) {
       }
       return null;
     } catch (e) {
-      DomainUtils.log("useDomain:subdomain", serializeError(e), "error");
+      DomainUtils.log("COMPOSABLES useDomain: subdomain", serializeError(e), "error");
       return null;
     }
   });
@@ -74,7 +74,7 @@ export function useDomain(url: Ref<string>) {
       );
       return urlObj.protocol.replace(":", "");
     } catch (e) {
-      DomainUtils.log("useDomain:protocol", serializeError(e), "error");
+      DomainUtils.log("COMPOSABLES useDomain: protocol", serializeError(e), "error");
       return null;
     }
   });
@@ -91,7 +91,7 @@ export function useDomain(url: Ref<string>) {
       );
       return urlObj.pathname;
     } catch (e) {
-      DomainUtils.log("useDomain:pathname", serializeError(e), "error");
+      DomainUtils.log("COMPOSABLES useDomain: pathname", serializeError(e), "error");
       return null;
     }
   });
@@ -104,4 +104,4 @@ export function useDomain(url: Ref<string>) {
   };
 }
 
-DomainUtils.log("COMPOSABLE useDomain");
+DomainUtils.log("COMPOSABLES useDomain");

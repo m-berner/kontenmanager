@@ -65,7 +65,7 @@ const depot = computed((): string => {
  * Loads records for the newly selected account.
  */
 const onUpdateTitleBar = async (): Promise<void> => {
-  DomainUtils.log("TITLE_BAR onUpdateTitleBar");
+  DomainUtils.log("VIEWS TitleBar: onUpdateTitleBar");
 
   try {
     await setStorage(
@@ -116,7 +116,7 @@ onMounted(async () => {
   }
 });
 
-DomainUtils.log("Views TitleBar: setup");
+DomainUtils.log("VIEWS TitleBar: setup");
 </script>
 
 <template>

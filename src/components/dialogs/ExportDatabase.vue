@@ -149,7 +149,7 @@ const estimateExportSize = (data: string): number => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("EXPORT_DATABASE: onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS ExportDatabase: onClickOk");
 
   await withLoading(async () => {
     try {

@@ -117,7 +117,7 @@ export class DatabaseService extends IndexedDbBase {
         });
     }
     async getAccountRecords(accountId) {
-        DomainUtils.log("DATABASE: getAccountRecords");
+        DomainUtils.log("SERVICES database: getAccountRecords");
         return this.withTransaction([
             INDEXED_DB.STORE.BOOKINGS.NAME,
             INDEXED_DB.STORE.BOOKING_TYPES.NAME,

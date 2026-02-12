@@ -372,11 +372,11 @@ class FetchService {
   ): Promise<string> {
     const cached = this.cache.get(key, ttl);
     if (cached) {
-      DomainUtils.log(`Cache hit for ${key}`);
+      DomainUtils.log(`SERVICES fetch: Cache hit for ${key}`);
       return cached;
     }
 
-    DomainUtils.log(`Cache miss for ${key}, fetching...`);
+    DomainUtils.log(`SERVICES fetch: Cache miss for ${key}, fetching...`);
     const response = await this.fetchWithRetry(url);
     const text = await response.text();
 
@@ -476,7 +476,7 @@ class FetchService {
       return [];
     }
 
-    DomainUtils.log("Fetching min/rate/max data", {
+    DomainUtils.log("SERVICES fetch: Fetching min/rate/max data", {
       count: storageOnline.length
     });
 
@@ -584,7 +584,7 @@ class FetchService {
           }
         } catch (error) {
           DomainUtils.log(
-            "Failed to fetch date data",
+            "SERVICES fetch: Failed to fetch date data",
             { entry, error },
             "warn"
           );
@@ -656,7 +656,7 @@ class FetchService {
    * @returns Array of index names and current values
    */
   async fetchIndexData(): Promise<StringNumberPair[]> {
-    DomainUtils.log("Fetching index data");
+    DomainUtils.log("SERVICES fetch: Fetching index data");
 
     const html = await this.fetchWithCache(
       FETCH.FNET.INDEXES,
@@ -691,7 +691,7 @@ class FetchService {
    * @returns Array of material names and prices
    */
   async fetchMaterialData(): Promise<StringNumberPair[]> {
-    DomainUtils.log("Fetching material data");
+    DomainUtils.log("SERVICES fetch: Fetching material data");
 
     const html = await this.fetchWithCache(
       FETCH.FNET.MATERIALS,

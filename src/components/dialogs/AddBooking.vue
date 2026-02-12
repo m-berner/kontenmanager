@@ -55,7 +55,7 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.addBooking.title") });
 
 onBeforeMount(() => {
-  DomainUtils.log("ADD_BOOKING: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS AddBooking: onBeforeMount");
   reset();
 });
 

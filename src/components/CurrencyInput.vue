@@ -81,7 +81,7 @@ const onInput = (ev: Event): void => {
 };
 
 onMounted(async () => {
-  DomainUtils.log("CURRENCY_INPUT: onMounted");
+  DomainUtils.log("COMPONENTS CurrencyInput: onMounted");
   formattedValue.value = formatCurrency(props.modelValue);
 });
 

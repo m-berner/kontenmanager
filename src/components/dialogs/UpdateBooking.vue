@@ -40,7 +40,7 @@ const { submitGuard } = useDialogGuards();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentBooking = (): void => {
-  DomainUtils.log("UPDATE_BOOKING: loadCurrentBooking");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateBooking: loadCurrentBooking");
   resetForm();
   const currentBooking = records.bookings.getById(activeId.value);
 
@@ -72,7 +72,7 @@ const loadCurrentBooking = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("UPDATE_BOOKING : onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateBooking: onClickOk");
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
@@ -98,7 +98,7 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.updateBooking.title") });
 
 onBeforeMount(() => {
-  DomainUtils.log("UPDATE_BOOKING: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateBooking: onBeforeMount");
   loadCurrentBooking();
 });
 

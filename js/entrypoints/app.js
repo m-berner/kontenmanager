@@ -9,15 +9,15 @@ import AppIndex from "@/views/AppIndex.vue";
 import { useBrowser } from "@/composables/useBrowser";
 const { manifest } = useBrowser();
 window.addEventListener("unhandledrejection", (e) => {
-    DomainUtils.log("APP: unhandledrejection", { reason: e.reason }, "error");
+    DomainUtils.log("ENTRYPOINTS App: unhandledrejection", { reason: e.reason }, "error");
 });
 const app = createApp(AppIndex);
 app.config.errorHandler = (err, _instance, info) => {
     const message = err instanceof Error ? err.message : String(err);
-    DomainUtils.log("ENTRYPOINTS APP: errorHandler", { message, info, stack: err?.stack }, "error");
+    DomainUtils.log("ENTRYPOINTS App: errorHandler", { message, info, stack: err?.stack }, "error");
 };
 app.config.warnHandler = (msg, _instance, trace) => {
-    DomainUtils.log("ENTRYPOINTS APP: warnHandler", { msg, trace }, "warn");
+    DomainUtils.log("ENTRYPOINTS App: warnHandler", { msg, trace }, "warn");
 };
 app.use(piniaPlugin.pinia);
 app.use(i18nPlugin.i18n);

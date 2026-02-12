@@ -33,7 +33,7 @@ const records = useRecordsStore();
 const selected = ref<StockItem | null>(null);
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("FADE_IN_STOCK: onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS FadeInStock: onClickOk");
 
   if (
     !(await ensureConnected(
@@ -70,7 +70,7 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.fadeInStock.title") });
 
 onBeforeMount(() => {
-  DomainUtils.log("FADE_IN_STOCK: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS FadeInStock: onBeforeMount");
   selected.value = null;
 });
 

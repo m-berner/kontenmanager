@@ -179,10 +179,10 @@ class FetchService {
     async fetchWithCache(key, url, ttl = FETCH.DEFAULT_TTL) {
         const cached = this.cache.get(key, ttl);
         if (cached) {
-            DomainUtils.log(`Cache hit for ${key}`);
+            DomainUtils.log(`SERVICES fetch: Cache hit for ${key}`);
             return cached;
         }
-        DomainUtils.log(`Cache miss for ${key}, fetching...`);
+        DomainUtils.log(`SERVICES fetch: Cache miss for ${key}, fetching...`);
         const response = await this.fetchWithRetry(url);
         const text = await response.text();
         this.cache.set(key, text);
@@ -222,7 +222,7 @@ class FetchService {
         if (storageOnline.length === 0) {
             return [];
         }
-        DomainUtils.log("Fetching min/rate/max data", {
+        DomainUtils.log("SERVICES fetch: Fetching min/rate/max data", {
             count: storageOnline.length
         });
         const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
@@ -291,7 +291,7 @@ class FetchService {
                 }
             }
             catch (error) {
-                DomainUtils.log("Failed to fetch date data", { entry, error }, "warn");
+                DomainUtils.log("SERVICES fetch: Failed to fetch date data", { entry, error }, "warn");
             }
             return { key: entry.key, value: gmqf };
         }));
@@ -321,7 +321,7 @@ class FetchService {
             .map((r) => r.value);
     }
     async fetchIndexData() {
-        DomainUtils.log("Fetching index data");
+        DomainUtils.log("SERVICES fetch: Fetching index data");
         const html = await this.fetchWithCache(FETCH.FNET.INDEXES, FETCH.FNET.INDEXES);
         const doc = await this.parseHTML(html);
         const links = doc.querySelectorAll(".index-world-map a");
@@ -342,7 +342,7 @@ class FetchService {
         return indexes;
     }
     async fetchMaterialData() {
-        DomainUtils.log("Fetching material data");
+        DomainUtils.log("SERVICES fetch: Fetching material data");
         const html = await this.fetchWithCache(FETCH.FNET.MATERIALS, FETCH.FNET.MATERIALS);
         const doc = await this.parseHTML(html);
         const rows = doc.querySelectorAll("#commodity_prices > table > tbody tr");

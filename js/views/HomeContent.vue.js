@@ -23,7 +23,7 @@ const HEADERS = computed(() => createHomeHeaders(t));
 const MENU_ITEMS = computed(() => createHomeMenuItems(t));
 const search = ref("");
 const onChangeHandler = (changes) => {
-    DomainUtils.log("APP_INDEX: changeHandler");
+    DomainUtils.log("VIEWS HomeContent: changeHandler");
     const changesKey = Object.keys(changes);
     const { service, indexes, markets, materials, exchanges } = storeToRefs(settings);
     const sync = {
@@ -53,7 +53,7 @@ const onChangeHandler = (changes) => {
 };
 const removeStorageChangedListener = addStorageChangedListener(onChangeHandler);
 const onBeforeUnload = () => {
-    DomainUtils.log("APP_INDEX: onBeforeUnload");
+    DomainUtils.log("VIEWS AppIndex: onBeforeUnload");
     removeStorageChangedListener();
     databaseService.disconnect();
 };

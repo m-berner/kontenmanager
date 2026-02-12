@@ -77,7 +77,7 @@ const estimateExportSize = (data) => {
     return new TextEncoder().encode(data).length / 1024;
 };
 const onClickOk = async () => {
-    DomainUtils.log("EXPORT_DATABASE: onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS ExportDatabase: onClickOk");
     await withLoading(async () => {
         try {
             const exportData = await createExportData();

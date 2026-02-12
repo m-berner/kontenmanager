@@ -14,14 +14,14 @@ const { skin } = storeToRefs(settings);
 const theme = useTheme();
 const isInitialized = ref(false);
 onBeforeMount(async () => {
-    DomainUtils.log("VIEWS APP_INDEX: onBeforeMount");
+    DomainUtils.log("VIEWS AppIndex: onBeforeMount");
     try {
         const controller = new AbortController();
         const status = await initializeApp({
             title: t("mixed.smImportOnly.title"),
             message: t("mixed.smImportOnly.message")
         }, controller.signal);
-        DomainUtils.log("VIEWS APP_INDEX: Initialization successful", status, "info");
+        DomainUtils.log("VIEWS AppIndex: Initialization successful", status, "info");
         controller.abort();
         theme.global.name.value = skin.value;
         isInitialized.value = true;

@@ -186,4 +186,4 @@ export function useMenuAction() {
         hasAction
     };
 }
-DomainUtils.log("COMPOSABLE useMenu");
+DomainUtils.log("COMPOSABLES useMenu");

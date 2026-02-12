@@ -66,7 +66,7 @@ export function useAlert() {
         }
         recentMessages.set(key, now);
         const alerts = useAlertStore();
-        DomainUtils.log(`USE_ALERT ${title}: ${message}`.trim(), {
+        DomainUtils.log(`COMPOSABLES useAlert ${title}: ${message}`.trim(), {
             ...(data || {}),
             correlationId,
             errorStack
@@ -80,4 +80,4 @@ export function useAlert() {
         handleUserError
     };
 }
-DomainUtils.log("COMPOSABLE useAlert");
+DomainUtils.log("COMPOSABLES useAlert");

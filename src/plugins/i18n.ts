@@ -190,4 +190,4 @@ const i18nWrapper: I18nWrapper = {
 
 export default i18nWrapper;
 
-DomainUtils.log("PLUGINS I18n");
+DomainUtils.log("PLUGINS i18n");

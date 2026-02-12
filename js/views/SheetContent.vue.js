@@ -17,7 +17,7 @@ const formatData = computed(() => {
         icon: p.ICON
     }));
 });
-DomainUtils.log("VIEW SheetContent: setup");
+DomainUtils.log("VIEWS SheetContent: setup");
 const __VLS_ctx = {
     ...{},
     ...{},

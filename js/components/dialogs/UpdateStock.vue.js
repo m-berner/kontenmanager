@@ -23,7 +23,7 @@ const { stockFormData, mapStockFormToDb, reset: resetForm } = useStockForm();
 const { submitGuard } = useDialogGuards();
 const baseDialogRef = ref(null);
 const loadCurrentStock = () => {
-    DomainUtils.log("UPDATE_STOCK: loadCurrentStock");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateStock: loadCurrentStock");
     resetForm();
     const currentStock = records.stocks.getById(activeId.value);
     Object.assign(stockFormData, {
@@ -40,7 +40,7 @@ const loadCurrentStock = () => {
     });
 };
 const onClickOk = async () => {
-    DomainUtils.log("UPDATE_STOCK: onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateStock: onClickOk");
     await submitGuard({
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
@@ -60,7 +60,7 @@ const onClickOk = async () => {
 const __VLS_exposed = { onClickOk, title: t("components.dialogs.updateStock.title") };
 defineExpose(__VLS_exposed);
 onBeforeMount(() => {
-    DomainUtils.log("UPDATE_STOCK: onBeforeMount");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateStock: onBeforeMount");
     loadCurrentStock();
 });
 DomainUtils.log("COMPONENTS DIALOGS UpdateStock: setup");

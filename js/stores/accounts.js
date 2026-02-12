@@ -26,7 +26,7 @@ export const useAccountsStore = defineStore("accounts", function () {
         }
     });
     function add(account, prepend = false) {
-        DomainUtils.log("ACCOUNTS_STORE: add");
+        DomainUtils.log("STORES accounts: add");
         if (prepend) {
             items.value = [account, ...items.value];
         }
@@ -35,7 +35,7 @@ export const useAccountsStore = defineStore("accounts", function () {
         }
     }
     function update(account) {
-        DomainUtils.log("ACCOUNTS_STORE: update");
+        DomainUtils.log("STORES accounts: update");
         const index = getIndexById.value(account.cID);
         if (index !== -1) {
             const newItems = [...items.value];
@@ -44,11 +44,11 @@ export const useAccountsStore = defineStore("accounts", function () {
         }
     }
     function remove(ident) {
-        DomainUtils.log("ACCOUNTS_STORE: remove", ident, "info");
+        DomainUtils.log("STORES accounts: remove", ident, "info");
         items.value = items.value.filter((entry) => entry.cID !== ident);
     }
     function clean() {
-        DomainUtils.log("ACCOUNTS_STORE: clean");
+        DomainUtils.log("STORES accounts: clean");
         items.value = [];
     }
     return {

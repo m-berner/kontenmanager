@@ -338,4 +338,4 @@ export function useMenuAction() {
   };
 }
 
-DomainUtils.log("COMPOSABLE useMenu");
+DomainUtils.log("COMPOSABLES useMenu");

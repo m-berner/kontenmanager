@@ -56,7 +56,7 @@ const setChecked = async () => {
     }
 };
 onBeforeMount(async () => {
-    DomainUtils.log("CHECKBOX_GRID: onBeforeMount");
+    DomainUtils.log("COMPONENTS CheckboxGrid: onBeforeMount");
     isLoading.value = true;
     error.value = null;
     try {

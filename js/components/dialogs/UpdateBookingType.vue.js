@@ -24,7 +24,7 @@ const { activeAccountId } = useSettingsStore();
 const baseDialogRef = ref(null);
 const bookingTypeRef = ref(null);
 const loadCurrentBookingType = () => {
-    DomainUtils.log("UPDATE_BOOKING_TYPE: loadCurrentBookingType");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: loadCurrentBookingType");
     resetForm();
     const currentBookingType = records.bookingTypes.getById(activeId.value);
     if (!currentBookingType)
@@ -38,7 +38,7 @@ const loadCurrentBookingType = () => {
     });
 };
 const onClickOk = async () => {
-    DomainUtils.log("UPDATE_BOOKING_TYPE: onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: onClickOk");
     if (!bookingTypeRef.value?.edit) {
         await handleUserNotice("UpdateBookingType", getMessage("xx_db_no_selected"));
         return;
@@ -73,7 +73,7 @@ const __VLS_exposed = {
 };
 defineExpose(__VLS_exposed);
 onBeforeMount(() => {
-    DomainUtils.log("UPDATE_BOOKING_TYPE: onBeforeMount");
+    DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: onBeforeMount");
     loadCurrentBookingType();
 });
 DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: setup");

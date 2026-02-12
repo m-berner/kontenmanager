@@ -57,7 +57,7 @@ export const useStocksStore = defineStore("stocks", function () {
         return DomainLogic.calculateTotalDepotValue(active.value);
     });
     function add(stock, prepend = false) {
-        DomainUtils.log("RECORDS_STOCKS: add");
+        DomainUtils.log("STORES stocks: add");
         const completeStock = {
             ...stock,
             ...STORES.STOCK_STORE_MEMORY
@@ -70,7 +70,7 @@ export const useStocksStore = defineStore("stocks", function () {
         }
     }
     function update(stockDb) {
-        DomainUtils.log("RECORDS_STOCKS: updateStock", stockDb, "info");
+        DomainUtils.log("STORES stocks: updateStock", stockDb, "info");
         const index = getIndexById.value(stockDb.cID);
         if (index !== -1) {
             const newItems = [...items.value];
@@ -96,11 +96,11 @@ export const useStocksStore = defineStore("stocks", function () {
         }
     }
     function remove(ident) {
-        DomainUtils.log("RECORDS_STOCKS: remove", ident, "info");
+        DomainUtils.log("STORES stocks: remove", ident, "info");
         items.value = items.value.filter((entry) => entry.cID !== ident);
     }
     function clean() {
-        DomainUtils.log("RECORDS_STOCKS: clean");
+        DomainUtils.log("STORES stocks: clean");
         items.value = [];
     }
     async function refreshOnlineData(page) {
@@ -108,7 +108,7 @@ export const useStocksStore = defineStore("stocks", function () {
         await loadOnlineData(page);
     }
     async function loadOnlineData(page) {
-        DomainUtils.log("RECORDS: loadOnlineData");
+        DomainUtils.log("STORES stocks: loadOnlineData");
         const { getStorage } = useStorage();
         const isin = [];
         const isinDates = [];

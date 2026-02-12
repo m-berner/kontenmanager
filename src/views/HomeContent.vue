@@ -53,7 +53,7 @@ const search = ref<string>("");
 const onChangeHandler = (
   changes: Record<string, browser.storage.StorageChange>
 ): void => {
-  DomainUtils.log("APP_INDEX: changeHandler");
+  DomainUtils.log("VIEWS HomeContent: changeHandler");
   const changesKey = Object.keys(changes);
   const { service, indexes, markets, materials, exchanges } =
     storeToRefs(settings);
@@ -91,7 +91,7 @@ const removeStorageChangedListener = addStorageChangedListener(onChangeHandler);
  * Removes storage listeners and disconnects from the database.
  */
 const onBeforeUnload = (): void => {
-  DomainUtils.log("APP_INDEX: onBeforeUnload");
+  DomainUtils.log("VIEWS AppIndex: onBeforeUnload");
   removeStorageChangedListener();
   databaseService.disconnect();
 };

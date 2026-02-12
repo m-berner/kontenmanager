@@ -209,13 +209,13 @@ const createRollbackPoint = async () => {
             : err instanceof Error
                 ? err.message
                 : "Unknown error";
-        DomainUtils.log("IMPORT_DATABASE: Failed to create rollback point", errorMessage);
+        DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: Failed to create rollback point", errorMessage);
         return null;
     }
 };
 const restoreFromRollback = async (rollbackData) => {
     try {
-        DomainUtils.log("IMPORT_DATABASE: Starting rollback");
+        DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: Starting rollback");
         await atomicImport([
             {
                 storeName: INDEXED_DB.STORE.ACCOUNTS.NAME,
@@ -344,7 +344,7 @@ const processBackupFile = async () => {
     }
 };
 const onClickOk = async () => {
-    DomainUtils.log("IMPORT_DATABASE: onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: onClickOk");
     if (!isFileSelected) {
         await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_db_no_file"));
         return;
@@ -365,7 +365,7 @@ const onClickOk = async () => {
             }
             catch (rollbackErr) {
                 const rollbackErrorMessage = await handleUserError(t("components.dialogs.importDatabase.title"), rollbackErr, {});
-                DomainUtils.log("IMPORT_DATABASE: CRITICAL - Rollback failed", rollbackErrorMessage);
+                DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: CRITICAL - Rollback failed", rollbackErrorMessage);
             }
             throw new AppError(ERROR_CODES.IMPORT_DATABASE.B, ERROR_CATEGORY.DATABASE, true);
         }

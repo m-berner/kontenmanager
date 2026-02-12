@@ -37,7 +37,7 @@ const canDeleteBookingType = (bookingTypeId: number): boolean => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("DELETE_BOOKING_TYPE : onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: onClickOk");
 
   if (
     !(await ensureConnected(
@@ -49,7 +49,7 @@ const onClickOk = async (): Promise<void> => {
     return;
 
   if (!bookingTypeFormData.id) {
-    DomainUtils.log("DELETE_BOOKING_TYPE: No booking type selected");
+    DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: No booking type selected");
     return;
   }
 
@@ -80,7 +80,7 @@ defineExpose({
 });
 
 onBeforeMount(() => {
-  DomainUtils.log("DELETE_BOOKING_TYPE: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: onBeforeMount");
   reset();
 });
 

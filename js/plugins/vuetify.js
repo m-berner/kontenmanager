@@ -144,4 +144,4 @@ const vuetifyConfig = {
     vuetify: vuetifyInstance
 };
 export default vuetifyConfig;
-DomainUtils.log("PLUGINS Vuetify");
+DomainUtils.log("PLUGINS vuetify");

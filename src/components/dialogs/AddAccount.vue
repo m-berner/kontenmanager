@@ -121,7 +121,7 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.addAccount.title") });
 
 onBeforeMount(() => {
-  DomainUtils.log("ADD_ACCOUNT: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS AddAccount: onBeforeMount");
   reset();
 });
 

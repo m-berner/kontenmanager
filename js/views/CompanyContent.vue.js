@@ -49,7 +49,7 @@ const loadRequiredPages = async (startPage = 1) => {
     }
 };
 const onUpdatePage = async (page) => {
-    DomainUtils.log("COMPANY_CONTENT: onUpdatePage", page, "info");
+    DomainUtils.log("VIEWS CompanyContent: onUpdatePage", page, "info");
     stocksPage.value = page;
     if (runtime.loadedStocksPages.has(page))
         return;
@@ -65,7 +65,7 @@ const onUpdatePage = async (page) => {
     }
 };
 onBeforeMount(async () => {
-    DomainUtils.log("COMPANY_CONTENT: onBeforeMount");
+    DomainUtils.log("VIEWS CompanyContent: onBeforeMount");
     records.stocks.items.forEach((stock) => {
         if (stock.cID > 0) {
             stock.mPortfolio = DomainLogic.calculatePortfolioByStockId(records.bookings.items, stock.cID);

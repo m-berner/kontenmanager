@@ -16,7 +16,7 @@ const runtime = useRuntimeStore();
 const records = useRecordsStore();
 const selected = ref(null);
 const onClickOk = async () => {
-    DomainUtils.log("FADE_IN_STOCK: onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS FadeInStock: onClickOk");
     if (!(await ensureConnected(databaseService.isConnected(), handleUserNotice)))
         return;
     if (!selected.value) {
@@ -40,7 +40,7 @@ const onClickOk = async () => {
 const __VLS_exposed = { onClickOk, title: t("components.dialogs.fadeInStock.title") };
 defineExpose(__VLS_exposed);
 onBeforeMount(() => {
-    DomainUtils.log("FADE_IN_STOCK: onBeforeMount");
+    DomainUtils.log("COMPONENTS DIALOGS FadeInStock: onBeforeMount");
     selected.value = null;
 });
 DomainUtils.log("COMPONENTS DIALOGS FadeInStock: setup");

@@ -36,7 +36,7 @@ const theme = useTheme();
 const isInitialized = ref(false);
 
 onBeforeMount(async () => {
-  DomainUtils.log("VIEWS APP_INDEX: onBeforeMount");
+  DomainUtils.log("VIEWS AppIndex: onBeforeMount");
 
   try {
     const controller = new AbortController();
@@ -47,7 +47,7 @@ onBeforeMount(async () => {
       },
       controller.signal
     );
-    DomainUtils.log("VIEWS APP_INDEX: Initialization successful", status, "info");
+    DomainUtils.log("VIEWS AppIndex: Initialization successful", status, "info");
     // Abort if the user navigates away or cancels
     controller.abort();
     // Apply theme after successful initialization

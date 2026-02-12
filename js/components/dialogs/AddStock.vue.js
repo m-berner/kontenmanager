@@ -22,7 +22,7 @@ const { mapStockFormToDb, reset } = useStockForm();
 const { submitGuard } = useDialogGuards();
 const baseDialogRef = ref(null);
 const onClickOk = async () => {
-    DomainUtils.log("ADD_STOCK : onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS AddStock: onClickOk");
     await submitGuard({
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
@@ -34,7 +34,7 @@ const onClickOk = async () => {
             const stockData = mapStockFormToDb(activeAccountId);
             const addStockID = await add(stockData);
             if (addStockID === INDEXED_DB.INVALID_ID) {
-                DomainUtils.log("ADD_STOCK: onClickOk", t("components.dialogs.addStock.messages.error"));
+                DomainUtils.log("COMPONENTS DIALOGS AddStock: onClickOk", t("components.dialogs.addStock.messages.error"));
                 await handleUserNotice("AddStock", getMessage("xx_db_add_err"));
                 return;
             }
@@ -48,7 +48,7 @@ const onClickOk = async () => {
 const __VLS_exposed = { onClickOk, title: t("components.dialogs.addStock.title") };
 defineExpose(__VLS_exposed);
 onMounted(() => {
-    DomainUtils.log("ADD_STOCK: onMounted");
+    DomainUtils.log("COMPONENTS DIALOGS AddStock: onMounted");
     reset();
 });
 DomainUtils.log("COMPONENTS DIALOGS AddStock: setup");

@@ -165,7 +165,7 @@ export class AppService {
    * @returns A promise that resolves when the reset is complete.
    */
   async reset(): Promise<void> {
-    DomainUtils.log("Resetting application state");
+    DomainUtils.log("SERVICES Resetting application state");
 
     // Clear runtime state
     this.runtime.resetTeleport();
@@ -174,7 +174,7 @@ export class AppService {
     // Clear store state
     this.records.$reset();
 
-    DomainUtils.log("Application state reset completed");
+    DomainUtils.log("SERVICES Application state reset completed");
   }
 
   /**
@@ -407,7 +407,7 @@ export class AppService {
    */
   private processExchangeBase(baseData: ExchangeData[]): void {
     if (!baseData.length) {
-      DomainUtils.log("No base exchange data to process", null, "warn");
+      DomainUtils.log("SERVICES app: No base exchange data to process", null, "warn");
       return;
     }
 

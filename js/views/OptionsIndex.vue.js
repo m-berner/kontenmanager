@@ -11,7 +11,7 @@ import { createTabs } from "@/configs/views";
 const { t } = useI18n();
 const TABS = computed(() => createTabs(t));
 const tab = ref(0);
-DomainUtils.log("VIES OptionsIndex: setup", window.location.href, "info");
+DomainUtils.log("VIEWS OptionsIndex: setup", window.location.href, "info");
 const __VLS_ctx = {
     ...{},
     ...{},

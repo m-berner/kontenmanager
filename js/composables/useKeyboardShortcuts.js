@@ -54,4 +54,4 @@ export function useKeyboardShortcuts() {
         enabled
     };
 }
-DomainUtils.log("COMPOSABLE useKeyboardShortcuts");
+DomainUtils.log("COMPOSABLES useKeyboardShortcuts");

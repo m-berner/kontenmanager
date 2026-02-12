@@ -126,7 +126,7 @@ export class DomainLogic {
             cAskDates: DATE.ISO
         }, true);
         if (stores.accounts.items.length === 0 && !hideImportAlert) {
-            DomainUtils.log("DomainLogic.initializeRecords", messages, "info");
+            DomainUtils.log("DOMAINS DomainLogic: initializeRecords", messages, "info");
             hideImportAlert = true;
         }
     }

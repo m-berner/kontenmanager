@@ -42,7 +42,7 @@ const depot = computed(() => {
     return n(records.stocks.sumDepot(), "currency");
 });
 const onUpdateTitleBar = async () => {
-    DomainUtils.log("TITLE_BAR onUpdateTitleBar");
+    DomainUtils.log("VIEWS TitleBar: onUpdateTitleBar");
     try {
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeAccountId.value);
         const storesDB = await databaseService.getAccountRecords(activeAccountId.value);
@@ -79,7 +79,7 @@ onMounted(async () => {
         connectionState.value = "offline";
     }
 });
-DomainUtils.log("Views TitleBar: setup");
+DomainUtils.log("VIEWS TitleBar: setup");
 const __VLS_ctx = {
     ...{},
     ...{},

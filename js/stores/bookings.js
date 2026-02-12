@@ -74,7 +74,7 @@ export const useBookingsStore = defineStore("bookings", function () {
         return new Set(years);
     });
     function add(booking, prepend = false) {
-        DomainUtils.log("RECORDS_BOOKINGS: add");
+        DomainUtils.log("STORES bookings: add");
         if (prepend) {
             items.value = [booking, ...items.value];
         }
@@ -83,7 +83,7 @@ export const useBookingsStore = defineStore("bookings", function () {
         }
     }
     function update(booking) {
-        DomainUtils.log("RECORDS_BOOKINGS: update");
+        DomainUtils.log("STORES bookings: update");
         const index = getIndexById.value(booking.cID);
         if (index !== -1) {
             const newItems = [...items.value];
@@ -92,11 +92,11 @@ export const useBookingsStore = defineStore("bookings", function () {
         }
     }
     function remove(ident) {
-        DomainUtils.log("RECORDS_BOOKINGS: remove", ident, "info");
+        DomainUtils.log("STORES bookings: remove", ident, "info");
         items.value = items.value.filter((entry) => entry.cID !== ident);
     }
     function clean() {
-        DomainUtils.log("RECORDS_BOOKINGS: clean");
+        DomainUtils.log("STORES bookings: clean");
         items.value = [];
     }
     function set(bookings) {

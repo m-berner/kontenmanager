@@ -60,7 +60,7 @@ const switchToNextAccount = async (): Promise<void> => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("DELETE_ACCOUNT_CONFIRMATION: onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS DeleteAccountConfirmation: onClickOk");
 
   if (
     !(await ensureConnected(

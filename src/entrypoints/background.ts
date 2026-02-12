@@ -28,11 +28,11 @@ const { installStorageLocal } = useStorage();
  * and also after Firefox updates which can trigger this event.
  */
 async function onInstall(): Promise<void> {
-  DomainUtils.log("ENTRYPOINTS BACKGROUND: onInstall");
+  DomainUtils.log("ENTRYPOINTS background: onInstall");
   try {
     await installStorageLocal();
   } catch (err) {
-    DomainUtils.log("ENTRYPOINTS BACKGROUND: install error", err, "error");
+    DomainUtils.log("ENTRYPOINTS background: install error", err, "error");
   }
 }
 
@@ -43,7 +43,7 @@ async function onInstall(): Promise<void> {
  * Logs errors instead of throwing to avoid breaking the background context.
  */
 async function onClick(): Promise<void> {
-  DomainUtils.log("ENTRYPOINTS BACKGROUND: onClick");
+  DomainUtils.log("ENTRYPOINTS background: onClick");
 
   try {
     const foundTabs = await tabsQuery();
@@ -52,13 +52,13 @@ async function onClick(): Promise<void> {
       const extensionTab = await tabsCreate();
       if (extensionTab.id === undefined) {
         DomainUtils.log(
-          "ENTRYPOINTS BACKGROUND: Created new tab error",
+          "ENTRYPOINTS background: Created new tab error",
           extensionTab,
           "error"
         );
       }
       DomainUtils.log(
-        "ENTRYPOINTS BACKGROUND: Created new tab",
+        "ENTRYPOINTS background: Created new tab",
         extensionTab,
         "info"
       );
@@ -67,7 +67,7 @@ async function onClick(): Promise<void> {
       await windowsUpdate(firstTab.windowId!);
       await tabsUpdate(firstTab.id!);
       DomainUtils.log(
-        "ENTRYPOINTS BACKGROUND: Focused existing tab",
+        "ENTRYPOINTS background: Focused existing tab",
         firstTab.id
       );
       // Close other tabs
@@ -76,7 +76,7 @@ async function onClick(): Promise<void> {
       }
     }
   } catch (err) {
-    DomainUtils.log("ENTRYPOINTS BACKGROUND: Error in onClick", err, "error");
+    DomainUtils.log("ENTRYPOINTS background: Error in onClick", err, "error");
   }
 }
 

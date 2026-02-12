@@ -208,4 +208,4 @@ const vuetifyConfig: VuetifyWrapper = {
 
 export default vuetifyConfig;
 
-DomainUtils.log("PLUGINS Vuetify");
+DomainUtils.log("PLUGINS vuetify");

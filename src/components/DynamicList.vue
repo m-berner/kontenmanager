@@ -56,7 +56,7 @@ const label = computed(() => labelMap[props.type] || "Error");
 const title = computed(() => titleMap[props.type] || "Error");
 
 const addItem = async (item: string): Promise<void> => {
-  DomainUtils.log("DYNAMIC_LIST: addItem");
+  DomainUtils.log("COMPONENTS DynamicList: addItem");
   if (!item.trim()) return; // Validate input
 
   isAdding.value = true; // Start loading
@@ -93,7 +93,7 @@ const addItem = async (item: string): Promise<void> => {
 };
 
 const removeItem = async (n: number): Promise<void> => {
-  DomainUtils.log("DYNAMIC_LIST: removeItem");
+  DomainUtils.log("COMPONENTS DynamicList: removeItem");
   if (n < 0) return;
 
   error.value = null;
@@ -116,7 +116,7 @@ const removeItem = async (n: number): Promise<void> => {
 };
 
 onBeforeMount(async () => {
-  DomainUtils.log("DYNAMIC_LIST: onBeforeMount");
+  DomainUtils.log("COMPONENTS DynamicList: onBeforeMount");
   isLoading.value = true;
   error.value = null;
 
@@ -140,7 +140,7 @@ onBeforeMount(async () => {
   }
 });
 
-DomainUtils.log("Components DynamicList: setup");
+DomainUtils.log("COMPONENTS DynamicList: setup");
 </script>
 
 <template>

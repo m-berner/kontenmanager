@@ -19,4 +19,4 @@ const piniaConfig: PiniaWrapper = {
 
 export default piniaConfig;
 
-DomainUtils.log("PLUGINS Pinia");
+DomainUtils.log("PLUGINS pinia");

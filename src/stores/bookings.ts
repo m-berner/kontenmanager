@@ -179,7 +179,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * @param prepend - Whether to insert at the beginning.
    */
   function add(booking: BookingDb, prepend: boolean = false): void {
-    DomainUtils.log("RECORDS_BOOKINGS: add");
+    DomainUtils.log("STORES bookings: add");
     if (prepend) {
       items.value = [booking, ...items.value];
     } else {
@@ -193,7 +193,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * @param booking - Updated booking data.
    */
   function update(booking: BookingDb): void {
-    DomainUtils.log("RECORDS_BOOKINGS: update");
+    DomainUtils.log("STORES bookings: update");
     const index = getIndexById.value(booking.cID);
     if (index !== -1) {
       const newItems = [...items.value];
@@ -208,7 +208,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * @param ident - Booking ID to remove.
    */
   function remove(ident: number): void {
-    DomainUtils.log("RECORDS_BOOKINGS: remove", ident, "info");
+    DomainUtils.log("STORES bookings: remove", ident, "info");
     items.value = items.value.filter((entry) => entry.cID !== ident);
   }
 
@@ -216,7 +216,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * Clears all bookings.
    */
   function clean(): void {
-    DomainUtils.log("RECORDS_BOOKINGS: clean");
+    DomainUtils.log("STORES bookings: clean");
     items.value = [];
   }
 

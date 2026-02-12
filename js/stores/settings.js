@@ -30,7 +30,7 @@ export const useSettingsStore = defineStore("settings", function () {
         }
     }
     function init(storage) {
-        DomainUtils.log("SETTINGS: init");
+        DomainUtils.log("STROES settings: init");
         skin.value = storage[BROWSER_STORAGE.SKIN.key];
         bookingsPerPage.value = storage[BROWSER_STORAGE.BOOKINGS_PER_PAGE.key];
         stocksPerPage.value = storage[BROWSER_STORAGE.STOCKS_PER_PAGE.key];

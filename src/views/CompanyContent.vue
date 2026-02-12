@@ -127,7 +127,7 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
  * @returns {Promise<void>}
  */
 const onUpdatePage = async (page: number): Promise<void> => {
-  DomainUtils.log("COMPANY_CONTENT: onUpdatePage", page, "info");
+  DomainUtils.log("VIEWS CompanyContent: onUpdatePage", page, "info");
   stocksPage.value = page;
 
   if (runtime.loadedStocksPages.has(page)) return;
@@ -155,7 +155,7 @@ const onUpdatePage = async (page: number): Promise<void> => {
  * @returns {Promise<void>}
  */
 onBeforeMount(async () => {
-  DomainUtils.log("COMPANY_CONTENT: onBeforeMount");
+  DomainUtils.log("VIEWS CompanyContent: onBeforeMount");
 
   // Always recalculate portfolio values from bookings upon entry
   // to ensure RAM-only properties (mPortfolio, mInvest) are up to date.

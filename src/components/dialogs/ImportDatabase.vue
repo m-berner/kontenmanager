@@ -290,7 +290,7 @@ const createRollbackPoint = async (): Promise<RollbackData | null> => {
         ? err.message
         : "Unknown error";
     DomainUtils.log(
-      "IMPORT_DATABASE: Failed to create rollback point",
+      "COMPONENTS DIALOGS ImportDatabase: Failed to create rollback point",
       errorMessage
     );
     return null;
@@ -301,7 +301,7 @@ const restoreFromRollback = async (
   rollbackData: RollbackData
 ): Promise<void> => {
   try {
-    DomainUtils.log("IMPORT_DATABASE: Starting rollback");
+    DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: Starting rollback");
 
     await atomicImport([
       {
@@ -503,7 +503,7 @@ const processBackupFile = async (): Promise<void> => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("IMPORT_DATABASE: onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: onClickOk");
 
   if (!isFileSelected) {
     await handleUserNotice(
@@ -545,7 +545,7 @@ const onClickOk = async (): Promise<void> => {
           rollbackErr, {}
         );
         DomainUtils.log(
-          "IMPORT_DATABASE: CRITICAL - Rollback failed",
+          "COMPONENTS DIALOGS ImportDatabase: CRITICAL - Rollback failed",
           rollbackErrorMessage
         );
       }

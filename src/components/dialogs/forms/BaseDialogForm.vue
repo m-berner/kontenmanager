@@ -28,7 +28,7 @@ const validationErrors = ref<string[]>([]);
 
 // Error boundary for dialog component failures
 onErrorCaptured((err, _instance, info) => {
-  DomainUtils.log("BASE_DIALOG_FORM: Error captured", { err, info }, "error");
+  DomainUtils.log("COMPONENTS DIALOGS FORMS BaseDialogForm: Error captured", { err, info }, "error");
   hasError.value = true;
   alertStore.error(
     "Dialog Error",
@@ -62,7 +62,7 @@ const validateForm = async (): Promise<boolean> => {
 
     return valid;
   } catch (err) {
-    DomainUtils.log("BASE_DIALOG_FORM: Validation error", err, "error");
+    DomainUtils.log("COMPONENTS DIALOGS FORMS BaseDialogForm: Validation error", err, "error");
     return false;
   }
 };

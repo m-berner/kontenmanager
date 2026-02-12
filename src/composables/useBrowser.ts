@@ -239,7 +239,7 @@ export function useBrowser() {
         };
       await browser.notifications.create(notificationOption);
     } catch {
-      DomainUtils.log("Notification failed", {}, "error");
+      DomainUtils.log("COMPOSABLES useBrowser: Notification failed", {}, "error");
     }
   }
 
@@ -305,4 +305,4 @@ export function useBrowser() {
   };
 }
 
-DomainUtils.log("COMPOSABLE useBrowser");
+DomainUtils.log("COMPOSABLES useBrowser");

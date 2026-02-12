@@ -84,7 +84,7 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
    * @param prepend - Whether to insert at the beginning.
    */
   function add(bookingType: BookingTypeDb, prepend: boolean = false): void {
-    DomainUtils.log("BOOKING_TYPES_STORE: add");
+    DomainUtils.log("STORES bookingTypes: add");
     if (prepend) {
       items.value.unshift(bookingType);
     } else {
@@ -98,7 +98,7 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
    * @param bookingType - Updated booking type data.
    */
   function update(bookingType: BookingTypeDb): void {
-    DomainUtils.log("BOOKING_TYPES_STORE: update");
+    DomainUtils.log("STORES bookingTypes: update");
     const index = getIndexById.value(bookingType.cID);
     if (index !== -1) {
       items.value[index] = { ...bookingType };
@@ -111,7 +111,7 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
    * @param ident - Booking type ID to remove.
    */
   function remove(ident: number): void {
-    DomainUtils.log("BOOKING_TYPE_STORE: remove", ident, "info");
+    DomainUtils.log("STORES bookingTypes: remove", ident, "info");
     const index = getIndexById.value(ident);
     if (index !== -1) {
       items.value.splice(index, 1);
@@ -122,7 +122,7 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
    * Clears all booking type records.
    */
   function clean(): void {
-    DomainUtils.log("BOOKING_TYPES_STORE: clean");
+    DomainUtils.log("STORES bookingTypes: clean");
     items.value = [];
   }
 

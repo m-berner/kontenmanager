@@ -31,7 +31,7 @@ export class DomainValidators {
             cMarketPlace: this.normalizeString(raw.cMarketPlace)
         };
         if (normalized.cAccountNumberID === 0) {
-            DomainUtils.log("DomainValidators: Booking missing account ID", normalized, "warn");
+            DomainUtils.log("DOMAINS VALIDATION validators: Booking missing account ID", normalized, "warn");
         }
         return normalized;
     }
@@ -42,7 +42,7 @@ export class DomainValidators {
         const raw = data;
         const ibanRes = ValidationRules.validateIBAN(raw.cIban);
         if (!ibanRes.isValid) {
-            DomainUtils.log("DomainValidators: Invalid IBAN", raw.cIban, "warn");
+            DomainUtils.log("DOMAINS VALIDATION validators: Invalid IBAN", raw.cIban, "warn");
         }
         return {
             cID: Number(raw.cID ?? 0),
@@ -59,7 +59,7 @@ export class DomainValidators {
         const raw = data;
         const isinRes = ValidationRules.validateISIN(raw.cISIN);
         if (!isinRes.isValid) {
-            DomainUtils.log("DomainValidators: Invalid ISIN", raw.cISIN, "warn");
+            DomainUtils.log("DOMAINS VALIDATION validators: Invalid ISIN", raw.cISIN, "warn");
         }
         return {
             cID: Number(raw.cID ?? 0),

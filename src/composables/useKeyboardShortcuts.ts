@@ -107,4 +107,4 @@ export function useKeyboardShortcuts() {
   };
 }
 
-DomainUtils.log("COMPOSABLE useKeyboardShortcuts");
+DomainUtils.log("COMPOSABLES useKeyboardShortcuts");

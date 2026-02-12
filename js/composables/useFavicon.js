@@ -46,4 +46,4 @@ export function useFavicon(domain, size = 48) {
         reset
     };
 }
-DomainUtils.log("COMPOSABLE useFavicon");
+DomainUtils.log("COMPOSABLES useFavicon");

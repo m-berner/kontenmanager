@@ -20,7 +20,7 @@ const ISIN_RULES = [
     t("validators.isinRules.luhn")
 ];
 const onUpdateIsin = async () => {
-    DomainUtils.log("STOCK_FORMULAR: onUpdateISIN");
+    DomainUtils.log("COMPONENTS DIALOGS FORMS StockForm: onUpdateISIN");
     try {
         if (!props.isUpdate && stockFormData.isin.length === 12) {
             stockFormData.isin = stockFormData.isin.toUpperCase().replace(/\s/g, "");

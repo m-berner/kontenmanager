@@ -70,4 +70,4 @@ export function useStocksDB() {
         }
     };
 }
-DomainUtils.log("COMPOSABLE useIndexedDB");
+DomainUtils.log("COMPOSABLES useIndexedDB");

@@ -33,7 +33,7 @@ const titleMap = {
 const label = computed(() => labelMap[props.type] || "Error");
 const title = computed(() => titleMap[props.type] || "Error");
 const addItem = async (item) => {
-    DomainUtils.log("DYNAMIC_LIST: addItem");
+    DomainUtils.log("COMPONENTS DynamicList: addItem");
     if (!item.trim())
         return;
     isAdding.value = true;
@@ -66,7 +66,7 @@ const addItem = async (item) => {
     }
 };
 const removeItem = async (n) => {
-    DomainUtils.log("DYNAMIC_LIST: removeItem");
+    DomainUtils.log("COMPONENTS DynamicList: removeItem");
     if (n < 0)
         return;
     error.value = null;
@@ -88,7 +88,7 @@ const removeItem = async (n) => {
     }
 };
 onBeforeMount(async () => {
-    DomainUtils.log("DYNAMIC_LIST: onBeforeMount");
+    DomainUtils.log("COMPONENTS DynamicList: onBeforeMount");
     isLoading.value = true;
     error.value = null;
     try {
@@ -112,7 +112,7 @@ onBeforeMount(async () => {
         isLoading.value = false;
     }
 });
-DomainUtils.log("Components DynamicList: setup");
+DomainUtils.log("COMPONENTS DynamicList: setup");
 const __VLS_ctx = {
     ...{},
     ...{},

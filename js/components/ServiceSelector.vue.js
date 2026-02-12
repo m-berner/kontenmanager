@@ -8,7 +8,7 @@ const { getStorage, setStorage } = useStorage();
 const { handleUserError } = useAlert();
 const service = ref(BROWSER_STORAGE.SERVICE.value);
 const setService = async () => {
-    DomainUtils.log("SERVICE_SELECTOR: setService");
+    DomainUtils.log("COMPONENTS ServiceSelector: setService");
     try {
         await setStorage(BROWSER_STORAGE.SERVICE.key, service.value);
     }
@@ -26,7 +26,7 @@ const serviceLabels = (item) => {
     }
 };
 onBeforeMount(async () => {
-    DomainUtils.log("SERVICE_SELECTOR: onBeforeMount");
+    DomainUtils.log("COMPONENTS ServiceSelector: onBeforeMount");
     try {
         const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
         service.value = storageService[BROWSER_STORAGE.SERVICE.key];

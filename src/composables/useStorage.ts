@@ -144,4 +144,4 @@ export function useStorage() {
   };
 }
 
-DomainUtils.log("COMPOSABLE useStorage");
+DomainUtils.log("COMPOSABLES useStorage");

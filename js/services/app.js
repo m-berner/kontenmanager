@@ -94,11 +94,11 @@ export class AppService {
         }
     }
     async reset() {
-        DomainUtils.log("Resetting application state");
+        DomainUtils.log("SERVICES Resetting application state");
         this.runtime.resetTeleport();
         this.runtime.clearStocksPages();
         this.records.$reset();
-        DomainUtils.log("Application state reset completed");
+        DomainUtils.log("SERVICES Application state reset completed");
     }
     getStatus() {
         const derived = {
@@ -236,7 +236,7 @@ export class AppService {
     }
     processExchangeBase(baseData) {
         if (!baseData.length) {
-            DomainUtils.log("No base exchange data to process", null, "warn");
+            DomainUtils.log("SERVICES app: No base exchange data to process", null, "warn");
             return;
         }
         baseData.forEach((data) => {

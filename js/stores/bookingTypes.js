@@ -30,7 +30,7 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
         index
     })));
     function add(bookingType, prepend = false) {
-        DomainUtils.log("BOOKING_TYPES_STORE: add");
+        DomainUtils.log("STORES bookingTypes: add");
         if (prepend) {
             items.value.unshift(bookingType);
         }
@@ -39,21 +39,21 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
         }
     }
     function update(bookingType) {
-        DomainUtils.log("BOOKING_TYPES_STORE: update");
+        DomainUtils.log("STORES bookingTypes: update");
         const index = getIndexById.value(bookingType.cID);
         if (index !== -1) {
             items.value[index] = { ...bookingType };
         }
     }
     function remove(ident) {
-        DomainUtils.log("BOOKING_TYPE_STORE: remove", ident, "info");
+        DomainUtils.log("STORES bookingTypes: remove", ident, "info");
         const index = getIndexById.value(ident);
         if (index !== -1) {
             items.value.splice(index, 1);
         }
     }
     function clean() {
-        DomainUtils.log("BOOKING_TYPES_STORE: clean");
+        DomainUtils.log("STORES bookingTypes: clean");
         items.value = [];
     }
     return {

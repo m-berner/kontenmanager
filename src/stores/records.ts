@@ -38,7 +38,7 @@ export const useRecordsStore = defineStore("records", function () {
    * @returns Void.
    */
   function clean(withAccounts: boolean = true): void {
-    DomainUtils.log("RECORDS: clean");
+    DomainUtils.log("STORES records: clean");
     if (withAccounts) {
       accountsStore.clean();
     }

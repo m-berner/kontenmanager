@@ -34,7 +34,7 @@ const formatData = computed<ContentItem[] | undefined>(() => {
   }));
 });
 
-DomainUtils.log("VIEW SheetContent: setup");
+DomainUtils.log("VIEWS SheetContent: setup");
 </script>
 
 <template>

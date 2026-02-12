@@ -86,7 +86,7 @@ const onClickOk = async () => {
 const __VLS_exposed = { onClickOk, title: t("components.dialogs.addAccount.title") };
 defineExpose(__VLS_exposed);
 onBeforeMount(() => {
-    DomainUtils.log("ADD_ACCOUNT: onBeforeMount");
+    DomainUtils.log("COMPONENTS DIALOGS AddAccount: onBeforeMount");
     reset();
 });
 DomainUtils.log("COMPONENTS DIALOGS AddAccount: setup");

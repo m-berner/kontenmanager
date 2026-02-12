@@ -32,7 +32,7 @@ const { submitGuard } = useDialogGuards();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("ADD_BOOKING_TYPE: onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS AddBookingType: onClickOk");
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
@@ -52,7 +52,7 @@ const onClickOk = async (): Promise<void> => {
       const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
       const addBookingTypeID = await add(bookingTypeData);
       if (addBookingTypeID === INDEXED_DB.INVALID_ID) {
-        DomainUtils.log("ADD_BOOKING_TYPE: Failed to create booking type");
+        DomainUtils.log("COMPONENTS DIALOGS AddBookingType: Failed to create booking type");
         await handleUserNotice(
           "AddBookingType",
           getMessage("xx_db_add_err")
@@ -76,7 +76,7 @@ defineExpose({
 });
 
 onBeforeMount(() => {
-  DomainUtils.log("ADD_BOOKING_TYPE: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS AddBookingType: onBeforeMount");
   reset();
 });
 

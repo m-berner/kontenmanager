@@ -163,4 +163,4 @@ const i18nWrapper = {
     i18n: i18nInstance
 };
 export default i18nWrapper;
-DomainUtils.log("PLUGINS I18n");
+DomainUtils.log("PLUGINS i18n");

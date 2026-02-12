@@ -4,7 +4,7 @@ export class DatabaseMigrator {
     setupDatabase(db, ev) {
         const oldVersion = ev.oldVersion;
         const newVersion = ev.newVersion || INDEXED_DB.VERSION;
-        DomainUtils.log(`Database upgrade: ${oldVersion} -> ${newVersion}`, "info");
+        DomainUtils.log(`SERVICES DATABASE migrator: upgrade: ${oldVersion} -> ${newVersion}`, "info");
         if (oldVersion < 1) {
             this.createStores(db);
         }

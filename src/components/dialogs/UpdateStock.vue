@@ -35,7 +35,7 @@ const { submitGuard } = useDialogGuards();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentStock = (): void => {
-  DomainUtils.log("UPDATE_STOCK: loadCurrentStock");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateStock: loadCurrentStock");
   resetForm();
   const currentStock = records.stocks.getById(activeId.value);
 
@@ -54,7 +54,7 @@ const loadCurrentStock = (): void => {
 };
 
 const onClickOk = async (): Promise<void> => {
-  DomainUtils.log("UPDATE_STOCK: onClickOk");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateStock: onClickOk");
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
@@ -76,7 +76,7 @@ const onClickOk = async (): Promise<void> => {
 defineExpose({ onClickOk, title: t("components.dialogs.updateStock.title") });
 
 onBeforeMount(() => {
-  DomainUtils.log("UPDATE_STOCK: onBeforeMount");
+  DomainUtils.log("COMPONENTS DIALOGS UpdateStock: onBeforeMount");
   loadCurrentStock();
 });
 

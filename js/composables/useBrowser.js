@@ -130,7 +130,7 @@ export function useBrowser() {
             await browser.notifications.create(notificationOption);
         }
         catch {
-            DomainUtils.log("Notification failed", {}, "error");
+            DomainUtils.log("COMPOSABLES useBrowser: Notification failed", {}, "error");
         }
     }
     async function writeBufferToFile(buffer, filename) {
@@ -172,4 +172,4 @@ export function useBrowser() {
         writeBufferToFile
     };
 }
-DomainUtils.log("COMPOSABLE useBrowser");
+DomainUtils.log("COMPOSABLES useBrowser");

@@ -12,7 +12,7 @@ export const useRecordsStore = defineStore("records", function () {
     const bookingTypesStore = useBookingTypesStore();
     const stocksStore = useStocksStore();
     function clean(withAccounts = true) {
-        DomainUtils.log("RECORDS: clean");
+        DomainUtils.log("STORES records: clean");
         if (withAccounts) {
             accountsStore.clean();
         }

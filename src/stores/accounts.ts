@@ -61,7 +61,7 @@ export const useAccountsStore = defineStore("accounts", function () {
    * @param prepend - Whether to insert at the beginning of the list.
    */
   function add(account: AccountStoreItem, prepend: boolean = false): void {
-    DomainUtils.log("ACCOUNTS_STORE: add");
+    DomainUtils.log("STORES accounts: add");
     if (prepend) {
       items.value = [account, ...items.value];
     } else {
@@ -75,7 +75,7 @@ export const useAccountsStore = defineStore("accounts", function () {
    * @param account - The updated account data.
    */
   function update(account: AccountStoreItem): void {
-    DomainUtils.log("ACCOUNTS_STORE: update");
+    DomainUtils.log("STORES accounts: update");
     const index = getIndexById.value(account.cID);
     if (index !== -1) {
       const newItems = [...items.value];
@@ -90,7 +90,7 @@ export const useAccountsStore = defineStore("accounts", function () {
    * @param ident - Account ID to remove.
    */
   function remove(ident: number): void {
-    DomainUtils.log("ACCOUNTS_STORE: remove", ident, "info");
+    DomainUtils.log("STORES accounts: remove", ident, "info");
     items.value = items.value.filter((entry) => entry.cID !== ident);
   }
 
@@ -98,7 +98,7 @@ export const useAccountsStore = defineStore("accounts", function () {
    * Clears all account records from the store.
    */
   function clean() {
-    DomainUtils.log("ACCOUNTS_STORE: clean");
+    DomainUtils.log("STORES accounts: clean");
     items.value = [];
   }
 

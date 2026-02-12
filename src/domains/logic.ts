@@ -275,7 +275,7 @@ export class DomainLogic {
 
     // Check for empty accounts and show alert if necessary
     if (stores.accounts.items.length === 0 && !hideImportAlert) {
-      DomainUtils.log("DomainLogic.initializeRecords", messages, "info");
+      DomainUtils.log("DOMAINS DomainLogic: initializeRecords", messages, "info");
       hideImportAlert = true;
     }
   }

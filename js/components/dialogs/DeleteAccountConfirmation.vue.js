@@ -41,7 +41,7 @@ const switchToNextAccount = async () => {
     });
 };
 const onClickOk = async () => {
-    DomainUtils.log("DELETE_ACCOUNT_CONFIRMATION: onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS DeleteAccountConfirmation: onClickOk");
     if (!(await ensureConnected(databaseService.isConnected(), handleUserNotice, t("components.dialogs.deleteAccountConfirmation.messages.dbNotConnected"))))
         return;
     await withLoading(async () => {

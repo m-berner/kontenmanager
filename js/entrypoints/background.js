@@ -4,37 +4,37 @@ import { useStorage } from "@/composables/useStorage";
 const { actionOnClicked, removeTab, runtimeOnInstalled, tabsCreate, tabsQuery, tabsUpdate, windowsUpdate } = useBrowser();
 const { installStorageLocal } = useStorage();
 async function onInstall() {
-    DomainUtils.log("ENTRYPOINTS BACKGROUND: onInstall");
+    DomainUtils.log("ENTRYPOINTS background: onInstall");
     try {
         await installStorageLocal();
     }
     catch (err) {
-        DomainUtils.log("ENTRYPOINTS BACKGROUND: install error", err, "error");
+        DomainUtils.log("ENTRYPOINTS background: install error", err, "error");
     }
 }
 async function onClick() {
-    DomainUtils.log("ENTRYPOINTS BACKGROUND: onClick");
+    DomainUtils.log("ENTRYPOINTS background: onClick");
     try {
         const foundTabs = await tabsQuery();
         if (foundTabs.length === 0) {
             const extensionTab = await tabsCreate();
             if (extensionTab.id === undefined) {
-                DomainUtils.log("ENTRYPOINTS BACKGROUND: Created new tab error", extensionTab, "error");
+                DomainUtils.log("ENTRYPOINTS background: Created new tab error", extensionTab, "error");
             }
-            DomainUtils.log("ENTRYPOINTS BACKGROUND: Created new tab", extensionTab, "info");
+            DomainUtils.log("ENTRYPOINTS background: Created new tab", extensionTab, "info");
         }
         else {
             const [firstTab, ...remainingTabs] = foundTabs;
             await windowsUpdate(firstTab.windowId);
             await tabsUpdate(firstTab.id);
-            DomainUtils.log("ENTRYPOINTS BACKGROUND: Focused existing tab", firstTab.id);
+            DomainUtils.log("ENTRYPOINTS background: Focused existing tab", firstTab.id);
             for (const tab of remainingTabs) {
                 await removeTab(tab.id);
             }
         }
     }
     catch (err) {
-        DomainUtils.log("ENTRYPOINTS BACKGROUND: Error in onClick", err, "error");
+        DomainUtils.log("ENTRYPOINTS background: Error in onClick", err, "error");
     }
 }
 runtimeOnInstalled(onInstall);

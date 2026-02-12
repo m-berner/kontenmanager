@@ -21,11 +21,11 @@ const canDeleteBookingType = (bookingTypeId) => {
     return !records.bookings.hasBookingType(bookingTypeId);
 };
 const onClickOk = async () => {
-    DomainUtils.log("DELETE_BOOKING_TYPE : onClickOk");
+    DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: onClickOk");
     if (!(await ensureConnected(databaseService.isConnected(), handleUserNotice, t("components.dialogs.deleteBookingType.messages.dbNotConnected"))))
         return;
     if (!bookingTypeFormData.id) {
-        DomainUtils.log("DELETE_BOOKING_TYPE: No booking type selected");
+        DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: No booking type selected");
         return;
     }
     await withLoading(async () => {
@@ -50,7 +50,7 @@ const __VLS_exposed = {
 };
 defineExpose(__VLS_exposed);
 onBeforeMount(() => {
-    DomainUtils.log("DELETE_BOOKING_TYPE: onBeforeMount");
+    DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: onBeforeMount");
     reset();
 });
 DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: setup");

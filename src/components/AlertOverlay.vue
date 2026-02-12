@@ -34,7 +34,7 @@ const confirmationIcon = computed(() => {
   return `$${confirmationDialog.value.type}`;
 });
 
-DomainUtils.log("COMPONENTS ALERT_OVERLAY: setup");
+DomainUtils.log("COMPONENTS AlertOverlay: setup");
 </script>
 
 <template>

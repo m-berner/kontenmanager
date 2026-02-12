@@ -41,7 +41,7 @@ const onClickOk = async () => {
 const __VLS_exposed = { onClickOk, title: t("components.dialogs.addBooking.title") };
 defineExpose(__VLS_exposed);
 onBeforeMount(() => {
-    DomainUtils.log("ADD_BOOKING: onBeforeMount");
+    DomainUtils.log("COMPONENTS DIALOGS AddBooking: onBeforeMount");
     reset();
 });
 DomainUtils.log("COMPONENTS DIALOGS AddBooking: setup");

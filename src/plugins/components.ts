@@ -70,4 +70,4 @@ const ComponentsPlugin: Plugin = {
 
 export default ComponentsPlugin;
 
-DomainUtils.log("PLUGINS Components");
+DomainUtils.log("PLUGINS components");

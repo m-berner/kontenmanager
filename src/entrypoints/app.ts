@@ -22,7 +22,7 @@ const { manifest } = useBrowser();
  * Catch errors not handled by Vue's errorHandler.
  */
 window.addEventListener("unhandledrejection", (e) => {
-  DomainUtils.log("APP: unhandledrejection", { reason: e.reason }, "error");
+  DomainUtils.log("ENTRYPOINTS App: unhandledrejection", { reason: e.reason }, "error");
 });
 
 /**
@@ -43,7 +43,7 @@ const app = createApp(AppIndex);
 app.config.errorHandler = (err: unknown, _instance, info): void => {
   const message = err instanceof Error ? err.message : String(err);
   DomainUtils.log(
-    "ENTRYPOINTS APP: errorHandler",
+    "ENTRYPOINTS App: errorHandler",
     { message, info, stack: (err as Error)?.stack },
     "error"
   );
@@ -59,7 +59,7 @@ app.config.errorHandler = (err: unknown, _instance, info): void => {
  * @param trace - Component trace with hierarchy information.
  */
 app.config.warnHandler = (msg: string, _instance, trace): void => {
-  DomainUtils.log("ENTRYPOINTS APP: warnHandler", { msg, trace }, "warn");
+  DomainUtils.log("ENTRYPOINTS App: warnHandler", { msg, trace }, "warn");
 };
 
 app.use(piniaPlugin.pinia);
