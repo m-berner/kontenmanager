@@ -12,8 +12,10 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import type { FormInterface, FormValidateResultType } from "@/types";
 import { DomainUtils } from "@/domains/utils";
 import { useAlert } from "@/composables/useAlert";
+import { useBrowser } from "@/composables/useBrowser";
 
 const { handleUserError } = useAlert();
+const { getMessage } = useBrowser();
 
 /**
  * Composable providing common guards and wrappers for dialog operations.
@@ -44,7 +46,7 @@ export function useDialogGuards() {
     errorMessage = "Database not connected"
   ): Promise<boolean> {
     if (!isConnected) {
-      await handleUserNotice("useDialogGuards", "ensureConnected", {
+      await handleUserNotice("Composables useDialogGuards", getMessage("xx_db_connection_err"), {
         noticeLines: [errorMessage]
       });
       return false;
@@ -188,7 +190,7 @@ export function useDialogGuards() {
       try {
         await operation();
       } catch (err) {
-        await handleUserError(errorTitle ?? "", err, { data: errorContext });
+        await handleUserError(errorTitle ?? "", err, { data: errorContext ?? ""});
       } finally {
         onFinally?.();
       }

@@ -45,10 +45,6 @@
           "buy": "Stock purchase",
           "sell": "Stock sale",
           "dividend": "Dividend"
-        },
-        "messages": {
-          "success": "Account has been added",
-          "dbNotConnected": "No database connection"
         }
       },
       "addBooking": {
@@ -59,34 +55,24 @@
       },
       "addBookingType": {
         "title": "Add booking type",
-        "placeholder": "Enter name",
-        "messages": {
-          "success": "Booking type has been added",
-          "error": "The booking type already exists",
-          "dbNotConnected": "No database connection"
-        }
+        "placeholder": "Enter name"
       },
       "addStock": {
         "title": "Add company",
         "messages": {
-          "error": "Company could not be added",
-          "success": "Company has been added",
-          "dbNotConnected": "No database connection"
+          "error": "Company could not be added"
         }
       },
       "deleteAccountConfirmation": {
         "title": "Bank account - delete all data",
         "messages": {
           "confirm": "Do you really want to delete the account and all associated data?",
-          "success": "Account has been removed",
           "dbNotConnected": "No database connection"
         }
       },
       "deleteBookingType": {
         "title": "Delete booking type",
         "messages": {
-          "success": "Booking type has been removed",
-          "error": "The booking type is still in use",
           "dbNotConnected": "No database connection"
         }
       },
@@ -106,16 +92,10 @@
       },
       "fadeInStock": {
         "title": "Show company",
-        "selectLabel": "Company",
-        "messages": {
-          "success": "Company has been shown",
-          "dbNotConnected": "No database connection",
-          "noRecords": "There is no data to show"
-        }
+        "selectLabel": "Company"
       },
       "importDatabase": {
         "title": "Import data",
-        "invalid": "The data file is invalid!",
         "messageDelete": "All existing data will be deleted!",
         "fileLabel": "from file",
         "buy": "Stock purchase",
@@ -128,23 +108,15 @@
         "confirmOk": "Import",
         "confirmCancel": "Cancel",
         "messages": {
-          "importFailed": "Import failed. Old data restored.",
           "invalidSuffix": "Invalid filename",
-          "invalidVersion": "Database version is not supported",
-          "notEmpty": "KontenManager objects already exist. Therefore, a StockManager backup file cannot be restored!",
-          "rollbackFailed": "Import failed. Data recovery not possible.",
-          "noFileSelected": "No file selected",
-          "createBackupFailed": "Saving data before import failed.",
           "emptyFile": "The file is empty.",
           "fileToLarge": "The backup file is too large.",
-          "importSuccess": "{ summary } imported in { duration } seconds",
           "importInfo": {
             "account": "account(s)",
             "booking": "booking(s)",
             "bookingType": "booking type(s)",
             "stock": "stock(s)"
-          },
-          "dataIntegrity": "Corrupt data"
+          }
         }
       },
       "showAccounting": {
@@ -167,34 +139,17 @@
         "noDataText": "No dividends received yet"
       },
       "updateAccount": {
-        "title": "Update bank account",
-        "messages": {
-          "success": "Account has been updated",
-          "dbNotConnected": "No database connection"
-        }
+        "title": "Update bank account"
       },
       "updateBooking": {
-        "title": "Edit booking",
-        "messages": {
-          "success": "The booking has been updated",
-          "dbNotConnected": "No database connection"
-        }
+        "title": "Edit booking"
       },
       "updateBookingType": {
         "title": "Update booking type",
-        "bookingTypeLabel": "Booking type",
-        "messages": {
-          "success": "Booking type has been updated",
-          "error": "The booking type could not be updated",
-          "dbNotConnected": "No database connection"
-        }
+        "bookingTypeLabel": "Booking type"
       },
       "updateStock": {
-        "title": "Edit company",
-        "messages": {
-          "success": "Company has been updated",
-          "dbNotConnected": "No database connection"
-        }
+        "title": "Edit company"
       }
     },
     "checkboxGrid": {
@@ -212,9 +167,6 @@
       "message": "KontenManager is an evolution of the former StockManager. Importing StockManager data is only possible directly after installation – that is, before any KontenManager object has been manually created."
     }
   },
-  "messages": {
-    "noStockSelected": "No company selected."
-  },
   "views": {
     "titleBar": {
       "title": "KontenManager",
@@ -223,9 +175,6 @@
       "selectAccountLabel": "IBAN",
       "iconsAlt": {
         "logo": "Bank logo"
-      },
-      "messages": {
-        "onUpdateTitleBar": "Error in 'onUpdateTitleBar'"
       }
     },
     "headerBar": {
@@ -247,11 +196,7 @@
       "showAccounting": "Yearly calculations",
       "settings": "Settings",
       "messages": {
-        "createAccount": "You must create an account first...",
-        "noBookings": "There are no bookings.",
-        "noAccount": "No account exists yet.",
-        "noBookingTypes": "No booking categories exist.",
-        "nothingToExport": "There is no data to export."
+        "noAccount": "No account exists yet."
       }
     },
     "infoBar": {},
@@ -406,11 +351,5 @@
     "bookingTypeRules": {
       "required": "Booking type is required"
     }
-  },
-  "notifications": {
-    "#hzt": "Invalid browser language"
-  },
-  "test": {
-    "message": "wAAA"
   }
 }

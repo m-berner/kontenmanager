@@ -9,7 +9,7 @@ import { useBrowser } from "@/composables/useBrowser";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { update } = useStocksDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const runtime = useRuntimeStore();
@@ -20,7 +20,7 @@ const onClickOk = async () => {
     if (!(await ensureConnected(databaseService.isConnected(), handleUserNotice)))
         return;
     if (!selected.value) {
-        await handleUserNotice("FadeInStock", "no stock");
+        await handleUserNotice("FadeInStock", getMessage("xx_db_no_selected"));
         return;
     }
     await withLoading(async () => {
@@ -29,7 +29,7 @@ const onClickOk = async () => {
             stock.cFadeOut = 0;
             await update(stock);
             records.stocks.update(stock);
-            await handleUserNotice("FadeInStock", "success");
+            await handleUserNotice("FadeInStock", getMessage("xx_db_fade_in"));
             runtime.resetTeleport();
         }
         catch {

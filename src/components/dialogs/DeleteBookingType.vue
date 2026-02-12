@@ -56,7 +56,7 @@ const onClickOk = async (): Promise<void> => {
   await withLoading(async () => {
     try {
       if (!canDeleteBookingType(bookingTypeFormData.id!)) {
-        await handleUserNotice("DeleteBookingType", "not deletable");
+        await handleUserNotice("DeleteBookingType", getMessage("xx_db_no_delete"));
         return;
       }
 

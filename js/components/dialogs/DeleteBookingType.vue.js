@@ -12,7 +12,7 @@ import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 import { useBookingTypeForm } from "@/composables/useForms";
 const { bookingTypeFormData, reset } = useBookingTypeForm();
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { remove } = useBookingTypesDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const records = useRecordsStore();
@@ -31,13 +31,13 @@ const onClickOk = async () => {
     await withLoading(async () => {
         try {
             if (!canDeleteBookingType(bookingTypeFormData.id)) {
-                await handleUserNotice("DeleteBookingType", "not deletable");
+                await handleUserNotice("DeleteBookingType", getMessage("xx_db_no_delete"));
                 return;
             }
             records.bookingTypes.remove(bookingTypeFormData.id);
             await remove(bookingTypeFormData.id);
             runtime.resetTeleport();
-            await handleUserNotice("DeleteBookingType", "success");
+            await handleUserNotice("DeleteBookingType", getMessage("xx_db_delete_success"));
         }
         catch {
             throw new AppError(ERROR_CODES.DELETE_BOOKING_TYPE, ERROR_CATEGORY.VALIDATION, true);

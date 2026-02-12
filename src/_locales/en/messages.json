@@ -37,5 +37,50 @@
   },
   "xx_db_delete_success": {
     "message": "Record deleted"
+  },
+  "xx_db_no_delete": {
+    "message": "Record could not be deleted"
+  },
+  "xx_db_no_selected": {
+    "message": "No record eselected"
+  },
+  "xx_db_fade_in": {
+    "message": "Record fade in"
+  },
+  "xx_db_restored": {
+    "message": "Database restored"
+  },
+  "xx_db_no_restored": {
+    "message": "Database could not be restored"
+  },
+  "xx_db_no_file": {
+    "message": "No backup file selected"
+  },
+  "xx_db_no_rollback": {
+    "message": "Rollback failed"
+  },
+  "xx_db_rollback": {
+    "message": "Rollback successful"
+  },
+  "xx_db_update": {
+    "message": "Update successful"
+  },
+  "xx_db_missing_id": {
+    "message": "No ID?"
+  },
+  "xx_no_link": {
+    "message": "Mising link"
+  },
+  "xx_no_company": {
+    "message": "No companies available"
+  },
+  "xx_no_account": {
+    "message": "No account available. Create one."
+  },
+  "xx_no_bookingType": {
+    "message": "No booking type available."
+  },
+  "xx_no_booking": {
+    "message": "No booking available."
   }
 }

@@ -9,7 +9,7 @@ import { useBrowser } from "@/composables/useBrowser";
 import DialogPort from "@/components/DialogPort.vue";
 import { CODES } from "@/configs/codes";
 const { t } = useI18n();
-const { handleUserNotice, openOptionsPage } = useBrowser();
+const { getMessage, handleUserNotice, openOptionsPage } = useBrowser();
 const runtime = useRuntimeStore();
 const { isStockLoading } = storeToRefs(runtime);
 const records = useRecordsStore();
@@ -33,7 +33,7 @@ const dialogActions = {
     },
     fadeInStock: async () => {
         if (records.stocks.passive.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_company"));
         }
         else {
             runtime.setTeleport({
@@ -66,7 +66,7 @@ const dialogActions = {
     },
     updateAccount: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -78,7 +78,7 @@ const dialogActions = {
     },
     deleteAccountConfirmation: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -90,7 +90,7 @@ const dialogActions = {
     },
     addBookingType: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -102,7 +102,7 @@ const dialogActions = {
     },
     updateBookingType: async () => {
         if (bookingTypeItems.value.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
         }
         else {
             runtime.setTeleport({
@@ -114,7 +114,7 @@ const dialogActions = {
     },
     deleteBookingType: async () => {
         if (bookingTypeItems.value.length === 0) {
-            void handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
         }
         else {
             runtime.setTeleport({
@@ -126,7 +126,7 @@ const dialogActions = {
     },
     addBooking: async () => {
         if (accountItems.value.length === 0) {
-            void handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -138,7 +138,7 @@ const dialogActions = {
     },
     exportDatabase: () => {
         if (accountItems.value.length === 0) {
-            void handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -157,7 +157,7 @@ const dialogActions = {
     },
     showAccounting: () => {
         if (bookingItems.value.length === 0) {
-            void handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+            void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_booking"));
         }
         else {
             runtime.setTeleport({
@@ -186,63 +186,63 @@ const dialogActions = {
 const dialogValidations = {
     updateAccount: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("views.headerBar.messages.noAccount")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_account")));
             return false;
         }
         return true;
     },
     fadeInStock: async () => {
         if (records.stocks.passive.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("components.dialogs.fadeInStock.messages.noRecords")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_company")));
             return false;
         }
         return true;
     },
     deleteAccountConfirmation: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("views.headerBar.messages.noAccount")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_account")));
             return false;
         }
         return true;
     },
     addBookingType: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("views.headerBar.messages.createAccount")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_account")));
             return false;
         }
         return true;
     },
     updateBookingType: async () => {
         if (bookingTypeItems.value.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("views.headerBar.messages.noBookingTypes")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_bookingType")));
             return false;
         }
         return true;
     },
     deleteBookingType: async () => {
         if (bookingTypeItems.value.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("views.headerBar.messages.noBookingTypes")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_bookingType")));
             return false;
         }
         return true;
     },
     addBooking: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("views.headerBar.messages.createAccount")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_account")));
             return false;
         }
         return true;
     },
     exportDatabase: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("views.headerBar.messages.nothingToExport")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_account")));
             return false;
         }
         return true;
     },
     showAccounting: async () => {
         if (bookingItems.value.length === 0) {
-            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(t("views.headerBar.messages.noBookings")));
+            await handleUserInfo(t("views.headerBar.infoTitle"), new Error(getMessage("xx_no_booking")));
             return false;
         }
         return true;

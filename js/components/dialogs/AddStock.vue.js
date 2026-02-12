@@ -35,13 +35,13 @@ const onClickOk = async () => {
             const addStockID = await add(stockData);
             if (addStockID === INDEXED_DB.INVALID_ID) {
                 DomainUtils.log("ADD_STOCK: onClickOk", t("components.dialogs.addStock.messages.error"));
-                await handleUserNotice("AddStock", "add failed");
+                await handleUserNotice("AddStock", getMessage("xx_db_add_err"));
                 return;
             }
             records.stocks.add({ ...stockData, cID: addStockID });
             await records.stocks.refreshOnlineData(runtime.stocksPage);
             runtime.resetTeleport();
-            await handleUserNotice("AddStock", "success");
+            await handleUserNotice("AddStock", getMessage("xx_db_add_success"));
         }
     });
 };

@@ -2,14 +2,16 @@ import { ref } from "vue";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useAlert } from "@/composables/useAlert";
+import { useBrowser } from "@/composables/useBrowser";
 const { handleUserError } = useAlert();
+const { getMessage } = useBrowser();
 export function useDialogGuards() {
     const isLoading = ref(false);
     const loadingOperations = ref(new Set());
     let operationCounter = 0;
     async function ensureConnected(isConnected, handleUserNotice, errorMessage = "Database not connected") {
         if (!isConnected) {
-            await handleUserNotice("useDialogGuards", "ensureConnected", {
+            await handleUserNotice("Composables useDialogGuards", getMessage("xx_db_connection_err"), {
                 noticeLines: [errorMessage]
             });
             return false;
@@ -71,7 +73,7 @@ export function useDialogGuards() {
                 await operation();
             }
             catch (err) {
-                await handleUserError(errorTitle ?? "", err, { data: errorContext });
+                await handleUserError(errorTitle ?? "", err, { data: errorContext ?? "" });
             }
             finally {
                 onFinally?.();

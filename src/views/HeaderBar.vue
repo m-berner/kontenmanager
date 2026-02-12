@@ -26,7 +26,7 @@ import type { MenuActionType } from "@/types";
 import { CODES } from "@/configs/codes";
 
 const { t } = useI18n();
-const { handleUserNotice, openOptionsPage } = useBrowser();
+const { getMessage, handleUserNotice, openOptionsPage } = useBrowser();
 const runtime = useRuntimeStore();
 const { isStockLoading } = storeToRefs(runtime);
 const records = useRecordsStore();
@@ -61,7 +61,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   fadeInStock: async () => {
     // Opens the fade-in dialog only when passive stocks exist; otherwise informs the user
     if (records.stocks.passive.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_company"));
     } else {
       runtime.setTeleport({
         dialogName: "fadeInStock",
@@ -101,7 +101,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   updateAccount: async () => {
     // Open the Update Account dialog or inform the user if no accounts exist
     if (accountItems.value.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "updateAccount",
@@ -113,7 +113,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   deleteAccountConfirmation: async () => {
     if (accountItems.value.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "deleteAccountConfirmation",
@@ -125,7 +125,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBookingType: async () => {
     if (accountItems.value.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "addBookingType",
@@ -137,7 +137,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   updateBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
     } else {
       runtime.setTeleport({
         dialogName: "updateBookingType",
@@ -149,7 +149,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   deleteBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      void handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
     } else {
       runtime.setTeleport({
         dialogName: "deleteBookingType",
@@ -161,7 +161,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBooking: async () => {
     if (accountItems.value.length === 0) {
-      void handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "addBooking",
@@ -173,7 +173,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   exportDatabase: () => {
     if (accountItems.value.length === 0) {
-      void handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "exportDatabase",
@@ -193,7 +193,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   showAccounting: () => {
     if (bookingItems.value.length === 0) {
-      void handleUserNotice(t("views.headerBar.infoTitle"), "HeaderBar");
+      void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_booking"));
     } else {
       runtime.setTeleport({
         dialogName: "showAccounting",
@@ -240,7 +240,7 @@ const dialogValidations: Record<
     if (accountItems.value.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noAccount"))
+        new Error(getMessage("xx_no_account"))
       );
       return false;
     }
@@ -250,7 +250,7 @@ const dialogValidations: Record<
     if (records.stocks.passive.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("components.dialogs.fadeInStock.messages.noRecords"))
+        new Error(getMessage("xx_no_company"))
       );
       return false;
     }
@@ -260,7 +260,7 @@ const dialogValidations: Record<
     if (accountItems.value.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noAccount"))
+        new Error(getMessage("xx_no_account"))
       );
       return false;
     }
@@ -270,7 +270,7 @@ const dialogValidations: Record<
     if (accountItems.value.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.createAccount"))
+        new Error(getMessage("xx_no_account"))
       );
       return false;
     }
@@ -280,7 +280,7 @@ const dialogValidations: Record<
     if (bookingTypeItems.value.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noBookingTypes"))
+        new Error(getMessage("xx_no_bookingType"))
       );
       return false;
     }
@@ -290,7 +290,7 @@ const dialogValidations: Record<
     if (bookingTypeItems.value.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noBookingTypes"))
+        new Error(getMessage("xx_no_bookingType"))
       );
       return false;
     }
@@ -300,7 +300,7 @@ const dialogValidations: Record<
     if (accountItems.value.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.createAccount"))
+        new Error(getMessage("xx_no_account"))
       );
       return false;
     }
@@ -310,7 +310,7 @@ const dialogValidations: Record<
     if (accountItems.value.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.nothingToExport"))
+        new Error(getMessage("xx_no_account"))
       );
       return false;
     }
@@ -320,7 +320,7 @@ const dialogValidations: Record<
     if (bookingItems.value.length === 0) {
       await handleUserInfo(
         t("views.headerBar.infoTitle"),
-        new Error(t("views.headerBar.messages.noBookings"))
+        new Error(getMessage("xx_no_booking"))
       );
       return false;
     }

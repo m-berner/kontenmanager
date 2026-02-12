@@ -7,6 +7,7 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { CODES } from "@/configs/codes";
 import { useBrowser } from "@/composables/useBrowser";
 import { DomainUtils } from "@/domains/utils";
+const { getMessage } = useBrowser();
 export function useMenuHighlight() {
     const highlightedItems = ref(new Map());
     const timeouts = new Map();
@@ -87,7 +88,7 @@ export function useMenuAction() {
         async deleteBooking(recordId) {
             records.bookings.remove(recordId);
             await removeBooking(recordId);
-            await handleUserNotice("Menu", "deleteBooking");
+            await handleUserNotice("Composables Menu", getMessage("xx_db_delete_success"));
         },
         async updateStock() {
             openDialog("updateStock", true);
@@ -97,12 +98,12 @@ export function useMenuAction() {
         },
         async deleteStock(recordId) {
             if (checkStockHasBookings(recordId)) {
-                await handleUserNotice("Cannot Delete", "deleteStock");
+                await handleUserNotice("Composable useMenu", getMessage("xx_db_no_delete"));
                 return;
             }
             records.stocks.remove(recordId);
             await removeStock(recordId);
-            await handleUserNotice("Menu", "deleteStock");
+            await handleUserNotice("Composables useMenu", getMessage("xx_db_delete_success"));
         },
         async fadeInStock() {
             openDialog("fadeInStock", true);
@@ -145,7 +146,7 @@ export function useMenuAction() {
                 window.open(url, "_blank", "noopener,noreferrer");
             }
             else {
-                await handleUserNotice("Menu", "openLink");
+                await handleUserNotice("Composables useMenu", getMessage("xx_no_link"));
             }
         },
         async exportDatabase() {

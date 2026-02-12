@@ -83,7 +83,7 @@ const onChange = async (selectedFile: File | File[] | null): Promise<any> => {
   if (validationError) {
     await handleUserNotice(
       t("components.dialogs.importDatabase.title"),
-      "Corrupt import file"
+      getMessage("xx_invalid_backup")
     );
     resetFileInput();
     return;
@@ -417,10 +417,9 @@ const processBackupFile = async (): Promise<void> => {
       validation.version === INDEXED_DB.SM_IMPORT_VERSION &&
       accountItems.value.length > 0
     ) {
-      // TODO alert here
       await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "Database imported"
+        getMessage("xx_db_restored")
       );
       return;
     }
@@ -434,15 +433,16 @@ const processBackupFile = async (): Promise<void> => {
     }
 
     if (dataIntegrityErrors.length > 0) {
-      // const errorList = dataIntegrityErrors.slice(0, 5).join("\n");
+      const errorList = dataIntegrityErrors.slice(0, 5).join("\n");
       // const moreErrors =
       //   dataIntegrityErrors.length > 5
       //     ? `\n...and ${dataIntegrityErrors.length - 5} more`
       //     : "";
 
-      await handleUserNotice(
+      await handleUserError(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase"
+        new Error(errorList),
+        {}
       );
 
       resetTeleport();
@@ -479,7 +479,7 @@ const processBackupFile = async (): Promise<void> => {
     } else {
       await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase"
+        getMessage("xx_db_no_restored")
       );
       activeAccountId.value = originalActiveId;
       await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
@@ -508,7 +508,7 @@ const onClickOk = async (): Promise<void> => {
   if (!isFileSelected) {
     await handleUserNotice(
       t("components.dialogs.importDatabase.title"),
-      "ImportDatabase"
+      getMessage("xx_db_no_file")
     );
     return;
   }
@@ -519,7 +519,7 @@ const onClickOk = async (): Promise<void> => {
     if (!rollbackData) {
       await handleUserNotice(
         t("components.dialogs.importDatabase.title"),
-        "ImportDatabase"
+        getMessage("xx_db_no_rollback")
       );
       return;
     }
@@ -531,15 +531,15 @@ const onClickOk = async (): Promise<void> => {
         await restoreFromRollback(rollbackData);
         await handleUserNotice(
           t("components.dialogs.importDatabase.title"),
-          "ImportDatabase"
+          getMessage("xx_db_rollback")
         );
       } catch (rollbackErr) {
         const rollbackErrorMessage =
-          rollbackErr instanceof AppError
-            ? rollbackErr.message
-            : rollbackErr instanceof Error
-            ? rollbackErr.message
-            : "Unknown error";
+          // rollbackErr instanceof AppError
+          //   ? rollbackErr.message
+          //   : rollbackErr instanceof Error
+          //   ? rollbackErr.message
+          //   : "Unknown error";
         await handleUserError(
           t("components.dialogs.importDatabase.title"),
           rollbackErr, {}

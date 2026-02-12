@@ -30,19 +30,19 @@ const onClickOk = async () => {
         errorTitle: t("components.dialogs.onClickOk"),
         operation: async () => {
             if (records.bookingTypes.isDuplicate(bookingTypeFormData.name)) {
-                await handleUserNotice("AddBookingType", "duplicate");
+                await handleUserNotice("AddBookingType", getMessage("xx_db_duplicate"));
                 return;
             }
             const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
             const addBookingTypeID = await add(bookingTypeData);
             if (addBookingTypeID === INDEXED_DB.INVALID_ID) {
                 DomainUtils.log("ADD_BOOKING_TYPE: Failed to create booking type");
-                await handleUserNotice("AddBookingType", "add failed");
+                await handleUserNotice("AddBookingType", getMessage("xx_db_add_err"));
                 return;
             }
             records.bookingTypes.add({ ...bookingTypeData, cID: addBookingTypeID });
             reset();
-            await handleUserNotice("AddBookingType", "success");
+            await handleUserNotice("AddBookingType", getMessage("xx_db_add_success"));
         }
     });
 };

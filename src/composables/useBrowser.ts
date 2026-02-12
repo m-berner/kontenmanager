@@ -13,6 +13,9 @@ import { DEFAULTS } from "@/configs/defaults";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import deNotifications from "@/_locales/de/messages.json";
+import { useAlert } from "@/composables/useAlert";
+
+const { handleUserError } = useAlert();
 
 /**
  * Composable providing access to browser extension APIs.
@@ -53,7 +56,7 @@ export function useBrowser() {
       }
       return "en-US";
     } catch (err) {
-      handleUserNotice("Plugins i18n", err).then();
+      handleUserError("Plugins i18n", err, {}).then();
       return "en-US";
     }
   }
@@ -303,4 +306,3 @@ export function useBrowser() {
 }
 
 DomainUtils.log("COMPOSABLE useBrowser");
-

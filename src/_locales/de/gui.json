@@ -45,10 +45,6 @@
           "buy": "Aktienkauf",
           "sell": "Aktienverkauf",
           "dividend": "Dividende"
-        },
-        "messages": {
-          "success": "Konto wurde hinzugefügt",
-          "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
       "addBooking": {
@@ -59,34 +55,24 @@
       },
       "addBookingType": {
         "title": "Buchungstyp hinzufügen",
-        "placeholder": "Name eingeben",
-        "messages": {
-          "success": "Buchungstyp wurde hinzugefügt",
-          "error": "Der Buchungstyp existiert bereits",
-          "dbNotConnected": "Keine Datenbank Verbindung"
-        }
+        "placeholder": "Name eingeben"
       },
       "addStock": {
         "title": "Unternehmen hinzufügen",
         "messages": {
-          "error": "Unternehmen konnte nicht hinzugefügt werden",
-          "success": "Unternehmen wurde hinzugefügt",
-          "dbNotConnected": "Keine Datenbank Verbindung"
+          "error": "Unternehmen konnte nicht hinzugefügt werden"
         }
       },
       "deleteAccountConfirmation": {
         "title": "Bankkonto - alle Daten löschen",
         "messages": {
           "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
-          "success": "Konto wurde entfernt",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
       "deleteBookingType": {
         "title": "Buchungstyp löschen",
         "messages": {
-          "success": "Buchungstyp wurde entfernt",
-          "error": "Der Buchungstyp wird noch verwendet",
           "dbNotConnected": "Keine Datenbank Verbindung"
         }
       },
@@ -106,16 +92,10 @@
       },
       "fadeInStock": {
         "title": "Unternehmen einblenden",
-        "selectLabel": "Unternehmen",
-        "messages": {
-          "success": "Unternehmen wurde eingeblendet",
-          "dbNotConnected": "Keine Datenbank Verbindung",
-          "noRecords": "Es gibt keine Daten zum Einblenden"
-        }
+        "selectLabel": "Unternehmen"
       },
       "importDatabase": {
         "title": "Daten importieren",
-        "invalid": "Die Datendatei ist ungültig!",
         "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
         "fileLabel": "aus Datei",
         "buy": "Aktienkauf",
@@ -128,23 +108,15 @@
         "confirmOk": "Importieren",
         "confirmCancel": "Abbrechen",
         "messages": {
-          "importFailed": "Import fehlgeschlagen. Alte Daten wiederhergestellt.",
           "invalidSuffix": "Ungültiger Dateiname",
-          "invalidVersion": "Datenbank Version wird nicht unterstützt",
-          "notEmpty": "Es existieren bereits KontenManager Objekte. Daher kann eine StockManager Sicherungsdatei nicht wiederhergestellt werden!",
-          "rollbackFailed": "Import fehlgeschlagen. Daten Wiederherstellung nicht möglich.",
-          "noFileSelected": "Keine Datei ausgewählt",
-          "createBackupFailed": "Sichern der Daten vor dem Import fehlgeschlagen.",
           "emptyFile": "Die Datei ist leer.",
           "fileToLarge": "Die Sicherungsdatei ist zu gross.",
-          "importSuccess": "{ summary } importiert in { duration } Sekunden",
           "importInfo": {
             "account": "Konto(s)",
             "booking": "Buchung(en)",
             "bookingType": "Kategorie(n)",
             "stock": "Unternehmen"
-          },
-          "dataIntegrity": "Die Daten sind korrupt"
+          }
         }
       },
       "showAccounting": {
@@ -167,34 +139,17 @@
         "noDataText": "Bisher keine Dividende erhalten"
       },
       "updateAccount": {
-        "title": "Bankkonto aktualisieren",
-        "messages": {
-          "success": "Konto wurde aktualisiert",
-          "dbNotConnected": "Keine Datenbank Verbindung"
-        }
+        "title": "Bankkonto aktualisieren"
       },
       "updateBooking": {
-        "title": "Buchung bearbeiten",
-        "messages": {
-          "success": "Die Buchung wurde aktualisiert",
-          "dbNotConnected": "Keine Datenbank Verbindung"
-        }
+        "title": "Buchung bearbeiten"
       },
       "updateBookingType": {
         "title": "Buchungstyp aktualisieren",
-        "bookingTypeLabel": "Buchungstyp",
-        "messages": {
-          "success": "Buchungstyp wurde aktualisiert",
-          "error": "Der Buchungstyp konnte nicht aktualisiert werden",
-          "dbNotConnected": "Keine Datenbank Verbindung"
-        }
+        "bookingTypeLabel": "Buchungstyp"
       },
       "updateStock": {
-        "title": "Unternehmen bearbeiten",
-        "messages": {
-          "success": "Unternehmen wurde aktualisiert",
-          "dbNotConnected": "Keine Datenbank Verbindung"
-        }
+        "title": "Unternehmen bearbeiten"
       }
     },
     "checkboxGrid": {
@@ -211,9 +166,6 @@
       "title": "INFO",
       "message": "KontenManager ist eine Weiterentwicklung des ehemaligen StockManagers. Der Import von StockManager-Daten ist nur direkt nach der Installation möglich – das heißt, bevor manuell ein KontenManager-Objekt angelegt wurde."
     }
-  },
-  "messages": {
-    "noStockSelected": "Kein Unternehmen ausgewählt."
   },
   "validators": {
     "ibanRules": {
@@ -264,9 +216,6 @@
       "selectAccountLabel": "IBAN",
       "iconsAlt": {
         "logo": "Bank Logo"
-      },
-      "messages": {
-        "onUpdateTitleBar": "Fehler in 'onUpdateTitleBar'"
       }
     },
     "headerBar": {
@@ -288,11 +237,7 @@
       "showAccounting": "Jahres-Berechnungen",
       "settings": "Einstellungen",
       "messages": {
-        "createAccount": "Sie müssen zuerst ein Konto anlegen...",
-        "noBookings": "Es sind keine Buchungen vorhanden.",
-        "noAccount": "Es ist noch kein Konto vorhanden.",
-        "noBookingTypes": "Es sind keine Buchungskategorien vorhanden.",
-        "nothingToExport": "Es existieren noch keine Daten zum Exportieren."
+        "noAccount": "Es ist noch kein Konto vorhanden."
       }
     },
     "infoBar": {},
@@ -406,11 +351,5 @@
         }
       }
     }
-  },
-  "notifications": {
-    "#hzt": "Ungültige Browser Sprache"
-  },
-  "test": {
-    "message": "TH"
   }
 }

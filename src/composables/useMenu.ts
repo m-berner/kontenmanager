@@ -21,6 +21,8 @@ import { CODES } from "@/configs/codes";
 import { useBrowser } from "@/composables/useBrowser";
 import { DomainUtils } from "@/domains/utils";
 
+const { getMessage } = useBrowser();
+
 type HighlightColor = "green" | "red" | "yellow" | "blue";
 
 interface HighlightOptionsType {
@@ -188,7 +190,7 @@ export function useMenuAction() {
     async deleteBooking(recordId: number) {
       records.bookings.remove(recordId);
       await removeBooking(recordId);
-      await handleUserNotice("Menu", "deleteBooking");
+      await handleUserNotice("Composables Menu", getMessage("xx_db_delete_success"));
     },
 
     // Stock Actions
@@ -202,13 +204,13 @@ export function useMenuAction() {
 
     async deleteStock(recordId: number) {
       if (checkStockHasBookings(recordId)) {
-        await handleUserNotice("Cannot Delete", "deleteStock");
+        await handleUserNotice("Composable useMenu", getMessage("xx_db_no_delete"));
         return;
       }
 
       records.stocks.remove(recordId);
       await removeStock(recordId);
-      await handleUserNotice("Menu", "deleteStock");
+      await handleUserNotice("Composables useMenu", getMessage("xx_db_delete_success"));
     },
 
     async fadeInStock() {
@@ -266,7 +268,7 @@ export function useMenuAction() {
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
       } else {
-        await handleUserNotice("Menu", "openLink");
+        await handleUserNotice("Composables useMenu", getMessage("xx_no_link"));
       }
     },
 

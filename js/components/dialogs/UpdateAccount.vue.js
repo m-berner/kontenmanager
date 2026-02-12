@@ -52,7 +52,7 @@ const onClickOk = async () => {
             records.accounts.update(account);
             await update(account);
             runtime.resetTeleport();
-            await handleUserNotice("UpdateAccount", "success");
+            await handleUserNotice("UpdateAccount", getMessage("xx_db_update_success"));
         }
     });
 };

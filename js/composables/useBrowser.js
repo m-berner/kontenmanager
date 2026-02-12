@@ -5,6 +5,8 @@ import { DEFAULTS } from "@/configs/defaults";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import deNotifications from "@/_locales/de/messages.json";
+import { useAlert } from "@/composables/useAlert";
+const { handleUserError } = useAlert();
 export function useBrowser() {
     const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
     const manifest = computed(() => browser.runtime.getManifest());
@@ -27,7 +29,7 @@ export function useBrowser() {
             return "en-US";
         }
         catch (err) {
-            handleUserNotice("Plugins i18n", err).then();
+            handleUserError("Plugins i18n", err, {}).then();
             return "en-US";
         }
     }

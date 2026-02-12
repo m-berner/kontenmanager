@@ -40,7 +40,7 @@ const loadCurrentBookingType = () => {
 const onClickOk = async () => {
     DomainUtils.log("UPDATE_BOOKING_TYPE: onClickOk");
     if (!bookingTypeRef.value?.edit) {
-        await handleUserNotice("UpdateBookingType", "no id");
+        await handleUserNotice("UpdateBookingType", getMessage("xx_db_no_selected"));
         return;
     }
     await submitGuard({
@@ -52,18 +52,18 @@ const onClickOk = async () => {
         errorTitle: t("components.dialogs.onClickOk"),
         operation: async () => {
             if (!bookingTypeFormData.id) {
-                await handleUserNotice("UpdateBookingType", "no id");
+                await handleUserNotice("UpdateBookingType", getMessage("xx_db_missing_id"));
                 return;
             }
             if (records.bookingTypes.isDuplicate(bookingTypeFormData.name, bookingTypeFormData.id)) {
-                await handleUserNotice("UpdateBookingType", "duplicate");
+                await handleUserNotice("UpdateBookingType", getMessage("xx_db_duplicate"));
                 return;
             }
             const bookingType = mapBookingTypeFormToDb(activeAccountId);
             records.bookingTypes.update(bookingType);
             await update(bookingType);
             runtime.resetTeleport();
-            await handleUserNotice("UpdateBookingType", "success");
+            await handleUserNotice("UpdateBookingType", getMessage("xx_db_update_success"));
         }
     });
 };
