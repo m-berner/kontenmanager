@@ -28,8 +28,8 @@ import {
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { ImportExportService } from "@/services/importExport";
 import type { AccountDb, BookingDb, BookingTypeDb, StockDb } from "@/types";
-import { DEFAULTS } from "@/config/defaults";
-import { INDEXED_DB } from "@/config/database";
+import { DEFAULTS } from "@/configs/defaults";
+import { INDEXED_DB } from "@/configs/database";
 
 const { t } = useI18n();
 const { handleUserNotice, manifest, writeBufferToFile } = useBrowser();

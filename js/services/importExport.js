@@ -1,9 +1,9 @@
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { ImportExportValidator } from "@/domains/importExport/validator";
 import { ImportExportTransformer } from "@/domains/importExport/transformer";
-import { DATE } from "@/domains/config/date";
+import { DATE } from "@/domains/configs/date";
 export class ImportExportService {
     _transformer;
     constructor() {

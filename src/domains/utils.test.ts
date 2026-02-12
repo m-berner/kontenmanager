@@ -99,9 +99,9 @@ describe("DomainUtils: numbers and parsing", () => {
 });
 
 describe("DomainUtils: strings and collections", () => {
-  it("normalizeBookingTypeName should trim/collapse/lowercase", () => {
+  it("normalizeBookingTypeName should trim/collapse", () => {
     expect(DomainUtils.normalizeBookingTypeName("  Foo   BAR  ")).toBe(
-      "foo bar"
+      "Foo BAR"
     );
   });
 

@@ -9,7 +9,7 @@ import { useBookingTypeForm } from "@/composables/useForms";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useSettingsStore } from "@/stores/settings";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { useBrowser } from "@/composables/useBrowser";
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();

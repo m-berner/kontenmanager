@@ -15,7 +15,7 @@ import type {
   RecordsDbData,
   StockDb
 } from "@/types";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { IndexedDbBase } from "./database/base";
 import { DatabaseMigrator } from "./database/migrator";
 import { AccountRepository } from "./database/repositories/AccountRepository";

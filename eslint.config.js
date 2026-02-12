@@ -11,7 +11,7 @@ import * as parserVue from "vue-eslint-parser";
 import pluginVue from "eslint-plugin-vue";
 
 export default [
-  // Base config (applies to JS/TS/Vue)
+  // Base configs (applies to JS/TS/Vue)
   {
     files: ["**/*.{js,ts,vue}"],
     languageOptions: {

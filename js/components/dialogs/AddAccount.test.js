@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { useAccountForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useAccountsStore } from "@/stores/accounts";

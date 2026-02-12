@@ -145,4 +145,4 @@ This project is licensed under the **Mozilla Public License 2.0**. See the [LICE
 
 - Tests cannot resolve `@/...` imports: ensure Vite alias is configured (already set in `vite.config.js`).
 - DOM-related tests: use the `happy-dom` environment provided by Vitest config.
-- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace, lowercased) via `DomainUtils.normalizeBookingTypeName`.
+- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace) via `DomainUtils.normalizeBookingTypeName`.

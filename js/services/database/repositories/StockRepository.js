@@ -1,4 +1,4 @@
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { IndexedDbBase } from "../base";
 import { DomainUtils } from "@/domains/utils";
 export class StockRepository {

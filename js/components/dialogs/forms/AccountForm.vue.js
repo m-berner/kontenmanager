@@ -3,7 +3,7 @@ import { useI18n } from "vue-i18n";
 import { useFavicon } from "@/composables/useFavicon";
 import { useDomain } from "@/composables/useDomain";
 import { useAccountForm } from "@/composables/useForms";
-import { COMPONENTS } from "@/config/components";
+import { COMPONENTS } from "@/configs/components";
 import { ValidationService } from "@/services/validation";
 import { createIbanMessages, createSwiftMessages } from "@/domains/validation/messages";
 import { DomainUtils } from "@/domains/utils";

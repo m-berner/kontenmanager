@@ -1,5 +1,5 @@
-import { STORE_MEMORY } from "@/domains/config/storeMemory";
-import { DATE } from "@/domains/config/date";
+import { STORE_MEMORY } from "@/domains/configs/storeMemory";
+import { DATE } from "@/domains/configs/date";
 import { DomainUtils } from "@/domains/utils";
 let hideImportAlert = false;
 export class DomainLogic {

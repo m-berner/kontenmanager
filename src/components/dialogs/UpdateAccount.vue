@@ -21,7 +21,7 @@ import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import type { AccountDb } from "@/types";
 
 const { t } = useI18n();

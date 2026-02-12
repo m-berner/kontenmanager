@@ -13,7 +13,7 @@ import { useBookingsStore } from "./bookings";
 import { useSettingsStore } from "./settings";
 import { useRuntimeStore } from "./runtime";
 import { fetchService } from "@/services/fetch";
-import { DATE } from "@/domains/config/date";
+import { DATE } from "@/domains/configs/date";
 
 // Mock dependencies
 vi.mock("@/services/fetch", () => ({

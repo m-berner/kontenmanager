@@ -9,7 +9,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
@@ -79,7 +79,7 @@ describe("AddBookingType Logic Test", () => {
     expect(addSpy).toHaveBeenCalledWith(
       INDEXED_DB.STORE.BOOKING_TYPES.NAME,
       expect.objectContaining({
-        cName: "test type",
+        cName: "Test Type",
         cAccountNumberID: 1
       })
     );
@@ -87,6 +87,6 @@ describe("AddBookingType Logic Test", () => {
     // 5. Verify store updates
     expect(records.bookingTypes.items).toHaveLength(1);
     expect(records.bookingTypes.items[0].cID).toBe(101);
-    expect(records.bookingTypes.items[0].cName).toBe("test type");
+    expect(records.bookingTypes.items[0].cName).toBe("Test Type");
   });
 });

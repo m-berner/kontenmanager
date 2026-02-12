@@ -24,8 +24,8 @@ import {
   createCompanyHeaders,
   createCompanyMenuItems,
   VIEWS
-} from "@/config/views";
-import { DATE } from "@/domains/config/date";
+} from "@/configs/views";
+import { DATE } from "@/domains/configs/date";
 import { AppError } from "@/domains/errors";
 
 const { d, n, t } = useI18n();

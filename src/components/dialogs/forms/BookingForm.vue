@@ -13,7 +13,7 @@ import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
 import { useBookingForm } from "@/composables/useForms";
 import CreditDebitFieldset from "@/components/CreditDebitFieldset.vue";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { ValidationService } from "@/services/validation";
 import { DomainUtils } from "@/domains/utils";
 //import type { BookingFormProps } from "@/types";

@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const { RELEASE_PATH, RELEASE_XPI, EXTENSIONS_PATH, BUILD_DIR } = env;
 
-  // Base config shared across all modes (including test)
+  // Base configs shared across all modes (including test)
   const baseConfig = {
     resolve: {
       alias: [

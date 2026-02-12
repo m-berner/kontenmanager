@@ -20,7 +20,7 @@ import {
   ERROR_CODES
 } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import { CURRENCIES } from "@/domains/config/currencies";
+import { CURRENCIES } from "@/domains/configs/currencies";
 
 const {getUserLocale} = useBrowser();
 /**

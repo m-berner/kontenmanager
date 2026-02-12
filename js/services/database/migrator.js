@@ -1,4 +1,4 @@
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { DomainUtils } from "@/domains/utils";
 export class DatabaseMigrator {
     setupDatabase(db, ev) {

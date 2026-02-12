@@ -14,7 +14,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { DomainUtils } from "@/domains/utils";
-import { createDividendHeaders, VIEWS } from "@/config/views";
+import { createDividendHeaders, VIEWS } from "@/configs/views";
 
 const { d, n, t } = useI18n();
 const settings = useSettingsStore();

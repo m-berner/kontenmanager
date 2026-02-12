@@ -12,7 +12,7 @@ import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { ValidationService } from "@/services/validation";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import type { BookingTypeFormProps } from "@/types";
 import { DomainUtils } from "@/domains/utils";
 

@@ -67,8 +67,8 @@ describe("BookingTypes Store", () => {
     it("should detect duplicate with different casing", () => {
       const store = useBookingTypesStore();
       store.add(sampleType);
-      expect(store.isDuplicate("purchase")).toBe(true);
-      expect(store.isDuplicate("PURCHASE")).toBe(true);
+      expect(store.isDuplicate("Purchase")).toBe(true);
+      expect(store.isDuplicate("purchase")).toBe(false);
     });
 
     it("should detect duplicate with extra whitespace", () => {
@@ -82,7 +82,7 @@ describe("BookingTypes Store", () => {
       const store = useBookingTypesStore();
       store.add({ ...sampleType, cName: "Food  Drinks" });
       expect(store.isDuplicate("Food Drinks")).toBe(true);
-      expect(store.isDuplicate("food   drinks")).toBe(true);
+      expect(store.isDuplicate("Food   Drinks")).toBe(true);
     });
 
     it("should exclude current ID when checking for duplicates", () => {

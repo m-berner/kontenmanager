@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import { DomainUtils } from "@/domains/utils";
-import { ROUTES } from "@/config/routes";
-import { CODES } from "@/config/codes";
+import { ROUTES } from "@/configs/routes";
+import { CODES } from "@/configs/codes";
 import { useRuntimeStore } from "@/stores/runtime";
 const routerInstance = createRouter({
     history: createWebHashHistory(),

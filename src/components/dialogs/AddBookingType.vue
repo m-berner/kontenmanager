@@ -18,7 +18,7 @@ import { useBookingTypeForm } from "@/composables/useForms";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useSettingsStore } from "@/stores/settings";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { useBrowser } from "@/composables/useBrowser";
 
 const { t } = useI18n();
@@ -45,7 +45,7 @@ const onClickOk = async (): Promise<void> => {
       if (records.bookingTypes.isDuplicate(bookingTypeFormData.name)) {
         await handleUserNotice(
           "AddBookingType",
-          "duplicate"
+          getMessage("xx_db_duplicate")
         );
         return;
       }
@@ -55,7 +55,7 @@ const onClickOk = async (): Promise<void> => {
         DomainUtils.log("ADD_BOOKING_TYPE: Failed to create booking type");
         await handleUserNotice(
           "AddBookingType",
-          "add failed"
+          getMessage("xx_db_add_err")
         );
         return;
       }
@@ -64,7 +64,7 @@ const onClickOk = async (): Promise<void> => {
       reset();
       await handleUserNotice(
         "AddBookingType",
-        "success"
+        getMessage("xx_db_add_success")
       );
     }
   });

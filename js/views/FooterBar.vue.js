@@ -1,7 +1,7 @@
 import { useI18n } from "vue-i18n";
 import { DomainUtils } from "@/domains/utils";
-import { ROUTES } from "@/config/routes";
-import { DEFAULTS } from "@/config/defaults";
+import { ROUTES } from "@/configs/routes";
+import { DEFAULTS } from "@/configs/defaults";
 const { t } = useI18n();
 DomainUtils.log("VIEWS FooterBar: setup");
 const __VLS_ctx = {

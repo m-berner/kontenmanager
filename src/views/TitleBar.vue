@@ -18,11 +18,11 @@ import { useRecordsStore } from "@/stores/records";
 import { useStorage } from "@/composables/useStorage";
 import { DomainUtils } from "@/domains/utils";
 import { fetchService } from "@/services/fetch";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { databaseService } from "@/services/database";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
-import { COMPONENTS } from "@/config/components";
-import { CODES } from "@/config/codes";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
+import { COMPONENTS } from "@/configs/components";
+import { CODES } from "@/configs/codes";
 import { useAlert } from "@/composables/useAlert";
 
 const { n, t } = useI18n();

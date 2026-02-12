@@ -1,4 +1,4 @@
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { databaseService } from "@/services/database";
 import { DomainValidators } from "@/domains/validation/validators";
 import { DomainUtils } from "@/domains/utils";

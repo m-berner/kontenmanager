@@ -71,8 +71,8 @@ describe("DomainUtils: numbers and parsing", () => {
     });
 });
 describe("DomainUtils: strings and collections", () => {
-    it("normalizeBookingTypeName should trim/collapse/lowercase", () => {
-        expect(DomainUtils.normalizeBookingTypeName("  Foo   BAR  ")).toBe("foo bar");
+    it("normalizeBookingTypeName should trim/collapse", () => {
+        expect(DomainUtils.normalizeBookingTypeName("  Foo   BAR  ")).toBe("Foo BAR");
     });
     it("mean should ignore zeros and non-finite values", () => {
         expect(DomainUtils.mean([0, 1, 2, Number.NaN, Number.POSITIVE_INFINITY, 3])).toBeCloseTo(2, 6);

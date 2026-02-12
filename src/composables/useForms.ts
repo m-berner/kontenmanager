@@ -18,8 +18,8 @@ import type {
   StockDb,
   StockFormData
 } from "@/types";
-import { INDEXED_DB } from "@/config/database";
-import { DATE } from "@/domains/config/date";
+import { INDEXED_DB } from "@/configs/database";
+import { DATE } from "@/domains/configs/date";
 import { DomainUtils } from "@/domains/utils";
 
 let stockFormManagerInstance: ReturnType<typeof createStockFormManager> | null =

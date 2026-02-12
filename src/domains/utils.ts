@@ -7,7 +7,7 @@
  */
 
 import type { LogLevelType, NumberParseOptions } from "@/types";
-import { DATE } from "@/domains/config/date";
+import { DATE } from "@/domains/configs/date";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 
 /**

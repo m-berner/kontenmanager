@@ -19,7 +19,7 @@ import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { DomainUtils } from "@/domains/utils";
-import { STORES } from "@/config/stores";
+import { STORES } from "@/configs/stores";
 
 const { n, t } = useI18n();
 const runtime = useRuntimeStore();

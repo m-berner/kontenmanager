@@ -12,7 +12,7 @@ import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();
 const { update } = useAccountsDB();

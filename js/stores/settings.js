@@ -3,7 +3,7 @@ import { DomainUtils } from "@/domains/utils";
 import { defineStore } from "pinia";
 import { useStorage } from "@/composables/useStorage";
 import { useAlert } from "@/composables/useAlert";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
 export const useSettingsStore = defineStore("settings", function () {
     const { setStorage } = useStorage();
     const { handleUserError } = useAlert();

@@ -9,7 +9,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { useSettingsStore } from "./settings";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
 
 // Mock persistence composable used by the settings store
 const mockSetStorage = vi.fn();

@@ -102,7 +102,7 @@ describe("Runtime Store", () => {
     });
 
     // Switch to a different view (HOME already default; use a different one)
-    // Use a number cast because ViewTypeSelection is a union from config
+    // Use a number cast because ViewTypeSelection is a union from configs
     const someOtherView = 999 as any;
     runtime.setCurrentView(someOtherView);
 

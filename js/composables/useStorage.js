@@ -1,5 +1,5 @@
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { DomainUtils } from "@/domains/utils";
 export function useStorage() {
     async function clearStorage() {

@@ -13,7 +13,7 @@ import { DomainUtils } from "@/domains/utils";
 import { defineStore } from "pinia";
 import { useStorage } from "@/composables/useStorage";
 import { useAlert } from "@/composables/useAlert";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
 
 /**
  * Pinia store for user-specific application settings and preferences.

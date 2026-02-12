@@ -1,5 +1,5 @@
 import { useAlertStore } from "@/stores/alerts";
-import { DEFAULTS } from "@/config/defaults";
+import { DEFAULTS } from "@/configs/defaults";
 import { DomainUtils } from "@/domains/utils";
 import { AppError } from "@/domains/errors";
 const recentMessages = new Map();

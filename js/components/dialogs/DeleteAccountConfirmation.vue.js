@@ -9,7 +9,7 @@ import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { useAlert } from "@/composables/useAlert";
 const { t } = useI18n();
 const { handleUserNotice } = useBrowser();

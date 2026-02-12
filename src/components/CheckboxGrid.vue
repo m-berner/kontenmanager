@@ -18,9 +18,9 @@ import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import {useAlert} from "@/composables/useAlert";
 import type { CheckboxGridProps } from "@/types";
-import { STORES } from "@/config/stores";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
-import { COMPONENTS } from "@/config/components";
+import { STORES } from "@/configs/stores";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
+import { COMPONENTS } from "@/configs/components";
 
 const props = defineProps<CheckboxGridProps>();
 const { t } = useI18n();

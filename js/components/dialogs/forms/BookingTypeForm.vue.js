@@ -3,7 +3,7 @@ import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { ValidationService } from "@/services/validation";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { DomainUtils } from "@/domains/utils";
 const props = defineProps();
 const { t } = useI18n();

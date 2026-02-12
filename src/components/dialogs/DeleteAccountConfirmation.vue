@@ -18,11 +18,11 @@ import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { useAlert } from "@/composables/useAlert";
 
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { handleUserError } = useAlert();
 const { setStorage } = useStorage();
 const settings = useSettingsStore();
@@ -80,7 +80,7 @@ const onClickOk = async (): Promise<void> => {
       await switchToNextAccount();
 
       resetTeleport();
-      await handleUserNotice("DeleteAccountConfirmation", "success");
+      await handleUserNotice("DeleteAccountConfirmation", getMessage("xx_db_delete_success"));
     } catch {
       throw new AppError(
         ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION,

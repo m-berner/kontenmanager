@@ -17,8 +17,8 @@ import { useTheme } from "vuetify/framework";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { useAlert } from "@/composables/useAlert";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
-import { createThemes } from "@/config/views";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
+import { createThemes } from "@/configs/views";
 
 const { t } = useI18n();
 const theme = useTheme();

@@ -1,4 +1,4 @@
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 export class ImportExportValidator {
     static validateBackup(data) {
         if (!data || typeof data !== "object") {

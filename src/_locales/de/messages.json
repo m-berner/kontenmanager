@@ -25,5 +25,17 @@
   },
   "xx_db_update_success": {
     "message": "Datensatz erfolgreich aktualisiert"
+  },
+  "xx_db_duplicate": {
+    "message": "Datensatz ist bereits vorhanden"
+  },
+  "xx_db_add_err": {
+    "message": "Datensatz hinzufügen ist fehlgeschlagen"
+  },
+  "xx_db_add_success": {
+    "message": "Datensatz erfolgreich hinzugefügt"
+  },
+  "xx_db_delete_success": {
+    "message": "Datensatz wurde gelöscht"
   }
 }

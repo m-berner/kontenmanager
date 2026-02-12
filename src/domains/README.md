@@ -26,7 +26,7 @@ Domain-scoped constants used by the business logic. These values are framework-a
     - `ZERO_TIME`: Zero marker for timestamps when time is intentionally not tracked.
   - Example:
     ```ts
-    import { DATE } from "@/domains/config/date";
+    import { DATE } from "@/domains/configs/date";
     const isIso = DATE.ISO_DATE_REGEX.test("2025-12-31");
     const daysToMs = 3 * DATE.MILLI_PER_DAY;
     ```
@@ -41,7 +41,7 @@ Domain-scoped constants used by the business logic. These values are framework-a
     `mRealDividend`, `mRealBuyValue`, `mDeleteable`.
   - Example (see also `DomainLogic.initializeRecords`):
     ```ts
-    import { STORE_MEMORY } from "@/domains/config/storeMemory";
+    import { STORE_MEMORY } from "@/domains/configs/storeMemory";
     // Ensure runtime-only fields exist on every stock
     const enriched = { ...stockFromDB, ...STORE_MEMORY.STOCK };
     ```
@@ -52,7 +52,7 @@ Domain-scoped constants used by the business logic. These values are framework-a
     free from hard-coded strings.
   - Examples:
     ```ts
-    import { BROWSER_STORAGE } from "@/domains/config/storage";
+    import { BROWSER_STORAGE } from "@/domains/configs/storage";
     // Use stable keys in adapter code (outside the domain layer)
     const k = BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key; // "sActiveAccountId"
     const def = BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.value; // -1
@@ -94,7 +94,7 @@ localized user feedback.
 General-purpose business utilities, such as date normalization and logging wrappers, that are used across multiple
 domain boundaries.
 
-- Notable normalization: `normalizeBookingTypeName` trims, collapses whitespace, and lowercases names to ensure
+- Notable normalization: `normalizeBookingTypeName` trims and collapses whitespace to ensure
   duplicate detection is stable and case-insensitive across the app.
 
 ## Testing

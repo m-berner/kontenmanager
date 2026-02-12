@@ -6,7 +6,7 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 import { useAlertStore } from "@/stores/alerts";
-import { DEFAULTS } from "@/config/defaults";
+import { DEFAULTS } from "@/configs/defaults";
 import type { HandleUserAlertOptions } from "@/types";
 import { DomainUtils } from "@/domains/utils";
 import { AppError } from "@/domains/errors";

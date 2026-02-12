@@ -25,5 +25,17 @@
   },
   "xx_db_update_success": {
     "message": "Record update successful"
+  },
+  "xx_db_duplicate": {
+    "message": "Duplicate record"
+  },
+  "xx_db_add_err": {
+    "message": "Add record failed"
+  },
+  "xx_db_add_success": {
+    "message": "Add record successful"
+  },
+  "xx_db_delete_success": {
+    "message": "Record deleted"
   }
 }

@@ -7,7 +7,7 @@ import { databaseService } from "@/services/database";
 import { fetchService } from "@/services/fetch";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import { CURRENCIES } from "@/domains/config/currencies";
+import { CURRENCIES } from "@/domains/configs/currencies";
 const { getUserLocale } = useBrowser();
 export class AppService {
     records = useRecordsStore();

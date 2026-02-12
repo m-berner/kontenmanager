@@ -13,14 +13,14 @@ import { useSettingsStore } from "@/stores/settings";
 import { fetchService } from "@/services/fetch";
 import { useRuntimeStore } from "@/stores/runtime";
 import { DomainUtils } from "@/domains/utils";
-import { STORES } from "@/config/stores";
-import { DEFAULTS } from "@/config/defaults";
-import { DATE } from "@/domains/config/date";
+import { STORES } from "@/configs/stores";
+import { DEFAULTS } from "@/configs/defaults";
+import { DATE } from "@/domains/configs/date";
 import { useStorage } from "@/composables/useStorage";
 import { useBrowser } from "@/composables/useBrowser";
 import { useBookingsStore } from "@/stores/bookings";
 import { DomainLogic } from "@/domains/logic";
-import {CURRENCIES} from "@/domains/config/currencies";
+import {CURRENCIES} from "@/domains/configs/currencies";
 
 const {getUserLocale} = useBrowser();
 

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAlert } from "@/composables/useAlert";
-import { DEFAULTS } from "@/config/defaults";
+import { DEFAULTS } from "@/configs/defaults";
 import { useBrowser } from "@/composables/useBrowser";
 const alertStoreMock = {
     info: vi.fn().mockReturnValue(101),

@@ -14,8 +14,8 @@ import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
 //import { useAlert } from "@/composables/useAlert";
 import type { AccountEntry } from "@/types";
-import { createAccountingHeaders, VIEWS } from "@/config/views";
-import { COMPONENTS } from "@/config/components";
+import { createAccountingHeaders, VIEWS } from "@/configs/views";
+import { COMPONENTS } from "@/configs/components";
 import { DomainUtils } from "@/domains/utils";
 
 const { n, t } = useI18n();

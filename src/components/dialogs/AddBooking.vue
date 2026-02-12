@@ -17,8 +17,8 @@ import { useBookingForm } from "@/composables/useForms";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
-import { DATE } from "@/domains/config/date";
-import { INDEXED_DB } from "@/config/database";
+import { DATE } from "@/domains/configs/date";
+import { INDEXED_DB } from "@/configs/database";
 import { databaseService } from "@/services/database";
 import { useBrowser } from "@/composables/useBrowser";
 

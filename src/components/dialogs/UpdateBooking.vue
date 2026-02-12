@@ -21,7 +21,7 @@ import { useBookingForm } from "@/composables/useForms";
 import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { DATE } from "@/domains/config/date";
+import { DATE } from "@/domains/configs/date";
 import { databaseService } from "@/services/database";
 
 const { t } = useI18n();

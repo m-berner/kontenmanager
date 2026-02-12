@@ -1,7 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { DomainUtils } from "@/domains/utils";
-import { CODES } from "@/config/codes";
+import { CODES } from "@/configs/codes";
 export const useRuntimeStore = defineStore("runtime", function () {
     const activeId = ref(-1);
     const currentView = ref(CODES.VIEW_CODES.HOME);

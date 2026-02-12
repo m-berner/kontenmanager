@@ -21,8 +21,8 @@ import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { useAlert } from "@/composables/useAlert";
 import { fetchService } from "@/services/fetch";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
-import { COMPONENTS } from "@/config/components";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
+import { COMPONENTS } from "@/configs/components";
 
 const props = defineProps<DynamicListProps>();
 

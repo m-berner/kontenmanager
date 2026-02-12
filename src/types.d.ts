@@ -587,12 +587,12 @@ export type MessageSchemaType = typeof deDE;
 // Rule builder type
 export type RuleBuilderType = (..._args: any[]) => ValidationRuleType;
 
-// Strongly typed browser storage snapshot derived from BROWSER_STORAGE config
+// Strongly typed browser storage snapshot derived from BROWSER_STORAGE configs
 // We map the runtime schema entries to a type whose keys are the literal
 // storage keys (e.g., "sSkin") and whose values are the corresponding default
 // value types (string | number | boolean | string[]).
 type __BrowserStorageSchema =
-  typeof import("@/domains/config/storage").BROWSER_STORAGE;
+  typeof import("@/domains/configs/storage").BROWSER_STORAGE;
 type __BrowserStorageEntryUnion =
   __BrowserStorageSchema[keyof __BrowserStorageSchema];
 

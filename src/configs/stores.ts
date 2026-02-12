@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
-import { STORE_MEMORY } from "@/domains/config/storeMemory";
+import { STORE_MEMORY } from "@/domains/configs/storeMemory";
 
 export const STORES = Object.freeze({
   INDEXES: new Map<string, string>([

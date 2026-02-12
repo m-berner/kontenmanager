@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useBookingTypesStore } from "@/stores/bookingTypes";
 import { useSettingsStore } from "@/stores/settings";
@@ -51,9 +51,9 @@ describe("UpdateBookingType Logic Test", () => {
         bookingTypesStore.update(bookingTypeData);
         expect(updateSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.BOOKING_TYPES.NAME, expect.objectContaining({
             cID: 10,
-            cName: "dividend updated"
+            cName: "Dividend Updated"
         }));
         expect(bookingTypesStore.items).toHaveLength(1);
-        expect(bookingTypesStore.items[0].cName).toBe("dividend updated");
+        expect(bookingTypesStore.items[0].cName).toBe("Dividend Updated");
     });
 });

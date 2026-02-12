@@ -7,9 +7,9 @@
  */
 
 import { computed } from "vue";
-import { EVENTS } from "@/config/events";
-import { ENTRYPOINTS } from "@/config/entrypoints";
-import { DEFAULTS } from "@/config/defaults";
+import { EVENTS } from "@/configs/events";
+import { ENTRYPOINTS } from "@/configs/entrypoints";
+import { DEFAULTS } from "@/configs/defaults";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import deNotifications from "@/_locales/de/messages.json";

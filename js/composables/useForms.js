@@ -1,6 +1,6 @@
 import { reactive } from "vue";
-import { INDEXED_DB } from "@/config/database";
-import { DATE } from "@/domains/config/date";
+import { INDEXED_DB } from "@/configs/database";
+import { DATE } from "@/domains/configs/date";
 import { DomainUtils } from "@/domains/utils";
 let stockFormManagerInstance = null;
 let accountFormManagerInstance = null;

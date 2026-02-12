@@ -17,7 +17,7 @@ import {
   ERROR_CATEGORY,
   ERROR_CODES
 } from "@/domains/errors";
-import { CODES } from "@/config/codes";
+import { CODES } from "@/configs/codes";
 import { useBrowser } from "@/composables/useBrowser";
 import { DomainUtils } from "@/domains/utils";
 

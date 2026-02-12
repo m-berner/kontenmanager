@@ -10,7 +10,7 @@ import type { TeleportState, ViewTypeSelection } from "@/types";
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { DomainUtils } from "@/domains/utils";
-import { CODES } from "@/config/codes";
+import { CODES } from "@/configs/codes";
 
 /**
  * Pinia store for runtime and UI state.

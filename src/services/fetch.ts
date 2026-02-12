@@ -19,9 +19,9 @@ import type {
 } from "@/types";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import { FETCH } from "@/config/fetch";
-import { STORES } from "@/config/stores";
-import { BROWSER_STORAGE } from "@/domains/config/storage";
+import { FETCH } from "@/configs/fetch";
+import { STORES } from "@/configs/stores";
+import { BROWSER_STORAGE } from "@/domains/configs/storage";
 
 /**
  * Simple in-memory cache with TTL (time-to-live) expiration.

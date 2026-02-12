@@ -7,7 +7,7 @@
  */
 
 import type { BackupData, BackupValidationResult } from "@/types";
-import { INDEXED_DB } from "@/config/database";
+import { INDEXED_DB } from "@/configs/database";
 
 /**
  * Domain-level validator for database backups.

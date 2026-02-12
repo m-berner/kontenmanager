@@ -23,7 +23,7 @@ import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import DialogPort from "@/components/DialogPort.vue";
 import type { MenuActionType } from "@/types";
-import { CODES } from "@/config/codes";
+import { CODES } from "@/configs/codes";
 
 const { t } = useI18n();
 const { handleUserNotice, openOptionsPage } = useBrowser();

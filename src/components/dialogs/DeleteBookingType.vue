@@ -26,7 +26,7 @@ import { useBookingTypeForm } from "@/composables/useForms";
 
 const { bookingTypeFormData, reset } = useBookingTypeForm();
 const { t } = useI18n();
-const { handleUserNotice } = useBrowser();
+const { getMessage, handleUserNotice } = useBrowser();
 const { remove } = useBookingTypesDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const records = useRecordsStore();
@@ -63,7 +63,7 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.remove(bookingTypeFormData.id!);
       await remove(bookingTypeFormData.id!);
       runtime.resetTeleport();
-      await handleUserNotice("DeleteBookingType", "success");
+      await handleUserNotice("DeleteBookingType", getMessage("xx_db_delete_success"));
     } catch {
       throw new AppError(
         ERROR_CODES.DELETE_BOOKING_TYPE,
