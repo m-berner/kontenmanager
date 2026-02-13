@@ -18,15 +18,15 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { DomainUtils } from "@/domains/utils";
 import ContentCard from "@/components/ContentCard.vue";
-import { ROUTES } from "@/configs/routes";
 import { createPrivacyContent } from "@/configs/views";
+import { VIEW_CODES } from "@/configs/codes";
 
 const { t } = useI18n();
 const router = useRouter();
 
 const PARAGRAPHS = computed(() => createPrivacyContent(t));
 const formatData = computed<ContentItem[] | undefined>(() => {
-  if (router.currentRoute.value.path !== ROUTES.PRIVACY) return undefined;
+  if (router.currentRoute.value.path !== `/${VIEW_CODES.PRIVACY}`) return undefined;
   return PARAGRAPHS.value.map((p) => ({
     subTitle: p.SUBTITLE,
     content: p.CONTENT,

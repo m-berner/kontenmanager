@@ -66,8 +66,8 @@ export const INDEXED_DB = {
             }
         }
     },
-    SM_IMPORT_VERSION: 25,
-    VERSION: 26,
+    LEGACY_IMPORT_VERSION: 25,
+    CURRENT_VERSION: 26,
     MAX_FILE_SIZE: 64 * 1024 * 1024,
     CHUNK_SIZE: 100
 };

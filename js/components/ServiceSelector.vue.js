@@ -17,7 +17,7 @@ const setService = async () => {
     }
 };
 const serviceLabels = (item) => {
-    const service = FETCH.MAP.get(item);
+    const service = FETCH.PROVIDERS[item];
     if (service !== undefined && service?.NAME !== undefined) {
         return service.NAME;
     }
@@ -62,7 +62,7 @@ const __VLS_6 = ({ 'update:modelValue': {} },
         }) });
 var __VLS_7 = {};
 const { default: __VLS_8 } = __VLS_3.slots;
-for (const [item] of __VLS_vFor(([...__VLS_ctx.FETCH.MAP.keys()]))) {
+for (const [item] of __VLS_vFor(([...Object.keys(__VLS_ctx.FETCH.PROVIDERS)]))) {
     let __VLS_9;
     vRadio;
     const __VLS_10 = __VLS_asFunctionalComponent1(__VLS_9, new __VLS_9({

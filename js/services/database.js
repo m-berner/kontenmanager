@@ -23,7 +23,7 @@ export class DatabaseService extends IndexedDbBase {
         if (this.db)
             return;
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(INDEXED_DB.NAME, INDEXED_DB.VERSION);
+            const request = indexedDB.open(INDEXED_DB.NAME, INDEXED_DB.CURRENT_VERSION);
             request.onerror = () => {
                 this.db = null;
                 this.connected = false;

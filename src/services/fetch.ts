@@ -39,7 +39,7 @@ class FetchCache {
   constructor() {}
 
   /**
-   * Stores data in cache with current timestamp.
+   * Stores data in the cache with the current timestamp.
    * Triggers cleanup if the cache size exceeds 100 entries.
    *
    * @param key - Unique identifier for cached data
@@ -419,7 +419,7 @@ class FetchService {
       );
     }
 
-    const service = FETCH.MAP.get("tgate");
+    const service = FETCH.PROVIDERS["tgate"];
     if (!service) {
       throw new AppError(
         ERROR_CODES.SERVICES.FETCH.D,
@@ -482,7 +482,7 @@ class FetchService {
 
     const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
     const serviceName = storageService[BROWSER_STORAGE.SERVICE.key] as string;
-    const service = FETCH.MAP.get(serviceName);
+    const service = FETCH.PROVIDERS[serviceName];
 
     if (!service) {
       throw new AppError(
@@ -666,12 +666,12 @@ class FetchService {
     const links = doc.querySelectorAll(".index-world-map a");
 
     const indexes: StringNumberPair[] = [];
-    for (const [property, indexValue] of STORES.INDEXES.entries()) {
+    for (const property of Object.keys(STORES.INDEXES)) {
       for (const link of links) {
         const title = link.getAttribute("title");
         const valueText = link.children[0]?.textContent;
 
-        if (indexValue?.includes(title || "") && valueText) {
+        if (STORES.INDEXES[property]?.includes(title || "") && valueText) {
           indexes.push({
             key: property,
             value: DomainUtils.toNumber(valueText)
@@ -892,7 +892,7 @@ class FetchService {
 
   private buildWStreetDetailUrl(responseJson: any): string {
     const detailPath = responseJson.result?.[0]?.link ?? "";
-    const baseUrl = FETCH.MAP.get("wstreet")?.HOME ?? "";
+    const baseUrl = FETCH.PROVIDERS["wstreet"]?.HOME ?? "";
     return baseUrl + detailPath;
   }
 
@@ -951,7 +951,7 @@ class FetchService {
     const minParts = parts[0].split("WochenTief");
     const min =
       minParts.length > 1
-        ? minParts[1]?.trim() ?? FETCH.DEFAULT_VALUE
+        ? (minParts[1]?.trim() ?? FETCH.DEFAULT_VALUE)
         : FETCH.DEFAULT_VALUE;
 
     return { min, max };
@@ -997,7 +997,7 @@ class FetchService {
       const parts = rateText.split(")");
 
       return parts.length > 1
-        ? parts[1]?.trim() ?? FETCH.DEFAULT_VALUE
+        ? (parts[1]?.trim() ?? FETCH.DEFAULT_VALUE)
         : FETCH.DEFAULT_VALUE;
     } catch {
       return FETCH.DEFAULT_VALUE;

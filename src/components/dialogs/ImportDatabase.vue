@@ -363,7 +363,7 @@ const restoreFromRollback = async (
 };
 
 const getImportSummary = (backup: BackupData): string => {
-  const isLegacy = backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION;
+  const isLegacy = backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION;
 
   if (isLegacy) {
     return [
@@ -414,7 +414,7 @@ const processBackupFile = async (): Promise<void> => {
     }
     // Check for empty database requirement
     if (
-      validation.version === INDEXED_DB.SM_IMPORT_VERSION &&
+      validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION &&
       accountItems.value.length > 0
     ) {
       await handleUserNotice(
@@ -426,7 +426,7 @@ const processBackupFile = async (): Promise<void> => {
     // Check data integrity for both legacy and modern
     let dataIntegrityErrors: string[] = [];
 
-    if (validation.version === INDEXED_DB.SM_IMPORT_VERSION) {
+    if (validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION) {
       dataIntegrityErrors = importService.validateLegacyDataIntegrity(backup);
     } else {
       dataIntegrityErrors = importService.validateDataIntegrity(backup);
@@ -472,9 +472,9 @@ const processBackupFile = async (): Promise<void> => {
     activeAccountId.value = activeId;
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeId as any);
     // Import based on the version
-    if (backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION) {
+    if (backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION) {
       await importLegacyData(backup, activeId);
-    } else if (backup.sm.cDBVersion > INDEXED_DB.SM_IMPORT_VERSION) {
+    } else if (backup.sm.cDBVersion > INDEXED_DB.LEGACY_IMPORT_VERSION) {
       await importModernData(backup, activeId);
     } else {
       await handleUserNotice(

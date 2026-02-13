@@ -198,7 +198,7 @@ class FetchService {
         if (!isin || isin.length !== 12) {
             throw new AppError(ERROR_CODES.SERVICES.FETCH.C, ERROR_CATEGORY.VALIDATION, false);
         }
-        const service = FETCH.MAP.get("tgate");
+        const service = FETCH.PROVIDERS["tgate"];
         if (!service) {
             throw new AppError(ERROR_CODES.SERVICES.FETCH.D, ERROR_CATEGORY.VALIDATION, false);
         }
@@ -227,7 +227,7 @@ class FetchService {
         });
         const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
         const serviceName = storageService[BROWSER_STORAGE.SERVICE.key];
-        const service = FETCH.MAP.get(serviceName);
+        const service = FETCH.PROVIDERS[serviceName];
         if (!service) {
             throw new AppError(ERROR_CODES.SERVICES.FETCH.G, ERROR_CATEGORY.VALIDATION, false);
         }
@@ -326,11 +326,11 @@ class FetchService {
         const doc = await this.parseHTML(html);
         const links = doc.querySelectorAll(".index-world-map a");
         const indexes = [];
-        for (const [property, indexValue] of STORES.INDEXES.entries()) {
+        for (const property of Object.keys(STORES.INDEXES)) {
             for (const link of links) {
                 const title = link.getAttribute("title");
                 const valueText = link.children[0]?.textContent;
-                if (indexValue?.includes(title || "") && valueText) {
+                if (STORES.INDEXES[property]?.includes(title || "") && valueText) {
                     indexes.push({
                         key: property,
                         value: DomainUtils.toNumber(valueText)
@@ -458,7 +458,7 @@ class FetchService {
     }
     buildWStreetDetailUrl(responseJson) {
         const detailPath = responseJson.result?.[0]?.link ?? "";
-        const baseUrl = FETCH.MAP.get("wstreet")?.HOME ?? "";
+        const baseUrl = FETCH.PROVIDERS["wstreet"]?.HOME ?? "";
         return baseUrl + detailPath;
     }
     extractWStreetStockData(doc) {
@@ -499,7 +499,7 @@ class FetchService {
         const max = parts[1]?.trim() ?? FETCH.DEFAULT_VALUE;
         const minParts = parts[0].split("WochenTief");
         const min = minParts.length > 1
-            ? minParts[1]?.trim() ?? FETCH.DEFAULT_VALUE
+            ? (minParts[1]?.trim() ?? FETCH.DEFAULT_VALUE)
             : FETCH.DEFAULT_VALUE;
         return { min, max };
     }
@@ -531,7 +531,7 @@ class FetchService {
             const rateText = listItems[3].textContent ?? FETCH.DEFAULT_VALUE;
             const parts = rateText.split(")");
             return parts.length > 1
-                ? parts[1]?.trim() ?? FETCH.DEFAULT_VALUE
+                ? (parts[1]?.trim() ?? FETCH.DEFAULT_VALUE)
                 : FETCH.DEFAULT_VALUE;
         }
         catch {

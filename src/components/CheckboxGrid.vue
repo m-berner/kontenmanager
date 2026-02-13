@@ -16,7 +16,7 @@ import { computed, onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
-import {useAlert} from "@/composables/useAlert";
+import { useAlert } from "@/composables/useAlert";
 import type { CheckboxGridProps } from "@/types";
 import { STORES } from "@/configs/stores";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
@@ -47,7 +47,7 @@ const config = computed(() => {
   };
 });
 const boxes = computed((): { A: string[]; B: string[] } => {
-  const keys = Array.from(config.value.map.keys());
+  const keys = Array.from(Object.keys(config.value.map));
   const half = Math.ceil(keys.length / 2);
   return {
     A: keys.slice(0, half),
@@ -59,7 +59,7 @@ const getLabel = (item: string): string => {
   if (config.value.labelPath) {
     return t(`${config.value.labelPath}.${item}`);
   }
-  return config.value.map.get(item) || item;
+  return config.value.map[item] || item;
 };
 
 const setChecked = async (): Promise<void> => {

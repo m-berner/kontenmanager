@@ -4,7 +4,7 @@ import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
 import { storeToRefs } from "pinia";
 import { computed, onUnmounted, readonly, ref } from "vue";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-import { CODES } from "@/configs/codes";
+import { VIEW_CODES } from "@/configs/codes";
 import { useBrowser } from "@/composables/useBrowser";
 import { DomainUtils } from "@/domains/utils";
 const { getMessage } = useBrowser();
@@ -156,13 +156,13 @@ export function useMenuAction() {
             openDialog("importDatabase", true);
         },
         async home() {
-            runtime.setCurrentView(CODES.VIEW_CODES.HOME);
+            runtime.setCurrentView(VIEW_CODES.HOME);
         },
         async company() {
-            runtime.setCurrentView(CODES.VIEW_CODES.COMPANY);
+            runtime.setCurrentView(VIEW_CODES.COMPANY);
         },
         async setting() {
-            runtime.setCurrentView(CODES.VIEW_CODES.SETTINGS);
+            runtime.setCurrentView(VIEW_CODES.SETTINGS);
         }
     };
     const executeAction = async (actionType, recordId) => {

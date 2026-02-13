@@ -263,7 +263,7 @@ const restoreFromRollback = async (rollbackData) => {
     }
 };
 const getImportSummary = (backup) => {
-    const isLegacy = backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION;
+    const isLegacy = backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION;
     if (isLegacy) {
         return [
             `1 ${t("components.dialogs.importDatabase.messages.importInfo.account")}`,
@@ -289,13 +289,13 @@ const processBackupFile = async () => {
             await handleUserError("COMPONENTS DIALOGS ImportDatabase", getMessage("xx_invalid_backup"), {});
             return;
         }
-        if (validation.version === INDEXED_DB.SM_IMPORT_VERSION &&
+        if (validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION &&
             accountItems.value.length > 0) {
             await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_db_restored"));
             return;
         }
         let dataIntegrityErrors = [];
-        if (validation.version === INDEXED_DB.SM_IMPORT_VERSION) {
+        if (validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION) {
             dataIntegrityErrors = importService.validateLegacyDataIntegrity(backup);
         }
         else {
@@ -321,10 +321,10 @@ const processBackupFile = async () => {
         const activeId = backup.accounts?.[0].cID ?? DEFAULTS.SM_RESTORE_ACCOUNT_ID;
         activeAccountId.value = activeId;
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeId);
-        if (backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION) {
+        if (backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION) {
             await importLegacyData(backup, activeId);
         }
-        else if (backup.sm.cDBVersion > INDEXED_DB.SM_IMPORT_VERSION) {
+        else if (backup.sm.cDBVersion > INDEXED_DB.LEGACY_IMPORT_VERSION) {
             await importModernData(backup, activeId);
         }
         else {

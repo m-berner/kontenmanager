@@ -13,7 +13,7 @@ import { INDEXED_DB } from "@/configs/database";
 import { databaseService } from "@/services/database";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { COMPONENTS } from "@/configs/components";
-import { CODES } from "@/configs/codes";
+import { VIEW_CODES } from "@/configs/codes";
 import { useAlert } from "@/composables/useAlert";
 const { n, t } = useI18n();
 const records = useRecordsStore();
@@ -56,7 +56,7 @@ const onUpdateTitleBar = async () => {
     }
 };
 watch([() => runtime.getCurrentView, () => runtime.isDownloading], () => {
-    if (runtime.getCurrentView === CODES.VIEW_CODES.COMPANY &&
+    if (runtime.getCurrentView === VIEW_CODES.COMPANY &&
         !runtime.isDownloading) {
         if (depotTimer)
             clearTimeout(depotTimer);
@@ -121,7 +121,7 @@ let __VLS_14;
 vSpacer;
 const __VLS_15 = __VLS_asFunctionalComponent1(__VLS_14, new __VLS_14({}));
 const __VLS_16 = __VLS_15({}, ...__VLS_functionalComponentArgsRest(__VLS_15));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_19;
     vChip;
     const __VLS_20 = __VLS_asFunctionalComponent1(__VLS_19, new __VLS_19({
@@ -138,7 +138,7 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
     const { default: __VLS_24 } = __VLS_22.slots;
     (__VLS_ctx.t("views.titleBar.bookingsSumLabel"));
     (__VLS_ctx.balance);
-    [t, runtime, CODES, balance,];
+    [t, runtime, VIEW_CODES, balance,];
     var __VLS_22;
 }
 if (__VLS_ctx.showDepotChip) {
@@ -171,7 +171,7 @@ if (__VLS_ctx.activeAccountId > 0) {
     const __VLS_37 = __VLS_asFunctionalComponent1(__VLS_36, new __VLS_36({
         ...{ 'onUpdate:modelValue': {} },
         modelValue: (__VLS_ctx.activeAccountId),
-        disabled: (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY),
+        disabled: (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY),
         itemTitle: (__VLS_ctx.INDEXED_DB.STORE.ACCOUNTS.FIELDS.IBAN),
         itemValue: (__VLS_ctx.INDEXED_DB.STORE.ACCOUNTS.FIELDS.ID),
         items: (__VLS_ctx.records.accounts.items),
@@ -184,7 +184,7 @@ if (__VLS_ctx.activeAccountId > 0) {
     const __VLS_38 = __VLS_37({
         ...{ 'onUpdate:modelValue': {} },
         modelValue: (__VLS_ctx.activeAccountId),
-        disabled: (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY),
+        disabled: (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY),
         itemTitle: (__VLS_ctx.INDEXED_DB.STORE.ACCOUNTS.FIELDS.IBAN),
         itemValue: (__VLS_ctx.INDEXED_DB.STORE.ACCOUNTS.FIELDS.ID),
         items: (__VLS_ctx.records.accounts.items),
@@ -204,7 +204,7 @@ if (__VLS_ctx.activeAccountId > 0) {
             alt: (__VLS_ctx.t('views.titleBar.iconsAlt.logo')),
             src: (__VLS_ctx.logoUrl),
         });
-        [t, t, runtime, CODES, activeAccountId, activeAccountId, INDEXED_DB, INDEXED_DB, records, onUpdateTitleBar, logoUrl,];
+        [t, t, runtime, VIEW_CODES, activeAccountId, activeAccountId, INDEXED_DB, INDEXED_DB, records, onUpdateTitleBar, logoUrl,];
     }
     [];
     var __VLS_39;

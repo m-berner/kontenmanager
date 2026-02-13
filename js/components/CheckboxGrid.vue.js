@@ -29,7 +29,7 @@ const config = computed(() => {
     };
 });
 const boxes = computed(() => {
-    const keys = Array.from(config.value.map.keys());
+    const keys = Array.from(Object.keys(config.value.map));
     const half = Math.ceil(keys.length / 2);
     return {
         A: keys.slice(0, half),
@@ -40,7 +40,7 @@ const getLabel = (item) => {
     if (config.value.labelPath) {
         return t(`${config.value.labelPath}.${item}`);
     }
-    return config.value.map.get(item) || item;
+    return config.value.map[item] || item;
 };
 const setChecked = async () => {
     isSaving.value = true;

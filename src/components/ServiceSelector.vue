@@ -29,7 +29,7 @@ const setService = async (): Promise<void> => {
 };
 
 const serviceLabels = (item: string): string => {
-  const service = FETCH.MAP.get(item);
+  const service = FETCH.PROVIDERS[item];
   if (service !== undefined && service?.NAME !== undefined) {
     return service.NAME;
   } else {
@@ -61,7 +61,7 @@ DomainUtils.log("COMPONENTS ServiceSelector: setup");
     "
   >
     <v-radio
-      v-for="item in [...FETCH.MAP.keys()]"
+      v-for="item in [...Object.keys(FETCH.PROVIDERS)]"
       :key="item"
       :label="serviceLabels(item)"
       :value="item"

@@ -23,7 +23,7 @@ import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import DialogPort from "@/components/DialogPort.vue";
 import type { MenuActionType } from "@/types";
-import { CODES } from "@/configs/codes";
+import { VIEW_CODES } from "@/configs/codes";
 
 const { t } = useI18n();
 const { getMessage, handleUserNotice, openOptionsPage } = useBrowser();
@@ -216,11 +216,11 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   deleteStock: () => {},
 
   home: () => {
-    runtime.setCurrentView(CODES.VIEW_CODES.HOME);
+    runtime.setCurrentView(VIEW_CODES.HOME);
   },
 
   company: () => {
-    runtime.setCurrentView(CODES.VIEW_CODES.COMPANY);
+    runtime.setCurrentView(VIEW_CODES.COMPANY);
   },
 
   setting: async () => {
@@ -443,7 +443,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
     </RouterLink>
     <v-spacer />
     <v-tooltip
-      v-if="runtime.getCurrentView === CODES.VIEW_CODES.COMPANY"
+      v-if="runtime.getCurrentView === VIEW_CODES.COMPANY"
       :text="t('views.headerBar.updateQuote')"
       location="top"
     >
@@ -460,7 +460,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
     </v-tooltip>
     <v-spacer />
     <v-tooltip
-      v-if="runtime.getCurrentView === CODES.VIEW_CODES.COMPANY"
+      v-if="runtime.getCurrentView === VIEW_CODES.COMPANY"
       :text="t('views.headerBar.addStock')"
       location="top"
     >
@@ -476,7 +476,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
       </template>
     </v-tooltip>
     <v-tooltip
-      v-if="runtime.getCurrentView === CODES.VIEW_CODES.COMPANY"
+      v-if="runtime.getCurrentView === VIEW_CODES.COMPANY"
       :text="t('views.headerBar.fadeInStock')"
       location="top"
     >
@@ -493,7 +493,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
     </v-tooltip>
     <v-spacer />
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.addAccount')"
       location="top"
     >
@@ -509,7 +509,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
       </template>
     </v-tooltip>
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.updateAccount')"
       location="top"
     >
@@ -525,7 +525,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
       </template>
     </v-tooltip>
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.deleteAccount')"
       location="top"
     >
@@ -542,7 +542,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
     </v-tooltip>
     <v-spacer />
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.addBooking')"
       location="top"
     >
@@ -559,7 +559,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
     </v-tooltip>
     <v-spacer />
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.addBookingType')"
       location="top"
     >
@@ -575,7 +575,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
       </template>
     </v-tooltip>
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.updateBookingType')"
       location="top"
     >
@@ -591,7 +591,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
       </template>
     </v-tooltip>
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.deleteBookingType')"
       location="top"
     >
@@ -608,7 +608,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
     </v-tooltip>
     <v-spacer />
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.exportToFile')"
       location="top"
     >
@@ -624,7 +624,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
       </template>
     </v-tooltip>
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.importDatabase')"
       location="top"
     >
@@ -641,7 +641,7 @@ DomainUtils.log("VIEWS HeaderBar: setup");
     </v-tooltip>
     <v-spacer />
     <v-tooltip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       :text="t('views.headerBar.showAccounting')"
       location="top"
     >

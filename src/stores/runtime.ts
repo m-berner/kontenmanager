@@ -10,7 +10,7 @@ import type { TeleportState, ViewTypeSelection } from "@/types";
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { DomainUtils } from "@/domains/utils";
-import { CODES } from "@/configs/codes";
+import { VIEW_CODES } from "@/configs/codes";
 
 /**
  * Pinia store for runtime and UI state.
@@ -31,7 +31,7 @@ export const useRuntimeStore = defineStore("runtime", function () {
   const activeId = ref<number>(-1);
 
   /** Currently active application view. */
-  const currentView = ref<ViewTypeSelection>(CODES.VIEW_CODES.HOME);
+  const currentView = ref<ViewTypeSelection>(VIEW_CODES.HOME);
 
   /**
    * Map of color overrides for option menu entries.

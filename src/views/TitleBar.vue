@@ -22,7 +22,7 @@ import { INDEXED_DB } from "@/configs/database";
 import { databaseService } from "@/services/database";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { COMPONENTS } from "@/configs/components";
-import { CODES } from "@/configs/codes";
+import { VIEW_CODES } from "@/configs/codes";
 import { useAlert } from "@/composables/useAlert";
 
 const { n, t } = useI18n();
@@ -88,7 +88,7 @@ watch(
   [() => runtime.getCurrentView, () => runtime.isDownloading],
   () => {
     if (
-      runtime.getCurrentView === CODES.VIEW_CODES.COMPANY &&
+      runtime.getCurrentView === VIEW_CODES.COMPANY &&
       !runtime.isDownloading
     ) {
       if (depotTimer) clearTimeout(depotTimer);
@@ -130,7 +130,7 @@ DomainUtils.log("VIEWS TitleBar: setup");
     <v-app-bar-title>{{ t("views.titleBar.title") }}</v-app-bar-title>
     <v-spacer />
     <v-chip
-      v-if="!(runtime.getCurrentView === CODES.VIEW_CODES.COMPANY)"
+      v-if="!(runtime.getCurrentView === VIEW_CODES.COMPANY)"
       class="text-h6"
       color="secondary"
       variant="flat"
@@ -147,7 +147,7 @@ DomainUtils.log("VIEWS TitleBar: setup");
     <v-select
       v-if="activeAccountId > 0"
       v-model="activeAccountId"
-      :disabled="runtime.getCurrentView === CODES.VIEW_CODES.COMPANY"
+      :disabled="runtime.getCurrentView === VIEW_CODES.COMPANY"
       :item-title="INDEXED_DB.STORE.ACCOUNTS.FIELDS.IBAN"
       :item-value="INDEXED_DB.STORE.ACCOUNTS.FIELDS.ID"
       :items="records.accounts.items"

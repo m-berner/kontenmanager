@@ -45,7 +45,7 @@ const exportService = new ImportExportService();
 
 const filename = computed(() => {
   const prefix = new Date().toISOString().substring(0, 10);
-  return `${prefix}_${INDEXED_DB.VERSION}_${INDEXED_DB.NAME}.json`;
+  return `${prefix}_${INDEXED_DB.CURRENT_VERSION}_${INDEXED_DB.NAME}.json`;
 });
 
 const validateExportData = (
@@ -122,7 +122,7 @@ const createExportData = async (): Promise<string> => {
   }
   const metaData = {
     cVersion: Number.parseInt(manifest.value.version.replace(/\./g, "")),
-    cDBVersion: INDEXED_DB.VERSION,
+    cDBVersion: INDEXED_DB.CURRENT_VERSION,
     cEngine: "indexeddb"
   };
   const dataString = exportService.stringifyDatabase(

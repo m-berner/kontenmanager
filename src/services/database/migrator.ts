@@ -22,7 +22,7 @@ export class DatabaseMigrator {
    */
   setupDatabase(db: IDBDatabase, ev: IDBVersionChangeEvent): void {
     const oldVersion = ev.oldVersion;
-    const newVersion = ev.newVersion || INDEXED_DB.VERSION;
+    const newVersion = ev.newVersion || INDEXED_DB.CURRENT_VERSION;
 
     DomainUtils.log(`SERVICES DATABASE migrator: upgrade: ${oldVersion} -> ${newVersion}`, "info");
 

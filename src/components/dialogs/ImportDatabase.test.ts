@@ -40,8 +40,8 @@ describe("ImportDatabase Logic Test", () => {
   it("should validate backup data structure", () => {
     const validBackup: BackupData = {
       sm: {
-        cVersion: INDEXED_DB.SM_IMPORT_VERSION,
-        cDBVersion: INDEXED_DB.VERSION,
+        cVersion: INDEXED_DB.LEGACY_IMPORT_VERSION,
+        cDBVersion: INDEXED_DB.CURRENT_VERSION,
         cEngine: "kontenmanager"
       },
       accounts: [
@@ -60,7 +60,7 @@ describe("ImportDatabase Logic Test", () => {
 
     // Validate structure
     expect(validBackup.sm).toBeDefined();
-    expect(validBackup.sm.cDBVersion).toBe(INDEXED_DB.VERSION);
+    expect(validBackup.sm.cDBVersion).toBe(INDEXED_DB.CURRENT_VERSION);
     expect(validBackup.accounts).toBeInstanceOf(Array);
     expect(validBackup.bookings).toBeInstanceOf(Array);
     expect(validBackup.bookingTypes).toBeInstanceOf(Array);
@@ -77,14 +77,14 @@ describe("ImportDatabase Logic Test", () => {
     };
 
     // Version check
-    expect(invalidBackup.sm.cDBVersion).toBeLessThan(INDEXED_DB.VERSION);
+    expect(invalidBackup.sm.cDBVersion).toBeLessThan(INDEXED_DB.CURRENT_VERSION);
   });
 
   it("should handle backup with missing optional fields", () => {
     const backupWithoutTransfers: Partial<BackupData> = {
       sm: {
-        cVersion: INDEXED_DB.SM_IMPORT_VERSION,
-        cDBVersion: INDEXED_DB.VERSION,
+        cVersion: INDEXED_DB.LEGACY_IMPORT_VERSION,
+        cDBVersion: INDEXED_DB.CURRENT_VERSION,
         cEngine: "kontenmanager"
       },
       accounts: [],

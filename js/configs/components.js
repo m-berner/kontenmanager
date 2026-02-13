@@ -37,7 +37,6 @@ export const COMPONENTS = {
         SHOW_DIVIDEND: "showDividend",
         UPDATE_QUOTE: "updateQuote",
         DELETE_ACCOUNT_CONFIRMATION: "deleteAccountConfirmation",
-        SETTING: "setting",
         OPEN_LINK: "openLink",
         PLACEHOLDER: {
             ACCOUNT_LOGO_URL: "z. B. https://www.ing.de"

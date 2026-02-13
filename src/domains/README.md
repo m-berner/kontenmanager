@@ -31,21 +31,6 @@ to guarantee predictable behavior across the app. Current modules:
     const daysToMs = 3 * DATE.MILLI_PER_DAY;
     ```
 
-- `storeMemory.ts` — `STORE_MEMORY`
-
-  - Default in-memory fields that do not come from persistence but are required for runtime calculations.
-    Currently focused on stock calculations. These values are merged into stock items when stores are
-    initialized to keep computed fields present and typed.
-  - Keys (excerpt): `mPortfolio`, `mInvest`, `mChange`, `mBuyValue`, `mEuroChange`, `mMin`, `mMax`,
-    `mValue`, `mDividendYielda`, `mDividendYeara`, `mDividendYieldb`, `mDividendYearb`,
-    `mRealDividend`, `mRealBuyValue`, `mDeleteable`.
-  - Example (see also `DomainLogic.initializeRecords`):
-    ```ts
-    import { STORE_MEMORY } from "@/domains/configs/storeMemory";
-    // Ensure runtime-only fields exist on every stock
-    const enriched = { ...stockFromDB, ...STORE_MEMORY.STOCK };
-    ```
-
 - `storage.ts` — `BROWSER_STORAGE`
   - Canonical keys and defaults for simple settings stored outside IndexedDB.
     These constants define both the storage key and a sane default value, keeping the domain layer
@@ -83,6 +68,22 @@ Encapsulates complex calculations and orchestration that don't belong in a singl
 - Financial aggregations (sums, taxes, fees).
 - FIFO (First-In-First-Out) portfolio calculations.
 - Multi-store initialization logic.
+
+
+- `STORE_MEMORY`
+
+  - Default in-memory fields that do not come from persistence but are required for runtime calculations.
+    Currently focused on stock calculations. These values are merged into stock items when stores are
+    initialized to keep computed fields present and typed.
+  - Keys (excerpt): `mPortfolio`, `mInvest`, `mChange`, `mBuyValue`, `mEuroChange`, `mMin`, `mMax`,
+    `mValue`, `mDividendYielda`, `mDividendYeara`, `mDividendYieldb`, `mDividendYearb`,
+    `mRealDividend`, `mRealBuyValue`, `mDeleteable`.
+  - Example (see also `DomainLogic.initializeRecords`):
+    ```ts
+    import { STORE_MEMORY } from "@/domains/configs/storeMemory";
+    // Ensure runtime-only fields exist on every stock
+    const enriched = { ...stockFromDB, ...STORE_MEMORY.STOCK };
+    ```
 
 ### `errors.ts` (`AppError`)
 

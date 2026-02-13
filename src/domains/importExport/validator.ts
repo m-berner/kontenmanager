@@ -32,16 +32,16 @@ export class ImportExportValidator {
       };
     }
 
-    if (backup.sm.cDBVersion < INDEXED_DB.SM_IMPORT_VERSION) {
+    if (backup.sm.cDBVersion < INDEXED_DB.LEGACY_IMPORT_VERSION) {
       return {
         isValid: false,
         version: backup.sm.cDBVersion,
-        error: `Version ${backup.sm.cDBVersion} is too old (minimum: ${INDEXED_DB.SM_IMPORT_VERSION})`
+        error: `Version ${backup.sm.cDBVersion} is too old (minimum: ${INDEXED_DB.LEGACY_IMPORT_VERSION})`
       };
     }
 
     // Check for required fields
-    const isLegacy = backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION;
+    const isLegacy = backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION;
 
     if (isLegacy) {
       if (!backup.stocks || !Array.isArray(backup.stocks)) {

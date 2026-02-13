@@ -9,8 +9,8 @@
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
 import { DomainUtils } from "@/domains/utils";
-import { ROUTES } from "@/configs/routes";
 import { DEFAULTS } from "@/configs/defaults";
+import { VIEW_CODES } from "@/configs/codes";
 
 const { t } = useI18n();
 
@@ -19,11 +19,11 @@ DomainUtils.log("VIEWS FooterBar: setup");
 
 <template>
   <v-bottom-navigation color="primary">
-    <v-btn color="white" :to="ROUTES.HELP">
+    <v-btn color="white" :to="`/${VIEW_CODES.HELP}`">
       <v-icon icon="$help" />
       <div>{{ t("views.footerBar.help") }}</div>
     </v-btn>
-    <v-btn color="white" :to="ROUTES.PRIVACY">
+    <v-btn color="white" :to="`/${VIEW_CODES.PRIVACY}`">
       <v-icon icon="$privacy" />
       <div>{{ t("views.footerBar.privacy") }}</div>
     </v-btn>

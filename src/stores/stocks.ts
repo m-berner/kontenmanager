@@ -13,7 +13,6 @@ import { useSettingsStore } from "@/stores/settings";
 import { fetchService } from "@/services/fetch";
 import { useRuntimeStore } from "@/stores/runtime";
 import { DomainUtils } from "@/domains/utils";
-import { STORES } from "@/configs/stores";
 import { DEFAULTS } from "@/configs/defaults";
 import { DATE } from "@/domains/configs/date";
 import { useStorage } from "@/composables/useStorage";
@@ -21,6 +20,7 @@ import { useBrowser } from "@/composables/useBrowser";
 import { useBookingsStore } from "@/stores/bookings";
 import { DomainLogic } from "@/domains/logic";
 import {CURRENCIES} from "@/domains/configs/currencies";
+import { STOCK_STORE_MEMORY } from "@/domains/logic";
 
 const {getUserLocale} = useBrowser();
 
@@ -113,7 +113,7 @@ export const useStocksStore = defineStore("stocks", function () {
     DomainUtils.log("STORES stocks: add");
     const completeStock = {
       ...stock,
-      ...STORES.STOCK_STORE_MEMORY
+      ...STOCK_STORE_MEMORY
     };
     if (prepend) {
       items.value = [completeStock, ...items.value];

@@ -17,9 +17,26 @@ import type {
   StockItem,
   StockStoreInterface
 } from "@/types";
-import { STORE_MEMORY } from "@/domains/configs/storeMemory";
 import { DATE } from "@/domains/configs/date";
 import { DomainUtils } from "@/domains/utils";
+
+export const STOCK_STORE_MEMORY = {
+  mPortfolio: 0,
+  mInvest: 0,
+  mChange: 0,
+  mBuyValue: 0,
+  mEuroChange: 0,
+  mMin: 0,
+  mValue: 0,
+  mMax: 0,
+  mDividendYielda: 0,
+  mDividendYeara: 0,
+  mDividendYieldb: 0,
+  mDividendYearb: 0,
+  mRealDividend: 0,
+  mRealBuyValue: 0,
+  mDeleteable: false
+} as const;
 
 let hideImportAlert = false;
 
@@ -245,7 +262,7 @@ export class DomainLogic {
     storesDB.accountsDB.forEach((a) => stores.accounts.add(a));
     storesDB.bookingTypesDB.forEach((bt) => stores.bookingTypes.add(bt));
     storesDB.stocksDB.forEach((s) =>
-      stores.stocks.add({ ...s, ...STORE_MEMORY.STOCK })
+      stores.stocks.add({ ...s, ...STOCK_STORE_MEMORY })
     );
     storesDB.bookingsDB.forEach((b) => stores.bookings.add(b));
 
@@ -275,7 +292,11 @@ export class DomainLogic {
 
     // Check for empty accounts and show alert if necessary
     if (stores.accounts.items.length === 0 && !hideImportAlert) {
-      DomainUtils.log("DOMAINS DomainLogic: initializeRecords", messages, "info");
+      DomainUtils.log(
+        "DOMAINS DomainLogic: initializeRecords",
+        messages,
+        "info"
+      );
       hideImportAlert = true;
     }
   }

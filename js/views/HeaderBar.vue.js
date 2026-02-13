@@ -7,7 +7,7 @@ import { useAlert } from "@/composables/useAlert";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import DialogPort from "@/components/DialogPort.vue";
-import { CODES } from "@/configs/codes";
+import { VIEW_CODES } from "@/configs/codes";
 const { t } = useI18n();
 const { getMessage, handleUserNotice, openOptionsPage } = useBrowser();
 const runtime = useRuntimeStore();
@@ -174,10 +174,10 @@ const dialogActions = {
     openLink: () => { },
     deleteStock: () => { },
     home: () => {
-        runtime.setCurrentView(CODES.VIEW_CODES.HOME);
+        runtime.setCurrentView(VIEW_CODES.HOME);
     },
     company: () => {
-        runtime.setCurrentView(CODES.VIEW_CODES.COMPANY);
+        runtime.setCurrentView(VIEW_CODES.COMPANY);
     },
     setting: async () => {
         await openOptionsPage();
@@ -443,7 +443,7 @@ let __VLS_51;
 vSpacer;
 const __VLS_52 = __VLS_asFunctionalComponent1(__VLS_51, new __VLS_51({}));
 const __VLS_53 = __VLS_52({}, ...__VLS_functionalComponentArgsRest(__VLS_52));
-if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
+if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY) {
     let __VLS_56;
     vTooltip;
     const __VLS_57 = __VLS_asFunctionalComponent1(__VLS_56, new __VLS_56({
@@ -481,7 +481,7 @@ if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_66;
         var __VLS_67;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_59;
@@ -490,7 +490,7 @@ let __VLS_70;
 vSpacer;
 const __VLS_71 = __VLS_asFunctionalComponent1(__VLS_70, new __VLS_70({}));
 const __VLS_72 = __VLS_71({}, ...__VLS_functionalComponentArgsRest(__VLS_71));
-if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
+if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY) {
     let __VLS_75;
     vTooltip;
     const __VLS_76 = __VLS_asFunctionalComponent1(__VLS_75, new __VLS_75({
@@ -528,12 +528,12 @@ if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_85;
         var __VLS_86;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_78;
 }
-if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
+if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY) {
     let __VLS_89;
     vTooltip;
     const __VLS_90 = __VLS_asFunctionalComponent1(__VLS_89, new __VLS_89({
@@ -571,7 +571,7 @@ if (__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY) {
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_99;
         var __VLS_100;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_92;
@@ -580,7 +580,7 @@ let __VLS_103;
 vSpacer;
 const __VLS_104 = __VLS_asFunctionalComponent1(__VLS_103, new __VLS_103({}));
 const __VLS_105 = __VLS_104({}, ...__VLS_functionalComponentArgsRest(__VLS_104));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_108;
     vTooltip;
     const __VLS_109 = __VLS_asFunctionalComponent1(__VLS_108, new __VLS_108({
@@ -618,12 +618,12 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_118;
         var __VLS_119;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_111;
 }
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_122;
     vTooltip;
     const __VLS_123 = __VLS_asFunctionalComponent1(__VLS_122, new __VLS_122({
@@ -661,12 +661,12 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_132;
         var __VLS_133;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_125;
 }
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_136;
     vTooltip;
     const __VLS_137 = __VLS_asFunctionalComponent1(__VLS_136, new __VLS_136({
@@ -704,7 +704,7 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_146;
         var __VLS_147;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_139;
@@ -713,7 +713,7 @@ let __VLS_150;
 vSpacer;
 const __VLS_151 = __VLS_asFunctionalComponent1(__VLS_150, new __VLS_150({}));
 const __VLS_152 = __VLS_151({}, ...__VLS_functionalComponentArgsRest(__VLS_151));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_155;
     vTooltip;
     const __VLS_156 = __VLS_asFunctionalComponent1(__VLS_155, new __VLS_155({
@@ -751,7 +751,7 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_165;
         var __VLS_166;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_158;
@@ -760,7 +760,7 @@ let __VLS_169;
 vSpacer;
 const __VLS_170 = __VLS_asFunctionalComponent1(__VLS_169, new __VLS_169({}));
 const __VLS_171 = __VLS_170({}, ...__VLS_functionalComponentArgsRest(__VLS_170));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_174;
     vTooltip;
     const __VLS_175 = __VLS_asFunctionalComponent1(__VLS_174, new __VLS_174({
@@ -798,12 +798,12 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_184;
         var __VLS_185;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_177;
 }
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_188;
     vTooltip;
     const __VLS_189 = __VLS_asFunctionalComponent1(__VLS_188, new __VLS_188({
@@ -841,12 +841,12 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_198;
         var __VLS_199;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_191;
 }
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_202;
     vTooltip;
     const __VLS_203 = __VLS_asFunctionalComponent1(__VLS_202, new __VLS_202({
@@ -884,7 +884,7 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_212;
         var __VLS_213;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_205;
@@ -893,7 +893,7 @@ let __VLS_216;
 vSpacer;
 const __VLS_217 = __VLS_asFunctionalComponent1(__VLS_216, new __VLS_216({}));
 const __VLS_218 = __VLS_217({}, ...__VLS_functionalComponentArgsRest(__VLS_217));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_221;
     vTooltip;
     const __VLS_222 = __VLS_asFunctionalComponent1(__VLS_221, new __VLS_221({
@@ -931,12 +931,12 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_231;
         var __VLS_232;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_224;
 }
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_235;
     vTooltip;
     const __VLS_236 = __VLS_asFunctionalComponent1(__VLS_235, new __VLS_235({
@@ -974,7 +974,7 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_245;
         var __VLS_246;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_238;
@@ -983,7 +983,7 @@ let __VLS_249;
 vSpacer;
 const __VLS_250 = __VLS_asFunctionalComponent1(__VLS_249, new __VLS_249({}));
 const __VLS_251 = __VLS_250({}, ...__VLS_functionalComponentArgsRest(__VLS_250));
-if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) {
+if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.VIEW_CODES.COMPANY)) {
     let __VLS_254;
     vTooltip;
     const __VLS_255 = __VLS_asFunctionalComponent1(__VLS_254, new __VLS_254({
@@ -1021,7 +1021,7 @@ if (!(__VLS_ctx.runtime.getCurrentView === __VLS_ctx.CODES.VIEW_CODES.COMPANY)) 
             { onClick: (__VLS_ctx.onIconClick) });
         var __VLS_264;
         var __VLS_265;
-        [onIconClick, t, runtime, CODES,];
+        [onIconClick, t, runtime, VIEW_CODES,];
     }
     [];
     var __VLS_257;

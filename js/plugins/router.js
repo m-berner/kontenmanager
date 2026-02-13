@@ -1,14 +1,13 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import { DomainUtils } from "@/domains/utils";
-import { ROUTES } from "@/configs/routes";
-import { CODES } from "@/configs/codes";
+import { VIEW_CODES } from "@/configs/codes";
 import { useRuntimeStore } from "@/stores/runtime";
 const routerInstance = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
-            path: ROUTES.HOME,
-            name: CODES.VIEW_CODES.HOME,
+            path: "/",
+            name: VIEW_CODES.HOME,
             components: {
                 default: () => import("@/views/HomeContent.vue"),
                 title: () => import("@/views/TitleBar.vue"),
@@ -17,8 +16,8 @@ const routerInstance = createRouter({
             }
         },
         {
-            path: ROUTES.COMPANY,
-            name: CODES.VIEW_CODES.COMPANY,
+            path: `/${VIEW_CODES.COMPANY}`,
+            name: VIEW_CODES.COMPANY,
             components: {
                 default: () => import("@/views/CompanyContent.vue"),
                 title: () => import("@/views/TitleBar.vue"),
@@ -28,8 +27,8 @@ const routerInstance = createRouter({
             }
         },
         {
-            path: ROUTES.PRIVACY,
-            name: CODES.VIEW_CODES.PRIVACY,
+            path: `/${VIEW_CODES.PRIVACY}`,
+            name: VIEW_CODES.PRIVACY,
             components: {
                 default: () => import("@/views/SheetContent.vue"),
                 title: () => import("@/views/TitleBar.vue"),
@@ -38,8 +37,8 @@ const routerInstance = createRouter({
             }
         },
         {
-            path: ROUTES.HELP,
-            name: CODES.VIEW_CODES.HELP,
+            path: `/${VIEW_CODES.HELP}`,
+            name: VIEW_CODES.HELP,
             components: {
                 default: () => import("@/views/HelpContent.vue"),
                 title: () => import("@/views/TitleBar.vue"),

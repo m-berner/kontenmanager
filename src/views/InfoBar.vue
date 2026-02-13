@@ -31,7 +31,7 @@ const materialValues = computed(() => {
   const result = new Map<string, { usd: number; local: number }>();
 
   for (const item of settings.materials) {
-    const code = STORES.MATERIALS.get(item) ?? "";
+    const code = STORES.MATERIALS[item] ?? "";
     const usdValue = infoMaterials.value.get(code) ?? 0;
     const localValue = usdValue / curUsd.value;
 
@@ -55,7 +55,7 @@ DomainUtils.log("VIEWS InfoBar: setup");
       </v-list-item>
 
       <v-list-item v-for="item in settings.indexes" :key="item">
-        <v-list-item-title>{{ STORES.INDEXES.get(item) }}</v-list-item-title>
+        <v-list-item-title>{{ STORES.INDEXES[item] }}</v-list-item-title>
         <v-list-item-subtitle>{{
           n(runtime.infoIndexes.get(item) ?? 0, "integer")
         }}</v-list-item-subtitle>

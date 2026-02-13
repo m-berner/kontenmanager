@@ -594,9 +594,9 @@ export type ValidationCode =
   (typeof VALIDATION_CODES)[keyof typeof VALIDATION_CODES];
 
 export type ViewTypeSelection =
-  | CODES.VIEW_CODES.HOME
-  | CODES.VIEW_CODES.COMPANY
-  | CODES.VIEW_CODES.SETTINGS;
+  | "home"
+  | "company"
+  | "settings";
 
 declare global {
   module "*.vue" {

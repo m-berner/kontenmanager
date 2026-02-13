@@ -22,7 +22,7 @@ export const DEFAULTS = {
     RATE_LIMIT_MS: 1500,
     DURATION: {
       INFO: 4000,
-      ERROR: null as number | null
+      ERROR: null
     }
   }
 } as const;

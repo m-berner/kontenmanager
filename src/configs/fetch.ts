@@ -6,59 +6,74 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export const FETCH = {
-  MAP: new Map<string, { [p: string]: string }>([
-    [
-      "goyax",
-      {
-        NAME: "Goyax",
-        HOME: "https://www.goyax.de/",
-        QUOTE: "https://www.goyax.de/aktien/"
-      }
-    ],
-    [
-      "fnet",
-      {
-        NAME: "Finanzen.Net",
-        HOME: "https://www.finanzen.net/aktienkurse/",
-        QUOTE: "https://www.finanzen.net/suchergebnis.asp?_search="
-      }
-    ],
-    [
-      "wstreet",
-      {
-        NAME: "Wallstreet-Online",
-        HOME: "https://www.wallstreet-online.de",
-        QUOTE:
-          "https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/"
-      }
-    ],
-    [
-      "acheck",
-      {
-        NAME: "Aktien Check",
-        HOME: "https://m.aktiencheck.de/",
-        QUOTE: "https://m.aktiencheck.de/quotes/suche/?search="
-      }
-    ],
-    [
-      "ard",
-      {
-        NAME: "ARD",
-        HOME: "https://www.tagesschau.de/wirtschaft/boersenkurse/",
-        QUOTE:
-          "https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff="
-      }
-    ],
-    [
-      "tgate",
-      {
-        NAME: "Tradegate",
-        HOME: "https://www.tradegate.de/",
-        QUOTE: "https://www.tradegate.de/orderbuch.php?isin="
-      }
-    ]
-  ]),
+export type Fetch = {
+  PROVIDERS: {
+    [key: string]: {
+      NAME: string;
+      HOME: string;
+      QUOTE: string;
+    };
+  };
+  FNET: {
+    INDEXES: string;
+    DATES: string;
+    MATERIALS: string;
+    ONLINE_TEST: string;
+    SEARCH: string;
+  };
+  TGATE: {
+    CHS_URL: string;
+    CHB_URL: string;
+    CHS: string[];
+    CHB: string[];
+  };
+  FX: {
+    NAME: string;
+    HOME: string;
+    QUOTE: string;
+  };
+  DEFAULT_TTL: number;
+  DEFAULT_VALUE: string;
+  DEFAULT_CURRENCY: string;
+  TARGET_PERIOD: string;
+  DEFAULT_CURRENCY_SYMBOL: string;
+};
+
+export const FETCH: Fetch = {
+  PROVIDERS: {
+    goyax: {
+      NAME: "Goyax",
+      HOME: "https://www.goyax.de/",
+      QUOTE: "https://www.goyax.de/aktien/"
+    },
+    fnet: {
+      NAME: "Finanzen.Net",
+      HOME: "https://www.finanzen.net/aktienkurse/",
+      QUOTE: "https://www.finanzen.net/suchergebnis.asp?_search="
+    },
+    wstreet: {
+      NAME: "Wallstreet-Online",
+      HOME: "https://www.wallstreet-online.de",
+      QUOTE:
+        "https://www.wallstreet-online.de/_rpc/json/search/auto/searchInst/"
+    },
+    acheck: {
+      NAME: "Aktien Check",
+      HOME: "https://m.aktiencheck.de/",
+      QUOTE: "https://m.aktiencheck.de/quotes/suche/?search="
+    },
+    ard: {
+      NAME: "ARD",
+      HOME: "https://www.tagesschau.de/wirtschaft/boersenkurse/",
+      QUOTE:
+        "https://www.tagesschau.de/wirtschaft/boersenkurse/suche/?suchbegriff="
+    },
+    tgate: {
+      NAME: "Tradegate",
+      HOME: "https://www.tradegate.de/",
+      QUOTE: "https://www.tradegate.de/orderbuch.php?isin="
+    }
+  },
   FNET: {
     INDEXES: "https://www.finanzen.net/indizes/",
     DATES: "https://www.finanzen.net/termine/",
@@ -114,8 +129,7 @@ export const FETCH = {
       "Y",
       "Z",
       "Ö"
-    ],
-    CHANGES: { SMALL: 34, BIG: 41 }
+    ]
   },
   FX: {
     NAME: "fx-rate",

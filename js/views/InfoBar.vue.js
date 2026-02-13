@@ -12,7 +12,7 @@ const settings = useSettingsStore();
 const materialValues = computed(() => {
     const result = new Map();
     for (const item of settings.materials) {
-        const code = STORES.MATERIALS.get(item) ?? "";
+        const code = STORES.MATERIALS[item] ?? "";
         const usdValue = infoMaterials.value.get(code) ?? 0;
         const localValue = usdValue / curUsd.value;
         result.set(item, { usd: usdValue, local: localValue });
@@ -100,7 +100,7 @@ for (const [item] of __VLS_vFor((__VLS_ctx.settings.indexes))) {
     const __VLS_38 = __VLS_asFunctionalComponent1(__VLS_37, new __VLS_37({}));
     const __VLS_39 = __VLS_38({}, ...__VLS_functionalComponentArgsRest(__VLS_38));
     const { default: __VLS_42 } = __VLS_40.slots;
-    (__VLS_ctx.STORES.INDEXES.get(item));
+    (__VLS_ctx.STORES.INDEXES[item]);
     [settings, STORES,];
     var __VLS_40;
     let __VLS_43;
