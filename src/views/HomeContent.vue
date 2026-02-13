@@ -40,10 +40,6 @@ const MENU_ITEMS = computed(() => createHomeMenuItems(t));
 
 const search = ref<string>("");
 
-// ============================================================================
-// Storage & Lifecycle
-// ============================================================================
-
 /**
  * Handles changes in browser storage and synchronizes them with the local store.
  * Updates theme skin, services, and various market/material indexes.
@@ -97,10 +93,6 @@ const onBeforeUnload = (): void => {
 };
 
 window.addEventListener("beforeunload", onBeforeUnload, { once: true });
-
-// ============================================================================
-// Keyboard Shortcuts
-// ============================================================================
 
 const { register, unregister } = useKeyboardShortcuts();
 

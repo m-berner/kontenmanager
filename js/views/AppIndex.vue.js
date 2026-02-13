@@ -1,7 +1,7 @@
 import { onBeforeMount, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { useAlert } from "@/composables/useAlert";
 import { DomainUtils } from "@/domains/utils";
 import AlertOverlay from "@/components/AlertOverlay.vue";
 import { initializeApp } from "@/services/app";
@@ -12,6 +12,7 @@ const { t } = useI18n();
 const settings = useSettingsStore();
 const { skin } = storeToRefs(settings);
 const theme = useTheme();
+const { handleUserError } = useAlert();
 const isInitialized = ref(false);
 onBeforeMount(async () => {
     DomainUtils.log("VIEWS AppIndex: onBeforeMount");
@@ -21,13 +22,13 @@ onBeforeMount(async () => {
             title: t("mixed.smImportOnly.title"),
             message: t("mixed.smImportOnly.message")
         }, controller.signal);
-        DomainUtils.log("VIEWS AppIndex: Initialization successful", status, "info");
+        DomainUtils.log("VIEWS AppIndex: onBeforeMount - Initialization successful", status, "info");
         controller.abort();
         theme.global.name.value = skin.value;
         isInitialized.value = true;
     }
-    catch {
-        throw new AppError(ERROR_CODES.VIEWS.APP_INDEX.A, ERROR_CATEGORY.VALIDATION, true);
+    catch (err) {
+        await handleUserError(t("views.appIndex.init"), err, {});
     }
 });
 DomainUtils.log("VIEWS AppIndex: setup", window.location.href, "info");

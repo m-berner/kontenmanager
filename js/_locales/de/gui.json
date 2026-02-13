@@ -209,6 +209,9 @@
         }
     },
     "views": {
+        "appIndex": {
+            "init": "Initialisierung fehlgeschlagen"
+        },
         "titleBar": {
             "title": "KontenManager",
             "bookingsSumLabel": "Kontostand",

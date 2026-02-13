@@ -104,7 +104,7 @@ export const useSettingsStore = defineStore("settings", function () {
    * @param {StorageDataType} storage - Object containing all persisted settings.
    */
   function init(storage: StorageDataType): void {
-    DomainUtils.log("STROES settings: init");
+    DomainUtils.log("STORES settings: init");
 
     skin.value = storage[BROWSER_STORAGE.SKIN.key] as string;
     bookingsPerPage.value = storage[

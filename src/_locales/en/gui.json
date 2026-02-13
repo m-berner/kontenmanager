@@ -168,6 +168,9 @@
     }
   },
   "views": {
+    "appIndex": {
+      "init": "Initialisation failed"
+    },
     "titleBar": {
       "title": "KontenManager",
       "bookingsSumLabel": "Account balance",

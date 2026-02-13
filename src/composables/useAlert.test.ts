@@ -42,7 +42,7 @@ describe("useAlert", () => {
     expect(id).toBe(101);
     expect(alertStoreMock.info).toHaveBeenCalledWith(
       "Title",
-      "Title\nError\nMessage",
+      "Error\nMessage",
       DEFAULTS.USER_INFO.DURATION.INFO
     );
   });
@@ -57,7 +57,7 @@ describe("useAlert", () => {
     expect(id).toBe(202);
     expect(alertStoreMock.error).toHaveBeenCalledWith(
       "Title",
-      "Title\nError\nOops",
+      "Error\nOops",
       DEFAULTS.USER_INFO.DURATION.ERROR
     );
   });
@@ -71,7 +71,7 @@ describe("useAlert", () => {
     expect(res).toBe(true);
     expect(alertStoreMock.confirm).toHaveBeenCalledWith(
       "Confirm?",
-      "Confirm?\nError\nAre you sure?",
+      "Error\nAre you sure?",
       undefined
     );
   });

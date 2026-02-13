@@ -17,22 +17,20 @@ import { AppError } from "@/domains/errors";
 const recentMessages = new Map<string, number>();
 
 /**
- *
- * @param title - Contextual title or source of the message.
  * @param error - The Error object.
  */
-const normalizedParams = (title: string, error: string | Error | unknown) => {
+const normalizedError = (error: string | Error | unknown) => {
   let messages: string[] = [];
   if (error instanceof AppError) {
-    messages = [`${title}: ${error._category}`, error.message];
+    messages = [`${error._category}`, error.message];
   } else if (error instanceof Error) {
-    messages = [title, error.name, error.message];
+    messages = [error.name, error.message];
   } else if (typeof error === "string") {
-    messages = [title, error];
+    messages = [error];
   } else if (Array.isArray(error)) {
-    messages = [title, ...error];
+    messages = [...error];
   } else {
-    messages = [title, "Unknown error"];
+    messages = ["Unknown error"];
   }
   return messages.join("\n");
 };
@@ -57,7 +55,7 @@ export function useAlert() {
     error: string | string[]| Error | unknown,
     options?: HandleUserAlertOptions
   ): Promise<number | void> {
-    const message = normalizedParams(title, error);
+    const message = normalizedError(error);
 
     // Rate limit identical messages per kind/title/message
     const rateLimitMs =
@@ -88,7 +86,7 @@ export function useAlert() {
     error: string | string[] | Error | unknown,
     options?: HandleUserAlertOptions
   ): Promise<boolean | void> {
-    const message = normalizedParams(title, error);
+    const message = normalizedError(error);
 
     // Rate limit identical messages per kind/title/message
     const rateLimitMs =
@@ -123,7 +121,7 @@ export function useAlert() {
     if (error instanceof Error) {
       errorStack = error.stack;
     }
-    const message = normalizedParams(title, error);
+    const message = normalizedError(error);
 
     // Rate limit identical messages per kind/title/message
     const rateLimitMs =

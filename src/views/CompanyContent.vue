@@ -37,6 +37,8 @@ const { setStocksPerPage } = settings;
 const runtime = useRuntimeStore();
 const { stocksPage, isDownloading, isStockLoading } = storeToRefs(runtime);
 
+const MINIMUM_PORTFOLIO_THRESHOLD = 0.1;
+
 const HEADERS = computed(() => createCompanyHeaders(t));
 const MENU_ITEMS = computed(() => createCompanyMenuItems(t));
 
@@ -61,7 +63,7 @@ const isValidDate = (dateString: string): boolean => {
  * @returns {boolean} True if portfolio contains at least 0.1 share
  */
 const hasPortfolio = (portfolio: number | undefined): boolean => {
-  return (portfolio ?? 0) >= VIEWS.MINIMUM_PORTFOLIO_THRESHOLD;
+  return (portfolio ?? 0) >= MINIMUM_PORTFOLIO_THRESHOLD;
 };
 
 /**

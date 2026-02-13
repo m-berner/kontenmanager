@@ -1,8 +1,8 @@
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
-const { actionOnClicked, removeTab, runtimeOnInstalled, tabsCreate, tabsQuery, tabsUpdate, windowsUpdate } = useBrowser();
 const { installStorageLocal } = useStorage();
+const { actionOnClicked, removeTab, runtimeOnInstalled, tabsCreate, tabsQuery, tabsUpdate, windowsUpdate } = useBrowser();
 async function onInstall() {
     DomainUtils.log("ENTRYPOINTS background: onInstall");
     try {
@@ -39,4 +39,4 @@ async function onClick() {
 }
 runtimeOnInstalled(onInstall);
 actionOnClicked(onClick);
-DomainUtils.log("ENTRYPOINTS background");
+DomainUtils.log("ENTRYPOINTS background", window.location.href, "info");

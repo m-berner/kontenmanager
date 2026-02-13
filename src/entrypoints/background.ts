@@ -10,6 +10,7 @@ import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 
+const { installStorageLocal } = useStorage();
 const {
   actionOnClicked,
   removeTab,
@@ -19,7 +20,6 @@ const {
   tabsUpdate,
   windowsUpdate
 } = useBrowser();
-const { installStorageLocal } = useStorage();
 
 /**
  * Handles extension installation/update lifecycle.
@@ -83,4 +83,4 @@ async function onClick(): Promise<void> {
 runtimeOnInstalled(onInstall);
 actionOnClicked(onClick);
 
-DomainUtils.log("ENTRYPOINTS background");
+DomainUtils.log("ENTRYPOINTS background", window.location.href, "info");

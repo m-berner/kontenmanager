@@ -3,28 +3,28 @@ import { DEFAULTS } from "@/configs/defaults";
 import { DomainUtils } from "@/domains/utils";
 import { AppError } from "@/domains/errors";
 const recentMessages = new Map();
-const normalizedParams = (title, error) => {
+const normalizedError = (error) => {
     let messages = [];
     if (error instanceof AppError) {
-        messages = [`${title}: ${error._category}`, error.message];
+        messages = [`${error._category}`, error.message];
     }
     else if (error instanceof Error) {
-        messages = [title, error.name, error.message];
+        messages = [error.name, error.message];
     }
     else if (typeof error === "string") {
-        messages = [title, error];
+        messages = [error];
     }
     else if (Array.isArray(error)) {
-        messages = [title, ...error];
+        messages = [...error];
     }
     else {
-        messages = [title, "Unknown error"];
+        messages = ["Unknown error"];
     }
     return messages.join("\n");
 };
 export function useAlert() {
     async function handleUserInfo(title, error, options) {
-        const message = normalizedParams(title, error);
+        const message = normalizedError(error);
         const rateLimitMs = options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
         const key = `info|${title}|${message}`;
         const now = Date.now();
@@ -38,7 +38,7 @@ export function useAlert() {
         return alerts.info(title, message, duration);
     }
     async function handleUserConfirm(title, error, options) {
-        const message = normalizedParams(title, error);
+        const message = normalizedError(error);
         const rateLimitMs = options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
         const key = `confirm|${title}|${message}`;
         const now = Date.now();
@@ -56,7 +56,7 @@ export function useAlert() {
         if (error instanceof Error) {
             errorStack = error.stack;
         }
-        const message = normalizedParams(title, error);
+        const message = normalizedError(error);
         const rateLimitMs = options?.rateLimitMs ?? DEFAULTS.USER_INFO.RATE_LIMIT_MS;
         const key = `error|${title}|${message}`;
         const now = Date.now();
