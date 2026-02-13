@@ -7,7 +7,7 @@
  */
 import { STORE_MEMORY } from "@/domains/configs/storeMemory";
 
-export const STORES = Object.freeze({
+export const STORES = {
   INDEXES: new Map<string, string>([
     ["dax", "DAX"],
     ["dow", "Dow Jones"],
@@ -44,4 +44,4 @@ export const STORES = Object.freeze({
   // Default in-memory (RAM-only) fields for stock records
   // Use the STOCK shape from STORE_MEMORY to flatten RAM fields into stock items
   STOCK_STORE_MEMORY: STORE_MEMORY.STOCK
-});
+} as const;

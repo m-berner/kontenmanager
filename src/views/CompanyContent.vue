@@ -22,8 +22,7 @@ import { DomainLogic } from "@/domains/logic";
 import DotMenu from "@/components/DotMenu.vue";
 import {
   createCompanyHeaders,
-  createCompanyMenuItems,
-  VIEWS
+  createCompanyMenuItems
 } from "@/configs/views";
 import { DATE } from "@/domains/configs/date";
 import { AppError } from "@/domains/errors";
@@ -33,10 +32,32 @@ const records = useRecordsStore();
 const { active: activeStockItems } = storeToRefs(records.stocks);
 const settings = useSettingsStore();
 const { stocksPerPage } = storeToRefs(settings);
-const { setStocksPerPage } = settings;
+const setStocksPerPage = (value: number) => settings.setStocksPerPage(value as any);
 const runtime = useRuntimeStore();
 const { stocksPage, isDownloading, isStockLoading } = storeToRefs(runtime);
 
+const ITEMS_PER_PAGE_OPTIONS = [
+  {
+    value: 5,
+    title: "5"
+  },
+  {
+    value: 7,
+    title: "7"
+  },
+  {
+    value: 9,
+    title: "9"
+  },
+  {
+    value: 11,
+    title: "11"
+  },
+  {
+    value: 13,
+    title: "13"
+  }
+];
 const MINIMUM_PORTFOLIO_THRESHOLD = 0.1;
 
 const HEADERS = computed(() => createCompanyHeaders(t));
@@ -224,7 +245,7 @@ DomainUtils.log("VIEWS CompanyContent: setup");
     :hover="true"
     :items="activeStockItems"
     :items-per-page="stocksPerPage"
-    :items-per-page-options="VIEWS.ITEMS_PER_PAGE_OPTIONS"
+    :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
     :items-per-page-text="
       t('views.companyContent.stocksTable.itemsPerPageText')
     "

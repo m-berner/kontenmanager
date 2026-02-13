@@ -6,7 +6,7 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export const CURRENCIES = Object.freeze({
+export const CURRENCIES = {
   EUR: "EUR",
   USD: "USD",
   CODE: new Map([
@@ -86,4 +86,4 @@ export const CURRENCIES = Object.freeze({
     ["za", "ZAR"],
     ["zw", "ZWD"]
   ])
-});
+} as const;

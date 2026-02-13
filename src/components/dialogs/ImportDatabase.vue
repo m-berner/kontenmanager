@@ -334,7 +334,7 @@ const restoreFromRollback = async (
     settings.activeAccountId = rollbackData.activeAccountId;
     await setStorage(
       BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
-      rollbackData.activeAccountId
+      rollbackData.activeAccountId as any
     );
 
     records.init(
@@ -470,7 +470,7 @@ const processBackupFile = async (): Promise<void> => {
     // Set the active account
     const activeId = backup.accounts?.[0].cID ?? DEFAULTS.SM_RESTORE_ACCOUNT_ID;
     activeAccountId.value = activeId;
-    await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeId);
+    await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeId as any);
     // Import based on the version
     if (backup.sm.cDBVersion === INDEXED_DB.SM_IMPORT_VERSION) {
       await importLegacyData(backup, activeId);
@@ -482,7 +482,7 @@ const processBackupFile = async (): Promise<void> => {
         getMessage("xx_db_no_restored")
       );
       activeAccountId.value = originalActiveId;
-      await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
+      await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId as any);
       return;
     }
     resetTeleport();
@@ -493,7 +493,7 @@ const processBackupFile = async (): Promise<void> => {
     resetFileInput();
   } catch {
     activeAccountId.value = originalActiveId;
-    await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
+    await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId as any);
     throw new AppError(
       ERROR_CODES.IMPORT_DATABASE.A,
       ERROR_CATEGORY.DATABASE,

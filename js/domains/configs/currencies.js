@@ -1,4 +1,4 @@
-export const CURRENCIES = Object.freeze({
+export const CURRENCIES = {
     EUR: "EUR",
     USD: "USD",
     CODE: new Map([
@@ -78,4 +78,4 @@ export const CURRENCIES = Object.freeze({
         ["za", "ZAR"],
         ["zw", "ZWD"]
     ])
-});
+};

@@ -309,7 +309,7 @@ export class AppService {
     const [exchangesBase, exchangesInfo, indexesInfo, materialsInfo] =
       await Promise.allSettled([
         this.fetch.fetchExchangesData([currencyUSD, currencyEUR]),
-        this.fetch.fetchExchangesData(this.settings.exchanges),
+        this.fetch.fetchExchangesData([...this.settings.exchanges]),
         this.fetch.fetchIndexData(),
         this.fetch.fetchMaterialData()
       ]);

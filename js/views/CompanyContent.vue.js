@@ -7,7 +7,7 @@ import { useRuntimeStore } from "@/stores/runtime";
 import { DomainUtils } from "@/domains/utils";
 import { DomainLogic } from "@/domains/logic";
 import DotMenu from "@/components/DotMenu.vue";
-import { createCompanyHeaders, createCompanyMenuItems, VIEWS } from "@/configs/views";
+import { createCompanyHeaders, createCompanyMenuItems } from "@/configs/views";
 import { DATE } from "@/domains/configs/date";
 import { AppError } from "@/domains/errors";
 const { d, n, t } = useI18n();
@@ -15,16 +15,39 @@ const records = useRecordsStore();
 const { active: activeStockItems } = storeToRefs(records.stocks);
 const settings = useSettingsStore();
 const { stocksPerPage } = storeToRefs(settings);
-const { setStocksPerPage } = settings;
+const setStocksPerPage = (value) => settings.setStocksPerPage(value);
 const runtime = useRuntimeStore();
 const { stocksPage, isDownloading, isStockLoading } = storeToRefs(runtime);
+const ITEMS_PER_PAGE_OPTIONS = [
+    {
+        value: 5,
+        title: "5"
+    },
+    {
+        value: 7,
+        title: "7"
+    },
+    {
+        value: 9,
+        title: "9"
+    },
+    {
+        value: 11,
+        title: "11"
+    },
+    {
+        value: 13,
+        title: "13"
+    }
+];
+const MINIMUM_PORTFOLIO_THRESHOLD = 0.1;
 const HEADERS = computed(() => createCompanyHeaders(t));
 const MENU_ITEMS = computed(() => createCompanyMenuItems(t));
 const isValidDate = (dateString) => {
     return new Date(dateString).getTime() > DATE.ZERO_TIME;
 };
 const hasPortfolio = (portfolio) => {
-    return (portfolio ?? 0) >= VIEWS.MINIMUM_PORTFOLIO_THRESHOLD;
+    return (portfolio ?? 0) >= MINIMUM_PORTFOLIO_THRESHOLD;
 };
 const calculatePercentChange = (euroChange, invest) => {
     if (!invest || invest === 0)
@@ -122,7 +145,7 @@ const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     hover: (true),
     items: (__VLS_ctx.activeStockItems),
     itemsPerPage: (__VLS_ctx.stocksPerPage),
-    itemsPerPageOptions: (__VLS_ctx.VIEWS.ITEMS_PER_PAGE_OPTIONS),
+    itemsPerPageOptions: (__VLS_ctx.ITEMS_PER_PAGE_OPTIONS),
     itemsPerPageText: (__VLS_ctx.t('views.companyContent.stocksTable.itemsPerPageText')),
     loading: (__VLS_ctx.isStockLoading),
     noDataText: (__VLS_ctx.t('views.companyContent.stocksTable.noDataText')),
@@ -137,7 +160,7 @@ const __VLS_2 = __VLS_1({
     hover: (true),
     items: (__VLS_ctx.activeStockItems),
     itemsPerPage: (__VLS_ctx.stocksPerPage),
-    itemsPerPageOptions: (__VLS_ctx.VIEWS.ITEMS_PER_PAGE_OPTIONS),
+    itemsPerPageOptions: (__VLS_ctx.ITEMS_PER_PAGE_OPTIONS),
     itemsPerPageText: (__VLS_ctx.t('views.companyContent.stocksTable.itemsPerPageText')),
     loading: (__VLS_ctx.isStockLoading),
     noDataText: (__VLS_ctx.t('views.companyContent.stocksTable.noDataText')),
@@ -210,7 +233,7 @@ const { default: __VLS_9 } = __VLS_3.slots;
                 ...(props),
             });
             (__VLS_ctx.n(item.mEuroChange ?? 0, "currency"));
-            [HEADERS, activeStockItems, stocksPerPage, VIEWS, t, t, isStockLoading, setStocksPerPage, onUpdatePage, MENU_ITEMS, isValidDate, isValidDate, d, d, hasPortfolio, hasPortfolio, n, n, calculatePercentChange, DomainUtils,];
+            [HEADERS, activeStockItems, stocksPerPage, ITEMS_PER_PAGE_OPTIONS, t, t, isStockLoading, setStocksPerPage, onUpdatePage, MENU_ITEMS, isValidDate, isValidDate, d, d, hasPortfolio, hasPortfolio, n, n, calculatePercentChange, DomainUtils,];
         }
         [];
         var __VLS_19;

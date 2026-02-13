@@ -1,4 +1,4 @@
-export const BROWSER_STORAGE = Object.freeze({
+export const BROWSER_STORAGE = {
     ACTIVE_ACCOUNT_ID: { key: "sActiveAccountId", value: -1 },
     SKIN: { key: "sSkin", value: "ocean" },
     BOOKINGS_PER_PAGE: { key: "sBookingsPerPage", value: 9 },
@@ -10,4 +10,4 @@ export const BROWSER_STORAGE = Object.freeze({
     INDEXES: { key: "sIndexes", value: ["dax", "dow"] },
     MARKETS: { key: "sMarkets", value: ["Frankfurt", "XETRA"] },
     MATERIALS: { key: "sMaterials", value: ["au", "brent"] }
-});
+};

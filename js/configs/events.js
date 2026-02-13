@@ -1,4 +1,4 @@
-export const EVENTS = Object.freeze({
+export const EVENTS = {
     ABORT: "abort",
     BEFOREUNLOAD: "beforeunload",
     CHANGE: "change",
@@ -13,4 +13,4 @@ export const EVENTS = Object.freeze({
     BLUR: "blur",
     SUCCESS: "success",
     UPGRADE: "upgradeneeded"
-});
+};

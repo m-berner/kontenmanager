@@ -31,21 +31,19 @@ export const useSettingsStore = defineStore("settings", function () {
   const { handleUserError } = useAlert();
 
   /** Currently active UI skin or theme name. */
-  const skin = ref<string>(BROWSER_STORAGE.SKIN.value);
+  const skin = ref(BROWSER_STORAGE.SKIN.value);
 
   /** Number of booking records displayed per table page. */
-  const bookingsPerPage = ref<number>(BROWSER_STORAGE.BOOKINGS_PER_PAGE.value);
+  const bookingsPerPage = ref(BROWSER_STORAGE.BOOKINGS_PER_PAGE.value);
 
   /** Number of stock records displayed per table page. */
-  const stocksPerPage = ref<number>(BROWSER_STORAGE.STOCKS_PER_PAGE.value);
+  const stocksPerPage = ref(BROWSER_STORAGE.STOCKS_PER_PAGE.value);
 
   /** Number of dividend records displayed per table page. */
-  const dividendsPerPage = ref<number>(
-    BROWSER_STORAGE.DIVIDENDS_PER_PAGE.value
-  );
+  const dividendsPerPage = ref(BROWSER_STORAGE.DIVIDENDS_PER_PAGE.value);
 
   /** Number of summary/total records displayed per table page. */
-  const sumsPerPage = ref<number>(BROWSER_STORAGE.SUMS_PER_PAGE.value);
+  const sumsPerPage = ref(BROWSER_STORAGE.SUMS_PER_PAGE.value);
 
   /**
    * Identifier of the currently selected bank account.
@@ -57,16 +55,16 @@ export const useSettingsStore = defineStore("settings", function () {
   const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
 
   /** List of enabled/visible material categories. */
-  const materials = ref<string[]>(BROWSER_STORAGE.MATERIALS.value);
+  const materials = ref(BROWSER_STORAGE.MATERIALS.value);
 
   /** List of enabled/visible stock market identifiers. */
-  const markets = ref<string[]>(BROWSER_STORAGE.MARKETS.value);
+  const markets = ref(BROWSER_STORAGE.MARKETS.value);
 
   /** List of enabled/visible financial indexes. */
-  const indexes = ref<string[]>(BROWSER_STORAGE.INDEXES.value);
+  const indexes = ref(BROWSER_STORAGE.INDEXES.value);
 
   /** List of enabled/visible stock exchange identifiers. */
-  const exchanges = ref<string[]>(BROWSER_STORAGE.EXCHANGES.value);
+  const exchanges = ref(BROWSER_STORAGE.EXCHANGES.value);
 
   /**
    * Internal helper to update a state property and its corresponding browser storage entry.
@@ -75,14 +73,6 @@ export const useSettingsStore = defineStore("settings", function () {
    * @param {string} key - The key used in browser storage.
    * @param {StorageValueType} value - The new value to apply.
    */
-  // async function updateSetting(
-  //   stateRef: Ref<StorageValueType>,
-  //   storageKey: string,
-  //   newValue: StorageValueType
-  // ): Promise<void> {
-  //   stateRef.value = newValue;
-  //   await setStorage(storageKey, newValue);
-  // }
   async function updateSetting(
     refVar: Ref<StorageValueType>,
     key: string,
@@ -106,33 +96,33 @@ export const useSettingsStore = defineStore("settings", function () {
   function init(storage: StorageDataType): void {
     DomainUtils.log("STORES settings: init");
 
-    skin.value = storage[BROWSER_STORAGE.SKIN.key] as string;
+    skin.value = storage[BROWSER_STORAGE.SKIN.key];
     bookingsPerPage.value = storage[
       BROWSER_STORAGE.BOOKINGS_PER_PAGE.key
-    ] as number;
+    ];
     stocksPerPage.value = storage[
       BROWSER_STORAGE.STOCKS_PER_PAGE.key
-    ] as number;
+    ];
     dividendsPerPage.value = storage[
       BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key
-    ] as number;
-    sumsPerPage.value = storage[BROWSER_STORAGE.SUMS_PER_PAGE.key] as number;
+    ];
+    sumsPerPage.value = storage[BROWSER_STORAGE.SUMS_PER_PAGE.key];
     activeAccountId.value = storage[
       BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key
-    ] as number;
-    service.value = storage[BROWSER_STORAGE.SERVICE.key] as string;
+    ];
+    service.value = storage[BROWSER_STORAGE.SERVICE.key];
 
-    materials.value = [...(storage[BROWSER_STORAGE.MATERIALS.key] as string[])];
-    markets.value = [...(storage[BROWSER_STORAGE.MARKETS.key] as string[])];
-    indexes.value = [...(storage[BROWSER_STORAGE.INDEXES.key] as string[])];
-    exchanges.value = [...(storage[BROWSER_STORAGE.EXCHANGES.key] as string[])];
+    materials.value = [...(storage[BROWSER_STORAGE.MATERIALS.key])];
+    markets.value = [...(storage[BROWSER_STORAGE.MARKETS.key])];
+    indexes.value = [...(storage[BROWSER_STORAGE.INDEXES.key])];
+    exchanges.value = [...(storage[BROWSER_STORAGE.EXCHANGES.key])];
   }
 
   /**
    * Updates the page limit for summary tables.
    * @param {number} v - New items per page limit.
    */
-  async function setSumsPerPage(v: number): Promise<void> {
+  async function setSumsPerPage(v: StorageValueType): Promise<void> {
     await updateSetting(sumsPerPage, BROWSER_STORAGE.SUMS_PER_PAGE.key, v);
   }
 
@@ -140,7 +130,7 @@ export const useSettingsStore = defineStore("settings", function () {
    * Updates the page limit for booking tables.
    * @param {number} v - New items per page limit.
    */
-  async function setBookingsPerPage(v: number): Promise<void> {
+  async function setBookingsPerPage(v: StorageValueType): Promise<void> {
     await updateSetting(
       bookingsPerPage,
       BROWSER_STORAGE.BOOKINGS_PER_PAGE.key,
@@ -152,7 +142,7 @@ export const useSettingsStore = defineStore("settings", function () {
    * Updates the page limit for stock tables.
    * @param {number} v - New items per page limit.
    */
-  async function setStocksPerPage(v: number): Promise<void> {
+  async function setStocksPerPage(v: StorageValueType): Promise<void> {
     await updateSetting(stocksPerPage, BROWSER_STORAGE.STOCKS_PER_PAGE.key, v);
   }
 
@@ -160,7 +150,7 @@ export const useSettingsStore = defineStore("settings", function () {
    * Updates the page limit for dividend tables.
    * @param {number} v - New items per page limit.
    */
-  async function setDividendsPerPage(v: number): Promise<void> {
+  async function setDividendsPerPage(v: StorageValueType): Promise<void> {
     await updateSetting(
       dividendsPerPage,
       BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key,
@@ -172,9 +162,9 @@ export const useSettingsStore = defineStore("settings", function () {
    * Switches the currently active account.
    * @param {number} id - The ID of the account to activate.
    */
-  async function setActiveAccountId(id: number): Promise<void> {
+  async function setActiveAccountId(id: StorageValueType): Promise<void> {
     await updateSetting(
-      activeAccountId,
+      activeAccountId as Ref<StorageValueType>,
       BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
       id
     );

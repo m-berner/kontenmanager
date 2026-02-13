@@ -1,4 +1,4 @@
-export const FETCH = Object.freeze({
+export const FETCH = {
     MAP: new Map([
         [
             "goyax",
@@ -117,4 +117,4 @@ export const FETCH = Object.freeze({
     DEFAULT_CURRENCY: "EUR",
     TARGET_PERIOD: "1 Jahr",
     DEFAULT_CURRENCY_SYMBOL: "€"
-});
+};

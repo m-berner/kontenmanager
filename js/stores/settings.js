@@ -38,10 +38,10 @@ export const useSettingsStore = defineStore("settings", function () {
         sumsPerPage.value = storage[BROWSER_STORAGE.SUMS_PER_PAGE.key];
         activeAccountId.value = storage[BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key];
         service.value = storage[BROWSER_STORAGE.SERVICE.key];
-        materials.value = [...storage[BROWSER_STORAGE.MATERIALS.key]];
-        markets.value = [...storage[BROWSER_STORAGE.MARKETS.key]];
-        indexes.value = [...storage[BROWSER_STORAGE.INDEXES.key]];
-        exchanges.value = [...storage[BROWSER_STORAGE.EXCHANGES.key]];
+        materials.value = [...(storage[BROWSER_STORAGE.MATERIALS.key])];
+        markets.value = [...(storage[BROWSER_STORAGE.MARKETS.key])];
+        indexes.value = [...(storage[BROWSER_STORAGE.INDEXES.key])];
+        exchanges.value = [...(storage[BROWSER_STORAGE.EXCHANGES.key])];
     }
     async function setSumsPerPage(v) {
         await updateSetting(sumsPerPage, BROWSER_STORAGE.SUMS_PER_PAGE.key, v);

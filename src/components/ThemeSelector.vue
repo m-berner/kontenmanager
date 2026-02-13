@@ -32,7 +32,7 @@ const skin = ref<string>("");
 const setSkin = async (): Promise<void> => {
   DomainUtils.log("COMPONENTS ThemeSelector: setSkin");
   try {
-    await setStorage(BROWSER_STORAGE.SKIN.key, skin.value);
+    await setStorage(BROWSER_STORAGE.SKIN.key, skin.value as any);
   } catch (err) {
     await handleUserError("Components ThemeSelector", err, {});
   }

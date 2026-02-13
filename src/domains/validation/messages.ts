@@ -15,7 +15,7 @@
 export const createSwiftMessages = (
   t: (_key: string) => string
 ): readonly string[] =>
-  Object.freeze([
+  [
     t("validators.swiftRules.required"),
     t("validators.swiftRules.length"),
     t("validators.swiftRules.format"),
@@ -24,7 +24,7 @@ export const createSwiftMessages = (
     t("validators.swiftRules.locationCode"),
     t("validators.swiftRules.branchCode"),
     t("validators.swiftRules.test")
-  ]);
+  ] as const;
 
 /**
  * Factory function to create iban rules.
@@ -35,10 +35,10 @@ export const createSwiftMessages = (
 export const createIbanMessages = (
   t: (_key: string) => string
 ): readonly string[] =>
-  Object.freeze([
+  [
     t("validators.ibanRules.required"),
     t("validators.ibanRules.length"),
     t("validators.ibanRules.format"),
     t("validators.ibanRules.checksum"),
     t("validators.ibanRules.duplicate")
-  ]);
+  ] as const;

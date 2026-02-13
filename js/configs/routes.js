@@ -1,6 +1,6 @@
-export const ROUTES = Object.freeze({
+export const ROUTES = {
     HOME: "/",
     HELP: "/help",
     PRIVACY: "/privacy",
     COMPANY: "/company"
-});
+};

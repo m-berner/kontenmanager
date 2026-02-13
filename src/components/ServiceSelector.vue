@@ -22,7 +22,7 @@ const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
 const setService = async (): Promise<void> => {
   DomainUtils.log("COMPONENTS ServiceSelector: setService");
   try {
-    await setStorage(BROWSER_STORAGE.SERVICE.key, service.value);
+    await setStorage(BROWSER_STORAGE.SERVICE.key, service.value as any);
   } catch (err) {
     await handleUserError("Components ServiceSelector", err, {});
   }

@@ -14,14 +14,45 @@ import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
 import { DomainUtils } from "@/domains/utils";
-import { createDividendHeaders, VIEWS } from "@/configs/views";
+import { createDividendHeaders } from "@/configs/views";
 
 const { d, n, t } = useI18n();
 const settings = useSettingsStore();
 const { dividendsPerPage } = storeToRefs(settings);
-const { setDividendsPerPage } = settings;
+const setDividendsPerPage = (value: number) => settings.setDividendsPerPage(value as any);
 const { activeId } = useRuntimeStore();
 const records = useRecordsStore();
+
+const ITEMS_PER_PAGE_OPTIONS = [
+  {
+    value: 5,
+    title: "5"
+  },
+  {
+    value: 6,
+    title: "6"
+  },
+  {
+    value: 7,
+    title: "7"
+  },
+  {
+    value: 8,
+    title: "8"
+  },
+  {
+    value: 9,
+    title: "9"
+  },
+  {
+    value: 10,
+    title: "10"
+  },
+  {
+    value: 11,
+    title: "11"
+  }
+];
 
 const HEADERS = computed(() => createDividendHeaders(t));
 
@@ -40,7 +71,7 @@ DomainUtils.log("COMPONENTS DIALOGS ShowDividend: setup");
           :hover="false"
           :items="records.bookings.dividendsByStockId(activeId)"
           :items-per-page="dividendsPerPage"
-          :items-per-page-options="VIEWS.ITEMS_PER_PAGE_OPTIONS"
+          :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
           :items-per-page-text="
             t('components.dialogs.showDividend.itemsPerPageText')
           "

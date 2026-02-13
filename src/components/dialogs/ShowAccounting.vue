@@ -14,16 +14,46 @@ import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
 //import { useAlert } from "@/composables/useAlert";
 import type { AccountEntry } from "@/types";
-import { createAccountingHeaders, VIEWS } from "@/configs/views";
+import { createAccountingHeaders } from "@/configs/views";
 import { COMPONENTS } from "@/configs/components";
 import { DomainUtils } from "@/domains/utils";
 
 const { n, t } = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
-//const { handleUserInfo } = useAlert();
 const { sumsPerPage } = storeToRefs(settings);
-const { setSumsPerPage } = settings;
+const setSumsPerPage = (value: number) => settings.setSumsPerPage(value as any);
+
+const ITEMS_PER_PAGE_OPTIONS = [
+  {
+    value: 5,
+    title: "5"
+  },
+  {
+    value: 6,
+    title: "6"
+  },
+  {
+    value: 7,
+    title: "7"
+  },
+  {
+    value: 8,
+    title: "8"
+  },
+  {
+    value: 9,
+    title: "9"
+  },
+  {
+    value: 10,
+    title: "10"
+  },
+  {
+    value: 11,
+    title: "11"
+  }
+];
 
 const HEADERS = computed(() => createAccountingHeaders(t));
 
@@ -136,7 +166,7 @@ DomainUtils.log("COMPONENTS DIALOGS ShowAccounting: setup");
           :hover="false"
           :items="accountEntries"
           :items-per-page="sumsPerPage"
-          :items-per-page-options="VIEWS.ITEMS_PER_PAGE_OPTIONS"
+          :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
           :items-per-page-text="
             t('components.dialogs.showAccounting.itemsPerPageText')
           "

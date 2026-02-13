@@ -6,7 +6,7 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export const STORE_MEMORY = Object.freeze({
+export const STORE_MEMORY = {
   STOCK: {
     mPortfolio: 0,
     mInvest: 0,
@@ -24,4 +24,4 @@ export const STORE_MEMORY = Object.freeze({
     mRealBuyValue: 0,
     mDeleteable: false
   }
-});
+} as const;

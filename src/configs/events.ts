@@ -6,7 +6,7 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export const EVENTS = Object.freeze({
+export const EVENTS = {
   ABORT: "abort",
   BEFOREUNLOAD: "beforeunload",
   CHANGE: "change",
@@ -21,4 +21,4 @@ export const EVENTS = Object.freeze({
   BLUR: "blur",
   SUCCESS: "success",
   UPGRADE: "upgradeneeded"
-});
+} as const;

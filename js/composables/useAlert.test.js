@@ -22,19 +22,19 @@ describe("useAlert", () => {
         const { handleUserInfo } = useAlert();
         const id = await handleUserInfo("Title", new Error("Message"), { duration: DEFAULTS.USER_INFO.DURATION.INFO });
         expect(id).toBe(101);
-        expect(alertStoreMock.info).toHaveBeenCalledWith("Title", "Title\nError\nMessage", DEFAULTS.USER_INFO.DURATION.INFO);
+        expect(alertStoreMock.info).toHaveBeenCalledWith("Title", "Error\nMessage", DEFAULTS.USER_INFO.DURATION.INFO);
     });
     it("shows error alert with default null duration and returns alert id", async () => {
         const { handleUserError } = useAlert();
         const id = await handleUserError("Title", new Error("Oops"), {});
         expect(id).toBe(202);
-        expect(alertStoreMock.error).toHaveBeenCalledWith("Title", "Title\nError\nOops", DEFAULTS.USER_INFO.DURATION.ERROR);
+        expect(alertStoreMock.error).toHaveBeenCalledWith("Title", "Error\nOops", DEFAULTS.USER_INFO.DURATION.ERROR);
     });
     it("shows confirm dialog and returns boolean", async () => {
         const { handleUserConfirm } = useAlert();
         const res = await handleUserConfirm("Confirm?", new Error("Are you sure?"));
         expect(res).toBe(true);
-        expect(alertStoreMock.confirm).toHaveBeenCalledWith("Confirm?", "Confirm?\nError\nAre you sure?", undefined);
+        expect(alertStoreMock.confirm).toHaveBeenCalledWith("Confirm?", "Error\nAre you sure?", undefined);
     });
     it("sends notice via useBrowser", async () => {
         const { handleUserNotice } = useBrowser();

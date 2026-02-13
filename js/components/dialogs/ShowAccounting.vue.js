@@ -3,14 +3,44 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
-import { createAccountingHeaders, VIEWS } from "@/configs/views";
+import { createAccountingHeaders } from "@/configs/views";
 import { COMPONENTS } from "@/configs/components";
 import { DomainUtils } from "@/domains/utils";
 const { n, t } = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
 const { sumsPerPage } = storeToRefs(settings);
-const { setSumsPerPage } = settings;
+const setSumsPerPage = (value) => settings.setSumsPerPage(value);
+const ITEMS_PER_PAGE_OPTIONS = [
+    {
+        value: 5,
+        title: "5"
+    },
+    {
+        value: 6,
+        title: "6"
+    },
+    {
+        value: 7,
+        title: "7"
+    },
+    {
+        value: 8,
+        title: "8"
+    },
+    {
+        value: 9,
+        title: "9"
+    },
+    {
+        value: 10,
+        title: "10"
+    },
+    {
+        value: 11,
+        title: "11"
+    }
+];
 const HEADERS = computed(() => createAccountingHeaders(t));
 const selected = ref(COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID);
 const yearEntries = computed(() => {
@@ -154,7 +184,7 @@ const __VLS_27 = __VLS_asFunctionalComponent1(__VLS_26, new __VLS_26({
     hover: (false),
     items: (__VLS_ctx.accountEntries),
     itemsPerPage: (__VLS_ctx.sumsPerPage),
-    itemsPerPageOptions: (__VLS_ctx.VIEWS.ITEMS_PER_PAGE_OPTIONS),
+    itemsPerPageOptions: (__VLS_ctx.ITEMS_PER_PAGE_OPTIONS),
     itemsPerPageText: (__VLS_ctx.t('components.dialogs.showAccounting.itemsPerPageText')),
     noDataText: (__VLS_ctx.t('components.dialogs.showAccounting.noDataText')),
     density: "compact",
@@ -167,7 +197,7 @@ const __VLS_28 = __VLS_27({
     hover: (false),
     items: (__VLS_ctx.accountEntries),
     itemsPerPage: (__VLS_ctx.sumsPerPage),
-    itemsPerPageOptions: (__VLS_ctx.VIEWS.ITEMS_PER_PAGE_OPTIONS),
+    itemsPerPageOptions: (__VLS_ctx.ITEMS_PER_PAGE_OPTIONS),
     itemsPerPageText: (__VLS_ctx.t('components.dialogs.showAccounting.itemsPerPageText')),
     noDataText: (__VLS_ctx.t('components.dialogs.showAccounting.noDataText')),
     density: "compact",
@@ -197,7 +227,7 @@ const { default: __VLS_33 } = __VLS_29.slots;
         ...{ class: (item.sumClass) },
     });
     (__VLS_ctx.n(item.sum, "currency"));
-    [selected, yearEntries, t, t, t, HEADERS, accountEntries, sumsPerPage, VIEWS, setSumsPerPage, n,];
+    [selected, yearEntries, t, t, t, HEADERS, accountEntries, sumsPerPage, ITEMS_PER_PAGE_OPTIONS, setSumsPerPage, n,];
 }
 [];
 var __VLS_29;

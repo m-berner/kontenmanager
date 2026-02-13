@@ -103,12 +103,12 @@ export class DatabaseService extends IndexedDbBase {
   ): Promise<void> {
     stores.forEach((store) => {
       if (
-        ![
+        !([
           INDEXED_DB.STORE.ACCOUNTS.NAME,
           INDEXED_DB.STORE.BOOKINGS.NAME,
           INDEXED_DB.STORE.STOCKS.NAME,
           INDEXED_DB.STORE.BOOKING_TYPES.NAME
-        ].includes(store.storeName)
+        ] as string[]).includes(store.storeName)
       ) {
         throw new AppError(
           ERROR_CODES.SERVICES.DATABASE.D,

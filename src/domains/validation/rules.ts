@@ -58,7 +58,7 @@ export class ValidationRules {
     }
 
     const countryCode = cleaned.substring(0, 2);
-    if (!VALID_COUNTRY_CODES.has(countryCode)) {
+    if (!VALID_COUNTRY_CODES.has(countryCode as any)) {
       return { isValid: false, error: VALIDATION_CODES.INVALID_COUNTRY };
     }
 
@@ -91,7 +91,7 @@ export class ValidationRules {
       return { isValid: false, error: VALIDATION_CODES.INVALID_BANK };
 
     const countryCode = cleaned.substring(4, 6);
-    if (!VALID_COUNTRY_CODES.has(countryCode)) {
+    if (!VALID_COUNTRY_CODES.has(countryCode as any)) {
       // Some BICs might use codes not in our standard list or specialized codes
       // For now, we only log it if we want to be strict, but let's allow it if it passes regex
     }

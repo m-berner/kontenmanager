@@ -67,7 +67,7 @@ const setChecked = async (): Promise<void> => {
   error.value = null;
 
   try {
-    await setStorage(config.value.storageKey, [...checked.value]);
+    await setStorage(config.value.storageKey, [...checked.value] as any);
   } catch (err) {
     await handleUserError("Components CheckboxGrid", err, {});
   } finally {
@@ -82,7 +82,7 @@ onBeforeMount(async () => {
 
   try {
     const storage = await getStorage([config.value.storageKey]);
-    checked.value = (storage[config.value.storageKey] as string[]) || [];
+    checked.value = (storage[config.value.storageKey] as any as string[]) || [];
   } catch (err) {
     await handleUserError("Components CheckboxGrid", err, {});
   } finally {

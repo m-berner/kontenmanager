@@ -60,35 +60,35 @@ describe("Settings Store", () => {
   it("setters should update state and persist via setStorage", async () => {
     const store = useSettingsStore();
 
-    await store.setBookingsPerPage(12);
+    await store.setBookingsPerPage(12 as any);
     expect(store.bookingsPerPage).toBe(12);
     expect(mockSetStorage).toHaveBeenCalledWith(
       BROWSER_STORAGE.BOOKINGS_PER_PAGE.key,
       12
     );
 
-    await store.setStocksPerPage(18);
+    await store.setStocksPerPage(18 as any);
     expect(store.stocksPerPage).toBe(18);
     expect(mockSetStorage).toHaveBeenCalledWith(
       BROWSER_STORAGE.STOCKS_PER_PAGE.key,
       18
     );
 
-    await store.setDividendsPerPage(22);
+    await store.setDividendsPerPage(22 as any);
     expect(store.dividendsPerPage).toBe(22);
     expect(mockSetStorage).toHaveBeenCalledWith(
       BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key,
       22
     );
 
-    await store.setSumsPerPage(7);
+    await store.setSumsPerPage(7 as any);
     expect(store.sumsPerPage).toBe(7);
     expect(mockSetStorage).toHaveBeenCalledWith(
       BROWSER_STORAGE.SUMS_PER_PAGE.key,
       7
     );
 
-    await store.setActiveAccountId(5);
+    await store.setActiveAccountId(5 as any);
     expect(store.activeAccountId).toBe(5);
     expect(mockSetStorage).toHaveBeenCalledWith(
       BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,

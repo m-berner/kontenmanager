@@ -23,7 +23,7 @@ import { useStorage } from "@/composables/useStorage";
 import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts";
 import { databaseService } from "@/services/database";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
-import { createHomeHeaders, createHomeMenuItems, VIEWS } from "@/configs/views";
+import { createHomeHeaders, createHomeMenuItems } from "@/configs/views";
 
 const { d, n, t } = useI18n();
 const { addStorageChangedListener, clearStorage, installStorageLocal } =
@@ -32,8 +32,31 @@ const records = useRecordsStore();
 const { items: bookingItems } = storeToRefs(records.bookings);
 const settings = useSettingsStore();
 const { bookingsPerPage, skin } = storeToRefs(settings);
-const { setBookingsPerPage } = settings;
+const setBookingsPerPage = (value: number) => settings.setBookingsPerPage(value as any);
 const theme = useTheme();
+
+const ITEMS_PER_PAGE_OPTIONS = [
+  {
+    value: 5,
+    title: "5"
+  },
+  {
+    value: 7,
+    title: "7"
+  },
+  {
+    value: 9,
+    title: "9"
+  },
+  {
+    value: 11,
+    title: "11"
+  },
+  {
+    value: 13,
+    title: "13"
+  }
+];
 
 const HEADERS = computed(() => createHomeHeaders(t));
 const MENU_ITEMS = computed(() => createHomeMenuItems(t));
@@ -53,7 +76,7 @@ const onChangeHandler = (
   const changesKey = Object.keys(changes);
   const { service, indexes, markets, materials, exchanges } =
     storeToRefs(settings);
-  const sync = {
+  const sync: Record<string, () => void> = {
     [BROWSER_STORAGE.SKIN.key]: () => {
       if (theme?.global?.name) {
         theme.global.name.value = changes[BROWSER_STORAGE.SKIN.key].newValue;
@@ -133,7 +156,7 @@ DomainUtils.log("VIEWS HomeContent: setup");
     :hover="true"
     :items="bookingItems"
     :items-per-page="bookingsPerPage"
-    :items-per-page-options="VIEWS.ITEMS_PER_PAGE_OPTIONS"
+    :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
     :items-per-page-text="t('views.homeContent.bookingsTable.itemsPerPageText')"
     :no-data-text="t('views.homeContent.bookingsTable.noDataText')"
     :search="search"

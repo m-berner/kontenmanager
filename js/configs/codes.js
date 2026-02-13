@@ -1,4 +1,4 @@
-export const CODES = Object.freeze({
+export const CODES = {
     VIEW_CODES: {
         HOME: "home",
         COMPANY: "company",
@@ -6,4 +6,4 @@ export const CODES = Object.freeze({
         HELP: "help",
         PRIVACY: "privacy"
     }
-});
+};

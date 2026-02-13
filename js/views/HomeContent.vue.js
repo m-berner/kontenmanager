@@ -10,15 +10,37 @@ import { useStorage } from "@/composables/useStorage";
 import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts";
 import { databaseService } from "@/services/database";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
-import { createHomeHeaders, createHomeMenuItems, VIEWS } from "@/configs/views";
+import { createHomeHeaders, createHomeMenuItems } from "@/configs/views";
 const { d, n, t } = useI18n();
 const { addStorageChangedListener, clearStorage, installStorageLocal } = useStorage();
 const records = useRecordsStore();
 const { items: bookingItems } = storeToRefs(records.bookings);
 const settings = useSettingsStore();
 const { bookingsPerPage, skin } = storeToRefs(settings);
-const { setBookingsPerPage } = settings;
+const setBookingsPerPage = (value) => settings.setBookingsPerPage(value);
 const theme = useTheme();
+const ITEMS_PER_PAGE_OPTIONS = [
+    {
+        value: 5,
+        title: "5"
+    },
+    {
+        value: 7,
+        title: "7"
+    },
+    {
+        value: 9,
+        title: "9"
+    },
+    {
+        value: 11,
+        title: "11"
+    },
+    {
+        value: 13,
+        title: "13"
+    }
+];
 const HEADERS = computed(() => createHomeHeaders(t));
 const MENU_ITEMS = computed(() => createHomeMenuItems(t));
 const search = ref("");
@@ -104,7 +126,7 @@ const __VLS_6 = __VLS_asFunctionalComponent1(__VLS_5, new __VLS_5({
     hover: (true),
     items: (__VLS_ctx.bookingItems),
     itemsPerPage: (__VLS_ctx.bookingsPerPage),
-    itemsPerPageOptions: (__VLS_ctx.VIEWS.ITEMS_PER_PAGE_OPTIONS),
+    itemsPerPageOptions: (__VLS_ctx.ITEMS_PER_PAGE_OPTIONS),
     itemsPerPageText: (__VLS_ctx.t('views.homeContent.bookingsTable.itemsPerPageText')),
     noDataText: (__VLS_ctx.t('views.homeContent.bookingsTable.noDataText')),
     search: (__VLS_ctx.search),
@@ -118,7 +140,7 @@ const __VLS_7 = __VLS_6({
     hover: (true),
     items: (__VLS_ctx.bookingItems),
     itemsPerPage: (__VLS_ctx.bookingsPerPage),
-    itemsPerPageOptions: (__VLS_ctx.VIEWS.ITEMS_PER_PAGE_OPTIONS),
+    itemsPerPageOptions: (__VLS_ctx.ITEMS_PER_PAGE_OPTIONS),
     itemsPerPageText: (__VLS_ctx.t('views.homeContent.bookingsTable.itemsPerPageText')),
     noDataText: (__VLS_ctx.t('views.homeContent.bookingsTable.noDataText')),
     search: (__VLS_ctx.search),
@@ -166,7 +188,7 @@ const { default: __VLS_12 } = __VLS_8.slots;
     });
     ;
     (item.cAccountNumberID);
-    [search, search, t, t, t, HEADERS, bookingItems, bookingsPerPage, VIEWS, setBookingsPerPage, MENU_ITEMS, d, DomainUtils, n, n, records,];
+    [search, search, t, t, t, HEADERS, bookingItems, bookingsPerPage, ITEMS_PER_PAGE_OPTIONS, setBookingsPerPage, MENU_ITEMS, d, DomainUtils, n, n, records,];
 }
 [];
 var __VLS_8;

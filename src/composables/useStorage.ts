@@ -6,7 +6,7 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-import type { StorageDataType } from "@/types";
+import type { StorageDataType, StorageValueType } from "@/types";
 import {
   AppError,
   ERROR_CATEGORY,
@@ -44,7 +44,7 @@ export function useStorage() {
    */
   async function setStorage(
     key: string,
-    value: string | number | boolean | string[]
+    value: StorageValueType //string | number | boolean | string[]
   ): Promise<void> {
     try {
       await browser.storage.local.set({ [key]: value });
@@ -66,7 +66,7 @@ export function useStorage() {
     keys: string[] | null = null
   ): Promise<StorageDataType> {
     try {
-      return await browser.storage.local.get(keys);
+      return await browser.storage.local.get(keys) as StorageDataType;
     } catch {
       throw new AppError(
         "xx_get_local_storage",
@@ -107,7 +107,7 @@ export function useStorage() {
   async function installStorageLocal(): Promise<void> {
     try {
       const storageLocal = await browser.storage.local.get();
-      const updates: Record<string, string | number | boolean | string[]> = {};
+      const updates: Record<string, StorageValueType> = {};
 
       // Collect all missing keys
       for (const value of Object.values(BROWSER_STORAGE)) {

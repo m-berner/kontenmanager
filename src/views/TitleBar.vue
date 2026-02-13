@@ -70,7 +70,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
   try {
     await setStorage(
       BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
-      activeAccountId.value
+      activeAccountId.value as any
     );
     const storesDB = await databaseService.getAccountRecords(
       activeAccountId.value

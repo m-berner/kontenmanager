@@ -1,4 +1,4 @@
-export const INDEXED_DB = Object.freeze({
+export const INDEXED_DB = {
     NAME: "kontenmanager.db",
     INVALID_ID: -1,
     STORE: {
@@ -70,4 +70,4 @@ export const INDEXED_DB = Object.freeze({
     VERSION: 26,
     MAX_FILE_SIZE: 64 * 1024 * 1024,
     CHUNK_SIZE: 100
-});
+};

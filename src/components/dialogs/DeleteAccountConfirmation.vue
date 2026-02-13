@@ -36,7 +36,7 @@ const switchToNextAccount = async (): Promise<void> => {
   try {
     if (accountItems.value.length === 0) {
       activeAccountId.value = -1;
-      await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, -1);
+      await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, -1 as any);
       return;
     }
 
@@ -44,7 +44,7 @@ const switchToNextAccount = async (): Promise<void> => {
     activeAccountId.value = accountItems.value[0].cID; //newActiveId!;
     await setStorage(
       BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
-      activeAccountId.value
+      activeAccountId.value as any
     );
   } catch (err) {
     await handleUserError("DeleteAccountConfirmation", err, {});

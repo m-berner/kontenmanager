@@ -1,4 +1,4 @@
-export const COMPONENTS = Object.freeze({
+export const COMPONENTS = {
     TITLE_BAR: {
         LOGO: "../assets/icon64.png"
     },
@@ -43,4 +43,4 @@ export const COMPONENTS = Object.freeze({
             ACCOUNT_LOGO_URL: "z. B. https://www.ing.de"
         }
     }
-});
+};

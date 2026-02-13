@@ -108,7 +108,7 @@ const onClickOk = async (): Promise<void> => {
 
       activeAccountId.value = accountId;
       try {
-        await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, accountId);
+        await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, accountId as any);
       } catch (err) {
         await handleUserError("COMPONENTS DIALOGS AddAccount", err, {});
       }

@@ -15,7 +15,7 @@ APIs (like `browser.storage` or `browser.tabs`), the UI framework (Vue/Vuetify),
 ### `config/`
 
 Domain-scoped constants used by the business logic. These values are framework-agnostic and immutable
-(`Object.freeze`) to guarantee predictable behavior across the app. Current modules:
+to guarantee predictable behavior across the app. Current modules:
 
 - `date.ts` — `DATE`
 

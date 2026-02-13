@@ -1,4 +1,4 @@
-export const DEFAULTS = Object.freeze({
+export const DEFAULTS = {
     CURRENCY: "EUR",
     LANG: "de",
     LOCALE: "de-DE",
@@ -9,11 +9,11 @@ export const DEFAULTS = Object.freeze({
     COPYRIGHT: `2025-${new Date().getFullYear()} Martin Berner`,
     MAILTO: "mailto:kontenmanager@gmx.de",
     HELP_URL: "https://kontenmanager8.wixsite.com/kontenmanager",
-    USER_INFO: Object.freeze({
+    USER_INFO: {
         RATE_LIMIT_MS: 1500,
-        DURATION: Object.freeze({
+        DURATION: {
             INFO: 4000,
             ERROR: null
-        })
-    })
-});
+        }
+    }
+};

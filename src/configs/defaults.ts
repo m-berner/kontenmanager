@@ -6,7 +6,7 @@
  * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
-export const DEFAULTS = Object.freeze({
+export const DEFAULTS = {
   CURRENCY: "EUR",
   LANG: "de",
   LOCALE: "de-DE",
@@ -18,11 +18,11 @@ export const DEFAULTS = Object.freeze({
   MAILTO: "mailto:kontenmanager@gmx.de",
   HELP_URL: "https://kontenmanager8.wixsite.com/kontenmanager",
   // Defaults for user information/feedback handling
-  USER_INFO: Object.freeze({
+  USER_INFO: {
     RATE_LIMIT_MS: 1500,
-    DURATION: Object.freeze({
+    DURATION: {
       INFO: 4000,
       ERROR: null as number | null
-    })
-  })
-});
+    }
+  }
+} as const;

@@ -1,4 +1,4 @@
-export const IBAN_LENGTH_CODES = Object.freeze({
+export const IBAN_LENGTH_CODES = {
     AD: 24,
     AE: 23,
     AL: 28,
@@ -70,8 +70,8 @@ export const IBAN_LENGTH_CODES = Object.freeze({
     UA: 29,
     VG: 24,
     XK: 20
-});
-export const VALIDATION_CODES = Object.freeze({
+};
+export const VALIDATION_CODES = {
     REQUIRED: "required",
     INVALID_FORMAT: "invalid_format",
     INVALID_LENGTH: "invalid_length",
@@ -86,8 +86,8 @@ export const VALIDATION_CODES = Object.freeze({
     TEST_BIC: "test_bic",
     MAX_LENGTH: "max_length",
     MUST_BEGIN_WITH_LETTER: "must_begin_with_letter"
-});
-export const VALID_COUNTRY_CODES = Object.freeze(new Set([
+};
+export const VALID_COUNTRY_CODES = new Set([
     "AD",
     "AE",
     "AF",
@@ -338,9 +338,9 @@ export const VALID_COUNTRY_CODES = Object.freeze(new Set([
     "ZA",
     "ZM",
     "ZW"
-]));
-export const RULE_CODES = Object.freeze({
+]);
+export const RULE_CODES = {
     CHAR_CODE_OFFSET: 55,
     MOD_97: 97n,
     LUHN_BASE: 10
-});
+};
