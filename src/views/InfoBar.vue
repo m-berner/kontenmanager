@@ -19,7 +19,7 @@ import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
 import { DomainUtils } from "@/domains/utils";
-import { STORES } from "@/configs/stores";
+import { STORES, TRANSLATION_KEYS } from "@/configs/stores";
 
 const { n, t } = useI18n();
 const runtime = useRuntimeStore();
@@ -63,7 +63,7 @@ DomainUtils.log("VIEWS InfoBar: setup");
 
       <v-list-item v-for="item in settings.materials" :key="item">
         <v-list-item-title>{{
-          t("views.optionsIndex.materials." + item)
+          t(TRANSLATION_KEYS[item])
         }}</v-list-item-title>
         <v-list-item-subtitle>
           {{

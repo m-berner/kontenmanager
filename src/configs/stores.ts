@@ -46,3 +46,21 @@ export type Stores = {
   INDEXES: { [key: string]: string };
   MATERIALS: { [key: string]: string };
 };
+
+export const TRANSLATION_KEYS: TranslationKeys = {
+  ag: "views.optionsIndex.materials.ag",
+  al: "views.optionsIndex.materials.al",
+  au: "views.optionsIndex.materials.au",
+  brent: "views.optionsIndex.materials.brent",
+  cu: "views.optionsIndex.materials.cu",
+  ni: "views.optionsIndex.materials.ni",
+  pb: "views.optionsIndex.materials.pb",
+  pd: "views.optionsIndex.materials.pd",
+  pt: "views.optionsIndex.materials.pt",
+  sn: "views.optionsIndex.materials.sn",
+  wti: "views.optionsIndex.materials.wti"
+};
+
+export type TranslationKeys = {
+  [p: string]: string;
+};

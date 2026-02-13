@@ -1,5 +1,5 @@
 {
-  "browser_language": {
+  "xx_browser_language": {
     "message": "Invalid browser language\nFallback to English"
   },
   "xx_set_local_storage": {
@@ -61,9 +61,6 @@
   },
   "xx_db_rollback": {
     "message": "Rollback successful"
-  },
-  "xx_db_update": {
-    "message": "Update successful"
   },
   "xx_db_missing_id": {
     "message": "No ID?"

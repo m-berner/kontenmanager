@@ -3,7 +3,7 @@ import { useI18n } from "vue-i18n";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { useAlert } from "@/composables/useAlert";
-import { STORES } from "@/configs/stores";
+import { STORES, TRANSLATION_KEYS } from "@/configs/stores";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { COMPONENTS } from "@/configs/components";
 const props = defineProps();
@@ -19,13 +19,13 @@ const config = computed(() => {
         return {
             map: STORES.INDEXES,
             storageKey: BROWSER_STORAGE.INDEXES.key,
-            labelPath: null
+            withLabel: false
         };
     }
     return {
         map: STORES.MATERIALS,
         storageKey: BROWSER_STORAGE.MATERIALS.key,
-        labelPath: "views.optionsIndex.materials"
+        withLabel: true
     };
 });
 const boxes = computed(() => {
@@ -37,8 +37,8 @@ const boxes = computed(() => {
     };
 });
 const getLabel = (item) => {
-    if (config.value.labelPath) {
-        return t(`${config.value.labelPath}.${item}`);
+    if (config.value.withLabel) {
+        return t(TRANSLATION_KEYS[item]);
     }
     return config.value.map[item] || item;
 };

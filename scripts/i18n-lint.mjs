@@ -47,8 +47,17 @@ function extractUsedKeysFromText(text) {
   const reT = /\b\$?t\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
   // <i18n-t keypath="key"> in templates
   const reI18nT = /<i18n-t[^>]*\skeypath=(["'])([^"']+)\1/gi;
+  // getMessage('key') or getMessage("key")
+  const reGetMessage = /\bgetMessage\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
+  // TRANSLATION_KEYS object values: PROPERTY_NAME: "translation.key.path"
+  // Matches: TRANSLATION_KEYS = { ... } or export const TRANSLATION_KEYS: Type = { ... }
+  const reTranslationKeys = /TRANSLATION_KEYS\s*(?::\s*\w+)?\s*=\s*\{[^}]*\}/gs;
+  const reKeyValue = /:\s*["']([^"']+)["']/g;
+  // Direct string literals matching xx_* pattern (for messages.json keys)
+  // Used in places like: new AppError("xx_browser_language", ...)
+  const reMessageKeys = /["']xx_[a-zA-Z_]+["']/g;
 
-  for (const re of [reT, reI18nT]) {
+  for (const re of [reT, reI18nT, reGetMessage]) {
     let m;
     while ((m = re.exec(text))) {
       const key = m[2];
@@ -56,6 +65,26 @@ function extractUsedKeysFromText(text) {
         found.add(key);
       }
     }
+  }
+
+  // Extract keys from TRANSLATION_KEYS objects
+  let match;
+  while ((match = reTranslationKeys.exec(text))) {
+    const objText = match[0];
+    let keyMatch;
+    while ((keyMatch = reKeyValue.exec(objText))) {
+      const key = keyMatch[1];
+      if (!key.includes("${")) {
+        found.add(key);
+      }
+    }
+  }
+
+  // Extract xx_* message keys
+  let msgMatch;
+  while ((msgMatch = reMessageKeys.exec(text))) {
+    const key = msgMatch[0].slice(1, -1); // Remove quotes
+    found.add(key);
   }
 
   return found;
@@ -81,10 +110,25 @@ function loadLocales() {
   for (const dir of localeDirs) {
     const locale = dir.name; // e.g., de or en
     const guiFile = path.join(LOCALES_DIR, locale, "gui.json");
+    const messagesFile = path.join(LOCALES_DIR, locale, "messages.json");
+
+    const combined = {};
+
     if (fs.existsSync(guiFile)) {
       const data = readJson(guiFile);
-      locales[locale] = flatten(data);
+      Object.assign(combined, flatten(data));
     }
+
+    // Load messages.json (Chrome extension format with "message" property)
+    if (fs.existsSync(messagesFile)) {
+      const messagesData = readJson(messagesFile);
+      // Extract keys from messages.json (the keys themselves are what's used in code)
+      for (const key of Object.keys(messagesData)) {
+        combined[key] = messagesData[key].message || "";
+      }
+    }
+
+    locales[locale] = combined;
   }
   return locales;
 }

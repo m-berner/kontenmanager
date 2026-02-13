@@ -62,9 +62,6 @@
   "xx_db_rollback": {
     "message": "'Rollback' erfolgreich"
   },
-  "xx_db_update": {
-    "message": "Aktualisierung erfolgreich"
-  },
   "xx_db_missing_id": {
     "message": "Keine ID?"
   },
