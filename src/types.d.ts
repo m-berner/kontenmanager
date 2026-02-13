@@ -321,12 +321,6 @@ export interface RouterWrapper {
   router: Router;
 }
 
-export interface ExternalServiceConfig {
-  NAME: string;
-  HOME: string;
-  QUOTE: string;
-}
-
 export interface StockDb {
   cID: number;
   cCompany: string;
@@ -495,11 +489,6 @@ export interface TeleportState {
   dialogVisibility: boolean;
 }
 
-export interface ValidationResultData {
-  valid: boolean;
-  error?: string;
-}
-
 export interface VisibleAlertData {
   id: number;
   type: "error" | "success" | "warning" | "info" | undefined;
@@ -529,51 +518,6 @@ export type UserInfoResult =
   | UserInfoAlertConfirmResult;
 
 // Callable type for the handleUserInfo function used across dialogs/guards (mirrors overloads)
-export interface HandleUserInfoFn {
-  (
-    _mode: "console",
-    _title: string,
-    _messageOrError: string | Error,
-    _options?: HandleUserAlertOptions
-  ): Promise<UserInfoConsoleResult>;
-  (
-    _mode: "notice",
-    _title: string,
-    _messageOrError: string | Error,
-    _options?: HandleUserAlertOptions
-  ): Promise<UserInfoNoticeResult>;
-  (
-    _mode: "alert",
-    _title: string,
-    _messageOrError: string | Error,
-    _options?: HandleUserAlertOptions & {
-      alertKind?: "info";
-      duration?: number | null;
-    }
-  ): Promise<UserInfoAlertInfoResult>;
-  (
-    _mode: "alert",
-    _title: string,
-    _messageOrError: string | Error,
-    _options?: HandleUserAlertOptions & {
-      alertKind?: "error";
-      duration?: number | null;
-    }
-  ): Promise<UserInfoAlertErrorResult>;
-  (
-    _mode: "alert",
-    _title: string,
-    _messageOrError: string | Error,
-    _options?: HandleUserAlertOptions & { alertKind: "confirm" }
-  ): Promise<UserInfoAlertConfirmResult>;
-  (
-    _mode: Mode,
-    _title: string,
-    _messageOrError: string | Error,
-    _options?: HandleUserAlertOptions
-  ): Promise<UserInfoResult>;
-}
-
 export type FormModeType = "add" | "update" | "delete";
 
 export type DateConfigType = typeof DATE;
@@ -583,9 +527,6 @@ export type IndexedDbConfigType = typeof INDEXED_DB;
 export type LogLevelType = "info" | "warn" | "error" | "log";
 
 export type MessageSchemaType = typeof deDE;
-
-// Rule builder type
-export type RuleBuilderType = (..._args: any[]) => ValidationRuleType;
 
 // Strongly typed browser storage snapshot derived from BROWSER_STORAGE configs
 // We map the runtime schema entries to a type whose keys are the literal
