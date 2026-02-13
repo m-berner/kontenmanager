@@ -23,33 +23,33 @@ export class ImportExportTransformer {
             cAskDates: this._DATE.ISO
         };
     }
-    transformLegacyBooking(smTransfer, index, activeId) {
+    transformLegacyBooking(legacyTransfer, index, activeId) {
         const BOOKING_TYPES = this._INDEXED_DB.STORE.BOOKING_TYPES;
         const booking = {
             cID: index + 1,
             cAccountNumberID: activeId,
-            cStockID: smTransfer.cStockID,
-            cBookDate: this._isoDate(smTransfer.cDate),
-            cBookingTypeID: smTransfer.cType,
-            cExDate: this._isoDate(smTransfer.cExDay),
-            cCount: Math.abs(smTransfer.cCount),
-            cDescription: smTransfer.cDescription,
-            cMarketPlace: smTransfer.cMarketPlace,
-            cTransactionTaxCredit: smTransfer.cFTax > 0 ? smTransfer.cFTax : 0,
-            cTransactionTaxDebit: smTransfer.cFTax < 0 ? -smTransfer.cFTax : 0,
-            cSourceTaxCredit: smTransfer.cSTax > 0 ? smTransfer.cSTax : 0,
-            cSourceTaxDebit: smTransfer.cSTax < 0 ? -smTransfer.cSTax : 0,
-            cFeeCredit: smTransfer.cFees > 0 ? smTransfer.cFees : 0,
-            cFeeDebit: smTransfer.cFees < 0 ? -smTransfer.cFees : 0,
-            cTaxCredit: smTransfer.cTax > 0 ? smTransfer.cTax : 0,
-            cTaxDebit: smTransfer.cTax < 0 ? -smTransfer.cTax : 0,
-            cSoliCredit: smTransfer.cSoli > 0 ? smTransfer.cSoli : 0,
-            cSoliDebit: smTransfer.cSoli < 0 ? -smTransfer.cSoli : 0,
-            cCredit: smTransfer.cAmount > 0 ? smTransfer.cAmount : 0,
-            cDebit: smTransfer.cAmount < 0 ? -smTransfer.cAmount : 0
+            cStockID: legacyTransfer.cStockID,
+            cBookDate: this._isoDate(legacyTransfer.cDate),
+            cBookingTypeID: legacyTransfer.cType,
+            cExDate: this._isoDate(legacyTransfer.cExDay),
+            cCount: Math.abs(legacyTransfer.cCount),
+            cDescription: legacyTransfer.cDescription,
+            cMarketPlace: legacyTransfer.cMarketPlace,
+            cTransactionTaxCredit: legacyTransfer.cFTax > 0 ? legacyTransfer.cFTax : 0,
+            cTransactionTaxDebit: legacyTransfer.cFTax < 0 ? -legacyTransfer.cFTax : 0,
+            cSourceTaxCredit: legacyTransfer.cSTax > 0 ? legacyTransfer.cSTax : 0,
+            cSourceTaxDebit: legacyTransfer.cSTax < 0 ? -legacyTransfer.cSTax : 0,
+            cFeeCredit: legacyTransfer.cFees > 0 ? legacyTransfer.cFees : 0,
+            cFeeDebit: legacyTransfer.cFees < 0 ? -legacyTransfer.cFees : 0,
+            cTaxCredit: legacyTransfer.cTax > 0 ? legacyTransfer.cTax : 0,
+            cTaxDebit: legacyTransfer.cTax < 0 ? -legacyTransfer.cTax : 0,
+            cSoliCredit: legacyTransfer.cSoli > 0 ? legacyTransfer.cSoli : 0,
+            cSoliDebit: legacyTransfer.cSoli < 0 ? -legacyTransfer.cSoli : 0,
+            cCredit: legacyTransfer.cAmount > 0 ? legacyTransfer.cAmount : 0,
+            cDebit: legacyTransfer.cAmount < 0 ? -legacyTransfer.cAmount : 0
         };
-        const creditDebit = this.createCreditDebitObject(smTransfer);
-        switch (smTransfer.cType) {
+        const creditDebit = this.transformLegacyOtherFee(legacyTransfer);
+        switch (legacyTransfer.cType) {
             case BOOKING_TYPES.BUY:
                 booking.cDebit = creditDebit.value;
                 booking.cCredit = 0;
@@ -76,54 +76,54 @@ export class ImportExportTransformer {
         }
         return booking;
     }
-    createCreditDebitObject(rec) {
+    transformLegacyOtherFee(legacyTransfer) {
         const BOOKING_TYPES = this._INDEXED_DB.STORE.BOOKING_TYPES;
         const result = { value: 0, type: -1 };
-        if (rec.cAmount !== 0) {
+        if (legacyTransfer.cAmount !== 0) {
             result.type = BOOKING_TYPES.OTHER;
         }
-        else if (rec.cFees !== 0) {
+        else if (legacyTransfer.cFees !== 0) {
             result.type = BOOKING_TYPES.FEE;
         }
-        else if (rec.cTax !== 0 ||
-            rec.cSoli !== 0 ||
-            rec.cSTax !== 0 ||
-            rec.cFTax !== 0) {
+        else if (legacyTransfer.cTax !== 0 ||
+            legacyTransfer.cSoli !== 0 ||
+            legacyTransfer.cSTax !== 0 ||
+            legacyTransfer.cFTax !== 0) {
             result.type = BOOKING_TYPES.TAX;
         }
-        switch (rec.cType) {
+        switch (legacyTransfer.cType) {
             case BOOKING_TYPES.BUY:
                 return {
-                    value: rec.cUnitQuotation * rec.cCount,
+                    value: legacyTransfer.cUnitQuotation * legacyTransfer.cCount,
                     type: BOOKING_TYPES.BUY
                 };
             case BOOKING_TYPES.SELL:
                 return {
-                    value: rec.cUnitQuotation * -rec.cCount,
+                    value: legacyTransfer.cUnitQuotation * -legacyTransfer.cCount,
                     type: BOOKING_TYPES.SELL
                 };
             case BOOKING_TYPES.DIVIDEND:
                 return {
-                    value: rec.cUnitQuotation * rec.cCount,
+                    value: legacyTransfer.cUnitQuotation * legacyTransfer.cCount,
                     type: BOOKING_TYPES.DIVIDEND
                 };
             case BOOKING_TYPES.CREDIT:
                 result.value =
-                    rec.cAmount +
-                        rec.cFees +
-                        rec.cSTax +
-                        rec.cFTax +
-                        rec.cTax +
-                        rec.cSoli;
+                    legacyTransfer.cAmount +
+                        legacyTransfer.cFees +
+                        legacyTransfer.cSTax +
+                        legacyTransfer.cFTax +
+                        legacyTransfer.cTax +
+                        legacyTransfer.cSoli;
                 return result;
             case BOOKING_TYPES.DEBIT:
                 result.value =
-                    -rec.cAmount -
-                        rec.cFees -
-                        rec.cSTax -
-                        rec.cFTax -
-                        rec.cTax -
-                        rec.cSoli;
+                    -legacyTransfer.cAmount -
+                        legacyTransfer.cFees -
+                        legacyTransfer.cSTax -
+                        legacyTransfer.cFTax -
+                        legacyTransfer.cTax -
+                        legacyTransfer.cSoli;
                 return result;
             default:
                 throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, false);

@@ -21,12 +21,6 @@ export type Fetch = {
     ONLINE_TEST: string;
     SEARCH: string;
   };
-  TGATE: {
-    CHS_URL: string;
-    CHB_URL: string;
-    CHS: string[];
-    CHB: string[];
-  };
   FX: {
     NAME: string;
     HOME: string;
@@ -81,56 +75,56 @@ export const FETCH: Fetch = {
     ONLINE_TEST: "https://www.finanzen.net",
     SEARCH: "https://www.finanzen.net/suchergebnis.asp?_search="
   },
-  TGATE: {
-    CHS_URL: "https://www.tradegate.de/indizes.php?index=",
-    CHB_URL: "https://www.tradegate.de/indizes.php?buchstabe=",
-    CHS: [
-      "DE000A1EXRV0",
-      "DE000A1EXRY4",
-      "DE000A1EXRW8",
-      "DE000A1EXRX6",
-      "EU0009658145",
-      "DE000A0SNK21",
-      "US0000000002"
-    ],
-    CHB: [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "7",
-      "8",
-      "9",
-      "A",
-      "B",
-      "C",
-      "D",
-      "E",
-      "F",
-      "G",
-      "H",
-      "I",
-      "J",
-      "K",
-      "L",
-      "M",
-      "N",
-      "O",
-      "P",
-      "Q",
-      "R",
-      "S",
-      "T",
-      "U",
-      "V",
-      "W",
-      "X",
-      "Y",
-      "Z",
-      "Ö"
-    ]
-  },
+  // TGATE: {
+  //   CHANGES_URL_SMALL: "https://www.tradegate.de/indizes.php?index=",
+  //   CHANGES_URL_BIG: "https://www.tradegate.de/indizes.php?buchstabe=",
+  //   CHS: [
+  //     "DE000A1EXRV0",
+  //     "DE000A1EXRY4",
+  //     "DE000A1EXRW8",
+  //     "DE000A1EXRX6",
+  //     "EU0009658145",
+  //     "DE000A0SNK21",
+  //     "US0000000002"
+  //   ],
+  //   CHB: [
+  //     "1",
+  //     "2",
+  //     "3",
+  //     "4",
+  //     "5",
+  //     "7",
+  //     "8",
+  //     "9",
+  //     "A",
+  //     "B",
+  //     "C",
+  //     "D",
+  //     "E",
+  //     "F",
+  //     "G",
+  //     "H",
+  //     "I",
+  //     "J",
+  //     "K",
+  //     "L",
+  //     "M",
+  //     "N",
+  //     "O",
+  //     "P",
+  //     "Q",
+  //     "R",
+  //     "S",
+  //     "T",
+  //     "U",
+  //     "V",
+  //     "W",
+  //     "X",
+  //     "Y",
+  //     "Z",
+  //     "Ö"
+  //   ]
+  // },
   FX: {
     NAME: "fx-rate",
     HOME: "https://fx-rate.net/qwsaq",

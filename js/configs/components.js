@@ -23,7 +23,7 @@ export const COMPONENTS = {
         UPDATE_STOCK: "updateStock",
         DELETE_STOCK: "deleteStock",
         ADD_BOOKING_TYPE: "addBookingType",
-        DELETE_BOOKING_TYPE: "DeleteBookingType",
+        DELETE_BOOKING_TYPE: "deleteBookingType",
         UPDATE_BOOKING_TYPE: "updateBookingType",
         ADD_BOOKING: "addBooking",
         UPDATE_BOOKING: "updateBooking",
