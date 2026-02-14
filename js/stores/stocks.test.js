@@ -78,19 +78,19 @@ describe("Stocks Store", () => {
         it("active should filter and enrich stocks", () => {
             const stocksStore = useStocksStore();
             const bookingsStore = useBookingsStore();
+            bookingsStore.items = [
+                createSampleBooking({ cStockID: 1, cCount: 5, cDebit: 500 })
+            ];
             stocksStore.items = [
                 createSampleStock({ cID: 1, cCompany: "Active", cFadeOut: 0 }),
                 createSampleStock({ cID: 2, cCompany: "Passive", cFadeOut: 1 }),
                 createSampleStock({ cID: 0, cCompany: "ZeroID", cFadeOut: 0 })
             ];
-            bookingsStore.items = [
-                createSampleBooking({ cStockID: 1, cCount: 5, cDebit: 500 })
-            ];
             expect(stocksStore.active).toHaveLength(1);
             expect(stocksStore.active[0].cCompany).toBe("Active");
             expect(stocksStore.active[0].mPortfolio).toBe(5);
             expect(stocksStore.active[0].mInvest).toBe(500);
-            expect(stocksStore.active[0].id).toBe(1);
+            expect(stocksStore.active[0].cID).toBe(1);
         });
         it("active should sort by cFirstPage and then by mPortfolio value", () => {
             const stocksStore = useStocksStore();

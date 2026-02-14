@@ -33,14 +33,14 @@ function useDBStore<T>(storeName: string) {
     add: (data: Omit<T, "cID">, tx?: IDBTransaction) =>
       dbi.add(storeName, data, tx),
     /** Retrieves a record by ID. */
-    get: (id: IDBValidKey, tx?: IDBTransaction) =>
+    get: (id: number, tx?: IDBTransaction) =>
       dbi.get<T>(storeName, id, tx),
     /** Retrieves all records from the store. */
     getAll: (tx?: IDBTransaction) => dbi.getAll<T>(storeName, tx),
     /** Updates an existing record. */
     update: (data: T, tx?: IDBTransaction) => dbi.update(storeName, data, tx),
     /** Removes a record by ID. */
-    remove: (id: IDBValidKey, tx?: IDBTransaction) =>
+    remove: (id: number, tx?: IDBTransaction) =>
       dbi.remove(storeName, id, tx),
     /** Clears all records in the store. */
     clear: (tx?: IDBTransaction) => dbi.clear(storeName, tx),

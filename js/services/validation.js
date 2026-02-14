@@ -1,17 +1,17 @@
 import { DomainUtils } from "@/domains/utils";
 import { VALIDATION_CODES } from "@/domains/validation/codes";
 import { ValidationRules } from "@/domains/validation/rules";
-export class ValidationService {
-    static createRule(validator, message) {
+class ValidationServiceImpl {
+    createRule(validator, message) {
         return (value) => validator(value) || message;
     }
-    static cleanString(value) {
+    cleanString(value) {
         if (typeof value !== "string")
             return null;
         return value.replace(/\s/g, "");
     }
-    static oneOfTwo(zeroValue, message) {
-        return ValidationService.createRule((v) => {
+    oneOfTwo(zeroValue, message) {
+        return this.createRule((v) => {
             const tv = v;
             const zero = typeof zeroValue === "number" ? zeroValue : zeroValue.value;
             if (tv > 0 && zero > 0) {
@@ -23,10 +23,10 @@ export class ValidationService {
             return true;
         }, message);
     }
-    static required(message) {
+    required(message) {
         return this.createRule((v) => v !== null && v !== "" && v !== undefined, message);
     }
-    static stringLength(min, max, message) {
+    stringLength(min, max, message) {
         return this.createRule((v) => {
             const cleaned = this.cleanString(v);
             if (!cleaned)
@@ -34,7 +34,7 @@ export class ValidationService {
             return cleaned.length >= min && cleaned.length <= max;
         }, message);
     }
-    static regex(pattern, message) {
+    regex(pattern, message) {
         return this.createRule((v) => {
             const cleaned = this.cleanString(v);
             if (!cleaned)
@@ -42,36 +42,36 @@ export class ValidationService {
             return pattern.test(cleaned);
         }, message);
     }
-    static nameRules(msgArray) {
+    nameRules(msgArray) {
         return [
-            ValidationService.required(msgArray[0]),
-            ValidationService.stringLength(2, 32, msgArray[1]),
-            ValidationService.regex(/^[a-zA-ZäöüÄÖÜ].*/, msgArray[2])
+            this.required(msgArray[0]),
+            this.stringLength(2, 32, msgArray[1]),
+            this.regex(/^[a-zA-ZäöüÄÖÜ].*/, msgArray[2])
         ];
     }
-    static bookingTypeRules(msgArray) {
-        return [ValidationService.required(msgArray[0])];
+    bookingTypeRules(msgArray) {
+        return [this.required(msgArray[0])];
     }
-    static amountRules(zeroValue, msgArray) {
-        return [ValidationService.oneOfTwo(zeroValue, msgArray[0])];
+    amountRules(zeroValue, msgArray) {
+        return [this.oneOfTwo(zeroValue, msgArray[0])];
     }
-    static validateIBAN(iban) {
+    validateIBAN(iban) {
         return ValidationRules.validateIBAN(iban).isValid;
     }
-    static isoDateRules(msgArray) {
+    isoDateRules(msgArray) {
         const isValid = (message) => {
-            return ValidationService.createRule((v) => {
+            return this.createRule((v) => {
                 const tv = v;
                 const date = new Date(`${tv}T00:00:00Z`);
                 return !isNaN(date.getTime());
             }, message);
         };
         return [
-            ValidationService.regex(/^\d{4}-\d{2}-\d{2}$/, msgArray[0]),
+            this.regex(/^\d{4}-\d{2}-\d{2}$/, msgArray[0]),
             isValid(msgArray[1])
         ];
     }
-    static ibanRules(msgArray) {
+    ibanRules(msgArray) {
         return [
             this.required(msgArray[0]),
             this.fromDomain((v) => ValidationRules.validateIBAN(v), {
@@ -82,10 +82,10 @@ export class ValidationService {
             })
         ];
     }
-    static validateISIN(isin) {
+    validateISIN(isin) {
         return ValidationRules.validateISIN(isin).isValid;
     }
-    static isinRules(msgArray) {
+    isinRules(msgArray) {
         return [
             this.required(msgArray[0]),
             this.fromDomain((v) => ValidationRules.validateISIN(v), {
@@ -97,7 +97,7 @@ export class ValidationService {
             })
         ];
     }
-    static swiftRules(msgArray) {
+    swiftRules(msgArray) {
         return [
             this.required(msgArray[0]),
             this.fromDomain((v) => ValidationRules.validateSWIFT(v), {
@@ -112,7 +112,7 @@ export class ValidationService {
             })
         ];
     }
-    static fromDomain(domainFn, messageMap) {
+    fromDomain(domainFn, messageMap) {
         return (v) => {
             const res = domainFn(v);
             if (res.isValid)
@@ -121,4 +121,6 @@ export class ValidationService {
         };
     }
 }
+export const validationService = new ValidationServiceImpl();
+export { ValidationServiceImpl as ValidationService };
 DomainUtils.log("SERVICES validation");

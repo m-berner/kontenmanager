@@ -7,20 +7,20 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { ValidationService } from "./validation";
+import { validationService } from "./validation";
 import { ValidationRules } from "@/domains/validation/rules";
 import { VALIDATION_CODES } from "@/domains/validation/codes";
 
 describe("ValidationService (Bridge)", () => {
   describe("validateISIN", () => {
     it("should return true for valid ISINs via bridge", () => {
-      expect(ValidationService.validateISIN("US0378331005")).toBe(true);
+      expect(validationService.validateISIN("US0378331005")).toBe(true);
     });
   });
 
   describe("cleanString", () => {
     it("should remove all whitespace", () => {
-      expect(ValidationService.cleanString(" DE 123 ")).toBe("DE123");
+      expect(validationService.cleanString(" DE 123 ")).toBe("DE123");
     });
   });
 });

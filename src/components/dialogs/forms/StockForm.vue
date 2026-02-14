@@ -17,14 +17,12 @@ import { DomainUtils } from "@/domains/utils";
 import { useStockForm } from "@/composables/useForms";
 import { fetchService } from "@/services/fetch";
 import type { StockFormProps } from "@/types";
-import { ValidationService } from "@/services/validation";
-//import { useAlert } from "@/composables/useAlert";
+import { validationService } from "@/services/validation";
 
 const props = defineProps<StockFormProps>();
 
 const { t } = useI18n();
 const { stockFormData } = useStockForm();
-//const { handleUserInfo } = useAlert();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -73,7 +71,7 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS StockForm: setup");
         v-model="stockFormData.isin"
         :counter="12"
         :label="t('components.dialogs.forms.stockForm.isinLabel')"
-        :rules="ValidationService.isinRules(ISIN_RULES)"
+        :rules="validationService.isinRules(ISIN_RULES)"
         autofocus
         variant="outlined"
         @update:model-value="onUpdateIsin"
@@ -93,7 +91,7 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS StockForm: setup");
         <v-text-field
           v-model="stockFormData.symbol"
           :label="t('components.dialogs.forms.stockForm.symbolLabel')"
-          :rules="ValidationService.nameRules(NAME_RULES)"
+          :rules="validationService.nameRules(NAME_RULES)"
           required
           variant="outlined"
         />

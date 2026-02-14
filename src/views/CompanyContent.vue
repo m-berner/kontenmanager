@@ -260,7 +260,7 @@ DomainUtils.log("VIEWS CompanyContent: setup");
       <tr class="table-row">
         <td class="d-none">{{ item.cID }}</td>
         <td>
-          <DotMenu :items="MENU_ITEMS" :record-id="item.cID!" />
+          <DotMenu :items="MENU_ITEMS" :record-id="(item.cID as number)" />
         </td>
         <td>{{ item.cCompany }}</td>
         <td>{{ item.cISIN }}</td>

@@ -22,7 +22,8 @@ import {
 import { DomainUtils } from "@/domains/utils";
 import { CURRENCIES } from "@/domains/configs/currencies";
 
-const {getUserLocale} = useBrowser();
+const { getUserLocale } = useBrowser();
+
 /**
  * Application initialization and bootstrapping service
  * Handles app startup, data loading, and external API coordination
@@ -44,11 +45,7 @@ export class AppService {
   /**
    * Application initialization status shape returned by initializeApp.
    */
-  private _lastStatus: AppStatus = {
-    storage: "error",
-    db: "error",
-    fetch: { exchanges: false, indexes: false, materials: false }
-  };
+  private _lastStatus: AppStatus = this.createDefaultStatus();
 
   /**
    * Initialize the application by loading data from storage, database, and external APIs.
@@ -67,31 +64,23 @@ export class AppService {
     const tAppStart = performance.now();
     DomainUtils.log("SERVICES app", { phase: "initializeApp", event: "start" });
 
-    // local mutable status we also persist to _lastStatus at the end
-    const status: AppStatus = {
-      storage: "error",
-      db: "error",
-      fetch: { exchanges: false, indexes: false, materials: false }
-    };
+    const status = this.createDefaultStatus();
 
     try {
       // Abort guard before any work
       if (signal?.aborted) {
-        status.storage = "aborted";
-        status.db = "aborted";
-        this._lastStatus = status;
-        return status;
+        return this.handleAbort(status);
       }
 
       // Step 1: Initialize storage (critical - will throw on failure)
-      const tStorageStart = performance.now();
-      await this.initializeStorage(signal);
-      status.storage = signal?.aborted ? "aborted" : "ok";
-      const storageDuration = Math.round(performance.now() - tStorageStart);
-      DomainUtils.log("SERVICES app", {
-        phase: "initializeStorage",
-        durationMs: storageDuration
-      });
+      await this.executePhase(
+        "initializeStorage",
+        () => this.initializeStorage(signal),
+        status,
+        "storage",
+        signal
+      );
+      
       if (signal?.aborted) {
         status.db = "aborted";
         this._lastStatus = status;
@@ -99,14 +88,14 @@ export class AppService {
       }
 
       // Step 2: Initialize the database (critical - will throw on failure)
-      const tDbStart = performance.now();
-      await this.initializeDatabase(translations, signal);
-      status.db = signal?.aborted ? "aborted" : "ok";
-      const dbDuration = Math.round(performance.now() - tDbStart);
-      DomainUtils.log("SERVICES app", {
-        phase: "initializeDatabase",
-        durationMs: dbDuration
-      });
+      await this.executePhase(
+        "initializeDatabase",
+        () => this.initializeDatabase(translations, signal),
+        status,
+        "db",
+        signal
+      );
+      
       if (signal?.aborted) {
         this._lastStatus = status;
         return status;
@@ -115,36 +104,17 @@ export class AppService {
       // Step 3: Fetch external data (non-critical - fails gracefully)
       const tFetchStart = performance.now();
       status.fetch = await this.fetchExternalData(signal);
-      const fetchDuration = Math.round(performance.now() - tFetchStart);
-      DomainUtils.log("SERVICES app", {
-        phase: "fetchExternalData",
-        durationMs: fetchDuration
-      });
+      this.logPhaseDuration("fetchExternalData", tFetchStart);
 
-      const appDuration = Math.round(performance.now() - tAppStart);
-      DomainUtils.log("SERVICES app", {
-        phase: "initializeApp",
-        durationMs: appDuration
-      });
+      this.logPhaseDuration("initializeApp", tAppStart);
       this._lastStatus = status;
       return status;
     } catch (err) {
-      const appDuration = Math.round(performance.now() - tAppStart);
-      DomainUtils.log(
-        "SERVICES app",
-        { phase: "initializeApp", durationMs: appDuration, error: err },
-        "error"
-      );
-
-      // Persist whatever partial status we have before throwing
+      this.logPhaseDuration("initializeApp", tAppStart, err);
       this._lastStatus = status;
 
       if (signal?.aborted) {
-        // Treat as aborted without throwing an AppError
-        status.storage =
-          status.storage === "error" ? "aborted" : status.storage;
-        status.db = "aborted";
-        return status;
+        return this.handleAbort(status);
       }
 
       if (err instanceof AppError) {
@@ -182,9 +152,9 @@ export class AppService {
    *
    * @returns An object with boolean status flags for various subsystems.
    */
-  getStatus() {
+  getStatus(): AppStatus {
     // Reuse last known initializeApp status if present, otherwise derive a snapshot
-    const derived = {
+    const derived: AppStatus = {
       storage: this.settings.activeAccountId > 0 ? "ok" : "error",
       db: databaseService.isConnected() ? "ok" : "error",
       fetch: {
@@ -192,8 +162,76 @@ export class AppService {
         indexes: this.runtime.infoIndexes.size > 0,
         materials: this.runtime.infoMaterials.size > 0
       }
-    } as const;
+    };
     return this._lastStatus ?? derived;
+  }
+
+  // ========================================================================
+  // Private Helper Methods
+  // ========================================================================
+
+  /**
+   * Creates a default status object with error states
+   */
+  private createDefaultStatus(): AppStatus {
+    return {
+      storage: "error",
+      db: "error",
+      fetch: { exchanges: false, indexes: false, materials: false }
+    };
+  }
+
+  /**
+   * Handles abort scenario by marking remaining steps as aborted
+   */
+  private handleAbort(status: AppStatus): AppStatus {
+    status.storage = status.storage === "error" ? "aborted" : status.storage;
+    status.db = "aborted";
+    return status;
+  }
+
+  /**
+   * Executes a phase and updates status accordingly
+   */
+  private async executePhase(
+    phaseName: string,
+    phaseFunction: () => Promise<void>,
+    status: AppStatus,
+    statusKey: keyof Pick<AppStatus, "storage" | "db">,
+    signal?: AbortSignal
+  ): Promise<void> {
+    const tStart = performance.now();
+    await phaseFunction();
+    status[statusKey] = signal?.aborted ? "aborted" : "ok";
+    this.logPhaseDuration(phaseName, tStart);
+  }
+
+  /**
+   * Logs phase duration with optional error
+   */
+  private logPhaseDuration(
+    phase: string,
+    startTime: number,
+    error?: unknown
+  ): void {
+    const durationMs = Math.round(performance.now() - startTime);
+    const logData: Record<string, unknown> = { phase, durationMs };
+    
+    if (error) {
+      logData.error = error;
+      DomainUtils.log("SERVICES app", logData, "error");
+    } else {
+      DomainUtils.log("SERVICES app", logData);
+    }
+  }
+
+  /**
+   * Extracts currency code from user locale
+   */
+  private getCurrencyFromLocale(): string | undefined {
+    const locale = getUserLocale().toLowerCase();
+    const countryCode = locale.substring(3, 5);
+    return CURRENCIES.CODE.get(countryCode);
   }
 
   /**
@@ -245,7 +283,7 @@ export class AppService {
       event: "start"
     });
 
-    const currency = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3,5));
+    const currency = this.getCurrencyFromLocale();
     if (!currency) {
       throw new AppError(
         ERROR_CODES.SERVICES.APP.CURRENCY,
@@ -255,9 +293,11 @@ export class AppService {
     }
 
     if (signal?.aborted) return;
+    
     try {
       await databaseService.connect();
       if (signal?.aborted) return;
+      
       const databaseStores = await databaseService.getAccountRecords(
         this.settings.activeAccountId
       );
@@ -289,7 +329,7 @@ export class AppService {
       event: "start"
     });
 
-    const currency = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3,5));
+    const currency = this.getCurrencyFromLocale();
     if (!currency) {
       DomainUtils.log(
         "SERVICES app",
@@ -318,88 +358,65 @@ export class AppService {
       return { exchanges: false, indexes: false, materials: false };
     }
 
-    let exchangesOk = false;
-    let indexesOk = false;
-    let materialsOk = false;
-
     // Process successful fetches
-    if (exchangesBase.status === "fulfilled") {
-      this.processExchangeBase(exchangesBase.value);
-      exchangesOk = true;
-    } else {
-      const wrapped = new AppError(
-        ERROR_CODES.SERVICES.APP.FETCH,
-        ERROR_CATEGORY.NETWORK,
-        true
-      );
-      DomainUtils.log(
-        "SERVICES app",
-        {
-          phase: "fetchExternalData",
-          section: "baseExchanges",
-          error: wrapped
-        },
-        "warn"
-      );
-    }
+    const exchangesOk = this.processFetchResult(
+      exchangesBase,
+      (data) => this.processExchangeBase(data),
+      "baseExchanges"
+    ) || this.processFetchResult(
+      exchangesInfo,
+      (data) => this.processExchangeInfo(data),
+      "exchanges"
+    );
 
-    if (exchangesInfo.status === "fulfilled") {
-      this.processExchangeInfo(exchangesInfo.value);
-      exchangesOk = true;
-    } else {
-      const wrapped = new AppError(
-        ERROR_CODES.SERVICES.APP.FETCH,
-        ERROR_CATEGORY.NETWORK,
-        true
-      );
-      DomainUtils.log(
-        "SERVICES app",
-        { phase: "fetchExternalData", section: "exchanges", error: wrapped },
-        "warn"
-      );
-    }
+    const indexesOk = this.processFetchResult(
+      indexesInfo,
+      (data) => this.processIndexesInfo(data),
+      "indexes"
+    );
 
-    if (indexesInfo.status === "fulfilled") {
-      this.processIndexesInfo(indexesInfo.value);
-      indexesOk = true;
-    } else {
-      const wrapped = new AppError(
-        ERROR_CODES.SERVICES.APP.FETCH,
-        ERROR_CATEGORY.NETWORK,
-        true
-      );
-      DomainUtils.log(
-        "SERVICES app",
-        { phase: "fetchExternalData", section: "indexes", error: wrapped },
-        "warn"
-      );
-    }
-
-    if (materialsInfo.status === "fulfilled") {
-      this.processMaterialsInfo(materialsInfo.value);
-      materialsOk = true;
-    } else {
-      const wrapped = new AppError(
-        ERROR_CODES.SERVICES.APP.FETCH,
-        ERROR_CATEGORY.NETWORK,
-        true
-      );
-      DomainUtils.log(
-        "SERVICES app",
-        { phase: "fetchExternalData", section: "materials", error: wrapped },
-        "warn"
-      );
-    }
+    const materialsOk = this.processFetchResult(
+      materialsInfo,
+      (data) => this.processMaterialsInfo(data),
+      "materials"
+    );
 
     DomainUtils.log("SERVICES app", {
       phase: "fetchExternalData",
       event: "done"
     });
+    
     return {
       exchanges: exchangesOk,
       indexes: indexesOk,
       materials: materialsOk
     };
+  }
+
+  /**
+   * Processes a fetch result and handles errors consistently
+   */
+  private processFetchResult<T>(
+    result: PromiseSettledResult<T>,
+    processor: (data: T) => void,
+    errorSection: string
+  ): boolean {
+    if (result.status === "fulfilled") {
+      processor(result.value);
+      return true;
+    }
+    
+    const wrapped = new AppError(
+      ERROR_CODES.SERVICES.APP.FETCH,
+      ERROR_CATEGORY.NETWORK,
+      true
+    );
+    DomainUtils.log(
+      "SERVICES app",
+      { phase: "fetchExternalData", section: errorSection, error: wrapped },
+      "warn"
+    );
+    return false;
   }
 
   /**
@@ -507,11 +524,7 @@ export class AppService {
 export async function initializeApp(
   translations: Record<string, string>,
   signal?: AbortSignal
-): Promise<{
-  storage: "ok" | "aborted" | "error";
-  db: "ok" | "aborted" | "error";
-  fetch: { exchanges: boolean; indexes: boolean; materials: boolean };
-}> {
+): Promise<AppStatus> {
   const appService = new AppService();
   return appService.initializeApp(translations, signal);
 }

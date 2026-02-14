@@ -17,75 +17,38 @@ export class AppService {
     fetch = fetchService;
     constructor() {
     }
-    _lastStatus = {
-        storage: "error",
-        db: "error",
-        fetch: { exchanges: false, indexes: false, materials: false }
-    };
+    _lastStatus = this.createDefaultStatus();
     async initializeApp(translations, signal) {
         const tAppStart = performance.now();
         DomainUtils.log("SERVICES app", { phase: "initializeApp", event: "start" });
-        const status = {
-            storage: "error",
-            db: "error",
-            fetch: { exchanges: false, indexes: false, materials: false }
-        };
+        const status = this.createDefaultStatus();
         try {
             if (signal?.aborted) {
-                status.storage = "aborted";
-                status.db = "aborted";
-                this._lastStatus = status;
-                return status;
+                return this.handleAbort(status);
             }
-            const tStorageStart = performance.now();
-            await this.initializeStorage(signal);
-            status.storage = signal?.aborted ? "aborted" : "ok";
-            const storageDuration = Math.round(performance.now() - tStorageStart);
-            DomainUtils.log("SERVICES app", {
-                phase: "initializeStorage",
-                durationMs: storageDuration
-            });
+            await this.executePhase("initializeStorage", () => this.initializeStorage(signal), status, "storage", signal);
             if (signal?.aborted) {
                 status.db = "aborted";
                 this._lastStatus = status;
                 return status;
             }
-            const tDbStart = performance.now();
-            await this.initializeDatabase(translations, signal);
-            status.db = signal?.aborted ? "aborted" : "ok";
-            const dbDuration = Math.round(performance.now() - tDbStart);
-            DomainUtils.log("SERVICES app", {
-                phase: "initializeDatabase",
-                durationMs: dbDuration
-            });
+            await this.executePhase("initializeDatabase", () => this.initializeDatabase(translations, signal), status, "db", signal);
             if (signal?.aborted) {
                 this._lastStatus = status;
                 return status;
             }
             const tFetchStart = performance.now();
             status.fetch = await this.fetchExternalData(signal);
-            const fetchDuration = Math.round(performance.now() - tFetchStart);
-            DomainUtils.log("SERVICES app", {
-                phase: "fetchExternalData",
-                durationMs: fetchDuration
-            });
-            const appDuration = Math.round(performance.now() - tAppStart);
-            DomainUtils.log("SERVICES app", {
-                phase: "initializeApp",
-                durationMs: appDuration
-            });
+            this.logPhaseDuration("fetchExternalData", tFetchStart);
+            this.logPhaseDuration("initializeApp", tAppStart);
             this._lastStatus = status;
             return status;
         }
         catch (err) {
-            const appDuration = Math.round(performance.now() - tAppStart);
-            DomainUtils.log("SERVICES app", { phase: "initializeApp", durationMs: appDuration, error: err }, "error");
+            this.logPhaseDuration("initializeApp", tAppStart, err);
             this._lastStatus = status;
             if (signal?.aborted) {
-                status.storage =
-                    status.storage === "error" ? "aborted" : status.storage;
-                status.db = "aborted";
-                return status;
+                return this.handleAbort(status);
             }
             if (err instanceof AppError) {
                 throw err;
@@ -111,6 +74,40 @@ export class AppService {
             }
         };
         return this._lastStatus ?? derived;
+    }
+    createDefaultStatus() {
+        return {
+            storage: "error",
+            db: "error",
+            fetch: { exchanges: false, indexes: false, materials: false }
+        };
+    }
+    handleAbort(status) {
+        status.storage = status.storage === "error" ? "aborted" : status.storage;
+        status.db = "aborted";
+        return status;
+    }
+    async executePhase(phaseName, phaseFunction, status, statusKey, signal) {
+        const tStart = performance.now();
+        await phaseFunction();
+        status[statusKey] = signal?.aborted ? "aborted" : "ok";
+        this.logPhaseDuration(phaseName, tStart);
+    }
+    logPhaseDuration(phase, startTime, error) {
+        const durationMs = Math.round(performance.now() - startTime);
+        const logData = { phase, durationMs };
+        if (error) {
+            logData.error = error;
+            DomainUtils.log("SERVICES app", logData, "error");
+        }
+        else {
+            DomainUtils.log("SERVICES app", logData);
+        }
+    }
+    getCurrencyFromLocale() {
+        const locale = getUserLocale().toLowerCase();
+        const countryCode = locale.substring(3, 5);
+        return CURRENCIES.CODE.get(countryCode);
     }
     async initializeStorage(signal) {
         DomainUtils.log("SERVICES app", {
@@ -138,7 +135,7 @@ export class AppService {
             phase: "initializeDatabase",
             event: "start"
         });
-        const currency = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3, 5));
+        const currency = this.getCurrencyFromLocale();
         if (!currency) {
             throw new AppError(ERROR_CODES.SERVICES.APP.CURRENCY, ERROR_CATEGORY.BUSINESS, false);
         }
@@ -166,7 +163,7 @@ export class AppService {
             phase: "fetchExternalData",
             event: "start"
         });
-        const currency = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3, 5));
+        const currency = this.getCurrencyFromLocale();
         if (!currency) {
             DomainUtils.log("SERVICES app", { phase: "fetchExternalData", warning: "missing currency" }, "warn");
             return { exchanges: false, indexes: false, materials: false };
@@ -185,45 +182,9 @@ export class AppService {
         if (signal?.aborted) {
             return { exchanges: false, indexes: false, materials: false };
         }
-        let exchangesOk = false;
-        let indexesOk = false;
-        let materialsOk = false;
-        if (exchangesBase.status === "fulfilled") {
-            this.processExchangeBase(exchangesBase.value);
-            exchangesOk = true;
-        }
-        else {
-            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
-            DomainUtils.log("SERVICES app", {
-                phase: "fetchExternalData",
-                section: "baseExchanges",
-                error: wrapped
-            }, "warn");
-        }
-        if (exchangesInfo.status === "fulfilled") {
-            this.processExchangeInfo(exchangesInfo.value);
-            exchangesOk = true;
-        }
-        else {
-            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
-            DomainUtils.log("SERVICES app", { phase: "fetchExternalData", section: "exchanges", error: wrapped }, "warn");
-        }
-        if (indexesInfo.status === "fulfilled") {
-            this.processIndexesInfo(indexesInfo.value);
-            indexesOk = true;
-        }
-        else {
-            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
-            DomainUtils.log("SERVICES app", { phase: "fetchExternalData", section: "indexes", error: wrapped }, "warn");
-        }
-        if (materialsInfo.status === "fulfilled") {
-            this.processMaterialsInfo(materialsInfo.value);
-            materialsOk = true;
-        }
-        else {
-            const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
-            DomainUtils.log("SERVICES app", { phase: "fetchExternalData", section: "materials", error: wrapped }, "warn");
-        }
+        const exchangesOk = this.processFetchResult(exchangesBase, (data) => this.processExchangeBase(data), "baseExchanges") || this.processFetchResult(exchangesInfo, (data) => this.processExchangeInfo(data), "exchanges");
+        const indexesOk = this.processFetchResult(indexesInfo, (data) => this.processIndexesInfo(data), "indexes");
+        const materialsOk = this.processFetchResult(materialsInfo, (data) => this.processMaterialsInfo(data), "materials");
         DomainUtils.log("SERVICES app", {
             phase: "fetchExternalData",
             event: "done"
@@ -233,6 +194,15 @@ export class AppService {
             indexes: indexesOk,
             materials: materialsOk
         };
+    }
+    processFetchResult(result, processor, errorSection) {
+        if (result.status === "fulfilled") {
+            processor(result.value);
+            return true;
+        }
+        const wrapped = new AppError(ERROR_CODES.SERVICES.APP.FETCH, ERROR_CATEGORY.NETWORK, true);
+        DomainUtils.log("SERVICES app", { phase: "fetchExternalData", section: errorSection, error: wrapped }, "warn");
+        return false;
     }
     processExchangeBase(baseData) {
         if (!baseData.length) {

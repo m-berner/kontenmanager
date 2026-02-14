@@ -11,7 +11,7 @@ import { nextTick, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useBookingTypeForm } from "@/composables/useForms";
-import { ValidationService } from "@/services/validation";
+import { validationService } from "@/services/validation";
 import { INDEXED_DB } from "@/configs/database";
 import type { BookingTypeFormProps } from "@/types";
 import { DomainUtils } from "@/domains/utils";
@@ -80,7 +80,7 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingTypeForm: setup");
     :counter="32"
     :label="t(`components.dialogs.${props.mode}BookingType.title`)"
     :placeholder="t('components.dialogs.addBookingType.placeholder')"
-    :rules="ValidationService.nameRules(NAME_RULES)"
+    :rules="validationService.nameRules(NAME_RULES)"
     density="compact"
     variant="outlined"
   />

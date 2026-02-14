@@ -190,11 +190,11 @@ const { default: __VLS_9 } = __VLS_3.slots;
     const __VLS_11 = DotMenu;
     const __VLS_12 = __VLS_asFunctionalComponent1(__VLS_11, new __VLS_11({
         items: (__VLS_ctx.MENU_ITEMS),
-        recordId: (item.cID),
+        recordId: item.cID,
     }));
     const __VLS_13 = __VLS_12({
         items: (__VLS_ctx.MENU_ITEMS),
-        recordId: (item.cID),
+        recordId: item.cID,
     }, ...__VLS_functionalComponentArgsRest(__VLS_12));
     __VLS_asFunctionalElement1(__VLS_intrinsics.td, __VLS_intrinsics.td)({});
     (item.cCompany);

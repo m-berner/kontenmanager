@@ -427,9 +427,9 @@ const processBackupFile = async (): Promise<void> => {
     let dataIntegrityErrors: string[] = [];
 
     if (validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION) {
-      dataIntegrityErrors = importService.validateLegacyDataIntegrity(backup);
+      dataIntegrityErrors = ImportExportService.validateLegacyDataIntegrity(backup);
     } else {
-      dataIntegrityErrors = importService.validateDataIntegrity(backup);
+      dataIntegrityErrors = ImportExportService.validateDataIntegrity(backup);
     }
 
     if (dataIntegrityErrors.length > 0) {

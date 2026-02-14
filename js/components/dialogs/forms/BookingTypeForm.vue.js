@@ -2,7 +2,7 @@ import { nextTick, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useBookingTypeForm } from "@/composables/useForms";
-import { ValidationService } from "@/services/validation";
+import { validationService } from "@/services/validation";
 import { INDEXED_DB } from "@/configs/database";
 import { DomainUtils } from "@/domains/utils";
 const props = defineProps();
@@ -96,7 +96,7 @@ if ((__VLS_ctx.edit && props.mode !== 'delete') || props.mode === 'add') {
         counter: (32),
         label: (__VLS_ctx.t(`components.dialogs.${props.mode}BookingType.title`)),
         placeholder: (__VLS_ctx.t('components.dialogs.addBookingType.placeholder')),
-        rules: (__VLS_ctx.ValidationService.nameRules(__VLS_ctx.NAME_RULES)),
+        rules: (__VLS_ctx.validationService.nameRules(__VLS_ctx.NAME_RULES)),
         density: "compact",
         variant: "outlined",
     }));
@@ -107,7 +107,7 @@ if ((__VLS_ctx.edit && props.mode !== 'delete') || props.mode === 'add') {
         counter: (32),
         label: (__VLS_ctx.t(`components.dialogs.${props.mode}BookingType.title`)),
         placeholder: (__VLS_ctx.t('components.dialogs.addBookingType.placeholder')),
-        rules: (__VLS_ctx.ValidationService.nameRules(__VLS_ctx.NAME_RULES)),
+        rules: (__VLS_ctx.validationService.nameRules(__VLS_ctx.NAME_RULES)),
         density: "compact",
         variant: "outlined",
     }, ...__VLS_functionalComponentArgsRest(__VLS_9));
@@ -115,7 +115,7 @@ if ((__VLS_ctx.edit && props.mode !== 'delete') || props.mode === 'add') {
     var __VLS_11;
 }
 var __VLS_14 = __VLS_13;
-[bookingTypeFormData, bookingTypeFormData, INDEXED_DB, INDEXED_DB, records, t, t, t, onClear, onSelect, edit, ValidationService, NAME_RULES,];
+[bookingTypeFormData, bookingTypeFormData, INDEXED_DB, INDEXED_DB, records, t, t, t, onClear, onSelect, edit, validationService, NAME_RULES,];
 const __VLS_export = (await import('vue')).defineComponent({
     setup: () => (__VLS_exposed),
     __typeProps: {},

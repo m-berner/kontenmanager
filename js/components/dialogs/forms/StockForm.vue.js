@@ -3,7 +3,7 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStockForm } from "@/composables/useForms";
 import { fetchService } from "@/services/fetch";
-import { ValidationService } from "@/services/validation";
+import { validationService } from "@/services/validation";
 const props = defineProps();
 const { t } = useI18n();
 const { stockFormData } = useStockForm();
@@ -62,7 +62,7 @@ const __VLS_13 = __VLS_asFunctionalComponent1(__VLS_12, new __VLS_12({
     modelValue: (__VLS_ctx.stockFormData.isin),
     counter: (12),
     label: (__VLS_ctx.t('components.dialogs.forms.stockForm.isinLabel')),
-    rules: (__VLS_ctx.ValidationService.isinRules(__VLS_ctx.ISIN_RULES)),
+    rules: (__VLS_ctx.validationService.isinRules(__VLS_ctx.ISIN_RULES)),
     autofocus: true,
     variant: "outlined",
 }));
@@ -71,7 +71,7 @@ const __VLS_14 = __VLS_13({
     modelValue: (__VLS_ctx.stockFormData.isin),
     counter: (12),
     label: (__VLS_ctx.t('components.dialogs.forms.stockForm.isinLabel')),
-    rules: (__VLS_ctx.ValidationService.isinRules(__VLS_ctx.ISIN_RULES)),
+    rules: (__VLS_ctx.validationService.isinRules(__VLS_ctx.ISIN_RULES)),
     autofocus: true,
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_13));
@@ -80,7 +80,7 @@ const __VLS_18 = ({ 'update:modelValue': {} },
     { 'onUpdate:modelValue': (__VLS_ctx.onUpdateIsin) });
 var __VLS_15;
 var __VLS_16;
-[stockFormData, t, ValidationService, ISIN_RULES, onUpdateIsin,];
+[stockFormData, t, validationService, ISIN_RULES, onUpdateIsin,];
 var __VLS_9;
 let __VLS_19;
 vRow;
@@ -128,18 +128,18 @@ vTextField;
 const __VLS_48 = __VLS_asFunctionalComponent1(__VLS_47, new __VLS_47({
     modelValue: (__VLS_ctx.stockFormData.symbol),
     label: (__VLS_ctx.t('components.dialogs.forms.stockForm.symbolLabel')),
-    rules: (__VLS_ctx.ValidationService.nameRules(__VLS_ctx.NAME_RULES)),
+    rules: (__VLS_ctx.validationService.nameRules(__VLS_ctx.NAME_RULES)),
     required: true,
     variant: "outlined",
 }));
 const __VLS_49 = __VLS_48({
     modelValue: (__VLS_ctx.stockFormData.symbol),
     label: (__VLS_ctx.t('components.dialogs.forms.stockForm.symbolLabel')),
-    rules: (__VLS_ctx.ValidationService.nameRules(__VLS_ctx.NAME_RULES)),
+    rules: (__VLS_ctx.validationService.nameRules(__VLS_ctx.NAME_RULES)),
     required: true,
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_48));
-[stockFormData, t, ValidationService, NAME_RULES,];
+[stockFormData, t, validationService, NAME_RULES,];
 var __VLS_44;
 [];
 var __VLS_33;

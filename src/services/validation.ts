@@ -18,7 +18,7 @@ import { ValidationRules } from "@/domains/validation/rules";
  *
  * This service acts as a bridge between the domain validation rules and Vuetify components.
  */
-export class ValidationService {
+class ValidationServiceImpl {
   /**
    * Helper to create a Vuetify-compatible validation rule.
    *
@@ -26,7 +26,7 @@ export class ValidationService {
    * @param message - Error message if invalid.
    * @returns A validation rule function.
    */
-  static createRule(
+  createRule(
     validator: (_value: unknown) => boolean,
     message: string
   ): ValidationRuleType {
@@ -39,7 +39,7 @@ export class ValidationService {
    * @param value - The value to clean.
    * @returns Cleaned string or null if input is not a string.
    */
-  static cleanString(value: unknown): string | null {
+  cleanString(value: unknown): string | null {
     if (typeof value !== "string") return null;
     return value.replace(/\s/g, "");
   }
@@ -52,11 +52,11 @@ export class ValidationService {
    * @param message - Error message if invalid.
    * @returns A validation rule function.
    */
-  static oneOfTwo(
+  oneOfTwo(
     zeroValue: Ref<number> | number,
     message: string
   ): ValidationRuleType {
-    return ValidationService.createRule((v) => {
+    return this.createRule((v) => {
       const tv = v as number;
       const zero = typeof zeroValue === "number" ? zeroValue : zeroValue.value;
       // Only one of the values could be 0
@@ -75,7 +75,7 @@ export class ValidationService {
    * @param message - Error message if invalid.
    * @returns A validation rule function.
    */
-  static required(message: string): ValidationRuleType {
+  required(message: string): ValidationRuleType {
     return this.createRule(
       (v) => v !== null && v !== "" && v !== undefined,
       message
@@ -94,7 +94,7 @@ export class ValidationService {
    * @param message - Error message if invalid.
    * @returns A validation rule function.
    */
-  static stringLength(
+  stringLength(
     min: number,
     max: number,
     message: string
@@ -106,7 +106,7 @@ export class ValidationService {
     }, message);
   }
 
-  static regex(pattern: RegExp, message: string): ValidationRuleType {
+  regex(pattern: RegExp, message: string): ValidationRuleType {
     return this.createRule((v) => {
       const cleaned = this.cleanString(v);
       if (!cleaned) return false;
@@ -114,26 +114,26 @@ export class ValidationService {
     }, message);
   }
 
-  static nameRules(msgArray: string[]): ValidationRuleType[] {
+  nameRules(msgArray: string[]): ValidationRuleType[] {
     return [
-      ValidationService.required(msgArray[0]),
-      ValidationService.stringLength(2, 32, msgArray[1]),
-      ValidationService.regex(/^[a-zA-ZäöüÄÖÜ].*/, msgArray[2])
+      this.required(msgArray[0]),
+      this.stringLength(2, 32, msgArray[1]),
+      this.regex(/^[a-zA-ZäöüÄÖÜ].*/, msgArray[2])
     ];
   }
 
-  static bookingTypeRules(msgArray: string[]): ValidationRuleType[] {
-    return [ValidationService.required(msgArray[0])];
+  bookingTypeRules(msgArray: string[]): ValidationRuleType[] {
+    return [this.required(msgArray[0])];
   }
 
-  static amountRules(
+  amountRules(
     zeroValue: Ref<number> | number,
     msgArray: string[]
   ): ValidationRuleType[] {
-    return [ValidationService.oneOfTwo(zeroValue, msgArray[0])];
+    return [this.oneOfTwo(zeroValue, msgArray[0])];
   }
 
-  static validateIBAN(iban: string): boolean {
+  validateIBAN(iban: string): boolean {
     return ValidationRules.validateIBAN(iban).isValid;
   }
 
@@ -141,21 +141,21 @@ export class ValidationService {
   // Complex Validations
   // ========================================================================
 
-  static isoDateRules(msgArray: string[]): ValidationRuleType[] {
+  isoDateRules(msgArray: string[]): ValidationRuleType[] {
     const isValid = (message: string): ValidationRuleType => {
-      return ValidationService.createRule((v) => {
+      return this.createRule((v) => {
         const tv = v as string;
         const date = new Date(`${tv}T00:00:00Z`);
         return !isNaN(date.getTime());
       }, message);
     };
     return [
-      ValidationService.regex(/^\d{4}-\d{2}-\d{2}$/, msgArray[0]),
+      this.regex(/^\d{4}-\d{2}-\d{2}$/, msgArray[0]),
       isValid(msgArray[1])
     ];
   }
 
-  static ibanRules(msgArray: readonly string[]): ValidationRuleType[] {
+  ibanRules(msgArray: readonly string[]): ValidationRuleType[] {
     return [
       this.required(msgArray[0]),
       this.fromDomain((v) => ValidationRules.validateIBAN(v as string), {
@@ -167,11 +167,11 @@ export class ValidationService {
     ];
   }
 
-  static validateISIN(isin: string): boolean {
+  validateISIN(isin: string): boolean {
     return ValidationRules.validateISIN(isin).isValid;
   }
 
-  static isinRules(msgArray: string[]): ValidationRuleType[] {
+  isinRules(msgArray: string[]): ValidationRuleType[] {
     return [
       this.required(msgArray[0]),
       this.fromDomain((v) => ValidationRules.validateISIN(v as string), {
@@ -184,7 +184,7 @@ export class ValidationService {
     ];
   }
 
-  static swiftRules(msgArray: readonly string[]): ValidationRuleType[] {
+  swiftRules(msgArray: readonly string[]): ValidationRuleType[] {
     return [
       this.required(msgArray[0]),
       this.fromDomain((v) => ValidationRules.validateSWIFT(v as string), {
@@ -203,7 +203,7 @@ export class ValidationService {
   /**
    * Map a domain DomainValidationResult to a Vuetify rule.
    */
-  private static fromDomain(
+  private fromDomain(
     domainFn: (_v: any) => { isValid: boolean; error?: ValidationCode },
     messageMap: Record<string, string>
   ): ValidationRuleType {
@@ -214,5 +214,11 @@ export class ValidationService {
     };
   }
 }
+
+// Export as a singleton instance
+export const validationService = new ValidationServiceImpl();
+
+// Also export the class for testing purposes
+export { ValidationServiceImpl as ValidationService };
 
 DomainUtils.log("SERVICES validation");

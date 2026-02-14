@@ -4,7 +4,7 @@ import { useFavicon } from "@/composables/useFavicon";
 import { useDomain } from "@/composables/useDomain";
 import { useAccountForm } from "@/composables/useForms";
 import { COMPONENTS } from "@/configs/components";
-import { ValidationService } from "@/services/validation";
+import { validationService } from "@/services/validation";
 import { createIbanMessages, createSwiftMessages } from "@/domains/validation/messages";
 import { DomainUtils } from "@/domains/utils";
 const props = defineProps();
@@ -88,7 +88,7 @@ const __VLS_6 = __VLS_asFunctionalComponent1(__VLS_5, new __VLS_5({
     modelValue: (__VLS_ctx.accountFormData.swift),
     counter: (11),
     label: (`${__VLS_ctx.t('components.dialogs.forms.accountForm.swiftLabel')}${__VLS_ctx.swiftLabel}`),
-    rules: (__VLS_ctx.ValidationService.swiftRules(__VLS_ctx.SWIFT_RULES)),
+    rules: (__VLS_ctx.validationService.swiftRules(__VLS_ctx.SWIFT_RULES)),
     autofocus: true,
     variant: "outlined",
 }));
@@ -97,7 +97,7 @@ const __VLS_7 = __VLS_6({
     modelValue: (__VLS_ctx.accountFormData.swift),
     counter: (11),
     label: (`${__VLS_ctx.t('components.dialogs.forms.accountForm.swiftLabel')}${__VLS_ctx.swiftLabel}`),
-    rules: (__VLS_ctx.ValidationService.swiftRules(__VLS_ctx.SWIFT_RULES)),
+    rules: (__VLS_ctx.validationService.swiftRules(__VLS_ctx.SWIFT_RULES)),
     autofocus: true,
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_6));
@@ -114,7 +114,7 @@ const __VLS_13 = __VLS_asFunctionalComponent1(__VLS_12, new __VLS_12({
     disabled: (props.isUpdate),
     label: (`${__VLS_ctx.t('components.dialogs.forms.accountForm.ibanLabel')}${__VLS_ctx.ibanLabel}`),
     placeholder: (__VLS_ctx.t('components.dialogs.forms.accountForm.ibanPlaceholder')),
-    rules: (__VLS_ctx.ValidationService.ibanRules(__VLS_ctx.IBAN_RULES)),
+    rules: (__VLS_ctx.validationService.ibanRules(__VLS_ctx.IBAN_RULES)),
     variant: "outlined",
 }));
 const __VLS_14 = __VLS_13({
@@ -123,7 +123,7 @@ const __VLS_14 = __VLS_13({
     disabled: (props.isUpdate),
     label: (`${__VLS_ctx.t('components.dialogs.forms.accountForm.ibanLabel')}${__VLS_ctx.ibanLabel}`),
     placeholder: (__VLS_ctx.t('components.dialogs.forms.accountForm.ibanPlaceholder')),
-    rules: (__VLS_ctx.ValidationService.ibanRules(__VLS_ctx.IBAN_RULES)),
+    rules: (__VLS_ctx.validationService.ibanRules(__VLS_ctx.IBAN_RULES)),
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_13));
 let __VLS_17;
@@ -173,7 +173,7 @@ const __VLS_32 = __VLS_31({
     alt: (__VLS_ctx.t('components.dialogs.forms.accountForm.missingLogo')),
     src: (__VLS_ctx.accountFormData.logoUrl),
 }, ...__VLS_functionalComponentArgsRest(__VLS_31));
-[accountFormData, accountFormData, accountFormData, accountFormData, t, t, t, t, t, t, swiftLabel, ValidationService, ValidationService, SWIFT_RULES, onUpdateSwift, ibanLabel, IBAN_RULES, onUpdateIban, search, COMPONENTS,];
+[accountFormData, accountFormData, accountFormData, accountFormData, t, t, t, t, t, t, swiftLabel, validationService, validationService, SWIFT_RULES, onUpdateSwift, ibanLabel, IBAN_RULES, onUpdateIban, search, COMPONENTS,];
 var __VLS_27;
 [];
 const __VLS_export = (await import('vue')).defineComponent({

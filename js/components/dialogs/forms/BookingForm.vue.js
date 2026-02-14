@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { useBookingForm } from "@/composables/useForms";
 import CreditDebitFieldset from "@/components/CreditDebitFieldset.vue";
 import { INDEXED_DB } from "@/configs/database";
-import { ValidationService } from "@/services/validation";
+import { validationService } from "@/services/validation";
 import { DomainUtils } from "@/domains/utils";
 const { t } = useI18n();
 const { bookingFormData } = useBookingForm();
@@ -129,7 +129,7 @@ vTextField;
 const __VLS_20 = __VLS_asFunctionalComponent1(__VLS_19, new __VLS_19({
     modelValue: (__VLS_ctx.bookingFormData.bookDate),
     label: (__VLS_ctx.t('components.dialogs.forms.bookingForm.dateLabel')),
-    rules: (__VLS_ctx.ValidationService.isoDateRules(__VLS_ctx.DATE_RULES)),
+    rules: (__VLS_ctx.validationService.isoDateRules(__VLS_ctx.DATE_RULES)),
     autofocus: true,
     density: "compact",
     type: "date",
@@ -138,13 +138,13 @@ const __VLS_20 = __VLS_asFunctionalComponent1(__VLS_19, new __VLS_19({
 const __VLS_21 = __VLS_20({
     modelValue: (__VLS_ctx.bookingFormData.bookDate),
     label: (__VLS_ctx.t('components.dialogs.forms.bookingForm.dateLabel')),
-    rules: (__VLS_ctx.ValidationService.isoDateRules(__VLS_ctx.DATE_RULES)),
+    rules: (__VLS_ctx.validationService.isoDateRules(__VLS_ctx.DATE_RULES)),
     autofocus: true,
     density: "compact",
     type: "date",
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_20));
-[bookingFormData, t, ValidationService, DATE_RULES,];
+[bookingFormData, t, validationService, DATE_RULES,];
 var __VLS_16;
 let __VLS_24;
 vCol;
@@ -207,7 +207,7 @@ const __VLS_48 = __VLS_asFunctionalComponent1(__VLS_47, new __VLS_47({
     itemValue: (__VLS_ctx.INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID),
     items: (__VLS_ctx.sortedBookingTypes),
     label: (__VLS_ctx.t('components.dialogs.forms.bookingForm.bookingTypeLabel')),
-    rules: (__VLS_ctx.ValidationService.bookingTypeRules(__VLS_ctx.BOOKING_TYPE_RULES)),
+    rules: (__VLS_ctx.validationService.bookingTypeRules(__VLS_ctx.BOOKING_TYPE_RULES)),
     clearable: true,
     density: "compact",
     maxWidth: "300",
@@ -219,13 +219,13 @@ const __VLS_49 = __VLS_48({
     itemValue: (__VLS_ctx.INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID),
     items: (__VLS_ctx.sortedBookingTypes),
     label: (__VLS_ctx.t('components.dialogs.forms.bookingForm.bookingTypeLabel')),
-    rules: (__VLS_ctx.ValidationService.bookingTypeRules(__VLS_ctx.BOOKING_TYPE_RULES)),
+    rules: (__VLS_ctx.validationService.bookingTypeRules(__VLS_ctx.BOOKING_TYPE_RULES)),
     clearable: true,
     density: "compact",
     maxWidth: "300",
     variant: "outlined",
 }, ...__VLS_functionalComponentArgsRest(__VLS_48));
-[bookingFormData, t, ValidationService, INDEXED_DB, INDEXED_DB, sortedBookingTypes, BOOKING_TYPE_RULES,];
+[bookingFormData, t, validationService, INDEXED_DB, INDEXED_DB, sortedBookingTypes, BOOKING_TYPE_RULES,];
 var __VLS_44;
 let __VLS_52;
 vCol;
@@ -282,7 +282,7 @@ if (__VLS_ctx.isDividendType) {
         ref: "date-input",
         modelValue: (__VLS_ctx.bookingFormData.exDate),
         label: (__VLS_ctx.t('components.dialogs.forms.bookingForm.exDateLabel')),
-        rules: (__VLS_ctx.ValidationService.isoDateRules(__VLS_ctx.DATE_RULES)),
+        rules: (__VLS_ctx.validationService.isoDateRules(__VLS_ctx.DATE_RULES)),
         density: "compact",
         required: true,
         type: "date",
@@ -292,7 +292,7 @@ if (__VLS_ctx.isDividendType) {
         ref: "date-input",
         modelValue: (__VLS_ctx.bookingFormData.exDate),
         label: (__VLS_ctx.t('components.dialogs.forms.bookingForm.exDateLabel')),
-        rules: (__VLS_ctx.ValidationService.isoDateRules(__VLS_ctx.DATE_RULES)),
+        rules: (__VLS_ctx.validationService.isoDateRules(__VLS_ctx.DATE_RULES)),
         density: "compact",
         required: true,
         type: "date",
@@ -301,7 +301,7 @@ if (__VLS_ctx.isDividendType) {
     var __VLS_80 = {};
     var __VLS_78;
 }
-[bookingFormData, t, ValidationService, DATE_RULES, isDividendType,];
+[bookingFormData, t, validationService, DATE_RULES, isDividendType,];
 var __VLS_72;
 let __VLS_82;
 vCol;
@@ -346,19 +346,19 @@ const __VLS_100 = __VLS_asFunctionalComponent1(__VLS_99, new __VLS_99({
     modelValue: (__VLS_ctx.creditDebitModel),
     legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.bookingLabel')),
     rules: ([
-        (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-        (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+        (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+        (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
     ]),
 }));
 const __VLS_101 = __VLS_100({
     modelValue: (__VLS_ctx.creditDebitModel),
     legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.bookingLabel')),
     rules: ([
-        (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-        (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+        (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+        (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
     ]),
 }, ...__VLS_functionalComponentArgsRest(__VLS_100));
-[t, ValidationService, ValidationService, creditDebitModel, RULES, RULES,];
+[t, validationService, validationService, creditDebitModel, RULES, RULES,];
 var __VLS_96;
 if (__VLS_ctx.isDividendSellType) {
     let __VLS_104;
@@ -375,19 +375,19 @@ if (__VLS_ctx.isDividendSellType) {
         modelValue: (__VLS_ctx.taxModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.taxLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }));
     const __VLS_112 = __VLS_111({
         modelValue: (__VLS_ctx.taxModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.taxLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }, ...__VLS_functionalComponentArgsRest(__VLS_111));
-    [t, ValidationService, ValidationService, RULES, RULES, isDividendSellType, taxModel,];
+    [t, validationService, validationService, RULES, RULES, isDividendSellType, taxModel,];
     var __VLS_107;
 }
 if (__VLS_ctx.isDividendSellType) {
@@ -405,19 +405,19 @@ if (__VLS_ctx.isDividendSellType) {
         modelValue: (__VLS_ctx.soliModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.soliLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }));
     const __VLS_123 = __VLS_122({
         modelValue: (__VLS_ctx.soliModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.soliLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }, ...__VLS_functionalComponentArgsRest(__VLS_122));
-    [t, ValidationService, ValidationService, RULES, RULES, isDividendSellType, soliModel,];
+    [t, validationService, validationService, RULES, RULES, isDividendSellType, soliModel,];
     var __VLS_118;
 }
 if (__VLS_ctx.isDividendSellType) {
@@ -435,19 +435,19 @@ if (__VLS_ctx.isDividendSellType) {
         modelValue: (__VLS_ctx.sourceTaxModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.sourceTaxLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }));
     const __VLS_134 = __VLS_133({
         modelValue: (__VLS_ctx.sourceTaxModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.sourceTaxLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }, ...__VLS_functionalComponentArgsRest(__VLS_133));
-    [t, ValidationService, ValidationService, RULES, RULES, isDividendSellType, sourceTaxModel,];
+    [t, validationService, validationService, RULES, RULES, isDividendSellType, sourceTaxModel,];
     var __VLS_129;
 }
 if (__VLS_ctx.isBuySellType) {
@@ -465,19 +465,19 @@ if (__VLS_ctx.isBuySellType) {
         modelValue: (__VLS_ctx.feeModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.feeLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }));
     const __VLS_145 = __VLS_144({
         modelValue: (__VLS_ctx.feeModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.feeLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }, ...__VLS_functionalComponentArgsRest(__VLS_144));
-    [t, ValidationService, ValidationService, isBuySellType, RULES, RULES, feeModel,];
+    [t, validationService, validationService, isBuySellType, RULES, RULES, feeModel,];
     var __VLS_140;
 }
 if (__VLS_ctx.isBuyType) {
@@ -495,19 +495,19 @@ if (__VLS_ctx.isBuyType) {
         modelValue: (__VLS_ctx.transactionTaxModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.transactionTaxLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }));
     const __VLS_156 = __VLS_155({
         modelValue: (__VLS_ctx.transactionTaxModel),
         legend: (__VLS_ctx.t('components.dialogs.forms.bookingForm.transactionTaxLabel')),
         rules: ([
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES),
-            (v) => __VLS_ctx.ValidationService.amountRules(v, __VLS_ctx.RULES)
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES),
+            (v) => __VLS_ctx.validationService.amountRules(v, __VLS_ctx.RULES)
         ]),
     }, ...__VLS_functionalComponentArgsRest(__VLS_155));
-    [t, ValidationService, ValidationService, RULES, RULES, isBuyType, transactionTaxModel,];
+    [t, validationService, validationService, RULES, RULES, isBuyType, transactionTaxModel,];
     var __VLS_151;
 }
 let __VLS_159;

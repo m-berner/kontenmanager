@@ -9,13 +9,12 @@
 <script lang="ts" setup>
 import { onBeforeUnmount, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-//import { useAlert } from "@/composables/useAlert";
 import { useFavicon } from "@/composables/useFavicon";
 import { useDomain } from "@/composables/useDomain";
 import { useAccountForm } from "@/composables/useForms";
 import { COMPONENTS } from "@/configs/components";
 import type { AccountFormProps } from "@/types";
-import { ValidationService } from "@/services/validation";
+import { validationService } from "@/services/validation";
 import {
   createIbanMessages,
   createSwiftMessages
@@ -99,7 +98,7 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS AccountForm: setup");
     :label="`${t(
       'components.dialogs.forms.accountForm.swiftLabel'
     )}${swiftLabel}`"
-    :rules="ValidationService.swiftRules(SWIFT_RULES)"
+    :rules="validationService.swiftRules(SWIFT_RULES)"
     autofocus
     variant="outlined"
     @update:model-value="onUpdateSwift"
@@ -111,7 +110,7 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS AccountForm: setup");
       'components.dialogs.forms.accountForm.ibanLabel'
     )}${ibanLabel}`"
     :placeholder="t('components.dialogs.forms.accountForm.ibanPlaceholder')"
-    :rules="ValidationService.ibanRules(IBAN_RULES)"
+    :rules="validationService.ibanRules(IBAN_RULES)"
     variant="outlined"
     @update:model-value="onUpdateIban"
   />

@@ -18,10 +18,22 @@ import type {
 import { INDEXED_DB } from "@/configs/database";
 import { IndexedDbBase } from "./database/base";
 import { DatabaseMigrator } from "./database/migrator";
-import { AccountRepository } from "./database/repositories/AccountRepository";
-import { BookingRepository } from "./database/repositories/BookingRepository";
-import { BookingTypeRepository } from "./database/repositories/BookingTypeRepository";
-import { StockRepository } from "./database/repositories/StockRepository";
+import {
+  AccountRepository,
+  BookingRepository,
+  BookingTypeRepository,
+  StockRepository
+} from "./database/repositories/repositories";
+
+/**
+ * Valid store names for operations
+ */
+const VALID_STORE_NAMES = [
+  INDEXED_DB.STORE.ACCOUNTS.NAME,
+  INDEXED_DB.STORE.BOOKINGS.NAME,
+  INDEXED_DB.STORE.STOCKS.NAME,
+  INDEXED_DB.STORE.BOOKING_TYPES.NAME
+] as const;
 
 /**
  * Service for managing IndexedDB operations.
@@ -55,11 +67,13 @@ export class DatabaseService extends IndexedDbBase {
     if (this.db) return;
 
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(INDEXED_DB.NAME, INDEXED_DB.CURRENT_VERSION);
+      const request = indexedDB.open(
+        INDEXED_DB.NAME,
+        INDEXED_DB.CURRENT_VERSION
+      );
 
       request.onerror = () => {
-        this.db = null;
-        this.connected = false;
+        this.handleConnectionError();
         reject(
           new AppError(
             ERROR_CODES.SERVICES.DATABASE.A,
@@ -70,9 +84,7 @@ export class DatabaseService extends IndexedDbBase {
       };
 
       request.onsuccess = () => {
-        this.db = request.result;
-        this.connected = true;
-        this.setupEventHandlers();
+        this.handleConnectionSuccess(request.result);
         resolve();
       };
 
@@ -92,110 +104,57 @@ export class DatabaseService extends IndexedDbBase {
       } catch (err) {
         DomainUtils.log("SERVICES database", err, "error");
       } finally {
-        this.db = null;
-        this.connected = false;
+        this.resetConnection();
       }
     }
   }
 
+  /**
+   * Performs atomic operations across multiple stores within a single transaction
+   *
+   * @param stores - Array of store operations to perform
+   * @throws AppError if invalid store names or operations are provided
+   */
   async atomicImport(
     stores: { storeName: string; operations: RecordOperation[] }[]
   ): Promise<void> {
-    stores.forEach((store) => {
-      if (
-        !([
-          INDEXED_DB.STORE.ACCOUNTS.NAME,
-          INDEXED_DB.STORE.BOOKINGS.NAME,
-          INDEXED_DB.STORE.STOCKS.NAME,
-          INDEXED_DB.STORE.BOOKING_TYPES.NAME
-        ] as string[]).includes(store.storeName)
-      ) {
-        throw new AppError(
-          ERROR_CODES.SERVICES.DATABASE.D,
-          ERROR_CATEGORY.DATABASE,
-          false
-        );
-      }
-    });
+    this.validateStoreNames(stores.map((s) => s.storeName));
 
     return this.withTransaction(
       stores.map((s) => s.storeName),
       "readwrite",
       async (tx) => {
         for (const { storeName, operations } of stores) {
-          const store = tx.objectStore(storeName);
-          for (const op of operations) {
-            switch (op.type) {
-              case "add":
-                store.add(op.data);
-                break;
-              case "put":
-                store.put(op.data);
-                break;
-              case "delete":
-                if (!op.key)
-                  throw new AppError(
-                    ERROR_CODES.SERVICES.DATABASE.C,
-                    ERROR_CATEGORY.DATABASE,
-                    false
-                  );
-                store.delete(op.key);
-                break;
-              case "clear":
-                store.clear();
-                break;
-              default:
-                throw new AppError(
-                  ERROR_CODES.SERVICES.DATABASE.D,
-                  ERROR_CATEGORY.DATABASE,
-                  false
-                );
-            }
-          }
+          await this.executeOperations(tx.objectStore(storeName), operations);
         }
       }
     );
   }
 
+  /**
+   * Performs batch operations on a single store
+   *
+   * @param storeName - Target store name
+   * @param operations - Operations to perform
+   */
   async batchOperations(
     storeName: string,
     operations: RecordOperation[]
   ): Promise<void> {
     return this.withTransaction(storeName, "readwrite", async (tx) => {
-      const store = tx.objectStore(storeName);
-      for (const op of operations) {
-        switch (op.type) {
-          case "add":
-            store.add(op.data);
-            break;
-          case "put":
-            store.put(op.data);
-            break;
-          case "delete":
-            if (!op.key)
-              throw new AppError(
-                ERROR_CODES.SERVICES.DATABASE.E,
-                ERROR_CATEGORY.DATABASE,
-                false
-              );
-            store.delete(op.key);
-            break;
-          case "clear":
-            store.clear();
-            break;
-          default:
-            throw new AppError(
-              ERROR_CODES.SERVICES.DATABASE.F,
-              ERROR_CATEGORY.DATABASE,
-              false
-            );
-        }
-      }
+      await this.executeOperations(tx.objectStore(storeName), operations);
     });
   }
 
+  /**
+   * Retrieves all records for a specific account across all stores
+   *
+   * @param accountId - Account identifier
+   * @returns Complete set of account records
+   */
   async getAccountRecords(accountId: number): Promise<RecordsDbData> {
     DomainUtils.log("SERVICES database: getAccountRecords");
+
     return this.withTransaction(
       [
         INDEXED_DB.STORE.BOOKINGS.NAME,
@@ -211,6 +170,7 @@ export class DatabaseService extends IndexedDbBase {
           this.bookingTypes.getAllByAccount(accountId, tx),
           this.stocks.getAllByAccount(accountId, tx)
         ]);
+
         return {
           accountsDB: accounts,
           bookingsDB: bookings,
@@ -221,6 +181,11 @@ export class DatabaseService extends IndexedDbBase {
     );
   }
 
+  /**
+   * Deletes all records associated with an account
+   *
+   * @param accountId - Account identifier
+   */
   async deleteAccountRecords(accountId: number): Promise<void> {
     return this.withTransaction(
       [
@@ -231,11 +196,14 @@ export class DatabaseService extends IndexedDbBase {
       ],
       "readwrite",
       async (tx) => {
+        // Delete dependent records first
         await Promise.all([
           this.bookings.deleteByAccount(accountId, tx),
           this.bookingTypes.deleteByAccount(accountId, tx),
           this.stocks.deleteByAccount(accountId, tx)
         ]);
+
+        // Then delete the account itself
         await this.accounts.delete(accountId, tx);
       }
     );
@@ -264,30 +232,29 @@ export class DatabaseService extends IndexedDbBase {
         const accounts = await this.accounts.getAll(tx);
         const accountIds = new Set(accounts.map((a) => a.cID));
 
-        const bookings = await this.getAll<BookingDb>(
-          INDEXED_DB.STORE.BOOKINGS.NAME,
-          tx
-        );
-        const stocks = await this.getAll<StockDb>(
-          INDEXED_DB.STORE.STOCKS.NAME,
-          tx
-        );
-        const bookingTypes = await this.getAll<BookingTypeDb>(
-          INDEXED_DB.STORE.BOOKING_TYPES.NAME,
-          tx
-        );
+        const [bookings, stocks, bookingTypes] = await Promise.all([
+          this.getAll<BookingDb>(INDEXED_DB.STORE.BOOKINGS.NAME, tx),
+          this.getAll<StockDb>(INDEXED_DB.STORE.STOCKS.NAME, tx),
+          this.getAll<BookingTypeDb>(INDEXED_DB.STORE.BOOKING_TYPES.NAME, tx)
+        ]);
 
-        const orphanedBookings = bookings.filter(
-          (b) => !accountIds.has(b.cAccountNumberID)
-        ).length;
-        const orphanedStocks = stocks.filter(
-          (s) => !accountIds.has(s.cAccountNumberID)
-        ).length;
-        const orphanedBookingTypes = bookingTypes.filter(
-          (bt) => !accountIds.has(bt.cAccountNumberID)
-        ).length;
-
-        return { orphanedBookings, orphanedStocks, orphanedBookingTypes };
+        return {
+          orphanedBookings: this.countOrphaned(
+            bookings,
+            accountIds,
+            "cAccountNumberID"
+          ),
+          orphanedStocks: this.countOrphaned(
+            stocks,
+            accountIds,
+            "cAccountNumberID"
+          ),
+          orphanedBookingTypes: this.countOrphaned(
+            bookingTypes,
+            accountIds,
+            "cAccountNumberID"
+          )
+        };
       }
     );
   }
@@ -308,52 +275,164 @@ export class DatabaseService extends IndexedDbBase {
         const accounts = await this.accounts.getAll(tx);
         const accountIds = new Set(accounts.map((a) => a.cID));
 
-        const bookings = await this.getAll<BookingDb>(
-          INDEXED_DB.STORE.BOOKINGS.NAME,
-          tx
-        );
-        for (const b of bookings) {
-          if (!accountIds.has(b.cAccountNumberID)) {
-            tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME).delete(b.cID);
-          }
-        }
-
-        const stocks = await this.getAll<StockDb>(
-          INDEXED_DB.STORE.STOCKS.NAME,
-          tx
-        );
-        for (const s of stocks) {
-          if (!accountIds.has(s.cAccountNumberID)) {
-            tx.objectStore(INDEXED_DB.STORE.STOCKS.NAME).delete(s.cID);
-          }
-        }
-
-        const bookingTypes = await this.getAll<BookingTypeDb>(
-          INDEXED_DB.STORE.BOOKING_TYPES.NAME,
-          tx
-        );
-        for (const bt of bookingTypes) {
-          if (!accountIds.has(bt.cAccountNumberID)) {
-            tx.objectStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME).delete(bt.cID);
-          }
-        }
+        await Promise.all([
+          this.removeOrphaned(
+            tx,
+            INDEXED_DB.STORE.BOOKINGS.NAME,
+            accountIds,
+            "cAccountNumberID"
+          ),
+          this.removeOrphaned(
+            tx,
+            INDEXED_DB.STORE.STOCKS.NAME,
+            accountIds,
+            "cAccountNumberID"
+          ),
+          this.removeOrphaned(
+            tx,
+            INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+            accountIds,
+            "cAccountNumberID"
+          )
+        ]);
       }
     );
   }
 
+  // ========================================================================
+  // Private Helper Methods
+  // ========================================================================
+
+  /**
+   * Handles successful database connection
+   */
+  private handleConnectionSuccess(db: IDBDatabase): void {
+    this.db = db;
+    this.connected = true;
+    this.setupEventHandlers();
+  }
+
+  /**
+   * Handles connection errors
+   */
+  private handleConnectionError(): void {
+    this.resetConnection();
+  }
+
+  /**
+   * Resets connection state
+   */
+  private resetConnection(): void {
+    this.db = null;
+    this.connected = false;
+  }
+
+  /**
+   * Validates that all store names are valid
+   */
+  private validateStoreNames(storeNames: string[]): void {
+    const invalidStores = storeNames.filter(
+      (name) => !VALID_STORE_NAMES.includes(name as any)
+    );
+
+    if (invalidStores.length > 0) {
+      throw new AppError(
+        ERROR_CODES.SERVICES.DATABASE.D,
+        ERROR_CATEGORY.DATABASE,
+        false
+      );
+    }
+  }
+
+  /**
+   * Executes a list of operations on a store
+   */
+  private async executeOperations(
+    store: IDBObjectStore,
+    operations: RecordOperation[]
+  ): Promise<void> {
+    for (const op of operations) {
+      this.executeOperation(store, op);
+    }
+  }
+
+  /**
+   * Executes a single operation on a store
+   */
+  private executeOperation(store: IDBObjectStore, op: RecordOperation): void {
+    switch (op.type) {
+      case "add":
+        store.add(op.data);
+        break;
+      case "put":
+        store.put(op.data);
+        break;
+      case "delete":
+        if (!op.key) {
+          throw new AppError(
+            ERROR_CODES.SERVICES.DATABASE.C,
+            ERROR_CATEGORY.DATABASE,
+            false
+          );
+        }
+        store.delete(op.key);
+        break;
+      case "clear":
+        store.clear();
+        break;
+      default:
+        throw new AppError(
+          ERROR_CODES.SERVICES.DATABASE.D,
+          ERROR_CATEGORY.DATABASE,
+          false
+        );
+    }
+  }
+
+  /**
+   * Counts orphaned records (records with invalid foreign keys)
+   */
+  private countOrphaned<T extends Record<string, any>>(
+    records: T[],
+    validIds: Set<number>,
+    foreignKeyField: keyof T
+  ): number {
+    return records.filter((r) => !validIds.has(r[foreignKeyField])).length;
+  }
+
+  /**
+   * Removes orphaned records from a store
+   */
+  private async removeOrphaned(
+    tx: IDBTransaction,
+    storeName: string,
+    validIds: Set<number>,
+    foreignKeyField: string
+  ): Promise<void> {
+    const records = await this.getAll<any>(storeName, tx);
+    const store = tx.objectStore(storeName);
+
+    for (const record of records) {
+      if (!validIds.has(record[foreignKeyField])) {
+        store.delete(record.cID);
+      }
+    }
+  }
+
+  /**
+   * Sets up event handlers for database lifecycle events
+   */
   private setupEventHandlers(): void {
     if (!this.db) return;
 
     this.db.onversionchange = () => {
       this.db!.close();
-      this.db = null;
-      this.connected = false;
+      this.resetConnection();
       window.location.reload();
     };
 
     this.db.onclose = () => {
-      this.connected = false;
-      this.db = null;
+      this.resetConnection();
     };
   }
 }

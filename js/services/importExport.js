@@ -4,46 +4,29 @@ import { INDEXED_DB } from "@/configs/database";
 import { ImportExportValidator } from "@/domains/importExport/validator";
 import { ImportExportTransformer } from "@/domains/importExport/transformer";
 import { DATE } from "@/domains/configs/date";
+const FILE_VALIDATION = {
+    MAX_SIZE: 100 * 1024 * 1024,
+    MIN_SIZE: 1
+};
 export class ImportExportService {
-    _transformer;
+    transformer;
     constructor() {
-        this._transformer = new ImportExportTransformer(INDEXED_DB, DATE, DomainUtils.isoDate);
+        this.transformer = new ImportExportTransformer(INDEXED_DB, DATE, DomainUtils.isoDate);
     }
     static validateBackup(data) {
         return ImportExportValidator.validateBackup(data);
     }
+    static validateDataIntegrity(backup) {
+        return ImportExportValidator.validateDataIntegrity(backup);
+    }
+    static validateLegacyDataIntegrity(backup) {
+        return ImportExportValidator.validateLegacyDataIntegrity(backup);
+    }
     static async readJsonFile(blob) {
-        if (!blob || blob.size === 0) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.A, ERROR_CATEGORY.VALIDATION, false);
-        }
-        const MAX_SIZE = 100 * 1024 * 1024;
-        if (blob.size > MAX_SIZE) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.B, ERROR_CATEGORY.VALIDATION, false);
-        }
-        let text;
-        try {
-            text = await blob.text();
-        }
-        catch {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.C, ERROR_CATEGORY.VALIDATION, true);
-        }
-        if (!text || text.trim().length === 0) {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.D, ERROR_CATEGORY.VALIDATION, false);
-        }
-        let parsed;
-        try {
-            parsed = JSON.parse(text);
-        }
-        catch (err) {
-            if (err instanceof SyntaxError) {
-                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.E, ERROR_CATEGORY.VALIDATION, true);
-            }
-            throw err;
-        }
-        if (!parsed || typeof parsed !== "object") {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, false);
-        }
-        return parsed;
+        FileValidator.validateBlob(blob);
+        const text = await FileReader.readBlobAsText(blob);
+        FileValidator.validateText(text);
+        return JsonParser.parse(text);
     }
     stringifyDatabase(sm, accounts, stocks, bookingTypes, bookings) {
         this.validateExportData(accounts, stocks, bookingTypes, bookings);
@@ -54,12 +37,7 @@ export class ImportExportService {
             bookingTypes,
             bookings
         };
-        try {
-            return JSON.stringify(exportData, null, 2);
-        }
-        catch {
-            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.G, ERROR_CATEGORY.VALIDATION, true);
-        }
+        return JsonSerializer.stringify(exportData);
     }
     verifyExportIntegrity(exportedData) {
         try {
@@ -84,17 +62,11 @@ export class ImportExportService {
             };
         }
     }
-    validateDataIntegrity(backup) {
-        return ImportExportValidator.validateDataIntegrity(backup);
-    }
-    validateLegacyDataIntegrity(backup) {
-        return ImportExportValidator.validateLegacyDataIntegrity(backup);
-    }
     transformLegacyStock(rec, activeId) {
-        return this._transformer.transformLegacyStock(rec, activeId);
+        return this.transformer.transformLegacyStock(rec, activeId);
     }
     transformLegacyBooking(smTransfer, index, activeId) {
-        return this._transformer.transformLegacyBooking(smTransfer, index, activeId);
+        return this.transformer.transformLegacyBooking(smTransfer, index, activeId);
     }
     validateExportData(accounts, stocks, bookingTypes, bookings) {
         const errors = [];
@@ -108,6 +80,59 @@ export class ImportExportService {
             errors.push("Invalid bookings data");
         if (errors.length > 0) {
             throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.H, ERROR_CATEGORY.VALIDATION, false);
+        }
+    }
+}
+class FileValidator {
+    static validateBlob(blob) {
+        if (!blob || blob.size === 0) {
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.A, ERROR_CATEGORY.VALIDATION, false);
+        }
+        if (blob.size > FILE_VALIDATION.MAX_SIZE) {
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.B, ERROR_CATEGORY.VALIDATION, false);
+        }
+    }
+    static validateText(text) {
+        if (!text || text.trim().length === 0) {
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.D, ERROR_CATEGORY.VALIDATION, false);
+        }
+    }
+}
+class FileReader {
+    static async readBlobAsText(blob) {
+        try {
+            return await blob.text();
+        }
+        catch {
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.C, ERROR_CATEGORY.VALIDATION, true);
+        }
+    }
+}
+class JsonParser {
+    static parse(text) {
+        let parsed;
+        try {
+            parsed = JSON.parse(text);
+        }
+        catch (err) {
+            if (err instanceof SyntaxError) {
+                throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.E, ERROR_CATEGORY.VALIDATION, true);
+            }
+            throw err;
+        }
+        if (!parsed || typeof parsed !== "object") {
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.F, ERROR_CATEGORY.VALIDATION, false);
+        }
+        return parsed;
+    }
+}
+class JsonSerializer {
+    static stringify(data) {
+        try {
+            return JSON.stringify(data, null, 2);
+        }
+        catch {
+            throw new AppError(ERROR_CODES.IMPORT_EXPORT_SERVICE.G, ERROR_CATEGORY.VALIDATION, true);
         }
     }
 }

@@ -53,8 +53,10 @@ internationalized error messages.
 
 ## Directory Structure
 
-- `database/`: Contains database-specific configuration and migration logic.
-- `fetch/`: Contains configuration for external endpoints and scrapers.
+- `database/`: Contains database-specific base classes, migration logic, and repositories.
+  - `base.ts`: Low-level IndexedDB wrapper and base repository classes.
+  - `migrator.ts`: Database schema versioning and migration logic.
+  - `repositories/`: Specialized repository classes for each entity type.
 - `*.ts`: Individual service implementations.
 - `*.test.ts`: Integration and unit tests for services.
 

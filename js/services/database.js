@@ -3,10 +3,13 @@ import { DomainUtils } from "@/domains/utils";
 import { INDEXED_DB } from "@/configs/database";
 import { IndexedDbBase } from "./database/base";
 import { DatabaseMigrator } from "./database/migrator";
-import { AccountRepository } from "./database/repositories/AccountRepository";
-import { BookingRepository } from "./database/repositories/BookingRepository";
-import { BookingTypeRepository } from "./database/repositories/BookingTypeRepository";
-import { StockRepository } from "./database/repositories/StockRepository";
+import { AccountRepository, BookingRepository, BookingTypeRepository, StockRepository } from "./database/repositories/repositories";
+const VALID_STORE_NAMES = [
+    INDEXED_DB.STORE.ACCOUNTS.NAME,
+    INDEXED_DB.STORE.BOOKINGS.NAME,
+    INDEXED_DB.STORE.STOCKS.NAME,
+    INDEXED_DB.STORE.BOOKING_TYPES.NAME
+];
 export class DatabaseService extends IndexedDbBase {
     accounts = new AccountRepository(this);
     bookings = new BookingRepository(this);
@@ -25,14 +28,11 @@ export class DatabaseService extends IndexedDbBase {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(INDEXED_DB.NAME, INDEXED_DB.CURRENT_VERSION);
             request.onerror = () => {
-                this.db = null;
-                this.connected = false;
+                this.handleConnectionError();
                 reject(new AppError(ERROR_CODES.SERVICES.DATABASE.A, ERROR_CATEGORY.DATABASE, false));
             };
             request.onsuccess = () => {
-                this.db = request.result;
-                this.connected = true;
-                this.setupEventHandlers();
+                this.handleConnectionSuccess(request.result);
                 resolve();
             };
             request.onupgradeneeded = (ev) => {
@@ -49,71 +49,21 @@ export class DatabaseService extends IndexedDbBase {
                 DomainUtils.log("SERVICES database", err, "error");
             }
             finally {
-                this.db = null;
-                this.connected = false;
+                this.resetConnection();
             }
         }
     }
     async atomicImport(stores) {
-        stores.forEach((store) => {
-            if (![
-                INDEXED_DB.STORE.ACCOUNTS.NAME,
-                INDEXED_DB.STORE.BOOKINGS.NAME,
-                INDEXED_DB.STORE.STOCKS.NAME,
-                INDEXED_DB.STORE.BOOKING_TYPES.NAME
-            ].includes(store.storeName)) {
-                throw new AppError(ERROR_CODES.SERVICES.DATABASE.D, ERROR_CATEGORY.DATABASE, false);
-            }
-        });
+        this.validateStoreNames(stores.map(s => s.storeName));
         return this.withTransaction(stores.map((s) => s.storeName), "readwrite", async (tx) => {
             for (const { storeName, operations } of stores) {
-                const store = tx.objectStore(storeName);
-                for (const op of operations) {
-                    switch (op.type) {
-                        case "add":
-                            store.add(op.data);
-                            break;
-                        case "put":
-                            store.put(op.data);
-                            break;
-                        case "delete":
-                            if (!op.key)
-                                throw new AppError(ERROR_CODES.SERVICES.DATABASE.C, ERROR_CATEGORY.DATABASE, false);
-                            store.delete(op.key);
-                            break;
-                        case "clear":
-                            store.clear();
-                            break;
-                        default:
-                            throw new AppError(ERROR_CODES.SERVICES.DATABASE.D, ERROR_CATEGORY.DATABASE, false);
-                    }
-                }
+                await this.executeOperations(tx.objectStore(storeName), operations);
             }
         });
     }
     async batchOperations(storeName, operations) {
         return this.withTransaction(storeName, "readwrite", async (tx) => {
-            const store = tx.objectStore(storeName);
-            for (const op of operations) {
-                switch (op.type) {
-                    case "add":
-                        store.add(op.data);
-                        break;
-                    case "put":
-                        store.put(op.data);
-                        break;
-                    case "delete":
-                        if (!op.key)
-                            throw new AppError(ERROR_CODES.SERVICES.DATABASE.E, ERROR_CATEGORY.DATABASE, false);
-                        store.delete(op.key);
-                        break;
-                    case "clear":
-                        store.clear();
-                        break;
-                    default:
-                        throw new AppError(ERROR_CODES.SERVICES.DATABASE.F, ERROR_CATEGORY.DATABASE, false);
-                }
-            }
+            await this.executeOperations(tx.objectStore(storeName), operations);
         });
     }
     async getAccountRecords(accountId) {
@@ -162,13 +112,16 @@ export class DatabaseService extends IndexedDbBase {
         ], "readonly", async (tx) => {
             const accounts = await this.accounts.getAll(tx);
             const accountIds = new Set(accounts.map((a) => a.cID));
-            const bookings = await this.getAll(INDEXED_DB.STORE.BOOKINGS.NAME, tx);
-            const stocks = await this.getAll(INDEXED_DB.STORE.STOCKS.NAME, tx);
-            const bookingTypes = await this.getAll(INDEXED_DB.STORE.BOOKING_TYPES.NAME, tx);
-            const orphanedBookings = bookings.filter((b) => !accountIds.has(b.cAccountNumberID)).length;
-            const orphanedStocks = stocks.filter((s) => !accountIds.has(s.cAccountNumberID)).length;
-            const orphanedBookingTypes = bookingTypes.filter((bt) => !accountIds.has(bt.cAccountNumberID)).length;
-            return { orphanedBookings, orphanedStocks, orphanedBookingTypes };
+            const [bookings, stocks, bookingTypes] = await Promise.all([
+                this.getAll(INDEXED_DB.STORE.BOOKINGS.NAME, tx),
+                this.getAll(INDEXED_DB.STORE.STOCKS.NAME, tx),
+                this.getAll(INDEXED_DB.STORE.BOOKING_TYPES.NAME, tx)
+            ]);
+            return {
+                orphanedBookings: this.countOrphaned(bookings, accountIds, "cAccountNumberID"),
+                orphanedStocks: this.countOrphaned(stocks, accountIds, "cAccountNumberID"),
+                orphanedBookingTypes: this.countOrphaned(bookingTypes, accountIds, "cAccountNumberID")
+            };
         });
     }
     async repairDatabase() {
@@ -180,38 +133,79 @@ export class DatabaseService extends IndexedDbBase {
         ], "readwrite", async (tx) => {
             const accounts = await this.accounts.getAll(tx);
             const accountIds = new Set(accounts.map((a) => a.cID));
-            const bookings = await this.getAll(INDEXED_DB.STORE.BOOKINGS.NAME, tx);
-            for (const b of bookings) {
-                if (!accountIds.has(b.cAccountNumberID)) {
-                    tx.objectStore(INDEXED_DB.STORE.BOOKINGS.NAME).delete(b.cID);
-                }
-            }
-            const stocks = await this.getAll(INDEXED_DB.STORE.STOCKS.NAME, tx);
-            for (const s of stocks) {
-                if (!accountIds.has(s.cAccountNumberID)) {
-                    tx.objectStore(INDEXED_DB.STORE.STOCKS.NAME).delete(s.cID);
-                }
-            }
-            const bookingTypes = await this.getAll(INDEXED_DB.STORE.BOOKING_TYPES.NAME, tx);
-            for (const bt of bookingTypes) {
-                if (!accountIds.has(bt.cAccountNumberID)) {
-                    tx.objectStore(INDEXED_DB.STORE.BOOKING_TYPES.NAME).delete(bt.cID);
-                }
-            }
+            await Promise.all([
+                this.removeOrphaned(tx, INDEXED_DB.STORE.BOOKINGS.NAME, accountIds, "cAccountNumberID"),
+                this.removeOrphaned(tx, INDEXED_DB.STORE.STOCKS.NAME, accountIds, "cAccountNumberID"),
+                this.removeOrphaned(tx, INDEXED_DB.STORE.BOOKING_TYPES.NAME, accountIds, "cAccountNumberID")
+            ]);
         });
+    }
+    handleConnectionSuccess(db) {
+        this.db = db;
+        this.connected = true;
+        this.setupEventHandlers();
+    }
+    handleConnectionError() {
+        this.resetConnection();
+    }
+    resetConnection() {
+        this.db = null;
+        this.connected = false;
+    }
+    validateStoreNames(storeNames) {
+        const invalidStores = storeNames.filter(name => !VALID_STORE_NAMES.includes(name));
+        if (invalidStores.length > 0) {
+            throw new AppError(ERROR_CODES.SERVICES.DATABASE.D, ERROR_CATEGORY.DATABASE, false);
+        }
+    }
+    async executeOperations(store, operations) {
+        for (const op of operations) {
+            this.executeOperation(store, op);
+        }
+    }
+    executeOperation(store, op) {
+        switch (op.type) {
+            case "add":
+                store.add(op.data);
+                break;
+            case "put":
+                store.put(op.data);
+                break;
+            case "delete":
+                if (!op.key) {
+                    throw new AppError(ERROR_CODES.SERVICES.DATABASE.C, ERROR_CATEGORY.DATABASE, false);
+                }
+                store.delete(op.key);
+                break;
+            case "clear":
+                store.clear();
+                break;
+            default:
+                throw new AppError(ERROR_CODES.SERVICES.DATABASE.D, ERROR_CATEGORY.DATABASE, false);
+        }
+    }
+    countOrphaned(records, validIds, foreignKeyField) {
+        return records.filter((r) => !validIds.has(r[foreignKeyField])).length;
+    }
+    async removeOrphaned(tx, storeName, validIds, foreignKeyField) {
+        const records = await this.getAll(storeName, tx);
+        const store = tx.objectStore(storeName);
+        for (const record of records) {
+            if (!validIds.has(record[foreignKeyField])) {
+                store.delete(record.cID);
+            }
+        }
     }
     setupEventHandlers() {
         if (!this.db)
             return;
         this.db.onversionchange = () => {
             this.db.close();
-            this.db = null;
-            this.connected = false;
+            this.resetConnection();
             window.location.reload();
         };
         this.db.onclose = () => {
-            this.connected = false;
-            this.db = null;
+            this.resetConnection();
         };
     }
 }

@@ -19,10 +19,10 @@ import { useStorage } from "@/composables/useStorage";
 import { useBrowser } from "@/composables/useBrowser";
 import { useBookingsStore } from "@/stores/bookings";
 import { DomainLogic } from "@/domains/logic";
-import {CURRENCIES} from "@/domains/configs/currencies";
+import { CURRENCIES } from "@/domains/configs/currencies";
 import { STOCK_STORE_MEMORY } from "@/domains/logic";
 
-const {getUserLocale} = useBrowser();
+const { getUserLocale } = useBrowser();
 
 /**
  * Internal Pinia store managing stock records and derived stock data.
@@ -61,9 +61,9 @@ export const useStocksStore = defineStore("stocks", function () {
   });
 
   /** All passive (faded-out) stocks. */
-  const passive = computed(() => {
+  const passive = computed((): StockItem[] => {
     return items.value.filter((rec) => {
-      return rec.cFadeOut === 1 && rec.cID > 0;
+      return rec.cFadeOut === 1 && rec.cID as number > 0;
     });
   });
 
@@ -72,16 +72,21 @@ export const useStocksStore = defineStore("stocks", function () {
    *
    * Sorted by first-page flag and portfolio value.
    */
-  const active = computed(() => {
+  const active = computed((): StockItem[] => {
     return items.value
-      .filter((rec) => rec.cFadeOut === 0 && rec.cID > 0)
-      .map((rec) => ({
-        ...rec,
-        id: rec.cID, // Ensure 'id' is available for loadOnlineData
-        mPortfolio: portfolioByStockId(rec.cID),
-        mInvest: investByStockId(rec.cID),
-        mDeleteable: !hasStockID(rec.cID)
-      }))
+      .filter((rec: StockItem): boolean => {
+        const { cFadeOut, cID } = rec;
+        return cFadeOut === 0 && (cID as number) > 0;
+      })
+      .map((rec: StockItem): StockItem => {
+        return {
+          ...rec,
+          //id: rec.cID, // Ensure 'id' is available for loadOnlineData
+          mPortfolio: portfolioByStockId(rec.cID as number),
+          mInvest: investByStockId(rec.cID as number),
+          mDeleteable: !hasStockID(rec.cID as number)
+        };
+      })
       .sort((a: StockItem, b: StockItem) => {
         const firstPageDiff = b.cFirstPage - a.cFirstPage;
         return firstPageDiff !== 0
@@ -111,14 +116,14 @@ export const useStocksStore = defineStore("stocks", function () {
    */
   function add(stock: StockDb, prepend: boolean = false): void {
     DomainUtils.log("STORES stocks: add");
-    const completeStock = {
+    const completeStock: StockItem = {
       ...stock,
       ...STOCK_STORE_MEMORY
     };
     if (prepend) {
-      items.value = [completeStock, ...items.value];
+      items.value.unshift(completeStock as StockItem);
     } else {
-      items.value = [...items.value, completeStock];
+      items.value.push(completeStock as StockItem);
     }
   }
 
@@ -130,7 +135,7 @@ export const useStocksStore = defineStore("stocks", function () {
   function update(stockDb: StockDb): void {
     DomainUtils.log("STORES stocks: updateStock", stockDb, "info");
 
-    const index = getIndexById.value(stockDb.cID);
+    const index = getIndexById.value(stockDb.cID as number);
 
     if (index !== -1) {
       const newItems = [...items.value];
@@ -238,11 +243,18 @@ export const useStocksStore = defineStore("stocks", function () {
       const data = minRateMaxResponse[i];
       if (!data) return;
 
-      const stockToUpdate = getById.value(stock.id);
+      const stockToUpdate = getById.value(stock.cID as number);
       if (!stockToUpdate) return;
 
-      const uiCur = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3,5));
-      const divisor = data.cur === uiCur ? 1 : data.cur === "EUR" ? runtime.curUsd : runtime.curEur;
+      const uiCur = CURRENCIES.CODE.get(
+        getUserLocale().toLowerCase().substring(3, 5)
+      );
+      const divisor =
+        data.cur === uiCur
+          ? 1
+          : data.cur === "EUR"
+            ? runtime.curUsd
+            : runtime.curEur;
 
       stockToUpdate.mMin = DomainUtils.toNumber(data.min) / divisor;
       stockToUpdate.mValue = DomainUtils.toNumber(data.rate) / divisor;
@@ -250,7 +262,7 @@ export const useStocksStore = defineStore("stocks", function () {
       stockToUpdate.mEuroChange =
         stockToUpdate.mValue * (stock.mPortfolio ?? 0) - (stock.mInvest ?? 0);
 
-      const dateData = dateResponse.find((d) => d.key === stock.id);
+      const dateData = dateResponse.find((d) => d.key === stock.cID);
       if (dateData) {
         stockToUpdate.cMeetingDay =
           dateData.value.gm > 0

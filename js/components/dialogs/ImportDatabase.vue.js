@@ -296,10 +296,10 @@ const processBackupFile = async () => {
         }
         let dataIntegrityErrors = [];
         if (validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION) {
-            dataIntegrityErrors = importService.validateLegacyDataIntegrity(backup);
+            dataIntegrityErrors = ImportExportService.validateLegacyDataIntegrity(backup);
         }
         else {
-            dataIntegrityErrors = importService.validateDataIntegrity(backup);
+            dataIntegrityErrors = ImportExportService.validateDataIntegrity(backup);
         }
         if (dataIntegrityErrors.length > 0) {
             const errorList = dataIntegrityErrors.slice(0, 5).join("\n");

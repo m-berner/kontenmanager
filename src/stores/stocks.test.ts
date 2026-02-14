@@ -14,6 +14,7 @@ import { useSettingsStore } from "./settings";
 import { useRuntimeStore } from "./runtime";
 import { fetchService } from "@/services/fetch";
 import { DATE } from "@/domains/configs/date";
+import type { StockItem } from "@/types";
 
 // Mock dependencies
 vi.mock("@/services/fetch", () => ({
@@ -43,7 +44,7 @@ describe("Stocks Store", () => {
     vi.clearAllMocks();
   });
 
-  const createSampleStock = (overrides = {}) => ({
+  const createSampleStock = (overrides = {}): StockItem => ({
     cID: 1,
     cCompany: "Test Company",
     cISIN: "US1234567890",
@@ -95,6 +96,9 @@ describe("Stocks Store", () => {
     it("active should filter and enrich stocks", () => {
       const stocksStore = useStocksStore();
       const bookingsStore = useBookingsStore();
+      bookingsStore.items = [
+        createSampleBooking({ cStockID: 1, cCount: 5, cDebit: 500 })
+      ];
 
       stocksStore.items = [
         createSampleStock({ cID: 1, cCompany: "Active", cFadeOut: 0 }),
@@ -102,15 +106,11 @@ describe("Stocks Store", () => {
         createSampleStock({ cID: 0, cCompany: "ZeroID", cFadeOut: 0 })
       ];
 
-      bookingsStore.items = [
-        createSampleBooking({ cStockID: 1, cCount: 5, cDebit: 500 })
-      ];
-
       expect(stocksStore.active).toHaveLength(1);
       expect(stocksStore.active[0].cCompany).toBe("Active");
       expect(stocksStore.active[0].mPortfolio).toBe(5);
       expect(stocksStore.active[0].mInvest).toBe(500);
-      expect(stocksStore.active[0].id).toBe(1);
+      expect(stocksStore.active[0].cID).toBe(1);
     });
 
     it("active should sort by cFirstPage and then by mPortfolio value", () => {

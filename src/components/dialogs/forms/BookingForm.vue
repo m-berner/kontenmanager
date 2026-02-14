@@ -14,11 +14,8 @@ import { useSettingsStore } from "@/stores/settings";
 import { useBookingForm } from "@/composables/useForms";
 import CreditDebitFieldset from "@/components/CreditDebitFieldset.vue";
 import { INDEXED_DB } from "@/configs/database";
-import { ValidationService } from "@/services/validation";
+import { validationService } from "@/services/validation";
 import { DomainUtils } from "@/domains/utils";
-//import type { BookingFormProps } from "@/types";
-
-//const props = defineProps<BookingFormProps>();
 
 const { t } = useI18n();
 const { bookingFormData } = useBookingForm();
@@ -141,7 +138,7 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
         <v-text-field
           v-model="bookingFormData.bookDate"
           :label="t('components.dialogs.forms.bookingForm.dateLabel')"
-          :rules="ValidationService.isoDateRules(DATE_RULES)"
+          :rules="validationService.isoDateRules(DATE_RULES)"
           autofocus
           density="compact"
           type="date"
@@ -171,7 +168,7 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
           :item-value="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID"
           :items="sortedBookingTypes"
           :label="t('components.dialogs.forms.bookingForm.bookingTypeLabel')"
-          :rules="ValidationService.bookingTypeRules(BOOKING_TYPE_RULES)"
+          :rules="validationService.bookingTypeRules(BOOKING_TYPE_RULES)"
           clearable
           density="compact"
           max-width="300"
@@ -197,7 +194,7 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
           ref="date-input"
           v-model="bookingFormData.exDate"
           :label="t('components.dialogs.forms.bookingForm.exDateLabel')"
-          :rules="ValidationService.isoDateRules(DATE_RULES)"
+          :rules="validationService.isoDateRules(DATE_RULES)"
           density="compact"
           required
           type="date"
@@ -221,8 +218,8 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
         v-model="creditDebitModel"
         :legend="t('components.dialogs.forms.bookingForm.bookingLabel')"
         :rules="[
-          (v: number) => ValidationService.amountRules(v, RULES),
-          (v: number) => ValidationService.amountRules(v, RULES)
+          (v: number) => validationService.amountRules(v, RULES),
+          (v: number) => validationService.amountRules(v, RULES)
         ]"
       />
     </v-row>
@@ -231,8 +228,8 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
         v-model="taxModel"
         :legend="t('components.dialogs.forms.bookingForm.taxLabel')"
         :rules="[
-          (v: number) => ValidationService.amountRules(v, RULES),
-          (v: number) => ValidationService.amountRules(v, RULES)
+          (v: number) => validationService.amountRules(v, RULES),
+          (v: number) => validationService.amountRules(v, RULES)
         ]"
       />
     </v-row>
@@ -241,8 +238,8 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
         v-model="soliModel"
         :legend="t('components.dialogs.forms.bookingForm.soliLabel')"
         :rules="[
-          (v: number) => ValidationService.amountRules(v, RULES),
-          (v: number) => ValidationService.amountRules(v, RULES)
+          (v: number) => validationService.amountRules(v, RULES),
+          (v: number) => validationService.amountRules(v, RULES)
         ]"
       />
     </v-row>
@@ -251,8 +248,8 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
         v-model="sourceTaxModel"
         :legend="t('components.dialogs.forms.bookingForm.sourceTaxLabel')"
         :rules="[
-          (v: number) => ValidationService.amountRules(v, RULES),
-          (v: number) => ValidationService.amountRules(v, RULES)
+          (v: number) => validationService.amountRules(v, RULES),
+          (v: number) => validationService.amountRules(v, RULES)
         ]"
       />
     </v-row>
@@ -261,8 +258,8 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
         v-model="feeModel"
         :legend="t('components.dialogs.forms.bookingForm.feeLabel')"
         :rules="[
-          (v: number) => ValidationService.amountRules(v, RULES),
-          (v: number) => ValidationService.amountRules(v, RULES)
+          (v: number) => validationService.amountRules(v, RULES),
+          (v: number) => validationService.amountRules(v, RULES)
         ]"
       />
     </v-row>
@@ -271,8 +268,8 @@ DomainUtils.log("COMPONENTS DIALOGS FORMS BookingForm: setup");
         v-model="transactionTaxModel"
         :legend="t('components.dialogs.forms.bookingForm.transactionTaxLabel')"
         :rules="[
-          (v: number) => ValidationService.amountRules(v, RULES),
-          (v: number) => ValidationService.amountRules(v, RULES)
+          (v: number) => validationService.amountRules(v, RULES),
+          (v: number) => validationService.amountRules(v, RULES)
         ]"
       />
     </v-row>

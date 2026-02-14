@@ -50,8 +50,20 @@ export interface BackupData {
   accounts: AccountDb[];
   bookings: BookingDb[];
   bookingTypes: BookingTypeDb[];
-  stocks: StocksDb[] & StockItem[] & LegacyStockDb[];
+  stocks: StockDb[] & StockItem[] & LegacyStockDb[];
   transfers?: LegacyBookingDb[];
+}
+
+export interface ExportData {
+  sm: {
+    cVersion: number;
+    cDBVersion: number;
+    cEngine: string;
+  };
+  accounts: AccountDb[];
+  bookings: BookingDb[];
+  bookingTypes: BookingTypeDb[];
+  stocks: StockDb[];
 }
 
 export interface BackupValidationResult {

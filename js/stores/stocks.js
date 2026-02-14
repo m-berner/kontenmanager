@@ -34,14 +34,18 @@ export const useStocksStore = defineStore("stocks", function () {
     });
     const active = computed(() => {
         return items.value
-            .filter((rec) => rec.cFadeOut === 0 && rec.cID > 0)
-            .map((rec) => ({
-            ...rec,
-            id: rec.cID,
-            mPortfolio: portfolioByStockId(rec.cID),
-            mInvest: investByStockId(rec.cID),
-            mDeleteable: !hasStockID(rec.cID)
-        }))
+            .filter((rec) => {
+            const { cFadeOut, cID } = rec;
+            return cFadeOut === 0 && cID > 0;
+        })
+            .map((rec) => {
+            return {
+                ...rec,
+                mPortfolio: portfolioByStockId(rec.cID),
+                mInvest: investByStockId(rec.cID),
+                mDeleteable: !hasStockID(rec.cID)
+            };
+        })
             .sort((a, b) => {
             const firstPageDiff = b.cFirstPage - a.cFirstPage;
             return firstPageDiff !== 0
@@ -63,10 +67,10 @@ export const useStocksStore = defineStore("stocks", function () {
             ...STOCK_STORE_MEMORY
         };
         if (prepend) {
-            items.value = [completeStock, ...items.value];
+            items.value.unshift(completeStock);
         }
         else {
-            items.value = [...items.value, completeStock];
+            items.value.push(completeStock);
         }
     }
     function update(stockDb) {
@@ -145,17 +149,21 @@ export const useStocksStore = defineStore("stocks", function () {
             const data = minRateMaxResponse[i];
             if (!data)
                 return;
-            const stockToUpdate = getById.value(stock.id);
+            const stockToUpdate = getById.value(stock.cID);
             if (!stockToUpdate)
                 return;
             const uiCur = CURRENCIES.CODE.get(getUserLocale().toLowerCase().substring(3, 5));
-            const divisor = data.cur === uiCur ? 1 : data.cur === "EUR" ? runtime.curUsd : runtime.curEur;
+            const divisor = data.cur === uiCur
+                ? 1
+                : data.cur === "EUR"
+                    ? runtime.curUsd
+                    : runtime.curEur;
             stockToUpdate.mMin = DomainUtils.toNumber(data.min) / divisor;
             stockToUpdate.mValue = DomainUtils.toNumber(data.rate) / divisor;
             stockToUpdate.mMax = DomainUtils.toNumber(data.max) / divisor;
             stockToUpdate.mEuroChange =
                 stockToUpdate.mValue * (stock.mPortfolio ?? 0) - (stock.mInvest ?? 0);
-            const dateData = dateResponse.find((d) => d.key === stock.id);
+            const dateData = dateResponse.find((d) => d.key === stock.cID);
             if (dateData) {
                 stockToUpdate.cMeetingDay =
                     dateData.value.gm > 0
