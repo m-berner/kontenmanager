@@ -2,14 +2,15 @@ import { onBeforeMount, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStocksDB } from "@/composables/useIndexedDB";
 import { useBrowser } from "@/composables/useBrowser";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
+import { useAlert } from "@/composables/useAlert";
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();
+const { handleUserError } = useAlert();
 const { update } = useStocksDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const runtime = useRuntimeStore();
@@ -32,8 +33,8 @@ const onClickOk = async () => {
             await handleUserNotice("FadeInStock", getMessage("xx_db_fade_in"));
             runtime.resetTeleport();
         }
-        catch {
-            throw new AppError(ERROR_CODES.FADE_IN_STOCK, ERROR_CATEGORY.VALIDATION, true);
+        catch (err) {
+            await handleUserError("FadeInStock", err, {});
         }
     });
 };

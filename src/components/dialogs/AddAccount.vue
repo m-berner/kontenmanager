@@ -2,8 +2,6 @@
   - This Source Code Form is subject to the terms of the Mozilla Public
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - one could get a copy at https://mozilla.org/MPL/2.0/.
-  -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 
 <script lang="ts" setup>
@@ -19,7 +17,7 @@ import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { useAccountsDB, useBookingTypesDB } from "@/composables/useIndexedDB";
 import { INDEXED_DB } from "@/configs/database";
 import { DomainUtils } from "@/domains/utils";
@@ -51,10 +49,10 @@ const onClickOk = async (): Promise<void> => {
       const accountData = mapAccountFormToDb();
 
       // 1) Run all DB writes atomically
-      const { accountId, createdTypes } = await databaseService.withTransaction(
+      const result = await databaseService.transactionManager.execute(
         [INDEXED_DB.STORE.ACCOUNTS.NAME, INDEXED_DB.STORE.BOOKING_TYPES.NAME],
         "readwrite",
-        async (tx) => {
+        async (tx: IDBTransaction) => {
           // Add the account, get the generated ID
           const accountId = await addAccountDB(accountData, tx);
           if (accountId === INDEXED_DB.INVALID_ID)
@@ -100,6 +98,8 @@ const onClickOk = async (): Promise<void> => {
           return { accountId, createdTypes };
         }
       );
+
+      const { accountId, createdTypes } = result;
 
       // 2) Only if the transaction completed successfully, update UI state
       const { activeAccountId } = storeToRefs(settings);

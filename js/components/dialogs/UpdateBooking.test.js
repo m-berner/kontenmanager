@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useBookingForm } from "@/composables/useForms";
 import { useBookingsStore } from "@/stores/bookings";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
 import { DATE } from "@/domains/configs/date";
+import { createDatabaseService } from "@/services/database/service";
+const testDb = createDatabaseService("test-db", 1);
 const browserMock = {
     storage: {
         local: {
@@ -29,7 +29,7 @@ vi.stubGlobal("browser", browserMock);
 describe("UpdateBooking Logic Test", () => {
     beforeEach(async () => {
         setActivePinia(createPinia());
-        vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+        vi.spyOn(testDb, "isConnected").mockReturnValue(true);
     });
     it("should update a booking and verify it reaches the database service", async () => {
         const { bookingFormData, mapBookingFormToDb } = useBookingForm();
@@ -69,13 +69,14 @@ describe("UpdateBooking Logic Test", () => {
         bookingFormData.description = "New Description";
         bookingFormData.debit = 150;
         bookingFormData.credit = 0;
-        const updateSpy = vi
-            .spyOn(databaseService, "update")
+        const bookingsRepo = testDb.getRepository("bookings");
+        const saveSpy = vi
+            .spyOn(bookingsRepo, "save")
             .mockResolvedValue(500);
         const bookingData = mapBookingFormToDb(settings.activeAccountId, DATE.ISO);
-        await databaseService.update(INDEXED_DB.STORE.BOOKINGS.NAME, bookingData);
+        await bookingsRepo.save(bookingData);
         bookingsStore.update(bookingData);
-        expect(updateSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.BOOKINGS.NAME, expect.objectContaining({
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({
             cID: 500,
             cDescription: "New Description",
             cDebit: 150

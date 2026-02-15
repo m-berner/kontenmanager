@@ -16,7 +16,7 @@ export const INDEXED_DB = {
             NAME: "bookings",
             FIELDS: {
                 ID: "cID",
-                DATE: "cDate",
+                BOOK_DATE: "cBookDate",
                 EX_DATE: "cExDate",
                 COUNT: "cCount",
                 CREDIT: "cCredit",

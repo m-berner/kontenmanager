@@ -2,8 +2,6 @@
   - This Source Code Form is subject to the terms of the Mozilla Public
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - one could get a copy at https://mozilla.org/MPL/2.0/.
-  -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 
 <script lang="ts" setup>
@@ -15,7 +13,11 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRuntimeStore } from "@/stores/runtime";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import {
+  AppError,
+  ERROR_CATEGORY,
+  ERROR_CODES
+} from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useAlert } from "@/composables/useAlert";
@@ -33,7 +35,7 @@ import { INDEXED_DB } from "@/configs/database";
 
 const { t } = useI18n();
 const { handleUserNotice, manifest, writeBufferToFile } = useBrowser();
-const { handleUserConfirm } = useAlert();
+const { handleUserConfirm, handleUserError } = useAlert();
 const { getAll: getAllAccounts } = useAccountsDB();
 const { getAll: getAllBookings } = useBookingsDB();
 const { getAll: getAllBookingTypes } = useBookingTypesDB();
@@ -186,15 +188,9 @@ const onClickOk = async (): Promise<void> => {
 
       resetTeleport();
     } catch (err) {
-      if (err instanceof AppError) {
-        throw err;
-      }
-
-      throw new AppError(
-        ERROR_CODES.EXPORT_DATABASE.C,
-        ERROR_CATEGORY.DATABASE,
-        true
-      );
+      await handleUserError(t("components.dialogs.exportDatabase.title"), err, {
+        data: "EXPORT_DATABASE"
+      });
     }
   });
 };

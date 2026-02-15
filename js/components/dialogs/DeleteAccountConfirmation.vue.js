@@ -3,12 +3,11 @@ import { storeToRefs } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { useAlert } from "@/composables/useAlert";
 const { t } = useI18n();
@@ -53,8 +52,8 @@ const onClickOk = async () => {
             resetTeleport();
             await handleUserNotice("DeleteAccountConfirmation", getMessage("xx_db_delete_success"));
         }
-        catch {
-            throw new AppError(ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION, ERROR_CATEGORY.VALIDATION, true);
+        catch (err) {
+            await handleUserError("DeleteAccountConfirmation", err, {});
         }
     });
 };

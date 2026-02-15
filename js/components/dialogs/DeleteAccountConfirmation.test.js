@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
+import { databaseService } from "@/services/database/service";
 const browserMock = {
     storage: {
         local: {

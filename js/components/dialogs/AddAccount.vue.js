@@ -10,7 +10,7 @@ import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { useAccountsDB, useBookingTypesDB } from "@/composables/useIndexedDB";
 import { INDEXED_DB } from "@/configs/database";
 import { DomainUtils } from "@/domains/utils";
@@ -38,7 +38,7 @@ const onClickOk = async () => {
         errorTitle: t("components.dialogs.onClickOk"),
         operation: async () => {
             const accountData = mapAccountFormToDb();
-            const { accountId, createdTypes } = await databaseService.withTransaction([INDEXED_DB.STORE.ACCOUNTS.NAME, INDEXED_DB.STORE.BOOKING_TYPES.NAME], "readwrite", async (tx) => {
+            const result = await databaseService.transactionManager.execute([INDEXED_DB.STORE.ACCOUNTS.NAME, INDEXED_DB.STORE.BOOKING_TYPES.NAME], "readwrite", async (tx) => {
                 const accountId = await addAccountDB(accountData, tx);
                 if (accountId === INDEXED_DB.INVALID_ID)
                     throw new Error("Failed to add account");
@@ -67,6 +67,7 @@ const onClickOk = async () => {
                 }
                 return { accountId, createdTypes };
             });
+            const { accountId, createdTypes } = result;
             const { activeAccountId } = storeToRefs(settings);
             records.accounts.add({ ...accountData, cID: accountId });
             for (const bt of createdTypes)

@@ -12,7 +12,7 @@ import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { DATE } from "@/domains/configs/date";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();
 const { update } = useBookingsDB();

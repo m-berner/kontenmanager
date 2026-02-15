@@ -1,10 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useAccountForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useAccountsStore } from "@/stores/accounts";
+import { databaseService } from "@/services/database/service";
 const browserMock = {
     storage: {
         local: {
@@ -47,7 +46,8 @@ describe("UpdateAccount Logic Test", () => {
         accountFormData.iban = "NEW_IBAN";
         accountFormData.logoUrl = "http://new.logo";
         accountFormData.withDepot = true;
-        const updateSpy = vi.spyOn(databaseService, "update").mockResolvedValue(1);
+        const accountsRepo = databaseService.getRepository("accounts");
+        const saveSpy = vi.spyOn(accountsRepo, "save").mockResolvedValue(1);
         const updatedAccountData = {
             cID: accountFormData.id,
             cSwift: accountFormData.swift.trim().toUpperCase(),
@@ -55,9 +55,9 @@ describe("UpdateAccount Logic Test", () => {
             cLogoUrl: accountFormData.logoUrl.trim(),
             cWithDepot: accountFormData.withDepot
         };
-        await databaseService.update(INDEXED_DB.STORE.ACCOUNTS.NAME, updatedAccountData);
+        await accountsRepo.save(updatedAccountData);
         accountsStore.update(updatedAccountData);
-        expect(updateSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.ACCOUNTS.NAME, expect.objectContaining({
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({
             cID: 1,
             cSwift: "NEW_SWIFT",
             cIban: "NEW_IBAN",

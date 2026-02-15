@@ -109,7 +109,7 @@ export const createPrivacyContent = (t) => [
 ];
 export const createHomeHeaders = (t) => [
     createHeaderItem(t, TRANSLATION_KEYS.HOME_ACTION, "mAction"),
-    createHeaderItem(t, TRANSLATION_KEYS.HOME_DATE, "cDate"),
+    createHeaderItem(t, TRANSLATION_KEYS.HOME_DATE, "cBookDate"),
     createHeaderItem(t, TRANSLATION_KEYS.HOME_DEBIT, "cDebit"),
     createHeaderItem(t, TRANSLATION_KEYS.HOME_CREDIT, "cCredit"),
     createHeaderItem(t, TRANSLATION_KEYS.HOME_DESCRIPTION, "cDescription"),

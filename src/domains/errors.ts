@@ -2,8 +2,6 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import type { AppErrorCategoryType } from "@/types";
@@ -109,7 +107,11 @@ export const ERROR_CODES = {
         H: "#dbs",
         I: "#dbt",
         J: "#dbv"
-      }
+      },
+      TRANSACTION_FAILED: "#kkb",
+      NO_INDEX: "qyy",
+      REQUEST_FAILED: "#ppz",
+      INVALID_BATCH: "hgv"
     },
     FETCH: {
       A: "#nsl",
@@ -222,6 +224,10 @@ const ERRORS: Record<string, string> = {
   [ERROR_CODES.SERVICES.DATABASE.D]: "Unknown operation type",
   [ERROR_CODES.SERVICES.DATABASE.E]: "Delete operation requires a key",
   [ERROR_CODES.SERVICES.DATABASE.F]: "Unknown operation type",
+  [ERROR_CODES.SERVICES.DATABASE.TRANSACTION_FAILED]: "Transaction failed",
+  [ERROR_CODES.SERVICES.DATABASE.NO_INDEX]: "Missing index",
+  [ERROR_CODES.SERVICES.DATABASE.REQUEST_FAILED]: "Request failed",
+  [ERROR_CODES.SERVICES.DATABASE.INVALID_BATCH]: "Invalid batch",
 
   [ERROR_CODES.SERVICES.FETCH.A]: "Failed to receive data",
   [ERROR_CODES.SERVICES.FETCH.B]: "Invalid HTML input",

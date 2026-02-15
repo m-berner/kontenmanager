@@ -2,17 +2,17 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
+import { createDatabaseService } from "@/services/database/service";
+import type { BookingTypeDb } from "@/types";
+
+const testDb = createDatabaseService("test-db", 1);
 
 // Mock browser API
 const browserMock = {
@@ -40,7 +40,7 @@ describe("AddBookingType Logic Test", () => {
     setActivePinia(createPinia());
 
     // Mock connection state
-    vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+    vi.spyOn(testDb, "isConnected").mockReturnValue(true);
   });
 
   it("should add a booking type and verify it reaches the database service", async () => {
@@ -49,23 +49,26 @@ describe("AddBookingType Logic Test", () => {
     const records = useRecordsStore();
     const settings = useSettingsStore();
 
-    // 0. Setup active account
+    // 0. Set up the active account
     settings.activeAccountId = 1;
 
     // 1. Setup form data
     bookingTypeFormData.name = "Test Type";
 
-    // 2. Mock the DB add operation success
-    const addSpy = vi.spyOn(databaseService, "add").mockResolvedValue(101);
+    // 2. Mock the DB save operation success
+    const mockRepository = {
+      save: vi.fn().mockResolvedValue(101)
+    };
+    const saveSpy = mockRepository.save;
+    vi.spyOn(testDb, "getRepository").mockReturnValue(mockRepository as any);
 
     // 3. Directly test the mapping and adding logic (simulating onClickOk's core operation)
     // Ensure no duplicate (isDuplicate is a computed property returning a function)
     expect(records.bookingTypes.isDuplicate("Test Type")).toBe(false);
 
     const bookingTypeData = mapBookingTypeFormToDb(settings.activeAccountId);
-    const addBookingTypeID = await databaseService.add(
-      INDEXED_DB.STORE.BOOKING_TYPES.NAME,
-      bookingTypeData
+    const addBookingTypeID = await testDb.getRepository("bookingTypes").save(
+      bookingTypeData as BookingTypeDb
     );
 
     if (addBookingTypeID !== -1) {
@@ -76,8 +79,7 @@ describe("AddBookingType Logic Test", () => {
     }
 
     // 4. Verify database interaction
-    expect(addSpy).toHaveBeenCalledWith(
-      INDEXED_DB.STORE.BOOKING_TYPES.NAME,
+    expect(saveSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         cName: "Test Type",
         cAccountNumberID: 1

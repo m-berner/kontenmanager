@@ -2,8 +2,6 @@
   - This Source Code Form is subject to the terms of the Mozilla Public
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - one could get a copy at https://mozilla.org/MPL/2.0/.
-  -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 
 <script lang="ts" setup>
@@ -30,10 +28,6 @@ DomainUtils.log("VIEWS FooterBar: setup");
     <v-btn :href="DEFAULTS.MAILTO" color="white">
       <v-icon icon="$mail" />
       <div>{{ t("views.footerBar.mail") }}</div>
-    </v-btn>
-    <v-btn :disabled="true" color="white">
-      <v-icon icon="$mdiCopyright" />
-      <div class="nowrap">{{ DEFAULTS.COPYRIGHT }}</div>
     </v-btn>
   </v-bottom-navigation>
 </template>

@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useStockForm } from "@/composables/useForms";
 import { useStocksStore } from "@/stores/stocks";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
+import { createDatabaseService } from "@/services/database/service";
+const testDb = createDatabaseService("test-db", 1);
 const browserMock = {
     storage: {
         local: {
@@ -28,7 +28,7 @@ vi.stubGlobal("browser", browserMock);
 describe("UpdateStock Logic Test", () => {
     beforeEach(async () => {
         setActivePinia(createPinia());
-        vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+        vi.spyOn(testDb, "isConnected").mockReturnValue(true);
     });
     it("should update a stock and verify it reaches the database service", async () => {
         const { stockFormData, mapStockFormToDb } = useStockForm();
@@ -57,13 +57,14 @@ describe("UpdateStock Logic Test", () => {
         stockFormData.symbol = "AAPL";
         stockFormData.fadeOut = 1;
         stockFormData.firstPage = 1;
-        const updateSpy = vi
-            .spyOn(databaseService, "update")
+        const stocksRepo = testDb.getRepository("stocks");
+        const saveSpy = vi
+            .spyOn(stocksRepo, "save")
             .mockResolvedValue(123);
         const stockData = mapStockFormToDb(settings.activeAccountId);
-        await databaseService.update(INDEXED_DB.STORE.STOCKS.NAME, stockData);
+        await stocksRepo.save(stockData);
         stocksStore.update(stockData);
-        expect(updateSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.STOCKS.NAME, expect.objectContaining({
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({
             cID: 123,
             cCompany: "Apple Updated",
             cFadeOut: 1,

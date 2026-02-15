@@ -2,8 +2,6 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { INDEXED_DB } from "@/configs/database";
@@ -62,7 +60,7 @@ export class DatabaseMigrator {
       });
       store.createIndex(
         `${INDEXED_DB.STORE.BOOKINGS.NAME}_k1`,
-        INDEXED_DB.STORE.BOOKINGS.FIELDS.DATE,
+        INDEXED_DB.STORE.BOOKINGS.FIELDS.BOOK_DATE,
         { unique: false }
       );
       store.createIndex(

@@ -10,7 +10,7 @@ import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import { DATE } from "@/domains/configs/date";
 import { INDEXED_DB } from "@/configs/database";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { useBrowser } from "@/composables/useBrowser";
 const { t } = useI18n();
 const { add } = useBookingsDB();

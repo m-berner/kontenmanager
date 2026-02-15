@@ -2,8 +2,6 @@
   - This Source Code Form is subject to the terms of the Mozilla Public
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - one could get a copy at https://mozilla.org/MPL/2.0/.
-  -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 
 <script lang="ts" setup>
@@ -27,7 +25,9 @@ import { useBrowser } from "@/composables/useBrowser";
 import { useAlert } from "@/composables/useAlert";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import {
+  AppError
+} from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountsDB } from "@/composables/useIndexedDB";
@@ -491,14 +491,18 @@ const processBackupFile = async (): Promise<void> => {
 
     await handleUserNotice("", summary);
     resetFileInput();
-  } catch {
+  } catch (err) {
     activeAccountId.value = originalActiveId;
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId as any);
-    throw new AppError(
-      ERROR_CODES.IMPORT_DATABASE.A,
-      ERROR_CATEGORY.DATABASE,
-      true
-    );
+    const errorMessage =
+      err instanceof AppError
+        ? err.message
+        : err instanceof Error
+        ? err.message
+        : "Unknown error";
+    await handleUserError(t("components.dialogs.importDatabase.title"), errorMessage, {
+      data: "IMPORT_DATABASE_PROCESS"
+    });
   }
 };
 
@@ -526,7 +530,7 @@ const onClickOk = async (): Promise<void> => {
 
     try {
       await processBackupFile();
-    } catch {
+    } catch (err) {
       try {
         await restoreFromRollback(rollbackData);
         await handleUserNotice(
@@ -534,27 +538,15 @@ const onClickOk = async (): Promise<void> => {
           getMessage("xx_db_rollback")
         );
       } catch (rollbackErr) {
-        const rollbackErrorMessage =
-          // rollbackErr instanceof AppError
-          //   ? rollbackErr.message
-          //   : rollbackErr instanceof Error
-          //   ? rollbackErr.message
-          //   : "Unknown error";
         await handleUserError(
           t("components.dialogs.importDatabase.title"),
           rollbackErr, {}
         );
-        DomainUtils.log(
-          "COMPONENTS DIALOGS ImportDatabase: CRITICAL - Rollback failed",
-          rollbackErrorMessage
-        );
       }
 
-      throw new AppError(
-        ERROR_CODES.IMPORT_DATABASE.B,
-        ERROR_CATEGORY.DATABASE,
-        true
-      );
+      await handleUserError(t("components.dialogs.importDatabase.title"), err, {
+        data: "IMPORT_DATABASE_FAILED"
+      });
     }
   });
 };

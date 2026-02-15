@@ -2,17 +2,14 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useAccountForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useAccountsStore } from "@/stores/accounts";
+import { databaseService } from "@/services/database/service";
 
 // Mock browser API
 const browserMock = {
@@ -65,7 +62,8 @@ describe("UpdateAccount Logic Test", () => {
     accountFormData.withDepot = true;
 
     // 3. Mock the DB update operation
-    const updateSpy = vi.spyOn(databaseService, "update").mockResolvedValue(1);
+    const accountsRepo = databaseService.getRepository("accounts");
+    const saveSpy = vi.spyOn(accountsRepo, "save").mockResolvedValue(1);
 
     // 4. Directly test the mapping and updating logic (simulating onClickOk)
     const updatedAccountData = {
@@ -76,15 +74,11 @@ describe("UpdateAccount Logic Test", () => {
       cWithDepot: accountFormData.withDepot
     };
 
-    await databaseService.update(
-      INDEXED_DB.STORE.ACCOUNTS.NAME,
-      updatedAccountData
-    );
+    await accountsRepo.save(updatedAccountData);
     accountsStore.update(updatedAccountData);
 
     // 5. Verify database interaction
-    expect(updateSpy).toHaveBeenCalledWith(
-      INDEXED_DB.STORE.ACCOUNTS.NAME,
+    expect(saveSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         cID: 1,
         cSwift: "NEW_SWIFT",

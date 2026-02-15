@@ -10,7 +10,7 @@ import { useStocksDB } from "@/composables/useIndexedDB";
 import { DomainUtils } from "@/domains/utils";
 import StockForm from "@/components/dialogs/forms/StockForm.vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();

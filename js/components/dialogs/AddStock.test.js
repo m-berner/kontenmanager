@@ -1,11 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useStockForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
+import { databaseService } from "@/services/database/service";
 const browserMock = {
     storage: {
         local: {
@@ -39,15 +38,16 @@ describe("AddStock Logic Test", () => {
         stockFormData.isin = "US0378331005";
         stockFormData.company = "Apple Inc.";
         stockFormData.symbol = "AAPL";
-        const addSpy = vi.spyOn(databaseService, "add").mockResolvedValue(456);
+        const stocksRepo = databaseService.getRepository("stocks");
+        const saveSpy = vi.spyOn(stocksRepo, "save").mockResolvedValue(456);
         vi.spyOn(records.stocks, "refreshOnlineData").mockResolvedValue(undefined);
         const stockData = mapStockFormToDb(settings.activeAccountId);
-        const addStockID = await databaseService.add(INDEXED_DB.STORE.STOCKS.NAME, stockData);
+        const addStockID = await stocksRepo.save(stockData);
         if (addStockID !== -1) {
             records.stocks.add({ ...stockData, cID: addStockID });
             await records.stocks.refreshOnlineData(runtime.stocksPage);
         }
-        expect(addSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.STOCKS.NAME, expect.objectContaining({
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({
             cISIN: "US0378331005",
             cCompany: "Apple Inc.",
             cSymbol: "AAPL",

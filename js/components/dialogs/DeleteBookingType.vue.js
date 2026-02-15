@@ -2,17 +2,18 @@ import { onBeforeMount } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 import { useBookingTypeForm } from "@/composables/useForms";
+import { useAlert } from "@/composables/useAlert";
 const { bookingTypeFormData, reset } = useBookingTypeForm();
 const { t } = useI18n();
 const { getMessage, handleUserNotice } = useBrowser();
+const { handleUserError } = useAlert();
 const { remove } = useBookingTypesDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
 const records = useRecordsStore();
@@ -39,8 +40,8 @@ const onClickOk = async () => {
             runtime.resetTeleport();
             await handleUserNotice("DeleteBookingType", getMessage("xx_db_delete_success"));
         }
-        catch {
-            throw new AppError(ERROR_CODES.DELETE_BOOKING_TYPE, ERROR_CATEGORY.VALIDATION, true);
+        catch (err) {
+            await handleUserError("DeleteBookingType", err, {});
         }
     });
 };

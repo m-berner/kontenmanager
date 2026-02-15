@@ -1,0 +1,163 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * one could get a copy at https://mozilla.org/MPL/2.0/.
+ */
+
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { DomainUtils } from "@/domains/utils";
+import type { IDatabaseMigrator } from "./types";
+
+/**
+ * Interface for database connections
+ */
+export interface IDatabaseConnection {
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
+  isConnected(): boolean;
+  getDatabase(): IDBDatabase;
+  onVersionChange(_handler: () => void): void;
+}
+
+/**
+ * Manages IndexedDB connection lifecycle
+ */
+export class DatabaseConnectionManager implements IDatabaseConnection {
+  private db?: IDBDatabase;
+  private versionChangeHandler?: () => void;
+
+  constructor(
+    private readonly _dbName: string,
+    private readonly _version: number,
+    private readonly _migrator: IDatabaseMigrator
+  ) {}
+
+  /**
+   * Establishes connection to IndexedDB
+   */
+  async connect(): Promise<void> {
+    if (this.db) {
+      DomainUtils.log("DATABASE connection: already connected", null, "warn");
+      return;
+    }
+
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this._dbName, this._version);
+
+      request.onerror = () => {
+        this.handleConnectionError();
+        reject(
+          new AppError(
+            ERROR_CODES.SERVICES.DATABASE.A,
+            ERROR_CATEGORY.DATABASE,
+            false,
+            { dbName: this._dbName, version: this._version }
+          )
+        );
+      };
+
+      request.onsuccess = () => {
+        this.handleConnectionSuccess(request.result);
+        DomainUtils.log("DATABASE connection: connected successfully", {
+          dbName: this._dbName,
+          version: this._version
+        });
+        resolve();
+      };
+
+      request.onupgradeneeded = (ev: IDBVersionChangeEvent) => {
+        DomainUtils.log("DATABASE connection: upgrading", {
+          oldVersion: ev.oldVersion,
+          newVersion: ev.newVersion
+        });
+        this._migrator.setupDatabase(request.result, ev);
+      };
+    });
+  }
+
+  /**
+   * Closes database connection
+   */
+  async disconnect(): Promise<void> {
+    if (!this.db) return;
+
+    try {
+      this.db.close();
+      DomainUtils.log("DATABASE connection: disconnected");
+    } catch (err) {
+      DomainUtils.log("DATABASE connection: disconnect error", err, "error");
+    } finally {
+      this.resetConnection();
+    }
+  }
+
+  /**
+   * Checks if the database is connected
+   */
+  isConnected(): boolean {
+    return !!this.db;
+  }
+
+  /**
+   * Gets database instance
+   * @throws {AppError} if not connected
+   */
+  getDatabase(): IDBDatabase {
+    if (!this.db) {
+      throw new AppError(
+        ERROR_CODES.SERVICES.DATABASE.BASE.I,
+        ERROR_CATEGORY.DATABASE,
+        false
+      );
+    }
+    return this.db;
+  }
+
+  /**
+   * Registers version change handler
+   */
+  onVersionChange(handler: () => void): void {
+    this.versionChangeHandler = handler;
+  }
+
+  // Private methods
+
+  private handleConnectionSuccess(db: IDBDatabase): void {
+    this.db = db;
+    this.setupEventHandlers();
+  }
+
+  private handleConnectionError(): void {
+    this.resetConnection();
+  }
+
+  private resetConnection(): void {
+    this.db = undefined;
+  }
+
+  private setupEventHandlers(): void {
+    if (!this.db) return;
+
+    this.db.onversionchange = () => {
+      DomainUtils.log(
+        "DATABASE connection: version change detected",
+        null,
+        "warn"
+      );
+      this.db!.close();
+      this.resetConnection();
+
+      if (this.versionChangeHandler) {
+        this.versionChangeHandler();
+      } else {
+        // Default behavior: reload page
+        window.location.reload();
+      }
+    };
+
+    this.db.onclose = () => {
+      DomainUtils.log("DATABASE connection: closed", null, "warn");
+      this.resetConnection();
+    };
+  }
+}

@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
 import { INDEXED_DB } from "@/configs/database";
 import { useBookingForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { DATE } from "@/domains/configs/date";
+import { createDatabaseService } from "@/services/database/service";
+const testDb = createDatabaseService("test-db", 1);
 const browserMock = {
     storage: {
         local: {
@@ -28,7 +29,7 @@ vi.stubGlobal("browser", browserMock);
 describe("AddBooking Logic Test", () => {
     beforeEach(async () => {
         setActivePinia(createPinia());
-        vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+        vi.spyOn(testDb, "isConnected").mockReturnValue(true);
     });
     it("should add a booking and verify it reaches the database service", async () => {
         const { bookingFormData, mapBookingFormToDb } = useBookingForm();
@@ -43,13 +44,17 @@ describe("AddBooking Logic Test", () => {
         bookingFormData.description = "Test Buy";
         bookingFormData.stockId = 1;
         bookingFormData.count = 10;
-        const addSpy = vi.spyOn(databaseService, "add").mockResolvedValue(789);
+        const mockRepository = {
+            save: vi.fn().mockResolvedValue(789)
+        };
+        const saveSpy = mockRepository.save;
+        vi.spyOn(testDb, "getRepository").mockReturnValue(mockRepository);
         const bookingData = mapBookingFormToDb(settings.activeAccountId, DATE.ISO);
-        const addBookingID = await databaseService.add(INDEXED_DB.STORE.BOOKINGS.NAME, bookingData);
+        const addBookingID = await testDb.getRepository("bookings").save(bookingData);
         if (addBookingID !== -1) {
             records.bookings.add({ ...bookingData, cID: addBookingID }, true);
         }
-        expect(addSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.BOOKINGS.NAME, expect.objectContaining({
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({
             cAccountNumberID: 1,
             cBookDate: "2023-10-27",
             cCredit: 1000,

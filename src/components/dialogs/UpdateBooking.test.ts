@@ -2,19 +2,18 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useBookingForm } from "@/composables/useForms";
 import { useBookingsStore } from "@/stores/bookings";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
 import { DATE } from "@/domains/configs/date";
+import { createDatabaseService } from "@/services/database/service";
+
+const testDb = createDatabaseService("test-db", 1);
 
 // Mock browser API
 const browserMock = {
@@ -40,7 +39,9 @@ vi.stubGlobal("browser", browserMock);
 describe("UpdateBooking Logic Test", () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
-    vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+
+    // Mock connection state
+    vi.spyOn(testDb, "isConnected").mockReturnValue(true);
   });
 
   it("should update a booking and verify it reaches the database service", async () => {
@@ -88,19 +89,19 @@ describe("UpdateBooking Logic Test", () => {
     bookingFormData.credit = 0;
 
     // 3. Mock the DB update operation
-    const updateSpy = vi
-      .spyOn(databaseService, "update")
+    const bookingsRepo = testDb.getRepository("bookings");
+    const saveSpy = vi
+      .spyOn(bookingsRepo, "save")
       .mockResolvedValue(500);
 
     // 4. Directly test the mapping and updating logic (simulating onClickOk)
     const bookingData = mapBookingFormToDb(settings.activeAccountId, DATE.ISO);
 
-    await databaseService.update(INDEXED_DB.STORE.BOOKINGS.NAME, bookingData);
+    await bookingsRepo.save(bookingData as any);
     bookingsStore.update(bookingData as any);
 
     // 5. Verify database interaction
-    expect(updateSpy).toHaveBeenCalledWith(
-      INDEXED_DB.STORE.BOOKINGS.NAME,
+    expect(saveSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         cID: 500,
         cDescription: "New Description",

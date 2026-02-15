@@ -2,14 +2,12 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
 import { useRecordsStore } from "@/stores/records";
+import { databaseService } from "@/services/database/service";
 
 // Mock browser API
 const browserMock = {
@@ -61,16 +59,16 @@ describe("FadeInStock Logic Test", () => {
     records.stocks.add(stock);
 
     // Mock the DB update operation
-    const updateSpy = vi.spyOn(databaseService, "update").mockResolvedValue(4);
+    const stocksRepo = databaseService.getRepository("stocks");
+    const saveSpy = vi.spyOn(stocksRepo, "save").mockResolvedValue(4);
 
     // Fade in the stock
     stock.cFadeOut = 0;
-    await databaseService.update("stocks", stock);
+    await stocksRepo.save(stock);
     records.stocks.update(stock);
 
     // Verify fade in
-    expect(updateSpy).toHaveBeenCalledWith(
-      "stocks",
+    expect(saveSpy).toHaveBeenCalledWith(
       expect.objectContaining({ cFadeOut: 0 })
     );
     expect(records.stocks.items[0].cFadeOut).toBe(0);

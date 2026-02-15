@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useRecordsStore } from "@/stores/records";
+import { databaseService } from "@/services/database/service";
 const browserMock = {
     storage: {
         local: {
@@ -36,13 +36,14 @@ describe("DeleteBookingType Logic Test", () => {
             cAccountNumberID: 1
         });
         bookingTypeFormData.id = 1;
-        const removeSpy = vi.spyOn(databaseService, "remove").mockResolvedValue();
+        const bookingTypesRepo = databaseService.getRepository("bookingTypes");
+        const removeSpy = vi.spyOn(bookingTypesRepo, "delete").mockResolvedValue();
         const hasBookingType = records.bookings.hasBookingType(bookingTypeFormData.id);
         expect(hasBookingType).toBe(false);
         records.bookingTypes.remove(bookingTypeFormData.id);
-        await databaseService.remove("bookingTypes", bookingTypeFormData.id);
+        await bookingTypesRepo.delete(bookingTypeFormData.id);
         expect(records.bookingTypes.items.length).toBe(0);
-        expect(removeSpy).toHaveBeenCalledWith("bookingTypes", 1);
+        expect(removeSpy).toHaveBeenCalledWith(1);
     });
     it("should not delete a booking type when it has associated bookings", async () => {
         const { bookingTypeFormData } = useBookingTypeForm();

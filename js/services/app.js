@@ -3,7 +3,7 @@ import { useStorage } from "@/composables/useStorage";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { fetchService } from "@/services/fetch";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
@@ -182,7 +182,8 @@ export class AppService {
         if (signal?.aborted) {
             return { exchanges: false, indexes: false, materials: false };
         }
-        const exchangesOk = this.processFetchResult(exchangesBase, (data) => this.processExchangeBase(data), "baseExchanges") || this.processFetchResult(exchangesInfo, (data) => this.processExchangeInfo(data), "exchanges");
+        const exchangesOk = this.processFetchResult(exchangesBase, (data) => this.processExchangeBase(data), "baseExchanges") ||
+            this.processFetchResult(exchangesInfo, (data) => this.processExchangeInfo(data), "exchanges");
         const indexesOk = this.processFetchResult(indexesInfo, (data) => this.processIndexesInfo(data), "indexes");
         const materialsOk = this.processFetchResult(materialsInfo, (data) => this.processMaterialsInfo(data), "materials");
         DomainUtils.log("SERVICES app", {

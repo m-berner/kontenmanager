@@ -12,7 +12,7 @@ import { DEFAULTS } from "@/configs/defaults";
 import { INDEXED_DB } from "@/configs/database";
 const { t } = useI18n();
 const { handleUserNotice, manifest, writeBufferToFile } = useBrowser();
-const { handleUserConfirm } = useAlert();
+const { handleUserConfirm, handleUserError } = useAlert();
 const { getAll: getAllAccounts } = useAccountsDB();
 const { getAll: getAllBookings } = useBookingsDB();
 const { getAll: getAllBookingTypes } = useBookingTypesDB();
@@ -105,10 +105,9 @@ const onClickOk = async () => {
             resetTeleport();
         }
         catch (err) {
-            if (err instanceof AppError) {
-                throw err;
-            }
-            throw new AppError(ERROR_CODES.EXPORT_DATABASE.C, ERROR_CATEGORY.DATABASE, true);
+            await handleUserError(t("components.dialogs.exportDatabase.title"), err, {
+                data: "EXPORT_DATABASE"
+            });
         }
     });
 };

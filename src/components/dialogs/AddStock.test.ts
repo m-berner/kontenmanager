@@ -2,18 +2,15 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useStockForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { useRuntimeStore } from "@/stores/runtime";
+import { databaseService } from "@/services/database/service";
 
 // Mock browser API
 const browserMock = {
@@ -59,7 +56,8 @@ describe("AddStock Logic Test", () => {
     stockFormData.symbol = "AAPL";
 
     // 2. Mock the DB add operation success
-    const addSpy = vi.spyOn(databaseService, "add").mockResolvedValue(456);
+    const stocksRepo = databaseService.getRepository("stocks");
+    const saveSpy = vi.spyOn(stocksRepo, "save").mockResolvedValue(456);
 
     // Mock refreshOnlineData to avoid network calls or heavy logic
     vi.spyOn(records.stocks, "refreshOnlineData").mockResolvedValue(undefined);
@@ -67,10 +65,7 @@ describe("AddStock Logic Test", () => {
     // 3. Directly test the mapping and adding logic (simulating onClickOk's core operation)
     const stockData = mapStockFormToDb(settings.activeAccountId);
 
-    const addStockID = await databaseService.add(
-      INDEXED_DB.STORE.STOCKS.NAME,
-      stockData
-    );
+    const addStockID = await stocksRepo.save(stockData as any);
 
     if (addStockID !== -1) {
       records.stocks.add({ ...stockData, cID: addStockID as number });
@@ -78,8 +73,7 @@ describe("AddStock Logic Test", () => {
     }
 
     // 4. Verify database interaction
-    expect(addSpy).toHaveBeenCalledWith(
-      INDEXED_DB.STORE.STOCKS.NAME,
+    expect(saveSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         cISIN: "US0378331005",
         cCompany: "Apple Inc.",

@@ -2,15 +2,13 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useRecordsStore } from "@/stores/records";
+import { databaseService } from "@/services/database/service";
 
 // Mock browser API
 const browserMock = {
@@ -54,7 +52,8 @@ describe("DeleteBookingType Logic Test", () => {
     bookingTypeFormData.id = 1;
 
     // Mock the DB remove operation
-    const removeSpy = vi.spyOn(databaseService, "remove").mockResolvedValue();
+    const bookingTypesRepo = databaseService.getRepository("bookingTypes");
+    const removeSpy = vi.spyOn(bookingTypesRepo, "delete").mockResolvedValue();
 
     // Verify no bookings use this type
     const hasBookingType = records.bookings.hasBookingType(
@@ -64,11 +63,11 @@ describe("DeleteBookingType Logic Test", () => {
 
     // Delete the booking type
     records.bookingTypes.remove(bookingTypeFormData.id);
-    await databaseService.remove("bookingTypes", bookingTypeFormData.id);
+    await bookingTypesRepo.delete(bookingTypeFormData.id);
 
     // Verify deletion
     expect(records.bookingTypes.items.length).toBe(0);
-    expect(removeSpy).toHaveBeenCalledWith("bookingTypes", 1);
+    expect(removeSpy).toHaveBeenCalledWith(1);
   });
 
   it("should not delete a booking type when it has associated bookings", async () => {

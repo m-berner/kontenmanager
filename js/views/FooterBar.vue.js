@@ -90,32 +90,6 @@ __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({});
 (__VLS_ctx.t("views.footerBar.mail"));
 [t, DEFAULTS,];
 var __VLS_32;
-let __VLS_40;
-vBtn;
-const __VLS_41 = __VLS_asFunctionalComponent1(__VLS_40, new __VLS_40({
-    disabled: (true),
-    color: "white",
-}));
-const __VLS_42 = __VLS_41({
-    disabled: (true),
-    color: "white",
-}, ...__VLS_functionalComponentArgsRest(__VLS_41));
-const { default: __VLS_45 } = __VLS_43.slots;
-let __VLS_46;
-vIcon;
-const __VLS_47 = __VLS_asFunctionalComponent1(__VLS_46, new __VLS_46({
-    icon: "$mdiCopyright",
-}));
-const __VLS_48 = __VLS_47({
-    icon: "$mdiCopyright",
-}, ...__VLS_functionalComponentArgsRest(__VLS_47));
-__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-    ...{ class: "nowrap" },
-});
-;
-(__VLS_ctx.DEFAULTS.COPYRIGHT);
-[DEFAULTS,];
-var __VLS_43;
 [];
 var __VLS_3;
 [];

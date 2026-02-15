@@ -8,7 +8,7 @@ import DotMenu from "@/components/DotMenu.vue";
 import { useTheme } from "vuetify";
 import { useStorage } from "@/composables/useStorage";
 import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { createHomeHeaders, createHomeMenuItems } from "@/configs/views";
 const { d, n, t } = useI18n();

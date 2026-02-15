@@ -2,18 +2,19 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
 import { INDEXED_DB } from "@/configs/database";
 import { useBookingForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { DATE } from "@/domains/configs/date";
+import { createDatabaseService } from "@/services/database/service";
+import type { BookingDb } from "@/types";
+
+const testDb = createDatabaseService("test-db", 1);
 
 // Mock browser API
 const browserMock = {
@@ -41,7 +42,7 @@ describe("AddBooking Logic Test", () => {
     setActivePinia(createPinia());
 
     // Mock connection state
-    vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+    vi.spyOn(testDb, "isConnected").mockReturnValue(true);
   });
 
   it("should add a booking and verify it reaches the database service", async () => {
@@ -49,7 +50,7 @@ describe("AddBooking Logic Test", () => {
     const records = useRecordsStore();
     const settings = useSettingsStore();
 
-    // 0. Setup active account
+    // 0. Set up the active account
     settings.activeAccountId = 1;
 
     // 1. Setup form data
@@ -62,15 +63,19 @@ describe("AddBooking Logic Test", () => {
     bookingFormData.stockId = 1;
     bookingFormData.count = 10;
 
-    // 2. Mock the DB add operation success
-    const addSpy = vi.spyOn(databaseService, "add").mockResolvedValue(789);
+    // 2. Mock the DB saved operation success
+    const mockRepository = {
+      save: vi.fn().mockResolvedValue(789)
+    };
+
+    const saveSpy = mockRepository.save;
+    vi.spyOn(testDb, "getRepository").mockReturnValue(mockRepository as any);
 
     // 3. Directly test the mapping and adding logic (simulating onClickOk's core operation)
     const bookingData = mapBookingFormToDb(settings.activeAccountId, DATE.ISO);
 
-    const addBookingID = await databaseService.add(
-      INDEXED_DB.STORE.BOOKINGS.NAME,
-      bookingData
+    const addBookingID = await testDb.getRepository("bookings").save(
+      bookingData as BookingDb
     );
 
     if (addBookingID !== -1) {
@@ -81,8 +86,7 @@ describe("AddBooking Logic Test", () => {
     }
 
     // 4. Verify database interaction
-    expect(addSpy).toHaveBeenCalledWith(
-      INDEXED_DB.STORE.BOOKINGS.NAME,
+    expect(saveSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         cAccountNumberID: 1,
         cBookDate: "2023-10-27",

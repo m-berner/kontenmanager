@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useAccountForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useAccountsStore } from "@/stores/accounts";
+import { createDatabaseService } from "@/services/database/service";
+const testDb = createDatabaseService("test-db", 1);
 const browserMock = {
     storage: {
         local: {
@@ -27,7 +27,7 @@ vi.stubGlobal("browser", browserMock);
 describe("AddAccount Logic Test", () => {
     beforeEach(async () => {
         setActivePinia(createPinia());
-        vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+        vi.spyOn(testDb, "isConnected").mockReturnValue(true);
     });
     it("should add an account and verify it reaches the database service", async () => {
         const { accountFormData } = useAccountForm();
@@ -36,20 +36,24 @@ describe("AddAccount Logic Test", () => {
         accountFormData.swift = "TESTSWIFT";
         accountFormData.iban = "DE12345678901234567890";
         accountFormData.withDepot = false;
-        const addSpy = vi.spyOn(databaseService, "add").mockResolvedValue(123);
+        const mockRepository = {
+            save: vi.fn().mockResolvedValue(123)
+        };
+        const saveSpy = mockRepository.save;
+        vi.spyOn(testDb, "getRepository").mockReturnValue(mockRepository);
         const accountData = {
             cSwift: accountFormData.swift.trim().toUpperCase(),
             cIban: accountFormData.iban.replace(/\s/g, "").toUpperCase(),
             cLogoUrl: accountFormData.logoUrl.trim(),
             cWithDepot: accountFormData.withDepot
         };
-        const addAccountID = await databaseService.add(INDEXED_DB.STORE.ACCOUNTS.NAME, accountData);
+        const addAccountID = await testDb.getRepository("accounts").save(accountData);
         if (addAccountID !== -1) {
             accountsStore.add({ ...accountData, cID: addAccountID });
             settings.activeAccountId = addAccountID;
             await browser.storage.local.set({ sActiveAccountId: addAccountID });
         }
-        expect(addSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.ACCOUNTS.NAME, expect.objectContaining({
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({
             cSwift: "TESTSWIFT",
             cIban: "DE12345678901234567890"
         }));

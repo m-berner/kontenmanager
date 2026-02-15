@@ -2,8 +2,6 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import type {
@@ -213,7 +211,7 @@ export const createHomeHeaders = (
 ): readonly HeaderItem[] =>
   [
     createHeaderItem(t, TRANSLATION_KEYS.HOME_ACTION, "mAction"),
-    createHeaderItem(t, TRANSLATION_KEYS.HOME_DATE, "cDate"),
+    createHeaderItem(t, TRANSLATION_KEYS.HOME_DATE, "cBookDate"),
     createHeaderItem(t, TRANSLATION_KEYS.HOME_DEBIT, "cDebit"),
     createHeaderItem(t, TRANSLATION_KEYS.HOME_CREDIT, "cCredit"),
     createHeaderItem(t, TRANSLATION_KEYS.HOME_DESCRIPTION, "cDescription"),

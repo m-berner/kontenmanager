@@ -2,8 +2,6 @@
   - This Source Code Form is subject to the terms of the Mozilla Public
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - one could get a copy at https://mozilla.org/MPL/2.0/.
-  -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 
 <script lang="ts" setup>
@@ -12,12 +10,11 @@ import { storeToRefs } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useStorage } from "@/composables/useStorage";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { useAlert } from "@/composables/useAlert";
 
@@ -81,12 +78,8 @@ const onClickOk = async (): Promise<void> => {
 
       resetTeleport();
       await handleUserNotice("DeleteAccountConfirmation", getMessage("xx_db_delete_success"));
-    } catch {
-      throw new AppError(
-        ERROR_CODES.DELETE_ACCOUNT_CONFIRMATION,
-        ERROR_CATEGORY.VALIDATION,
-        true
-      );
+    } catch (err) {
+      await handleUserError("DeleteAccountConfirmation", err, {});
     }
   });
 };

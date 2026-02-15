@@ -2,8 +2,6 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { useRuntimeStore } from "@/stores/runtime";
@@ -12,16 +10,13 @@ import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
 import { storeToRefs } from "pinia";
 import type { MenuActionType } from "@/types";
 import { computed, onUnmounted, readonly, ref } from "vue";
-import {
-  AppError,
-  ERROR_CATEGORY,
-  ERROR_CODES
-} from "@/domains/errors";
 import { VIEW_CODES } from "@/configs/codes";
 import { useBrowser } from "@/composables/useBrowser";
+import { useAlert } from "@/composables/useAlert";
 import { DomainUtils } from "@/domains/utils";
 
 const { getMessage } = useBrowser();
+const { handleUserError } = useAlert();
 
 type HighlightColor = "green" | "red" | "yellow" | "blue";
 
@@ -310,21 +305,18 @@ export function useMenuAction() {
     const handler = actionHandlers[actionType];
 
     if (!handler) {
-      throw new AppError(
-        ERROR_CODES.USE_MENU.A,
-        ERROR_CATEGORY.VALIDATION,
-        false
-      );
+      await handleUserError("Composables useMenu", getMessage("xx_error_code"), {
+        data: actionType
+      });
+      return;
     }
 
     try {
       await handler(recordId);
-    } catch {
-      throw new AppError(
-        ERROR_CODES.USE_MENU.B,
-        ERROR_CATEGORY.VALIDATION,
-        true
-      );
+    } catch (err) {
+      await handleUserError("Composables useMenu", err, {
+        data: actionType
+      });
     }
   };
 

@@ -7,7 +7,7 @@ import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useBookingTypesDB } from "@/composables/useIndexedDB";
 import { useDialogGuards } from "@/composables/useDialogGuards";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";

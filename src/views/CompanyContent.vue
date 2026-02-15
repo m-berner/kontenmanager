@@ -2,8 +2,6 @@
   - This Source Code Form is subject to the terms of the Mozilla Public
   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
   - one could get a copy at https://mozilla.org/MPL/2.0/.
-  -
-  - Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
   -->
 
 <script lang="ts" setup>
@@ -25,9 +23,11 @@ import {
   createCompanyMenuItems
 } from "@/configs/views";
 import { DATE } from "@/domains/configs/date";
-import { AppError } from "@/domains/errors";
+
+import { useAlert } from "@/composables/useAlert";
 
 const { d, n, t } = useI18n();
+const { handleUserError } = useAlert();
 const records = useRecordsStore();
 const { active: activeStockItems } = storeToRefs(records.stocks);
 const settings = useSettingsStore();
@@ -131,12 +131,10 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
     await Promise.all(
       pagesToLoad.map((page) => records.stocks.loadOnlineData(page))
     );
-  } catch {
-    throw new AppError(
-      "COMPANY_CONTENT: loadRequiredPages",
-      "Failed to load online market data for required pages.",
-      true
-    );
+  } catch (err) {
+    await handleUserError("COMPANY_CONTENT", err, {
+      data: "loadRequiredPages"
+    });
   }
 };
 
@@ -158,12 +156,10 @@ const onUpdatePage = async (page: number): Promise<void> => {
   isStockLoading.value = true;
   try {
     await records.stocks.loadOnlineData(page);
-  } catch {
-    throw new AppError(
-      "COMPANY_CONTENT: onUpdatePage",
-      "Failed to load online market data for required page.",
-      true
-    );
+  } catch (err) {
+    await handleUserError("COMPANY_CONTENT", err, {
+      data: "onUpdatePage"
+    });
   } finally {
     isStockLoading.value = false;
   }

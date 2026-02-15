@@ -2,8 +2,6 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import type { AppStatus, ExchangeData } from "@/types";
@@ -12,13 +10,9 @@ import { useStorage } from "@/composables/useStorage";
 import { useRecordsStore } from "@/stores/records";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { fetchService } from "@/services/fetch";
-import {
-  AppError,
-  ERROR_CATEGORY,
-  ERROR_CODES
-} from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { CURRENCIES } from "@/domains/configs/currencies";
 
@@ -80,7 +74,7 @@ export class AppService {
         "storage",
         signal
       );
-      
+
       if (signal?.aborted) {
         status.db = "aborted";
         this._lastStatus = status;
@@ -95,7 +89,7 @@ export class AppService {
         "db",
         signal
       );
-      
+
       if (signal?.aborted) {
         this._lastStatus = status;
         return status;
@@ -182,7 +176,7 @@ export class AppService {
   }
 
   /**
-   * Handles abort scenario by marking remaining steps as aborted
+   * Handles the abort scenario by marking remaining steps as aborted
    */
   private handleAbort(status: AppStatus): AppStatus {
     status.storage = status.storage === "error" ? "aborted" : status.storage;
@@ -216,7 +210,7 @@ export class AppService {
   ): void {
     const durationMs = Math.round(performance.now() - startTime);
     const logData: Record<string, unknown> = { phase, durationMs };
-    
+
     if (error) {
       logData.error = error;
       DomainUtils.log("SERVICES app", logData, "error");
@@ -293,11 +287,11 @@ export class AppService {
     }
 
     if (signal?.aborted) return;
-    
+
     try {
       await databaseService.connect();
       if (signal?.aborted) return;
-      
+
       const databaseStores = await databaseService.getAccountRecords(
         this.settings.activeAccountId
       );
@@ -359,15 +353,17 @@ export class AppService {
     }
 
     // Process successful fetches
-    const exchangesOk = this.processFetchResult(
-      exchangesBase,
-      (data) => this.processExchangeBase(data),
-      "baseExchanges"
-    ) || this.processFetchResult(
-      exchangesInfo,
-      (data) => this.processExchangeInfo(data),
-      "exchanges"
-    );
+    const exchangesOk =
+      this.processFetchResult(
+        exchangesBase,
+        (data) => this.processExchangeBase(data),
+        "baseExchanges"
+      ) ||
+      this.processFetchResult(
+        exchangesInfo,
+        (data) => this.processExchangeInfo(data),
+        "exchanges"
+      );
 
     const indexesOk = this.processFetchResult(
       indexesInfo,
@@ -385,7 +381,7 @@ export class AppService {
       phase: "fetchExternalData",
       event: "done"
     });
-    
+
     return {
       exchanges: exchangesOk,
       indexes: indexesOk,
@@ -398,14 +394,14 @@ export class AppService {
    */
   private processFetchResult<T>(
     result: PromiseSettledResult<T>,
-    processor: (data: T) => void,
+    processor: (_data: T) => void,
     errorSection: string
   ): boolean {
     if (result.status === "fulfilled") {
       processor(result.value);
       return true;
     }
-    
+
     const wrapped = new AppError(
       ERROR_CODES.SERVICES.APP.FETCH,
       ERROR_CATEGORY.NETWORK,
@@ -424,7 +420,11 @@ export class AppService {
    */
   private processExchangeBase(baseData: ExchangeData[]): void {
     if (!baseData.length) {
-      DomainUtils.log("SERVICES app: No base exchange data to process", null, "warn");
+      DomainUtils.log(
+        "SERVICES app: No base exchange data to process",
+        null,
+        "warn"
+      );
       return;
     }
 

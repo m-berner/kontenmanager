@@ -1,11 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useBookingTypesStore } from "@/stores/bookingTypes";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
+import { databaseService } from "@/services/database/service";
 const browserMock = {
     storage: {
         local: {
@@ -45,11 +44,12 @@ describe("UpdateBookingType Logic Test", () => {
         bookingTypesStore.add(initialBookingType);
         bookingTypeFormData.id = 10;
         bookingTypeFormData.name = "Dividend Updated";
-        const updateSpy = vi.spyOn(databaseService, "update").mockResolvedValue(10);
+        const bookingTypesRepo = databaseService.getRepository("bookingTypes");
+        const saveSpy = vi.spyOn(bookingTypesRepo, "save").mockResolvedValue(10);
         const bookingTypeData = mapBookingTypeFormToDb(settings.activeAccountId);
-        await databaseService.update(INDEXED_DB.STORE.BOOKING_TYPES.NAME, bookingTypeData);
+        await bookingTypesRepo.save(bookingTypeData);
         bookingTypesStore.update(bookingTypeData);
-        expect(updateSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.BOOKING_TYPES.NAME, expect.objectContaining({
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({
             cID: 10,
             cName: "Dividend Updated"
         }));

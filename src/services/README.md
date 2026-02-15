@@ -16,13 +16,15 @@ The mission of the services layer is to:
 
 ## Key Services
 
-### 🗄️ `database.ts` (`DatabaseService`)
+### 🗄️ `database/` (`DatabaseService`)
 
-The core persistence engine based on IndexedDB.
+The core persistence engine based on IndexedDB, refactored into a modular architecture.
 
-- Manages schema versioning and migrations.
-- Provides a transaction-safe wrapper for CRUD operations.
-- Implements health checks and repair routines for data integrity.
+- **Facade Pattern**: The `Service` class acts as a single entry point for all database interactions.
+- **Repository Pattern**: Specialized repositories handle CRUD operations for different entity types.
+- **Transaction Management**: Orchestrates atomic operations and ensures data consistency.
+- **Health & Maintenance**: Implements health checks and automated repair routines.
+- **Batch Processing**: Supports high-performance bulk data operations.
 
 ### 🚀 `app.ts` (`AppService`)
 

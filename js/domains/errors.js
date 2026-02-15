@@ -94,7 +94,11 @@ export const ERROR_CODES = {
                 H: "#dbs",
                 I: "#dbt",
                 J: "#dbv"
-            }
+            },
+            TRANSACTION_FAILED: "#kkb",
+            NO_INDEX: "qyy",
+            REQUEST_FAILED: "#ppz",
+            INVALID_BATCH: "hgv"
         },
         FETCH: {
             A: "#nsl",

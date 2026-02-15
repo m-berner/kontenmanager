@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useBookingTypeForm } from "@/composables/useForms";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
+import { createDatabaseService } from "@/services/database/service";
+const testDb = createDatabaseService("test-db", 1);
 const browserMock = {
     storage: {
         local: {
@@ -27,7 +27,7 @@ vi.stubGlobal("browser", browserMock);
 describe("AddBookingType Logic Test", () => {
     beforeEach(async () => {
         setActivePinia(createPinia());
-        vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+        vi.spyOn(testDb, "isConnected").mockReturnValue(true);
     });
     it("should add a booking type and verify it reaches the database service", async () => {
         const { bookingTypeFormData, mapBookingTypeFormToDb } = useBookingTypeForm();
@@ -35,17 +35,21 @@ describe("AddBookingType Logic Test", () => {
         const settings = useSettingsStore();
         settings.activeAccountId = 1;
         bookingTypeFormData.name = "Test Type";
-        const addSpy = vi.spyOn(databaseService, "add").mockResolvedValue(101);
+        const mockRepository = {
+            save: vi.fn().mockResolvedValue(101)
+        };
+        const saveSpy = mockRepository.save;
+        vi.spyOn(testDb, "getRepository").mockReturnValue(mockRepository);
         expect(records.bookingTypes.isDuplicate("Test Type")).toBe(false);
         const bookingTypeData = mapBookingTypeFormToDb(settings.activeAccountId);
-        const addBookingTypeID = await databaseService.add(INDEXED_DB.STORE.BOOKING_TYPES.NAME, bookingTypeData);
+        const addBookingTypeID = await testDb.getRepository("bookingTypes").save(bookingTypeData);
         if (addBookingTypeID !== -1) {
             records.bookingTypes.add({
                 ...bookingTypeData,
                 cID: addBookingTypeID
             });
         }
-        expect(addSpy).toHaveBeenCalledWith(INDEXED_DB.STORE.BOOKING_TYPES.NAME, expect.objectContaining({
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({
             cName: "Test Type",
             cAccountNumberID: 1
         }));

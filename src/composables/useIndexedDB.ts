@@ -2,8 +2,6 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 /* eslint-disable no-unused-vars */
@@ -16,9 +14,11 @@ import type {
   StockItem
 } from "@/types";
 import { INDEXED_DB } from "@/configs/database";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { DomainValidators } from "@/domains/validation/validators";
 import { DomainUtils } from "@/domains/utils";
+
+import type { RepositoryType } from "@/services/database/repositories/factory";
 
 /**
  * Generic internal helper to create store-specific IndexedDB wrappers.
@@ -26,24 +26,28 @@ import { DomainUtils } from "@/domains/utils";
  * @param storeName - The name of the IndexedDB object store.
  * @returns An object with common database operations for the store.
  */
-function useDBStore<T>(storeName: string) {
+function useDBStore<T>(storeName: RepositoryType) {
   const dbi = databaseService;
+  const repo = dbi.getRepository(storeName);
+
   return {
     /** Adds a new record. */
     add: (data: Omit<T, "cID">, tx?: IDBTransaction) =>
-      dbi.add(storeName, data, tx),
+      repo.save(data as any, { tx }),
     /** Retrieves a record by ID. */
-    get: (id: number, tx?: IDBTransaction) =>
-      dbi.get<T>(storeName, id, tx),
+    get: (id: number, tx?: IDBTransaction) => repo.findById(id, { tx }) as any,
     /** Retrieves all records from the store. */
-    getAll: (tx?: IDBTransaction) => dbi.getAll<T>(storeName, tx),
+    getAll: (tx?: IDBTransaction) => repo.findAll({ tx }) as any,
     /** Updates an existing record. */
-    update: (data: T, tx?: IDBTransaction) => dbi.update(storeName, data, tx),
+    update: (data: T, tx?: IDBTransaction) => repo.save(data as any, { tx }),
     /** Removes a record by ID. */
-    remove: (id: number, tx?: IDBTransaction) =>
-      dbi.remove(storeName, id, tx),
+    remove: (id: number, tx?: IDBTransaction) => repo.delete(id, { tx }),
     /** Clears all records in the store. */
-    clear: (tx?: IDBTransaction) => dbi.clear(storeName, tx),
+    clear: (_tx?: IDBTransaction) =>
+      dbi.transactionManager.execute([storeName], "readwrite", async (t) => {
+        const store = t.objectStore(storeName);
+        store.clear();
+      }),
     /** Executes batch operations. */
     batchImport: (batch: RecordOperation[]) =>
       dbi.batchOperations(storeName, batch),
@@ -91,7 +95,7 @@ export function useBookingsDB() {
     /** Retrieves all records with validation. */
     getAll: async (tx?: IDBTransaction) => {
       const records = await store.getAll(tx);
-      return records.map((rec) => DomainValidators.validateBooking(rec));
+      return records.map((rec: any) => DomainValidators.validateBooking(rec));
     }
   };
 }

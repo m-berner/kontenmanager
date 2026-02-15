@@ -6,7 +6,7 @@ import { useBrowser } from "@/composables/useBrowser";
 import { useAlert } from "@/composables/useAlert";
 import { useRuntimeStore } from "@/stores/runtime";
 import { useSettingsStore } from "@/stores/settings";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
+import { AppError } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useStorage } from "@/composables/useStorage";
 import { useAccountsDB } from "@/composables/useIndexedDB";
@@ -337,10 +337,17 @@ const processBackupFile = async () => {
         await handleUserNotice("", summary);
         resetFileInput();
     }
-    catch {
+    catch (err) {
         activeAccountId.value = originalActiveId;
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
-        throw new AppError(ERROR_CODES.IMPORT_DATABASE.A, ERROR_CATEGORY.DATABASE, true);
+        const errorMessage = err instanceof AppError
+            ? err.message
+            : err instanceof Error
+                ? err.message
+                : "Unknown error";
+        await handleUserError(t("components.dialogs.importDatabase.title"), errorMessage, {
+            data: "IMPORT_DATABASE_PROCESS"
+        });
     }
 };
 const onClickOk = async () => {
@@ -358,16 +365,17 @@ const onClickOk = async () => {
         try {
             await processBackupFile();
         }
-        catch {
+        catch (err) {
             try {
                 await restoreFromRollback(rollbackData);
                 await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_db_rollback"));
             }
             catch (rollbackErr) {
-                const rollbackErrorMessage = await handleUserError(t("components.dialogs.importDatabase.title"), rollbackErr, {});
-                DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: CRITICAL - Rollback failed", rollbackErrorMessage);
+                await handleUserError(t("components.dialogs.importDatabase.title"), rollbackErr, {});
             }
-            throw new AppError(ERROR_CODES.IMPORT_DATABASE.B, ERROR_CATEGORY.DATABASE, true);
+            await handleUserError(t("components.dialogs.importDatabase.title"), err, {
+                data: "IMPORT_DATABASE_FAILED"
+            });
         }
     });
 };

@@ -2,18 +2,17 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * one could get a copy at https://mozilla.org/MPL/2.0/.
- *
- * Copyright (c) 2025-2026, Martin Berner, kontenmanager@gmx.de. All rights reserved.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
-import { INDEXED_DB } from "@/configs/database";
 import { useStockForm } from "@/composables/useForms";
 import { useStocksStore } from "@/stores/stocks";
 import { useSettingsStore } from "@/stores/settings";
 import { useRuntimeStore } from "@/stores/runtime";
+import { createDatabaseService } from "@/services/database/service";
+
+const testDb = createDatabaseService("test-db", 1);
 
 // Mock browser API
 const browserMock = {
@@ -39,7 +38,9 @@ vi.stubGlobal("browser", browserMock);
 describe("UpdateStock Logic Test", () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
-    vi.spyOn(databaseService, "isConnected").mockReturnValue(true);
+
+    // Mock connection state
+    vi.spyOn(testDb, "isConnected").mockReturnValue(true);
   });
 
   it("should update a stock and verify it reaches the database service", async () => {
@@ -76,21 +77,21 @@ describe("UpdateStock Logic Test", () => {
     stockFormData.firstPage = 1;
 
     // 3. Mock the DB update operation
-    const updateSpy = vi
-      .spyOn(databaseService, "update")
+    const stocksRepo = testDb.getRepository("stocks");
+    const saveSpy = vi
+      .spyOn(stocksRepo, "save")
       .mockResolvedValue(123);
 
     // 4. Directly test the mapping and updating logic (simulating onClickOk)
     const stockData = mapStockFormToDb(settings.activeAccountId);
 
-    // In useStocksDB.ts, it strips 'm' properties, but our form mapper already returns clean DB object.
+    // In useStocksDB.ts, it strips 'm' properties, but our form mapper already returns a clean DB object.
     // However, we simulate what the component does.
-    await databaseService.update(INDEXED_DB.STORE.STOCKS.NAME, stockData);
+    await stocksRepo.save(stockData as any);
     stocksStore.update(stockData as any);
 
     // 5. Verify database interaction
-    expect(updateSpy).toHaveBeenCalledWith(
-      INDEXED_DB.STORE.STOCKS.NAME,
+    expect(saveSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         cID: 123,
         cCompany: "Apple Updated",

@@ -9,8 +9,9 @@ import { DomainLogic } from "@/domains/logic";
 import DotMenu from "@/components/DotMenu.vue";
 import { createCompanyHeaders, createCompanyMenuItems } from "@/configs/views";
 import { DATE } from "@/domains/configs/date";
-import { AppError } from "@/domains/errors";
+import { useAlert } from "@/composables/useAlert";
 const { d, n, t } = useI18n();
+const { handleUserError } = useAlert();
 const records = useRecordsStore();
 const { active: activeStockItems } = storeToRefs(records.stocks);
 const settings = useSettingsStore();
@@ -67,8 +68,10 @@ const loadRequiredPages = async (startPage = 1) => {
     try {
         await Promise.all(pagesToLoad.map((page) => records.stocks.loadOnlineData(page)));
     }
-    catch {
-        throw new AppError("COMPANY_CONTENT: loadRequiredPages", "Failed to load online market data for required pages.", true);
+    catch (err) {
+        await handleUserError("COMPANY_CONTENT", err, {
+            data: "loadRequiredPages"
+        });
     }
 };
 const onUpdatePage = async (page) => {
@@ -80,8 +83,10 @@ const onUpdatePage = async (page) => {
     try {
         await records.stocks.loadOnlineData(page);
     }
-    catch {
-        throw new AppError("COMPANY_CONTENT: onUpdatePage", "Failed to load online market data for required page.", true);
+    catch (err) {
+        await handleUserError("COMPANY_CONTENT", err, {
+            data: "onUpdatePage"
+        });
     }
     finally {
         isStockLoading.value = false;

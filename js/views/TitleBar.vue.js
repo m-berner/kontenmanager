@@ -10,7 +10,7 @@ import { useStorage } from "@/composables/useStorage";
 import { DomainUtils } from "@/domains/utils";
 import { fetchService } from "@/services/fetch";
 import { INDEXED_DB } from "@/configs/database";
-import { databaseService } from "@/services/database";
+import { databaseService } from "@/services/database/service";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { COMPONENTS } from "@/configs/components";
 import { VIEW_CODES } from "@/configs/codes";

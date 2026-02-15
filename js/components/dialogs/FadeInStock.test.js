@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { databaseService } from "@/services/database";
 import { useRecordsStore } from "@/stores/records";
+import { databaseService } from "@/services/database/service";
 const browserMock = {
     storage: {
         local: {
@@ -42,11 +42,12 @@ describe("FadeInStock Logic Test", () => {
             cAskDates: "1970-01-01"
         };
         records.stocks.add(stock);
-        const updateSpy = vi.spyOn(databaseService, "update").mockResolvedValue(4);
+        const stocksRepo = databaseService.getRepository("stocks");
+        const saveSpy = vi.spyOn(stocksRepo, "save").mockResolvedValue(4);
         stock.cFadeOut = 0;
-        await databaseService.update("stocks", stock);
+        await stocksRepo.save(stock);
         records.stocks.update(stock);
-        expect(updateSpy).toHaveBeenCalledWith("stocks", expect.objectContaining({ cFadeOut: 0 }));
+        expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({ cFadeOut: 0 }));
         expect(records.stocks.items[0].cFadeOut).toBe(0);
     });
 });

@@ -3,11 +3,12 @@ import { useRecordsStore } from "@/stores/records";
 import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
 import { storeToRefs } from "pinia";
 import { computed, onUnmounted, readonly, ref } from "vue";
-import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { VIEW_CODES } from "@/configs/codes";
 import { useBrowser } from "@/composables/useBrowser";
+import { useAlert } from "@/composables/useAlert";
 import { DomainUtils } from "@/domains/utils";
 const { getMessage } = useBrowser();
+const { handleUserError } = useAlert();
 export function useMenuHighlight() {
     const highlightedItems = ref(new Map());
     const timeouts = new Map();
@@ -169,13 +170,18 @@ export function useMenuAction() {
         runtime.activeId = recordId;
         const handler = actionHandlers[actionType];
         if (!handler) {
-            throw new AppError(ERROR_CODES.USE_MENU.A, ERROR_CATEGORY.VALIDATION, false);
+            await handleUserError("Composables useMenu", getMessage("xx_error_code"), {
+                data: actionType
+            });
+            return;
         }
         try {
             await handler(recordId);
         }
-        catch {
-            throw new AppError(ERROR_CODES.USE_MENU.B, ERROR_CATEGORY.VALIDATION, true);
+        catch (err) {
+            await handleUserError("Composables useMenu", err, {
+                data: actionType
+            });
         }
     };
     const hasAction = (actionType) => {
