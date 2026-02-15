@@ -251,6 +251,52 @@
       "privacy": "Privacy",
       "mail": "Email"
     },
+    "helpContent": {
+      "title": "Help",
+      "overview": {
+        "title": "Overview",
+        "description": "KontenManager is your personal financial tool for managing bank accounts, tracking bookings, and monitoring a stock portfolio. Use the Home view to manage daily transactions and the Company view to track your investments and depot value."
+      },
+      "gettingStarted": {
+        "title": "Getting Started",
+        "steps": [
+          "Create a new bank account via the header menu (Add Account).",
+          "If you have existing data, use 'Import Database' to restore it, or 'Export Database' to create a backup.",
+          "The account selector in the title bar allows you to switch between different accounts once they are created."
+        ]
+      },
+      "bookings": {
+        "title": "Managing Bookings",
+        "details": [
+          "Add, update, or delete individual bookings for your selected account.",
+          "Categorize your transactions by configuring custom 'Booking Types'.",
+          "The current account balance is always visible in the title bar while on the Home view."
+        ]
+      },
+      "stocks": {
+        "title": "Stocks & Portfolio",
+        "details": [
+          "The Company view provides a specialized table for managing stock positions.",
+          "The Info Bar at the top shows live market data, including exchange rates, indexes, and commodity prices.",
+          "In the Company view, the title bar displays the total value of your portfolio (Depot Sum)."
+        ]
+      },
+      "settings": {
+        "title": "Settings & Personalization",
+        "details": [
+          "Access 'Settings' to customize technical aspects like market placeholders and currency symbols.",
+          "Configuration is stored locally in your browser and automatically reloaded when you open the extension."
+        ]
+      },
+      "shortcuts": {
+        "title": "Accessibility",
+        "description": "The interface is optimized for mouse and touch interactions. Currently, no global keyboard shortcuts are implemented."
+      },
+      "privacy": {
+        "title": "Privacy First",
+        "description": "Your privacy is important. Detailed information about data handling is available on our Privacy page, accessible from the footer."
+      }
+    },
     "optionsIndex": {
       "tabs": {
         "ge": "Topics & Services",

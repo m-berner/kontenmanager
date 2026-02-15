@@ -292,6 +292,52 @@
             "privacy": "Datenschutz",
             "mail": "Email"
         },
+        "helpContent": {
+            "title": "Hilfe",
+            "overview": {
+                "title": "Überblick",
+                "description": "KontenManager ist Ihr persönliches Finanzwerkzeug zur Verwaltung von Bankkonten, zur Verfolgung von Buchungen und zur Überwachung eines Aktienportfolios. Verwenden Sie die Startseite für tägliche Transaktionen und die Firmenansicht, um Ihre Investitionen und den Depotwert im Auge zu behalten."
+            },
+            "gettingStarted": {
+                "title": "Erste Schritte",
+                "steps": [
+                    "Legen Sie ein neues Bankkonto über das Menü in der Kopfleiste an (Konto hinzufügen).",
+                    "Wenn Sie bereits Daten haben, nutzen Sie 'Datenbank importieren', um diese wiederherzustellen, oder 'Datenbank exportieren', um eine Sicherung zu erstellen.",
+                    "Der Kontoauswahlschalter in der Titelleiste ermöglicht es Ihnen, zwischen verschiedenen Konten zu wechseln, sobald diese erstellt wurden."
+                ]
+            },
+            "bookings": {
+                "title": "Buchungen verwalten",
+                "details": [
+                    "Fügen Sie einzelne Buchungen für Ihr ausgewähltes Konto hinzu, bearbeiten oder löschen Sie diese.",
+                    "Kategorisieren Sie Ihre Transaktionen, indem Sie benutzerdefinierte 'Buchungsarten' konfigurieren.",
+                    "Der aktuelle Kontostand ist auf der Startseite immer in der Titelleiste sichtbar."
+                ]
+            },
+            "stocks": {
+                "title": "Aktien & Portfolio",
+                "details": [
+                    "Die Firmenansicht bietet eine spezialisierte Tabelle zur Verwaltung von Aktienpositionen.",
+                    "Die Infoleiste am oberen Rand zeigt Live-Marktdaten, einschließlich Wechselkurse, Indizes und Rohstoffpreise.",
+                    "In der Firmenansicht zeigt die Titelleiste den Gesamtwert Ihres Portfolios (Depot-Summe) an."
+                ]
+            },
+            "settings": {
+                "title": "Einstellungen & Personalisierung",
+                "details": [
+                    "Rufen Sie die 'Einstellungen' auf, um technische Aspekte wie Marktplatz-Platzhalter und Währungssymbole anzupassen.",
+                    "Die Konfiguration wird lokal in Ihrem Browser gespeichert und beim Öffnen der Erweiterung automatisch geladen."
+                ]
+            },
+            "shortcuts": {
+                "title": "Barrierefreiheit",
+                "description": "Die Benutzeroberfläche ist für Maus- und Touch-Interaktionen optimiert. Derzeit sind keine globalen Tastaturkürzel implementiert."
+            },
+            "privacy": {
+                "title": "Datenschutz an erster Stelle",
+                "description": "Ihre Privatsphäre ist wichtig. Detaillierte Informationen zum Umgang mit Daten finden Sie auf unserer Datenschutzseite, die über die Fußzeile erreichbar ist."
+            }
+        },
         "optionsIndex": {
             "tabs": {
                 "ge": "Themen & Dienste",

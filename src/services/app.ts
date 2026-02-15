@@ -16,6 +16,9 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { CURRENCIES } from "@/domains/configs/currencies";
 
+// TODO exchange rate EUR USD?
+// TODO stock exchanges EUR USD confusions?
+
 const { getUserLocale } = useBrowser();
 
 /**

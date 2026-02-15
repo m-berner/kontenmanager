@@ -62,6 +62,8 @@ const __VLS_27 = __VLS_26({
 ;
 ;
 const { default: __VLS_30 } = __VLS_28.slots;
+(__VLS_ctx.$t("views.helpContent.title"));
+[$t,];
 var __VLS_28;
 let __VLS_31;
 vCardText;
@@ -91,121 +93,93 @@ __VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
 });
 ;
 ;
+(__VLS_ctx.$t("views.helpContent.overview.title"));
 __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
+(__VLS_ctx.$t("views.helpContent.overview.description"));
+__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
+    ...{ class: "mb-6" },
+});
+;
 __VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mt-4 mb-2" },
+    ...{ class: "text-h6 mb-2" },
 });
 ;
 ;
+(__VLS_ctx.$t("views.helpContent.gettingStarted.title"));
+__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
+for (const [step, index] of __VLS_vFor((__VLS_ctx.$tm('views.helpContent.gettingStarted.steps')))) {
+    __VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({
+        key: (index),
+    });
+    (__VLS_ctx.$rt(step));
+    [$t, $t, $t, $tm, $rt,];
+}
+__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
+    ...{ class: "mb-6" },
+});
 ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
+    ...{ class: "text-h6 mb-2" },
+});
+;
+;
+(__VLS_ctx.$t("views.helpContent.bookings.title"));
+__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
+for (const [detail, index] of __VLS_vFor((__VLS_ctx.$tm('views.helpContent.bookings.details')))) {
+    __VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({
+        key: (index),
+    });
+    (__VLS_ctx.$rt(detail));
+    [$t, $tm, $rt,];
+}
+__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
+    ...{ class: "mb-6" },
+});
+;
+__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
+    ...{ class: "text-h6 mb-2" },
+});
+;
+;
+(__VLS_ctx.$t("views.helpContent.stocks.title"));
+__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
+for (const [detail, index] of __VLS_vFor((__VLS_ctx.$tm('views.helpContent.stocks.details')))) {
+    __VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({
+        key: (index),
+    });
+    (__VLS_ctx.$rt(detail));
+    [$t, $tm, $rt,];
+}
+__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
+    ...{ class: "mb-6" },
+});
+;
+__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
+    ...{ class: "text-h6 mb-2" },
+});
+;
+;
+(__VLS_ctx.$t("views.helpContent.settings.title"));
+__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
+for (const [detail, index] of __VLS_vFor((__VLS_ctx.$tm('views.helpContent.settings.details')))) {
+    __VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({
+        key: (index),
+    });
+    (__VLS_ctx.$rt(detail));
+    [$t, $tm, $rt,];
+}
+__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
+    ...{ class: "mb-6" },
+});
+;
+__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
+    ...{ class: "text-h6 mb-2" },
+});
+;
+;
+(__VLS_ctx.$t("views.helpContent.shortcuts.title"));
 __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
-    ...{ class: "mb-6" },
-});
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mb-2" },
-});
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mt-4 mb-2" },
-});
-;
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
-    ...{ class: "mb-6" },
-});
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mb-2" },
-});
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mt-4 mb-2" },
-});
-;
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
-    ...{ class: "mb-6" },
-});
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mb-2" },
-});
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mt-4 mb-2" },
-});
-;
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
-    ...{ class: "mb-6" },
-});
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mb-2" },
-});
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mt-4 mb-2" },
-});
-;
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.ul, __VLS_intrinsics.ul)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.li, __VLS_intrinsics.li)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
-    ...{ class: "mb-6" },
-});
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mb-2" },
-});
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mt-4 mb-2" },
-});
-;
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
+(__VLS_ctx.$t("views.helpContent.shortcuts.description"));
 __VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
     ...{ class: "mb-2" },
 });
@@ -215,18 +189,19 @@ __VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
 });
 ;
 ;
+(__VLS_ctx.$t("views.helpContent.privacy.title"));
 __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
-__VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({
-    ...{ class: "text-h6 mt-4 mb-2" },
-});
-;
-;
-;
-__VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
+(__VLS_ctx.$t("views.helpContent.privacy.description"));
+[$t, $t, $t, $t,];
 var __VLS_34;
+[];
 var __VLS_22;
+[];
 var __VLS_16;
+[];
 var __VLS_10;
+[];
 var __VLS_3;
+[];
 const __VLS_export = (await import('vue')).defineComponent({});
 export default {};
