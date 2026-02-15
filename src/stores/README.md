@@ -25,13 +25,14 @@ The orchestrator for all domain-specific data stores.
 
 #### Cross-store dependency policy
 
-- Leaf stores (e.g., `accounts`, `bookings`, `bookingTypes`, `stocks`, `settings`, `runtime`, `alerts`) must avoid importing each other directly to minimize coupling and prevent import cycles.
-- When coordination between record stores is required, use the `records` hub to access sibling stores.
+- **Leaf Stores**: Individual domain stores (e.g., `accounts`, `bookings`, `bookingTypes`, `stocks`, `settings`, `runtime`, `alerts`).
+- **Orchestration**: `records.ts` is the primary orchestrator for mass operations (init, clean).
+- **Dependencies**: Leaf stores should minimize direct imports of other leaf stores. When a store requires data or logic from another store, it is permitted if it avoids circular dependencies. Prefer using `records` for cross-entity coordination when possible.
 
 #### Single hydration entrypoint
 
-- `records.init(...)` is the only place where record stores are hydrated from persistence (IndexedDB, etc.).
-- Any sequencing or enrichment that depends on multiple record stores must be performed within `records.init(...)` (see `src/stores/records.ts`).
+- `records.init(...)` is the central place where domain record stores (accounts, bookings, etc.) are hydrated from persistence.
+- It also coordinates with `settings.init(...)` to ensure the application state is consistent.
 
 ### 🏦 Domain Data Stores
 
@@ -63,7 +64,6 @@ Manages the application’s notification system.
 
 ## Directory Structure
 
-- `stores.ts`: Contains store-specific constants (e.g., pagination defaults).
 - `*.ts`: Individual store implementations using the Pinia “setup” syntax.
 - `*.test.ts`: Unit tests for store logic and state transitions.
 
@@ -78,8 +78,8 @@ Manages the application’s notification system.
 5. **Validation**: Data entering the stores from the UI should ideally be validated via the `ValidationService` before
    reaching the persistence layer.
 
-6. **No leaf-to-leaf imports**: Leaf stores do not import other leaf stores. Use `useRecordsStore()` as the boundary for orchestration.
-7. **Single hydration entrypoint**: Always hydrate record data through `records.init(...)`. Do not partially hydrate leaf stores from random locations.
+6. **Minimize leaf-to-leaf imports**: Avoid tight coupling between leaf stores. Use `useRecordsStore()` for high-level orchestration or ensure that cross-imports do not create circularities.
+7. **Hydration entrypoint**: Domain record data should be hydrated through `records.init(...)`.
 
 ### Example usage
 

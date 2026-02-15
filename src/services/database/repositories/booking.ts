@@ -33,11 +33,7 @@ export class BookingRepository extends BaseRepository<BookingDb> {
     accountId: number,
     options: QueryOptions = {}
   ): Promise<BookingDb[]> {
-    return this.findBy(
-      "cAccountNumberID" as keyof BookingDb,
-      accountId,
-      options
-    );
+    return this.findBy("cAccountNumberID", accountId, options);
   }
 
   /**
@@ -47,7 +43,7 @@ export class BookingRepository extends BaseRepository<BookingDb> {
     date: string,
     options: QueryOptions = {}
   ): Promise<BookingDb[]> {
-    return this.findBy("cBookDate" as keyof BookingDb, date, options);
+    return this.findBy("cBookDate", date, options);
   }
 
   /**
@@ -57,11 +53,7 @@ export class BookingRepository extends BaseRepository<BookingDb> {
     bookingTypeId: number,
     options: QueryOptions = {}
   ): Promise<BookingDb[]> {
-    return this.findBy(
-      "cBookingTypeID" as keyof BookingDb,
-      bookingTypeId,
-      options
-    );
+    return this.findBy("cBookingTypeID", bookingTypeId, options);
   }
 
   /**
@@ -71,7 +63,7 @@ export class BookingRepository extends BaseRepository<BookingDb> {
     stockId: number,
     options: QueryOptions = {}
   ): Promise<BookingDb[]> {
-    return this.findBy("cStockID" as keyof BookingDb, stockId, options);
+    return this.findBy("cStockID", stockId, options);
   }
 
   /**
@@ -81,11 +73,7 @@ export class BookingRepository extends BaseRepository<BookingDb> {
     accountId: number,
     options: QueryOptions = {}
   ): Promise<void> {
-    return this.deleteBy(
-      "cAccountNumberID" as keyof BookingDb,
-      accountId,
-      options
-    );
+    return this.deleteBy("cAccountNumberID", accountId, options);
   }
 
   /**

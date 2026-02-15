@@ -1,11 +1,11 @@
 import { DomainUtils } from "@/domains/utils";
 import { INDEXED_DB } from "@/configs/database";
 export class DatabaseHealthService {
-    _repositoryFactory;
-    _transactionManager;
-    constructor(_repositoryFactory, _transactionManager) {
-        this._repositoryFactory = _repositoryFactory;
-        this._transactionManager = _transactionManager;
+    repositoryFactory;
+    transactionManager;
+    constructor(repositoryFactory, transactionManager) {
+        this.repositoryFactory = repositoryFactory;
+        this.transactionManager = transactionManager;
     }
     async performHealthCheck() {
         const startTime = performance.now();
@@ -46,8 +46,8 @@ export class DatabaseHealthService {
         return result;
     }
     async collectStats() {
-        const repos = this._repositoryFactory.getAllRepositories();
-        return this._transactionManager.execute([
+        const repos = this.repositoryFactory.getAllRepositories();
+        return this.transactionManager.execute([
             INDEXED_DB.STORE.ACCOUNTS.NAME,
             INDEXED_DB.STORE.BOOKINGS.NAME,
             INDEXED_DB.STORE.STOCKS.NAME,
@@ -127,8 +127,8 @@ export class DatabaseHealthService {
         return result;
     }
     async removeOrphanedRecords(storeName) {
-        const repos = this._repositoryFactory.getAllRepositories();
-        return this._transactionManager.execute([INDEXED_DB.STORE.ACCOUNTS.NAME, storeName], "readwrite", async (tx) => {
+        const repos = this.repositoryFactory.getAllRepositories();
+        return this.transactionManager.execute([INDEXED_DB.STORE.ACCOUNTS.NAME, storeName], "readwrite", async (tx) => {
             const accounts = await repos.accounts.findAll({ tx });
             const validAccountIds = new Set(accounts.map(a => a.cID));
             let repository;

@@ -10,17 +10,9 @@ import { computed, ref } from "vue";
 import { useSettingsStore } from "@/stores/settings";
 import { DomainUtils } from "@/domains/utils";
 
-/**
- * Pinia store managing bank account records.
- *
- * @module stores/accounts
- * @returns Reactive account state, computed aggregations,
- * and methods to mutate and enrich account records.
- */
 export const useAccountsStore = defineStore("accounts", function () {
   const settings = useSettingsStore();
   const { activeAccountId } = storeToRefs(settings);
-
   /** All bank account records. */
   const items = ref<AccountStoreItem[]>([]);
 

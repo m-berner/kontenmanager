@@ -39,7 +39,7 @@ export class AppService {
   /**
    * Application initialization status shape returned by initializeApp.
    */
-  private _lastStatus: AppStatus = this.createDefaultStatus();
+  private lastStatus: AppStatus = this.createDefaultStatus();
 
   /**
    * Initialize the application by loading data from storage, database, and external APIs.
@@ -77,7 +77,7 @@ export class AppService {
 
       if (signal?.aborted) {
         status.db = "aborted";
-        this._lastStatus = status;
+        this.lastStatus = status;
         return status;
       }
 
@@ -91,7 +91,7 @@ export class AppService {
       );
 
       if (signal?.aborted) {
-        this._lastStatus = status;
+        this.lastStatus = status;
         return status;
       }
 
@@ -101,11 +101,11 @@ export class AppService {
       this.logPhaseDuration("fetchExternalData", tFetchStart);
 
       this.logPhaseDuration("initializeApp", tAppStart);
-      this._lastStatus = status;
+      this.lastStatus = status;
       return status;
     } catch (err) {
       this.logPhaseDuration("initializeApp", tAppStart, err);
-      this._lastStatus = status;
+      this.lastStatus = status;
 
       if (signal?.aborted) {
         return this.handleAbort(status);
@@ -157,7 +157,7 @@ export class AppService {
         materials: this.runtime.infoMaterials.size > 0
       }
     };
-    return this._lastStatus ?? derived;
+    return this.lastStatus ?? derived;
   }
 
   // ========================================================================

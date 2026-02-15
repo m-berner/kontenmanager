@@ -13,16 +13,8 @@ import { DomainUtils } from "@/domains/utils";
 import deNotifications from "@/_locales/de/messages.json";
 import { useAlert } from "@/composables/useAlert";
 
-const { handleUserError } = useAlert();
-
-/**
- * Composable providing access to browser extension APIs.
- * Wraps common browser operations (storage, tabs, windows, notifications)
- * with error handling and reactive state.
- *
- * @module composables/useBrowser
- */
 export function useBrowser() {
+  const { handleUserError } = useAlert();
   /** The extension's internal index page URL. */
   const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
   /** The current extension manifest. */
@@ -217,7 +209,7 @@ export function useBrowser() {
         if (msg === "") {
           msg = messageOrError.message;
         }
-        messages = [`${mod}: ${messageOrError._category}`, msg];
+        messages = [`${mod}: ${messageOrError.category}`, msg];
       } else if (messageOrError instanceof Error) {
         messages = [mod, messageOrError.name, messageOrError.message];
       } else if (typeof messageOrError === "string") {

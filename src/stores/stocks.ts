@@ -20,16 +20,8 @@ import { DomainLogic } from "@/domains/logic";
 import { CURRENCIES } from "@/domains/configs/currencies";
 import { STOCK_STORE_MEMORY } from "@/domains/logic";
 
-const { getUserLocale } = useBrowser();
-
-/**
- * Internal Pinia store managing stock records and derived stock data.
- *
- * @module stores/stocks
- * @returns Reactive stock state, computed aggregations,
- * and methods to mutate and enrich stock records.
- */
 export const useStocksStore = defineStore("stocks", function () {
+  const { getUserLocale } = useBrowser();
   const { investByStockId, portfolioByStockId, hasStockID } =
     useBookingsStore();
   const runtime = useRuntimeStore();

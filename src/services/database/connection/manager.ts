@@ -27,9 +27,9 @@ export class DatabaseConnectionManager implements IDatabaseConnection {
   private versionChangeHandler?: () => void;
 
   constructor(
-    private readonly _dbName: string,
-    private readonly _version: number,
-    private readonly _migrator: IDatabaseMigrator
+    private readonly dbName: string,
+    private readonly version: number,
+    private readonly migrator: IDatabaseMigrator
   ) {}
 
   /**
@@ -42,7 +42,7 @@ export class DatabaseConnectionManager implements IDatabaseConnection {
     }
 
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this._dbName, this._version);
+      const request = indexedDB.open(this.dbName, this.version);
 
       request.onerror = () => {
         this.handleConnectionError();
@@ -51,7 +51,7 @@ export class DatabaseConnectionManager implements IDatabaseConnection {
             ERROR_CODES.SERVICES.DATABASE.A,
             ERROR_CATEGORY.DATABASE,
             false,
-            { dbName: this._dbName, version: this._version }
+            { dbName: this.dbName, version: this.version }
           )
         );
       };
@@ -59,8 +59,8 @@ export class DatabaseConnectionManager implements IDatabaseConnection {
       request.onsuccess = () => {
         this.handleConnectionSuccess(request.result);
         DomainUtils.log("DATABASE connection: connected successfully", {
-          dbName: this._dbName,
-          version: this._version
+          dbName: this.dbName,
+          version: this.version
         });
         resolve();
       };
@@ -70,7 +70,7 @@ export class DatabaseConnectionManager implements IDatabaseConnection {
           oldVersion: ev.oldVersion,
           newVersion: ev.newVersion
         });
-        this._migrator.setupDatabase(request.result, ev);
+        this.migrator.setupDatabase(request.result, ev);
       };
     });
   }

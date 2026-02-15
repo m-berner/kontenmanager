@@ -6,7 +6,7 @@ const recentMessages = new Map();
 const normalizedError = (error) => {
     let messages = [];
     if (error instanceof AppError) {
-        messages = [`${error._category}`, error.message];
+        messages = [`${error.category}`, error.message];
     }
     else if (error instanceof Error) {
         messages = [error.name, error.message];

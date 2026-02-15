@@ -34,11 +34,7 @@ export class StockRepository extends BaseRepository<StockDb> {
     accountId: number,
     options: QueryOptions = {}
   ): Promise<StockDb[]> {
-    return this.findBy(
-      "cAccountNumberID" as keyof StockDb,
-      accountId,
-      options
-    );
+    return this.findBy("cAccountNumberID", accountId, options);
   }
 
   /**
@@ -48,11 +44,7 @@ export class StockRepository extends BaseRepository<StockDb> {
     accountId: number,
     options: QueryOptions = {}
   ): Promise<void> {
-    return this.deleteBy(
-      "cAccountNumberID" as keyof StockDb,
-      accountId,
-      options
-    );
+    return this.deleteBy("cAccountNumberID", accountId, options);
   }
 
   /**

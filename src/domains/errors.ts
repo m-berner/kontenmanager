@@ -269,15 +269,15 @@ export function serializeError(err: unknown): Record<string, string> {
 export class AppError extends Error {
   /**
    * @param code - Unique error code for identification.
-   * @param _category - Classification of the error (e.g., 'database', 'network').
-   * @param _context - Optional key-value pairs with extra debugging information.
-   * @param _recoverable - Whether the application can continue after this error.
+   * @param category - Classification of the error (e.g., 'database', 'network').
+   * @param context - Optional key-value pairs with extra debugging information.
+   * @param recoverable - Whether the application can continue after this error.
    */
   constructor(
     public readonly code: keyof typeof deNotifications | keyof typeof ERRORS,
-    public readonly _category: AppErrorCategoryType,
-    public readonly _recoverable: boolean = true,
-    public readonly _context?: Record<string, unknown>
+    public readonly category: AppErrorCategoryType,
+    public readonly recoverable: boolean = true,
+    public readonly context?: Record<string, unknown>
   ) {
     let message: string;
 

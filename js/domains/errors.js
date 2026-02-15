@@ -229,10 +229,10 @@ export function serializeError(err) {
 }
 export class AppError extends Error {
     code;
-    _category;
-    _recoverable;
-    _context;
-    constructor(code, _category, _recoverable = true, _context) {
+    category;
+    recoverable;
+    context;
+    constructor(code, category, recoverable = true, context) {
         let message;
         if (code in deNotifications) {
             message =
@@ -247,9 +247,9 @@ export class AppError extends Error {
         }
         super(message);
         this.code = code;
-        this._category = _category;
-        this._recoverable = _recoverable;
-        this._context = _context;
+        this.category = category;
+        this.recoverable = recoverable;
+        this.context = context;
         this.name = "AppError";
     }
 }

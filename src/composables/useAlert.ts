@@ -21,7 +21,7 @@ const recentMessages = new Map<string, number>();
 const normalizedError = (error: string | Error | unknown) => {
   let messages: string[] = [];
   if (error instanceof AppError) {
-    messages = [`${error._category}`, error.message];
+    messages = [`${error.category}`, error.message];
   } else if (error instanceof Error) {
     messages = [error.name, error.message];
   } else if (typeof error === "string") {

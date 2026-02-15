@@ -607,7 +607,9 @@ export type ValidationCode =
 export type ViewTypeSelection =
   | "home"
   | "company"
-  | "settings";
+  | "settings"
+  | "help"
+  | "privacy";
 
 declare global {
   module "*.vue" {

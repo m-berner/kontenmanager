@@ -47,8 +47,8 @@ export interface HealthStats {
  */
 export class DatabaseHealthService {
   constructor(
-    private readonly _repositoryFactory: RepositoryFactory,
-    private readonly _transactionManager: TransactionManager
+    private readonly repositoryFactory: RepositoryFactory,
+    private readonly transactionManager: TransactionManager
   ) {}
 
   /**
@@ -111,10 +111,10 @@ export class DatabaseHealthService {
   // Private methods
 
   private async collectStats(): Promise<HealthStats> {
-    const repos = this._repositoryFactory.getAllRepositories();
+    const repos = this.repositoryFactory.getAllRepositories();
 
     // Get all data in a single transaction for consistency
-    return this._transactionManager.execute(
+    return this.transactionManager.execute(
       [
         INDEXED_DB.STORE.ACCOUNTS.NAME,
         INDEXED_DB.STORE.BOOKINGS.NAME,
@@ -208,9 +208,9 @@ export class DatabaseHealthService {
   }
 
   private async removeOrphanedRecords(storeName: string): Promise<void> {
-    const repos = this._repositoryFactory.getAllRepositories();
+    const repos = this.repositoryFactory.getAllRepositories();
 
-    return this._transactionManager.execute(
+    return this.transactionManager.execute(
       [INDEXED_DB.STORE.ACCOUNTS.NAME, storeName],
       "readwrite",
       async (tx) => {

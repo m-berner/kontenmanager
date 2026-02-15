@@ -17,7 +17,7 @@ export class AppService {
     fetch = fetchService;
     constructor() {
     }
-    _lastStatus = this.createDefaultStatus();
+    lastStatus = this.createDefaultStatus();
     async initializeApp(translations, signal) {
         const tAppStart = performance.now();
         DomainUtils.log("SERVICES app", { phase: "initializeApp", event: "start" });
@@ -29,24 +29,24 @@ export class AppService {
             await this.executePhase("initializeStorage", () => this.initializeStorage(signal), status, "storage", signal);
             if (signal?.aborted) {
                 status.db = "aborted";
-                this._lastStatus = status;
+                this.lastStatus = status;
                 return status;
             }
             await this.executePhase("initializeDatabase", () => this.initializeDatabase(translations, signal), status, "db", signal);
             if (signal?.aborted) {
-                this._lastStatus = status;
+                this.lastStatus = status;
                 return status;
             }
             const tFetchStart = performance.now();
             status.fetch = await this.fetchExternalData(signal);
             this.logPhaseDuration("fetchExternalData", tFetchStart);
             this.logPhaseDuration("initializeApp", tAppStart);
-            this._lastStatus = status;
+            this.lastStatus = status;
             return status;
         }
         catch (err) {
             this.logPhaseDuration("initializeApp", tAppStart, err);
-            this._lastStatus = status;
+            this.lastStatus = status;
             if (signal?.aborted) {
                 return this.handleAbort(status);
             }
@@ -73,7 +73,7 @@ export class AppService {
                 materials: this.runtime.infoMaterials.size > 0
             }
         };
-        return this._lastStatus ?? derived;
+        return this.lastStatus ?? derived;
     }
     createDefaultStatus() {
         return {

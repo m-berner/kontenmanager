@@ -11,13 +11,8 @@ import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import type { I18nWrapper, MessageSchemaType } from "@/types";
 
-const { getUserLocale } = useBrowser();
-
-/**
- * I18n configuration object (extracted to avoid duplication)
- */
 const i18nConfig: MessageSchemaType = {
-  locale: getUserLocale(),
+  locale: "en-US", // Default, will be updated in i18nInstance or after mount
   fallbackLocale: "en-US",
   messages: {
     "de-DE": deDE,
@@ -187,5 +182,9 @@ const i18nWrapper: I18nWrapper = {
 };
 
 export default i18nWrapper;
+
+// Set locale after initialization to avoid top-level composable issues
+const { getUserLocale } = useBrowser();
+i18nInstance.global.locale = getUserLocale();
 
 DomainUtils.log("PLUGINS i18n");

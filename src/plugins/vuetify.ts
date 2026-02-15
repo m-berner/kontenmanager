@@ -134,7 +134,6 @@ const vuetifyInstance = createVuetify({
           primary: "#378222",
           surface: "#378222",
           secondary: "#e0e0e0",
-          // Consider using a CSS custom property or component-specific styling.
           warning: "orange",
           error: "orange",
           info: "yellow",

@@ -1,15 +1,15 @@
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 export class DatabaseConnectionManager {
-    _dbName;
-    _version;
-    _migrator;
+    dbName;
+    version;
+    migrator;
     db;
     versionChangeHandler;
-    constructor(_dbName, _version, _migrator) {
-        this._dbName = _dbName;
-        this._version = _version;
-        this._migrator = _migrator;
+    constructor(dbName, version, migrator) {
+        this.dbName = dbName;
+        this.version = version;
+        this.migrator = migrator;
     }
     async connect() {
         if (this.db) {
@@ -17,16 +17,16 @@ export class DatabaseConnectionManager {
             return;
         }
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(this._dbName, this._version);
+            const request = indexedDB.open(this.dbName, this.version);
             request.onerror = () => {
                 this.handleConnectionError();
-                reject(new AppError(ERROR_CODES.SERVICES.DATABASE.A, ERROR_CATEGORY.DATABASE, false, { dbName: this._dbName, version: this._version }));
+                reject(new AppError(ERROR_CODES.SERVICES.DATABASE.A, ERROR_CATEGORY.DATABASE, false, { dbName: this.dbName, version: this.version }));
             };
             request.onsuccess = () => {
                 this.handleConnectionSuccess(request.result);
                 DomainUtils.log("DATABASE connection: connected successfully", {
-                    dbName: this._dbName,
-                    version: this._version
+                    dbName: this.dbName,
+                    version: this.version
                 });
                 resolve();
             };
@@ -35,7 +35,7 @@ export class DatabaseConnectionManager {
                     oldVersion: ev.oldVersion,
                     newVersion: ev.newVersion
                 });
-                this._migrator.setupDatabase(request.result, ev);
+                this.migrator.setupDatabase(request.result, ev);
             };
         });
     }

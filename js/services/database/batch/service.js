@@ -8,9 +8,9 @@ const VALID_STORES = [
     INDEXED_DB.STORE.BOOKING_TYPES.NAME
 ];
 export class BatchOperationService {
-    _transactionManager;
-    constructor(_transactionManager) {
-        this._transactionManager = _transactionManager;
+    transactionManager;
+    constructor(transactionManager) {
+        this.transactionManager = transactionManager;
     }
     async executeAtomic(descriptors) {
         const startTime = performance.now();
@@ -20,7 +20,7 @@ export class BatchOperationService {
             stores: storeNames,
             totalOperations: descriptors.reduce((sum, d) => sum + d.operations.length, 0)
         });
-        await this._transactionManager.execute(storeNames, "readwrite", async (tx) => {
+        await this.transactionManager.execute(storeNames, "readwrite", async (tx) => {
             for (const descriptor of descriptors) {
                 const store = tx.objectStore(descriptor.storeName);
                 await this.executeOperations(store, descriptor.operations);
@@ -82,10 +82,10 @@ export class BatchOperationService {
     }
 }
 export class BatchOperationBuilder {
-    _service;
+    service;
     descriptors = new Map();
-    constructor(_service) {
-        this._service = _service;
+    constructor(service) {
+        this.service = service;
     }
     add(storeName, operation) {
         if (!this.descriptors.has(storeName)) {
@@ -108,7 +108,7 @@ export class BatchOperationBuilder {
     }
     async execute() {
         const descriptors = Array.from(this.descriptors.entries()).map(([storeName, operations]) => ({ storeName, operations }));
-        return this._service.executeAtomic(descriptors);
+        return this.service.executeAtomic(descriptors);
     }
     getOperationCount() {
         return Array.from(this.descriptors.values()).reduce((sum, ops) => sum + ops.length, 0);

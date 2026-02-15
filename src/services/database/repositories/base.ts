@@ -15,14 +15,21 @@ export interface QueryOptions {
 }
 
 /**
+ * Base entity with optional ID
+ */
+export interface BaseEntity {
+  cID?: number;
+}
+
+/**
  * Base repository providing common CRUD operations
  * Uses composition over inheritance for better testability
  */
-export class BaseRepository<T extends { cID?: number }> {
+export abstract class BaseRepository<T extends BaseEntity> {
   constructor(
-    protected readonly _storeName: string,
-    protected readonly _transactionManager: TransactionManager,
-    protected readonly _indexes: Map<keyof T, string> = new Map()
+    protected readonly storeName: string,
+    protected readonly transactionManager: TransactionManager,
+    protected readonly indexes: Map<keyof T, string> = new Map()
   ) {}
 
   /**
@@ -30,7 +37,7 @@ export class BaseRepository<T extends { cID?: number }> {
    */
   async findById(id: number, options: QueryOptions = {}): Promise<T | null> {
     const operation = async (tx: IDBTransaction): Promise<T | null> => {
-      const store = tx.objectStore(this._storeName);
+      const store = tx.objectStore(this.storeName);
       const result = await this.executeRequest<T>(store.get(id));
       return result || null;
     };
@@ -39,8 +46,8 @@ export class BaseRepository<T extends { cID?: number }> {
       return operation(options.tx);
     }
 
-    return this._transactionManager.execute(
-      this._storeName,
+    return this.transactionManager.execute(
+      this.storeName,
       "readonly",
       operation
     );
@@ -51,7 +58,7 @@ export class BaseRepository<T extends { cID?: number }> {
    */
   async findAll(options: QueryOptions = {}): Promise<T[]> {
     const operation = async (tx: IDBTransaction): Promise<T[]> => {
-      const store = tx.objectStore(this._storeName);
+      const store = tx.objectStore(this.storeName);
       return this.executeRequest<T[]>(store.getAll());
     };
 
@@ -59,8 +66,8 @@ export class BaseRepository<T extends { cID?: number }> {
       return operation(options.tx);
     }
 
-    return this._transactionManager.execute(
-      this._storeName,
+    return this.transactionManager.execute(
+      this.storeName,
       "readonly",
       operation
     );
@@ -74,19 +81,19 @@ export class BaseRepository<T extends { cID?: number }> {
     value: IDBValidKey,
     options: QueryOptions = {}
   ): Promise<T[]> {
-    const indexName = this._indexes.get(field);
+    const indexName = this.indexes.get(field);
 
     if (!indexName) {
       throw new AppError(
         ERROR_CODES.SERVICES.DATABASE.NO_INDEX,
         ERROR_CATEGORY.DATABASE,
         false,
-        { storeName: this._storeName, field: String(field) }
+        { storeName: this.storeName, field: String(field) }
       );
     }
 
     const operation = async (tx: IDBTransaction): Promise<T[]> => {
-      const store = tx.objectStore(this._storeName);
+      const store = tx.objectStore(this.storeName);
       const index = store.index(indexName);
       return this.executeRequest<T[]>(index.getAll(value));
     };
@@ -95,8 +102,8 @@ export class BaseRepository<T extends { cID?: number }> {
       return operation(options.tx);
     }
 
-    return this._transactionManager.execute(
-      this._storeName,
+    return this.transactionManager.execute(
+      this.storeName,
       "readonly",
       operation
     );
@@ -107,7 +114,7 @@ export class BaseRepository<T extends { cID?: number }> {
    */
   async save(entity: T, options: QueryOptions = {}): Promise<number> {
     const operation = async (tx: IDBTransaction): Promise<number> => {
-      const store = tx.objectStore(this._storeName);
+      const store = tx.objectStore(this.storeName);
 
       if (entity.cID) {
         // Update existing
@@ -117,7 +124,7 @@ export class BaseRepository<T extends { cID?: number }> {
         // Insert new
         const dataToAdd: Omit<T, "cID"> = { ...entity };
         if ("cID" in dataToAdd) {
-          delete dataToAdd.cID;
+          delete (dataToAdd as any).cID;
         }
         const result = await this.executeRequest(store.add(dataToAdd));
         return result as number;
@@ -128,8 +135,8 @@ export class BaseRepository<T extends { cID?: number }> {
       return operation(options.tx);
     }
 
-    return this._transactionManager.execute(
-      this._storeName,
+    return this.transactionManager.execute(
+      this.storeName,
       "readwrite",
       operation
     );
@@ -140,7 +147,7 @@ export class BaseRepository<T extends { cID?: number }> {
    */
   async delete(id: number, options: QueryOptions = {}): Promise<void> {
     const operation = async (tx: IDBTransaction): Promise<void> => {
-      const store = tx.objectStore(this._storeName);
+      const store = tx.objectStore(this.storeName);
       await this.executeRequest<undefined>(store.delete(id));
     };
 
@@ -148,8 +155,8 @@ export class BaseRepository<T extends { cID?: number }> {
       return operation(options.tx);
     }
 
-    return this._transactionManager.execute(
-      this._storeName,
+    return this.transactionManager.execute(
+      this.storeName,
       "readwrite",
       operation
     );
@@ -163,19 +170,19 @@ export class BaseRepository<T extends { cID?: number }> {
     value: IDBValidKey,
     options: QueryOptions = {}
   ): Promise<void> {
-    const indexName = this._indexes.get(field);
+    const indexName = this.indexes.get(field);
 
     if (!indexName) {
       throw new AppError(
         ERROR_CODES.SERVICES.DATABASE.NO_INDEX,
         ERROR_CATEGORY.DATABASE,
         false,
-        { storeName: this._storeName, field: String(field) }
+        { storeName: this.storeName, field: String(field) }
       );
     }
 
     const operation = async (tx: IDBTransaction): Promise<void> => {
-      const store = tx.objectStore(this._storeName);
+      const store = tx.objectStore(this.storeName);
       const index = store.index(indexName);
       await this.deleteByCursor(index, IDBKeyRange.only(value));
     };
@@ -184,8 +191,8 @@ export class BaseRepository<T extends { cID?: number }> {
       return operation(options.tx);
     }
 
-    return this._transactionManager.execute(
-      this._storeName,
+    return this.transactionManager.execute(
+      this.storeName,
       "readwrite",
       operation
     );
@@ -196,7 +203,7 @@ export class BaseRepository<T extends { cID?: number }> {
    */
   async count(options: QueryOptions = {}): Promise<number> {
     const operation = async (tx: IDBTransaction): Promise<number> => {
-      const store = tx.objectStore(this._storeName);
+      const store = tx.objectStore(this.storeName);
       return this.executeRequest<number>(store.count());
     };
 
@@ -204,8 +211,8 @@ export class BaseRepository<T extends { cID?: number }> {
       return operation(options.tx);
     }
 
-    return this._transactionManager.execute(
-      this._storeName,
+    return this.transactionManager.execute(
+      this.storeName,
       "readonly",
       operation
     );
@@ -222,7 +229,7 @@ export class BaseRepository<T extends { cID?: number }> {
             ERROR_CODES.SERVICES.DATABASE.REQUEST_FAILED,
             ERROR_CATEGORY.DATABASE,
             false,
-            { storeName: this._storeName }
+            { storeName: this.storeName }
           )
         );
     });
@@ -251,7 +258,7 @@ export class BaseRepository<T extends { cID?: number }> {
             ERROR_CODES.SERVICES.DATABASE.BASE.A,
             ERROR_CATEGORY.DATABASE,
             false,
-            { storeName: this._storeName }
+            { storeName: this.storeName }
           )
         );
     });

@@ -19,40 +19,36 @@ export const STOCK_STORE_MEMORY = {
 };
 let hideImportAlert = false;
 export class DomainLogic {
+    static calculateEntryFees(entry) {
+        return entry.cFeeDebit - entry.cFeeCredit;
+    }
+    static calculateEntryTaxes(entry) {
+        return (entry.cTaxDebit -
+            entry.cTaxCredit +
+            (entry.cSourceTaxDebit - entry.cSourceTaxCredit) +
+            (entry.cTransactionTaxDebit - entry.cTransactionTaxCredit) +
+            (entry.cSoliDebit - entry.cSoliCredit));
+    }
     static calculateTotalSum(bookings) {
         if (bookings.length === 0)
             return 0;
         return bookings.reduce((acc, entry) => {
-            const fees = entry.cTaxDebit -
-                entry.cTaxCredit +
-                (entry.cSourceTaxDebit - entry.cSourceTaxCredit) +
-                (entry.cTransactionTaxDebit - entry.cTransactionTaxCredit) +
-                (entry.cSoliDebit - entry.cSoliCredit) +
-                (entry.cFeeDebit - entry.cFeeCredit);
-            const result = acc + (entry.cCredit - entry.cDebit) - fees;
+            const fees = this.calculateEntryFees(entry);
+            const taxes = this.calculateEntryTaxes(entry);
+            const result = acc + (entry.cCredit - entry.cDebit) - (fees + taxes);
             return Math.round(result * 100) / 100;
         }, 0);
     }
     static calculateSumFees(bookings, year) {
         const sum = bookings
             .filter((entry) => new Date(entry.cBookDate).getFullYear() === year)
-            .reduce((acc, entry) => acc + (entry.cFeeCredit - entry.cFeeDebit), 0);
+            .reduce((acc, entry) => acc - this.calculateEntryFees(entry), 0);
         return Math.round(sum * 100) / 100;
     }
     static calculateSumTaxes(bookings, year) {
         const sum = bookings
             .filter((entry) => new Date(entry.cBookDate).getFullYear() === year)
-            .reduce((acc, entry) => {
-            return (acc +
-                (entry.cTaxCredit -
-                    entry.cTaxDebit +
-                    entry.cSoliCredit -
-                    entry.cSoliDebit +
-                    entry.cSourceTaxCredit -
-                    entry.cSourceTaxDebit +
-                    entry.cTransactionTaxCredit -
-                    entry.cTransactionTaxDebit));
-        }, 0);
+            .reduce((acc, entry) => acc - this.calculateEntryTaxes(entry), 0);
         return Math.round(sum * 100) / 100;
     }
     static aggregateBookingsPerType(bookings, bookingTypes, year) {
@@ -70,21 +66,11 @@ export class DomainLogic {
         });
     }
     static calculateSumAllFees(bookings) {
-        const sum = bookings.reduce((acc, entry) => acc + (entry.cFeeCredit - entry.cFeeDebit), 0);
+        const sum = bookings.reduce((acc, entry) => acc - this.calculateEntryFees(entry), 0);
         return Math.round(sum * 100) / 100;
     }
     static calculateSumAllTaxes(bookings) {
-        const sum = bookings.reduce((acc, entry) => {
-            return (acc +
-                (entry.cTaxCredit -
-                    entry.cTaxDebit +
-                    entry.cSoliCredit -
-                    entry.cSoliDebit +
-                    entry.cSourceTaxCredit -
-                    entry.cSourceTaxDebit +
-                    entry.cTransactionTaxCredit -
-                    entry.cTransactionTaxDebit));
-        }, 0);
+        const sum = bookings.reduce((acc, entry) => acc - this.calculateEntryTaxes(entry), 0);
         return Math.round(sum * 100) / 100;
     }
     static calculatePortfolioByStockId(bookings, stockId) {

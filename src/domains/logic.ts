@@ -43,6 +43,26 @@ let hideImportAlert = false;
  */
 export class DomainLogic {
   /**
+   * Calculates the total fees for a booking entry.
+   */
+  private static calculateEntryFees(entry: BookingDb): number {
+    return entry.cFeeDebit - entry.cFeeCredit;
+  }
+
+  /**
+   * Calculates the total taxes for a booking entry.
+   */
+  private static calculateEntryTaxes(entry: BookingDb): number {
+    return (
+      entry.cTaxDebit -
+      entry.cTaxCredit +
+      (entry.cSourceTaxDebit - entry.cSourceTaxCredit) +
+      (entry.cTransactionTaxDebit - entry.cTransactionTaxCredit) +
+      (entry.cSoliDebit - entry.cSoliCredit)
+    );
+  }
+
+  /**
    * Calculates the total sum of bookings considering all taxes and fees.
    *
    * @param bookings - Array of bookings to sum.
@@ -51,14 +71,9 @@ export class DomainLogic {
   static calculateTotalSum(bookings: BookingDb[]): number {
     if (bookings.length === 0) return 0;
     return bookings.reduce((acc, entry) => {
-      const fees =
-        entry.cTaxDebit -
-        entry.cTaxCredit +
-        (entry.cSourceTaxDebit - entry.cSourceTaxCredit) +
-        (entry.cTransactionTaxDebit - entry.cTransactionTaxCredit) +
-        (entry.cSoliDebit - entry.cSoliCredit) +
-        (entry.cFeeDebit - entry.cFeeCredit);
-      const result = acc + (entry.cCredit - entry.cDebit) - fees;
+      const fees = this.calculateEntryFees(entry);
+      const taxes = this.calculateEntryTaxes(entry);
+      const result = acc + (entry.cCredit - entry.cDebit) - (fees + taxes);
       return Math.round(result * 100) / 100;
     }, 0);
   }
@@ -73,7 +88,7 @@ export class DomainLogic {
   static calculateSumFees(bookings: BookingDb[], year: number): number {
     const sum = bookings
       .filter((entry) => new Date(entry.cBookDate).getFullYear() === year)
-      .reduce((acc, entry) => acc + (entry.cFeeCredit - entry.cFeeDebit), 0);
+      .reduce((acc, entry) => acc - this.calculateEntryFees(entry), 0);
     return Math.round(sum * 100) / 100;
   }
 
@@ -87,19 +102,7 @@ export class DomainLogic {
   static calculateSumTaxes(bookings: BookingDb[], year: number): number {
     const sum = bookings
       .filter((entry) => new Date(entry.cBookDate).getFullYear() === year)
-      .reduce((acc, entry) => {
-        return (
-          acc +
-          (entry.cTaxCredit -
-            entry.cTaxDebit +
-            entry.cSoliCredit -
-            entry.cSoliDebit +
-            entry.cSourceTaxCredit -
-            entry.cSourceTaxDebit +
-            entry.cTransactionTaxCredit -
-            entry.cTransactionTaxDebit)
-        );
-      }, 0);
+      .reduce((acc, entry) => acc - this.calculateEntryTaxes(entry), 0);
     return Math.round(sum * 100) / 100;
   }
 
@@ -141,7 +144,7 @@ export class DomainLogic {
    */
   static calculateSumAllFees(bookings: BookingDb[]): number {
     const sum = bookings.reduce(
-      (acc, entry) => acc + (entry.cFeeCredit - entry.cFeeDebit),
+      (acc, entry) => acc - this.calculateEntryFees(entry),
       0
     );
     return Math.round(sum * 100) / 100;
@@ -154,19 +157,10 @@ export class DomainLogic {
    * @returns Total taxes.
    */
   static calculateSumAllTaxes(bookings: BookingDb[]): number {
-    const sum = bookings.reduce((acc, entry) => {
-      return (
-        acc +
-        (entry.cTaxCredit -
-          entry.cTaxDebit +
-          entry.cSoliCredit -
-          entry.cSoliDebit +
-          entry.cSourceTaxCredit -
-          entry.cSourceTaxDebit +
-          entry.cTransactionTaxCredit -
-          entry.cTransactionTaxDebit)
-      );
-    }, 0);
+    const sum = bookings.reduce(
+      (acc, entry) => acc - this.calculateEntryTaxes(entry),
+      0
+    );
     return Math.round(sum * 100) / 100;
   }
 

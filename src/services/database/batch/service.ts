@@ -34,7 +34,7 @@ export interface BatchOperationDescriptor {
  * Service for executing batch operations atomically
  */
 export class BatchOperationService {
-  constructor(private readonly _transactionManager: TransactionManager) {}
+  constructor(private readonly transactionManager: TransactionManager) {}
 
   /**
    * Executes multiple operations across multiple stores atomically
@@ -57,7 +57,7 @@ export class BatchOperationService {
       )
     });
 
-    await this._transactionManager.execute(
+    await this.transactionManager.execute(
       storeNames,
       "readwrite",
       async (tx) => {
@@ -183,7 +183,7 @@ export class BatchOperationService {
 export class BatchOperationBuilder {
   private descriptors: Map<string, RecordOperation[]> = new Map();
 
-  constructor(private readonly _service: BatchOperationService) {}
+  constructor(private readonly service: BatchOperationService) {}
 
   /**
    * Adds an operation to the batch
@@ -232,7 +232,7 @@ export class BatchOperationBuilder {
       ([storeName, operations]) => ({ storeName, operations })
     );
 
-    return this._service.executeAtomic(descriptors);
+    return this.service.executeAtomic(descriptors);
   }
 
   /**

@@ -12,8 +12,8 @@ import { useBookingsStore } from "@/stores/bookings";
 import { DomainLogic } from "@/domains/logic";
 import { CURRENCIES } from "@/domains/configs/currencies";
 import { STOCK_STORE_MEMORY } from "@/domains/logic";
-const { getUserLocale } = useBrowser();
 export const useStocksStore = defineStore("stocks", function () {
+    const { getUserLocale } = useBrowser();
     const { investByStockId, portfolioByStockId, hasStockID } = useBookingsStore();
     const runtime = useRuntimeStore();
     const settings = useSettingsStore();

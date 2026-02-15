@@ -3,9 +3,8 @@ import deDE from "@/_locales/de/gui.json";
 import enUS from "@/_locales/en/gui.json";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
-const { getUserLocale } = useBrowser();
 const i18nConfig = {
-    locale: getUserLocale(),
+    locale: "en-US",
     fallbackLocale: "en-US",
     messages: {
         "de-DE": deDE,
@@ -163,4 +162,6 @@ const i18nWrapper = {
     i18n: i18nInstance
 };
 export default i18nWrapper;
+const { getUserLocale } = useBrowser();
+i18nInstance.global.locale = getUserLocale();
 DomainUtils.log("PLUGINS i18n");

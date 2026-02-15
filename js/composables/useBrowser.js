@@ -6,8 +6,8 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import deNotifications from "@/_locales/de/messages.json";
 import { useAlert } from "@/composables/useAlert";
-const { handleUserError } = useAlert();
 export function useBrowser() {
+    const { handleUserError } = useAlert();
     const indexUrl = computed(() => browser.runtime.getURL(ENTRYPOINTS.APP));
     const manifest = computed(() => browser.runtime.getManifest());
     const locale5 = computed(() => {
@@ -107,7 +107,7 @@ export function useBrowser() {
                 if (msg === "") {
                     msg = messageOrError.message;
                 }
-                messages = [`${mod}: ${messageOrError._category}`, msg];
+                messages = [`${mod}: ${messageOrError.category}`, msg];
             }
             else if (messageOrError instanceof Error) {
                 messages = [mod, messageOrError.name, messageOrError.message];

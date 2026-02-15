@@ -12,36 +12,14 @@ APIs (like `browser.storage` or `browser.tabs`), the UI framework (Vue/Vuetify),
 
 ## Directory Structure
 
-### `config/`
+### `configs/`
 
 Domain-scoped constants used by the business logic. These values are framework-agnostic and immutable
 to guarantee predictable behavior across the app. Current modules:
 
 - `date.ts` — `DATE`
-
-  - Canonical date defaults and helpers used by domain logic. Notable fields:
-    - `ISO`: Baseline ISO date string `"1970-01-01"` used for initialization.
-    - `MILLI_PER_DAY`, `MILLI_PER_MIN`: Time constants in milliseconds.
-    - `ISO_DATE_REGEX`: Simple regex to validate `YYYY-MM-DD` format.
-    - `ZERO_TIME`: Zero marker for timestamps when time is intentionally not tracked.
-  - Example:
-    ```ts
-    import { DATE } from "@/domains/configs/date";
-    const isIso = DATE.ISO_DATE_REGEX.test("2025-12-31");
-    const daysToMs = 3 * DATE.MILLI_PER_DAY;
-    ```
-
 - `storage.ts` — `BROWSER_STORAGE`
-  - Canonical keys and defaults for simple settings stored outside IndexedDB.
-    These constants define both the storage key and a sane default value, keeping the domain layer
-    free from hard-coded strings.
-  - Examples:
-    ```ts
-    import { BROWSER_STORAGE } from "@/domains/configs/storage";
-    // Use stable keys in adapter code (outside the domain layer)
-    const k = BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key; // "sActiveAccountId"
-    const def = BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.value; // -1
-    ```
+- `currencies.ts` — `CURRENCIES`
 
 ### `importExport/`
 
@@ -68,21 +46,15 @@ Encapsulates complex calculations and orchestration that don't belong in a singl
 - Financial aggregations (sums, taxes, fees).
 - FIFO (First-In-First-Out) portfolio calculations.
 - Multi-store initialization logic.
-
-
-- `STORE_MEMORY`
-
-  - Default in-memory fields that do not come from persistence but are required for runtime calculations.
-    Currently focused on stock calculations. These values are merged into stock items when stores are
-    initialized to keep computed fields present and typed.
+- `STOCK_STORE_MEMORY`: Default in-memory fields for stock calculations. Merged into stock items during initialization to keep computed fields present and typed.
   - Keys (excerpt): `mPortfolio`, `mInvest`, `mChange`, `mBuyValue`, `mEuroChange`, `mMin`, `mMax`,
     `mValue`, `mDividendYielda`, `mDividendYeara`, `mDividendYieldb`, `mDividendYearb`,
     `mRealDividend`, `mRealBuyValue`, `mDeleteable`.
   - Example (see also `DomainLogic.initializeRecords`):
     ```ts
-    import { STORE_MEMORY } from "@/domains/configs/storeMemory";
+    import { STOCK_STORE_MEMORY } from "@/domains/logic";
     // Ensure runtime-only fields exist on every stock
-    const enriched = { ...stockFromDB, ...STORE_MEMORY.STOCK };
+    const enriched = { ...stockFromDB, ...STOCK_STORE_MEMORY };
     ```
 
 ### `errors.ts` (`AppError`)
