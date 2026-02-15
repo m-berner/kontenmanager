@@ -5,20 +5,17 @@ import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { DomainUtils } from "@/domains/utils";
 import DotMenu from "@/components/DotMenu.vue";
-import { useTheme } from "vuetify";
 import { useStorage } from "@/composables/useStorage";
 import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts";
 import { databaseService } from "@/services/database/service";
-import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { createHomeHeaders, createHomeMenuItems } from "@/configs/views";
 const { d, n, t } = useI18n();
-const { addStorageChangedListener, clearStorage, installStorageLocal } = useStorage();
+const { clearStorage, installStorageLocal } = useStorage();
 const records = useRecordsStore();
 const { items: bookingItems } = storeToRefs(records.bookings);
 const settings = useSettingsStore();
-const { bookingsPerPage, skin } = storeToRefs(settings);
+const { bookingsPerPage } = storeToRefs(settings);
 const setBookingsPerPage = (value) => settings.setBookingsPerPage(value);
-const theme = useTheme();
 const ITEMS_PER_PAGE_OPTIONS = [
     {
         value: 5,
@@ -44,39 +41,8 @@ const ITEMS_PER_PAGE_OPTIONS = [
 const HEADERS = computed(() => createHomeHeaders(t));
 const MENU_ITEMS = computed(() => createHomeMenuItems(t));
 const search = ref("");
-const onChangeHandler = (changes) => {
-    DomainUtils.log("VIEWS HomeContent: changeHandler");
-    const changesKey = Object.keys(changes);
-    const { service, indexes, markets, materials, exchanges } = storeToRefs(settings);
-    const sync = {
-        [BROWSER_STORAGE.SKIN.key]: () => {
-            if (theme?.global?.name) {
-                theme.global.name.value = changes[BROWSER_STORAGE.SKIN.key].newValue;
-            }
-            skin.value = changes[BROWSER_STORAGE.SKIN.key].newValue;
-        },
-        [BROWSER_STORAGE.SERVICE.key]: () => {
-            service.value = changes[BROWSER_STORAGE.SERVICE.key].newValue;
-        },
-        [BROWSER_STORAGE.INDEXES.key]: () => {
-            indexes.value = changes[BROWSER_STORAGE.INDEXES.key].newValue;
-        },
-        [BROWSER_STORAGE.MARKETS.key]: () => {
-            markets.value = changes[BROWSER_STORAGE.MARKETS.key].newValue;
-        },
-        [BROWSER_STORAGE.MATERIALS.key]: () => {
-            materials.value = changes[BROWSER_STORAGE.MATERIALS.key].newValue;
-        },
-        [BROWSER_STORAGE.EXCHANGES.key]: () => {
-            exchanges.value = changes[BROWSER_STORAGE.EXCHANGES.key].newValue;
-        }
-    };
-    sync[changesKey[0]]?.();
-};
-const removeStorageChangedListener = addStorageChangedListener(onChangeHandler);
 const onBeforeUnload = () => {
     DomainUtils.log("VIEWS AppIndex: onBeforeUnload");
-    removeStorageChangedListener();
     databaseService.disconnect();
 };
 window.addEventListener("beforeunload", onBeforeUnload, { once: true });

@@ -19,7 +19,7 @@ import { BROWSER_STORAGE } from "@/domains/configs/storage";
 import { useAlert } from "@/composables/useAlert";
 
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { handleUserError } = useAlert();
 const { setStorage } = useStorage();
 const settings = useSettingsStore();
@@ -62,7 +62,7 @@ const onClickOk = async (): Promise<void> => {
   if (
     !(await ensureConnected(
       databaseService.isConnected(),
-      handleUserNotice,
+      showSystemNotification,
       t("components.dialogs.deleteAccountConfirmation.messages.dbNotConnected")
     ))
   )
@@ -77,7 +77,7 @@ const onClickOk = async (): Promise<void> => {
       await switchToNextAccount();
 
       resetTeleport();
-      await handleUserNotice("DeleteAccountConfirmation", getMessage("xx_db_delete_success"));
+      await showSystemNotification("DeleteAccountConfirmation", getMessage("xx_db_delete_success"));
     } catch (err) {
       await handleUserError("DeleteAccountConfirmation", err, {});
     }

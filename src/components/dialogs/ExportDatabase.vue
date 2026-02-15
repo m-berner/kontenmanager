@@ -34,7 +34,7 @@ import { DEFAULTS } from "@/configs/defaults";
 import { INDEXED_DB } from "@/configs/database";
 
 const { t } = useI18n();
-const { handleUserNotice, manifest, writeBufferToFile } = useBrowser();
+const { showSystemNotification, manifest, writeBufferToFile } = useBrowser();
 const { handleUserConfirm, handleUserError } = useAlert();
 const { getAll: getAllAccounts } = useAccountsDB();
 const { getAll: getAllBookings } = useBookingsDB();
@@ -179,7 +179,7 @@ const onClickOk = async (): Promise<void> => {
           return;
         }
       } else {
-        await handleUserNotice(
+        await showSystemNotification(
           t("components.dialogs.exportDatabase.largeFileTitle"),
           "ExportDatabase"
         );

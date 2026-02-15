@@ -14,14 +14,24 @@ vi.mock("@/services/fetch", () => ({
 }));
 vi.mock("@/composables/useBrowser", () => ({
     useBrowser: () => ({
-        handleUserNotice: vi.fn(),
+        showSystemNotification: vi.fn(),
         getUserLocale: () => "de-DE"
     })
 }));
 vi.mock("@/composables/useStorage", () => ({
     useStorage: () => ({
         getStorage: vi.fn(),
-        setStorage: vi.fn()
+        setStorage: vi.fn(),
+        addStorageChangedListener: vi.fn()
+    })
+}));
+vi.mock("vuetify", () => ({
+    useTheme: () => ({
+        global: {
+            name: {
+                value: "ocean"
+            }
+        }
     })
 }));
 describe("Stocks Store", () => {

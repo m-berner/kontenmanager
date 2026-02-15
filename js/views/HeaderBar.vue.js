@@ -9,7 +9,7 @@ import { useBrowser } from "@/composables/useBrowser";
 import DialogPort from "@/components/DialogPort.vue";
 import { VIEW_CODES } from "@/configs/codes";
 const { t } = useI18n();
-const { getMessage, handleUserNotice, openOptionsPage } = useBrowser();
+const { getMessage, showSystemNotification, openOptionsPage } = useBrowser();
 const runtime = useRuntimeStore();
 const { isStockLoading } = storeToRefs(runtime);
 const records = useRecordsStore();
@@ -33,7 +33,7 @@ const dialogActions = {
     },
     fadeInStock: async () => {
         if (records.stocks.passive.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_company"));
+            await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_company"));
         }
         else {
             runtime.setTeleport({
@@ -66,7 +66,7 @@ const dialogActions = {
     },
     updateAccount: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+            await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -78,7 +78,7 @@ const dialogActions = {
     },
     deleteAccountConfirmation: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+            await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -90,7 +90,7 @@ const dialogActions = {
     },
     addBookingType: async () => {
         if (accountItems.value.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+            await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -102,7 +102,7 @@ const dialogActions = {
     },
     updateBookingType: async () => {
         if (bookingTypeItems.value.length === 0) {
-            await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
+            await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
         }
         else {
             runtime.setTeleport({
@@ -114,7 +114,7 @@ const dialogActions = {
     },
     deleteBookingType: async () => {
         if (bookingTypeItems.value.length === 0) {
-            void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
+            void showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
         }
         else {
             runtime.setTeleport({
@@ -126,7 +126,7 @@ const dialogActions = {
     },
     addBooking: async () => {
         if (accountItems.value.length === 0) {
-            void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+            void showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -138,7 +138,7 @@ const dialogActions = {
     },
     exportDatabase: () => {
         if (accountItems.value.length === 0) {
-            void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+            void showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
         }
         else {
             runtime.setTeleport({
@@ -157,7 +157,7 @@ const dialogActions = {
     },
     showAccounting: () => {
         if (bookingItems.value.length === 0) {
-            void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_booking"));
+            void showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_booking"));
         }
         else {
             runtime.setTeleport({

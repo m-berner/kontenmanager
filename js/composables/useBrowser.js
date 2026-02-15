@@ -99,7 +99,7 @@ export function useBrowser() {
             ? browser.i18n.getMessage(code)
             : browser.i18n.getMessage("xx_error_code");
     }
-    async function handleUserNotice(mod, messageOrError) {
+    async function showSystemNotification(mod, messageOrError) {
         try {
             let messages = [];
             if (messageOrError instanceof AppError) {
@@ -163,7 +163,7 @@ export function useBrowser() {
         getUserLocale,
         runtimeOnInstalled,
         removeTab,
-        handleUserNotice,
+        showSystemNotification,
         openOptionsPage,
         tabsCreate,
         tabsQuery,

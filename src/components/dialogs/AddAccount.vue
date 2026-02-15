@@ -31,7 +31,7 @@ const { add: addBookingTypeDB } = useBookingTypesDB();
 const { accountFormData, mapAccountFormToDb, reset } = useAccountForm();
 const { submitGuard } = useDialogGuards();
 const { handleUserError } = useAlert();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
 const records = useRecordsStore();
@@ -42,7 +42,7 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    handleUserNotice,
+    showSystemNotification,
     errorContext: "ADD_ACCOUNT",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {

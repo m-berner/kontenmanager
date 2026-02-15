@@ -17,7 +17,7 @@ import { DEFAULTS } from "@/configs/defaults";
 import { INDEXED_DB } from "@/configs/database";
 import { DomainValidators } from "@/domains/validation/validators";
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { handleUserConfirm, handleUserError } = useAlert();
 const { setStorage } = useStorage();
 const { atomicImport } = useAccountsDB();
@@ -52,7 +52,7 @@ const onChange = async (selectedFile) => {
     }
     const validationError = validateFile(selectedFile);
     if (validationError) {
-        await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_invalid_backup"));
+        await showSystemNotification(t("components.dialogs.importDatabase.title"), getMessage("xx_invalid_backup"));
         resetFileInput();
         return;
     }
@@ -291,7 +291,7 @@ const processBackupFile = async () => {
         }
         if (validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION &&
             accountItems.value.length > 0) {
-            await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_db_restored"));
+            await showSystemNotification(t("components.dialogs.importDatabase.title"), getMessage("xx_db_restored"));
             return;
         }
         let dataIntegrityErrors = [];
@@ -328,13 +328,13 @@ const processBackupFile = async () => {
             await importModernData(backup, activeId);
         }
         else {
-            await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_db_no_restored"));
+            await showSystemNotification(t("components.dialogs.importDatabase.title"), getMessage("xx_db_no_restored"));
             activeAccountId.value = originalActiveId;
             await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
             return;
         }
         resetTeleport();
-        await handleUserNotice("", summary);
+        await showSystemNotification("", summary);
         resetFileInput();
     }
     catch (err) {
@@ -353,13 +353,13 @@ const processBackupFile = async () => {
 const onClickOk = async () => {
     DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: onClickOk");
     if (!isFileSelected) {
-        await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_db_no_file"));
+        await showSystemNotification(t("components.dialogs.importDatabase.title"), getMessage("xx_db_no_file"));
         return;
     }
     await withLoading(async () => {
         const rollbackData = await createRollbackPoint();
         if (!rollbackData) {
-            await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_db_no_rollback"));
+            await showSystemNotification(t("components.dialogs.importDatabase.title"), getMessage("xx_db_no_rollback"));
             return;
         }
         try {
@@ -368,7 +368,7 @@ const onClickOk = async () => {
         catch (err) {
             try {
                 await restoreFromRollback(rollbackData);
-                await handleUserNotice(t("components.dialogs.importDatabase.title"), getMessage("xx_db_rollback"));
+                await showSystemNotification(t("components.dialogs.importDatabase.title"), getMessage("xx_db_rollback"));
             }
             catch (rollbackErr) {
                 await handleUserError(t("components.dialogs.importDatabase.title"), rollbackErr, {});

@@ -21,7 +21,7 @@ import { INDEXED_DB } from "@/configs/database";
 import { useBrowser } from "@/composables/useBrowser";
 
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { add } = useStocksDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -37,7 +37,7 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    handleUserNotice,
+    showSystemNotification,
     errorContext: "ADD_STOCK",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -49,7 +49,7 @@ const onClickOk = async (): Promise<void> => {
           "COMPONENTS DIALOGS AddStock: onClickOk",
           t("components.dialogs.addStock.messages.error")
         );
-        await handleUserNotice(
+        await showSystemNotification(
           "AddStock",
           getMessage("xx_db_add_err")
         );
@@ -61,7 +61,7 @@ const onClickOk = async (): Promise<void> => {
       await records.stocks.refreshOnlineData(runtime.stocksPage);
 
       runtime.resetTeleport();
-      await handleUserNotice(
+      await showSystemNotification(
         "AddStock",
         getMessage("xx_db_add_success")
       );

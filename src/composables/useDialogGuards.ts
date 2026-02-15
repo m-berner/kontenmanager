@@ -12,16 +12,9 @@ import { DomainUtils } from "@/domains/utils";
 import { useAlert } from "@/composables/useAlert";
 import { useBrowser } from "@/composables/useBrowser";
 
-const { handleUserError } = useAlert();
-const { getMessage } = useBrowser();
-
-/**
- * Composable providing common guards and wrappers for dialog operations.
- * Handles loading states, database connection checks, form validation, and retries.
- *
- * @module composables/useDialogGuards
- */
 export function useDialogGuards() {
+  const { handleUserError } = useAlert();
+  const { getMessage } = useBrowser();
   /** Global loading flag for the dialog. */
   const isLoading = ref<boolean>(false);
   /** Set of active operation identifiers. */
@@ -34,17 +27,17 @@ export function useDialogGuards() {
    * Shows a notification if not connected.
    *
    * @param isConnected - Current connection status.
-   * @param handleUserNotice - Function to present user information consistently across the app.
+   * @param showSystemNotification - Function to present user information consistently across the app.
    * @param errorMessage - Message to show if disconnected.
    * @returns A promise resolving to true if connected.
    */
   async function ensureConnected(
     isConnected: boolean,
-    handleUserNotice: any,
+    showSystemNotification: any,
     errorMessage = "Database not connected"
   ): Promise<boolean> {
     if (!isConnected) {
-      await handleUserNotice("Composables useDialogGuards", getMessage("xx_db_connection_err"), {
+      await showSystemNotification("Composables useDialogGuards", getMessage("xx_db_connection_err"), {
         noticeLines: [errorMessage]
       });
       return false;
@@ -151,7 +144,7 @@ export function useDialogGuards() {
     formRef?: Ref<FormInterface | null>;
     isConnected?: boolean;
     connectionErrorMessage?: string;
-    handleUserNotice: any;
+    showSystemNotification: any;
     operation: () => Promise<void>;
     onFinally?: () => void;
     errorContext?: string;
@@ -161,7 +154,7 @@ export function useDialogGuards() {
       formRef,
       isConnected,
       connectionErrorMessage,
-      handleUserNotice,
+      showSystemNotification,
       operation,
       onFinally,
       errorContext,
@@ -177,7 +170,7 @@ export function useDialogGuards() {
       if (
         !(await ensureConnected(
           isConnected,
-          handleUserNotice,
+          showSystemNotification,
           connectionErrorMessage
         ))
       )

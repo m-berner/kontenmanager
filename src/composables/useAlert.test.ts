@@ -22,7 +22,7 @@ vi.mock("@/stores/alerts", () => ({
 
 const noticeFn = vi.fn().mockResolvedValue(undefined);
 vi.mock("@/composables/useBrowser", () => ({
-  useBrowser: () => ({ handleUserNotice: noticeFn })
+  useBrowser: () => ({ showSystemNotification: noticeFn })
 }));
 
 describe("useAlert", () => {
@@ -75,8 +75,8 @@ describe("useAlert", () => {
   });
 
   it("sends notice via useBrowser", async () => {
-    const { handleUserNotice } = useBrowser();
-    await handleUserNotice("Title", "OK");
+    const { showSystemNotification } = useBrowser();
+    await showSystemNotification("Title", "OK");
     expect(noticeFn).toHaveBeenCalledWith("Title", "OK");
   });
 

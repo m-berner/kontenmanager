@@ -194,11 +194,13 @@ export function useBrowser() {
 
   /**
    * Displays a browser notification.
+   * Best for background processes or system-level alerts.
+   * For foreground UI feedback, prefer `useAlert`.
    *
    * @param mod - Module name that catch the error.
    * @param messageOrError - Array of message lines.
    */
-  async function handleUserNotice(
+  async function showSystemNotification(
     mod: string,
     messageOrError: string | string[] | Error | unknown
   ): Promise<void> {
@@ -285,7 +287,7 @@ export function useBrowser() {
     getUserLocale,
     runtimeOnInstalled,
     removeTab,
-    handleUserNotice,
+    showSystemNotification,
     openOptionsPage,
     tabsCreate,
     tabsQuery,

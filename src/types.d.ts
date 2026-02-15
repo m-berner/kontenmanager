@@ -552,7 +552,15 @@ export type StorageDataType = {
   [P in __BrowserStorageEntryUnion["key"]]: Extract<
     __BrowserStorageEntryUnion,
     { key: P }
-  >["value"];
+  >["value"] extends infer V
+    ? V extends readonly any[]
+      ? string[]
+      : V extends number
+      ? number
+      : V extends string
+      ? string
+      : V
+    : never;
 };
 
 export type StorageValueType = StorageDataType[keyof StorageDataType];

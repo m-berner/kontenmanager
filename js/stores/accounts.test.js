@@ -1,6 +1,23 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { useAccountsStore } from "./accounts";
+import { vi } from "vitest";
+vi.mock("vuetify", () => ({
+    useTheme: () => ({
+        global: {
+            name: {
+                value: "ocean"
+            }
+        }
+    })
+}));
+vi.mock("@/composables/useStorage", () => ({
+    useStorage: () => ({
+        getStorage: vi.fn(),
+        setStorage: vi.fn(),
+        addStorageChangedListener: vi.fn()
+    })
+}));
 describe("Accounts Store", () => {
     beforeEach(() => {
         setActivePinia(createPinia());

@@ -1,4 +1,4 @@
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, onUnmounted, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAlert } from "@/composables/useAlert";
@@ -14,21 +14,30 @@ const { skin } = storeToRefs(settings);
 const theme = useTheme();
 const { handleUserError } = useAlert();
 const isInitialized = ref(false);
+let controller = null;
 onBeforeMount(async () => {
     DomainUtils.log("VIEWS AppIndex: onBeforeMount");
     try {
-        const controller = new AbortController();
+        controller = new AbortController();
         const status = await initializeApp({
             title: t("mixed.smImportOnly.title"),
             message: t("mixed.smImportOnly.message")
         }, controller.signal);
         DomainUtils.log("VIEWS AppIndex: onBeforeMount - Initialization successful", status, "info");
-        controller.abort();
         theme.global.name.value = skin.value;
         isInitialized.value = true;
     }
     catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
+            DomainUtils.log("VIEWS AppIndex: Initialization aborted");
+            return;
+        }
         await handleUserError(t("views.appIndex.init"), err, {});
+    }
+});
+onUnmounted(() => {
+    if (controller) {
+        controller.abort();
     }
 });
 DomainUtils.log("VIEWS AppIndex: setup", window.location.href, "info");

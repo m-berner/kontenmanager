@@ -19,7 +19,7 @@ import { databaseService } from "@/services/database/service";
 import { useAlert } from "@/composables/useAlert";
 
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { handleUserError } = useAlert();
 const { update } = useStocksDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
@@ -34,13 +34,13 @@ const onClickOk = async (): Promise<void> => {
   if (
     !(await ensureConnected(
       databaseService.isConnected(),
-      handleUserNotice
+      showSystemNotification
     ))
   )
     return;
 
   if (!selected.value) {
-    await handleUserNotice("FadeInStock", getMessage("xx_db_no_selected"));
+    await showSystemNotification("FadeInStock", getMessage("xx_db_no_selected"));
     return;
   }
 
@@ -51,7 +51,7 @@ const onClickOk = async (): Promise<void> => {
 
       await update(stock);
       records.stocks.update(stock);
-      await handleUserNotice("FadeInStock", getMessage("xx_db_fade_in"));
+      await showSystemNotification("FadeInStock", getMessage("xx_db_fade_in"));
       runtime.resetTeleport();
     } catch (err) {
       await handleUserError("FadeInStock", err, {});

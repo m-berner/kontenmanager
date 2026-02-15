@@ -55,10 +55,8 @@ export class Service {
             const [accounts, bookings, bookingTypes, stocks] = await Promise.all([
                 repos.accounts.findAll({ tx }),
                 repos.bookings.findByAccount(accountId, { tx }),
-                repos.bookingTypes.findBy("cAccountNumberID", accountId, {
-                    tx
-                }),
-                repos.stocks.findBy("cAccountNumberID", accountId, { tx })
+                repos.bookingTypes.findByAccount(accountId, { tx }),
+                repos.stocks.findByAccount(accountId, { tx })
             ]);
             return {
                 accountsDB: accounts,
@@ -81,10 +79,8 @@ export class Service {
         ], "readwrite", async (tx) => {
             await Promise.all([
                 repos.bookings.deleteByAccount(accountId, { tx }),
-                repos.bookingTypes.deleteBy("cAccountNumberID", accountId, {
-                    tx
-                }),
-                repos.stocks.deleteBy("cAccountNumberID", accountId, { tx })
+                repos.bookingTypes.deleteByAccount(accountId, { tx }),
+                repos.stocks.deleteByAccount(accountId, { tx })
             ]);
             await repos.accounts.delete(accountId, { tx });
         });

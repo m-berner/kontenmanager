@@ -13,7 +13,7 @@ import { databaseService } from "@/services/database/service";
 import { INDEXED_DB } from "@/configs/database";
 import { useBrowser } from "@/composables/useBrowser";
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { add } = useStocksDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -27,7 +27,7 @@ const onClickOk = async () => {
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
         connectionErrorMessage: getMessage("xx_db_connection_err"),
-        handleUserNotice,
+        showSystemNotification,
         errorContext: "ADD_STOCK",
         errorTitle: t("components.dialogs.onClickOk"),
         operation: async () => {
@@ -35,13 +35,13 @@ const onClickOk = async () => {
             const addStockID = await add(stockData);
             if (addStockID === INDEXED_DB.INVALID_ID) {
                 DomainUtils.log("COMPONENTS DIALOGS AddStock: onClickOk", t("components.dialogs.addStock.messages.error"));
-                await handleUserNotice("AddStock", getMessage("xx_db_add_err"));
+                await showSystemNotification("AddStock", getMessage("xx_db_add_err"));
                 return;
             }
             records.stocks.add({ ...stockData, cID: addStockID });
             await records.stocks.refreshOnlineData(runtime.stocksPage);
             runtime.resetTeleport();
-            await handleUserNotice("AddStock", getMessage("xx_db_add_success"));
+            await showSystemNotification("AddStock", getMessage("xx_db_add_success"));
         }
     });
 };

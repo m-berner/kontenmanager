@@ -26,25 +26,25 @@ import type { RepositoryType } from "@/services/database/repositories/factory";
  * @param storeName - The name of the IndexedDB object store.
  * @returns An object with common database operations for the store.
  */
-function useDBStore<T>(storeName: RepositoryType) {
+function useDBStore<T extends { cID?: number }>(storeName: RepositoryType) {
   const dbi = databaseService;
-  const repo = dbi.getRepository(storeName);
+  const repo = dbi.getRepository(storeName) as any;
 
   return {
     /** Adds a new record. */
     add: (data: Omit<T, "cID">, tx?: IDBTransaction) =>
       repo.save(data as any, { tx }),
     /** Retrieves a record by ID. */
-    get: (id: number, tx?: IDBTransaction) => repo.findById(id, { tx }) as any,
+    get: (id: number, tx?: IDBTransaction) => repo.findById(id, { tx }) as Promise<T | null>,
     /** Retrieves all records from the store. */
-    getAll: (tx?: IDBTransaction) => repo.findAll({ tx }) as any,
+    getAll: (tx?: IDBTransaction) => repo.findAll({ tx }) as Promise<T[]>,
     /** Updates an existing record. */
     update: (data: T, tx?: IDBTransaction) => repo.save(data as any, { tx }),
     /** Removes a record by ID. */
     remove: (id: number, tx?: IDBTransaction) => repo.delete(id, { tx }),
     /** Clears all records in the store. */
     clear: (_tx?: IDBTransaction) =>
-      dbi.transactionManager.execute([storeName], "readwrite", async (t) => {
+      dbi.transactionManager.execute(storeName, "readwrite", async (t) => {
         const store = t.objectStore(storeName);
         store.clear();
       }),

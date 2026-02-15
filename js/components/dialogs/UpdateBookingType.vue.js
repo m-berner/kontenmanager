@@ -13,7 +13,7 @@ import { useSettingsStore } from "@/stores/settings";
 import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { update } = useBookingTypesDB();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
@@ -40,30 +40,30 @@ const loadCurrentBookingType = () => {
 const onClickOk = async () => {
     DomainUtils.log("COMPONENTS DIALOGS UpdateBookingType: onClickOk");
     if (!bookingTypeRef.value?.edit) {
-        await handleUserNotice("UpdateBookingType", getMessage("xx_db_no_selected"));
+        await showSystemNotification("UpdateBookingType", getMessage("xx_db_no_selected"));
         return;
     }
     await submitGuard({
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
         connectionErrorMessage: getMessage("xx_db_connection_err"),
-        handleUserNotice,
+        showSystemNotification,
         errorContext: "UPDATE_BOOKING_TYPE",
         errorTitle: t("components.dialogs.onClickOk"),
         operation: async () => {
             if (!bookingTypeFormData.id) {
-                await handleUserNotice("UpdateBookingType", getMessage("xx_db_missing_id"));
+                await showSystemNotification("UpdateBookingType", getMessage("xx_db_missing_id"));
                 return;
             }
             if (records.bookingTypes.isDuplicate(bookingTypeFormData.name, bookingTypeFormData.id)) {
-                await handleUserNotice("UpdateBookingType", getMessage("xx_db_duplicate"));
+                await showSystemNotification("UpdateBookingType", getMessage("xx_db_duplicate"));
                 return;
             }
             const bookingType = mapBookingTypeFormToDb(activeAccountId);
             records.bookingTypes.update(bookingType);
             await update(bookingType);
             runtime.resetTeleport();
-            await handleUserNotice("UpdateBookingType", getMessage("xx_db_update_success"));
+            await showSystemNotification("UpdateBookingType", getMessage("xx_db_update_success"));
         }
     });
 };

@@ -24,7 +24,7 @@ const { t } = useI18n();
 const { add } = useBookingsDB();
 const { mapBookingFormToDb, reset } = useBookingForm();
 const { submitGuard } = useDialogGuards();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
@@ -34,7 +34,7 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    handleUserNotice,
+    showSystemNotification,
     errorContext: "ADD_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {

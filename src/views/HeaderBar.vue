@@ -24,7 +24,7 @@ import type { MenuActionType } from "@/types";
 import { VIEW_CODES } from "@/configs/codes";
 
 const { t } = useI18n();
-const { getMessage, handleUserNotice, openOptionsPage } = useBrowser();
+const { getMessage, showSystemNotification, openOptionsPage } = useBrowser();
 const runtime = useRuntimeStore();
 const { isStockLoading } = storeToRefs(runtime);
 const records = useRecordsStore();
@@ -59,7 +59,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   fadeInStock: async () => {
     // Opens the fade-in dialog only when passive stocks exist; otherwise informs the user
     if (records.stocks.passive.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_company"));
+      await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_company"));
     } else {
       runtime.setTeleport({
         dialogName: "fadeInStock",
@@ -99,7 +99,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   updateAccount: async () => {
     // Open the Update Account dialog or inform the user if no accounts exist
     if (accountItems.value.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+      await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "updateAccount",
@@ -111,7 +111,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   deleteAccountConfirmation: async () => {
     if (accountItems.value.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+      await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "deleteAccountConfirmation",
@@ -123,7 +123,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBookingType: async () => {
     if (accountItems.value.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+      await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "addBookingType",
@@ -135,7 +135,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   updateBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      await handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
+      await showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
     } else {
       runtime.setTeleport({
         dialogName: "updateBookingType",
@@ -147,7 +147,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   deleteBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
+      void showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_bookingType"));
     } else {
       runtime.setTeleport({
         dialogName: "deleteBookingType",
@@ -159,7 +159,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBooking: async () => {
     if (accountItems.value.length === 0) {
-      void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+      void showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "addBooking",
@@ -171,7 +171,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   exportDatabase: () => {
     if (accountItems.value.length === 0) {
-      void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
+      void showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_account"));
     } else {
       runtime.setTeleport({
         dialogName: "exportDatabase",
@@ -191,7 +191,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   showAccounting: () => {
     if (bookingItems.value.length === 0) {
-      void handleUserNotice(t("views.headerBar.infoTitle"), getMessage("xx_no_booking"));
+      void showSystemNotification(t("views.headerBar.infoTitle"), getMessage("xx_no_booking"));
     } else {
       runtime.setTeleport({
         dialogName: "showAccounting",

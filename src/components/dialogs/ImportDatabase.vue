@@ -39,7 +39,7 @@ import { INDEXED_DB } from "@/configs/database";
 import { DomainValidators } from "@/domains/validation/validators";
 
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { handleUserConfirm, handleUserError } = useAlert();
 const { setStorage } = useStorage();
 const { atomicImport } = useAccountsDB();
@@ -81,7 +81,7 @@ const onChange = async (selectedFile: File | File[] | null): Promise<any> => {
   const validationError = validateFile(selectedFile as File);
 
   if (validationError) {
-    await handleUserNotice(
+    await showSystemNotification(
       t("components.dialogs.importDatabase.title"),
       getMessage("xx_invalid_backup")
     );
@@ -417,7 +417,7 @@ const processBackupFile = async (): Promise<void> => {
       validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION &&
       accountItems.value.length > 0
     ) {
-      await handleUserNotice(
+      await showSystemNotification(
         t("components.dialogs.importDatabase.title"),
         getMessage("xx_db_restored")
       );
@@ -477,7 +477,7 @@ const processBackupFile = async (): Promise<void> => {
     } else if (backup.sm.cDBVersion > INDEXED_DB.LEGACY_IMPORT_VERSION) {
       await importModernData(backup, activeId);
     } else {
-      await handleUserNotice(
+      await showSystemNotification(
         t("components.dialogs.importDatabase.title"),
         getMessage("xx_db_no_restored")
       );
@@ -489,7 +489,7 @@ const processBackupFile = async (): Promise<void> => {
     // At the end of the processBackupFile, after successful import
     //const duration = Date.now() - startTime;
 
-    await handleUserNotice("", summary);
+    await showSystemNotification("", summary);
     resetFileInput();
   } catch (err) {
     activeAccountId.value = originalActiveId;
@@ -510,7 +510,7 @@ const onClickOk = async (): Promise<void> => {
   DomainUtils.log("COMPONENTS DIALOGS ImportDatabase: onClickOk");
 
   if (!isFileSelected) {
-    await handleUserNotice(
+    await showSystemNotification(
       t("components.dialogs.importDatabase.title"),
       getMessage("xx_db_no_file")
     );
@@ -521,7 +521,7 @@ const onClickOk = async (): Promise<void> => {
     const rollbackData = await createRollbackPoint();
 
     if (!rollbackData) {
-      await handleUserNotice(
+      await showSystemNotification(
         t("components.dialogs.importDatabase.title"),
         getMessage("xx_db_no_rollback")
       );
@@ -533,7 +533,7 @@ const onClickOk = async (): Promise<void> => {
     } catch (err) {
       try {
         await restoreFromRollback(rollbackData);
-        await handleUserNotice(
+        await showSystemNotification(
           t("components.dialogs.importDatabase.title"),
           getMessage("xx_db_rollback")
         );

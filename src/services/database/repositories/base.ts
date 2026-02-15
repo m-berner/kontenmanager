@@ -33,7 +33,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
   ) {}
 
   /**
-   * Finds a record by its primary key
+   * Retrieves a record by ID.
    */
   async findById(id: number, options: QueryOptions = {}): Promise<T | null> {
     const operation = async (tx: IDBTransaction): Promise<T | null> => {
@@ -54,7 +54,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
   }
 
   /**
-   * Finds all records in the store
+   * Retrieves all records from the store.
    */
   async findAll(options: QueryOptions = {}): Promise<T[]> {
     const operation = async (tx: IDBTransaction): Promise<T[]> => {

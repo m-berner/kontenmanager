@@ -155,10 +155,8 @@ export class Service {
         const [accounts, bookings, bookingTypes, stocks] = await Promise.all([
           repos.accounts.findAll({ tx }),
           repos.bookings.findByAccount(accountId, { tx }),
-          repos.bookingTypes.findBy("cAccountNumberID" as any, accountId, {
-            tx
-          }),
-          repos.stocks.findBy("cAccountNumberID" as any, accountId, { tx })
+          repos.bookingTypes.findByAccount(accountId, { tx }),
+          repos.stocks.findByAccount(accountId, { tx })
         ]);
 
         return {
@@ -195,10 +193,8 @@ export class Service {
         // Delete dependent records first (foreign key constraints)
         await Promise.all([
           repos.bookings.deleteByAccount(accountId, { tx }),
-          repos.bookingTypes.deleteBy("cAccountNumberID" as any, accountId, {
-            tx
-          }),
-          repos.stocks.deleteBy("cAccountNumberID" as any, accountId, { tx })
+          repos.bookingTypes.deleteByAccount(accountId, { tx }),
+          repos.stocks.deleteByAccount(accountId, { tx })
         ]);
 
         // Then delete the account itself

@@ -22,7 +22,7 @@ import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { update } = useBookingTypesDB();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
@@ -58,7 +58,7 @@ const onClickOk = async (): Promise<void> => {
 
   // Check if a booking type is selected for editing
   if (!bookingTypeRef.value?.edit) {
-    await handleUserNotice("UpdateBookingType", getMessage("xx_db_no_selected"));
+    await showSystemNotification("UpdateBookingType", getMessage("xx_db_no_selected"));
     return;
   }
 
@@ -66,12 +66,12 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    handleUserNotice,
+    showSystemNotification,
     errorContext: "UPDATE_BOOKING_TYPE",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       if (!bookingTypeFormData.id) {
-        await handleUserNotice("UpdateBookingType", getMessage("xx_db_missing_id"));
+        await showSystemNotification("UpdateBookingType", getMessage("xx_db_missing_id"));
         return;
       }
 
@@ -81,7 +81,7 @@ const onClickOk = async (): Promise<void> => {
           bookingTypeFormData.id as number
         )
       ) {
-        await handleUserNotice("UpdateBookingType", getMessage("xx_db_duplicate"));
+        await showSystemNotification("UpdateBookingType", getMessage("xx_db_duplicate"));
         return;
       }
 
@@ -92,7 +92,7 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType);
       await update(bookingType);
       runtime.resetTeleport();
-      await handleUserNotice("UpdateBookingType", getMessage("xx_db_update_success"));
+      await showSystemNotification("UpdateBookingType", getMessage("xx_db_update_success"));
     }
   });
 };

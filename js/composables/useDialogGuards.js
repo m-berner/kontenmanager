@@ -3,15 +3,15 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useAlert } from "@/composables/useAlert";
 import { useBrowser } from "@/composables/useBrowser";
-const { handleUserError } = useAlert();
-const { getMessage } = useBrowser();
 export function useDialogGuards() {
+    const { handleUserError } = useAlert();
+    const { getMessage } = useBrowser();
     const isLoading = ref(false);
     const loadingOperations = ref(new Set());
     let operationCounter = 0;
-    async function ensureConnected(isConnected, handleUserNotice, errorMessage = "Database not connected") {
+    async function ensureConnected(isConnected, showSystemNotification, errorMessage = "Database not connected") {
         if (!isConnected) {
-            await handleUserNotice("Composables useDialogGuards", getMessage("xx_db_connection_err"), {
+            await showSystemNotification("Composables useDialogGuards", getMessage("xx_db_connection_err"), {
                 noticeLines: [errorMessage]
             });
             return false;
@@ -58,14 +58,14 @@ export function useDialogGuards() {
         throw new AppError(ERROR_CODES.USE_DIALOG_GUARDS.C, ERROR_CATEGORY.VALIDATION, false);
     }
     async function submitGuard(options) {
-        const { formRef, isConnected, connectionErrorMessage, handleUserNotice, operation, onFinally, errorContext, errorTitle } = options;
+        const { formRef, isConnected, connectionErrorMessage, showSystemNotification, operation, onFinally, errorContext, errorTitle } = options;
         if (formRef && formRef.value) {
             const validation = await validateForm(formRef);
             if (!validation.valid)
                 return;
         }
         if (isConnected !== undefined) {
-            if (!(await ensureConnected(isConnected, handleUserNotice, connectionErrorMessage)))
+            if (!(await ensureConnected(isConnected, showSystemNotification, connectionErrorMessage)))
                 return;
         }
         await withLoading(async () => {

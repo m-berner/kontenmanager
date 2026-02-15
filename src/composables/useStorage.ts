@@ -110,7 +110,9 @@ export function useStorage() {
       // Collect all missing keys
       for (const value of Object.values(BROWSER_STORAGE)) {
         if (storageLocal[value.key] === undefined) {
-          updates[value.key] = value.value;
+          updates[value.key] = Array.isArray(value.value)
+            ? [...value.value]
+            : value.value as any;
         }
       }
 

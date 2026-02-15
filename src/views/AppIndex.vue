@@ -11,7 +11,7 @@
  * named view outlets (title, header, info, default, footer). Displays a
  * loading indicator until initialization completes.
  */
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, onUnmounted, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useAlert } from "@/composables/useAlert";
@@ -28,12 +28,13 @@ const { skin } = storeToRefs(settings);
 const theme = useTheme();
 const { handleUserError } = useAlert();
 const isInitialized = ref(false);
+let controller: AbortController | null = null;
 
 onBeforeMount(async () => {
   DomainUtils.log("VIEWS AppIndex: onBeforeMount");
 
   try {
-    const controller = new AbortController();
+    controller = new AbortController();
     const status = await initializeApp(
       {
         title: t("mixed.smImportOnly.title"),
@@ -46,13 +47,21 @@ onBeforeMount(async () => {
       status,
       "info"
     );
-    // Abort if the user navigates away or cancels
-    controller.abort();
 
     theme.global.name.value = skin.value;
     isInitialized.value = true;
   } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      DomainUtils.log("VIEWS AppIndex: Initialization aborted");
+      return;
+    }
     await handleUserError(t("views.appIndex.init"), err, {});
+  }
+});
+
+onUnmounted(() => {
+  if (controller) {
+    controller.abort();
   }
 });
 

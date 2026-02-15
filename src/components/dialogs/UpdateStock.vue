@@ -22,7 +22,7 @@ import { databaseService } from "@/services/database/service";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { update } = useStocksDB();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
@@ -58,7 +58,7 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    handleUserNotice,
+    showSystemNotification,
     errorContext: "UPDATE_STOCK",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -66,7 +66,7 @@ const onClickOk = async (): Promise<void> => {
       records.stocks.update(stock);
       await update(stock as any);
       runtime.resetTeleport();
-      await handleUserNotice("UpdateStock", getMessage("xx_db_update_success"));
+      await showSystemNotification("UpdateStock", getMessage("xx_db_update_success"));
     }
   });
 };

@@ -7,9 +7,9 @@ import { VIEW_CODES } from "@/configs/codes";
 import { useBrowser } from "@/composables/useBrowser";
 import { useAlert } from "@/composables/useAlert";
 import { DomainUtils } from "@/domains/utils";
-const { getMessage } = useBrowser();
-const { handleUserError } = useAlert();
 export function useMenuHighlight() {
+    const { getMessage } = useBrowser();
+    const { handleUserError } = useAlert();
     const highlightedItems = ref(new Map());
     const timeouts = new Map();
     const highlight = (recordId, color = "green") => {
@@ -53,6 +53,8 @@ export function useMenuHighlight() {
         clearAllHighlights();
     });
     return {
+        getMessage,
+        handleUserError,
         highlightedItems: readonly(computed(() => highlightedItems.value)),
         highlight,
         clearHighlight,
@@ -65,7 +67,8 @@ export function useMenuHighlight() {
 export function useMenuAction() {
     const runtime = useRuntimeStore();
     const records = useRecordsStore();
-    const { handleUserNotice } = useBrowser();
+    const { showSystemNotification } = useBrowser();
+    const { getMessage, handleUserError } = useMenuHighlight();
     const { remove: removeBooking } = useBookingsDB();
     const { remove: removeStock } = useStocksDB();
     const openDialog = (dialogName, dialogOk = false) => {
@@ -89,7 +92,7 @@ export function useMenuAction() {
         async deleteBooking(recordId) {
             records.bookings.remove(recordId);
             await removeBooking(recordId);
-            await handleUserNotice("Composables Menu", getMessage("xx_db_delete_success"));
+            await showSystemNotification("Composables Menu", getMessage("xx_db_delete_success"));
         },
         async updateStock() {
             openDialog("updateStock", true);
@@ -99,12 +102,12 @@ export function useMenuAction() {
         },
         async deleteStock(recordId) {
             if (checkStockHasBookings(recordId)) {
-                await handleUserNotice("Composable useMenu", getMessage("xx_db_no_delete"));
+                await showSystemNotification("Composable useMenu", getMessage("xx_db_no_delete"));
                 return;
             }
             records.stocks.remove(recordId);
             await removeStock(recordId);
-            await handleUserNotice("Composables useMenu", getMessage("xx_db_delete_success"));
+            await showSystemNotification("Composables useMenu", getMessage("xx_db_delete_success"));
         },
         async fadeInStock() {
             openDialog("fadeInStock", true);
@@ -147,7 +150,7 @@ export function useMenuAction() {
                 window.open(url, "_blank", "noopener,noreferrer");
             }
             else {
-                await handleUserNotice("Composables useMenu", getMessage("xx_no_link"));
+                await showSystemNotification("Composables useMenu", getMessage("xx_no_link"));
             }
         },
         async exportDatabase() {

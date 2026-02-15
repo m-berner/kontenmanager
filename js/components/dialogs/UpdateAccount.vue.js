@@ -14,7 +14,7 @@ import { useDialogGuards } from "@/composables/useDialogGuards";
 import { databaseService } from "@/services/database/service";
 import { INDEXED_DB } from "@/configs/database";
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { update } = useAccountsDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -44,7 +44,7 @@ const onClickOk = async () => {
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
         connectionErrorMessage: getMessage("xx_db_connection_err"),
-        handleUserNotice,
+        showSystemNotification,
         errorContext: "UPDATE_ACCOUNT",
         errorTitle: t("components.dialogs.updateAccount.title"),
         operation: async () => {
@@ -52,7 +52,7 @@ const onClickOk = async () => {
             records.accounts.update(account);
             await update(account);
             runtime.resetTeleport();
-            await handleUserNotice("UpdateAccount", getMessage("xx_db_update_success"));
+            await showSystemNotification("UpdateAccount", getMessage("xx_db_update_success"));
         }
     });
 };

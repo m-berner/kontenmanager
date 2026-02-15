@@ -8,6 +8,27 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { useAccountsStore } from "./accounts";
 import type { AccountStoreItem } from "@/types";
+import { vi } from "vitest";
+
+// Mock Vuetify theme
+vi.mock("vuetify", () => ({
+  useTheme: () => ({
+    global: {
+      name: {
+        value: "ocean"
+      }
+    }
+  })
+}));
+
+// Mock persistence composable used by the settings store
+vi.mock("@/composables/useStorage", () => ({
+  useStorage: () => ({
+    getStorage: vi.fn(),
+    setStorage: vi.fn(),
+    addStorageChangedListener: vi.fn()
+  })
+}));
 
 describe("Accounts Store", () => {
   beforeEach(() => {

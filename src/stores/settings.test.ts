@@ -9,12 +9,24 @@ import { createPinia, setActivePinia } from "pinia";
 import { useSettingsStore } from "./settings";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
 
+// Mock Vuetify theme
+vi.mock("vuetify", () => ({
+  useTheme: () => ({
+    global: {
+      name: {
+        value: "ocean"
+      }
+    }
+  })
+}));
+
 // Mock persistence composable used by the settings store
 const mockSetStorage = vi.fn();
 vi.mock("@/composables/useStorage", () => ({
   useStorage: () => ({
     getStorage: vi.fn(),
-    setStorage: mockSetStorage
+    setStorage: mockSetStorage,
+    addStorageChangedListener: vi.fn()
   })
 }));
 

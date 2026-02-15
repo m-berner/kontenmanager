@@ -12,7 +12,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { INDEXED_DB } from "@/configs/database";
 import { useBrowser } from "@/composables/useBrowser";
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { add } = useBookingTypesDB();
 const records = useRecordsStore();
 const { activeAccountId } = useSettingsStore();
@@ -25,24 +25,24 @@ const onClickOk = async () => {
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
         connectionErrorMessage: getMessage("xx_db_connection_err"),
-        handleUserNotice,
+        showSystemNotification,
         errorContext: "BOOKING_TYPE",
         errorTitle: t("components.dialogs.onClickOk"),
         operation: async () => {
             if (records.bookingTypes.isDuplicate(bookingTypeFormData.name)) {
-                await handleUserNotice("AddBookingType", getMessage("xx_db_duplicate"));
+                await showSystemNotification("AddBookingType", getMessage("xx_db_duplicate"));
                 return;
             }
             const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
             const addBookingTypeID = await add(bookingTypeData);
             if (addBookingTypeID === INDEXED_DB.INVALID_ID) {
                 DomainUtils.log("COMPONENTS DIALOGS AddBookingType: Failed to create booking type");
-                await handleUserNotice("AddBookingType", getMessage("xx_db_add_err"));
+                await showSystemNotification("AddBookingType", getMessage("xx_db_add_err"));
                 return;
             }
             records.bookingTypes.add({ ...bookingTypeData, cID: addBookingTypeID });
             reset();
-            await handleUserNotice("AddBookingType", getMessage("xx_db_add_success"));
+            await showSystemNotification("AddBookingType", getMessage("xx_db_add_success"));
         }
     });
 };

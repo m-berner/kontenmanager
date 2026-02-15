@@ -12,7 +12,7 @@ import { useBookingTypeForm } from "@/composables/useForms";
 import { useAlert } from "@/composables/useAlert";
 const { bookingTypeFormData, reset } = useBookingTypeForm();
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { handleUserError } = useAlert();
 const { remove } = useBookingTypesDB();
 const { isLoading, ensureConnected, withLoading } = useDialogGuards();
@@ -23,7 +23,7 @@ const canDeleteBookingType = (bookingTypeId) => {
 };
 const onClickOk = async () => {
     DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: onClickOk");
-    if (!(await ensureConnected(databaseService.isConnected(), handleUserNotice, t("components.dialogs.deleteBookingType.messages.dbNotConnected"))))
+    if (!(await ensureConnected(databaseService.isConnected(), showSystemNotification, t("components.dialogs.deleteBookingType.messages.dbNotConnected"))))
         return;
     if (!bookingTypeFormData.id) {
         DomainUtils.log("COMPONENTS DIALOGS DeleteBookingType: No booking type selected");
@@ -32,13 +32,13 @@ const onClickOk = async () => {
     await withLoading(async () => {
         try {
             if (!canDeleteBookingType(bookingTypeFormData.id)) {
-                await handleUserNotice("DeleteBookingType", getMessage("xx_db_no_delete"));
+                await showSystemNotification("DeleteBookingType", getMessage("xx_db_no_delete"));
                 return;
             }
             records.bookingTypes.remove(bookingTypeFormData.id);
             await remove(bookingTypeFormData.id);
             runtime.resetTeleport();
-            await handleUserNotice("DeleteBookingType", getMessage("xx_db_delete_success"));
+            await showSystemNotification("DeleteBookingType", getMessage("xx_db_delete_success"));
         }
         catch (err) {
             await handleUserError("DeleteBookingType", err, {});

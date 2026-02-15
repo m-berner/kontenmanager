@@ -14,7 +14,7 @@ import { useDialogGuards } from "@/composables/useDialogGuards";
 import { DATE } from "@/domains/configs/date";
 import { databaseService } from "@/services/database/service";
 const { t } = useI18n();
-const { getMessage, handleUserNotice } = useBrowser();
+const { getMessage, showSystemNotification } = useBrowser();
 const { update } = useBookingsDB();
 const { activeAccountId } = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -58,7 +58,7 @@ const onClickOk = async () => {
         formRef: baseDialogRef.value?.formRef,
         isConnected: databaseService.isConnected(),
         connectionErrorMessage: getMessage("xx_db_connection_err"),
-        handleUserNotice,
+        showSystemNotification,
         errorContext: "UPDATE_BOOKING",
         errorTitle: t("components.dialogs.onClickOk"),
         operation: async () => {
@@ -66,7 +66,7 @@ const onClickOk = async () => {
             records.bookings.update(booking);
             await update(booking);
             runtime.resetTeleport();
-            await handleUserNotice("UpdateBooking", getMessage("xx_db_update_success"));
+            await showSystemNotification("UpdateBooking", getMessage("xx_db_update_success"));
             runtime.resetOptionsMenuColors();
         }
     });

@@ -11,7 +11,7 @@ function useDBStore(storeName) {
         getAll: (tx) => repo.findAll({ tx }),
         update: (data, tx) => repo.save(data, { tx }),
         remove: (id, tx) => repo.delete(id, { tx }),
-        clear: (_tx) => dbi.transactionManager.execute([storeName], "readwrite", async (t) => {
+        clear: (_tx) => dbi.transactionManager.execute(storeName, "readwrite", async (t) => {
             const store = t.objectStore(storeName);
             store.clear();
         }),
