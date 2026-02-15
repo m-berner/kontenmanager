@@ -82,8 +82,8 @@ export class BatchOperationService {
     }
 }
 export class BatchOperationBuilder {
-    service;
     descriptors = new Map();
+    service;
     constructor(service) {
         this.service = service;
     }

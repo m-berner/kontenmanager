@@ -25,12 +25,15 @@ export interface IDatabaseConnection {
 export class DatabaseConnectionManager implements IDatabaseConnection {
   private db?: IDBDatabase;
   private versionChangeHandler?: () => void;
+  private readonly dbName: string;
+  private readonly version: number;
+  private readonly migrator: IDatabaseMigrator;
 
-  constructor(
-    private readonly dbName: string,
-    private readonly version: number,
-    private readonly migrator: IDatabaseMigrator
-  ) {}
+  constructor(dbName: string, version: number, migrator: IDatabaseMigrator) {
+    this.dbName = dbName;
+    this.version = version;
+    this.migrator = migrator;
+  }
 
   /**
    * Establishes connection to IndexedDB

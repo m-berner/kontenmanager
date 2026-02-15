@@ -1,11 +1,11 @@
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 export class DatabaseConnectionManager {
+    db;
+    versionChangeHandler;
     dbName;
     version;
     migrator;
-    db;
-    versionChangeHandler;
     constructor(dbName, version, migrator) {
         this.dbName = dbName;
         this.version = version;

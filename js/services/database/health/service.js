@@ -59,15 +59,15 @@ export class DatabaseHealthService {
                 repos.stocks.findAll({ tx }),
                 repos.bookingTypes.findAll({ tx })
             ]);
-            const accountIds = new Set(accounts.map(a => a.cID));
+            const accountIds = new Set(accounts.map((a) => a.cID));
             return {
                 totalAccounts: accounts.length,
                 totalBookings: bookings.length,
                 totalStocks: stocks.length,
                 totalBookingTypes: bookingTypes.length,
-                orphanedBookings: bookings.filter(b => !accountIds.has(b.cAccountNumberID)).length,
-                orphanedStocks: stocks.filter(s => !accountIds.has(s.cAccountNumberID)).length,
-                orphanedBookingTypes: bookingTypes.filter(bt => !accountIds.has(bt.cAccountNumberID)).length
+                orphanedBookings: bookings.filter((b) => !accountIds.has(b.cAccountNumberID)).length,
+                orphanedStocks: stocks.filter((s) => !accountIds.has(s.cAccountNumberID)).length,
+                orphanedBookingTypes: bookingTypes.filter((bt) => !accountIds.has(bt.cAccountNumberID)).length
             };
         });
     }
@@ -130,7 +130,7 @@ export class DatabaseHealthService {
         const repos = this.repositoryFactory.getAllRepositories();
         return this.transactionManager.execute([INDEXED_DB.STORE.ACCOUNTS.NAME, storeName], "readwrite", async (tx) => {
             const accounts = await repos.accounts.findAll({ tx });
-            const validAccountIds = new Set(accounts.map(a => a.cID));
+            const validAccountIds = new Set(accounts.map((a) => a.cID));
             let repository;
             switch (storeName) {
                 case INDEXED_DB.STORE.BOOKINGS.NAME:

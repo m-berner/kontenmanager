@@ -46,10 +46,16 @@ export interface HealthStats {
  * Service for database health checks and repairs
  */
 export class DatabaseHealthService {
+  private readonly repositoryFactory: RepositoryFactory;
+  private readonly transactionManager: TransactionManager;
+
   constructor(
-    private readonly repositoryFactory: RepositoryFactory,
-    private readonly transactionManager: TransactionManager
-  ) {}
+    repositoryFactory: RepositoryFactory,
+    transactionManager: TransactionManager
+  ) {
+    this.repositoryFactory = repositoryFactory;
+    this.transactionManager = transactionManager;
+  }
 
   /**
    * Performs comprehensive health check
@@ -130,16 +136,22 @@ export class DatabaseHealthService {
           repos.bookingTypes.findAll({ tx })
         ]);
 
-        const accountIds = new Set(accounts.map(a => a.cID));
+        const accountIds = new Set(accounts.map((a) => a.cID));
 
         return {
           totalAccounts: accounts.length,
           totalBookings: bookings.length,
           totalStocks: stocks.length,
           totalBookingTypes: bookingTypes.length,
-          orphanedBookings: bookings.filter(b => !accountIds.has(b.cAccountNumberID)).length,
-          orphanedStocks: stocks.filter(s => !accountIds.has(s.cAccountNumberID)).length,
-          orphanedBookingTypes: bookingTypes.filter(bt => !accountIds.has(bt.cAccountNumberID)).length
+          orphanedBookings: bookings.filter(
+            (b) => !accountIds.has(b.cAccountNumberID)
+          ).length,
+          orphanedStocks: stocks.filter(
+            (s) => !accountIds.has(s.cAccountNumberID)
+          ).length,
+          orphanedBookingTypes: bookingTypes.filter(
+            (bt) => !accountIds.has(bt.cAccountNumberID)
+          ).length
         };
       }
     );
@@ -216,7 +228,7 @@ export class DatabaseHealthService {
       async (tx) => {
         // Get valid account IDs
         const accounts = await repos.accounts.findAll({ tx });
-        const validAccountIds = new Set(accounts.map(a => a.cID));
+        const validAccountIds = new Set(accounts.map((a) => a.cID));
 
         // Get the repository for the store
         let repository;

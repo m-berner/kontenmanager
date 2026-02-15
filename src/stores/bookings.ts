@@ -125,9 +125,7 @@ export const useBookingsStore = defineStore("bookings", function () {
   });
 
   /**
-   * Calculates the current portfolio quantity for a stock.
-   *
-   * Uses FIFO calculations from the domain logic.
+   * Calculates the current portfolio quantity for a stock (FIFO principle).
    *
    * @param ident - The stock ID.
    * @returns The quantity currently held.

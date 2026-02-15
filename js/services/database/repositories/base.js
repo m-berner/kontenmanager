@@ -2,7 +2,7 @@ import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 export class BaseRepository {
     storeName;
     transactionManager;
-    indexes;
+    indexes = new Map();
     constructor(storeName, transactionManager, indexes = new Map()) {
         this.storeName = storeName;
         this.transactionManager = transactionManager;

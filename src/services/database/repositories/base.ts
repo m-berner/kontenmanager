@@ -26,11 +26,19 @@ export interface BaseEntity {
  * Uses composition over inheritance for better testability
  */
 export abstract class BaseRepository<T extends BaseEntity> {
-  constructor(
-    protected readonly storeName: string,
-    protected readonly transactionManager: TransactionManager,
-    protected readonly indexes: Map<keyof T, string> = new Map()
-  ) {}
+  protected readonly storeName: string;
+  protected readonly transactionManager: TransactionManager;
+  protected readonly indexes: Map<keyof T, string> = new Map();
+
+  protected constructor(
+    storeName: string,
+    transactionManager: TransactionManager,
+    indexes: Map<keyof T, string> = new Map()
+  ) {
+    this.storeName = storeName;
+    this.transactionManager = transactionManager;
+    this.indexes = indexes;
+  }
 
   /**
    * Retrieves a record by ID.
