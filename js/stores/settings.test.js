@@ -2,15 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { useSettingsStore } from "./settings";
 import { BROWSER_STORAGE } from "@/domains/configs/storage";
-vi.mock("vuetify", () => ({
-    useTheme: () => ({
-        global: {
-            name: {
-                value: "ocean"
-            }
-        }
-    })
-}));
 const mockSetStorage = vi.fn();
 vi.mock("@/composables/useStorage", () => ({
     useStorage: () => ({

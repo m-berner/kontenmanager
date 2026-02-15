@@ -37,17 +37,6 @@ vi.mock("@/composables/useStorage", () => ({
   })
 }));
 
-// Mock Vuetify theme
-vi.mock("vuetify", () => ({
-  useTheme: () => ({
-    global: {
-      name: {
-        value: "ocean"
-      }
-    }
-  })
-}));
-
 describe("Stocks Store", () => {
   beforeEach(() => {
     setActivePinia(createPinia());

@@ -85,6 +85,7 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: true,
       environment: "happy-dom",
+      setupFiles: ["src/vitest-setup.ts"],
       // Let Vitest discover tests in both TS and JS locations used in this repo
       include: [
         "src/**/*.test.ts",

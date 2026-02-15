@@ -10,17 +10,6 @@ import { useAccountsStore } from "./accounts";
 import type { AccountStoreItem } from "@/types";
 import { vi } from "vitest";
 
-// Mock Vuetify theme
-vi.mock("vuetify", () => ({
-  useTheme: () => ({
-    global: {
-      name: {
-        value: "ocean"
-      }
-    }
-  })
-}));
-
 // Mock persistence composable used by the settings store
 vi.mock("@/composables/useStorage", () => ({
   useStorage: () => ({

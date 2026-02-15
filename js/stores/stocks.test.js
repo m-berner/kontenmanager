@@ -25,15 +25,6 @@ vi.mock("@/composables/useStorage", () => ({
         addStorageChangedListener: vi.fn()
     })
 }));
-vi.mock("vuetify", () => ({
-    useTheme: () => ({
-        global: {
-            name: {
-                value: "ocean"
-            }
-        }
-    })
-}));
 describe("Stocks Store", () => {
     beforeEach(() => {
         setActivePinia(createPinia());
