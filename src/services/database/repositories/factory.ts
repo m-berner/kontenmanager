@@ -4,30 +4,12 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import type { RepositoryType, RepositoryMap } from "@/types";
 import type { TransactionManager } from "../transaction/manager";
 import { AccountRepository } from "./account";
 import { BookingRepository } from "./booking";
 import { BookingTypeRepository } from "./bookingType";
 import { StockRepository } from "./stock";
-
-/**
- * Repository type map for type-safe access
- */
-export type RepositoryType =
-  | "accounts"
-  | "bookings"
-  | "bookingTypes"
-  | "stocks";
-
-/**
- * Repository instances map
- */
-export interface RepositoryMap {
-  accounts: AccountRepository;
-  bookings: BookingRepository;
-  bookingTypes: BookingTypeRepository;
-  stocks: StockRepository;
-}
 
 /**
  * Factory for creating repository instances

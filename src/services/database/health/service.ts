@@ -4,43 +4,17 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import type {
+  HealthCheckResult,
+  HealthIssue,
+  HealthStats,
+  RepairResult,
+  RepositoryMap
+} from "@/types";
 import { DomainUtils } from "@/domains/utils";
 import type { RepositoryFactory } from "../repositories/factory";
 import type { TransactionManager } from "../transaction/manager";
 import { INDEXED_DB } from "@/configs/database";
-
-/**
- * Health check result
- */
-export interface HealthCheckResult {
-  healthy: boolean;
-  issues: HealthIssue[];
-  stats: HealthStats;
-}
-
-/**
- * Individual health issue
- */
-export interface HealthIssue {
-  type: "orphaned_records" | "invalid_references" | "missing_data";
-  severity: "warning" | "error";
-  store: string;
-  count: number;
-  details?: string;
-}
-
-/**
- * Health statistics
- */
-export interface HealthStats {
-  totalAccounts: number;
-  totalBookings: number;
-  totalStocks: number;
-  totalBookingTypes: number;
-  orphanedBookings: number;
-  orphanedStocks: number;
-  orphanedBookingTypes: number;
-}
 
 /**
  * Service for database health checks and repairs
@@ -220,7 +194,7 @@ export class DatabaseHealthService {
   }
 
   private async removeOrphanedRecords(storeName: string): Promise<void> {
-    const repos = this.repositoryFactory.getAllRepositories();
+    const repos = this.repositoryFactory.getAllRepositories() as RepositoryMap;
 
     return this.transactionManager.execute(
       [INDEXED_DB.STORE.ACCOUNTS.NAME, storeName],
@@ -256,17 +230,4 @@ export class DatabaseHealthService {
       }
     );
   }
-}
-
-/**
- * Repair result
- */
-export interface RepairResult {
-  success: boolean;
-  fixed: number;
-  errors: Array<{
-    issue: string;
-    store: string;
-    error: string;
-  }>;
 }

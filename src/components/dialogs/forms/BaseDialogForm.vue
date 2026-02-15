@@ -16,11 +16,11 @@ import { computed, onErrorCaptured, ref } from "vue";
 import { useDialogGuards } from "@/composables/useDialogGuards";
 import { useAlertStore } from "@/stores/alerts";
 import { DomainUtils } from "@/domains/utils";
-import type { FormInterface } from "@/types";
+import type { FormContract } from "@/types";
 
 const { isLoading } = useDialogGuards();
 const alertStore = useAlertStore();
-const formRef = ref<FormInterface | null>(null);
+const formRef = ref<FormContract | null>(null);
 const hasError = ref(false);
 const validationErrors = ref<string[]>([]);
 

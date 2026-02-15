@@ -11,14 +11,27 @@ import { DomainUtils } from "@/domains/utils";
 import { AppError } from "@/domains/errors";
 
 /**
- * Message times queue.
+ * A Map object that stores recent messages with their corresponding timestamps.
+ * The key represents the unique identifier of a message (e.g., message ID or user ID),
+ * and the value represents the timestamp (e.g., in milliseconds or seconds since the epoch)
+ * when the message was last recorded.
+ *
+ * This data structure can be used for tracking and managing messages
+ * based on their recency.
  */
 const recentMessages = new Map<string, number>();
 
 /**
- * @param error - The Error object.
+ * Normalizes an error into a formatted string message.
+ *
+ * Converts various error formats into a standardized, readable string representation.
+ * Handles instances of custom `AppError`, native `Error`, strings, arrays, and unknown types.
+ *
+ * @param {string | Error | unknown} error - The error object to be normalized.
+ * Can be an instance of `AppError`, a native `Error`, a string, an array of strings, or any other unknown type.
+ * @returns {string} A joined and formatted string containing the error message(s).
  */
-const normalizedError = (error: string | Error | unknown) => {
+const normalizedError = (error: string | Error | unknown): string => {
   let messages: string[] = [];
   if (error instanceof AppError) {
     messages = [`${error.category}`, error.message];

@@ -181,11 +181,13 @@ function createBookingFormManager() {
     defaultISODate: string
   ): BookingDb | Omit<BookingDb, "cID"> {
     const isStockRelated = (typeId: number): boolean => {
-      return ([
-        BOOKING_TYPES.BUY,
-        BOOKING_TYPES.SELL,
-        BOOKING_TYPES.DIVIDEND
-      ] as number[]).includes(typeId);
+      return (
+        [
+          BOOKING_TYPES.BUY,
+          BOOKING_TYPES.SELL,
+          BOOKING_TYPES.DIVIDEND
+        ] as number[]
+      ).includes(typeId);
     };
 
     const isDividend = (typeId: number): boolean => {
@@ -193,11 +195,13 @@ function createBookingFormManager() {
     };
 
     const hasMarketplace = (typeId: number): boolean => {
-      return ([
-        BOOKING_TYPES.BUY,
-        BOOKING_TYPES.SELL,
-        BOOKING_TYPES.DIVIDEND
-      ] as number[]).includes(typeId);
+      return (
+        [
+          BOOKING_TYPES.BUY,
+          BOOKING_TYPES.SELL,
+          BOOKING_TYPES.DIVIDEND
+        ] as number[]
+      ).includes(typeId);
     };
 
     const booking: Omit<BookingDb, "cID"> = {

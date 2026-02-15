@@ -4,22 +4,9 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import type { QueryOptions, BaseEntity } from "@/types";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import type { TransactionManager } from "../transaction/manager";
-
-/**
- * Query options for repository operations
- */
-export interface QueryOptions {
-  tx?: IDBTransaction;
-}
-
-/**
- * Base entity with optional ID
- */
-export interface BaseEntity {
-  cID?: number;
-}
 
 /**
  * Base repository providing common CRUD operations

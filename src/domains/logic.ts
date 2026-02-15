@@ -5,15 +5,15 @@
  */
 
 import type {
-  AccountStoreInterface,
+  AccountStoreContract,
   BookingDb,
-  BookingStoreInterface,
-  BookingTypeStoreInterface,
+  BookingStoreContract,
+  BookingTypeStoreContract,
   NumberStringPair,
   RecordsDbData,
-  SettingsStoreInterface,
+  SettingsStoreContract,
   StockItem,
-  StockStoreInterface
+  StockStoreContract
 } from "@/types";
 import { DATE } from "@/domains/configs/date";
 import { DomainUtils } from "@/domains/utils";
@@ -235,11 +235,11 @@ export class DomainLogic {
   static async initializeRecords(
     storesDB: RecordsDbData,
     stores: {
-      accounts: AccountStoreInterface;
-      bookings: BookingStoreInterface;
-      bookingTypes: BookingTypeStoreInterface;
-      stocks: StockStoreInterface;
-      settings: SettingsStoreInterface;
+      accounts: AccountStoreContract;
+      bookings: BookingStoreContract;
+      bookingTypes: BookingTypeStoreContract;
+      stocks: StockStoreContract;
+      settings: SettingsStoreContract;
     },
     messages: Record<string, string>,
     removeAccounts = true

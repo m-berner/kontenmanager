@@ -7,7 +7,7 @@
 import type { Ref } from "vue";
 import { ref } from "vue";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
-import type { FormInterface, FormValidateResultType } from "@/types";
+import type { FormContract, FormValidateResultType } from "@/types";
 import { DomainUtils } from "@/domains/utils";
 import { useAlert } from "@/composables/useAlert";
 import { useBrowser } from "@/composables/useBrowser";
@@ -76,7 +76,7 @@ export function useDialogGuards() {
    * @returns Validation status and any error messages.
    */
   async function validateForm(
-    form: Ref<FormInterface | null>
+    form: Ref<FormContract | null>
   ): Promise<FormValidateResultType> {
     try {
       if (form.value === null) {
@@ -141,7 +141,7 @@ export function useDialogGuards() {
    * @param options - Configuration for the submit operation.
    */
   async function submitGuard(options: {
-    formRef?: Ref<FormInterface | null>;
+    formRef?: Ref<FormContract | null>;
     isConnected?: boolean;
     connectionErrorMessage?: string;
     showSystemNotification: any;

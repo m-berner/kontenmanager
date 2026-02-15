@@ -8,19 +8,17 @@ import { useRuntimeStore } from "@/stores/runtime";
 import { useRecordsStore } from "@/stores/records";
 import { useBookingsDB, useStocksDB } from "@/composables/useIndexedDB";
 import { storeToRefs } from "pinia";
-import type { MenuActionType } from "@/types";
+import type {
+  ActionHandler,
+  HighlightColor,
+  HighlightOptions,
+  MenuActionType
+} from "@/types";
 import { computed, onUnmounted, readonly, ref } from "vue";
 import { VIEW_CODES } from "@/configs/codes";
 import { useBrowser } from "@/composables/useBrowser";
 import { useAlert } from "@/composables/useAlert";
 import { DomainUtils } from "@/domains/utils";
-
-type HighlightColor = "green" | "red" | "yellow" | "blue";
-
-interface HighlightOptionsType {
-  color?: HighlightColor;
-  duration?: number;
-}
 
 /**
  * Composable to temporarily highlight rows/items in data tables.
@@ -79,7 +77,7 @@ export function useMenuHighlight() {
    */
   const highlightTemporary = (
     recordId: number,
-    options: HighlightOptionsType = {}
+    options: HighlightOptions = {}
   ) => {
     const { color = "green", duration = 3000 } = options;
 
@@ -129,8 +127,6 @@ export function useMenuHighlight() {
     getHighlightColor
   };
 }
-
-type ActionHandler = (_recordId: number) => Promise<void>;
 
 /**
  * Composable for managing application menu actions and navigation.

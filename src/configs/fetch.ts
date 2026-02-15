@@ -4,34 +4,9 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-export type Fetch = {
-  PROVIDERS: {
-    [key: string]: {
-      NAME: string;
-      HOME: string;
-      QUOTE: string;
-    };
-  };
-  FNET: {
-    INDEXES: string;
-    DATES: string;
-    MATERIALS: string;
-    ONLINE_TEST: string;
-    SEARCH: string;
-  };
-  FX: {
-    NAME: string;
-    HOME: string;
-    QUOTE: string;
-  };
-  DEFAULT_TTL: number;
-  DEFAULT_VALUE: string;
-  DEFAULT_CURRENCY: string;
-  TARGET_PERIOD: string;
-  DEFAULT_CURRENCY_SYMBOL: string;
-};
+import type { FetchConfigType } from "@/types";
 
-export const FETCH: Fetch = {
+export const FETCH: FetchConfigType = {
   PROVIDERS: {
     goyax: {
       NAME: "Goyax",

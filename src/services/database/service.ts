@@ -6,7 +6,15 @@
 
 import { DomainUtils } from "@/domains/utils";
 import { INDEXED_DB } from "@/configs/database";
-import type { RecordOperation, RecordsDbData } from "@/types";
+import type {
+  RecordOperation,
+  RecordsDbData,
+  RepositoryMap,
+  RepositoryType,
+  HealthCheckResult,
+  RepairResult,
+  BatchOperationDescriptor
+} from "@/types";
 
 // Core components
 import { DatabaseConnectionManager } from "./connection/manager";
@@ -14,22 +22,11 @@ import { TransactionManager } from "./transaction/manager";
 import { DatabaseMigrator } from "./migrator";
 
 // Services
-import {
-  RepositoryFactory,
-  type RepositoryMap,
-  type RepositoryType
-} from "./repositories/factory";
-import {
-  DatabaseHealthService,
-  type HealthCheckResult,
-  type RepairResult
-} from "./health/service";
-import {
-  type BatchOperationDescriptor,
-  BatchOperationService
-} from "./batch/service";
+import { RepositoryFactory } from "./repositories/factory";
+import { DatabaseHealthService } from "./health/service";
+import { BatchOperationService } from "./batch/service";
 
-export type { RepositoryMap, RepositoryType } from "./repositories/factory";
+export type { RepositoryMap, RepositoryType } from "@/types";
 
 /**
  * Main database service - Facade for all database operations

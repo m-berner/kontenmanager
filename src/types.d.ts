@@ -32,7 +32,35 @@ export interface AccountFormProps {
   isUpdate: boolean;
 }
 
+export interface AccountStoreContract {
+  items: AccountStoreItem[];
+  clean: () => void;
+  add: (_account: AccountStoreItem, _prepend?: boolean) => void;
+}
+
 export interface AccountStoreItem extends AccountDb {}
+
+export type ActionHandler = (_recordId: number) => Promise<void>;
+
+export type AlertKindType = "info" | "error" | "confirm";
+
+export type AlertModeType = "notice" | "alert";
+
+export interface AlertStoreContract {
+  info: (_title: string, _message: string, _duration: number | null) => void;
+}
+
+export type AppErrorCategoryType =
+  | SYSTEM.ERRORS.CATEGORY.NETWORK
+  | SYSTEM.ERRORS.CATEGORY.VALIDATION
+  | SYSTEM.ERRORS.CATEGORY.DATABASE
+  | SYSTEM.ERRORS.CATEGORY.BUSINESS;
+
+export interface AppMetadata {
+  cVersion: number;
+  cDBVersion: number;
+  cEngine: string;
+}
 
 export interface AppStatus {
   storage: "ok" | "aborted" | "error";
@@ -53,22 +81,24 @@ export interface BackupData {
   transfers?: LegacyBookingDb[];
 }
 
-export interface ExportData {
-  sm: {
-    cVersion: number;
-    cDBVersion: number;
-    cEngine: string;
-  };
-  accounts: AccountDb[];
-  bookings: BookingDb[];
-  bookingTypes: BookingTypeDb[];
-  stocks: StockDb[];
-}
-
 export interface BackupValidationResult {
   isValid: boolean;
   version: number;
   error?: string;
+}
+
+export interface BaseDialogForm {
+  formRef: Ref<FormContract | null>; //FormContract | null;
+  validateForm: () => Promise<boolean>;
+}
+
+export interface BaseEntity {
+  cID?: number;
+}
+
+export interface BatchOperationDescriptor {
+  storeName: string;
+  operations: RecordOperation[];
 }
 
 export interface BookingDb {
@@ -92,23 +122,6 @@ export interface BookingDb {
   cSourceTaxDebit: number;
   cTransactionTaxCredit: number;
   cTransactionTaxDebit: number;
-  cMarketPlace: string;
-}
-
-export interface LegacyBookingDb {
-  cDate: number;
-  cExDay: number;
-  cUnitQuotation: number;
-  cAmount: number;
-  cDescription: string;
-  cCount: number;
-  cType: number;
-  cStockID: number;
-  cSoli: number;
-  cTax: number;
-  cFees: number;
-  cSTax: number;
-  cFTax: number;
   cMarketPlace: string;
 }
 
@@ -137,6 +150,12 @@ export interface BookingFormData {
   marketPlace: string;
 }
 
+export interface BookingStoreContract {
+  items: BookingDb[];
+  clean: () => void;
+  add: (_booking: BookingDb, _prepend?: boolean) => void;
+}
+
 export interface BookingTypeDb {
   cID: number;
   cName: string;
@@ -150,6 +169,12 @@ export interface BookingTypeFormData {
 
 export interface BookingTypeFormProps {
   mode: FormModeType;
+}
+
+export interface BookingTypeStoreContract {
+  items: BookingTypeDb[];
+  clean: () => void;
+  add: (_bookingType: BookingTypeDb, _prepend?: boolean) => void;
 }
 
 export interface CheckboxGridProps {
@@ -172,25 +197,15 @@ export interface ConfirmationDialogData {
   reject: () => void;
 }
 
-export interface DialogComponent {
-  onClickOk: () => Promise<void>;
+export interface ContentCardProps {
   title: string;
-}
-
-export interface BaseDialogForm {
-  formRef: Ref<FormInterface | null>; //FormInterface | null;
-  validateForm: () => Promise<boolean>;
+  data: ContentItem[];
 }
 
 export interface ContentItem {
   readonly subTitle: string;
   readonly content: string;
   readonly icon: string;
-}
-
-export interface ContentCardProps {
-  title: string;
-  data: ContentItem[];
 }
 
 export interface CreditDebitFieldsetProps {
@@ -210,18 +225,23 @@ export interface CurrencyInputProps {
   rules?: Array<(_v: number) => boolean | string>;
 }
 
-export interface FetchResult {
-  rate: string;
-  min: string;
-  max: string;
-  currency: string;
+export interface CustomEventTarget extends HTMLInputElement {
+  target: { files: UnwrapRef<Blob>[] };
 }
 
-export interface FormsManager<TForm, TDB> {
-  formData: UnwrapNestedRefs<TForm>;
-  reset: () => void;
-  mapFormToDb: (_data: UnwrapNestedRefs<TForm>, ..._args: any[]) => TDB;
+export interface DatabaseConnection {
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
+  isConnected(): boolean;
+  getDatabase(): IDBDatabase;
+  onVersionChange(_handler: () => void): void;
 }
+
+export interface DatabaseMigratorContract {
+  setupDatabase(_db: IDBDatabase, _ev: IDBVersionChangeEvent): void;
+}
+
+export type DateConfigType = typeof DATE;
 
 export interface DateData {
   key: number | undefined;
@@ -231,9 +251,14 @@ export interface DateData {
   };
 }
 
+export interface DialogComponent {
+  onClickOk: () => Promise<void>;
+  title: string;
+}
+
 export interface DomainValidationResult {
   isValid: boolean;
-  error?: ValidationCode;
+  error?: ValidationCodeType;
 }
 
 export interface DynamicListProps {
@@ -242,29 +267,83 @@ export interface DynamicListProps {
   placeholder?: string;
 }
 
-export interface CustomEventTarget extends HTMLInputElement {
-  target: { files: UnwrapRef<Blob>[] };
-}
-
 export interface ExchangeData {
   key: string;
   value: number;
 }
 
+export interface ExportData {
+  sm: {
+    cVersion: number;
+    cDBVersion: number;
+    cEngine: string;
+  };
+  accounts: AccountDb[];
+  bookings: BookingDb[];
+  bookingTypes: BookingTypeDb[];
+  stocks: StockDb[];
+}
+
+export interface FetchConfigType {
+  PROVIDERS: {
+    [key: string]: {
+      NAME: string;
+      HOME: string;
+      QUOTE: string;
+    };
+  };
+  FNET: {
+    INDEXES: string;
+    DATES: string;
+    MATERIALS: string;
+    ONLINE_TEST: string;
+    SEARCH: string;
+  };
+  FX: {
+    NAME: string;
+    HOME: string;
+    QUOTE: string;
+  };
+  DEFAULT_TTL: number;
+  DEFAULT_VALUE: string;
+  DEFAULT_CURRENCY: string;
+  TARGET_PERIOD: string;
+  DEFAULT_CURRENCY_SYMBOL: string;
+}
+
+export interface FetchResult {
+  rate: string;
+  min: string;
+  max: string;
+  currency: string;
+}
+
+export type FormContract = {
+  validate: () => FormValidateResultType;
+  resetValidation?: () => void;
+};
+
+export type FormModeType = "add" | "update" | "delete";
+
+export interface FormsManager<TForm, TDB> {
+  formData: UnwrapNestedRefs<TForm>;
+  reset: () => void;
+  mapFormToDb: (_data: UnwrapNestedRefs<TForm>, ..._args: any[]) => TDB;
+}
+
+export type FormValidateResultType = { valid: boolean; errors?: string[] };
+
 export interface HandleUserAlertOptions {
   data?: unknown;
   logLevel?: LogLevelType;
   delay?: number | null;
-  // Alert options
   duration?: number | null;
   confirm?: {
     confirmText?: string;
     cancelText?: string;
     type?: "error" | "success" | "warning" | "info";
   };
-  // Rate limiting the window in ms (identical messages suppressed), default from DEFAULTS.USER_INFO.RATE_LIMIT_MS
   rateLimitMs?: number;
-  // Optional correlation identifier forwarded to logs
   correlationId?: string;
 }
 
@@ -275,15 +354,127 @@ export interface HeaderItem {
   key: string;
 }
 
+export interface HealthCheckResult {
+  healthy: boolean;
+  issues: HealthIssue[];
+  stats: HealthStats;
+}
+
+export interface HealthIssue {
+  type: "orphaned_records" | "invalid_references" | "missing_data";
+  severity: "warning" | "error";
+  store: string;
+  count: number;
+  details?: string;
+}
+
+export interface HealthStats {
+  totalAccounts: number;
+  totalBookings: number;
+  totalStocks: number;
+  totalBookingTypes: number;
+  orphanedBookings: number;
+  orphanedStocks: number;
+  orphanedBookingTypes: number;
+}
+
+export interface HighlightOptions {
+  color?: HighlightColor;
+  duration?: number;
+}
+
+export type HighlightColor = "green" | "red" | "yellow" | "blue";
+
 export interface I18nWrapper {
   i18n: I18n<{ "de-DE": MessageSchemaType; "en-US": MessageSchemaType }>;
 }
 
-export interface AppMetadata {
-  cVersion: number;
-  cDBVersion: number;
-  cEngine: string;
+export type IndexedDbConfigType = typeof INDEXED_DB;
+
+export interface LegacyBookingDb {
+  cDate: number;
+  cExDay: number;
+  cUnitQuotation: number;
+  cAmount: number;
+  cDescription: string;
+  cCount: number;
+  cType: number;
+  cStockID: number;
+  cSoli: number;
+  cTax: number;
+  cFees: number;
+  cSTax: number;
+  cFTax: number;
+  cMarketPlace: string;
 }
+
+export interface LegacyStockDb {
+  cID: number;
+  cSym: string;
+  cMeetingDay: number;
+  cQuarterDay: number;
+  cCompany: string;
+  cISIN: string;
+  cFadeOut: number;
+  cFirstPage: number;
+  cURL: string;
+}
+
+export interface LocalStorageData {
+  sActiveAccountId: number;
+  sSkin: string;
+  sBookingsPerPage: number;
+  sStocksPerPage: number;
+  sDividendsPerPage: number;
+  sSumsPerPage: number;
+  sService: string;
+  sExchanges: string[];
+  sIndexes: string[];
+  sMarkets: string[];
+  sMaterials: string[];
+}
+
+export type LogLevelType = "info" | "warn" | "error" | "log";
+
+export type MenuActionType =
+  | "updateBooking"
+  | "deleteBooking"
+  | "updateStock"
+  | "deleteStock"
+  | "showDividend"
+  | "openLink"
+  | "fadeInStock"
+  | "addAccount"
+  | "updateAccount"
+  | "deleteAccount"
+  | "addStock"
+  | "addBookingType"
+  | "deleteBookingType"
+  | "updateBookingType"
+  | "addBooking"
+  | "exportDatabase"
+  | "importDatabase"
+  | "showAccounting"
+  | "updateQuote"
+  | "deleteAccountConfirmation"
+  | "home"
+  | "company"
+  | "setting";
+
+export interface MenuConfigData {
+  recordId: number;
+  items: readonly MenuItemData[];
+}
+
+export interface MenuItemData {
+  id: string;
+  title: string;
+  icon: string;
+  action: MenuActionType;
+  variant?: "default" | "danger";
+}
+
+export type MessageSchemaType = typeof deDE;
 
 export interface NumberParseOptions {
   locale?: "de" | "en";
@@ -296,30 +487,32 @@ export interface NumberStringPair {
   value: string;
 }
 
-export interface MenuItemData {
-  id: string;
-  title: string;
-  icon: string;
-  action: MenuActionType;
-  variant?: "default" | "danger";
-}
-
-export interface MenuConfigData {
-  recordId: number;
-  items: readonly MenuItemData[];
-}
-
-export interface StockMarketData {
-  id: number;
+export interface OnlineStorageData {
+  id: number | undefined;
   isin: string;
-  rate: string;
   min: string;
+  rate: string;
   max: string;
   cur: string;
 }
 
+export interface OptionTab {
+  id: string;
+  title: string;
+}
+
 export interface PiniaWrapper {
   pinia: Pinia;
+}
+
+export interface PrivacyParagraph {
+  SUBTITLE: string;
+  CONTENT: string;
+  ICON: string;
+}
+
+export interface QueryOptions {
+  tx?: IDBTransaction;
 }
 
 export interface RecordOperation {
@@ -328,8 +521,57 @@ export interface RecordOperation {
   key?: number;
 }
 
+export interface RecordsDbData {
+  accountsDB: AccountDb[];
+  bookingsDB: BookingDb[];
+  bookingTypesDB: BookingTypeDb[];
+  stocksDB: StockDb[];
+}
+
+export interface RecordsStoreData {
+  accounts: AccountStoreItem[];
+  bookings: BookingDb[];
+  bookingTypes: BookingTypeDb[];
+  stocks: StockItem[];
+}
+
+export interface RepairResult {
+  success: boolean;
+  fixed: number;
+  errors: Array<{
+    issue: string;
+    store: string;
+    error: string;
+  }>;
+}
+
+export interface RepositoryMap {
+  accounts: import("@/services/database/repositories/account").AccountRepository;
+  bookings: import("@/services/database/repositories/booking").BookingRepository;
+  bookingTypes: import("@/services/database/repositories/bookingType").BookingTypeRepository;
+  stocks: import("@/services/database/repositories/stock").StockRepository;
+}
+
+export type RepositoryType = "accounts" | "bookings" | "bookingTypes" | "stocks";
+
+export interface RollbackData {
+  accounts: AccountDb[];
+  stocks: StockDb[];
+  bookingTypes: BookingTypeDb[];
+  bookings: BookingDb[];
+  activeAccountId: number;
+}
+
 export interface RouterWrapper {
   router: Router;
+}
+
+export interface ServiceFetcherType {
+  (_urls: NumberStringPair[]): Promise<StockMarketData[]>;
+}
+
+export interface SettingsStoreContract {
+  activeAccountId: number;
 }
 
 export interface StockDb {
@@ -363,6 +605,19 @@ export interface StockFormProps {
   isUpdate: boolean;
 }
 
+export interface StockItem extends StockRamData, StockDb {
+  //
+}
+
+export interface StockMarketData {
+  id: number;
+  isin: string;
+  rate: string;
+  min: string;
+  max: string;
+  cur: string;
+}
+
 export interface StockRamData {
   mPortfolio?: number;
   mInvest?: number;
@@ -381,176 +636,15 @@ export interface StockRamData {
   mDeleteable?: boolean;
 }
 
-export interface StockItem extends StockRamData, StockDb {
-  //
-}
-
-export interface LegacyStockDb {
-  cID: number;
-  cSym: string;
-  cMeetingDay: number;
-  cQuarterDay: number;
-  cCompany: string;
-  cISIN: string;
-  cFadeOut: number;
-  cFirstPage: number;
-  cURL: string;
-}
-
-export interface OnlineStorageData {
-  id: number | undefined;
-  isin: string;
-  min: string;
-  rate: string;
-  max: string;
-  cur: string;
-}
-
-export interface StringNumberPair {
-  key: string;
-  value: number;
-}
-
-export interface RecordsDbData {
-  accountsDB: AccountDb[];
-  bookingsDB: BookingDb[];
-  bookingTypesDB: BookingTypeDb[];
-  stocksDB: StockDb[];
-}
-
-export interface RecordsStoreData {
-  accounts: AccountStoreItem[];
-  bookings: BookingDb[];
-  bookingTypes: BookingTypeDb[];
-  stocks: StockItem[];
-}
-
-export interface AccountStoreInterface {
-  items: AccountStoreItem[];
-  clean: () => void;
-  add: (_account: AccountStoreItem, _prepend?: boolean) => void;
-}
-
-export interface BookingStoreInterface {
-  items: BookingDb[];
-  clean: () => void;
-  add: (_booking: BookingDb, _prepend?: boolean) => void;
-}
-
-export interface BookingTypeStoreInterface {
-  items: BookingTypeDb[];
-  clean: () => void;
-  add: (_bookingType: BookingTypeDb, _prepend?: boolean) => void;
-}
-
-export interface StockStoreInterface {
+export interface StockStoreContract {
   items: StockItem[];
   clean: () => void;
   add: (_stock: StockItem, _prepend?: boolean) => void;
 }
 
-export interface SettingsStoreInterface {
-  activeAccountId: number;
-}
-
-export interface AlertStoreInterface {
-  info: (_title: string, _message: string, _duration: number | null) => void;
-}
-
-export interface RollbackData {
-  accounts: AccountDb[];
-  stocks: StockDb[];
-  bookingTypes: BookingTypeDb[];
-  bookings: BookingDb[];
-  activeAccountId: number;
-}
-
-export interface ServiceFetcherType {
-  (_urls: NumberStringPair[]): Promise<StockMarketData[]>;
-}
-
-export interface LocalStorageData {
-  sActiveAccountId: number;
-  sSkin: string;
-  sBookingsPerPage: number;
-  sStocksPerPage: number;
-  sDividendsPerPage: number;
-  sSumsPerPage: number;
-  sService: string;
-  sExchanges: string[];
-  sIndexes: string[];
-  sMarkets: string[];
-  sMaterials: string[];
-}
-
-export interface OptionTab {
-  id: string;
-  title: string;
-}
-
-export interface PrivacyParagraph {
-  SUBTITLE: string;
-  CONTENT: string;
-  ICON: string;
-}
-
-export interface TeleportState {
-  dialogName: string;
-  dialogOk: boolean;
-  dialogVisibility: boolean;
-}
-
-export interface VisibleAlertData {
-  id: number;
-  type: "error" | "success" | "warning" | "info" | undefined;
-  title: string;
-  message: string;
-}
-
-export interface VuetifyWrapper {
-  vuetify: ReturnType<typeof createVuetify>;
-}
-
-export type Mode = "notice" | "alert";
-
-export type AlertKind = "info" | "error" | "confirm";
-
-// Discriminated result types for useAlert
-export type UserInfoConsoleResult = void;
-export type UserInfoNoticeResult = void;
-export type UserInfoAlertInfoResult = number; // alert id
-export type UserInfoAlertErrorResult = number; // alert id
-export type UserInfoAlertConfirmResult = boolean; // user choice
-export type UserInfoResult =
-  | UserInfoConsoleResult
-  | UserInfoNoticeResult
-  | UserInfoAlertInfoResult
-  | UserInfoAlertErrorResult
-  | UserInfoAlertConfirmResult;
-
-// Callable type for the handleUserInfo function used across dialogs/guards (mirrors overloads)
-export type FormModeType = "add" | "update" | "delete";
-
-export type DateConfigType = typeof DATE;
-
-export type IndexedDbConfigType = typeof INDEXED_DB;
-
-export type LogLevelType = "info" | "warn" | "error" | "log";
-
-export type MessageSchemaType = typeof deDE;
-
-// Strongly typed browser storage snapshot derived from BROWSER_STORAGE configs
-// We map the runtime schema entries to a type whose keys are the literal
-// storage keys (e.g., "sSkin") and whose values are the corresponding default
-// value types (string | number | boolean | string[]).
-type __BrowserStorageSchema =
-  typeof import("@/domains/configs/storage").BROWSER_STORAGE;
-type __BrowserStorageEntryUnion =
-  __BrowserStorageSchema[keyof __BrowserStorageSchema];
-
 export type StorageDataType = {
-  [P in __BrowserStorageEntryUnion["key"]]: Extract<
-    __BrowserStorageEntryUnion,
+  [P in (typeof import("@/domains/configs/storage").BROWSER_STORAGE)[keyof typeof import("@/domains/configs/storage").BROWSER_STORAGE]["key"]]: Extract<
+    (typeof import("@/domains/configs/storage").BROWSER_STORAGE)[keyof typeof import("@/domains/configs/storage").BROWSER_STORAGE],
     { key: P }
   >["value"] extends infer V
     ? V extends readonly any[]
@@ -565,59 +659,78 @@ export type StorageDataType = {
 
 export type StorageValueType = StorageDataType[keyof StorageDataType];
 
-export type MenuActionType =
-  | "updateBooking"
-  | "deleteBooking"
-  | "updateStock"
-  | "deleteStock"
-  | "showDividend"
-  | "openLink"
-  | "fadeInStock"
-  | "addAccount"
-  | "updateAccount"
-  | "deleteAccount"
-  | "addStock"
-  | "addBookingType"
-  | "deleteBookingType"
-  | "updateBookingType"
-  | "addBooking"
-  | "exportDatabase"
-  | "importDatabase"
-  | "showAccounting"
-  | "updateQuote"
-  | "deleteAccountConfirmation"
-  | "home"
-  | "company"
-  | "setting";
+export interface StoresConfigType {
+  INDEXES: { [key: string]: string };
+  MATERIALS: { [key: string]: string };
+}
 
-export type FormValidateResultType = { valid: boolean; errors?: string[] };
-
-export type FormInterface = {
-  validate: () => FormValidateResultType;
-  resetValidation?: () => void;
-};
+export interface StringNumberPair {
+  key: string;
+  value: number;
+}
 
 export type StringValidatorType = (_v: string) => boolean | string;
 
 export type NumberValidatorType = (_v: number) => boolean | string;
 
-export type ValidationRuleType = (_value: unknown) => boolean | string;
+export interface TeleportState {
+  dialogName: string;
+  dialogOk: boolean;
+  dialogVisibility: boolean;
+}
 
-export type AppErrorCategoryType =
-  | SYSTEM.ERRORS.CATEGORY.NETWORK
-  | SYSTEM.ERRORS.CATEGORY.VALIDATION
-  | SYSTEM.ERRORS.CATEGORY.DATABASE
-  | SYSTEM.ERRORS.CATEGORY.BUSINESS;
+export interface TransactionOptions {
+  timeout?: number;
+  onProgress?: (_progress: TransactionProgress) => void;
+}
 
-export type ValidationCode =
+export interface TransactionProgress {
+  phase: "started" | "executing" | "completing" | "completed";
+  store?: string;
+}
+
+export type TranslationKeysType = {
+  [p: string]: string;
+};
+
+export type UserInfoAlertConfirmResult = boolean; // user choice
+
+export type UserInfoAlertErrorResult = number; // alert id
+
+export type UserInfoAlertInfoResult = number; // alert id
+
+export type UserInfoConsoleResult = void;
+
+export type UserInfoNoticeResult = void;
+
+export type UserInfoResult =
+  | UserInfoConsoleResult
+  | UserInfoNoticeResult
+  | UserInfoAlertInfoResult
+  | UserInfoAlertErrorResult
+  | UserInfoAlertConfirmResult;
+
+export type ValidationCodeType =
   (typeof VALIDATION_CODES)[keyof typeof VALIDATION_CODES];
 
-export type ViewTypeSelection =
+export type ValidationRuleType = (_value: unknown) => boolean | string;
+
+export type ViewTypeSelectionType =
   | "home"
   | "company"
   | "settings"
-  | "help"
-  | "privacy";
+  | "help" | "privacy";
+
+export interface VisibleAlertData {
+  id: number;
+  type: "error" | "success" | "warning" | "info" | undefined;
+  title: string;
+  message: string;
+}
+
+export interface VuetifyWrapper {
+  vuetify: ReturnType<typeof createVuetify>;
+}
 
 declare global {
   module "*.vue" {

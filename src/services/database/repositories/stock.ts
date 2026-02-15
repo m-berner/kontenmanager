@@ -5,8 +5,8 @@
  */
 
 import { INDEXED_DB } from "@/configs/database";
-import type { StockDb } from "@/types";
-import { BaseRepository, type QueryOptions } from "./base";
+import type { StockDb, QueryOptions } from "@/types";
+import { BaseRepository } from "./base";
 import type { TransactionManager } from "../transaction/manager";
 
 /**

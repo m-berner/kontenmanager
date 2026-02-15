@@ -4,7 +4,9 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-export const STORES: Stores = {
+import type { StoresConfigType, TranslationKeysType } from "@/types";
+
+export const STORES: StoresConfigType = {
   INDEXES: {
     dax: "DAX",
     dow: "Dow Jones",
@@ -40,12 +42,7 @@ export const STORES: Stores = {
   }
 } as const;
 
-export type Stores = {
-  INDEXES: { [key: string]: string };
-  MATERIALS: { [key: string]: string };
-};
-
-export const TRANSLATION_KEYS: TranslationKeys = {
+export const TRANSLATION_KEYS: TranslationKeysType = {
   ag: "views.optionsIndex.materials.ag",
   al: "views.optionsIndex.materials.al",
   au: "views.optionsIndex.materials.au",
@@ -57,8 +54,4 @@ export const TRANSLATION_KEYS: TranslationKeys = {
   pt: "views.optionsIndex.materials.pt",
   sn: "views.optionsIndex.materials.sn",
   wti: "views.optionsIndex.materials.wti"
-};
-
-export type TranslationKeys = {
-  [p: string]: string;
 };

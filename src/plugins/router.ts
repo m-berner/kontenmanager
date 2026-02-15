@@ -6,7 +6,7 @@
 
 import { createRouter, createWebHashHistory } from "vue-router";
 import { DomainUtils } from "@/domains/utils";
-import type { RouterWrapper, ViewTypeSelection } from "@/types";
+import type { RouterWrapper, ViewTypeSelectionType } from "@/types";
 import { VIEW_CODES } from "@/configs/codes";
 import { useRuntimeStore } from "@/stores/runtime";
 
@@ -73,7 +73,7 @@ const routerInstance = createRouter({
 routerInstance.afterEach((to) => {
   try {
     const runtime = useRuntimeStore();
-    const routeName = to.name as ViewTypeSelection;
+    const routeName = to.name as ViewTypeSelectionType;
     if (routeName) {
       runtime.setCurrentView(routeName);
     }
@@ -89,7 +89,7 @@ routerInstance.afterEach((to) => {
 routerInstance.isReady().then(() => {
   try {
     const runtime = useRuntimeStore();
-    const routeName = routerInstance.currentRoute.value.name as ViewTypeSelection;
+    const routeName = routerInstance.currentRoute.value.name as ViewTypeSelectionType;
     if (routeName) {
       runtime.setCurrentView(routeName);
     }

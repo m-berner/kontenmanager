@@ -11,14 +11,13 @@ import type {
   BookingTypeDb,
   RecordOperation,
   StockDb,
-  StockItem
+  StockItem,
+  RepositoryType
 } from "@/types";
 import { INDEXED_DB } from "@/configs/database";
 import { databaseService } from "@/services/database/service";
 import { DomainValidators } from "@/domains/validation/validators";
 import { DomainUtils } from "@/domains/utils";
-
-import type { RepositoryType } from "@/services/database/repositories/factory";
 
 /**
  * Generic internal helper to create store-specific IndexedDB wrappers.

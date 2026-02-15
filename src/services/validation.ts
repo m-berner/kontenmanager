@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type { ValidationCode, ValidationRuleType } from "@/types";
+import type { ValidationCodeType, ValidationRuleType } from "@/types";
 import type { Ref } from "vue";
 import { DomainUtils } from "@/domains/utils";
 import { VALIDATION_CODES } from "@/domains/validation/codes";
@@ -202,7 +202,7 @@ class ValidationServiceImpl {
    * Map a domain DomainValidationResult to a Vuetify rule.
    */
   private fromDomain(
-    domainFn: (_v: any) => { isValid: boolean; error?: ValidationCode },
+    domainFn: (_v: any) => { isValid: boolean; error?: ValidationCodeType },
     messageMap: Record<string, string>
   ): ValidationRuleType {
     return (v: any) => {

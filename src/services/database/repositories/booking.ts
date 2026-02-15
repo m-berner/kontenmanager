@@ -5,8 +5,8 @@
  */
 
 import { INDEXED_DB } from "@/configs/database";
-import type { BookingDb } from "@/types";
-import { BaseRepository, type QueryOptions } from "./base";
+import type { BookingDb, QueryOptions } from "@/types";
+import { BaseRepository } from "./base";
 import type { TransactionManager } from "../transaction/manager";
 
 /**

@@ -4,9 +4,9 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import type { BatchOperationDescriptor, RecordOperation } from "@/types";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import type { RecordOperation } from "@/types";
 import type { TransactionManager } from "../transaction/manager";
 import { INDEXED_DB } from "@/configs/database";
 
@@ -20,15 +20,7 @@ const VALID_STORES = [
   INDEXED_DB.STORE.BOOKING_TYPES.NAME
 ] as const;
 
-type ValidStoreName = (typeof VALID_STORES)[number];
-
-/**
- * Batch operation descriptor
- */
-export interface BatchOperationDescriptor {
-  storeName: string;
-  operations: RecordOperation[];
-}
+export type ValidStoreNameType = (typeof VALID_STORES)[number];
 
 /**
  * Service for executing batch operations atomically
@@ -109,7 +101,7 @@ export class BatchOperationService {
     }
 
     for (const descriptor of descriptors) {
-      if (!VALID_STORES.includes(descriptor.storeName as ValidStoreName)) {
+      if (!VALID_STORES.includes(descriptor.storeName as ValidStoreNameType)) {
         throw new AppError(
           ERROR_CODES.SERVICES.DATABASE.D,
           ERROR_CATEGORY.DATABASE,

@@ -4,32 +4,21 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import type { DatabaseConnection, DatabaseMigratorContract } from "@/types";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import type { IDatabaseMigrator } from "./types";
-
-/**
- * Interface for database connections
- */
-export interface IDatabaseConnection {
-  connect(): Promise<void>;
-  disconnect(): Promise<void>;
-  isConnected(): boolean;
-  getDatabase(): IDBDatabase;
-  onVersionChange(_handler: () => void): void;
-}
 
 /**
  * Manages IndexedDB connection lifecycle
  */
-export class DatabaseConnectionManager implements IDatabaseConnection {
+export class DatabaseConnectionManager implements DatabaseConnection {
   private db?: IDBDatabase;
   private versionChangeHandler?: () => void;
   private readonly dbName: string;
   private readonly version: number;
-  private readonly migrator: IDatabaseMigrator;
+  private readonly migrator: DatabaseMigratorContract;
 
-  constructor(dbName: string, version: number, migrator: IDatabaseMigrator) {
+  constructor(dbName: string, version: number, migrator: DatabaseMigratorContract) {
     this.dbName = dbName;
     this.version = version;
     this.migrator = migrator;

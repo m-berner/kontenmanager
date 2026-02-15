@@ -73,7 +73,7 @@ const TRANSLATION_KEYS = {
   COMPANY_MENU_LINK: "views.companyContent.stocksTable.menuItems.link"
 } as const;
 
-type TranslationKey = typeof TRANSLATION_KEYS[keyof typeof TRANSLATION_KEYS];
+export type TranslationKeyType = typeof TRANSLATION_KEYS[keyof typeof TRANSLATION_KEYS];
 
 /**
  * Helper function to create a header item.
@@ -86,7 +86,7 @@ type TranslationKey = typeof TRANSLATION_KEYS[keyof typeof TRANSLATION_KEYS];
  */
 const createHeaderItem = (
   t: (_key: string) => string,
-  titleKey: TranslationKey,
+  titleKey: TranslationKeyType,
   key: string,
   sortable = false
 ): HeaderItem => ({

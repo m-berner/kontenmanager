@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type { TeleportState, ViewTypeSelection } from "@/types";
+import type { TeleportState, ViewTypeSelectionType } from "@/types";
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { DomainUtils } from "@/domains/utils";
@@ -29,7 +29,7 @@ export const useRuntimeStore = defineStore("runtime", function () {
   const activeId = ref<number>(-1);
 
   /** Currently active application view. */
-  const currentView = ref<ViewTypeSelection>(VIEW_CODES.HOME);
+  const currentView = ref<ViewTypeSelectionType>(VIEW_CODES.HOME);
 
   /**
    * Map of color overrides for option menu entries.
@@ -70,7 +70,7 @@ export const useRuntimeStore = defineStore("runtime", function () {
   /** Specific flag indicating if stock data is being fetched or processed. */
   const isStockLoading = ref<boolean>(false);
 
-  const getCurrentView = computed((): ViewTypeSelection => currentView.value);
+  const getCurrentView = computed((): ViewTypeSelectionType => currentView.value);
 
   /**
    * Set of page numbers that have successfully loaded stock data.
@@ -119,9 +119,9 @@ export const useRuntimeStore = defineStore("runtime", function () {
   /**
    * Updates the active view and performs necessary state resets.
    *
-   * @param {ViewTypeSelection} view - The target view identifier to switch to.
+   * @param {ViewTypeSelectionType} view - The target view identifier to switch to.
    */
-  function setCurrentView(view: ViewTypeSelection): void {
+  function setCurrentView(view: ViewTypeSelectionType): void {
     currentView.value = view;
 
     // Ensure UI the state is clean when navigating

@@ -4,33 +4,20 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import type {
+  DatabaseConnection,
+  TransactionOptions
+} from "@/types";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
-import type { IDatabaseConnection } from "../connection/manager";
-
-/**
- * Transaction execution options
- */
-export interface TransactionOptions {
-  timeout?: number;
-  onProgress?: (_progress: TransactionProgress) => void;
-}
-
-/**
- * Transaction progress information
- */
-export interface TransactionProgress {
-  phase: "started" | "executing" | "completing" | "completed";
-  store?: string;
-}
 
 /**
  * Manages IndexedDB transactions with proper lifecycle handling
  */
 export class TransactionManager {
-  private readonly connection: IDatabaseConnection;
+  private readonly connection: DatabaseConnection;
 
-  constructor(connection: IDatabaseConnection) {
+  constructor(connection: DatabaseConnection) {
     this.connection = connection;
   }
 
