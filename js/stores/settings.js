@@ -40,10 +40,10 @@ export const useSettingsStore = defineStore("settings", function () {
         sumsPerPage.value = storage[BROWSER_STORAGE.SUMS_PER_PAGE.key];
         activeAccountId.value = storage[BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key];
         service.value = storage[BROWSER_STORAGE.SERVICE.key];
-        materials.value = [...(storage[BROWSER_STORAGE.MATERIALS.key])];
-        markets.value = [...(storage[BROWSER_STORAGE.MARKETS.key])];
-        indexes.value = [...(storage[BROWSER_STORAGE.INDEXES.key])];
-        exchanges.value = [...(storage[BROWSER_STORAGE.EXCHANGES.key])];
+        materials.value = [...storage[BROWSER_STORAGE.MATERIALS.key]];
+        markets.value = [...storage[BROWSER_STORAGE.MARKETS.key]];
+        indexes.value = [...storage[BROWSER_STORAGE.INDEXES.key]];
+        exchanges.value = [...storage[BROWSER_STORAGE.EXCHANGES.key]];
         addStorageChangedListener((changes) => {
             DomainUtils.log("STORES settings: cross-context sync");
             if (changes[BROWSER_STORAGE.SKIN.key]) {
@@ -63,25 +63,34 @@ export const useSettingsStore = defineStore("settings", function () {
                 markets.value = [...changes[BROWSER_STORAGE.MARKETS.key].newValue];
             }
             if (changes[BROWSER_STORAGE.MATERIALS.key]) {
-                materials.value = [...changes[BROWSER_STORAGE.MATERIALS.key].newValue];
+                materials.value = [
+                    ...changes[BROWSER_STORAGE.MATERIALS.key].newValue
+                ];
             }
             if (changes[BROWSER_STORAGE.EXCHANGES.key]) {
-                exchanges.value = [...changes[BROWSER_STORAGE.EXCHANGES.key].newValue];
+                exchanges.value = [
+                    ...changes[BROWSER_STORAGE.EXCHANGES.key].newValue
+                ];
             }
             if (changes[BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key]) {
-                activeAccountId.value = changes[BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key].newValue;
+                activeAccountId.value =
+                    changes[BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key].newValue;
             }
             if (changes[BROWSER_STORAGE.BOOKINGS_PER_PAGE.key]) {
-                bookingsPerPage.value = changes[BROWSER_STORAGE.BOOKINGS_PER_PAGE.key].newValue;
+                bookingsPerPage.value =
+                    changes[BROWSER_STORAGE.BOOKINGS_PER_PAGE.key].newValue;
             }
             if (changes[BROWSER_STORAGE.STOCKS_PER_PAGE.key]) {
-                stocksPerPage.value = changes[BROWSER_STORAGE.STOCKS_PER_PAGE.key].newValue;
+                stocksPerPage.value =
+                    changes[BROWSER_STORAGE.STOCKS_PER_PAGE.key].newValue;
             }
             if (changes[BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key]) {
-                dividendsPerPage.value = changes[BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key].newValue;
+                dividendsPerPage.value =
+                    changes[BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key].newValue;
             }
             if (changes[BROWSER_STORAGE.SUMS_PER_PAGE.key]) {
-                sumsPerPage.value = changes[BROWSER_STORAGE.SUMS_PER_PAGE.key].newValue;
+                sumsPerPage.value =
+                    changes[BROWSER_STORAGE.SUMS_PER_PAGE.key].newValue;
             }
         });
     }
