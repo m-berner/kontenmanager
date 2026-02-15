@@ -11,7 +11,7 @@
  * their current values. It converts USD‑denominated material prices to the
  * local currency using the runtime exchange rate.
  */
-import { computed } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
@@ -37,6 +37,10 @@ const materialValues = computed(() => {
   }
 
   return result;
+});
+
+onBeforeMount(() => {
+  DomainUtils.log("VIEWS InfoBar: onBeforeMount");
 });
 
 DomainUtils.log("VIEWS InfoBar: setup");

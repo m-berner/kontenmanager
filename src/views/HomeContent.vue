@@ -9,9 +9,9 @@
  * @fileoverview HomeContent component displays the main dashboard with a searchable
  * data table of all bookings, including action menus and keyboard shortcuts.
  */
-import { computed, onUnmounted, ref } from "vue";
-import { storeToRefs } from "pinia";
+import { computed, onBeforeMount, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { DomainUtils } from "@/domains/utils";
@@ -22,13 +22,13 @@ import { databaseService } from "@/services/database/service";
 import { createHomeHeaders, createHomeMenuItems } from "@/configs/views";
 
 const { d, n, t } = useI18n();
-const { clearStorage, installStorageLocal } =
-  useStorage();
+const { clearStorage, installStorageLocal } = useStorage();
 const records = useRecordsStore();
 const { items: bookingItems } = storeToRefs(records.bookings);
 const settings = useSettingsStore();
 const { bookingsPerPage } = storeToRefs(settings);
-const setBookingsPerPage = (value: number) => settings.setBookingsPerPage(value as any);
+const setBookingsPerPage = (value: number) =>
+  settings.setBookingsPerPage(value as any);
 
 const ITEMS_PER_PAGE_OPTIONS = [
   {
@@ -63,11 +63,9 @@ const search = ref<string>("");
  * Disconnects from the database.
  */
 const onBeforeUnload = (): void => {
-  DomainUtils.log("VIEWS AppIndex: onBeforeUnload");
+  DomainUtils.log("VIEWS HomeContent: onBeforeUnload");
   databaseService.disconnect();
 };
-
-window.addEventListener("beforeunload", onBeforeUnload, { once: true });
 
 const { register, unregister } = useKeyboardShortcuts();
 
@@ -83,7 +81,11 @@ const onResetStorage = async (): Promise<void> => {
   await installStorageLocal();
 };
 
-register("Ctrl+Alt+R", onResetStorage);
+onBeforeMount(() => {
+  DomainUtils.log("VIEWS HomeContent: onBeforeMount");
+  window.addEventListener("beforeunload", onBeforeUnload, { once: true });
+  register("Ctrl+Alt+R", onResetStorage);
+});
 
 onUnmounted(() => {
   unregister("Ctrl+Alt+R");

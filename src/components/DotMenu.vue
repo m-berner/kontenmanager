@@ -5,7 +5,7 @@
   -->
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { useMenuAction, useMenuHighlight } from "@/composables/useMenu";
 import MenuItem from "@/components/MenuItem.vue";
 import type { MenuConfigData, MenuItemData } from "@/types";
@@ -22,6 +22,10 @@ const { highlightedItems, highlightTemporary, clearAllHighlights } =
 const currentColor = computed(
   () => highlightedItems.value.get(props.recordId) || ""
 );
+
+onBeforeMount(() => {
+  DomainUtils.log("COMPONENTS DotMenu: onBeforeMount");
+});
 
 const handleMenuOpen = () => {
   DomainUtils.log("COMPONENTS DotMenu: handleMenuOpen", props.recordId);

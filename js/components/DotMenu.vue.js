@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { useMenuAction, useMenuHighlight } from "@/composables/useMenu";
 import MenuItem from "@/components/MenuItem.vue";
 import { DomainUtils } from "@/domains/utils";
@@ -8,6 +8,9 @@ const alertStore = useAlertStore();
 const { executeAction } = useMenuAction();
 const { highlightedItems, highlightTemporary, clearAllHighlights } = useMenuHighlight();
 const currentColor = computed(() => highlightedItems.value.get(props.recordId) || "");
+onBeforeMount(() => {
+    DomainUtils.log("COMPONENTS DotMenu: onBeforeMount");
+});
 const handleMenuOpen = () => {
     DomainUtils.log("COMPONENTS DotMenu: handleMenuOpen", props.recordId);
     highlightTemporary(props.recordId);

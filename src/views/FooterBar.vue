@@ -5,12 +5,17 @@
   -->
 
 <script lang="ts" setup>
+import { onBeforeMount } from "vue";
 import { useI18n } from "vue-i18n";
 import { DomainUtils } from "@/domains/utils";
 import { DEFAULTS } from "@/configs/defaults";
 import { VIEW_CODES } from "@/configs/codes";
 
 const { t } = useI18n();
+
+onBeforeMount(() => {
+  DomainUtils.log("VIEWS FooterBar: onBeforeMount");
+});
 
 DomainUtils.log("VIEWS FooterBar: setup");
 </script>

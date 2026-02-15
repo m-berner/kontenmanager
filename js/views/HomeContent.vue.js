@@ -1,6 +1,6 @@
-import { computed, onUnmounted, ref } from "vue";
-import { storeToRefs } from "pinia";
+import { computed, onBeforeMount, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { storeToRefs } from "pinia";
 import { useSettingsStore } from "@/stores/settings";
 import { useRecordsStore } from "@/stores/records";
 import { DomainUtils } from "@/domains/utils";
@@ -42,16 +42,19 @@ const HEADERS = computed(() => createHomeHeaders(t));
 const MENU_ITEMS = computed(() => createHomeMenuItems(t));
 const search = ref("");
 const onBeforeUnload = () => {
-    DomainUtils.log("VIEWS AppIndex: onBeforeUnload");
+    DomainUtils.log("VIEWS HomeContent: onBeforeUnload");
     databaseService.disconnect();
 };
-window.addEventListener("beforeunload", onBeforeUnload, { once: true });
 const { register, unregister } = useKeyboardShortcuts();
 const onResetStorage = async () => {
     await clearStorage();
     await installStorageLocal();
 };
-register("Ctrl+Alt+R", onResetStorage);
+onBeforeMount(() => {
+    DomainUtils.log("VIEWS HomeContent: onBeforeMount");
+    window.addEventListener("beforeunload", onBeforeUnload, { once: true });
+    register("Ctrl+Alt+R", onResetStorage);
+});
 onUnmounted(() => {
     unregister("Ctrl+Alt+R");
 });

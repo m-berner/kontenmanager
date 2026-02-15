@@ -1,4 +1,8 @@
+import { onBeforeMount } from "vue";
 import { DomainUtils } from "@/domains/utils";
+onBeforeMount(() => {
+    DomainUtils.log("VIEWS HelpContent: onBeforeMount");
+});
 DomainUtils.log("VIEWS HelpContent: setup");
 const __VLS_ctx = {};
 let __VLS_components;

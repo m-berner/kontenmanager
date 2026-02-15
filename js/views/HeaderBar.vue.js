@@ -1,3 +1,4 @@
+import { onBeforeMount } from "vue";
 import { useI18n } from "vue-i18n";
 import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
@@ -17,6 +18,9 @@ const { handleUserInfo } = useAlert();
 const { items: accountItems } = storeToRefs(records.accounts);
 const { items: bookingItems } = storeToRefs(records.bookings);
 const { items: bookingTypeItems } = storeToRefs(records.bookingTypes);
+onBeforeMount(() => {
+    DomainUtils.log("VIEWS HeaderBar: onBeforeMount");
+});
 const dialogActions = {
     updateQuote: async () => {
         try {

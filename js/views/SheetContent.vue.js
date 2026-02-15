@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { DomainUtils } from "@/domains/utils";
@@ -16,6 +16,9 @@ const formatData = computed(() => {
         content: p.CONTENT,
         icon: p.ICON
     }));
+});
+onBeforeMount(() => {
+    DomainUtils.log("VIEWS SheetContent: onBeforeMount");
 });
 DomainUtils.log("VIEWS SheetContent: setup");
 const __VLS_ctx = {

@@ -10,7 +10,12 @@
  * app’s main areas (Home, Company), basic workflows, and keyboard/menu hints.
  * Content is intentionally simple HTML rendered via Vuetify components.
  */
+import { onBeforeMount } from "vue";
 import { DomainUtils } from "@/domains/utils";
+
+onBeforeMount(() => {
+  DomainUtils.log("VIEWS HelpContent: onBeforeMount");
+});
 
 DomainUtils.log("VIEWS HelpContent: setup");
 </script>

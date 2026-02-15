@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useRuntimeStore } from "@/stores/runtime";
@@ -18,6 +18,9 @@ const materialValues = computed(() => {
         result.set(item, { usd: usdValue, local: localValue });
     }
     return result;
+});
+onBeforeMount(() => {
+    DomainUtils.log("VIEWS InfoBar: onBeforeMount");
 });
 DomainUtils.log("VIEWS InfoBar: setup");
 const __VLS_ctx = {
