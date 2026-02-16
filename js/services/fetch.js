@@ -307,7 +307,7 @@ class FetchService {
             const url = `${service.QUOTE}${code.substring(0, 3)}&cp_input=${code.substring(3, 6)}&amount_from=1`;
             const html = await this.fetchWithCache(url, url);
             const doc = await this.parseHTML(html);
-            const rateElement = doc.querySelector("form#formcalculator.formcalculator > div");
+            const rateElement = doc.querySelector("[data-rate]");
             if (!rateElement) {
                 throw new AppError(ERROR_CODES.SERVICES.FETCH.J, ERROR_CATEGORY.NETWORK, false);
             }

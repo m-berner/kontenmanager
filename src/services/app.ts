@@ -356,17 +356,19 @@ export class AppService {
     }
 
     // Process successful fetches
-    const exchangesOk =
-      this.processFetchResult(
-        exchangesBase,
-        (data) => this.processExchangeBase(data),
-        "baseExchanges"
-      ) ||
-      this.processFetchResult(
-        exchangesInfo,
-        (data) => this.processExchangeInfo(data),
-        "exchanges"
-      );
+    const baseExchangesOk = this.processFetchResult(
+      exchangesBase,
+      (data) => this.processExchangeBase(data),
+      "baseExchanges"
+    );
+
+    const infoExchangesOk = this.processFetchResult(
+      exchangesInfo,
+      (data) => this.processExchangeInfo(data),
+      "exchanges"
+    );
+
+    const exchangesOk = baseExchangesOk || infoExchangesOk;
 
     const indexesOk = this.processFetchResult(
       indexesInfo,

@@ -182,8 +182,9 @@ export class AppService {
         if (signal?.aborted) {
             return { exchanges: false, indexes: false, materials: false };
         }
-        const exchangesOk = this.processFetchResult(exchangesBase, (data) => this.processExchangeBase(data), "baseExchanges") ||
-            this.processFetchResult(exchangesInfo, (data) => this.processExchangeInfo(data), "exchanges");
+        const baseExchangesOk = this.processFetchResult(exchangesBase, (data) => this.processExchangeBase(data), "baseExchanges");
+        const infoExchangesOk = this.processFetchResult(exchangesInfo, (data) => this.processExchangeInfo(data), "exchanges");
+        const exchangesOk = baseExchangesOk || infoExchangesOk;
         const indexesOk = this.processFetchResult(indexesInfo, (data) => this.processIndexesInfo(data), "indexes");
         const materialsOk = this.processFetchResult(materialsInfo, (data) => this.processMaterialsInfo(data), "materials");
         DomainUtils.log("SERVICES app", {

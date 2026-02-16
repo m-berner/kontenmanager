@@ -620,9 +620,7 @@ class FetchService {
         const html = await this.fetchWithCache(url, url);
         const doc = await this.parseHTML(html);
 
-        const rateElement = doc.querySelector(
-          "form#formcalculator.formcalculator > div"
-        );
+        const rateElement = doc.querySelector("[data-rate]");
         if (!rateElement) {
           throw new AppError(
             ERROR_CODES.SERVICES.FETCH.J,
