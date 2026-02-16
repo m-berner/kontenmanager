@@ -43,8 +43,8 @@ function flatten(obj, prefix = "") {
 function extractUsedKeysFromText(text) {
   const found = new Set();
 
-  // t('key') or t("key")
-  const reT = /\b\$?t\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
+  // t('key') or t("key") or $t('key') or $tm('key')
+  const reT = /\b\$?t[m]?\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
   // <i18n-t keypath="key"> in templates
   const reI18nT = /<i18n-t[^>]*\skeypath=(["'])([^"']+)\1/gi;
   // getMessage('key') or getMessage("key")
