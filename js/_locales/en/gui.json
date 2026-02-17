@@ -81,7 +81,7 @@
                 "largeFileTitle": "Data export",
                 "continue": "Export data",
                 "cancel": "Cancel",
-                "text": "Test exp",
+                "text": "A backup file with name '{ filename }' will be created in the browser's download folder.",
                 "messages": {
                     "estimatedSize": "Test size",
                     "invalidBookingTypes": "Test BT",

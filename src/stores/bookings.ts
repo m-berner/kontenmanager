@@ -175,7 +175,7 @@ export const useBookingsStore = defineStore("bookings", function () {
    * @param prepend - Whether to insert at the beginning.
    */
   function add(booking: BookingDb, prepend: boolean = false): void {
-    DomainUtils.log("STORES bookings: add");
+    DomainUtils.log("STORES bookings: add", booking, "info");
     if (prepend) {
       items.value = [booking, ...items.value];
     } else {

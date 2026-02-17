@@ -10,14 +10,10 @@
  * Coordinates with the database service and provides user feedback via alerts
  * and notices. Closes itself via the dialog hub on success or cancel.
  */
-import { computed } from "vue";
+//import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRuntimeStore } from "@/stores/runtime";
-import {
-  AppError,
-  ERROR_CATEGORY,
-  ERROR_CODES
-} from "@/domains/errors";
+import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
 import { DomainUtils } from "@/domains/utils";
 import { useBrowser } from "@/composables/useBrowser";
 import { useAlert } from "@/composables/useAlert";
@@ -45,10 +41,8 @@ const { resetTeleport } = useRuntimeStore();
 
 const exportService = new ImportExportService();
 
-const filename = computed(() => {
-  const prefix = new Date().toISOString().substring(0, 10);
-  return `${prefix}_${INDEXED_DB.CURRENT_VERSION}_${INDEXED_DB.NAME}.json`;
-});
+const prefix = new Date().toISOString().substring(0, 10);
+const filename = `${prefix}_${INDEXED_DB.CURRENT_VERSION}_${INDEXED_DB.NAME}.json`;
 
 const validateExportData = (
   accounts: AccountDb[],
@@ -184,7 +178,7 @@ const onClickOk = async (): Promise<void> => {
           "ExportDatabase"
         );
       }
-      await writeBufferToFile(exportData, filename.value);
+      await writeBufferToFile(exportData, filename);
 
       resetTeleport();
     } catch (err) {
@@ -209,9 +203,7 @@ DomainUtils.log("COMPONENTS DIALOGS ExportDatabase: setup");
       <v-card-text class="pa-5">
         <v-textarea
           :disabled="true"
-          :model-value="
-            t('components.dialogs.exportDatabase.text', { filename })
-          "
+          :model-value="t('components.dialogs.exportDatabase.text', { filename })"
           variant="outlined"
         />
       </v-card-text>

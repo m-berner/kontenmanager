@@ -1,4 +1,3 @@
-import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRuntimeStore } from "@/stores/runtime";
 import { AppError, ERROR_CATEGORY, ERROR_CODES } from "@/domains/errors";
@@ -20,10 +19,8 @@ const { getAll: getAllStocks } = useStocksDB();
 const { isLoading, withLoading } = useDialogGuards();
 const { resetTeleport } = useRuntimeStore();
 const exportService = new ImportExportService();
-const filename = computed(() => {
-    const prefix = new Date().toISOString().substring(0, 10);
-    return `${prefix}_${INDEXED_DB.CURRENT_VERSION}_${INDEXED_DB.NAME}.json`;
-});
+const prefix = new Date().toISOString().substring(0, 10);
+const filename = `${prefix}_${INDEXED_DB.CURRENT_VERSION}_${INDEXED_DB.NAME}.json`;
 const validateExportData = (accounts, bookings, stocks, bookingTypes) => {
     const errors = [];
     if (accounts.length === 0) {
@@ -101,7 +98,7 @@ const onClickOk = async () => {
             else {
                 await showSystemNotification(t("components.dialogs.exportDatabase.largeFileTitle"), "ExportDatabase");
             }
-            await writeBufferToFile(exportData, filename.value);
+            await writeBufferToFile(exportData, filename);
             resetTeleport();
         }
         catch (err) {

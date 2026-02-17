@@ -74,7 +74,7 @@ export const useBookingsStore = defineStore("bookings", function () {
         return new Set(years);
     });
     function add(booking, prepend = false) {
-        DomainUtils.log("STORES bookings: add");
+        DomainUtils.log("STORES bookings: add", booking, "info");
         if (prepend) {
             items.value = [booking, ...items.value];
         }

@@ -32,6 +32,7 @@ const { setStorage } = useStorage();
 const { activeAccountId } = storeToRefs(settings);
 
 let depotTimer: number | undefined;
+
 const connectionState = ref<"checking" | "online" | "offline">("checking");
 const showDepotChip = ref(false);
 

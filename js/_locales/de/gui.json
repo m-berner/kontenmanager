@@ -81,7 +81,7 @@
                 "largeFileTitle": "Daten Export",
                 "continue": "Daten exportieren",
                 "cancel": "Abbrechen",
-                "text": "Test exp",
+                "text": "Eine Sicherungsdatei mit Namen '{ filename }' wird im Herunterladen Verzeichnis des Browsers erstellt.",
                 "messages": {
                     "estimatedSize": "Test size",
                     "invalidBookingTypes": "Test BT",

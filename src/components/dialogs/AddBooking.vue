@@ -46,6 +46,7 @@ const onClickOk = async (): Promise<void> => {
       }
 
       records.bookings.add({ ...bookingData, cID: addBookingID }, true);
+      await showSystemNotification("AddBooking", getMessage("xx_db_add_success"));
     }
   });
 };

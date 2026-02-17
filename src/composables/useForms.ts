@@ -221,10 +221,10 @@ function createBookingFormManager() {
       cSourceTaxDebit: data.sourceTaxDebit,
       cTransactionTaxCredit: data.transactionTaxCredit,
       cTransactionTaxDebit: data.transactionTaxDebit,
-      cStockID: isStockRelated(data.bookingTypeId) ? data.stockId : 0,
-      cCount: isStockRelated(data.bookingTypeId) ? data.count : 0,
-      cExDate: isDividend(data.bookingTypeId) ? data.exDate : defaultISODate,
-      cMarketPlace: hasMarketplace(data.bookingTypeId)
+      cStockID: isStockRelated(data.selected) ? data.stockId : 0,
+      cCount: isStockRelated(data.selected) ? data.count : 0,
+      cExDate: isDividend(data.selected) ? data.exDate : defaultISODate,
+      cMarketPlace: hasMarketplace(data.selected)
         ? data.marketPlace.trim()
         : ""
     };

@@ -35,6 +35,7 @@ const onClickOk = async () => {
                 throw new Error(t("components.dialogs.addBooking.messages.error"));
             }
             records.bookings.add({ ...bookingData, cID: addBookingID }, true);
+            await showSystemNotification("AddBooking", getMessage("xx_db_add_success"));
         }
     });
 };

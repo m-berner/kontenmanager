@@ -28,11 +28,7 @@ const TABS = computed(() => createTabs(t));
 
 const tab = ref<number>(0);
 
-DomainUtils.log(
-  "VIEWS OptionsIndex: setup",
-  window.location.href,
-  "info"
-);
+DomainUtils.log("VIEWS OptionsIndex: setup", window.location.href, "info");
 </script>
 
 <template>

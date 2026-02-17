@@ -27,6 +27,7 @@ const settings = useSettingsStore();
 const { skin } = storeToRefs(settings);
 const theme = useTheme();
 const { handleUserError } = useAlert();
+
 const isInitialized = ref(false);
 let controller: AbortController | null = null;
 
