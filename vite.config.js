@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
       vuetify({ autoImport: true }),
       viteStaticCopy({
         targets: [
-          { src: "manifest.json", dest: "./", overwrite: true },
+          { src: "../manifest.json", dest: "./", overwrite: true },
           { src: "assets/icon64.png", dest: "assets/", overwrite: true },
           { src: "assets/icon16.png", dest: "assets/", overwrite: true },
           { src: "assets/connection48.png", dest: "assets/", overwrite: true },
@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: true,
       environment: "happy-dom",
-      setupFiles: ["src/vitest-setup.ts"],
+      setupFiles: ["vitest-setup.js"],
       // Let Vitest discover tests in both TS and JS locations used in this repo
       include: [
         "src/**/*.test.ts",
@@ -102,7 +102,7 @@ export default defineConfig(({ mode }) => {
       vuetify({ autoImport: true }),
       viteStaticCopy({
         targets: [
-          { src: "manifest.json", dest: "./", overwrite: true },
+          { src: "../manifest.json", dest: "./", overwrite: true },
           { src: "assets/icon64.png", dest: "assets/", overwrite: true },
           { src: "assets/icon16.png", dest: "assets/", overwrite: true },
           { src: "assets/connection48.png", dest: "assets/", overwrite: true },
