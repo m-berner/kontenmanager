@@ -54,7 +54,8 @@
       "addBooking": {
         "title": "Buchung hinzufügen",
         "messages": {
-          "error": "Buchung konnte nicht hinzugefügt werden"
+          "error": "Buchung konnte nicht hinzugefügt werden",
+          "success": "Buchung erfolgreich hinzugefügt"
         }
       },
       "addBookingType": {
@@ -69,7 +70,8 @@
       "addStock": {
         "title": "Unternehmen hinzufügen",
         "messages": {
-          "error": "Unternehmen konnte nicht hinzugefügt werden"
+          "error": "Unternehmen konnte nicht hinzugefügt werden",
+          "success": "Unternehmen wurde hinzugefügt"
         }
       },
       "deleteAccountConfirmation": {
@@ -83,7 +85,9 @@
       "deleteBookingType": {
         "title": "Buchungstyp löschen",
         "messages": {
-          "dbNotConnected": "Keine Datenbank Verbindung"
+          "dbNotConnected": "Keine Datenbank Verbindung",
+          "noDelete": "Buchungskategorie kann nicht gelöscht werden. Es existieren zugeordnete Buchungen.",
+          "success": "Buchungskategorie wurde gelöscht"
         }
       },
       "exportDatabase": {
@@ -149,17 +153,32 @@
         "noDataText": "Bisher keine Dividende erhalten"
       },
       "updateAccount": {
-        "title": "Bankkonto aktualisieren"
+        "title": "Bankkonto aktualisieren",
+        "messages": {
+          "success": "Das Konto wurde erfolgreich aktualisiert"
+        }
       },
       "updateBooking": {
-        "title": "Buchung bearbeiten"
+        "title": "Buchung bearbeiten",
+        "messages": {
+          "success": "Buchung erfolgreich aktualisiert"
+        }
       },
       "updateBookingType": {
         "title": "Buchungstyp aktualisieren",
-        "bookingTypeLabel": "Buchungstyp"
+        "bookingTypeLabel": "Buchungstyp",
+        "messages": {
+          "success": "Buchungskategorie wurde aktualisiert",
+          "noId": "Datensatz ohne ID",
+          "noSelection": "Keine Buchungskategorie ausgewählt",
+          "duplicate": "Buchungskategorie existiert bereits"
+        }
       },
       "updateStock": {
-        "title": "Unternehmen bearbeiten"
+        "title": "Unternehmen bearbeiten",
+        "messages": {
+          "success": "Das Unternehmen wurde erfolgreich aktualisiert"
+        }
       }
     },
     "checkboxGrid": {
@@ -250,7 +269,10 @@
       "showAccounting": "Jahres-Berechnungen",
       "settings": "Einstellungen",
       "messages": {
-        "noAccount": "Es ist noch kein Konto vorhanden."
+        "noAccount": "Es ist noch kein Konto vorhanden.",
+        "noCompany": "Keine Unternehmen vorhanden",
+        "noBooking": "Keine Buchungen vorhanden",
+        "noBookingType": "Keine Buchungskategorien vorhanden"
       }
     },
     "infoBar": {},

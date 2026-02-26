@@ -25,9 +25,8 @@ import type {MenuActionType} from "@/types";
 import {VIEW_CODES} from "@/configs/codes";
 
 const {t} = useI18n();
-const {getMessage, openOptionsPage} = useBrowser();
+const {openOptionsPage} = useBrowser();
 const {handleUserInfo} = useAlert();
-type BrowserMessageKey = Parameters<typeof getMessage>[0];
 const runtime = useRuntimeStore();
 const {isStockLoading} = storeToRefs(runtime);
 const records = useRecordsStore();
@@ -41,13 +40,6 @@ const openDialog = (dialogName: string, dialogOk: boolean = true): void => {
     dialogOk,
     dialogVisibility: true
   });
-};
-
-const notifyInfo = async (messageKey: BrowserMessageKey): Promise<void> => {
-  await handleUserInfo(
-      t("views.headerBar.infoTitle"),
-      getMessage(messageKey)
-  );
 };
 
 onBeforeMount(() => {
@@ -80,7 +72,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   fadeInStock: async () => {
     // Opens the fade-in dialog only when passive stocks exist; otherwise informs the user
     if (records.stocks.passive.length === 0) {
-      await notifyInfo("xx_no_company");
+      await handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noCompany")
+      );
     } else {
       openDialog("fadeInStock");
     }
@@ -104,7 +99,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   updateAccount: async () => {
     // Open the Update Account dialog or inform the user if no accounts exist
     if (accountItems.value.length === 0) {
-      await notifyInfo("xx_no_account");
+      await handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noAccount")
+      );
     } else {
       openDialog("updateAccount");
     }
@@ -112,7 +110,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   deleteAccountConfirmation: async () => {
     if (accountItems.value.length === 0) {
-      await notifyInfo("xx_no_account");
+      await handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noAccount")
+      );
     } else {
       openDialog("deleteAccountConfirmation");
     }
@@ -120,7 +121,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBookingType: async () => {
     if (accountItems.value.length === 0) {
-      await notifyInfo("xx_no_account");
+      await handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noAccount")
+      );
     } else {
       openDialog("addBookingType");
     }
@@ -128,7 +132,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   updateBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      await notifyInfo("xx_no_bookingType");
+      await handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noBookingType")
+      );
     } else {
       openDialog("updateBookingType");
     }
@@ -136,7 +143,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   deleteBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      void notifyInfo("xx_no_bookingType");
+      await handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noBookingType")
+      );
     } else {
       openDialog("deleteBookingType");
     }
@@ -144,7 +154,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBooking: async () => {
     if (accountItems.value.length === 0) {
-      void notifyInfo("xx_no_account");
+      void handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noAccount")
+      );
     } else {
       openDialog("addBooking");
     }
@@ -152,7 +165,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   exportDatabase: () => {
     if (accountItems.value.length === 0) {
-      void notifyInfo("xx_no_account");
+      void handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noAccount")
+      );
     } else {
       openDialog("exportDatabase");
     }
@@ -164,7 +180,10 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   showAccounting: () => {
     if (bookingItems.value.length === 0) {
-      void notifyInfo("xx_no_booking");
+      void handleUserInfo(
+          t("views.headerBar.infoTitle"),
+          t("views.headerBar.messages.noBooking")
+      );
     } else {
       openDialog("showAccounting", false);
     }

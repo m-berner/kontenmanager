@@ -21,7 +21,7 @@ import {useAlert} from "@/composables/useAlert";
 
 const {bookingTypeFormData, reset} = useBookingTypeForm();
 const {t} = useI18n();
-const {getMessage, showSystemNotification} = useBrowser();
+const {showSystemNotification} = useBrowser();
 const {handleUserError, handleUserInfo} = useAlert();
 const {remove} = useBookingTypesDB();
 const {isLoading, ensureConnected, withLoading} = useDialogGuards();
@@ -52,14 +52,14 @@ const onClickOk = async (): Promise<void> => {
   await withLoading(async () => {
     try {
       if (!canDeleteBookingType(bookingTypeFormData.id!)) {
-        await handleUserInfo(t("components.dialogs.deleteBookingType.title"), getMessage("xx_db_no_delete"));
+        await handleUserInfo(t("components.dialogs.deleteBookingType.title"), t("components.dialogs.deleteBookingType.messages.noDelete"));
         return;
       }
 
       records.bookingTypes.remove(bookingTypeFormData.id!);
       await remove(bookingTypeFormData.id!);
       runtime.resetTeleport();
-      await handleUserInfo(t("components.dialogs.deleteBookingType.title"), getMessage("xx_db_delete_success"));
+      await handleUserInfo(t("components.dialogs.deleteBookingType.title"), t("components.dialogs.deleteBookingType.messages.success"));
     } catch (err) {
       await handleUserError(t("components.dialogs.deleteBookingType.title"), err, {});
     }

@@ -68,7 +68,7 @@ const onClickOk = async (): Promise<void> => {
       records.stocks.update(stock);
       await update(stock);
       runtime.resetTeleport()
-      await handleUserInfo(t("components.dialogs.updateStock.title"), getMessage("xx_db_update_success"));
+      await handleUserInfo(t("components.dialogs.updateStock.title"), t("components.dialogs.updateStock.messages.success"));
       runtime.resetOptionsMenuColors();
     }
   });
