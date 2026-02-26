@@ -73,7 +73,7 @@ export const INDEXED_DB = {
         }
     },
     LEGACY_IMPORT_VERSION: 25,
-    CURRENT_VERSION: 26,
+    CURRENT_VERSION: 27,
     MAX_FILE_SIZE: 64 * 1024 * 1024,
     //CHUNK_SIZE: 100
 } as const;

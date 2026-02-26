@@ -39,7 +39,7 @@ export class AppService {
     /**
      * Application initialization status shape returned by initializeApp.
      */
-    private lastStatus: AppStatus = this.createDefaultStatus();
+    private lastStatus?: AppStatus;
 
     /**
      * Initialize the application by loading data from storage, database, and external APIs.
@@ -223,9 +223,34 @@ export class AppService {
      * Extracts currency code from user locale
      */
     private getCurrencyFromLocale(): string | undefined {
-        const locale = getUserLocale().toLowerCase();
-        const countryCode = locale.substring(3, 5);
-        return CURRENCIES.CODE.get(countryCode);
+        const rawLocale = getUserLocale();
+        if (!rawLocale) {
+            return undefined;
+        }
+
+        const normalizedLocale = rawLocale.replace(/_/g, "-");
+
+        let regionCode: string | undefined;
+        try {
+            regionCode = new Intl.Locale(normalizedLocale).region?.toLowerCase();
+        } catch {
+            regionCode = undefined;
+        }
+
+        if (!regionCode) {
+            const regionMatch = normalizedLocale.match(/-(\w{2})(?:-|$)/);
+            regionCode = regionMatch?.[1]?.toLowerCase();
+        }
+
+        const languageCode = normalizedLocale
+            .split("-")[0]
+            ?.trim()
+            .toLowerCase();
+
+        return (
+            (regionCode ? CURRENCIES.CODE.get(regionCode) : undefined) ??
+            (languageCode ? CURRENCIES.CODE.get(languageCode) : undefined)
+        );
     }
 
     /**

@@ -323,19 +323,32 @@ class FetchService {
         options: RequestInit = {},
         maxRetries = 3
     ): Promise<Response> {
-        //let lastError: Error | null = null;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
+        let lastStatus: number | undefined;
+        let lastError: unknown;
 
         try {
             for (let attempt = 1; attempt <= maxRetries; attempt++) {
                 try {
-                    return await fetch(url, {
+                    const response = await fetch(url, {
                         ...options,
                         signal: options.signal || controller.signal
                     });
-                } catch {
-                    //lastError = error as Error;
+
+                    if (response.ok) {
+                        return response;
+                    }
+
+                    lastStatus = response.status;
+                    const isRetryable =
+                        response.status === 429 || response.status >= 500;
+
+                    if (!isRetryable || attempt === maxRetries) {
+                        break;
+                    }
+                } catch (error) {
+                    lastError = error;
                     if (attempt < maxRetries) {
                         await this.delay(1000 * attempt);
                     }
@@ -348,7 +361,8 @@ class FetchService {
         throw new AppError(
             ERROR_CODES.SERVICES.FETCH.A,
             ERROR_CATEGORY.NETWORK,
-            true
+            true,
+            {url, maxRetries, lastStatus, lastError}
         );
     }
 
