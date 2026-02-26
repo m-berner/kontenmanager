@@ -54,7 +54,8 @@
       "addBooking": {
         "title": "Add booking",
         "messages": {
-          "error": "Booking could not be added"
+          "error": "Booking could not be added",
+          "success": "Successfully added booking"
         }
       },
       "addBookingType": {
@@ -69,7 +70,8 @@
       "addStock": {
         "title": "Add company",
         "messages": {
-          "error": "Company could not be added"
+          "error": "Company could not be added",
+          "success": "Successfully added the company"
         }
       },
       "deleteAccountConfirmation": {
@@ -83,7 +85,9 @@
       "deleteBookingType": {
         "title": "Delete booking type",
         "messages": {
-          "dbNotConnected": "No database connection"
+          "dbNotConnected": "No database connection",
+          "noDelete": "Booking type could not be deleted. Bookings are assigned.",
+          "success": "Booking type successfully deleted"
         }
       },
       "exportDatabase": {
@@ -149,17 +153,32 @@
         "noDataText": "No dividends received yet"
       },
       "updateAccount": {
-        "title": "Update bank account"
+        "title": "Update bank account",
+        "messages": {
+          "success": "Successfully updated the account"
+        }
       },
       "updateBooking": {
-        "title": "Edit booking"
+        "title": "Edit booking",
+        "messages": {
+          "success": "Successfully updated booking"
+        }
       },
       "updateBookingType": {
         "title": "Update booking type",
-        "bookingTypeLabel": "Booking type"
+        "bookingTypeLabel": "Booking type",
+        "messages": {
+          "success": "Booking type updated",
+          "noId": "Missing ID",
+          "noSelection": "Keine Buchungskategorie ausgewählt",
+          "duplicate": "Booking type exists already"
+        }
       },
       "updateStock": {
-        "title": "Edit company"
+        "title": "Edit company",
+        "messages": {
+          "success": "Successfully updated the company"
+        }
       }
     },
     "checkboxGrid": {
@@ -209,7 +228,10 @@
       "showAccounting": "Yearly calculations",
       "settings": "Settings",
       "messages": {
-        "noAccount": "No account exists yet."
+        "noAccount": "No account exists yet",
+        "noCompany": "No company available",
+        "noBooking": "No bookings available",
+        "noBookingType": "No booking type available"
       }
     },
     "infoBar": {},

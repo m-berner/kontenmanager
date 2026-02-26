@@ -50,7 +50,7 @@ const onClickOk = async (): Promise<void> => {
       }
 
       records.bookings.add({...bookingData, cID: addBookingID}, true);
-      await handleUserInfo(t("components.dialogs.addBooking.title"), getMessage("xx_db_add_success"));
+      await handleUserInfo(t("components.dialogs.addBooking.title"), t("components.dialogs.addBooking.messages.success"));
       reset();
     }
   });

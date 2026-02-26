@@ -23,7 +23,6 @@ const props = defineProps<AccountFormProps>();
 
 const {t} = useI18n();
 const {accountFormData} = useAccountForm();
-//const { handleUserInfo } = useAlert();
 
 const SWIFT_RULES = createSwiftMessages(t);
 const IBAN_RULES = createIbanMessages(t);

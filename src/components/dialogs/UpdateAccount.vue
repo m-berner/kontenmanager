@@ -67,7 +67,7 @@ const onClickOk = async (): Promise<void> => {
       records.accounts.update(account);
       await update(account);
       runtime.resetTeleport();
-      await handleUserInfo(t("components.dialogs.updateAccount.title"), getMessage("xx_db_update_success"));
+      await handleUserInfo(t("components.dialogs.updateAccount.title"), t("components.dialogs.updateAccount.messages.success"));
     }
   });
 };

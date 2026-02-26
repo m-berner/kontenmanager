@@ -60,7 +60,7 @@ const onClickOk = async (): Promise<void> => {
 
   // Check if a booking type is selected for editing
   if (!bookingTypeRef.value?.edit) {
-    await handleUserInfo(t("components.dialogs.updateBookingType.title"), getMessage("xx_db_no_selected"));
+    await handleUserInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noSelection"));
     return;
   }
 
@@ -73,7 +73,7 @@ const onClickOk = async (): Promise<void> => {
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       if (!bookingTypeFormData.id) {
-        await handleUserInfo(t("components.dialogs.updateBookingType.title"), getMessage("xx_db_missing_id"));
+        await handleUserInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noId"));
         return;
       }
 
@@ -83,7 +83,7 @@ const onClickOk = async (): Promise<void> => {
               bookingTypeFormData.id as number
           )
       ) {
-        await handleUserInfo(t("components.dialogs.updateBookingType.title"), getMessage("xx_db_duplicate"));
+        await handleUserInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.duplicate"));
         return;
       }
 
@@ -94,7 +94,7 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType);
       await update(bookingType);
       runtime.resetTeleport();
-      await handleUserInfo(t("components.dialogs.updateBookingType.title"), getMessage("xx_db_update_success"));
+      await handleUserInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.success"));
     }
   });
 };

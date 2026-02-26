@@ -23,15 +23,6 @@
   "xx_db_connection_err": {
     "message": "Database not connected"
   },
-  "xx_db_update_success": {
-    "message": "Record update successful"
-  },
-  "xx_db_duplicate": {
-    "message": "Duplicate record"
-  },
-  "xx_db_add_success": {
-    "message": "Add record successful"
-  },
   "xx_db_delete_success": {
     "message": "Record deleted"
   },
@@ -59,22 +50,7 @@
   "xx_db_rollback": {
     "message": "Rollback successful"
   },
-  "xx_db_missing_id": {
-    "message": "No ID?"
-  },
   "xx_no_link": {
     "message": "Mising link"
-  },
-  "xx_no_company": {
-    "message": "No companies available"
-  },
-  "xx_no_account": {
-    "message": "No account available. Create one."
-  },
-  "xx_no_bookingType": {
-    "message": "No booking type available."
-  },
-  "xx_no_booking": {
-    "message": "No booking available."
   }
 }

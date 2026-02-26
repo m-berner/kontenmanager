@@ -51,7 +51,7 @@ const onClickOk = async (): Promise<void> => {
       }
 
       records.stocks.add({...stockData, cID: addStockID});
-      await handleUserInfo(t("components.dialogs.addStock.title"), getMessage("xx_db_add_success"));
+      await handleUserInfo(t("components.dialogs.addStock.title"), t("components.dialogs.addStock.messages.success"));
       reset();
 
       await records.stocks.refreshOnlineData(runtime.stocksPage);
