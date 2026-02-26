@@ -188,18 +188,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
     ): Promise<void> {
         return new Promise((resolve, reject) => {
             const request = index.openCursor(query);
-
-            request.onsuccess = () => {
-                const cursor = request.result;
-                if (cursor) {
-                    cursor.delete();
-                    cursor.continue();
-                } else {
-                    resolve();
-                }
-            };
-
-            request.onerror = () =>
+            const rejectWithDeleteError = () =>
                 reject(
                     new AppError(
                         ERROR_CODES.SERVICES.DATABASE.BASE.A,
@@ -208,6 +197,23 @@ export abstract class BaseRepository<T extends BaseEntity> {
                         {storeName: this.storeName}
                     )
                 );
+
+            request.onsuccess = () => {
+                const cursor = request.result;
+                if (cursor) {
+                    const deleteRequest = cursor.delete();
+                    if (deleteRequest) {
+                        deleteRequest.onsuccess = () => cursor.continue();
+                        deleteRequest.onerror = rejectWithDeleteError;
+                    } else {
+                        cursor.continue();
+                    }
+                } else {
+                    resolve();
+                }
+            };
+
+            request.onerror = rejectWithDeleteError;
         });
     }
 }

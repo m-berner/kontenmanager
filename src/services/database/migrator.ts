@@ -21,6 +21,8 @@ export class DatabaseMigrator {
     setupDatabase(db: IDBDatabase, ev: IDBVersionChangeEvent): void {
         const oldVersion = ev.oldVersion;
         const newVersion = ev.newVersion || INDEXED_DB.CURRENT_VERSION;
+        const request = ev.target as IDBOpenDBRequest | null;
+        const tx = request?.transaction ?? undefined;
 
         DomainUtils.log(
             "SERVICES DATABASE migrator: upgrade",
@@ -32,7 +34,7 @@ export class DatabaseMigrator {
             this.createStores(db);
         }
 
-        this.runMigrations(db, oldVersion, newVersion);
+        this.runMigrations(db, oldVersion, newVersion, tx);
     }
 
     /**
@@ -106,11 +108,27 @@ export class DatabaseMigrator {
             store.createIndex(
                 `${INDEXED_DB.STORE.STOCKS.NAME}_uk1`,
                 INDEXED_DB.STORE.STOCKS.FIELDS.ISIN,
-                {unique: true}
+                {unique: false}
             );
             store.createIndex(
                 `${INDEXED_DB.STORE.STOCKS.NAME}_uk2`,
                 INDEXED_DB.STORE.STOCKS.FIELDS.SYMBOL,
+                {unique: false}
+            );
+            store.createIndex(
+                `${INDEXED_DB.STORE.STOCKS.NAME}_uk3`,
+                [
+                    INDEXED_DB.STORE.STOCKS.FIELDS.ACCOUNT_NUMBER_ID,
+                    INDEXED_DB.STORE.STOCKS.FIELDS.ISIN
+                ],
+                {unique: true}
+            );
+            store.createIndex(
+                `${INDEXED_DB.STORE.STOCKS.NAME}_uk4`,
+                [
+                    INDEXED_DB.STORE.STOCKS.FIELDS.ACCOUNT_NUMBER_ID,
+                    INDEXED_DB.STORE.STOCKS.FIELDS.SYMBOL
+                ],
                 {unique: true}
             );
             store.createIndex(
@@ -140,10 +158,52 @@ export class DatabaseMigrator {
      */
     private runMigrations(
         _db: IDBDatabase,
-        _oldVersion: number,
-        _newVersion: number
+        oldVersion: number,
+        _newVersion: number,
+        tx?: IDBTransaction
     ): void {
-        // Placeholder for future migrations
+        if (!tx) {
+            return;
+        }
+
+        if (oldVersion < 27) {
+            this.migrateStocksAccountScopedUniqueness(tx);
+        }
+    }
+
+    private migrateStocksAccountScopedUniqueness(tx: IDBTransaction): void {
+        const storeName = INDEXED_DB.STORE.STOCKS.NAME;
+        const accountField = INDEXED_DB.STORE.STOCKS.FIELDS.ACCOUNT_NUMBER_ID;
+        const isinField = INDEXED_DB.STORE.STOCKS.FIELDS.ISIN;
+        const symbolField = INDEXED_DB.STORE.STOCKS.FIELDS.SYMBOL;
+
+        if (!tx.db.objectStoreNames.contains(storeName)) {
+            return;
+        }
+
+        const store = tx.objectStore(storeName);
+
+        if (store.indexNames.contains(`${storeName}_uk1`)) {
+            store.deleteIndex(`${storeName}_uk1`);
+        }
+        store.createIndex(`${storeName}_uk1`, isinField, {unique: false});
+
+        if (store.indexNames.contains(`${storeName}_uk2`)) {
+            store.deleteIndex(`${storeName}_uk2`);
+        }
+        store.createIndex(`${storeName}_uk2`, symbolField, {unique: false});
+
+        if (!store.indexNames.contains(`${storeName}_uk3`)) {
+            store.createIndex(`${storeName}_uk3`, [accountField, isinField], {
+                unique: true
+            });
+        }
+
+        if (!store.indexNames.contains(`${storeName}_uk4`)) {
+            store.createIndex(`${storeName}_uk4`, [accountField, symbolField], {
+                unique: true
+            });
+        }
     }
 }
 
