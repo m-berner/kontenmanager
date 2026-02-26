@@ -1,0 +1,80 @@
+{
+  "xx_browser_language": {
+    "message": "Unbekannte Browser Sprache\nEnglisch wird verwendet"
+  },
+  "xx_set_local_storage": {
+    "message": "Speichern im lokalen Browser Speicher fehlgeschlagen"
+  },
+  "xx_get_local_storage": {
+    "message": "Abfragen vom lokalen Browser Speicher fehlgeschlagen"
+  },
+  "xx_error_code": {
+    "message": "Ungültiger Fehlercode"
+  },
+  "xx_missing_translation": {
+    "message": "Keine Übersetzung gefunden"
+  },
+  "xx_missing_record": {
+    "message": "Datensatz nicht gefunden"
+  },
+  "xx_invalid_backup": {
+    "message": "Korrupte Wiederherstellungsdatei"
+  },
+  "xx_db_connection_err": {
+    "message": "Datenbankverbindung fehlgeschlagen"
+  },
+  "xx_db_update_success": {
+    "message": "Datensatz erfolgreich aktualisiert"
+  },
+  "xx_db_duplicate": {
+    "message": "Datensatz ist bereits vorhanden"
+  },
+  "xx_db_add_success": {
+    "message": "Datensatz erfolgreich hinzugefügt"
+  },
+  "xx_db_delete_success": {
+    "message": "Datensatz wurde gelöscht"
+  },
+  "xx_db_no_delete": {
+    "message": "Datensatz kann nicht gelöscht werden"
+  },
+  "xx_db_no_selected": {
+    "message": "Kein Datensatz ausgewählt"
+  },
+  "xx_db_fade_in": {
+    "message": "Datensatz ist eingeblendet"
+  },
+  "xx_db_restored": {
+    "message": "Datensatz wiederhergestellt"
+  },
+  "xx_db_no_restored": {
+    "message": "Datenbank konnte nicht wiederhergestellt werden"
+  },
+  "xx_db_no_file": {
+    "message": "Keine Wiederherstellungsdatei ausgewählt"
+  },
+  "xx_db_no_rollback": {
+    "message": "'Rollback' fehlgeschlagen"
+  },
+  "xx_db_rollback": {
+    "message": "'Rollback' erfolgreich"
+  },
+  "xx_db_missing_id": {
+    "message": "Keine ID?"
+  },
+  "xx_no_link": {
+    "message": "Kein Link gefunden"
+  },
+  "xx_no_company": {
+    "message": "Keine Unternehmen vorhanden"
+  },
+  "xx_no_account": {
+    "message": "Kein Konto vorhanden. Legen Sie eines an."
+  },
+  "xx_no_bookingType": {
+    "message": "Keine Buchungskategorie vorhanden."
+  },
+  "xx_no_booking": {
+    "message": "Keine Buchung vorhanden."
+  }
+}
