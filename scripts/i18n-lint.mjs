@@ -42,14 +42,14 @@ function extractUsedKeysFromText(text) {
   const found = new Set();
 
   // t('key') or t("key") or $t('key') or $tm('key')
-  const reT = /\b\$?t[m]?\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
+  const reT = /\b\$?tm?\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
   // <i18n-t keypath="key"> in templates
   const reI18nT = /<i18n-t[^>]*\skeypath=(["'])([^"']+)\1/gi;
   // getMessage('key') or getMessage("key")
   const reGetMessage = /\bgetMessage\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
   // TRANSLATION_KEYS object values: PROPERTY_NAME: "translation.key.path"
   // Matches: TRANSLATION_KEYS = { ... } or export const TRANSLATION_KEYS: Type = { ... }
-  const reTranslationKeys = /TRANSLATION_KEYS\s*(?::\s*\w+)?\s*=\s*\{[^}]*\}/gs;
+  const reTranslationKeys = /TRANSLATION_KEYS\s*(?::\s*\w+)?\s*=\s*\{[^}]*}/gs;
   const reKeyValue = /:\s*["']([^"']+)["']/g;
   // Direct string literals matching xx_* pattern (for messages.json keys)
   // Used in places like: new AppError("xx_browser_language", ...)
