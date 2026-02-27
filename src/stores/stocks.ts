@@ -256,15 +256,23 @@ export const useStocksStore = defineStore("stocks", function () {
             const stockToUpdate = getById.value(stock.cID as number);
             if (!stockToUpdate) return;
 
-            const uiCur = CURRENCIES.CODE.get(
-                getUserLocale().toLowerCase().substring(3, 5)
-            );
+            const locale = getUserLocale();
+
+            let region: string | undefined;
+            try {
+                region = new Intl.Locale(locale).region?.toUpperCase();
+            } catch (error) {
+                region = undefined;
+            }
+
+            const uiCur = region ? CURRENCIES.CODE.get(region) : undefined;
+
             const divisor =
                 data.cur === uiCur
                     ? 1
                     : data.cur === "EUR"
-                        ? runtime.curUsd
-                        : runtime.curEur;
+                        ? runtime.curEur
+                        : runtime.curUsd;
 
             stockToUpdate.mMin = DomainUtils.toNumber(data.min) / divisor;
             stockToUpdate.mValue = DomainUtils.toNumber(data.rate) / divisor;
