@@ -39,35 +39,41 @@ npm install
 ### Build (Development package)
 
 ```powershell
-npm run build
+npm run build:dev
 ```
 
+> Note: Building requires either a `.env.development` or `.env.production` file to be present.
+
 What this does:
-- Runs TypeScript checks (`tsc`) and Vue SFC checks (`vue-tsc --noemit`).
+- Runs Vue SFC/TypeScript checks (`vue-tsc`).
 - Bundles the extension with Vite.
 - Copies static assets and creates a ready-to-load extension under `kontenmanager@gmx.de/`.
 - Produces a zipped `.xpi` in `releases/` when environment variables are provided (see `vite.config.js`).
+
+Build production package:
+
+```powershell
+npm run build:prod
+```
 
 Load the folder `kontenmanager@gmx.de/` as a temporary addon in Firefox (about:debugging → This Firefox → Load Temporary Add-on... → select any file within that folder).
 
 ### Test
 
 ```powershell
-npm test
+npm run test:logic
 ```
 
-Run in watch mode during development:
+Type-check with Vue/TypeScript:
 
 ```powershell
-npm run test:watch
+npm run test:typescript
 ```
 
 ### Lint i18n
 
 ```powershell
-npm run i18n:lint
-# Strict mode (fails on unused keys)
-npm run i18n:lint:strict
+npm run lint:i18n
 ```
 
 ## Project Structure
@@ -101,7 +107,7 @@ The project follows a modular architecture with a clear separation of concerns:
 1. Make changes in `src/`.
 2. Run tests locally to validate logic:
    - Unit tests focus on domain utilities and Pinia stores.
-3. Build the extension with `npm run build`.
+3. Build the extension with `npm run build:dev` (or `npm run build:prod`).
 4. Reload the temporary addon in Firefox and verify behavior in the Browser Console.
 
 ## Tests
@@ -111,14 +117,19 @@ The project uses [Vitest](https://vitest.dev/) for unit testing, focusing on dom
 To run the tests:
 
 ```powershell
-npm test
+npm run test:logic
 ```
 
 ## Linting & Formatting
 
 - ESLint with TypeScript and Vue rules (`eslint.config.js`).
-- Prettier for formatting.
 - i18n dictionaries are verified via custom scripts under `scripts/`.
+
+Use:
+
+```powershell
+npm run lint
+```
 
 ## Packaging & Verification
 
@@ -126,10 +137,20 @@ npm test
 - To verify a packaged Firefox extension, run:
 
 ```powershell
-npm run verify
+npm run lint:addon
 ```
 
-This uses Mozilla's `addons-linter` against the latest `.xpi` in `releases/`.
+This uses Mozilla's `addons-linter` against `./releases/firefox/kontenmanager@gmx.de.xpi`.
+
+## npm Scripts
+
+- `npm run build:dev`: Build extension in development mode.
+- `npm run build:prod`: Build extension in production mode.
+- `npm run lint`: Run ESLint for `src/` (`.ts` and `.vue`).
+- `npm run lint:i18n`: Lint i18n dictionaries.
+- `npm run test:logic`: Run Vitest unit tests.
+- `npm run test:typescript`: Run Vue/TypeScript type checks.
+- `npm run lint:addon`: Run Mozilla addons linter for the packaged `.xpi`.
 
 ## Developer Information
 
