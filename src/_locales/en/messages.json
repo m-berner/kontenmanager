@@ -1,0 +1,56 @@
+{
+  "xx_browser_language": {
+    "message": "Invalid browser language\nFallback to English"
+  },
+  "xx_set_local_storage": {
+    "message": "Failed to save to local browser storage"
+  },
+  "xx_get_local_storage": {
+    "message": "Abfragen vom lokalen Browser Speicher fehlgeschlagen"
+  },
+  "xx_error_code": {
+    "message": "Invalid error code"
+  },
+  "xx_missing_translation": {
+    "message": "Missing translation"
+  },
+  "xx_missing_record": {
+    "message": "Record not found"
+  },
+  "xx_invalid_backup": {
+    "message": "Corrupt backup"
+  },
+  "xx_db_connection_err": {
+    "message": "Database not connected"
+  },
+  "xx_db_delete_success": {
+    "message": "Record deleted"
+  },
+  "xx_db_no_delete": {
+    "message": "Record could not be deleted"
+  },
+  "xx_db_no_selected": {
+    "message": "No record eselected"
+  },
+  "xx_db_fade_in": {
+    "message": "Record fade in"
+  },
+  "xx_db_restored": {
+    "message": "Database restored"
+  },
+  "xx_db_no_restored": {
+    "message": "Database could not be restored"
+  },
+  "xx_db_no_file": {
+    "message": "No backup file selected"
+  },
+  "xx_db_no_rollback": {
+    "message": "Rollback failed"
+  },
+  "xx_db_rollback": {
+    "message": "Rollback successful"
+  },
+  "xx_no_link": {
+    "message": "Mising link"
+  }
+}

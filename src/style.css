@@ -1,0 +1,86 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * one could get a copy at https://mozilla.org/MPL/2.0/.
+ */
+
+.sheet {
+    overflow: auto;
+    height: calc(100vh - 300px);
+}
+
+.d-none {
+    display: none;
+}
+
+.table-row {
+    /* Set the display to `table-row` because Vuetify makes `flex` */
+    display: table-row;
+}
+
+.table-row:hover {
+    background-color: rgb(200, 200, 200);
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: rgb(224, 224, 224);
+    color: darkgray;
+}
+
+tbody tr:nth-of-type(odd) {
+    background-color: rgb(248, 248, 248);
+    color: darkgray;
+}
+
+thead tr div.v-progress-linear {
+    color: red;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+.color-orange {
+    color: orange;
+}
+
+.color-red {
+    color: red;
+}
+
+.color-green {
+    color: green;
+}
+
+.color-black {
+    color: black;
+}
+
+.router-link-active {
+    color: white;
+}
+
+.opacity-off {
+    opacity: 0;
+}
+
+.opacity-on {
+    opacity: 1;
+}
+
+.text-align-center {
+    text-align: center;
+}
+
+.withoutSpinner input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.withoutSpinner input::-webkit-outer-spin-button,
+.withoutSpinner input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}

@@ -1,0 +1,436 @@
+{
+  "components": {
+    "dialogs": {
+      "forms": {
+        "accountForm": {
+          "swiftLabel": "BIC / SWIFT",
+          "searchLabel": "Logo search",
+          "withDepotLabel": "Depot clearing account",
+          "ibanLabel": "IBAN / Account number",
+          "ibanPlaceholder": "e.g. DE67 1234 5678 9123 8531 78",
+          "missingLogo": "No logo found"
+        },
+        "bookingForm": {
+          "bookingLabel": "Booking",
+          "dateLabel": "Booking date",
+          "exDateLabel": "Ex-date",
+          "descriptionLabel": "Remark",
+          "countLabel": "Count",
+          "bookingTypeLabel": "Booking type",
+          "feeLabel": "Fee",
+          "taxLabel": "Tax",
+          "soliLabel": "Soli",
+          "stockLabel": "Company",
+          "marketPlaceLabel": "Stock exchange",
+          "transactionTaxLabel": "Transaction tax",
+          "sourceTaxLabel": "Source tax"
+        },
+        "stockForm": {
+          "isinLabel": "ISIN",
+          "symbolLabel": "Symbol",
+          "companyLabel": "Company",
+          "fadeOutLabel": "Hide",
+          "firstPageLabel": "First page",
+          "meetingDayLabel": "Annual General Meeting",
+          "quarterDayLabel": "Quarterly figures",
+          "urlLabel": "URL"
+        }
+      },
+      "cancel": "Cancel",
+      "ok": "OK",
+      "onClickOk": "Error in 'onClickOk'",
+      "addAccount": {
+        "title": "Add bank account",
+        "bookingTypes": {
+          "buy": "Stock purchase",
+          "sell": "Stock sale",
+          "dividend": "Dividend"
+        },
+        "messages": {
+          "success": "Successfully added the account",
+          "error": "Account could not be added"
+        }
+      },
+      "addBooking": {
+        "title": "Add booking",
+        "messages": {
+          "error": "Booking could not be added",
+          "success": "Successfully added booking"
+        }
+      },
+      "addBookingType": {
+        "title": "Add booking type",
+        "placeholder": "Enter name",
+        "messages": {
+          "success": "Booking type added",
+          "error": "Booking type could not be added",
+          "duplicate": "Booking type already exists"
+        }
+      },
+      "addStock": {
+        "title": "Add company",
+        "messages": {
+          "error": "Company could not be added",
+          "success": "Successfully added the company"
+        }
+      },
+      "deleteAccountConfirmation": {
+        "title": "Bank account - delete all data",
+        "messages": {
+          "confirm": "Do you really want to delete the account and all associated data?",
+          "dbNotConnected": "No database connection",
+          "success": "Account successfully deleted"
+        }
+      },
+      "deleteBookingType": {
+        "title": "Delete booking type",
+        "messages": {
+          "dbNotConnected": "No database connection",
+          "noDelete": "Booking type could not be deleted. Bookings are assigned.",
+          "success": "Booking type successfully deleted"
+        }
+      },
+      "exportDatabase": {
+        "title": "Export data",
+        "largeFileTitle": "Data export",
+        "continue": "Export data",
+        "cancel": "Cancel",
+        "text": "A backup file with name {filename} will be created in the browser's download folder.",
+        "messages": {
+          "estimatedSize": "Test size",
+          "invalidBookingTypes": "Test BT",
+          "invalidBookings": "Test B",
+          "invalidStocks": "Test S",
+          "noAccounts": "No accounts to export are available"
+        }
+      },
+      "fadeInStock": {
+        "title": "Show company",
+        "selectLabel": "Company"
+      },
+      "importDatabase": {
+        "title": "Import data",
+        "messageDelete": "All existing data will be deleted!",
+        "fileLabel": "from file",
+        "buy": "Stock purchase",
+        "sell": "Stock sale",
+        "dividend": "Dividend",
+        "other": "Other",
+        "fee": "Fee",
+        "tax": "Tax",
+        "confirmImportTitle": "Start import",
+        "confirmOk": "Import",
+        "confirmCancel": "Cancel",
+        "messages": {
+          "invalidSuffix": "Invalid filename",
+          "emptyFile": "The file is empty.",
+          "fileToLarge": "The backup file is too large.",
+          "importInfo": {
+            "account": "account(s)",
+            "booking": "booking(s)",
+            "bookingType": "booking type(s)",
+            "stock": "stock(s)"
+          }
+        }
+      },
+      "showAccounting": {
+        "title": "Booking results",
+        "nameLabel": "Booking category",
+        "sumLabel": "Amount",
+        "sum": "Sum",
+        "fees": "Stock trading fees",
+        "taxes": "Stock trading taxes",
+        "itemsPerPageText": "Entries per page",
+        "noDataText": "No dividends received yet",
+        "year": "Year",
+        "allYears": "Total"
+      },
+      "showDividend": {
+        "title": "Dividend overview",
+        "yearLabel": "Ex-date",
+        "sumLabel": "Dividend payment",
+        "itemsPerPageText": "Entries per page",
+        "noDataText": "No dividends received yet"
+      },
+      "updateAccount": {
+        "title": "Update bank account",
+        "messages": {
+          "success": "Successfully updated the account"
+        }
+      },
+      "updateBooking": {
+        "title": "Edit booking",
+        "messages": {
+          "success": "Successfully updated booking"
+        }
+      },
+      "updateBookingType": {
+        "title": "Update booking type",
+        "bookingTypeLabel": "Booking type",
+        "messages": {
+          "success": "Booking type updated",
+          "noId": "Missing ID",
+          "noSelection": "Keine Buchungskategorie ausgewählt",
+          "duplicate": "Booking type exists already"
+        }
+      },
+      "updateStock": {
+        "title": "Edit company",
+        "messages": {
+          "success": "Successfully updated the company"
+        }
+      }
+    },
+    "checkboxGrid": {
+      "loading": "Loading options...",
+      "saving": "Saving..."
+    },
+    "creditDebitFieldset": {
+      "creditLabel": "Credit",
+      "debitLabel": "Debit"
+    }
+  },
+  "mixed": {
+    "smImportOnly": {
+      "title": "INFO",
+      "message": "KontenManager is an evolution of the former StockManager. Importing StockManager data is only possible directly after installation – that is, before any KontenManager object has been manually created."
+    }
+  },
+  "views": {
+    "appIndex": {
+      "init": "Initialisation failed"
+    },
+    "titleBar": {
+      "title": "KontenManager",
+      "bookingsSumLabel": "Account balance",
+      "depotSumLabel": "Depot account",
+      "selectAccountLabel": "IBAN",
+      "iconsAlt": {
+        "logo": "Bank logo"
+      }
+    },
+    "headerBar": {
+      "infoTitle": "INFO",
+      "home": "Home",
+      "company": "Stock company",
+      "updateQuote": "Update quotes",
+      "addBookingType": "Add booking type",
+      "deleteBookingType": "Remove booking type",
+      "updateBookingType": "Update booking type",
+      "addAccount": "Add bank account",
+      "updateAccount": "Edit bank account",
+      "deleteAccount": "Remove bank account",
+      "addStock": "Add stock company",
+      "fadeInStock": "Show company",
+      "addBooking": "Add booking",
+      "exportToFile": "Export database",
+      "importDatabase": "Import database",
+      "showAccounting": "Yearly calculations",
+      "settings": "Settings",
+      "messages": {
+        "noAccount": "No account exists yet",
+        "noCompany": "No company available",
+        "noBooking": "No bookings available",
+        "noBookingType": "No booking type available"
+      }
+    },
+    "infoBar": {},
+    "homeContent": {
+      "search": "Search",
+      "bookingsTable": {
+        "headers": {
+          "action": "Actions",
+          "date": "Date",
+          "debit": "Debit",
+          "credit": "Credit",
+          "description": "Remark",
+          "bookingType": "Booking type"
+        },
+        "menuItems": {
+          "delete": "Delete booking",
+          "update": "Edit booking"
+        },
+        "noDataText": "No entries found.",
+        "itemsPerPageText": "Entries per page:"
+      }
+    },
+    "companyContent": {
+      "stocksTable": {
+        "headers": {
+          "action": "Actions",
+          "company": "Company",
+          "isin": "ISIN",
+          "qf": "Quarterly figures",
+          "gm": "Annual General Meeting",
+          "portfolio": "Portfolio",
+          "winLoss": "Profit-Loss",
+          "52low": "52-week low",
+          "rate": "Price",
+          "52high": "52-week high"
+        },
+        "menuItems": {
+          "delete": "Delete company",
+          "dividend": "Dividend overview",
+          "update": "Update company",
+          "link": "Open external link"
+        },
+        "noDataText": "No entries found. Import a database or create new entries manually.",
+        "itemsPerPageText": "Entries per page:"
+      }
+    },
+    "footerBar": {
+      "help": "Help",
+      "privacy": "Privacy",
+      "mail": "Email"
+    },
+    "helpContent": {
+      "title": "Help",
+      "overview": {
+        "title": "Overview",
+        "description": "KontenManager is your personal financial tool for managing bank accounts, tracking bookings, and monitoring a stock portfolio. Use the Home view to manage daily transactions and the Company view to track your investments and depot value."
+      },
+      "gettingStarted": {
+        "title": "Getting Started",
+        "steps": [
+          "Create a new bank account via the header menu (Add Account).",
+          "If you have existing data, use 'Import Database' to restore it, or 'Export Database' to create a backup.",
+          "The account selector in the title bar allows you to switch between different accounts once they are created."
+        ]
+      },
+      "bookings": {
+        "title": "Managing Bookings",
+        "details": [
+          "Add, update, or delete individual bookings for your selected account.",
+          "Categorize your transactions by configuring custom 'Booking Types'.",
+          "The current account balance is always visible in the title bar while on the Home view."
+        ]
+      },
+      "stocks": {
+        "title": "Stocks & Portfolio",
+        "details": [
+          "The Company view provides a specialized table for managing stock positions.",
+          "The Info Bar at the top shows live market data, including exchange rates, indexes, and commodity prices.",
+          "In the Company view, the title bar displays the total value of your portfolio (Depot Sum)."
+        ]
+      },
+      "settings": {
+        "title": "Settings & Personalization",
+        "details": [
+          "Access 'Settings' to customize technical aspects like market placeholders and currency symbols.",
+          "Configuration is stored locally in your browser and automatically reloaded when you open the extension."
+        ]
+      },
+      "shortcuts": {
+        "title": "Accessibility",
+        "description": "The interface is optimized for mouse and touch interactions. Currently, no global keyboard shortcuts are implemented."
+      },
+      "privacy": {
+        "title": "Privacy First",
+        "description": "Your privacy is important. Detailed information about data handling is available on our Privacy page, accessible from the footer."
+      }
+    },
+    "optionsIndex": {
+      "tabs": {
+        "ge": "Topics & Services",
+        "mp": "Stock exchanges",
+        "ind": "Indexes",
+        "mat": "Commodities",
+        "ex": "Currencies"
+      },
+      "themeNames": {
+        "earth": "Earth",
+        "ocean": "Ocean",
+        "sky": "Sky",
+        "meadow": "Meadow",
+        "dark": "Dark",
+        "light": "Light"
+      },
+      "markets": {
+        "title": "Stock exchanges",
+        "label": "New stock exchange"
+      },
+      "exchanges": {
+        "title": "Exchange rates",
+        "label": "New exchange rate symbol"
+      },
+      "materials": {
+        "au": "Gold",
+        "ag": "Silver",
+        "brent": "Oil price (Brent)",
+        "wti": "Oil price (WTI)",
+        "cu": "Copper",
+        "pt": "Platinum",
+        "al": "Aluminum",
+        "ni": "Nickel",
+        "sn": "Tin",
+        "pb": "Lead",
+        "pd": "Palladium"
+      }
+    },
+    "sheetContent": {
+      "privacyContent": {
+        "general": {
+          "title": "General",
+          "paragraphs": {
+            "local": {
+              "subTitle": "Local data",
+              "content": "No data is sent to a server. Data is stored in an IndexedDB database. Only this add-on has access to the database. KontenManager does not personalize any data. Settings are stored in the browser's extension storage.",
+              "icon": ""
+            },
+            "public": {
+              "subTitle": "Public data",
+              "content": "KontenManager does not guarantee the accuracy of the data. When retrieving data, URIs including ISINs are sent over the Internet. Other data is not shared.",
+              "icon": ""
+            },
+            "connection": {
+              "subTitle": "Internet connections",
+              "content": "Connections are established to download bank logo, exchange rate, stock price, min/max, index, and commodity data.",
+              "icon": ""
+            }
+          }
+        }
+      }
+    }
+  },
+  "validators": {
+    "ibanRules": {
+      "required": "IBAN is required",
+      "length": "Invalid IBAN length",
+      "format": "Invalid IBAN",
+      "checksum": "Invalid checksum",
+      "duplicate": "Account already exists"
+    },
+    "isinRules": {
+      "required": "ISIN is required",
+      "length": "Invalid ISIN length",
+      "format": "Invalid ISIN",
+      "country": "Wrong country code",
+      "luhn": "Invalid checksum (Luhn)"
+    },
+    "nameRules": {
+      "required": "Name is required",
+      "length": "Maximum 24 characters",
+      "begin": "First character must be a letter"
+    },
+    "swiftRules": {
+      "required": "SWIFT is required",
+      "length": "Only 8 or 11 characters",
+      "format": "Invalid SWIFT format",
+      "bankCode": "Invalid bank",
+      "countryCode": "Invalid country",
+      "locationCode": "Invalid region",
+      "branchCode": "Invalid branch",
+      "test": "Test BIC"
+    },
+    "isoDateRules": {
+      "required": "Date is required",
+      "valid": "Date is invalid"
+    },
+    "creditDebitFieldset": {
+      "onlyOnePositive": "One value must be 0 and the other > 0"
+    },
+    "bookingTypeRules": {
+      "required": "Booking type is required"
+    }
+  }
+}

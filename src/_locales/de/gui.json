@@ -1,0 +1,436 @@
+{
+  "components": {
+    "dialogs": {
+      "forms": {
+        "accountForm": {
+          "swiftLabel": "BIC / SWIFT",
+          "searchLabel": "Logo Suche",
+          "withDepotLabel": "Depot Verrechnungskonto",
+          "ibanLabel": "IBAN / Kontonummer",
+          "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
+          "missingLogo": "Kein Logo gefunden"
+        },
+        "bookingForm": {
+          "bookingLabel": "Buchung",
+          "dateLabel": "Buchungstag",
+          "exDateLabel": "Ex-Tag",
+          "descriptionLabel": "Bemerkung",
+          "countLabel": "Anzahl",
+          "bookingTypeLabel": "Buchungstyp",
+          "feeLabel": "Gebühr",
+          "taxLabel": "Steuer",
+          "soliLabel": "Soli",
+          "stockLabel": "Unternehmen",
+          "marketPlaceLabel": "Handelsplatz",
+          "transactionTaxLabel": "Transaktionssteuer",
+          "sourceTaxLabel": "Quellensteuer"
+        },
+        "stockForm": {
+          "isinLabel": "ISIN",
+          "symbolLabel": "Kürzel",
+          "companyLabel": "Unternehmen",
+          "fadeOutLabel": "Ausblenden",
+          "firstPageLabel": "Erste Seite",
+          "meetingDayLabel": "Hauptversammlung",
+          "quarterDayLabel": "Quartalszahlen",
+          "urlLabel": "URL"
+        }
+      },
+      "cancel": "Abbrechen",
+      "ok": "OK",
+      "onClickOk": "Fehler in 'onClickOk'",
+      "addAccount": {
+        "title": "Bankkonto hinzufügen",
+        "bookingTypes": {
+          "buy": "Aktienkauf",
+          "sell": "Aktienverkauf",
+          "dividend": "Dividende"
+        },
+        "messages": {
+          "success": "Das Konto wurde erfolgreich angelegt",
+          "error": "Das Konto wurde nicht angelegt"
+        }
+      },
+      "addBooking": {
+        "title": "Buchung hinzufügen",
+        "messages": {
+          "error": "Buchung konnte nicht hinzugefügt werden",
+          "success": "Buchung erfolgreich hinzugefügt"
+        }
+      },
+      "addBookingType": {
+        "title": "Buchungstyp hinzufügen",
+        "placeholder": "Name eingeben",
+        "messages": {
+          "success": "Buchungskategorie wurde hinzugefügt",
+          "error": "Buchungskategorie konnte nicht hinzugefügt werden",
+          "duplicate": "Buchungskategorie existiert bereits"
+        }
+      },
+      "addStock": {
+        "title": "Unternehmen hinzufügen",
+        "messages": {
+          "error": "Unternehmen konnte nicht hinzugefügt werden",
+          "success": "Unternehmen wurde hinzugefügt"
+        }
+      },
+      "deleteAccountConfirmation": {
+        "title": "Bankkonto - alle Daten löschen",
+        "messages": {
+          "confirm": "Möchten Sie das Konto mit allen dazugehörigen Daten wirklich löschen?",
+          "dbNotConnected": "Keine Datenbank Verbindung",
+          "success": "Das Konto wurde gelöscht"
+        }
+      },
+      "deleteBookingType": {
+        "title": "Buchungstyp löschen",
+        "messages": {
+          "dbNotConnected": "Keine Datenbank Verbindung",
+          "noDelete": "Buchungskategorie kann nicht gelöscht werden. Es existieren zugeordnete Buchungen.",
+          "success": "Buchungskategorie wurde gelöscht"
+        }
+      },
+      "exportDatabase": {
+        "title": "Daten exportieren",
+        "largeFileTitle": "Daten Export",
+        "continue": "Daten exportieren",
+        "cancel": "Abbrechen",
+        "text": "Eine Sicherungsdatei mit Namen {filename} wird im Herunterladen Verzeichnis des Browsers erstellt.",
+        "messages": {
+          "estimatedSize": "Test size",
+          "invalidBookingTypes": "Test BT",
+          "invalidBookings": "Test B",
+          "invalidStocks": "Test S",
+          "noAccounts": "Keine Konten zum Export vorhanden"
+        }
+      },
+      "fadeInStock": {
+        "title": "Unternehmen einblenden",
+        "selectLabel": "Unternehmen"
+      },
+      "importDatabase": {
+        "title": "Daten importieren",
+        "messageDelete": "Alle vorhandenen Daten werden gelöscht!",
+        "fileLabel": "aus Datei",
+        "buy": "Aktienkauf",
+        "sell": "Aktienverkauf",
+        "dividend": "Dividende",
+        "other": "Sonstiges",
+        "fee": "Gebühr",
+        "tax": "Steuer",
+        "confirmImportTitle": "Import starten",
+        "confirmOk": "Importieren",
+        "confirmCancel": "Abbrechen",
+        "messages": {
+          "invalidSuffix": "Ungültiger Dateiname",
+          "emptyFile": "Die Datei ist leer.",
+          "fileToLarge": "Die Sicherungsdatei ist zu gross.",
+          "importInfo": {
+            "account": "Konto(s)",
+            "booking": "Buchung(en)",
+            "bookingType": "Kategorie(n)",
+            "stock": "Unternehmen"
+          }
+        }
+      },
+      "showAccounting": {
+        "title": "Buchungsergebnisse",
+        "nameLabel": "Buchungskategorie",
+        "sumLabel": "Betrag",
+        "sum": "Summe",
+        "fees": "Aktienhandel Gebühren",
+        "taxes": "Aktienhandel Steuern",
+        "itemsPerPageText": "Einträge pro Seite",
+        "noDataText": "Bisher keine Dividende erhalten",
+        "year": "Jahr",
+        "allYears": "Gesamt"
+      },
+      "showDividend": {
+        "title": "Dividenden Übersicht",
+        "yearLabel": "Ex-Tag",
+        "sumLabel": "Dividendenauszahlung",
+        "itemsPerPageText": "Einträge pro Seite",
+        "noDataText": "Bisher keine Dividende erhalten"
+      },
+      "updateAccount": {
+        "title": "Bankkonto aktualisieren",
+        "messages": {
+          "success": "Das Konto wurde erfolgreich aktualisiert"
+        }
+      },
+      "updateBooking": {
+        "title": "Buchung bearbeiten",
+        "messages": {
+          "success": "Buchung erfolgreich aktualisiert"
+        }
+      },
+      "updateBookingType": {
+        "title": "Buchungstyp aktualisieren",
+        "bookingTypeLabel": "Buchungstyp",
+        "messages": {
+          "success": "Buchungskategorie wurde aktualisiert",
+          "noId": "Datensatz ohne ID",
+          "noSelection": "Keine Buchungskategorie ausgewählt",
+          "duplicate": "Buchungskategorie existiert bereits"
+        }
+      },
+      "updateStock": {
+        "title": "Unternehmen bearbeiten",
+        "messages": {
+          "success": "Das Unternehmen wurde erfolgreich aktualisiert"
+        }
+      }
+    },
+    "checkboxGrid": {
+      "loading": "Optionen werden geladen...",
+      "saving": "Speichern..."
+    },
+    "creditDebitFieldset": {
+      "creditLabel": "Haben",
+      "debitLabel": "Soll"
+    }
+  },
+  "mixed": {
+    "smImportOnly": {
+      "title": "INFO",
+      "message": "KontenManager ist eine Weiterentwicklung des ehemaligen StockManagers. Der Import von StockManager-Daten ist nur direkt nach der Installation möglich – das heißt, bevor manuell ein KontenManager-Objekt angelegt wurde."
+    }
+  },
+  "validators": {
+    "ibanRules": {
+      "required": "IBAN ist erforderlich",
+      "length": "Ungültige IBAN Länge",
+      "format": "Ungültige IBAN",
+      "checksum": "Ungültige Prüfsumme",
+      "duplicate": "Konto existiert bereits"
+    },
+    "isinRules": {
+      "required": "ISIN ist erforderlich",
+      "length": "Ungültige ISIN Länge",
+      "format": "Ungültige ISIN",
+      "country": "Falscher Ländercode",
+      "luhn": "Ungültige Prüfsumme (Luhn)"
+    },
+    "nameRules": {
+      "required": "Name ist erforderlich",
+      "length": "Maximal 24 Zeichen",
+      "begin": "Erstes Zeichen muss ein Buchstabe sein"
+    },
+    "swiftRules": {
+      "required": "SWIFT ist erforderlich",
+      "length": "Nur 8 bzw. 11 Zeichen",
+      "format": "Ungültiges SWIFT Format",
+      "bankCode": "Ungültige Bank",
+      "countryCode": "Ungültiges Land",
+      "locationCode": "Ungültige Region",
+      "branchCode": "Ungültige Branche",
+      "test": "Test BIC"
+    },
+    "isoDateRules": {
+      "required": "Datum ist erforderlich",
+      "valid": "Datum ist ungültig"
+    },
+    "creditDebitFieldset": {
+      "onlyOnePositive": "Ein Wert muss 0 der andere > 0 sein"
+    },
+    "bookingTypeRules": {
+      "required": "Buchungstyp ist erforderlich"
+    }
+  },
+  "views": {
+    "appIndex": {
+      "init": "Initialisierung fehlgeschlagen"
+    },
+    "titleBar": {
+      "title": "KontenManager",
+      "bookingsSumLabel": "Kontostand",
+      "depotSumLabel": "Depotkonto",
+      "selectAccountLabel": "IBAN",
+      "iconsAlt": {
+        "logo": "Bank Logo"
+      }
+    },
+    "headerBar": {
+      "infoTitle": "INFO",
+      "home": "Startseite",
+      "company": "Aktien-Unternehmen",
+      "updateQuote": "Kurse aktualisieren",
+      "addBookingType": "Buchungstyp hinzufügen",
+      "deleteBookingType": "Buchungstyp entfernen",
+      "updateBookingType": "Buchungstyp aktualisieren",
+      "addAccount": "Bankkonto hinzufügen",
+      "updateAccount": "Bankkonto bearbeiten",
+      "deleteAccount": "Bankkonto entfernen",
+      "addStock": "Aktien-Unternehmen hinzufügen",
+      "fadeInStock": "Unternehmen einblenden",
+      "addBooking": "Buchung hinzufügen",
+      "exportToFile": "Datenbank exportieren",
+      "importDatabase": "Datenbank importieren",
+      "showAccounting": "Jahres-Berechnungen",
+      "settings": "Einstellungen",
+      "messages": {
+        "noAccount": "Es ist noch kein Konto vorhanden.",
+        "noCompany": "Keine Unternehmen vorhanden",
+        "noBooking": "Keine Buchungen vorhanden",
+        "noBookingType": "Keine Buchungskategorien vorhanden"
+      }
+    },
+    "infoBar": {},
+    "homeContent": {
+      "search": "Suchen",
+      "bookingsTable": {
+        "headers": {
+          "action": "Aktionen",
+          "date": "Datum",
+          "debit": "Soll",
+          "credit": "Haben",
+          "description": "Bemerkung",
+          "bookingType": "Buchungstyp"
+        },
+        "menuItems": {
+          "delete": "Buchung löschen",
+          "update": "Buchung bearbeiten"
+        },
+        "noDataText": "Keine Einträge gefunden.",
+        "itemsPerPageText": "Einträge pro Seite:"
+      }
+    },
+    "companyContent": {
+      "stocksTable": {
+        "headers": {
+          "action": "Aktionen",
+          "company": "Unternehmen",
+          "isin": "ISIN",
+          "qf": "Quartals-Zahlen",
+          "gm": "Hauptversammlung",
+          "portfolio": "Portfolio",
+          "winLoss": "Gewinn-Verlust",
+          "52low": "52-Wochen-Tief",
+          "rate": "Kurs",
+          "52high": "52-Wochen-Hoch"
+        },
+        "menuItems": {
+          "delete": "Unternehmen löschen",
+          "dividend": "Dividenden Übersicht",
+          "update": "Unternehmen aktualisieren",
+          "link": "Externen Link öffnen"
+        },
+        "noDataText": "Keine Einträge gefunden. Importieren Sie eine Datenbank oder legen Sie manuell neue Einträge an.",
+        "itemsPerPageText": "Einträge pro Seite:"
+      }
+    },
+    "footerBar": {
+      "help": "Hilfe",
+      "privacy": "Datenschutz",
+      "mail": "Email"
+    },
+    "helpContent": {
+      "title": "Hilfe",
+      "overview": {
+        "title": "Überblick",
+        "description": "KontenManager ist Ihr persönliches Finanzwerkzeug zur Verwaltung von Bankkonten, zur Verfolgung von Buchungen und zur Überwachung eines Aktienportfolios. Verwenden Sie die Startseite für tägliche Transaktionen und die Firmenansicht, um Ihre Investitionen und den Depotwert im Auge zu behalten."
+      },
+      "gettingStarted": {
+        "title": "Erste Schritte",
+        "steps": [
+          "Legen Sie ein neues Bankkonto über das Menü in der Kopfleiste an (Konto hinzufügen).",
+          "Wenn Sie bereits Daten haben, nutzen Sie 'Datenbank importieren', um diese wiederherzustellen, oder 'Datenbank exportieren', um eine Sicherung zu erstellen.",
+          "Der Kontoauswahlschalter in der Titelleiste ermöglicht es Ihnen, zwischen verschiedenen Konten zu wechseln, sobald diese erstellt wurden."
+        ]
+      },
+      "bookings": {
+        "title": "Buchungen verwalten",
+        "details": [
+          "Fügen Sie einzelne Buchungen für Ihr ausgewähltes Konto hinzu, bearbeiten oder löschen Sie diese.",
+          "Kategorisieren Sie Ihre Transaktionen, indem Sie benutzerdefinierte 'Buchungsarten' konfigurieren.",
+          "Der aktuelle Kontostand ist auf der Startseite immer in der Titelleiste sichtbar."
+        ]
+      },
+      "stocks": {
+        "title": "Aktien & Portfolio",
+        "details": [
+          "Die Firmenansicht bietet eine spezialisierte Tabelle zur Verwaltung von Aktienpositionen.",
+          "Die Infoleiste am oberen Rand zeigt Live-Marktdaten, einschließlich Wechselkurse, Indizes und Rohstoffpreise.",
+          "In der Firmenansicht zeigt die Titelleiste den Gesamtwert Ihres Portfolios (Depot-Summe) an."
+        ]
+      },
+      "settings": {
+        "title": "Einstellungen & Personalisierung",
+        "details": [
+          "Rufen Sie die 'Einstellungen' auf, um technische Aspekte wie Marktplatz-Platzhalter und Währungssymbole anzupassen.",
+          "Die Konfiguration wird lokal in Ihrem Browser gespeichert und beim Öffnen der Erweiterung automatisch geladen."
+        ]
+      },
+      "shortcuts": {
+        "title": "Barrierefreiheit",
+        "description": "Die Benutzeroberfläche ist für Maus- und Touch-Interaktionen optimiert. Derzeit sind keine globalen Tastaturkürzel implementiert."
+      },
+      "privacy": {
+        "title": "Datenschutz an erster Stelle",
+        "description": "Ihre Privatsphäre ist wichtig. Detaillierte Informationen zum Umgang mit Daten finden Sie auf unserer Datenschutzseite, die über die Fußzeile erreichbar ist."
+      }
+    },
+    "optionsIndex": {
+      "tabs": {
+        "ge": "Themen & Dienste",
+        "mp": "Marktplätze",
+        "ind": "Indizes",
+        "mat": "Rohstoffe",
+        "ex": "Währungen"
+      },
+      "themeNames": {
+        "earth": "Erde",
+        "ocean": "Ozean",
+        "sky": "Himmel",
+        "meadow": "Wiese",
+        "dark": "Dunkel",
+        "light": "Hell"
+      },
+      "markets": {
+        "title": "Marktplätze",
+        "label": "Neuer Marktplatz"
+      },
+      "exchanges": {
+        "title": "Wechselkurse",
+        "label": "Neues Wechselkurs-Kürzel"
+      },
+      "materials": {
+        "au": "Gold",
+        "ag": "Silber",
+        "brent": "Ölpreis (Brent)",
+        "wti": "Ölpreis (WTI)",
+        "cu": "Kupfer",
+        "pt": "Platin",
+        "al": "Aluminium",
+        "ni": "Nickel",
+        "sn": "Zinn",
+        "pb": "Blei",
+        "pd": "Palladium"
+      }
+    },
+    "sheetContent": {
+      "privacyContent": {
+        "general": {
+          "title": "Allgemein",
+          "paragraphs": {
+            "local": {
+              "subTitle": "Lokale Daten",
+              "content": "Es werden keine Daten an einen Server gesendet. Die Daten werden in einer IndexedDB Datenbank gespeichert. Nur dieses Add-on hat Zugriff auf die Datenbank. KontenManager personalisiert keine Daten. Einstellungen werden im Erweiterungsspeicher des Browsers gespeichert.",
+              "icon": ""
+            },
+            "public": {
+              "subTitle": "Öffentliche Daten",
+              "content": "KontenManager übernimmt keine Garantie für die Richtigkeit der Daten. Beim Abruf werden URIs inklusive ISINs über das Internet versendet. Andere Daten werden nicht weitergegeben.",
+              "icon": ""
+            },
+            "connection": {
+              "subTitle": "Internetverbindungen",
+              "content": "Verbindungen werden hergestellt, um Bank-Logo-, Wechselkurs-, Aktienkurs-, Min/Max-, Index-, Rohstoff Daten herunterzuladen.",
+              "icon": ""
+            }
+          }
+        }
+      }
+    }
+  }
+}
