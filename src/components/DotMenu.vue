@@ -6,6 +6,7 @@
 
 <script lang="ts" setup>
 import {computed, onBeforeMount} from "vue";
+import {useI18n} from "vue-i18n";
 import {useMenuAction, useMenuHighlight} from "@/composables/useMenu";
 import MenuItem from "@/components/MenuItem.vue";
 import type {MenuConfigData, MenuItemData} from "@/types";
@@ -13,8 +14,9 @@ import {DomainUtils} from "@/domains/utils";
 import {alertService} from "@/services/alert";
 
 const props = defineProps<MenuConfigData>();
+const {t} = useI18n();
 
-const {executeAction} = useMenuAction();
+const {executeAction} = useMenuAction(t);
 const {highlightedItems, highlightTemporary, clearAllHighlights} =
     useMenuHighlight();
 
@@ -39,7 +41,7 @@ const handleItemClick = async (item: MenuItemData) => {
     clearAllHighlights();
   } catch (err) {
     DomainUtils.log("COMPONENTS DotMenu: action failed", err, "error");
-    await alertService.handleUserError("Menu Action Failed", err, {data: item.action});
+    await alertService.feedbackError("Menu Action Failed", err, {data: item.action});
   }
 };
 

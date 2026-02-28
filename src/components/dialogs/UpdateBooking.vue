@@ -35,7 +35,7 @@ const {
   reset: resetForm
 } = useBookingForm();
 const records = useRecordsStore();
-const {submitGuard} = useDialogGuards();
+const {submitGuard} = useDialogGuards(t);
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentBooking = (): void => {
@@ -77,7 +77,7 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.handleUserInfo,
+    showSystemNotification: alertService.feedbackInfo,
     errorContext: "UPDATE_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -88,7 +88,7 @@ const onClickOk = async (): Promise<void> => {
       records.bookings.update(booking);
       await update(booking);
       runtime.resetTeleport();
-      await alertService.handleUserInfo(t("components.dialogs.updateBooking.title"), t("components.dialogs.updateBooking.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.updateBooking.title"), t("components.dialogs.updateBooking.messages.success"));
       runtime.resetOptionsMenuColors();
     }
   });

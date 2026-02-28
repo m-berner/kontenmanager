@@ -20,7 +20,7 @@ import {alertService} from "@/services/alert";
 const {t} = useI18n();
 const {getMessage, showSystemNotification} = useBrowser();
 const {update} = useStocksDB();
-const {isLoading, ensureConnected, withLoading} = useDialogGuards();
+const {isLoading, ensureConnected, withLoading} = useDialogGuards(t);
 const runtime = useRuntimeStore();
 const records = useRecordsStore();
 
@@ -52,7 +52,7 @@ const onClickOk = async (): Promise<void> => {
       await showSystemNotification("FadeInStock", getMessage("xx_db_fade_in"));
       runtime.resetTeleport();
     } catch (err) {
-      await alertService.handleUserError("FadeInStock", err, {});
+      await alertService.feedbackError("FadeInStock", err, {});
     }
   });
 };

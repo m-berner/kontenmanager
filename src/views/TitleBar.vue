@@ -80,7 +80,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
       message: t("mixed.smImportOnly.message")
     });
   } catch (err) {
-    await alertService.handleUserError("VIEWS TitleBar", err, {});
+    await alertService.feedbackError("VIEWS TitleBar", err, {});
   }
 };
 

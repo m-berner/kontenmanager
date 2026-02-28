@@ -30,7 +30,7 @@ const runtime = useRuntimeStore();
 const {activeAccountId} = useSettingsStore();
 const {activeId} = storeToRefs(runtime);
 const {stockFormData, mapStockFormToDb, reset: resetForm} = useStockForm();
-const {submitGuard} = useDialogGuards();
+const {submitGuard} = useDialogGuards(t);
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentStock = (): void => {
@@ -67,7 +67,7 @@ const onClickOk = async (): Promise<void> => {
       records.stocks.update(stock);
       await update(stock);
       runtime.resetTeleport()
-      await alertService.handleUserInfo(t("components.dialogs.updateStock.title"), t("components.dialogs.updateStock.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.updateStock.title"), t("components.dialogs.updateStock.messages.success"));
       runtime.resetOptionsMenuColors();
     }
   });

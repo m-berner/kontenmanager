@@ -190,6 +190,18 @@
       "debitLabel": "Debit"
     }
   },
+  "composables": {
+    "useMenu": {
+      "title": "Menu",
+      "messages": {
+        "delete": "Record has been deleted",
+        "noDelete": "Record could not be deleted. There a assigned records.",
+        "noLink": "No URL configured",
+        "invalidCode": "Invalid code"
+
+      }
+    }
+  },
   "mixed": {
     "smImportOnly": {
       "title": "INFO",

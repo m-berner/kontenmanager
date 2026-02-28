@@ -32,7 +32,7 @@ const setSkin = async (): Promise<void> => {
   try {
     await setStorage(BROWSER_STORAGE.SKIN.key, skin.value);
   } catch (err) {
-    await alertService.handleUserError("Components ThemeSelector", err, {});
+    await alertService.feedbackError("Components ThemeSelector", err, {});
   }
 };
 

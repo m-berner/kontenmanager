@@ -190,6 +190,17 @@
       "debitLabel": "Soll"
     }
   },
+  "composables": {
+    "useMenu": {
+      "title": "Menü",
+      "messages": {
+        "delete": "Datensatz wurde gelöscht",
+        "noDelete": "Datensatz konnte nicht gelöscht werden. Es existieren zugeordnete Buchungen.",
+        "noLink": "Keine externe URL konfiguriert",
+        "invalidCode": "Ungültiger Fehlercode"
+      }
+    }
+  },
   "mixed": {
     "smImportOnly": {
       "title": "INFO",

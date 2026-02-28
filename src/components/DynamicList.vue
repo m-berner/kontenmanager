@@ -83,7 +83,7 @@ const addItem = async (item: string): Promise<void> => {
       newItem.value = "";
     }
   } catch (err) {
-    await alertService.handleUserError("Components DynamicList", err, {});
+    await alertService.feedbackError("Components DynamicList", err, {});
   } finally {
     isAdding.value = false; // Stop loading
   }
@@ -108,7 +108,7 @@ const removeItem = async (n: number): Promise<void> => {
       default:
     }
   } catch (err) {
-    await alertService.handleUserError("Components DynamicList", err, {});
+    await alertService.feedbackError("Components DynamicList", err, {});
   }
 };
 
@@ -139,7 +139,7 @@ onBeforeMount(async () => {
         break;
     }
   } catch (err) {
-    await alertService.handleUserError("Components DynamicList", err, {});
+    await alertService.feedbackError("Components DynamicList", err, {});
   } finally {
     isLoading.value = false;
   }

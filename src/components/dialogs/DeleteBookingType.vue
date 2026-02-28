@@ -22,7 +22,7 @@ const {bookingTypeFormData, reset} = useBookingTypeForm();
 const {t} = useI18n();
 const {showSystemNotification} = useBrowser();
 const {remove} = useBookingTypesDB();
-const {isLoading, ensureConnected, withLoading} = useDialogGuards();
+const {isLoading, ensureConnected, withLoading} = useDialogGuards(t);
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
 
@@ -50,16 +50,16 @@ const onClickOk = async (): Promise<void> => {
   await withLoading(async () => {
     try {
       if (!canDeleteBookingType(bookingTypeFormData.id!)) {
-        await alertService.handleUserInfo(t("components.dialogs.deleteBookingType.title"), t("components.dialogs.deleteBookingType.messages.noDelete"));
+        await alertService.feedbackInfo(t("components.dialogs.deleteBookingType.title"), t("components.dialogs.deleteBookingType.messages.noDelete"));
         return;
       }
 
       records.bookingTypes.remove(bookingTypeFormData.id!);
       await remove(bookingTypeFormData.id!);
       runtime.resetTeleport();
-      await alertService.handleUserInfo(t("components.dialogs.deleteBookingType.title"), t("components.dialogs.deleteBookingType.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.deleteBookingType.title"), t("components.dialogs.deleteBookingType.messages.success"));
     } catch (err) {
-      await alertService.handleUserError(t("components.dialogs.deleteBookingType.title"), err, {});
+      await alertService.feedbackError(t("components.dialogs.deleteBookingType.title"), err, {});
     }
   });
 };

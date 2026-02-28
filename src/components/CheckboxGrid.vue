@@ -66,7 +66,7 @@ const setChecked = async (): Promise<void> => {
   try {
     await setStorage(config.value.storageKey, [...checked.value]);
   } catch (err) {
-    await alertService.handleUserError("Components CheckboxGrid", err, {});
+    await alertService.feedbackError("Components CheckboxGrid", err, {});
   } finally {
     isSaving.value = false;
   }
@@ -84,7 +84,7 @@ onBeforeMount(async () => {
         ? stored.filter((entry): entry is string => typeof entry === "string")
         : [];
   } catch (err) {
-    await alertService.handleUserError("Components CheckboxGrid", err, {});
+    await alertService.feedbackError("Components CheckboxGrid", err, {});
   } finally {
     isLoading.value = false;
   }

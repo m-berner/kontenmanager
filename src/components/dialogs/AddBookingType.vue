@@ -27,7 +27,7 @@ const records = useRecordsStore();
 const {activeAccountId} = useSettingsStore();
 const {bookingTypeFormData, mapBookingTypeFormToDb, reset} =
     useBookingTypeForm();
-const {submitGuard} = useDialogGuards();
+const {submitGuard} = useDialogGuards(t);
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
@@ -42,7 +42,7 @@ const onClickOk = async (): Promise<void> => {
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       if (records.bookingTypes.isDuplicate(bookingTypeFormData.name)) {
-        await alertService.handleUserInfo(t("components.dialogs.addBookingType.title"), t("components.dialogs.addBookingType.messages.duplicate"));
+        await alertService.feedbackInfo(t("components.dialogs.addBookingType.title"), t("components.dialogs.addBookingType.messages.duplicate"));
         return;
       }
       const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
@@ -53,7 +53,7 @@ const onClickOk = async (): Promise<void> => {
       }
 
       records.bookingTypes.add({...bookingTypeData, cID: addBookingTypeID});
-      await alertService.handleUserInfo(t("components.dialogs.addBookingType.title"), t("components.dialogs.addBookingType.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.addBookingType.title"), t("components.dialogs.addBookingType.messages.success"));
       reset();
     }
   });

@@ -17,7 +17,7 @@ type ShowSystemNotificationFn = (
     _messageOrError: string | string[] | Error | unknown
 ) => Promise<number | void>;
 
-export function useDialogGuards() {
+export function useDialogGuards(translate?: (_key: string) => string) {
     const {getMessage} = useBrowser();
     /** Global loading flag for the dialog. */
     const isLoading = ref<boolean>(false);
@@ -25,6 +25,13 @@ export function useDialogGuards() {
     const loadingOperations = ref<Set<string>>(new Set());
     /** Counter for generating unique operation IDs. */
     let operationCounter = 0;
+    const resolveMessage = (key: Parameters<typeof getMessage>[0]): string => {
+        if (!translate) {
+            return getMessage(key);
+        }
+        const translated = translate(key);
+        return translated && translated !== key ? translated : getMessage(key);
+    };
 
     /**
      * Ensures that the database is connected before proceeding.
@@ -42,7 +49,7 @@ export function useDialogGuards() {
     ): Promise<boolean> {
         if (!isConnected) {
             await showSystemNotification("Composables useDialogGuards", [
-                getMessage("xx_db_connection_err"),
+                resolveMessage("xx_db_connection_err"),
                 errorMessage
             ]);
             return false;
@@ -186,7 +193,7 @@ export function useDialogGuards() {
             try {
                 await operation();
             } catch (err) {
-                await alertService.handleUserError(errorTitle ?? "", err, {data: errorContext ?? ""});
+                await alertService.feedbackError(errorTitle ?? "", err, {data: errorContext ?? ""});
             } finally {
                 onFinally?.();
             }

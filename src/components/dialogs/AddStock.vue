@@ -28,7 +28,7 @@ const {activeAccountId} = useSettingsStore();
 const runtime = useRuntimeStore();
 const records = useRecordsStore();
 const {mapStockFormToDb, reset} = useStockForm();
-const {submitGuard} = useDialogGuards();
+const {submitGuard} = useDialogGuards(t);
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
@@ -50,7 +50,7 @@ const onClickOk = async (): Promise<void> => {
       }
 
       records.stocks.add({...stockData, cID: addStockID});
-      await alertService.handleUserInfo(t("components.dialogs.addStock.title"), t("components.dialogs.addStock.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.addStock.title"), t("components.dialogs.addStock.messages.success"));
       reset();
 
       await records.stocks.refreshOnlineData(runtime.stocksPage);

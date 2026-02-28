@@ -47,7 +47,7 @@ export function useBrowser() {
             }
             return "en-US";
         } catch (err) {
-            alertService.handleUserError("Plugins i18n", err, {}).then();
+            alertService.feedbackError("Plugins i18n", err, {}).then();
             return "en-US";
         }
     }

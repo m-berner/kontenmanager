@@ -12,7 +12,7 @@ import type {
     ActionHandler,
     HighlightColor,
     HighlightOptions,
-    MenuActionType
+    MenuActionType, MessageSchemaType
 } from "@/types";
 import {computed, onUnmounted, readonly, ref} from "vue";
 import {useBrowser} from "@/composables/useBrowser";
@@ -20,22 +20,28 @@ import {alertService} from "@/services/alert";
 import {DomainUtils} from "@/domains/utils";
 
 /**
- * Composable to temporarily highlight rows/items in data tables.
+ * Manages temporary row highlighting for table-like UIs.
  *
- * Provides helpers to set, clear, and auto-clear highlight states per record ID.
- * Intended for transient visual feedback after actions (e.g., add/update).
+ * The composable stores a highlight color per record id and optionally removes it
+ * after a timeout. It is intended for short-lived visual feedback after user
+ * actions such as add, update, or delete a record.
+ *
+ * Returned state is exposed as readonly to keep the mutation in one place.
  *
  * @module composables/useMenuHighlight
  */
 export function useMenuHighlight() {
-    const {getMessage} = useBrowser();
     const highlightedItems = ref<Map<number, HighlightColor>>(new Map());
     const timeouts = new Map<number, ReturnType<typeof setTimeout>>();
 
     /**
-     * Applies a highlight color to a record ID.
-     * @param recordId - Target record identifier.
-     * @param color - Optional color (default: green).
+     * Applies a highlight to one record.
+     *
+     * Any existing timeout for the same record is cleared first, so stale timers
+     * do not remove a newer highlight state.
+     *
+     * @param recordId - Record identifier.
+     * @param color - Highlight color (defaults to `green`).
      */
     const highlight = (recordId: number, color: HighlightColor = "green") => {
         clearHighlight(recordId);
@@ -43,8 +49,9 @@ export function useMenuHighlight() {
     };
 
     /**
-     * Clears the highlight for a specific record ID and cancels any pending auto-clear.
-     * @param recordId - Target record identifier.
+     * Removes the highlight state for one record and cancels its timeout, if present.
+     *
+     * @param recordId - Record identifier.
      */
     const clearHighlight = (recordId: number) => {
         highlightedItems.value.delete(recordId);
@@ -57,7 +64,7 @@ export function useMenuHighlight() {
     };
 
     /**
-     * Clears all highlight markers and cancels all pending auto-clear timeouts.
+     * Clears all highlight entries and cancels all scheduled auto-clear timers.
      */
     const clearAllHighlights = () => {
         highlightedItems.value.clear();
@@ -69,9 +76,14 @@ export function useMenuHighlight() {
     };
 
     /**
-     * Temporarily highlights a record ID, automatically clearing after a duration.
-     * @param recordId - Target record identifier.
-     * @param options - Optional color and custom duration (ms, default 3000).
+     * Applies a temporary highlight to one record.
+     *
+     * If a timer already exists for this record, it is replaced.
+     *
+     * @param recordId - Record identifier.
+     * @param options - Optional highlight configuration.
+     * @param options.color - Highlight color (defaults to `green`).
+     * @param options.duration - Lifetime in milliseconds (defaults to `3000`).
      */
     const highlightTemporary = (
         recordId: number,
@@ -94,16 +106,18 @@ export function useMenuHighlight() {
     };
 
     /**
-     * Returns whether a record ID is currently highlighted.
-     * @param recordId - Target record identifier.
+     * Checks whether a record is currently highlighted.
+     *
+     * @param recordId - Record identifier.
      */
     const isHighlighted = (recordId: number): boolean => {
         return highlightedItems.value.has(recordId);
     };
 
     /**
-     * Gets the highlight color for a record ID, if present.
-     * @param recordId - Target record identifier.
+     * Returns the highlight color for a record, if any.
+     *
+     * @param recordId - Record identifier.
      */
     const getHighlightColor = (recordId: number): HighlightColor | undefined => {
         return highlightedItems.value.get(recordId);
@@ -114,9 +128,6 @@ export function useMenuHighlight() {
     });
 
     return {
-        getMessage,
-        handleUserError: alertService.handleUserError,
-        handleUserInfo: alertService.handleUserInfo,
         highlightedItems: readonly(computed(() => highlightedItems.value)),
         highlight,
         clearHighlight,
@@ -128,24 +139,31 @@ export function useMenuHighlight() {
 }
 
 /**
- * Composable for managing application menu actions and navigation.
- * Centralizes the logic for opening dialogs, executing CRUD operations
- * from menus, and handling cross-view navigation.
+ * Provides handlers for context/menu actions across the application.
+ *
+ * Responsibilities:
+ * - open dialogs via runtime teleport state
+ * - execute delete operations for bookings/stocks
+ * - perform view navigation actions
+ * - send user feedback messages via `alertService`
+ *
+ * The optional `translate` function allows using vue-i18n translations while
+ * still falling back to browser i18n messages via `useBrowser().getMessage`.
  *
  * @module composables/useMenuAction
  */
-export function useMenuAction() {
+export function useMenuAction(translate?: (_key: string) => string) {
     const runtime = useRuntimeStore();
     const records = useRecordsStore();
-    const {getMessage, handleUserError, handleUserInfo} = useMenuHighlight();
+    const {getMessage} = useBrowser();
     const {remove: removeBooking} = useBookingsDB();
     const {remove: removeStock} = useStocksDB();
 
     /**
-     * Internal helper to open a dialog via the teleport system.
+     * Opens a dialog using runtime teleport state.
      *
-     * @param dialogName - Unique name of the dialog component.
-     * @param dialogOk - Whether the 'OK' button should be shown.
+     * @param dialogName - Dialog component identifier.
+     * @param dialogOk - Whether the dialog confirms with an explicit OK action.
      */
     const openDialog = (dialogName: string, dialogOk = false): void => {
         runtime.setTeleport({
@@ -156,10 +174,11 @@ export function useMenuAction() {
     };
 
     /**
-     * Checks if a stock has any associated bookings.
+     * Returns whether a stock still has linked bookings.
      *
-     * @param stockId - ID of the stock to check.
-     * @returns True if bookings exist.
+     * Stocks with linked bookings cannot be deleted.
+     *
+     * @param stockId - Stock identifier.
      */
     const checkStockHasBookings = (stockId: number): boolean => {
         const {items: bookingItems} = storeToRefs(records.bookings);
@@ -167,8 +186,22 @@ export function useMenuAction() {
     };
 
     /**
-     * Mapping of menu action keys to their handler functions.
+     * Resolves a localized message key to a display string.
+     *
+     * Resolution order:
+     * 1. `translate` (if provided)
+     * 2. `getMessage` fallback from `useBrowser`
+     *
+     * @param key - Translation/message key.
      */
+    const resolveMessage = (key: Parameters<typeof getMessage>[0] | MessageSchemaType): string => {
+        if (!translate) {
+            return "System error: resolveMessage";
+        }
+        const translated = translate(key);
+        return translated && translated !== key ? translated : getMessage(key);
+    };
+
     const actionHandlers: Record<MenuActionType, ActionHandler> = {
         async updateBooking() {
             openDialog("updateBooking", true);
@@ -181,7 +214,7 @@ export function useMenuAction() {
         async deleteBooking(recordId: number) {
             records.bookings.remove(recordId);
             await removeBooking(recordId);
-            await alertService.handleUserInfo("Menu", getMessage("xx_db_delete_success"));
+            await alertService.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
         },
 
         // Stock Actions
@@ -195,13 +228,13 @@ export function useMenuAction() {
 
         async deleteStock(recordId: number) {
             if (checkStockHasBookings(recordId)) {
-                await handleUserInfo("Menu", getMessage("xx_db_no_delete"));
+                await alertService.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.noDelete"));
                 return;
             }
 
             records.stocks.remove(recordId);
             await removeStock(recordId);
-            await handleUserInfo("Menu", getMessage("xx_db_delete_success"));
+            await alertService.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
         },
 
         async fadeInStock() {
@@ -259,7 +292,7 @@ export function useMenuAction() {
             if (url) {
                 window.open(url, "_blank", "noopener,noreferrer");
             } else {
-                await handleUserInfo("Menu", getMessage("xx_no_link"));
+                await alertService.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.noLink"));
             }
         },
 
@@ -287,10 +320,10 @@ export function useMenuAction() {
     };
 
     /**
-     * Executes a specific menu action.
+     * Executes one menu action and captures failures as user-visible alerts.
      *
-     * @param actionType - The identifier of the action.
-     * @param recordId - The ID of the record associated with the action.
+     * @param actionType - Menu action identifier.
+     * @param recordId - Target record identifier.
      */
     const executeAction = async (
         actionType: MenuActionType,
@@ -301,7 +334,7 @@ export function useMenuAction() {
         const handler = actionHandlers[actionType];
 
         if (!handler) {
-            await handleUserError("Menu", getMessage("xx_error_code"), {
+            await alertService.feedbackError(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.invalidCode"), {
                 data: actionType
             });
             return;
@@ -310,12 +343,17 @@ export function useMenuAction() {
         try {
             await handler(recordId);
         } catch (err) {
-            await handleUserError("Menu", err, {
+            await alertService.feedbackError(resolveMessage("composables.useMenu.title"), err, {
                 data: actionType
             });
         }
     };
 
+    /**
+     * Type guard that checks whether a string is a known menu action.
+     *
+     * @param actionType - Candidate action key.
+     */
     const hasAction = (actionType: string): actionType is MenuActionType => {
         return actionType in actionHandlers;
     };

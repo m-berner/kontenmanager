@@ -147,7 +147,7 @@ export const useSettingsStore = defineStore(
                 await setStorage(key, value);
             } catch (err) {
                 refVar.value = prev;
-                await alertService.handleUserError("STORES Settings", err, {});
+                await alertService.feedbackError("STORES Settings", err, {});
             }
         }
 

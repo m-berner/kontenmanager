@@ -72,7 +72,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   fadeInStock: async () => {
     // Opens the fade-in dialog only when passive stocks exist; otherwise informs the user
     if (records.stocks.passive.length === 0) {
-      await alertService.handleUserInfo(
+      await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noCompany")
       );
@@ -99,7 +99,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   updateAccount: async () => {
     // Open the Update Account dialog or inform the user if no accounts exist
     if (accountItems.value.length === 0) {
-      await alertService.handleUserInfo(
+      await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
       );
@@ -110,7 +110,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   deleteAccountConfirmation: async () => {
     if (accountItems.value.length === 0) {
-      await alertService.handleUserInfo(
+      await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
       );
@@ -121,7 +121,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBookingType: async () => {
     if (accountItems.value.length === 0) {
-      await alertService.handleUserInfo(
+      await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
       );
@@ -132,7 +132,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   updateBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      await alertService.handleUserInfo(
+      await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noBookingType")
       );
@@ -143,7 +143,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   deleteBookingType: async () => {
     if (bookingTypeItems.value.length === 0) {
-      await alertService.handleUserInfo(
+      await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noBookingType")
       );
@@ -154,7 +154,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   addBooking: async () => {
     if (accountItems.value.length === 0) {
-      void alertService.handleUserInfo(
+      void alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
       );
@@ -165,7 +165,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   exportDatabase: () => {
     if (accountItems.value.length === 0) {
-      void alertService.handleUserInfo(
+      void alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
       );
@@ -180,7 +180,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   showAccounting: () => {
     if (bookingItems.value.length === 0) {
-      void alertService.handleUserInfo(
+      void alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noBooking")
       );

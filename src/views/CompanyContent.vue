@@ -130,7 +130,7 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
         pagesToLoad.map((page) => records.stocks.loadOnlineData(page))
     );
   } catch (err) {
-    await alertService.handleUserError("COMPANY_CONTENT", err, {
+    await alertService.feedbackError("COMPANY_CONTENT", err, {
       data: "loadRequiredPages"
     });
   }
@@ -155,7 +155,7 @@ const onUpdatePage = async (page: number): Promise<void> => {
   try {
     await records.stocks.loadOnlineData(page);
   } catch (err) {
-    await alertService.handleUserError("COMPANY_CONTENT", err, {
+    await alertService.feedbackError("COMPANY_CONTENT", err, {
       data: "onUpdatePage"
     });
   } finally {

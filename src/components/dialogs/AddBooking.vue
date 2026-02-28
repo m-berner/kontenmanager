@@ -24,7 +24,7 @@ import {alertService} from "@/services/alert";
 const {t} = useI18n();
 const {add} = useBookingsDB();
 const {mapBookingFormToDb, reset} = useBookingForm();
-const {submitGuard} = useDialogGuards();
+const {submitGuard} = useDialogGuards(t);
 const {getMessage} = useBrowser();
 const records = useRecordsStore();
 const {activeAccountId} = useSettingsStore();
@@ -37,7 +37,7 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.handleUserInfo,
+    showSystemNotification: alertService.feedbackInfo,
     errorContext: "ADD_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -49,7 +49,7 @@ const onClickOk = async (): Promise<void> => {
       }
 
       records.bookings.add({...bookingData, cID: addBookingID}, true);
-      await alertService.handleUserInfo(t("components.dialogs.addBooking.title"), t("components.dialogs.addBooking.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.addBooking.title"), t("components.dialogs.addBooking.messages.success"));
       reset();
     }
   });

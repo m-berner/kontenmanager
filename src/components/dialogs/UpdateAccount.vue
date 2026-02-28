@@ -31,7 +31,7 @@ const runtime = useRuntimeStore();
 const {accountFormData, mapAccountFormToDb} = useAccountForm();
 const records = useRecordsStore();
 const {items: accountItems} = storeToRefs(records.accounts);
-const {submitGuard} = useDialogGuards();
+const {submitGuard} = useDialogGuards(t);
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentAccount = (): void => {
@@ -58,7 +58,7 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.handleUserInfo,
+    showSystemNotification: alertService.feedbackInfo,
     errorContext: "UPDATE_ACCOUNT",
     errorTitle: t("components.dialogs.updateAccount.title"),
     operation: async () => {
@@ -66,7 +66,7 @@ const onClickOk = async (): Promise<void> => {
       records.accounts.update(account);
       await update(account);
       runtime.resetTeleport();
-      await alertService.handleUserInfo(t("components.dialogs.updateAccount.title"), t("components.dialogs.updateAccount.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.updateAccount.title"), t("components.dialogs.updateAccount.messages.success"));
     }
   });
 };

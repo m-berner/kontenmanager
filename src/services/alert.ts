@@ -61,7 +61,7 @@ class AlertServiceImpl {
         return false;
     }
 
-    async handleUserInfo(
+    async feedbackInfo(
         title: string,
         error: string | string[] | Error | unknown,
         options?: HandleUserAlertOptions
@@ -76,7 +76,7 @@ class AlertServiceImpl {
         return alerts.info(title, message, duration);
     }
 
-    async handleUserWarning(
+    async feedbackWarning(
         title: string,
         error: string | string[] | Error | unknown,
         options?: HandleUserAlertOptions
@@ -91,7 +91,7 @@ class AlertServiceImpl {
         return alerts.warning(title, message, duration);
     }
 
-    async handleUserConfirm(
+    async feedbackConfirm(
         title: string,
         error: string | string[] | Error | unknown,
         options?: HandleUserAlertOptions
@@ -105,7 +105,7 @@ class AlertServiceImpl {
         return await alerts.confirm(title, message, options?.confirm);
     }
 
-    async handleUserError(
+    async feedbackError(
         title: string,
         error: string | string[] | Error | unknown,
         options: HandleUserAlertOptions

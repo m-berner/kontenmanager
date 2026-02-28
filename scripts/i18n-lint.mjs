@@ -47,6 +47,8 @@ function extractUsedKeysFromText(text) {
   const reI18nT = /<i18n-t[^>]*\skeypath=(["'])([^"']+)\1/gi;
   // getMessage('key') or getMessage("key")
   const reGetMessage = /\bgetMessage\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
+  // resolveMessage('key') or resolveMessage("key")
+  const reResolveMessage = /\bresolveMessage\(\s*(['"])([^'"\\]+)\1\s*[),]/g;
   // TRANSLATION_KEYS object values: PROPERTY_NAME: "translation.key.path"
   // Matches: TRANSLATION_KEYS = { ... } or export const TRANSLATION_KEYS: Type = { ... }
   const reTranslationKeys = /TRANSLATION_KEYS\s*(?::\s*\w+)?\s*=\s*\{[^}]*}/gs;
@@ -55,7 +57,7 @@ function extractUsedKeysFromText(text) {
   // Used in places like: new AppError("xx_browser_language", ...)
   const reMessageKeys = /["']xx_[a-zA-Z_]+["']/g;
 
-  for (const re of [reT, reI18nT, reGetMessage]) {
+  for (const re of [reT, reI18nT, reGetMessage, reResolveMessage]) {
     let m;
     while ((m = re.exec(text))) {
       const key = m[2];

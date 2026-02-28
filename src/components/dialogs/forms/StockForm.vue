@@ -52,7 +52,7 @@ const onUpdateIsin = async () => {
   } catch {
     stockFormData.company = "";
     stockFormData.symbol = "";
-    await alertService.handleUserError(
+    await alertService.feedbackError(
         "StockForm ISIN update",
         new AppError(
         ERROR_CODES.STOCK_FORM,

@@ -29,7 +29,7 @@ const {setStorage} = useStorage();
 const {add: addAccountDB} = useAccountsDB();
 const {add: addBookingTypeDB} = useBookingTypesDB();
 const {accountFormData, mapAccountFormToDb, reset} = useAccountForm();
-const {submitGuard} = useDialogGuards();
+const {submitGuard} = useDialogGuards(t);
 const {getMessage, showSystemNotification} = useBrowser();
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
@@ -113,9 +113,9 @@ const onClickOk = async (): Promise<void> => {
       try {
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, accountId);
       } catch (err) {
-        await alertService.handleUserError("COMPONENTS DIALOGS AddAccount", err, {});
+        await alertService.feedbackError("COMPONENTS DIALOGS AddAccount", err, {});
       }
-      await alertService.handleUserInfo(t("components.dialogs.addAccount.title"), t("components.dialogs.addAccount.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.addAccount.title"), t("components.dialogs.addAccount.messages.success"));
       records.clean(false);
       runtime.resetTeleport();
     }

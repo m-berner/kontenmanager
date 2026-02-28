@@ -56,7 +56,7 @@ onBeforeMount(async () => {
       DomainUtils.log("VIEWS AppIndex: Initialization aborted");
       return;
     }
-    await alertService.handleUserError(t("views.appIndex.init"), err, {});
+    await alertService.feedbackError(t("views.appIndex.init"), err, {});
   }
 });
 

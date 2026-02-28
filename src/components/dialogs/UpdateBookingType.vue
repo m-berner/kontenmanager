@@ -33,7 +33,7 @@ const {
   mapBookingTypeFormToDb,
   reset: resetForm
 } = useBookingTypeForm();
-const {submitGuard} = useDialogGuards();
+const {submitGuard} = useDialogGuards(t);
 const {activeAccountId} = useSettingsStore();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 const bookingTypeRef = ref<typeof BookingTypeForm | null>(null);
@@ -59,7 +59,7 @@ const onClickOk = async (): Promise<void> => {
 
   // Check if a booking type is selected for editing
   if (!bookingTypeRef.value?.edit) {
-    await alertService.handleUserInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noSelection"));
+    await alertService.feedbackInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noSelection"));
     return;
   }
 
@@ -67,12 +67,12 @@ const onClickOk = async (): Promise<void> => {
     formRef: baseDialogRef.value?.formRef,
     isConnected: databaseService.isConnected(),
     connectionErrorMessage: getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.handleUserInfo,
+    showSystemNotification: alertService.feedbackInfo,
     errorContext: "UPDATE_BOOKING_TYPE",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       if (!bookingTypeFormData.id) {
-        await alertService.handleUserInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noId"));
+        await alertService.feedbackInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noId"));
         return;
       }
 
@@ -82,7 +82,7 @@ const onClickOk = async (): Promise<void> => {
               bookingTypeFormData.id as number
           )
       ) {
-        await alertService.handleUserInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.duplicate"));
+        await alertService.feedbackInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.duplicate"));
         return;
       }
 
@@ -93,7 +93,7 @@ const onClickOk = async (): Promise<void> => {
       records.bookingTypes.update(bookingType);
       await update(bookingType);
       runtime.resetTeleport();
-      await alertService.handleUserInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.success"));
     }
   });
 };

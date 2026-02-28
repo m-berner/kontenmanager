@@ -22,7 +22,7 @@ const setService = async (): Promise<void> => {
   try {
     await setStorage(BROWSER_STORAGE.SERVICE.key, service.value);
   } catch (err) {
-    await alertService.handleUserError("Components ServiceSelector", err, {});
+    await alertService.feedbackError("Components ServiceSelector", err, {});
   }
 };
 
@@ -41,7 +41,7 @@ onBeforeMount(async () => {
     const storageService = await getStorage([BROWSER_STORAGE.SERVICE.key]);
     service.value = storageService[BROWSER_STORAGE.SERVICE.key] as string;
   } catch (err) {
-    await alertService.handleUserError("Components ServiceSelector", err, {});
+    await alertService.feedbackError("Components ServiceSelector", err, {});
   }
 });
 

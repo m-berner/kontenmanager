@@ -23,12 +23,6 @@
   "xx_db_connection_err": {
     "message": "Database not connected"
   },
-  "xx_db_delete_success": {
-    "message": "Record deleted"
-  },
-  "xx_db_no_delete": {
-    "message": "Record could not be deleted"
-  },
   "xx_db_no_selected": {
     "message": "No record eselected"
   },
@@ -49,8 +43,5 @@
   },
   "xx_db_rollback": {
     "message": "Rollback successful"
-  },
-  "xx_no_link": {
-    "message": "Mising link"
   }
 }

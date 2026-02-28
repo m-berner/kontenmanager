@@ -1,73 +1,56 @@
 # Composables Layer
 
-This directory contains **Vue Composables**, which serve as a bridge between the logic layer (Domain/Services) and the
-user interface. In this extension, they are essential for encapsulating side effects related to browser APIs (
-WebExtensions) and providing a reactive interface for Vue components.
+This folder contains Vue composables that coordinate UI workflows, browser APIs, and persistence access.
+Composables should adapt and orchestrate behavior, not implement domain-heavy logic.
 
-## Role and Responsibilities
+## Purpose
 
-The mission of the composables is to:
+Composables in this project are responsible for:
 
-- **UI/Services Bridge**: Translate calls to asynchronous services into reactive state for components.
-- **Form Management**: Centralize the mapping logic between raw form data and domain objects via `useForms`.
-- **Browser Abstraction**: Isolate the use of `browser.*` (or `chrome.*`) via `useBrowser` to facilitate testing and
-  maintenance.
-- **User Feedback Policy**: Centralize foreground user feedback via `useAlert` (`handleUserInfo`, `handleUserError`,
-  `handleUserWarning`, `handleUserConfirm`) to keep formatting, defaults, and logging consistent.
-- **Reactive Persistence**: Provide a simple interface for interacting with IndexedDB (`useIndexedDB`) and Browser
-  Storage (`useStorage`).
+- Converting service and storage calls into reactive UI-facing state.
+- Encapsulating browser/WebExtension interactions behind `useBrowser`.
+- Providing a consistent foreground feedback path through `useAlert`/`alertService`.
+- Managing form state and mapping between view models and domain/database models.
+- Wrapping persistence access (`useIndexedDB`, `useStorage`) with typed, reusable APIs.
 
-## Directory Structure
+## File Overview
 
-### 💾 Persistence and State
+### Persistence
 
-- **`useIndexedDB.ts`**: Provides typed wrappers for each database store. It ensures that incoming data is validated by
-  the domain before writing.
-- **`useStorage.ts`**: Handles simple persistence (sync/local/session) via browser storage APIs.
+- `useIndexedDB.ts`: Typed wrappers per IndexedDB entity/store. Validates incoming data before writes.
+- `useStorage.ts`: Browser storage adapter (local/sync/session) with listener utilities.
 
-### 📝 Forms and Validation
+### Forms and Dialogs
 
-- **`useForms.ts`**: Contains `FormManagers`. They manage the initial state of forms, resetting, and mapping to database
-  data structures.
-- **`useDialogGuards.ts`**: Provides protection mechanisms for dialog operations (loading, Vuetify form validation, DB
-  reconnection attempts).
+- `useForms.ts`: Form managers for initialization, reset, and mapping to persisted models.
+- `useDialogGuards.ts`: Guard logic for dialog flows (validation, loading, reconnection checks).
 
-### 🌐 Browser Integration
+### Browser and Integration
 
-- **`useBrowser.ts`**: The entry point for interactions with the WebExtension API (tabs, notifications, downloads,
-  i18n).
-- **`useStorage.ts`**: Dedicated composable for browser local storage operations (get, set, clear, listener).
-- **`useFavicon.ts`**: Utility for fetching and managing website icons with a fallback system.
-- **`useDomain.ts`**: URL parsing logic to extract domains, subdomains, and protocols reactively.
+- `useBrowser.ts`: Main WebExtension abstraction (`tabs`, `downloads`, `notifications`, `i18n`, etc.).
+- `useFavicon.ts`: Favicon loading utilities with fallback behavior.
+- `useDomain.ts`: Reactive URL/domain parsing helpers.
 
-### 🔔 User Feedback
+### UI Interaction
 
-- **`useAlert.ts`**: Thin composable wrapper around `alertService` for ergonomic Vue usage.
-- Prefer `useAlert` in components/composables for foreground UI feedback.
-- Use `useBrowser().showSystemNotification(...)` only for system-level/background notifications where OS-level visibility is needed.
+- `useMenu.ts`: Menu action execution and temporary row highlighting for table interactions.
+- `useKeyboardShortcuts.ts`: Registration and cleanup of global keyboard shortcuts.
 
-### 🖱️ Interface and Interaction
+### Alerts
 
-- **`useMenu.ts`**: Manages contextual menu actions and row highlighting in data tables.
-- **`useKeyboardShortcuts.ts`**: Centralized system for registering and managing global keyboard shortcuts within the
-  extension.
+- `useAlert.ts`: Vue-friendly wrapper around `alertService` for consistent foreground feedback UX.
 
-## Development Principles
+## Conventions
 
-1. **No heavy business logic**: Complex calculations should reside in `src/domains/logic.ts`. The composable only calls
-   these functions.
-2. **Consistent error handling**: Use `AppError` to propagate errors in a structured manner.
-3. **Alert policy**: Do not call the alert store directly from components unless strictly necessary. Prefer `useAlert`
-   wrapper functions (`handleUserInfo`, `handleUserWarning`, `handleUserError`, `handleUserConfirm`) to keep
-   formatting and behavior consistent.
-4. **Cleanup**: Always use `onUnmounted` to remove event listeners (keyboard, storage) to avoid memory leaks.
-5. **Systematic Validation**: Database composables (`useIndexedDB`) must systematically pass data through
-   `DomainValidators` before any `add` or `update` operation.
+1. Keep domain/business rules in `src/domains/*`; composables orchestrate, they do not own core business logic.
+2. Prefer structured error propagation (`AppError` or domain-specific errors), then map errors to user feedback.
+3. Use `useAlert` for foreground feedback; use system notifications only when OS-level/background visibility is required.
+4. Always clean up side effects (`onUnmounted`): listeners, timers, intervals, and subscriptions.
+5. Route persistence writes through domain validation before `add`/`update`.
 
-## Testing
+## Testing Guidance
 
-- Unit test pure helpers directly (e.g., URL/domain parsing) without Vue.
-- For composables with browser API usage, stub the `browser` global (see tests stubbing `browser.storage` and
-  `browser.notifications`).
-- Favor testing mapping functions from `useForms` to ensure DB-bound data is normalized (e.g., booking type name
-  normalization via `DomainUtils.normalizeBookingTypeName`).
+- Test pure helper logic without Vue runtime whenever possible.
+- Stub browser globals for composables that depend on WebExtension APIs.
+- Verify mapping/normalization behavior in `useForms` to protect DB contract stability.
+- Assert cleanup behavior for composables that register listeners or timers.

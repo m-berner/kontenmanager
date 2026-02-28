@@ -27,7 +27,7 @@ const validationErrors = ref<string[]>([]);
 onErrorCaptured((err, _instance, info) => {
   DomainUtils.log("COMPONENTS DIALOGS FORMS BaseDialogForm: Error captured", {err, info}, "error");
   hasError.value = true;
-  void alertService.handleUserError("Dialog Error", err, {data: info});
+  void alertService.feedbackError("Dialog Error", err, {data: info});
   return false; // Prevent error from propagating
 });
 

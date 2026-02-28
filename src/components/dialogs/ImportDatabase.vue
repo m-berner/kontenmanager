@@ -43,7 +43,7 @@ const {t} = useI18n();
 const {getMessage, showSystemNotification} = useBrowser();
 const {setStorage} = useStorage();
 const {atomicImport} = useAccountsDB();
-const {isLoading, withLoading} = useDialogGuards();
+const {isLoading, withLoading} = useDialogGuards(t);
 const {resetTeleport} = useRuntimeStore();
 const settings = useSettingsStore();
 const records = useRecordsStore();
@@ -362,7 +362,7 @@ const restoreFromRollback = async (
         "COMPONENTS DIALOGS ImportDatabase: Rollback completed successfully"
     );
   } catch (err) {
-    await alertService.handleUserError(t("components.dialogs.importDatabase.title"), err, {
+    await alertService.feedbackError(t("components.dialogs.importDatabase.title"), err, {
       data: "Rollback failed"
     });
   }
@@ -412,7 +412,7 @@ const processBackupFile = async (): Promise<void> => {
     const validation = ImportExportService.validateBackup(backup);
     // Use type guard
     if (!validation.isValid) {
-      await alertService.handleUserError(
+      await alertService.feedbackError(
           "COMPONENTS DIALOGS ImportDatabase",
           getMessage("xx_invalid_backup"), {}
       );
@@ -445,7 +445,7 @@ const processBackupFile = async (): Promise<void> => {
       //     ? `\n...and ${dataIntegrityErrors.length - 5} more`
       //     : "";
 
-      await alertService.handleUserError(
+      await alertService.feedbackError(
           t("components.dialogs.importDatabase.title"),
           new Error(errorList),
           {}
@@ -458,7 +458,7 @@ const processBackupFile = async (): Promise<void> => {
     // Show confirmation before import
     const summary = getImportSummary(backup);
 
-    const shouldProceed = await alertService.handleUserConfirm(
+    const shouldProceed = await alertService.feedbackConfirm(
         t("components.dialogs.importDatabase.confirmImportTitle"),
         summary,
         {
@@ -506,7 +506,7 @@ const processBackupFile = async (): Promise<void> => {
             : err instanceof Error
                 ? err.message
                 : "Unknown error";
-    await alertService.handleUserError(t("components.dialogs.importDatabase.title"), errorMessage, {
+    await alertService.feedbackError(t("components.dialogs.importDatabase.title"), errorMessage, {
       data: "IMPORT_DATABASE_PROCESS"
     });
   }
@@ -544,13 +544,13 @@ const onClickOk = async (): Promise<void> => {
             getMessage("xx_db_rollback")
         );
       } catch (rollbackErr) {
-        await alertService.handleUserError(
+        await alertService.feedbackError(
             t("components.dialogs.importDatabase.title"),
             rollbackErr, {}
         );
       }
 
-      await alertService.handleUserError(t("components.dialogs.importDatabase.title"), err, {
+      await alertService.feedbackError(t("components.dialogs.importDatabase.title"), err, {
         data: "IMPORT_DATABASE_FAILED"
       });
     }

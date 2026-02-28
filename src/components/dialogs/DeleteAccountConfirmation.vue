@@ -26,7 +26,7 @@ const {activeAccountId} = storeToRefs(settings);
 const {resetTeleport} = useRuntimeStore();
 const records = useRecordsStore();
 const {items: accountItems} = storeToRefs(records.accounts);
-const {isLoading, ensureConnected, withLoading} = useDialogGuards();
+const {isLoading, ensureConnected, withLoading} = useDialogGuards(t);
 
 const switchToNextAccount = async (): Promise<void> => {
   try {
@@ -42,7 +42,7 @@ const switchToNextAccount = async (): Promise<void> => {
         activeAccountId.value
     );
   } catch (err) {
-    await alertService.handleUserError("DeleteAccountConfirmation", err, {});
+    await alertService.feedbackError("DeleteAccountConfirmation", err, {});
   }
 
   const storesDB = await databaseService.getAccountRecords(
@@ -74,9 +74,9 @@ const onClickOk = async (): Promise<void> => {
 
       await switchToNextAccount();
       resetTeleport();
-      await alertService.handleUserInfo(t("components.dialogs.deleteAccountConfirmation.title"), t("components.dialogs.deleteAccountConfirmation.messages.success"));
+      await alertService.feedbackInfo(t("components.dialogs.deleteAccountConfirmation.title"), t("components.dialogs.deleteAccountConfirmation.messages.success"));
     } catch (err) {
-      await alertService.handleUserError("DeleteAccountConfirmation", err, {});
+      await alertService.feedbackError("DeleteAccountConfirmation", err, {});
     }
   });
 };

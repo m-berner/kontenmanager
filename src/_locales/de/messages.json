@@ -23,12 +23,6 @@
   "xx_db_connection_err": {
     "message": "Datenbankverbindung fehlgeschlagen"
   },
-  "xx_db_delete_success": {
-    "message": "Datensatz wurde gelöscht"
-  },
-  "xx_db_no_delete": {
-    "message": "Datensatz kann nicht gelöscht werden"
-  },
   "xx_db_no_selected": {
     "message": "Kein Datensatz ausgewählt"
   },
@@ -49,8 +43,5 @@
   },
   "xx_db_rollback": {
     "message": "'Rollback' erfolgreich"
-  },
-  "xx_no_link": {
-    "message": "Kein Link gefunden"
   }
 }

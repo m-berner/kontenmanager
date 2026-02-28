@@ -35,7 +35,7 @@ const {getAll: getAllAccounts} = useAccountsDB();
 const {getAll: getAllBookings} = useBookingsDB();
 const {getAll: getAllBookingTypes} = useBookingTypesDB();
 const {getAll: getAllStocks} = useStocksDB();
-const {isLoading, withLoading} = useDialogGuards();
+const {isLoading, withLoading} = useDialogGuards(t);
 const {resetTeleport} = useRuntimeStore();
 
 const prefix = new Date().toISOString().substring(0, 10);
@@ -152,7 +152,7 @@ const onClickOk = async (): Promise<void> => {
       const estimatedSize = estimateExportSize(exportData);
 
       if (estimatedSize > LARGE_FILE_THRESHOLD_KB) {
-        const proceed = await alertService.handleUserConfirm(
+        const proceed = await alertService.feedbackConfirm(
             t("components.dialogs.exportDatabase.largeFileTitle"),
             [
               t("components.dialogs.exportDatabase.messages.estimatedSize", {
@@ -181,7 +181,7 @@ const onClickOk = async (): Promise<void> => {
 
       resetTeleport();
     } catch (err) {
-      await alertService.handleUserError(t("components.dialogs.exportDatabase.title"), err, {
+      await alertService.feedbackError(t("components.dialogs.exportDatabase.title"), err, {
         data: "EXPORT_DATABASE"
       });
     }

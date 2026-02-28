@@ -10,7 +10,7 @@
  * Renders queued alerts from `useAlertStore` and a confirmation dialog when requested.
  * Provides non-blocking, app-wide feedback for success, info, warning, and error messages.
  */
-import {computed} from "vue";
+import {computed, ref, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useAlertStore} from "@/stores/alerts";
 import {DomainUtils} from "@/domains/utils";
@@ -22,15 +22,37 @@ const {
   confirmationDialog,
   showOverlay,
   showConfirmation,
-  alertMessage,
-  alertTitle,
-  alertType,
   pendingCount
 } = storeToRefs(alertStore);
 
 const confirmationIcon = computed(() => {
   return `$${confirmationDialog.value.type}`;
 });
+
+/**
+ * Cache the last non-empty alert payload.
+ * This avoids a brief empty render while the overlay is leaving:
+ * store state is reset immediately, but Vuetify still runs the leave transition.
+ */
+const renderedAlert = ref({
+  title: "",
+  message: "",
+  type: "info" as "error" | "success" | "warning" | "info"
+});
+
+watch(
+    currentAlert,
+    (next) => {
+      if (next && next.id > -1) {
+        renderedAlert.value = {
+          title: next.title,
+          message: next.message,
+          type: next.type ?? "info"
+        };
+      }
+    },
+    {immediate: true}
+);
 
 DomainUtils.log("COMPONENTS AlertOverlay: setup");
 </script>
@@ -44,12 +66,12 @@ DomainUtils.log("COMPONENTS AlertOverlay: setup");
     <v-card class="mx-auto" max-width="500">
       <v-card-text class="pa-6">
         <v-alert
-            :title="alertTitle"
-            :type="alertType"
+            :title="renderedAlert.title"
+            :type="renderedAlert.type"
             closable
             variant="tonal"
             @click:close="dismissAlert(currentAlert?.id)">
-          {{ alertMessage }}
+          {{ renderedAlert.message }}
         </v-alert>
       </v-card-text>
       <v-card-text

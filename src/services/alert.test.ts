@@ -49,20 +49,20 @@ describe("AlertService", () => {
         vi.clearAllMocks();
     });
 
-    it("handleUserInfo should normalize strings and use default duration", async () => {
+    it("feedbackInfo should normalize strings and use default duration", async () => {
         storeMock.info.mockReturnValueOnce(10);
 
-        const result = await service.handleUserInfo("Info", "text message");
+        const result = await service.feedbackInfo("Info", "text message");
 
         expect(result).toBe(10);
         expect(storeMock.info).toHaveBeenCalledWith("Info", "text message", 4000);
     });
 
-    it("handleUserWarning should normalize Error and use default duration", async () => {
+    it("feedbackWarning should normalize Error and use default duration", async () => {
         const error = new Error("disk full");
         storeMock.warning.mockReturnValueOnce(11);
 
-        const result = await service.handleUserWarning("Warn", error);
+        const result = await service.feedbackWarning("Warn", error);
 
         expect(result).toBe(11);
         expect(storeMock.warning).toHaveBeenCalledWith(
@@ -72,10 +72,10 @@ describe("AlertService", () => {
         );
     });
 
-    it("handleUserConfirm should pass normalized array message and confirm options", async () => {
+    it("feedbackConfirm should pass normalized array message and confirm options", async () => {
         storeMock.confirm.mockResolvedValueOnce(true);
 
-        const result = await service.handleUserConfirm("Confirm", ["line1", "line2"], {
+        const result = await service.feedbackConfirm("Confirm", ["line1", "line2"], {
             confirm: {
                 confirmText: "Yes",
                 cancelText: "No",
@@ -91,12 +91,12 @@ describe("AlertService", () => {
         });
     });
 
-    it("handleUserError should log context and call error alert with default duration", async () => {
+    it("feedbackError should log context and call error alert with default duration", async () => {
         const error = new Error("boom");
         error.stack = "stack trace";
         storeMock.error.mockReturnValueOnce(12);
 
-        const result = await service.handleUserError("Failure", error, {
+        const result = await service.feedbackError("Failure", error, {
             logLevel: "error",
             data: {id: 5},
             correlationId: "corr-1"
@@ -111,11 +111,11 @@ describe("AlertService", () => {
         expect(storeMock.error).toHaveBeenCalledWith("Failure", "Error\nboom", null);
     });
 
-    it("handleUserError should normalize AppError category and message", async () => {
+    it("feedbackError should normalize AppError category and message", async () => {
         const appError = new AppError("Translated message", "business");
         storeMock.error.mockReturnValueOnce(13);
 
-        const result = await service.handleUserError("Business", appError, {});
+        const result = await service.feedbackError("Business", appError, {});
 
         expect(result).toBe(13);
         expect(storeMock.error).toHaveBeenCalledWith(
@@ -128,8 +128,8 @@ describe("AlertService", () => {
     it("should rate-limit duplicate messages with default interval", async () => {
         storeMock.info.mockReturnValue(20);
 
-        const first = await service.handleUserInfo("Info", "same");
-        const second = await service.handleUserInfo("Info", "same");
+        const first = await service.feedbackInfo("Info", "same");
+        const second = await service.feedbackInfo("Info", "same");
 
         expect(first).toBe(20);
         expect(second).toBeUndefined();
@@ -139,8 +139,8 @@ describe("AlertService", () => {
     it("should allow duplicate messages when rateLimitMs is zero", async () => {
         storeMock.warning.mockReturnValue(21);
 
-        const first = await service.handleUserWarning("Warn", "same", {rateLimitMs: 0});
-        const second = await service.handleUserWarning("Warn", "same", {rateLimitMs: 0});
+        const first = await service.feedbackWarning("Warn", "same", {rateLimitMs: 0});
+        const second = await service.feedbackWarning("Warn", "same", {rateLimitMs: 0});
 
         expect(first).toBe(21);
         expect(second).toBe(21);
@@ -150,7 +150,7 @@ describe("AlertService", () => {
     it("should support custom durations and unknown error normalization", async () => {
         storeMock.info.mockReturnValueOnce(22);
 
-        const result = await service.handleUserInfo("Info", {invalid: true}, {
+        const result = await service.feedbackInfo("Info", {invalid: true}, {
             duration: 7000
         });
 

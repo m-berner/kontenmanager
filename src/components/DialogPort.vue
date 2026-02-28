@@ -19,7 +19,7 @@ import type {DialogComponent} from "@/types";
 
 const {t} = useI18n();
 const runtime = useRuntimeStore();
-const {isLoading} = useDialogGuards();
+const {isLoading} = useDialogGuards(t);
 
 const dialogRef = ref<DialogComponent>();
 
