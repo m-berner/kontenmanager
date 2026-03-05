@@ -1,0 +1,16 @@
+.yarn/**
+.vscode/**
+.env.
+.env.production
+.env.development
+doc/**
+js/**
+node_modules/**
+releases/**
+resources/**
+build/**
+out/**
+dist/**
+public/**
+desktop.ini
+kontenmanager@gmx.de/**
