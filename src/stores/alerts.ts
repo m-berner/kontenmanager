@@ -7,7 +7,9 @@
 import type {ConfirmationDialogData, VisibleAlertData} from "@/types";
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
+import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
 import {log} from "@/domains/utils/utils";
+import {ERROR_CATEGORY} from "@/constants";
 
 type VisualAlertType = "error" | "success" | "warning" | "info";
 
@@ -276,7 +278,14 @@ export const useAlertsStore = defineStore("alerts", () => {
                     null,
                     "warn"
                 );
-                reject(new Error("Confirmation dialog is already active"));
+                reject(
+                    appError(
+                        ERROR_DEFINITIONS.STORES.ALERTS.A.CODE,
+                        ERROR_CATEGORY.STORE,
+                        true,
+                        {activeDialogId: confirmationDialog.value.id}
+                    )
+                );
                 return;
             }
 
@@ -390,4 +399,3 @@ export const useAlertsStore = defineStore("alerts", () => {
 });
 
 log("STORES alerts");
-

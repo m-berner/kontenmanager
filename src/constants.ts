@@ -554,6 +554,19 @@ export const INDEXED_DB = {
     MAX_FILE_SIZE: 64 * 1024 * 1024
 } as const;
 
+/**
+ * Valid IndexedDB store names.
+ * Used for runtime validation and compile-time narrowing.
+ */
+export const VALID_STORES = [
+    INDEXED_DB.STORE.ACCOUNTS.NAME,
+    INDEXED_DB.STORE.BOOKINGS.NAME,
+    INDEXED_DB.STORE.STOCKS.NAME,
+    INDEXED_DB.STORE.BOOKING_TYPES.NAME
+] as const;
+
+export type ValidStoreNameType = (typeof VALID_STORES)[number];
+
 export const SETTINGS: StoresConfigType = {
     INDEXES: {
         dax: "DAX",

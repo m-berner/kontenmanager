@@ -15,7 +15,7 @@ import type {
     RepositoryMap,
     RepositoryType
 } from "@/types";
-import type {ValidStoreNameType} from "@/services/database/batch/service";
+import type {ValidStoreNameType} from "@/constants";
 
 import {createDatabaseConnectionManager} from "./connection/manager";
 import {createTransactionManager} from "./transaction/manager";

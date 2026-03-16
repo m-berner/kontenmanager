@@ -7,20 +7,8 @@
 import type {BatchOperationDescriptor, RecordOperation} from "@/types";
 import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
 import {log} from "@/domains/utils/utils";
-import {ERROR_CATEGORY, INDEXED_DB} from "@/constants";
+import {ERROR_CATEGORY, VALID_STORES, type ValidStoreNameType} from "@/constants";
 import type {TransactionManagerContract} from "@/services/database/transaction/manager";
-
-/**
- * Valid store names
- */
-const VALID_STORES = [
-    INDEXED_DB.STORE.ACCOUNTS.NAME,
-    INDEXED_DB.STORE.BOOKINGS.NAME,
-    INDEXED_DB.STORE.STOCKS.NAME,
-    INDEXED_DB.STORE.BOOKING_TYPES.NAME
-] as const;
-
-export type ValidStoreNameType = (typeof VALID_STORES)[number];
 
 export type BatchOperationBuilder = {
     add: (_storeName: ValidStoreNameType, _operation: RecordOperation) => BatchOperationBuilder;

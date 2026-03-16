@@ -82,6 +82,9 @@ export const ERROR_DEFINITIONS = {
     STORES: {
         BOOKINGS: {
             A: {CODE: "#bks", MSG: "No booking found for ID"}
+        },
+        ALERTS: {
+            A: {CODE: "#alx", MSG: "Confirmation dialog is already active"}
         }
     },
     SERVICES: {
@@ -202,6 +205,29 @@ function findErrorMsg(node: object, code: string): string | undefined {
     return undefined;
 }
 
+class AppErrorImpl extends Error {
+    code: Messages | ErrorCodes;
+    category: AppErrorCategoryType;
+    recoverable: boolean;
+    context?: Record<string, unknown>;
+
+    constructor(opts: {
+        message: string;
+        code: Messages | ErrorCodes;
+        category: AppErrorCategoryType;
+        recoverable: boolean;
+        context?: Record<string, unknown>;
+    }) {
+        super(opts.message);
+        Object.setPrototypeOf(this, new.target.prototype);
+        this.name = "AppError";
+        this.code = opts.code;
+        this.category = opts.category;
+        this.recoverable = opts.recoverable;
+        this.context = opts.context;
+    }
+}
+
 /**
  * Creates a custom application error with a specified code, category, and optional context.
  *
@@ -232,12 +258,11 @@ export function appError(
             `${browserService.getMessage("xx_error_code")}: ${code}`;
     }
 
-    const err = new Error(message) as AppError;
-    err.name = "AppError";
-    err.code = code;
-    err.category = category;
-    err.recoverable = recoverable;
-    err.context = context;
-
-    return err;
+    return new AppErrorImpl({
+        message,
+        code,
+        category,
+        recoverable,
+        context
+    });
 }

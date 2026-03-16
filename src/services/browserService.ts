@@ -117,7 +117,7 @@ async function tabsCreate(): Promise<browser.tabs.Tab> {
     } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.C.CODE,
-            ERROR_CATEGORY.VALIDATION,
+            ERROR_CATEGORY.BROWSER_API,
             true,
             {originalError: serializeError(err)}
         );
@@ -136,7 +136,7 @@ async function tabsQuery(): Promise<browser.tabs.Tab[]> {
     } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.D.CODE,
-            ERROR_CATEGORY.VALIDATION,
+            ERROR_CATEGORY.BROWSER_API,
             true,
             {originalError: serializeError(err)}
         );
@@ -157,7 +157,7 @@ async function windowsUpdate(
     } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.E.CODE,
-            ERROR_CATEGORY.VALIDATION,
+            ERROR_CATEGORY.BROWSER_API,
             true,
             {windowId, originalError: serializeError(err)}
         );
@@ -176,7 +176,7 @@ async function tabsUpdate(tabId: number): Promise<browser.tabs.Tab> {
     } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.F.CODE,
-            ERROR_CATEGORY.VALIDATION,
+            ERROR_CATEGORY.BROWSER_API,
             true,
             {tabId, originalError: serializeError(err)}
         );
@@ -193,7 +193,7 @@ async function removeTab(tabId: number): Promise<void> {
     } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.H.CODE,
-            ERROR_CATEGORY.VALIDATION,
+            ERROR_CATEGORY.BROWSER_API,
             true,
             {tabId, originalError: serializeError(err)}
         );
@@ -209,7 +209,7 @@ async function openOptionsPage(): Promise<void> {
     } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.G.CODE,
-            ERROR_CATEGORY.VALIDATION,
+            ERROR_CATEGORY.BROWSER_API,
             true,
             {originalError: serializeError(err)}
         );
@@ -302,7 +302,7 @@ async function writeBufferToFile(
     } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.J.CODE,
-            ERROR_CATEGORY.VALIDATION,
+            ERROR_CATEGORY.BROWSER_API,
             true,
             {filename, originalError: serializeError(err)}
         );

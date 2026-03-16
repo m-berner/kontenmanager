@@ -5,15 +5,31 @@
  */
 
 import type {AppError, DatabaseConnection, TransactionOptions} from "@/types";
-import {appError, ERROR_DEFINITIONS, isAppError} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, isAppError, serializeError} from "@/domains/errors";
 import {ERROR_CATEGORY} from "@/constants";
 import {log} from "@/domains/utils/utils";
 
-function waitForCompletion(tx: IDBTransaction): Promise<void> {
+function waitForCompletion(
+    tx: IDBTransaction,
+    stores: string[],
+    mode: IDBTransactionMode
+): Promise<void> {
     return new Promise((resolve, reject) => {
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
-        tx.onabort = () => reject(new Error("Transaction aborted"));
+        tx.onabort = () => reject(
+            appError(
+                ERROR_DEFINITIONS.SERVICES.DATABASE.TRANSACTION_FAILED.CODE,
+                ERROR_CATEGORY.DATABASE,
+                true,
+                {
+                    stores,
+                    mode,
+                    reason: "Transaction aborted",
+                    originalError: tx.error ? serializeError(tx.error) : undefined
+                }
+            )
+        );
     });
 }
 
@@ -101,7 +117,7 @@ export function createTransactionManager(connection: DatabaseConnection) {
             const result = await operation(tx);
 
             options.onProgress?.({phase: "completing"});
-            await waitForCompletion(tx);
+            await waitForCompletion(tx, stores, mode);
 
             options.onProgress?.({phase: "completed"});
 
@@ -163,4 +179,3 @@ export type TransactionManagerContract = ReturnType<typeof createTransactionMana
 export const TransactionManager = {
     create: createTransactionManager
 };
-

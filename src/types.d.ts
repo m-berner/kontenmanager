@@ -4,7 +4,6 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type {AppErrorCategoryType} from "@/types";
 import type {Errors} from "@/domains/errors";
 import deNotifications from "@/_locales/de/messages.json";
 
@@ -211,7 +210,7 @@ export interface BaseEntity {
  */
 export interface BatchOperationDescriptor {
     /** Name of the object store. */
-    storeName: import("@/services/database/batch/service").ValidStoreNameType;
+    storeName: import("@/constants").ValidStoreNameType;
     /** List of operations (add, put, delete). */
     operations: import("@/types").RecordOperation[];
 }
