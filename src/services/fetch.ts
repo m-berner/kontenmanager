@@ -16,7 +16,7 @@ import type {
     StockMarketData,
     StringNumberPair
 } from "@/types";
-import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, serializeError} from "@/domains/errors";
 import {log, mean, normalizeNumber, toNumber} from "@/domains/utils/utils";
 import {ERROR_CATEGORY, SETTINGS} from "@/constants";
 import {BROWSER_STORAGE} from "@/constants";
@@ -140,7 +140,17 @@ export async function fetchWithRetry(
     maxRetries = 3
 ): Promise<Response> {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(new Error("timeout")), 30000);
+    const TIMEOUT_MS = 30_000;
+    const timeoutId = setTimeout(() => {
+        controller.abort(
+            appError(
+                ERROR_DEFINITIONS.SERVICES.FETCH.A.CODE,
+                ERROR_CATEGORY.NETWORK,
+                true,
+                {url, timeoutMs: TIMEOUT_MS, reason: "timeout"}
+            )
+        );
+    }, TIMEOUT_MS);
     let lastStatus: number | undefined;
     let lastError: unknown;
 
@@ -178,7 +188,11 @@ export async function fetchWithRetry(
                     break;
                 }
             } catch (error) {
-                lastError = error;
+                // Prefer a structured abort reason (e.g. timeout AppError) if available.
+                lastError =
+                    controller.signal.aborted && controller.signal.reason !== undefined
+                        ? controller.signal.reason
+                        : error;
                 if (attempt < maxRetries) {
                     await delay(1000 * attempt);
                 }
@@ -193,7 +207,7 @@ export async function fetchWithRetry(
         ERROR_DEFINITIONS.SERVICES.FETCH.A.CODE,
         ERROR_CATEGORY.NETWORK,
         true,
-        {url, maxRetries, lastStatus, lastError}
+        {url, maxRetries, lastStatus, lastError: serializeError(lastError)}
     );
 }
 
@@ -304,37 +318,72 @@ function extractFnetRateAndCurrency(doc: Document): {
 
     const nodes = doc.querySelectorAll(SEARCH_RESULT_SELECTOR);
 
-    if (nodes.length < 2) {
-        return {rate: DEFAULT_VALUE, currency: DEFAULT_CURRENCY};
+    if (nodes.length >= 2) {
+        return {
+            rate: nodes[0]?.textContent?.trim() || DEFAULT_VALUE,
+            currency: nodes[1]?.textContent?.trim() || DEFAULT_CURRENCY
+        };
     }
 
-    return {
-        rate: nodes[0]?.textContent?.trim() || DEFAULT_VALUE,
-        currency: nodes[1]?.textContent?.trim() || DEFAULT_CURRENCY
-    };
+    // Fallback: try to parse a combined string like "123,45 EUR" / "123.45 USD".
+    const raw =
+        doc.querySelector("#snapshot-value-fst-current-0")?.textContent?.trim() ??
+        "";
+    if (!raw) return {rate: DEFAULT_VALUE, currency: DEFAULT_CURRENCY};
+
+    const rateMatch = raw.match(/[-+]?\d[\d.,]*/);
+    const currencyMatch = raw.match(/(EUR|USD|\$|€)/);
+    const rate = rateMatch?.[0]?.trim() ?? DEFAULT_VALUE;
+    const currency = currencyMatch?.[0]?.trim() ?? DEFAULT_CURRENCY;
+    return {rate, currency: parseCurrency(currency)};
 }
 
 /**
  * Extracts min and max from the finanzen.net document.
  */
 function extractFnetMinMax(doc: Document): { min: string; max: string } {
-    const SEARCH_RESULT_SELECTOR = "main div[class=accordion__content]";
+    // Use a class selector so this keeps working even if finanzen.net adds extra classes.
+    const SEARCH_RESULT_SELECTOR = "main .accordion__content";
 
     const nodes = doc.querySelectorAll(SEARCH_RESULT_SELECTOR);
 
-    if (nodes.length === 0) {
-        return {min: DEFAULT_VALUE, max: DEFAULT_VALUE};
-    }
-
-    const rows = nodes[0].querySelectorAll("table > tbody > tr");
+    // Preferred: use the scoped results table, but fall back to a global scan since
+    // the exact wrapper structure changes occasionally.
+    const rows =
+        nodes.length > 0
+            ? nodes[0].querySelectorAll<HTMLTableRowElement>("table > tbody > tr")
+            : doc.querySelectorAll<HTMLTableRowElement>("table > tbody > tr");
 
     for (const row of rows) {
-        if (row.textContent?.includes(TARGET_PERIOD)) {
+        const rowText = (row.textContent ?? "").toLowerCase();
+        const rowTextNoWs = rowText.replace(/\s+/g, "");
+        const targetNoWs = TARGET_PERIOD.toLowerCase().replace(/\s+/g, "");
+        if (rowText.includes(TARGET_PERIOD.toLowerCase()) || rowTextNoWs.includes(targetNoWs)) {
             const cells = row.querySelectorAll("td");
-            return {
-                min: cells[3]?.textContent?.trim() || DEFAULT_VALUE,
-                max: cells[4]?.textContent?.trim() || DEFAULT_VALUE
-            };
+            const cellTexts = Array.from(cells)
+                .map((c) => c.textContent?.trim() ?? "")
+                .filter(Boolean);
+
+            // Preferred: old stable indices (if present).
+            const minByIndex = cells[3]?.textContent?.trim();
+            const maxByIndex = cells[4]?.textContent?.trim();
+            if (minByIndex && maxByIndex) {
+                return {
+                    min: minByIndex,
+                    max: maxByIndex
+                };
+            }
+
+            // Fallback: some layouts have fewer columns; pick the last 2 numeric-looking cells.
+            // Keep this strict so labels like "1 Jahr" don't get treated as a number.
+            const numericCandidates = cellTexts.filter((t) => /^-?\d[\d.,]*$/.test(t));
+            if (numericCandidates.length >= 2) {
+                const min = numericCandidates[numericCandidates.length - 2] ?? DEFAULT_VALUE;
+                const max = numericCandidates[numericCandidates.length - 1] ?? DEFAULT_VALUE;
+                return {min, max};
+            }
+
+            return {min: DEFAULT_VALUE, max: DEFAULT_VALUE};
         }
     }
 
@@ -397,15 +446,6 @@ function extractArdStockData(doc: Document): FetchResult {
 
     const rows = doc.querySelectorAll<HTMLTableRowElement>(DATA_TABLE_SELECTOR);
 
-    if (rows.length < 8) {
-        return {
-            rate: DEFAULT_VALUE,
-            min: DEFAULT_VALUE,
-            max: DEFAULT_VALUE,
-            currency: DEFAULT_CURRENCY
-        };
-    }
-
     const cleanCell = (row: HTMLTableRowElement, cellIndex: number): string => {
         return (row.cells[cellIndex]?.textContent ?? DEFAULT_VALUE).replace(
             DEFAULT_CURRENCY_SYMBOL,
@@ -413,10 +453,45 @@ function extractArdStockData(doc: Document): FetchResult {
         );
     };
 
+    // Prefer label-based extraction since row order is prone to change.
+    const findValueByLabel = (terms: string[]): string | null => {
+        for (const row of rows) {
+            const label = row.cells[0]?.textContent?.trim().toLowerCase() ?? "";
+            if (!label) continue;
+            if (terms.some((t) => label.includes(t))) {
+                return cleanCell(row, 1);
+            }
+        }
+        return null;
+    };
+
+    const rateByLabel = findValueByLabel(["kurs", "letzter", "aktuell"]);
+    const minByLabel = findValueByLabel(["tief", "tagestief", "minimum"]);
+    const maxByLabel = findValueByLabel(["hoch", "tageshoch", "maximum"]);
+
+    if (rateByLabel || minByLabel || maxByLabel) {
+        return {
+            rate: rateByLabel ?? DEFAULT_VALUE,
+            min: minByLabel ?? DEFAULT_VALUE,
+            max: maxByLabel ?? DEFAULT_VALUE,
+            currency: DEFAULT_CURRENCY
+        };
+    }
+
+    // Fallback for older markup where values are in fixed rows.
+    if (rows.length >= 8) {
+        return {
+            rate: cleanCell(rows[0], 1),
+            min: cleanCell(rows[6], 1),
+            max: cleanCell(rows[7], 1),
+            currency: DEFAULT_CURRENCY
+        };
+    }
+
     return {
-        rate: cleanCell(rows[0], 1),
-        min: cleanCell(rows[6], 1),
-        max: cleanCell(rows[7], 1),
+        rate: DEFAULT_VALUE,
+        min: DEFAULT_VALUE,
+        max: DEFAULT_VALUE,
         currency: DEFAULT_CURRENCY
     };
 }
@@ -446,64 +521,201 @@ function buildWStreetDetailUrl(responseJson: unknown): string {
             ? responseJson.result[0].link
             : "";
     const baseUrl = FETCH.PROVIDERS["wstreet"]?.HOME ?? "";
-    return baseUrl + detailPath;
+
+    if (!baseUrl || !detailPath) return "";
+
+    // Fail closed: only allow same-origin HTTPS detail URLs.
+    try {
+        const base = new URL(baseUrl);
+        const url = new URL(detailPath, base);
+
+        if (url.protocol !== "https:") return "";
+        if (url.host !== base.host) return "";
+
+        return url.toString();
+    } catch (error) {
+        log(
+            "SERVICES fetch",
+            {parser: "buildWStreetDetailUrl", reason: "invalid url", error},
+            "warn"
+        );
+        return "";
+    }
 }
 
-function extractWStreetRate(doc: Document): string {
-    const RATE_TABLE_SELECTOR = "div.c2 table";
+function extractWStreetRateAndCurrency(doc: Document): {rate: string; currency: string | null} {
+    const ROOT_SELECTOR = "div.c2";
 
-    const tables = doc.querySelectorAll(RATE_TABLE_SELECTOR);
+    try {
+        const extractFirstNumber = (value: string): string => {
+            const match = value.match(/[-+]?\d[\d.,]*/);
+            return match?.[0]?.trim() ?? DEFAULT_VALUE;
+        };
 
-    if (tables.length === 0) {
-        return DEFAULT_VALUE;
+        const detectCurrency = (value: string): string | null => {
+            // Return null when unknown. Do not collapse to DEFAULT_CURRENCY here,
+            // otherwise we can't distinguish "EUR" from "unknown".
+            if (value.includes("USD") || value.includes("$")) return "USD";
+            if (value.includes("EUR") || value.includes("€")) return "EUR";
+            return null;
+        };
+
+        const root = doc.querySelector(ROOT_SELECTOR) ?? doc;
+
+        // Prefer key/value tables by label ("Kurs", "Letzter", ...).
+        const tables = root.querySelectorAll("table");
+        for (const table of tables) {
+            const rows = table.querySelectorAll("tr");
+            for (const row of rows) {
+                const cells = row.querySelectorAll("th,td");
+                if (cells.length < 2) continue;
+
+                const label = (cells[0]?.textContent ?? "").replace(/\s+/g, " ").trim();
+                if (!label) continue;
+
+                if (/^(kurs|letzter|aktuell|preis)\b/i.test(label)) {
+                    const value = (cells[1]?.textContent ?? "").replace(/\s+/g, " ").trim();
+                    if (value) {
+                        return {
+                            rate: extractFirstNumber(value),
+                            currency: detectCurrency(value)
+                        };
+                    }
+                }
+            }
+        }
+
+        // Fallback: try to extract a rate from nearby text.
+        // We deliberately require a label to reduce false positives.
+        const text = (root.textContent ?? "").replace(/\s+/g, " ").trim();
+        const labeled =
+            text.match(
+                /\b(Kurs|Letzter|Aktuell|Preis)\b\s*:?\s*([-+]?\d[\d.,]*\s*(?:EUR|USD|CHF|€|\$)?)/i
+            ) ?? null;
+        if (labeled?.[2]) {
+            const raw = labeled[2].trim();
+            return {
+                rate: extractFirstNumber(raw),
+                currency: detectCurrency(raw)
+            };
+        }
+
+        return {rate: DEFAULT_VALUE, currency: null};
+    } catch (error) {
+        log(
+            "SERVICES fetch",
+            {parser: "extractWStreetRate", reason: "exception", error},
+            "warn"
+        );
+        return {rate: DEFAULT_VALUE, currency: null};
     }
-
-    const rows = tables[0].querySelectorAll("tr");
-
-    if (rows.length < 2) {
-        return DEFAULT_VALUE;
-    }
-
-    const cells = rows[1].querySelectorAll("td");
-
-    return cells[1]?.textContent?.trim() ?? DEFAULT_VALUE;
 }
 
 function extractWStreetMinMax(doc: Document): { min: string; max: string } {
-    const FUNDAMENTAL_SELECTOR = "div.fundamental > div > div.float-start";
+    const ROOT_SELECTOR = "div.fundamental";
 
-    const nodes = doc.querySelectorAll(FUNDAMENTAL_SELECTOR);
+    try {
+        const extractFirstNumber = (value: string): string => {
+            const match = value.match(/[-+]?\d[\d.,]*/);
+            return match?.[0]?.trim() ?? DEFAULT_VALUE;
+        };
 
-    if (nodes.length < 2) {
+        const root = doc.querySelector(ROOT_SELECTOR) ?? doc;
+
+        // 1) Look for labeled patterns in text, e.g. "52-Wochen-Tief 1,23 ... 52-Wochen-Hoch 4,56".
+        const text = (root.textContent ?? "").replace(/\s+/g, " ").trim();
+
+        const minMatch =
+            text.match(
+                /\b(52\s*[- ]?\s*Wochen\s*[- ]?\s*Tief|WochenTief|Wochentief)\b\s*:?\s*([-+]?\d[\d.,]*)/i
+            ) ?? null;
+        const maxMatch =
+            text.match(
+                /\b(52\s*[- ]?\s*Wochen\s*[- ]?\s*Hoch|WochenHoch|Wochenhoch|Hoch)\b\s*:?\s*([-+]?\d[\d.,]*)/i
+            ) ?? null;
+
+        if (minMatch?.[2] && maxMatch?.[2]) {
+            return {
+                min: extractFirstNumber(minMatch[2]),
+                max: extractFirstNumber(maxMatch[2])
+            };
+        }
+
+        // 2) Key/value tables by label.
+        let min = DEFAULT_VALUE;
+        let max = DEFAULT_VALUE;
+        const tables = root.querySelectorAll("table");
+        for (const table of tables) {
+            const rows = table.querySelectorAll("tr");
+            for (const row of rows) {
+                const cells = row.querySelectorAll("th,td");
+                if (cells.length < 2) continue;
+
+                const label = (cells[0]?.textContent ?? "").replace(/\s+/g, " ").trim();
+                const value = (cells[1]?.textContent ?? "").replace(/\s+/g, " ").trim();
+                if (!label || !value) continue;
+
+                if (
+                    /\b(52\s*[- ]?\s*Wochen\s*[- ]?\s*Tief|WochenTief|Wochentief)\b/i.test(
+                        label
+                    )
+                ) {
+                    min = extractFirstNumber(value);
+                } else if (
+                    /\b(52\s*[- ]?\s*Wochen\s*[- ]?\s*Hoch|WochenHoch|Wochenhoch)\b/i.test(
+                        label
+                    )
+                ) {
+                    max = extractFirstNumber(value);
+                }
+            }
+        }
+
+        return {min, max};
+    } catch (error) {
+        log(
+            "SERVICES fetch",
+            {parser: "extractWStreetMinMax", reason: "exception", error},
+            "warn"
+        );
         return {min: DEFAULT_VALUE, max: DEFAULT_VALUE};
     }
-
-    const text = nodes[1]?.textContent ?? "";
-
-    // Parse format: "...WochenTief[min]Hoch[max]..."
-    const parts = text.split("Hoch");
-
-    if (parts.length < 2) {
-        return {min: DEFAULT_VALUE, max: DEFAULT_VALUE};
-    }
-
-    const max = parts[1]?.trim() ?? DEFAULT_VALUE;
-    const minParts = parts[0].split("WochenTief");
-    const min =
-        minParts.length > 1
-            ? (minParts[1]?.trim() ?? DEFAULT_VALUE)
-            : DEFAULT_VALUE;
-
-    return {min, max};
 }
 
 function extractWStreetStockData(doc: Document): FetchResult {
-    const rate = extractWStreetRate(doc);
+    const rateResult = extractWStreetRateAndCurrency(doc);
     const {min, max} = extractWStreetMinMax(doc);
-    const currency = parseCurrency(rate);
+    const currency = (() => {
+        if (rateResult.currency) return rateResult.currency;
+
+        // Fallback: try to infer currency from the most relevant sections.
+        const c2Text = doc.querySelector("div.c2")?.textContent ?? "";
+        const fundamentalText =
+            doc.querySelector("div.fundamental")?.textContent ?? "";
+        const combined = `${c2Text} ${fundamentalText}`;
+
+        const inferred = (() => {
+            // Prefer symbols over plain codes to reduce false positives.
+            if (combined.includes("€")) return "EUR";
+            if (combined.includes("$")) return "USD";
+            if (combined.includes("EUR")) return "EUR";
+            if (combined.includes("USD")) return "USD";
+            return null;
+        })();
+        if (inferred) return inferred;
+
+        // Last resort: check for a data attribute, e.g. data-currency="USD".
+        const attrValue =
+            doc
+                .querySelector<HTMLElement>("[data-currency]")
+                ?.getAttribute("data-currency") ?? "";
+        if (attrValue.includes("USD")) return "USD";
+        if (attrValue.includes("EUR")) return "EUR";
+        return DEFAULT_CURRENCY;
+    })();
 
     return {
-        rate,
+        rate: rateResult.rate,
         min,
         max,
         currency
@@ -785,6 +997,19 @@ const serviceFetchers: Record<ServiceName, ServiceFetcherType> = {
                 const responseJson = await response.json();
                 const detailUrl = buildWStreetDetailUrl(responseJson);
 
+                if (!detailUrl) {
+                    log(
+                        "SERVICES fetch",
+                        {
+                            service: "wstreet",
+                            reason: "missing detail url",
+                            url: urlObj.value
+                        },
+                        "warn"
+                    );
+                    return createDefaultStockData(urlObj.key);
+                }
+
                 const html = await fetchWithCache(detailUrl, detailUrl);
                 const doc = await parseHTML(html);
                 const {rate, min, max, currency} = extractWStreetStockData(doc);
@@ -893,8 +1118,13 @@ export async function fetchCompanyData(isin: string): Promise<CompanyData> {
     const html = await secondResponse.text();
     const doc = await parseHTML(html);
 
-    const nameNode = doc.querySelector("#col1_content")?.childNodes[1];
-    const company = nameNode?.textContent?.split(",")[0].trim() || "";
+    const col1 = doc.querySelector("#col1_content");
+    const companyRaw =
+        col1?.querySelector("h1")?.textContent ??
+        col1?.querySelector("h2")?.textContent ??
+        col1?.textContent ??
+        "";
+    const company = companyRaw.split(/[,\n\r]/)[0]?.trim() || "";
 
     if (!company || company.includes("Die Gattung wird")) {
         throw appError(
@@ -904,9 +1134,21 @@ export async function fetchCompanyData(isin: string): Promise<CompanyData> {
         );
     }
 
-    const tables: NodeListOf<HTMLTableRowElement> =
-        doc.querySelectorAll("table > tbody tr");
-    const symbol = tables[1]?.cells[1]?.textContent?.trim() || "";
+    // Prefer label-based extraction for resilience against layout changes.
+    let symbol = "";
+    const rows = doc.querySelectorAll<HTMLTableRowElement>("table > tbody tr");
+    for (const row of rows) {
+        const label = row.cells[0]?.textContent?.trim().toLowerCase() ?? "";
+        if (!label) continue;
+        if (label.includes("symbol")) {
+            symbol = row.cells[1]?.textContent?.trim() || "";
+            break;
+        }
+    }
+    // Fallback for older markup where symbol was in a fixed row.
+    if (!symbol) {
+        symbol = rows[1]?.cells[1]?.textContent?.trim() || "";
+    }
 
     if (!symbol) {
         throw appError(
@@ -1104,6 +1346,21 @@ export async function fetchExchangesData(exchangeCodes: string[]): Promise<Excha
             return {key: code, value: rate};
         })
     );
+
+    const rejected = results.filter(
+        (r): r is PromiseRejectedResult => r.status === "rejected"
+    );
+    if (rejected.length > 0) {
+        log(
+            "SERVICES fetch: fetchExchangesData partial failures",
+            {
+                total: exchangeCodes.length,
+                rejected: rejected.length,
+                errors: rejected.slice(0, 3).map((r) => serializeError(r.reason))
+            },
+            "warn"
+        );
+    }
 
     return results
         .filter(

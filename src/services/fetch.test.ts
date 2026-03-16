@@ -234,4 +234,203 @@ describe("FetchService", () => {
             expect(sanitizeArdDetailUrlFromOnclick(onclick)).toBeNull();
         });
     });
+
+    describe("fetchCompanyData", () => {
+        it("should extract company and symbol using resilient selectors", async () => {
+            const html = `
+                <div id="col1_content">
+                  <h1>Example AG, Inhaber-Stammaktien</h1>
+                </div>
+                <table><tbody>
+                  <tr><td>WKN</td><td>123456</td></tr>
+                  <tr><td>Symbol</td><td>EXM</td></tr>
+                </tbody></table>
+            `;
+
+            let call = 0;
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(() => {
+                call += 1;
+                // First call returns a redirect-like response (we only need `url`).
+                if (call === 1) {
+                    return Promise.resolve({
+                        ok: true,
+                        status: 200,
+                        url: "https://example.test/detail"
+                    } as unknown as Response);
+                }
+
+                // Second call returns the HTML body.
+                return Promise.resolve({
+                    ok: true,
+                    status: 200,
+                    url: "https://example.test/detail",
+                    text: async () => html
+                } as unknown as Response);
+            });
+
+            const data = await fetchService.fetchCompanyData("DE0000000001");
+            expect(data).toEqual({company: "Example AG", symbol: "EXM"});
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe("fetchMinRateMaxData (ard)", () => {
+        it("should parse ARD detail data by labels even when row order/size changes", async () => {
+            const searchHtml = `
+                <div id="desktopSearchResult">
+                  <table><tbody>
+                    <tr onclick="document.location='/wirtschaft/boersenkurse/aktien/xyz-aktie-123.html';"></tr>
+                  </tbody></table>
+                </div>
+            `;
+
+            const detailHtml = `
+                <div id="USFkursdaten">
+                  <table><tbody>
+                    <tr><td>Tageshoch</td><td>3,00€</td></tr>
+                    <tr><td>Kurs</td><td>2,00€</td></tr>
+                    <tr><td>Tagestief</td><td>1,00€</td></tr>
+                  </tbody></table>
+                </div>
+            `;
+
+            const fetchMock = vi
+                .spyOn(globalThis, "fetch")
+                .mockResolvedValueOnce(new Response(searchHtml, {status: 200}))
+                .mockResolvedValueOnce(new Response(detailHtml, {status: 200}));
+
+            const result = await fetchService.fetchMinRateMaxData(
+                [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
+                async (keys) => {
+                    if (keys.includes(BROWSER_STORAGE.SERVICE.key)) {
+                        return {[BROWSER_STORAGE.SERVICE.key]: "ard"};
+                    }
+                    return {};
+                }
+            );
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(result).toHaveLength(1);
+            expect(result[0]).toMatchObject({
+                id: 1,
+                rate: "2.00",
+                min: "1.00",
+                max: "3.00",
+                cur: "EUR"
+            });
+        });
+    });
+
+    describe("fetchMinRateMaxData (fnet)", () => {
+        it("should extract min/max even when the target row has fewer columns", async () => {
+            const fnetHtml = `
+                <div id="snapshot-value-fst-current-0">123,45 EUR</div>
+                <main>
+                  <div class="accordion__content">
+                    <table><tbody>
+                      <tr><td>Zeitraum</td><td>Foo</td><td>1,23</td><td>4,56</td></tr>
+                      <tr><td>1 Jahr</td><td>Foo</td><td>1,00</td><td>9,00</td></tr>
+                    </tbody></table>
+                  </div>
+                </main>
+            `;
+
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((_url) => {
+                return Promise.resolve({
+                    ok: true,
+                    status: 200,
+                    url: String(_url),
+                    text: async () => fnetHtml
+                } as unknown as Response);
+            });
+
+            const result = await fetchService.fetchMinRateMaxData(
+                [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
+                async (keys) => {
+                    if (keys.includes(BROWSER_STORAGE.SERVICE.key)) {
+                        return {[BROWSER_STORAGE.SERVICE.key]: "fnet"};
+                    }
+                    return {};
+                }
+            );
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result[0]).toMatchObject({
+                id: 1,
+                rate: "123.45",
+                min: "1.00",
+                max: "9.00",
+                cur: "EUR"
+            });
+        });
+    });
+
+    describe("fetchMinRateMaxData (wstreet)", () => {
+        it("should parse rate and 52-week min/max by labels (not fixed row positions)", async () => {
+            const searchJson = {
+                result: [
+                    {
+                        link: "/aktien/example-aktie-123"
+                    }
+                ]
+            };
+
+            // Intentionally breaks the old assumptions:
+            // - rate table has only one row (old parser required rows[1])
+            // - min/max are in a labeled table, not the 'float-start' nodes[1] blob
+            const detailHtml = `
+                <div class="c2">
+                  <table>
+                    <tr><td>Kurs</td><td>12,34 €</td></tr>
+                  </table>
+                </div>
+                <div class="fundamental">
+                  <table>
+                    <tr><td>52-Wochen-Tief</td><td>10,00 €</td></tr>
+                    <tr><td>52-Wochen-Hoch</td><td>20,00 €</td></tr>
+                  </table>
+                </div>
+            `;
+
+            let call = 0;
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((url) => {
+                call += 1;
+
+                if (call === 1) {
+                    // Search RPC request.
+                    return Promise.resolve(
+                        new Response(JSON.stringify(searchJson), {status: 200})
+                    );
+                }
+
+                // Detail HTML request.
+                return Promise.resolve({
+                    ok: true,
+                    status: 200,
+                    url: String(url),
+                    text: async () => detailHtml
+                } as unknown as Response);
+            });
+
+            const result = await fetchService.fetchMinRateMaxData(
+                [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
+                async (keys) => {
+                    if (keys.includes(BROWSER_STORAGE.SERVICE.key)) {
+                        return {[BROWSER_STORAGE.SERVICE.key]: "wstreet"};
+                    }
+                    return {};
+                }
+            );
+
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(result).toHaveLength(1);
+            expect(result[0]).toMatchObject({
+                id: 1,
+                rate: "12.34",
+                min: "10.00",
+                max: "20.00",
+                cur: "EUR"
+            });
+        });
+    });
 });

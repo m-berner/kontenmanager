@@ -190,6 +190,30 @@ export function serializeError(err: unknown): Record<string, string> {
     return {name: "AppError", message: "unknown"};
 }
 
+/**
+ * Normalizes an unknown value into an Error instance.
+ * Useful for retry hooks and APIs that expect Error.
+ */
+export function toError(err: unknown): Error {
+    if (err instanceof Error) {
+        return err;
+    }
+
+    if (typeof err === "string") {
+        return new Error(err);
+    }
+
+    if (err && typeof err === "object") {
+        try {
+            return new Error(JSON.stringify(err));
+        } catch {
+            // Fall through
+        }
+    }
+
+    return new Error(String(err));
+}
+
 function findErrorMsg(node: object, code: string): string | undefined {
     if ("CODE" in node && "MSG" in node) {
         return (node as {CODE: string; MSG: string}).CODE === code

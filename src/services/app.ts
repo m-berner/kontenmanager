@@ -170,7 +170,8 @@ function processFetchResult<T>(
     const wrapped = appError(
         ERROR_DEFINITIONS.SERVICES.APP.FETCH.CODE,
         ERROR_CATEGORY.NETWORK,
-        true
+        true,
+        {section: errorSection, originalError: serializeError(result.reason)}
     );
     log(
         "SERVICES app",

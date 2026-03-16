@@ -251,8 +251,8 @@ log("VIEWS CompanyContent: setup");
               :text="n(calculatePercentChange(item.mEuroChange, item.mInvest), 'percent')"
               location="left">
             <template #activator="{ props }">
-              <span
-                  :class="winLossClass(item.mEuroChange!)"
+               <span
+                  :class="winLossClass(item.mEuroChange ?? 0)"
                   v-bind="props">
                 {{ n(item.mEuroChange ?? 0, "currency") }}
               </span>
@@ -268,5 +268,4 @@ log("VIEWS CompanyContent: setup");
     </template>
   </v-data-table>
 </template>
-
 

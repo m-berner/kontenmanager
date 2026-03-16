@@ -34,7 +34,6 @@ export const useStocksStore = defineStore("stocks", function () {
     const {investByStockId, portfolioByStockId, hasStockID} =
         useBookingsStore();
     const runtime = useRuntimeStore();
-    //const { curEur, curUsd } = storeToRefs(runtime);
     const settings = useSettingsStore();
 
     /**

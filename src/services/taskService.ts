@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {appError, ERROR_DEFINITIONS, isAppError, serializeError} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, isAppError, serializeError, toError} from "@/domains/errors";
 import {ERROR_CATEGORY} from "@/constants";
 
 /**
@@ -31,7 +31,7 @@ export async function withRetry<T>(
             return await operation();
         } catch (err) {
             lastError = err;
-            const asError = err instanceof Error ? err : new Error(String(err));
+            const asError = toError(err);
 
             // If a domain-level AppError is thrown, preserve it; retries are only useful
             // for transient failures.

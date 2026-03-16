@@ -422,16 +422,15 @@ const processBackupFile = async (): Promise<void> => {
     }
 
     if (dataIntegrityErrors.length > 0) {
-      const errorList = dataIntegrityErrors.slice(0, 5).join("\n");
-      // const moreErrors =
-      //   dataIntegrityErrors.length > 5
-      //     ? `\n...and ${dataIntegrityErrors.length - 5} more`
-      //     : "";
+      const shownErrors = dataIntegrityErrors.slice(0, 5);
+      if (dataIntegrityErrors.length > 5) {
+        shownErrors.push(`...and ${dataIntegrityErrors.length - 5} more`);
+      }
 
       await alertService.feedbackError(
           t("components.dialogs.importDatabase.title"),
-          new Error(errorList),
-          {}
+          shownErrors,
+          {data: {count: dataIntegrityErrors.length}}
       );
 
       resetTeleport();
@@ -576,6 +575,5 @@ log("COMPONENTS DIALOGS ImportDatabase: setup");
     </v-overlay>
   </v-form>
 </template>
-
 
 
