@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {appError, ERROR_DEFINITIONS, isAppError} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, isAppError, serializeError} from "@/domains/errors";
 import {log} from "@/domains/utils/utils";
 import deNotifications from "@/_locales/de/messages.json";
 import type {EventTypes} from "@/types";
@@ -114,11 +114,12 @@ async function tabsCreate(): Promise<browser.tabs.Tab> {
             url: browser.runtime.getURL(APP_URL),
             active: true
         });
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.C.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {originalError: serializeError(err)}
         );
     }
 }
@@ -132,11 +133,12 @@ async function tabsCreate(): Promise<browser.tabs.Tab> {
 async function tabsQuery(): Promise<browser.tabs.Tab[]> {
     try {
         return await browser.tabs.query({url: browser.runtime.getURL(APP_URL)});
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.D.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {originalError: serializeError(err)}
         );
     }
 }
@@ -152,11 +154,12 @@ async function windowsUpdate(
         return await browser.windows.update(windowId, {
             focused: true
         });
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.E.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {windowId, originalError: serializeError(err)}
         );
     }
 }
@@ -170,11 +173,12 @@ async function tabsUpdate(tabId: number): Promise<browser.tabs.Tab> {
         return await browser.tabs.update(tabId, {
             active: true
         });
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.F.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {tabId, originalError: serializeError(err)}
         );
     }
 }
@@ -186,11 +190,12 @@ async function tabsUpdate(tabId: number): Promise<browser.tabs.Tab> {
 async function removeTab(tabId: number): Promise<void> {
     try {
         await browser.tabs.remove(tabId);
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.H.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {tabId, originalError: serializeError(err)}
         );
     }
 }
@@ -201,11 +206,12 @@ async function removeTab(tabId: number): Promise<void> {
 async function openOptionsPage(): Promise<void> {
     try {
         await browser.runtime.openOptionsPage();
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.G.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {originalError: serializeError(err)}
         );
     }
 }
@@ -248,8 +254,12 @@ async function showSystemNotification(
                 message: messages.join("\n")
             };
         await browser.notifications.create(notificationOption);
-    } catch {
-        log("SERVICES browserService: Notification failed", {}, "error");
+    } catch (err) {
+        log(
+            "SERVICES browserService: Notification failed",
+            {error: serializeError(err)},
+            "error"
+        );
     }
 }
 
@@ -289,11 +299,12 @@ async function writeBufferToFile(
         };
 
         browser.downloads.onChanged.addListener(onDownloadChange);
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.USE_BROWSER.J.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {filename, originalError: serializeError(err)}
         );
     }
 }

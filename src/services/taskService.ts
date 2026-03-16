@@ -70,11 +70,19 @@ export async function withRetry<T>(
  *
  * @param isConnected - Current connection status.
  * @param errorMessage - Message to include in the error.
- * @throws Error if not connected.
+ * @throws AppError if not connected.
  */
 export function ensureConnected(isConnected: boolean, errorMessage = "Database is not connected"): void {
     if (!isConnected) {
-        throw new Error(errorMessage);
+        const err = appError(
+            ERROR_DEFINITIONS.SERVICES.DATABASE.BASE.I.CODE,
+            ERROR_CATEGORY.DATABASE,
+            true,
+            {errorMessage}
+        );
+        // Preserve the caller-provided message for UI/tests while keeping a stable code/category.
+        err.message = errorMessage;
+        throw err;
     }
 }
 

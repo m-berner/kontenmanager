@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type {RecordOperation, StockItem} from "@/types";
+import type {BatchOperationDescriptor, StockItem} from "@/types";
 import {databaseService} from "@/services/database/service";
 import {validateStock} from "@/domains/validation/validators";
 import {log} from "@/domains/utils/utils";
@@ -23,7 +23,7 @@ export function useAccountsDB() {
         ...accountsRepository,
         /** Atomic multi-store import. */
         atomicImport: (
-            stores: { storeName: string; operations: RecordOperation[] }[]
+            stores: BatchOperationDescriptor[]
         ) => databaseService.atomicImport(stores)
     };
 }
@@ -36,7 +36,7 @@ export function useBookingsDB() {
         ...bookingsRepository,
         /** Atomic multi-store import. */
         atomicImport: (
-            stores: { storeName: string; operations: RecordOperation[] }[]
+            stores: BatchOperationDescriptor[]
         ) => databaseService.atomicImport(stores)
     };
 }
@@ -49,7 +49,7 @@ export function useBookingTypesDB() {
         ...bookingTypesRepository,
         /** Atomic multi-store import. */
         atomicImport: (
-            stores: { storeName: string; operations: RecordOperation[] }[]
+            stores: BatchOperationDescriptor[]
         ) => databaseService.atomicImport(stores)
     };
 }
@@ -63,7 +63,7 @@ export function useStocksDB() {
         ...stocksRepository,
         /** Atomic multi-store import. */
         atomicImport: (
-            stores: { storeName: string; operations: RecordOperation[] }[]
+            stores: BatchOperationDescriptor[]
         ) => databaseService.atomicImport(stores),
         /**
          * Updates a stock record, ensuring only database-relevant fields are sent.
@@ -100,4 +100,3 @@ export function useStocksDB() {
 }
 
 log("COMPOSABLES useIndexedDB");
-

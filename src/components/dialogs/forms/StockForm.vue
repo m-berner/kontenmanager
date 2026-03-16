@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n";
-import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, serializeError} from "@/domains/errors";
 import {log} from "@/domains/utils/utils";
 import {useStockForm} from "@/composables/useForms";
 import {fetchService} from "@/services/fetch";
@@ -46,7 +46,7 @@ const onUpdateIsin = async () => {
       stockFormData.company = companyData.company;
       stockFormData.symbol = companyData.symbol;
     }
-  } catch {
+  } catch (err) {
     stockFormData.company = "";
     stockFormData.symbol = "";
     await alertService.feedbackError(
@@ -56,7 +56,7 @@ const onUpdateIsin = async () => {
             ERROR_CATEGORY.VALIDATION,
             true
         ),
-        {data: stockFormData.isin}
+        {data: {isin: stockFormData.isin, error: serializeError(err)}}
     );
   }
 };
@@ -134,5 +134,4 @@ log("COMPONENTS DIALOGS FORMS StockForm: setup");
     </v-row>
   </v-container>
 </template>
-
 

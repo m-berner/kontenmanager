@@ -9,6 +9,8 @@ import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 import {log} from "@/domains/utils/utils";
 import {normalizeBookingTypeName} from "@/domains/validation/validators";
+import {appError} from "@/domains/errors";
+import {ERROR_CATEGORY} from "@/constants";
 
 /**
  * Pinia store managing booking type definitions.
@@ -58,8 +60,13 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
     /** Resolves a bookingType by its ID. */
     const getItemById = computed(
         () =>
-            (id: number): BookingTypeDb =>
-                items.value[getIndexById.value(id)]
+            (id: number): BookingTypeDb => {
+                const bookingType = getById.value(id);
+                if (!bookingType) {
+                    throw appError("xx_missing_record", ERROR_CATEGORY.STORE, false, {id});
+                }
+                return bookingType;
+            }
     );
 
     /** Retrieves a booking type record by its ID. */

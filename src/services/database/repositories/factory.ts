@@ -10,6 +10,8 @@ import {createBookingRepository} from "@/services/database/repositories/booking"
 import {createBookingTypeRepository} from "@/services/database/repositories/bookingType";
 import {createStockRepository} from "@/services/database/repositories/stock";
 import type {TransactionManagerContract} from "@/services/database/transaction/manager";
+import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {ERROR_CATEGORY} from "@/constants";
 
 /**
  * Factory for creating repository instances
@@ -36,7 +38,12 @@ export function createRepositoryFactory(transactionManager: TransactionManagerCo
             case "stocks":
                 return createStockRepository(transactionManager) as RepositoryMap[T];
             default:
-                throw new Error(`Unknown repository type: ${type}`);
+                throw appError(
+                    ERROR_DEFINITIONS.SERVICES.DATABASE.BASE.J.CODE,
+                    ERROR_CATEGORY.DATABASE,
+                    false,
+                    {type}
+                );
         }
     }
 

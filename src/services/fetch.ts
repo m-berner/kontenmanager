@@ -39,6 +39,9 @@ const DEFAULT_VALUE = "0";
 const DEFAULT_CURRENCY = "EUR";
 const TARGET_PERIOD = "1 Jahr";
 const DEFAULT_CURRENCY_SYMBOL = "€"
+const ARD_BASE_URL = "https://www.tagesschau.de";
+const ARD_ALLOWED_HOSTS = new Set(["www.tagesschau.de", "tagesschau.de"]);
+const ARD_ALLOWED_PATH_PREFIX = "/wirtschaft/boersenkurse/";
 
 /**
  * Simple in-memory cache with TTL (time-to-live) expiration.
@@ -341,6 +344,33 @@ function extractFnetMinMax(doc: Document): { min: string; max: string } {
 /**
  * Extracts detail URL from tagesschau.de document.
  */
+export function sanitizeArdDetailUrlFromOnclick(onclickAttr: string): string | null {
+    // Expected formats:
+    // - document.location='/wirtschaft/boersenkurse/...';
+    // - document.location="https://www.tagesschau.de/wirtschaft/boersenkurse/...";
+    const match = onclickAttr.match(/document\.location\s*=\s*(["'])([^"']+)\1/);
+    if (!match) return null;
+
+    const rawUrl = match[2]?.trim();
+    if (!rawUrl) return null;
+
+    let url: URL;
+    try {
+        url = new URL(rawUrl, ARD_BASE_URL);
+    } catch (err) {
+        void err;
+        return null;
+    }
+
+    // Fail closed to avoid following untrusted navigation strings.
+    if (url.protocol !== "https:") return null;
+    if (!ARD_ALLOWED_HOSTS.has(url.hostname)) return null;
+    if (!url.pathname.startsWith(ARD_ALLOWED_PATH_PREFIX)) return null;
+    if (url.username || url.password) return null;
+
+    return url.toString();
+}
+
 function extractArdDetailUrl(doc: Document): string | null {
     const DATA_TABLE_SELECTOR = "#desktopSearchResult > table > tbody > tr";
 
@@ -356,8 +386,7 @@ function extractArdDetailUrl(doc: Document): string | null {
         return null;
     }
 
-    // Extract URL from the onclick attribute
-    return onclickAttr.replace("document.location='", "").replace("';", "");
+    return sanitizeArdDetailUrlFromOnclick(onclickAttr);
 }
 
 /**
@@ -954,7 +983,15 @@ export async function fetchDateData(obj: NumberStringPair[]): Promise<DateData[]
             parts.length === 3 && parts[2].length === 4 ? parts[2] : "1970";
         const month = parts.length === 3 ? parts[1].padStart(2, "0") : "01";
         const day = parts.length === 3 ? parts[0].padStart(2, "0") : "01";
-        return new Date(`${year}-${month}-${day}`).getTime();
+        // Use UTC to avoid timezone/DST shifts affecting the date.
+        const y = Number.parseInt(year, 10);
+        const m = Number.parseInt(month, 10);
+        const d = Number.parseInt(day, 10);
+        return Date.UTC(
+            Number.isFinite(y) ? y : 1970,
+            Number.isFinite(m) ? m - 1 : 0,
+            Number.isFinite(d) ? d : 1
+        );
     };
 
     return Promise.all(
@@ -1152,7 +1189,9 @@ export async function fetchIsOk(): Promise<boolean> {
     try {
         const response = await fetchWithRetry(FNET.ONLINE_TEST);
         return response.ok;
-    } catch {
+    } catch (err) {
+        // This is a non-critical connectivity probe; callers only need a boolean.
+        void err;
         return false;
     }
 }

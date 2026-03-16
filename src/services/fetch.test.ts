@@ -6,6 +6,7 @@
 
 import {beforeAll, beforeEach, describe, expect, it, vi} from "vitest";
 import {fetchService} from "@/services/fetch";
+import {sanitizeArdDetailUrlFromOnclick} from "@/services/fetch";
 import {isAppError} from "@/domains/errors";
 import {BROWSER_STORAGE} from "@/constants";
 
@@ -191,6 +192,46 @@ describe("FetchService", () => {
                     getStorage
                 )
             ).rejects.toSatisfy(isAppError);
+        });
+    });
+
+    describe("ARD detail URL sanitization", () => {
+        it("should accept a relative tagesschau detail URL in onclick", () => {
+            const onclick =
+                "document.location='/wirtschaft/boersenkurse/aktien/irgendwas-123.html';";
+            expect(sanitizeArdDetailUrlFromOnclick(onclick))
+                .toBe("https://www.tagesschau.de/wirtschaft/boersenkurse/aktien/irgendwas-123.html");
+        });
+
+        it("should accept an absolute tagesschau detail URL in onclick", () => {
+            const onclick =
+                "document.location=\"https://www.tagesschau.de/wirtschaft/boersenkurse/aktien/abc-123.html\";";
+            expect(sanitizeArdDetailUrlFromOnclick(onclick))
+                .toBe("https://www.tagesschau.de/wirtschaft/boersenkurse/aktien/abc-123.html");
+        });
+
+        it("should reject non-https schemes", () => {
+            const onclick =
+                "document.location='http://www.tagesschau.de/wirtschaft/boersenkurse/aktien/abc.html';";
+            expect(sanitizeArdDetailUrlFromOnclick(onclick)).toBeNull();
+        });
+
+        it("should reject unexpected hosts", () => {
+            const onclick =
+                "document.location='https://evil.example/wirtschaft/boersenkurse/aktien/abc.html';";
+            expect(sanitizeArdDetailUrlFromOnclick(onclick)).toBeNull();
+        });
+
+        it("should reject unexpected paths", () => {
+            const onclick =
+                "document.location='https://www.tagesschau.de/other/path';";
+            expect(sanitizeArdDetailUrlFromOnclick(onclick)).toBeNull();
+        });
+
+        it("should reject javascript URLs", () => {
+            const onclick =
+                "document.location='javascript:alert(1)';";
+            expect(sanitizeArdDetailUrlFromOnclick(onclick)).toBeNull();
         });
     });
 });

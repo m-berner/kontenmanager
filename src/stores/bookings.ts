@@ -69,8 +69,18 @@ export const useBookingsStore = defineStore("bookings", function () {
     /** Resolves a booking by its ID. */
     const getItemById = computed(
         () =>
-            (id: number): BookingDb =>
-                items.value[getIndexById.value(id)]
+            (id: number): BookingDb => {
+                const booking = getById.value(id);
+                if (!booking) {
+                    throw appError(
+                        "xx_missing_record",
+                        ERROR_CATEGORY.STORE,
+                        false,
+                        {id}
+                    );
+                }
+                return booking;
+            }
     );
 
     /** Retrieves a booking record by its ID. */

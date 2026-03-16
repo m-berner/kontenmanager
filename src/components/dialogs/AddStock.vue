@@ -17,10 +17,12 @@ import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import {useDialogGuards} from "@/composables/useDialogGuards";
 import {databaseService} from "@/services/database/service";
 import {INDEXED_DB} from "@/constants";
+import {ERROR_CATEGORY} from "@/constants";
 import {browserService} from "@/services/browserService";
 import {alertService} from "@/services/alert";
 import {formMapper} from "@/domains/mapping/formMapper";
 import {stocksRepository} from "@/services/database/repositories";
+import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
 
 const {t} = useI18n();
 const {activeAccountId} = useSettingsStore();
@@ -45,7 +47,12 @@ const onClickOk = async (): Promise<void> => {
       const addStockID = await stocksRepository.save(stockData);
 
       if (addStockID === INDEXED_DB.INVALID_ID) {
-        throw new Error(t("components.dialogs.addStock.messages.error"));
+        throw appError(
+            ERROR_DEFINITIONS.SERVICES.DATABASE.BASE.B.CODE,
+            ERROR_CATEGORY.DATABASE,
+            true,
+            {entity: "stock"}
+        );
       }
 
       records.stocks.add({...stockData, cID: addStockID});
@@ -72,4 +79,3 @@ log("COMPONENTS DIALOGS AddStock: setup");
     <StockForm :isUpdate="false"/>
   </BaseDialogForm>
 </template>
-

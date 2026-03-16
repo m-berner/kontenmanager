@@ -30,8 +30,9 @@ function setupTimeout(
         );
         try {
             tx.abort();
-        } catch {
+        } catch (err) {
             // May already be aborted
+            void err;
         }
     }, timeout);
 }
@@ -117,8 +118,9 @@ export function createTransactionManager(connection: DatabaseConnection) {
             // Abort transaction on error
             try {
                 tx.abort();
-            } catch {
+            } catch (err) {
                 // Transaction may already be aborted
+                void err;
             }
 
             throw wrapTransactionError(err, stores, mode);
@@ -161,5 +163,4 @@ export type TransactionManagerContract = ReturnType<typeof createTransactionMana
 export const TransactionManager = {
     create: createTransactionManager
 };
-
 

@@ -11,13 +11,14 @@ import {useSettingsStore} from "@/stores/settings";
 import {fetchService} from "@/services/fetch";
 import {useRuntimeStore} from "@/stores/runtime";
 import {isoDate, log, toNumber, utcDate} from "@/domains/utils/utils";
-import {DATE} from "@/constants";
+import {DATE, ERROR_CATEGORY} from "@/constants";
 import {storageAdapter} from "@/domains/storage/storageAdapter";
 import {browserService} from "@/services/browserService";
 import {useBookingsStore} from "@/stores/bookings";
 import * as DomainLogic from "@/domains/logic";
 import {CURRENCIES} from "@/constants";
 import {INDEXED_DB} from "@/constants";
+import {appError} from "@/domains/errors";
 
 const ASK_DATE_INTERVAL = 7;
 const MILLISECONDS_PER_DAY = 86400000;
@@ -109,8 +110,13 @@ export const useStocksStore = defineStore("stocks", function () {
     /** Resolves a stock by its ID. */
     const getItemById = computed(
         () =>
-            (id: number): StockItem =>
-                items.value[getIndexById.value(id)]
+            (id: number): StockItem => {
+                const stock = getById.value(id);
+                if (!stock) {
+                    throw appError("xx_missing_record", ERROR_CATEGORY.STORE, false, {id});
+                }
+                return stock;
+            }
     );
 
     /** Retrieves a stock record by its ID. */
@@ -150,7 +156,7 @@ export const useStocksStore = defineStore("stocks", function () {
                 const firstPageDiff = b.cFirstPage - a.cFirstPage;
                 return firstPageDiff !== 0
                     ? firstPageDiff
-                    : b.mPortfolio! - a.mPortfolio!;
+                    : (b.mPortfolio ?? 0) - (a.mPortfolio ?? 0);
             });
     });
 

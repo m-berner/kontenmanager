@@ -5,7 +5,7 @@
  */
 
 import type {StorageDataType, StorageValueType} from "@/types";
-import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, serializeError} from "@/domains/errors";
 import {BROWSER_STORAGE, ERROR_CATEGORY} from "@/constants";
 
 /**
@@ -42,11 +42,12 @@ export function storageAdapter() {
     async function clearStorage(): Promise<void> {
         try {
             await browser.storage.local.clear();
-        } catch {
+        } catch (err) {
             throw appError(
                 ERROR_DEFINITIONS.USE_STORAGE.A.CODE,
                 ERROR_CATEGORY.STORAGE_API,
-                true
+                true,
+                {originalError: serializeError(err)}
             );
         }
     }
@@ -62,11 +63,12 @@ export function storageAdapter() {
     ): Promise<void> {
         try {
             await browser.storage.local.set({[key]: value});
-        } catch {
+        } catch (err) {
             throw appError(
                 "xx_set_local_storage",
                 ERROR_CATEGORY.STORAGE_API,
-                true
+                true,
+                {key, originalError: serializeError(err)}
             );
         }
     }
@@ -81,11 +83,12 @@ export function storageAdapter() {
     ): Promise<StorageDataType> {
         try {
             return await browser.storage.local.get(keys) as StorageDataType;
-        } catch {
+        } catch (err) {
             throw appError(
                 "xx_get_local_storage",
                 ERROR_CATEGORY.STORAGE_API,
-                true
+                true,
+                {keys, originalError: serializeError(err)}
             );
         }
     }
@@ -141,11 +144,12 @@ export function storageAdapter() {
             if (Object.keys(updates).length > 0) {
                 await browser.storage.local.set(updates);
             }
-        } catch {
+        } catch (err) {
             throw appError(
                 ERROR_DEFINITIONS.USE_STORAGE.D.CODE,
-                ERROR_CATEGORY.VALIDATION,
-                true
+                ERROR_CATEGORY.STORAGE_API,
+                true,
+                {originalError: serializeError(err)}
             );
         }
     }

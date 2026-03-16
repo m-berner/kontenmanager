@@ -12,7 +12,7 @@ import {useSettingsStore} from "@/stores/settings";
 import {useRuntimeStore} from "@/stores/runtime";
 import {databaseService} from "@/services/database/service";
 import {fetchService} from "@/services/fetch";
-import {appError, ERROR_DEFINITIONS, isAppError} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, isAppError, serializeError} from "@/domains/errors";
 import {log} from "@/domains/utils/utils";
 import {CURRENCIES, ERROR_CATEGORY} from "@/constants";
 
@@ -44,7 +44,12 @@ function getStores(): {
 
     // Fail fast if Pinia isn't set up; otherwise we'd propagate undefined.
     if (!records || !settings || !runtime) {
-        throw new Error("Pinia stores not initialized");
+        throw appError(
+            ERROR_DEFINITIONS.SERVICES.APP.OVERALL.CODE,
+            ERROR_CATEGORY.STORE,
+            false,
+            {reason: "Pinia stores not initialized"}
+        );
     }
 
     return {records, settings, runtime};
@@ -128,7 +133,8 @@ function getCurrencyFromLocale(): string | undefined {
     let regionCode: string | undefined;
     try {
         regionCode = new Intl.Locale(normalizedLocale).region?.toLowerCase();
-    } catch {
+    } catch (err) {
+        void err;
         regionCode = undefined;
     }
 
@@ -298,11 +304,12 @@ async function initializeStorage(signal?: AbortSignal): Promise<void> {
         const storageData = await storage.getStorage();
         if (signal?.aborted) return;
         settings.init(storageData);
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.SERVICES.APP.STORAGE.CODE,
             ERROR_CATEGORY.BUSINESS,
-            false
+            false,
+            {originalError: serializeError(err)}
         );
     }
 
@@ -351,11 +358,12 @@ async function initializeDatabase(
 
         if (signal?.aborted) return;
         await records.init(databaseStores, translations);
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.SERVICES.APP.DB.CODE,
             ERROR_CATEGORY.DATABASE,
-            false
+            false,
+            {originalError: serializeError(err)}
         );
     }
 

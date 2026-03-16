@@ -6,7 +6,7 @@
 
 import type {Ref} from "vue";
 import {ref} from "vue";
-import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, serializeError} from "@/domains/errors";
 import type {FormContract, FormValidateResultType} from "@/types";
 import {log} from "@/domains/utils/utils";
 import {alertService} from "@/services/alert";
@@ -75,7 +75,12 @@ export function useDialogGuards(translate?: (_key: string) => string) {
         try {
             taskService.ensureConnected(isConnected, errorMessage);
             return true;
-        } catch {
+        } catch (err) {
+            log(
+                "COMPOSABLES useDialogGuards: ensureConnected",
+                {error: serializeError(err)},
+                "warn"
+            );
             await showSystemNotification("Composables useDialogGuards", [
                 resolveMessage("xx_db_connection_err"),
                 errorMessage
@@ -122,11 +127,12 @@ export function useDialogGuards(translate?: (_key: string) => string) {
                 return {valid: false, errors: ["System error"]};
             }
             return await form.value.validate();
-        } catch {
+        } catch (err) {
             throw appError(
                 ERROR_DEFINITIONS.USE_DIALOG_GUARDS.A.CODE,
                 ERROR_CATEGORY.VALIDATION,
-                true
+                true,
+                {originalError: serializeError(err)}
             );
         }
     }

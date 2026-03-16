@@ -57,8 +57,11 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
       runtime.isStockLoading = true;
       runtime.isDownloading = true;
       await records.stocks.loadOnlineData(runtime.stocksPage);
-    } catch {
-      // optionally surface an alert
+    } catch (err) {
+      await alertService.feedbackError(t("views.headerBar.infoTitle"), err, {
+        data: {context: "UPDATE_QUOTE"},
+        logLevel: "error"
+      });
     } finally {
       runtime.isStockLoading = false;
       runtime.isDownloading = false;

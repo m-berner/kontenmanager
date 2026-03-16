@@ -6,7 +6,7 @@
 
 import {validateIBAN, validateISIN} from "@/domains/validation/rules";
 import {isoDate, isValidISODate, log, toNumber} from "@/domains/utils/utils";
-import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, serializeError} from "@/domains/errors";
 import {ERROR_CATEGORY} from "@/constants";
 import type {AccountDb, BookingDb, BookingTypeDb, StockDb} from "@/types";
 
@@ -50,10 +50,10 @@ function normalizeDate(value: unknown): string {
     if (typeof value === "number") {
         try {
             return isoDate(value);
-        } catch {
+        } catch (err) {
             log(
                 "DOMAINS VALIDATION validators: Invalid numeric date value",
-                value,
+                {value, error: serializeError(err)},
                 "warn"
             );
         }
@@ -232,5 +232,4 @@ export function validateBookingType(data: unknown): BookingTypeDb {
         cAccountNumberID: Number(raw.cAccountNumberID ?? 0)
     };
 }
-
 

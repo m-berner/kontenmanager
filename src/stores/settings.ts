@@ -58,6 +58,7 @@ export const useSettingsStore = defineStore(
     function () {
         const {setStorage, addStorageChangedListener} = storageAdapter();
         const theme = useTheme();
+        let removeStorageChangeListener: (() => void) | null = null;
 
         /** Currently active UI skin or theme name. */
         const skin = ref<string>(BROWSER_STORAGE.SKIN.value);
@@ -207,7 +208,12 @@ export const useSettingsStore = defineStore(
             syncFromStorage(exchanges, storage, BROWSER_STORAGE.EXCHANGES.key);
 
             // Start listening for external changes (cross-context sync)
-            addStorageChangedListener((changes) => {
+            if (removeStorageChangeListener) {
+                removeStorageChangeListener();
+                removeStorageChangeListener = null;
+            }
+
+            removeStorageChangeListener = addStorageChangedListener((changes) => {
                 log("STORES settings: cross-context sync");
 
                 applyStorageChange(
@@ -332,4 +338,3 @@ export const useSettingsStore = defineStore(
 );
 
 log("STORES settings");
-

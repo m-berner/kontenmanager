@@ -16,10 +16,12 @@ import BookingForm from "@/components/dialogs/forms/BookingForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import {DATE} from "@/constants";
 import {INDEXED_DB} from "@/constants";
+import {ERROR_CATEGORY} from "@/constants";
 import {databaseService} from "@/services/database/service";
 import {browserService} from "@/services/browserService";
 import {alertService} from "@/services/alert";
 import {bookingsRepository} from "@/services/database/repositories";
+import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
 
 const {t} = useI18n();
 const {mapBookingFormToDb, reset} = useBookingForm();
@@ -43,7 +45,12 @@ const onClickOk = async (): Promise<void> => {
       const addBookingID = await bookingsRepository.save(bookingData);
 
       if (addBookingID === INDEXED_DB.INVALID_ID) {
-        throw new Error(t("components.dialogs.addBooking.messages.error"));
+        throw appError(
+            ERROR_DEFINITIONS.SERVICES.DATABASE.BASE.B.CODE,
+            ERROR_CATEGORY.DATABASE,
+            true,
+            {entity: "booking"}
+        );
       }
 
       records.bookings.add({...bookingData, cID: addBookingID}, true);
@@ -68,4 +75,3 @@ log("COMPONENTS DIALOGS AddBooking: setup");
     <BookingForm/>
   </BaseDialogForm>
 </template>
-

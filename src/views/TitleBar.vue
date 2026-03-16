@@ -129,7 +129,8 @@ onMounted(async () => {
   try {
     const online = await fetchService.fetchIsOk();
     connectionState.value = online ? "online" : "offline";
-  } catch {
+  } catch (err) {
+    void err;
     connectionState.value = "offline";
   }
 });
@@ -180,4 +181,3 @@ log("VIEWS TitleBar: setup");
     </v-select>
   </v-app-bar>
 </template>
-

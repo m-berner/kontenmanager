@@ -16,9 +16,11 @@ import BookingTypeForm from "@/components/dialogs/forms/BookingTypeForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import {useSettingsStore} from "@/stores/settings";
 import {INDEXED_DB} from "@/constants";
+import {ERROR_CATEGORY} from "@/constants";
 import {browserService} from "@/services/browserService";
 import {alertService} from "@/services/alert";
 import {bookingTypesRepository} from "@/services/database/repositories";
+import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
 
 const {t} = useI18n();
 const records = useRecordsStore();
@@ -47,7 +49,12 @@ const onClickOk = async (): Promise<void> => {
       const addBookingTypeID = await bookingTypesRepository.save(bookingTypeData);
 
       if (addBookingTypeID === INDEXED_DB.INVALID_ID) {
-        throw new Error(t("components.dialogs.addBookingType.messages.error"));
+        throw appError(
+            ERROR_DEFINITIONS.SERVICES.DATABASE.BASE.B.CODE,
+            ERROR_CATEGORY.DATABASE,
+            true,
+            {entity: "bookingType"}
+        );
       }
 
       records.bookingTypes.add({...bookingTypeData, cID: addBookingTypeID});
@@ -75,4 +82,3 @@ log("COMPONENTS DIALOGS AddBookingType: setup");
     <BookingTypeForm :mode="'add'"/>
   </BaseDialogForm>
 </template>
-

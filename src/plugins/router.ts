@@ -82,8 +82,9 @@ routerInstance.afterEach((to) => {
         if (routeName) {
             runtime.setCurrentView(routeName);
         }
-    } catch {
-        // Pinia might not be ready in some unit-test contexts; fail silently
+    } catch (err) {
+        // Pinia might not be ready in some unit-test contexts; fail silently.
+        void err;
     }
 });
 
@@ -98,8 +99,9 @@ routerInstance.isReady().then(() => {
         if (routeName) {
             runtime.setCurrentView(routeName);
         }
-    } catch {
-        // Ignore if Pinia is not active in this context
+    } catch (err) {
+        // Ignore if Pinia is not active in this context.
+        void err;
     }
 });
 
@@ -111,4 +113,3 @@ export default routerInstance;
 log("PLUGINS router");
 
 //export const router = routerInstance;
-

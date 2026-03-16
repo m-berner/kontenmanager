@@ -16,7 +16,7 @@ import type {
     LegacyStockDb,
     StockDb
 } from "@/types";
-import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, serializeError} from "@/domains/errors";
 import {isoDate} from "@/domains/utils/utils";
 import {ERROR_CATEGORY, INDEXED_DB} from "@/constants";
 import {validateBackup, validateDataIntegrity, validateLegacyDataIntegrity} from "@/domains/importExport/validator";
@@ -68,11 +68,12 @@ function validateText(text: string): void {
 async function readBlobAsText(blob: Blob): Promise<string> {
     try {
         return await blob.text();
-    } catch {
+    } catch (err) {
         throw appError(
-            ERROR_DEFINITIONS.IMPORT_EXPORT_SERVICE.C.CODE,
+            ERROR_DEFINITIONS.IMPORT_EXPORT_SERVICE.A.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {originalError: serializeError(err)}
         );
     }
 }
@@ -86,21 +87,21 @@ function parseJson(text: string): BackupData {
     try {
         parsed = JSON.parse(text);
     } catch (err) {
-        if (err instanceof SyntaxError) {
-            throw appError(
-                ERROR_DEFINITIONS.IMPORT_EXPORT_SERVICE.E.CODE,
-                ERROR_CATEGORY.VALIDATION,
-                true
-            );
-        }
-        throw err;
+        // Parsing errors are format/validation issues, not legacy transformation failures.
+        throw appError(
+            ERROR_DEFINITIONS.IMPORT_EXPORT_SERVICE.B.CODE,
+            ERROR_CATEGORY.VALIDATION,
+            true,
+            {originalError: serializeError(err)}
+        );
     }
 
     if (!parsed || typeof parsed !== "object") {
         throw appError(
-            ERROR_DEFINITIONS.IMPORT_EXPORT_SERVICE.F.CODE,
+            ERROR_DEFINITIONS.IMPORT_EXPORT_SERVICE.B.CODE,
             ERROR_CATEGORY.VALIDATION,
-            false
+            false,
+            {reason: "Parsed JSON is not an object"}
         );
     }
 
@@ -113,11 +114,12 @@ function parseJson(text: string): BackupData {
 function stringifyJson(data: ExportData): string {
     try {
         return JSON.stringify(data, null, 2);
-    } catch {
+    } catch (err) {
         throw appError(
             ERROR_DEFINITIONS.IMPORT_EXPORT_SERVICE.G.CODE,
             ERROR_CATEGORY.VALIDATION,
-            true
+            true,
+            {originalError: serializeError(err)}
         );
     }
 }

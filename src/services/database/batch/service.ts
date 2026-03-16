@@ -23,11 +23,11 @@ const VALID_STORES = [
 export type ValidStoreNameType = (typeof VALID_STORES)[number];
 
 export type BatchOperationBuilder = {
-    add: (_storeName: string, _operation: RecordOperation) => BatchOperationBuilder;
-    insert: (_storeName: string, _data: unknown) => BatchOperationBuilder;
-    update: (_storeName: string, _data: unknown) => BatchOperationBuilder;
-    remove: (_storeName: string, _key: number) => BatchOperationBuilder;
-    clear: (_storeName: string) => BatchOperationBuilder;
+    add: (_storeName: ValidStoreNameType, _operation: RecordOperation) => BatchOperationBuilder;
+    insert: (_storeName: ValidStoreNameType, _data: unknown) => BatchOperationBuilder;
+    update: (_storeName: ValidStoreNameType, _data: unknown) => BatchOperationBuilder;
+    remove: (_storeName: ValidStoreNameType, _key: number) => BatchOperationBuilder;
+    clear: (_storeName: ValidStoreNameType) => BatchOperationBuilder;
     execute: () => Promise<void>;
     getOperationCount: () => number;
     reset: () => BatchOperationBuilder;
@@ -35,7 +35,7 @@ export type BatchOperationBuilder = {
 
 type BatchServiceContract = {
     executeAtomic: (_descriptors: BatchOperationDescriptor[]) => Promise<void>;
-    executeBatch: (_storeName: string, _operations: RecordOperation[]) => Promise<void>;
+    executeBatch: (_storeName: ValidStoreNameType, _operations: RecordOperation[]) => Promise<void>;
     createBuilder: () => BatchOperationBuilder;
 };
 
@@ -50,6 +50,7 @@ function validateDescriptors(descriptors: BatchOperationDescriptor[]): void {
     }
 
     for (const descriptor of descriptors) {
+        // Runtime guard for callers that might bypass the type system.
         if (!VALID_STORES.includes(descriptor.storeName as ValidStoreNameType)) {
             throw appError(
                 ERROR_DEFINITIONS.SERVICES.DATABASE.D.CODE,
@@ -168,7 +169,7 @@ export function createBatchOperationService(transactionManager: TransactionManag
      * @param operations - Operations to execute
      */
     async function executeBatch(
-        storeName: string,
+        storeName: ValidStoreNameType,
         operations: RecordOperation[]
     ): Promise<void> {
         return executeAtomic([{storeName, operations}]);
@@ -192,29 +193,36 @@ export function createBatchOperationService(transactionManager: TransactionManag
  * Creates a fluent builder for batch operations
  */
 export function createBatchOperationBuilder(service: Pick<BatchServiceContract, "executeAtomic">) {
-    const descriptors: Map<string, RecordOperation[]> = new Map();
+    const descriptors: Map<ValidStoreNameType, RecordOperation[]> = new Map();
 
-    function add(storeName: string, operation: RecordOperation) {
-        if (!descriptors.has(storeName)) {
-            descriptors.set(storeName, []);
+    function ensureOperations(storeName: ValidStoreNameType): RecordOperation[] {
+        const existing = descriptors.get(storeName);
+        if (existing) {
+            return existing;
         }
-        descriptors.get(storeName)!.push(operation);
+        const created: RecordOperation[] = [];
+        descriptors.set(storeName, created);
+        return created;
+    }
+
+    function add(storeName: ValidStoreNameType, operation: RecordOperation) {
+        ensureOperations(storeName).push(operation);
         return builder;
     }
 
-    function insert(storeName: string, data: unknown) {
+    function insert(storeName: ValidStoreNameType, data: unknown) {
         return add(storeName, {type: "add", data});
     }
 
-    function update(storeName: string, data: unknown) {
+    function update(storeName: ValidStoreNameType, data: unknown) {
         return add(storeName, {type: "put", data});
     }
 
-    function remove(storeName: string, key: number) {
+    function remove(storeName: ValidStoreNameType, key: number) {
         return add(storeName, {type: "delete", key});
     }
 
-    function clear(storeName: string) {
+    function clear(storeName: ValidStoreNameType) {
         return add(storeName, {type: "clear"});
     }
 

@@ -15,6 +15,7 @@ import type {
     RepositoryMap,
     RepositoryType
 } from "@/types";
+import type {ValidStoreNameType} from "@/services/database/batch/service";
 
 import {createDatabaseConnectionManager} from "./connection/manager";
 import {createTransactionManager} from "./transaction/manager";
@@ -171,7 +172,7 @@ export function createDatabaseService(
      * Executes operations on a single store
      */
     async function batchOperations(
-        storeName: string,
+        storeName: ValidStoreNameType,
         operations: RecordOperation[]
     ): Promise<void> {
         return batchService.executeBatch(storeName, operations);

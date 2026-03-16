@@ -211,7 +211,7 @@ export interface BaseEntity {
  */
 export interface BatchOperationDescriptor {
     /** Name of the object store. */
-    storeName: string;
+    storeName: import("@/services/database/batch/service").ValidStoreNameType;
     /** List of operations (add, put, delete). */
     operations: import("@/types").RecordOperation[];
 }

@@ -19,11 +19,13 @@ import {useDialogGuards} from "@/composables/useDialogGuards";
 import {BROWSER_STORAGE} from "@/constants";
 import {databaseService} from "@/services/database/service";
 import {INDEXED_DB} from "@/constants";
+import {ERROR_CATEGORY} from "@/constants";
 import {log} from "@/domains/utils/utils";
 import {normalizeBookingTypeName} from "@/domains/validation/validators";
 import {browserService} from "@/services/browserService";
 import {alertService} from "@/services/alert";
 import {accountsRepository, bookingTypesRepository} from "@/services/database/repositories";
+import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
 
 const {t} = useI18n();
 const {setStorage} = storageAdapter();
@@ -55,7 +57,12 @@ const onClickOk = async (): Promise<void> => {
             // Add the account, get the generated ID
             const accountId = await accountsRepository.save(accountData, {tx});
             if (accountId === INDEXED_DB.INVALID_ID) {
-              throw new Error(t("components.dialogs.addAccount.messages.error"));
+              throw appError(
+                  ERROR_DEFINITIONS.SERVICES.DATABASE.BASE.B.CODE,
+                  ERROR_CATEGORY.DATABASE,
+                  true,
+                  {entity: "account"}
+              );
             }
 
             // Optionally add default booking types
@@ -89,7 +96,12 @@ const onClickOk = async (): Promise<void> => {
               for (const bt of defaults) {
                 const id = await bookingTypesRepository.save(bt, {tx});
                 if (id === INDEXED_DB.INVALID_ID) {
-                  throw new Error(t("components.dialogs.addBookingType.messages.error"));
+                  throw appError(
+                      ERROR_DEFINITIONS.SERVICES.DATABASE.BASE.B.CODE,
+                      ERROR_CATEGORY.DATABASE,
+                      true,
+                      {entity: "bookingType"}
+                  );
                 }
                 createdTypes.push({cID: id, ...bt});
               }
@@ -135,4 +147,3 @@ log("COMPONENTS DIALOGS AddAccount: setup");
     <AccountForm :isUpdate="false"/>
   </BaseDialogForm>
 </template>
-
