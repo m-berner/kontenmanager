@@ -6,7 +6,6 @@
 
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useSettingsStore} from "@/stores/settings";
 import {useRuntimeStore} from "@/stores/runtime";
 import {useRecordsStore} from "@/stores/records";
@@ -20,27 +19,25 @@ import {alertService} from "@/services/alert";
 const {t} = useI18n();
 const {setStorage} = storageAdapter();
 const settings = useSettingsStore();
-const {activeAccountId} = storeToRefs(settings);
 const {resetTeleport} = useRuntimeStore();
 const records = useRecordsStore();
-const {items: accountItems} = storeToRefs(records.accounts);
 const {isLoading, submitGuard} = useDialogGuards(t);
 
 const switchToNextAccount = async (): Promise<void> => {
-  if (accountItems.value.length === 0) {
-    activeAccountId.value = -1;
+  if (records.accounts.items.length === 0) {
+    settings.activeAccountId = -1;
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, -1);
     return;
   }
 
-  activeAccountId.value = accountItems.value[0].cID; //newActiveId!;
+  settings.activeAccountId = records.accounts.items[0].cID; //newActiveId!;
   await setStorage(
       BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
-      activeAccountId.value
+      settings.activeAccountId
   );
 
   const storesDB = await databaseService.getAccountRecords(
-      activeAccountId.value
+      settings.activeAccountId
   );
   await records.init(storesDB, {
     title: t("mixed.smImportOnly.title"),
@@ -58,7 +55,7 @@ const onClickOk = async (): Promise<void> => {
     errorTitle: t("components.dialogs.deleteAccountConfirmation.title"),
     errorContext: "DELETE_ACCOUNT",
     operation: async () => {
-      const accountToDelete = activeAccountId.value;
+      const accountToDelete = settings.activeAccountId;
       await databaseService.deleteAccountRecords(accountToDelete);
       records.accounts.remove(accountToDelete);
 
@@ -90,4 +87,3 @@ log("COMPONENTS DIALOGS DeleteAccountConfirmation: setup");
     <v-progress-circular color="primary" indeterminate size="64"/>
   </v-overlay>
 </template>
-

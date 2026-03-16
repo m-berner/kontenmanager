@@ -13,7 +13,6 @@
 import type {BackupData, BookingDb, RecordOperation, RollbackData, StockDb} from "@/types";
 import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useRecordsStore} from "@/stores/records";
 import {browserService} from "@/services/browserService";
 import {alertService} from "@/services/alert";
@@ -38,7 +37,6 @@ const {isLoading, submitGuard} = useDialogGuards(t);
 const {resetTeleport} = useRuntimeStore();
 const settings = useSettingsStore();
 const records = useRecordsStore();
-const {items: accountItems} = storeToRefs(records.accounts);
 
 const files = ref<File[] | File | null>(null);
 const fileBlob = ref<Blob>(new Blob());
@@ -390,8 +388,7 @@ const getImportSummary = (backup: BackupData): string => {
 
 const processBackupFile = async (): Promise<void> => {
   //const startTime = Date.now();
-  const {activeAccountId} = storeToRefs(settings);
-  const originalActiveId = activeAccountId.value;
+  const originalActiveId = settings.activeAccountId;
 
   try {
     const backup = await importExportService.readJsonFile(fileBlob.value);
@@ -407,7 +404,7 @@ const processBackupFile = async (): Promise<void> => {
     // Check for empty database requirement
     if (
         validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION &&
-        accountItems.value.length > 0
+        records.accounts.items.length > 0
     ) {
       await browserService.showSystemNotification(
           t("components.dialogs.importDatabase.title"),
@@ -461,7 +458,7 @@ const processBackupFile = async (): Promise<void> => {
     }
     // Set the active account
     const activeId = backup.accounts?.[0].cID ?? SM_RESTORE_ACCOUNT_ID;
-    activeAccountId.value = activeId;
+    settings.activeAccountId = activeId;
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeId);
     // Import based on the version
     if (backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION) {
@@ -473,7 +470,7 @@ const processBackupFile = async (): Promise<void> => {
           t("components.dialogs.importDatabase.title"),
           browserService.getMessage("xx_db_no_restored")
       );
-      activeAccountId.value = originalActiveId;
+      settings.activeAccountId = originalActiveId;
       await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
       return;
     }
@@ -484,7 +481,7 @@ const processBackupFile = async (): Promise<void> => {
     await alertService.feedbackInfo("", summary);
     resetFileInput();
   } catch (err) {
-    activeAccountId.value = originalActiveId;
+    settings.activeAccountId = originalActiveId;
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
     const errorMessage =
         isAppError(err)
@@ -579,7 +576,6 @@ log("COMPONENTS DIALOGS ImportDatabase: setup");
     </v-overlay>
   </v-form>
 </template>
-
 
 
 

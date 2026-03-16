@@ -29,7 +29,7 @@ function createFormManager<
 >(
     initialData: TForm,
     mapFn: (_data: UnwrapNestedRefs<TForm>, ..._args: TArgs) => TDB
-): FormsManager<TForm, TDB> {
+): FormsManager<TForm, TDB, TArgs> {
     const formData = reactive<TForm>({...initialData});
 
     /**
@@ -94,8 +94,8 @@ function createAccountFormManager() {
     return {
         ...manager,
         accountFormData: manager.formData,
-        mapAccountFormToDb: (id?: number) =>
-            manager.mapFormToDb(manager.formData, id)
+        mapAccountFormToDb: () =>
+            manager.mapFormToDb(manager.formData)
     };
 }
 
@@ -154,7 +154,7 @@ function createBookingFormManager() {
  * @returns An object containing:
  * - All properties and methods from the base form manager.
  * - `bookingTypeFormData`: The current booking type form data managed by the form manager.
- * - `mapBookingTypeFormToDb`: A method to transform the form data into a database format, with an optional ID parameter.
+ * - `mapBookingTypeFormToDb`: A method to transform the form data into a database format, using the specified account ID.
  */
 function createBookingTypeFormManager() {
     const initialData: BookingTypeFormData = {
@@ -167,8 +167,8 @@ function createBookingTypeFormManager() {
     return {
         ...manager,
         bookingTypeFormData: manager.formData,
-        mapBookingTypeFormToDb: (id?: number) =>
-            manager.mapFormToDb(manager.formData, id)
+        mapBookingTypeFormToDb: (accountId: number) =>
+            manager.mapFormToDb(manager.formData, accountId)
     };
 }
 
@@ -226,4 +226,3 @@ export function useBookingTypeForm() {
 }
 
 log("COMPOSABLES useForms");
-

@@ -13,7 +13,6 @@
  */
 import {useI18n} from "vue-i18n";
 import {RouterLink} from "vue-router";
-import {storeToRefs} from "pinia";
 import {useRuntimeStore} from "@/stores/runtime";
 import {useRecordsStore} from "@/stores/records";
 import {log} from "@/domains/utils/utils";
@@ -26,11 +25,7 @@ const COMPANY: ViewTypeSelectionType = "company";
 
 const {t} = useI18n();
 const runtime = useRuntimeStore();
-const {isStockLoading} = storeToRefs(runtime);
 const records = useRecordsStore();
-const {items: accountItems} = storeToRefs(records.accounts);
-const {items: bookingItems} = storeToRefs(records.bookings);
-const {items: bookingTypeItems} = storeToRefs(records.bookingTypes);
 
 /**
  * Opens a dialog with the specified name and sets its visibility.
@@ -59,13 +54,13 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   updateQuote: async () => {
     // Fetches the latest quotes for the current stocks page with loading flags
     try {
-      isStockLoading.value = true;
+      runtime.isStockLoading = true;
       runtime.isDownloading = true;
       await records.stocks.loadOnlineData(runtime.stocksPage);
     } catch {
       // optionally surface an alert
     } finally {
-      isStockLoading.value = false;
+      runtime.isStockLoading = false;
       runtime.isDownloading = false;
     }
   },
@@ -99,7 +94,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
 
   updateAccount: async () => {
     // Open the Update Account dialog or inform the user if no accounts exist
-    if (accountItems.value.length === 0) {
+    if (records.accounts.items.length === 0) {
       await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
@@ -110,7 +105,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   deleteAccountConfirmation: async () => {
-    if (accountItems.value.length === 0) {
+    if (records.accounts.items.length === 0) {
       await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
@@ -121,7 +116,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   addBookingType: async () => {
-    if (accountItems.value.length === 0) {
+    if (records.accounts.items.length === 0) {
       await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
@@ -132,7 +127,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   updateBookingType: async () => {
-    if (bookingTypeItems.value.length === 0) {
+    if (records.bookingTypes.items.length === 0) {
       await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noBookingType")
@@ -143,7 +138,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   deleteBookingType: async () => {
-    if (bookingTypeItems.value.length === 0) {
+    if (records.bookingTypes.items.length === 0) {
       await alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noBookingType")
@@ -154,7 +149,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   addBooking: async () => {
-    if (accountItems.value.length === 0) {
+    if (records.accounts.items.length === 0) {
       void alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
@@ -165,7 +160,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   exportDatabase: () => {
-    if (accountItems.value.length === 0) {
+    if (records.accounts.items.length === 0) {
       void alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noAccount")
@@ -180,7 +175,7 @@ const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
   },
 
   showAccounting: () => {
-    if (bookingItems.value.length === 0) {
+    if (records.bookings.items.length === 0) {
       void alertService.feedbackInfo(
           t("views.headerBar.infoTitle"),
           t("views.headerBar.messages.noBooking")
@@ -478,4 +473,3 @@ log("VIEWS HeaderBar: setup");
   </v-app-bar>
   <DialogPort/>
 </template>
-

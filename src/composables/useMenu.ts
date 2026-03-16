@@ -7,7 +7,6 @@
 import {useRuntimeStore} from "@/stores/runtime";
 import {useRecordsStore} from "@/stores/records";
 import {bookingsRepository, stocksRepository} from "@/services/database/repositories";
-import {storeToRefs} from "pinia";
 import type {
     ActionHandler,
     DialogNameType,
@@ -180,8 +179,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
      * @param stockId - Stock identifier.
      */
     const checkStockHasBookings = (stockId: number): boolean => {
-        const {items: bookingItems} = storeToRefs(records.bookings);
-        return hasBookings(stockId, bookingItems.value);
+        return hasBookings(stockId, records.bookings.items);
     };
 
     /**
@@ -291,9 +289,8 @@ export function useMenuAction(translate?: (_key: string) => string) {
         },
 
         async openLink(recordId: number) {
-            const {items: stockItems} = storeToRefs(records.stocks);
-            const stockIndex = records.stocks.getIndexById(recordId);
-            const url = stockItems.value[stockIndex]?.cURL;
+            const stock = records.stocks.getById(recordId);
+            const url = stock?.cURL;
 
             if (url) {
                 window.open(url, "_blank", "noopener,noreferrer");

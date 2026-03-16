@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS, isAppError, serializeError} from "@/domains/errors";
 import {ERROR_CATEGORY} from "@/constants";
 
 /**
@@ -24,20 +24,35 @@ export async function withRetry<T>(
     } = {}
 ): Promise<T> {
     const {maxRetries = 3, delay = 1000, onRetry} = options;
+    let lastError: unknown;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             return await operation();
         } catch (err) {
+            lastError = err;
+            const asError = err instanceof Error ? err : new Error(String(err));
+
+            // If a domain-level AppError is thrown, preserve it; retries are only useful
+            // for transient failures.
+            if (isAppError(err) && !err.recoverable) {
+                throw err;
+            }
+
             if (attempt === maxRetries) {
                 throw appError(
                     ERROR_DEFINITIONS.USE_DIALOG_GUARDS.B.CODE,
                     ERROR_CATEGORY.VALIDATION,
-                    true
+                    true,
+                    {
+                        maxRetries,
+                        attempt,
+                        lastError: serializeError(lastError)
+                    }
                 );
             }
 
-            onRetry?.(attempt, err as Error);
+            onRetry?.(attempt, asError);
             await new Promise((resolve) => setTimeout(resolve, delay * attempt));
         }
     }
@@ -45,7 +60,8 @@ export async function withRetry<T>(
     throw appError(
         ERROR_DEFINITIONS.USE_DIALOG_GUARDS.C.CODE,
         ERROR_CATEGORY.VALIDATION,
-        false
+        false,
+        {maxRetries, lastError: serializeError(lastError)}
     );
 }
 

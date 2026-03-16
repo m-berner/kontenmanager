@@ -5,7 +5,7 @@
  */
 
 import type {StockDb, StockItem, StockRamData} from "@/types";
-import {defineStore, storeToRefs} from "pinia";
+import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 import {useSettingsStore} from "@/stores/settings";
 import {fetchService} from "@/services/fetch";
@@ -35,7 +35,6 @@ export const useStocksStore = defineStore("stocks", function () {
     const runtime = useRuntimeStore();
     //const { curEur, curUsd } = storeToRefs(runtime);
     const settings = useSettingsStore();
-    const {stocksPerPage, activeAccountId} = storeToRefs(settings);
 
     /**
      * A reactive reference to an array of StockItem objects.
@@ -159,7 +158,7 @@ export const useStocksStore = defineStore("stocks", function () {
      * Calculates the total depot value for the active account.
      */
     const sumDepot = computed(() => (): number => {
-        if (activeAccountId.value === -1) {
+        if (settings.activeAccountId === -1) {
             return 0;
         }
 
@@ -243,10 +242,10 @@ export const useStocksStore = defineStore("stocks", function () {
         const itemsLength = active.value.length;
         if (itemsLength === 0) return;
 
-        const startIndex = (page - 1) * stocksPerPage.value;
+        const startIndex = (page - 1) * settings.stocksPerPage;
         const pageStocks = active.value.slice(
             startIndex,
-            startIndex + stocksPerPage.value
+            startIndex + settings.stocksPerPage
         );
         const now = Date.now();
 
@@ -345,5 +344,3 @@ export const useStocksStore = defineStore("stocks", function () {
 });
 
 log("STORES stocks");
-
-

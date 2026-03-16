@@ -21,11 +21,9 @@ import AlertOverlay from "@/components/AlertOverlay.vue";
 import {appService} from "@/services/app";
 import {useTheme} from "vuetify";
 import {useSettingsStore} from "@/stores/settings";
-import {storeToRefs} from "pinia";
 
 const {t} = useI18n();
 const settings = useSettingsStore();
-const {skin} = storeToRefs(settings);
 const theme = useTheme();
 
 const isInitialized = ref(false);
@@ -49,7 +47,7 @@ onBeforeMount(async () => {
         "info"
     );
 
-    theme.global.name.value = skin.value;
+    theme.global.name.value = settings.skin; //.value;
     isInitialized.value = true;
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {

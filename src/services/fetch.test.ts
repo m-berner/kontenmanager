@@ -58,6 +58,50 @@ describe("FetchService", () => {
             ).rejects.toSatisfy(isAppError);
             expect(fetchMock).toHaveBeenCalledTimes(1);
         });
+
+        it("should enforce timeout even when caller provides an AbortSignal", async () => {
+            vi.useFakeTimers();
+
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((_url, init) => {
+                const signal = init?.signal as AbortSignal | undefined;
+
+                // Simulate a request that never completes unless aborted.
+                return new Promise((_resolve, reject) => {
+                    if (!signal) {
+                        reject(new Error("expected abortable fetch"));
+                        return;
+                    }
+
+                    if (signal.aborted) {
+                        reject(signal.reason ?? new Error("AbortError"));
+                        return;
+                    }
+
+                    signal.addEventListener(
+                        "abort",
+                        () => reject(signal.reason ?? new Error("AbortError")),
+                        {once: true}
+                    );
+                }) as unknown as Promise<Response>;
+            });
+
+            const caller = new AbortController();
+
+            const promise = fetchService.fetchWithRetry(
+                "https://example.test",
+                {signal: caller.signal},
+                3
+            );
+            // Attach the rejection handler immediately to avoid unhandledRejection
+            // warnings while we advance fake timers.
+            const assertion = expect(promise).rejects.toSatisfy(isAppError);
+
+            // 30s internal timeout + 1s + 2s backoff between retries (3 attempts).
+            await vi.advanceTimersByTimeAsync(33_000);
+
+            await assertion;
+            expect(fetchMock).toHaveBeenCalledTimes(3);
+        });
     });
 
     describe("fetchWithCache", () => {

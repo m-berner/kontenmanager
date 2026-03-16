@@ -1,6 +1,6 @@
 {
   "author": "Martin Berner, kontenmanager@gmx.de",
-  "packageManager": "npm@11.3.0",
+  "packageManager": "npm@11.11.1",
   "type": "module",
   "devDependencies": {
     "@mdi/font": "7.4.47",

@@ -7,7 +7,6 @@
 <script lang="ts" setup>
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useRecordsStore} from "@/stores/records";
 import {useRuntimeStore} from "@/stores/runtime";
 import {useSettingsStore} from "@/stores/settings";
@@ -18,7 +17,6 @@ import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import {useDialogGuards} from "@/composables/useDialogGuards";
 import {databaseService} from "@/services/database/service";
-import {INDEXED_DB} from "@/constants";
 import type {AccountDb} from "@/types";
 import {alertService} from "@/services/alert";
 import {accountsRepository} from "@/services/database/repositories";
@@ -28,17 +26,15 @@ const {activeAccountId} = useSettingsStore();
 const runtime = useRuntimeStore();
 const {accountFormData, mapAccountFormToDb} = useAccountForm();
 const records = useRecordsStore();
-const {items: accountItems} = storeToRefs(records.accounts);
 const {submitGuard} = useDialogGuards(t);
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentAccount = (): void => {
-  const accountIndex = records.accounts.getIndexById(activeAccountId);
-  if (accountIndex === INDEXED_DB.INVALID_ID) {
+  const currentAccount = records.accounts.getById(activeAccountId);
+  if (!currentAccount) {
     log("COMPONENTS DIALOGS UpdateAccount: Account not found", activeAccountId);
     return;
   }
-  const currentAccount = accountItems.value[accountIndex];
 
   Object.assign(accountFormData, {
     id: currentAccount.cID,
@@ -60,7 +56,7 @@ const onClickOk = async (): Promise<void> => {
     errorContext: "UPDATE_ACCOUNT",
     errorTitle: t("components.dialogs.updateAccount.title"),
     operation: async () => {
-      const account = mapAccountFormToDb(activeAccountId) as AccountDb;
+      const account = mapAccountFormToDb() as AccountDb;
       records.accounts.update(account);
       await accountsRepository.save(account);
       runtime.resetTeleport();
@@ -84,4 +80,3 @@ log("COMPONENTS DIALOGS UpdateAccount: setup");
     <AccountForm :isUpdate="true"/>
   </BaseDialogForm>
 </template>
-

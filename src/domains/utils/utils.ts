@@ -224,8 +224,15 @@ export function toNumber(
 export function log(msg: string, data?: unknown, level?: LogLevelType): void {
     if (import.meta.env.MODE !== "development") return;
 
-    // eslint-disable-next-line no-console
-    const logFn: (..._args: unknown[]) => void = level === undefined ? console.log : console[level];
+    /* eslint-disable no-console */
+    const methods: Record<LogLevelType, (..._args: unknown[]) => void> = {
+        log: console.log.bind(console),
+        info: console.info.bind(console),
+        warn: console.warn.bind(console),
+        error: console.error.bind(console)
+    };
+    /* eslint-enable no-console */
+    const logFn = level ? methods[level] : methods.log;
     data !== undefined ? logFn(msg, data) : logFn(msg);
 }
 

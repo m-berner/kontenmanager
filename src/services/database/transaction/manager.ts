@@ -21,7 +21,7 @@ function setupTimeout(
     tx: IDBTransaction,
     timeout: number,
     stores: string[]
-): NodeJS.Timeout {
+): ReturnType<typeof setTimeout> {
     return setTimeout(() => {
         log(
             "DATABASE transaction: timeout",
@@ -161,6 +161,5 @@ export type TransactionManagerContract = ReturnType<typeof createTransactionMana
 export const TransactionManager = {
     create: createTransactionManager
 };
-
 
 

@@ -141,15 +141,26 @@ export async function fetchWithRetry(
     let lastStatus: number | undefined;
     let lastError: unknown;
 
-    const onCallerAbort = () => controller.abort(options.signal?.reason);
-    options.signal?.addEventListener("abort", onCallerAbort, { once: true });
+    // Always enforce our own timeout, but still respect any caller-provided abort signal.
+    // We do this by always passing our controller.signal to fetch, and mirroring the
+    // caller abort into it.
+    const callerSignal = options.signal;
+    const onCallerAbort = () => controller.abort(callerSignal?.reason);
+    if (callerSignal?.aborted) {
+        controller.abort(callerSignal.reason);
+    } else {
+        callerSignal?.addEventListener("abort", onCallerAbort, {once: true});
+    }
 
     try {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
+                // Do not pass the caller signal directly, otherwise the timeout abort above
+                // would be bypassed when a caller supplies its own signal.
+                const {signal: _ignoredSignal, ...restOptions} = options;
                 const response = await fetch(url, {
-                    ...options,
-                    signal: options.signal || controller.signal
+                    ...restOptions,
+                    signal: controller.signal
                 });
 
                 if (response.ok) {
@@ -172,7 +183,7 @@ export async function fetchWithRetry(
         }
     } finally {
         clearTimeout(timeoutId);
-        options.signal?.removeEventListener("abort", onCallerAbort);
+        callerSignal?.removeEventListener("abort", onCallerAbort);
     }
 
     throw appError(

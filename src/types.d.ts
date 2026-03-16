@@ -715,13 +715,13 @@ export type FormModeType = "add" | "update" | "delete";
  * @template TForm - The form data structure.
  * @template TDB - The database entity structure.
  */
-export interface FormsManager<TForm, TDB> {
+export interface FormsManager<TForm, TDB, TArgs extends unknown[] = unknown[]> {
     /** Reactive form state. */
     formData: UnwrapNestedRefs<TForm>;
     /** Resets the form to the initial state. */
     reset: () => void;
     /** Maps form data to a database entity. */
-    mapFormToDb: (_data: UnwrapNestedRefs<TForm>, ..._args: any[]) => TDB;
+    mapFormToDb: (_data: UnwrapNestedRefs<TForm>, ..._args: TArgs) => TDB;
 }
 
 /**

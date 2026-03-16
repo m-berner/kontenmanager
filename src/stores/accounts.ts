@@ -5,7 +5,7 @@
  */
 
 import type {AccountStoreItem} from "@/types";
-import {defineStore, storeToRefs} from "pinia";
+import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 import {useSettingsStore} from "@/stores/settings";
 import {log} from "@/domains/utils/utils";
@@ -18,7 +18,6 @@ import {log} from "@/domains/utils/utils";
  */
 export const useAccountsStore = defineStore("accounts", function () {
     const settings = useSettingsStore();
-    const {activeAccountId} = storeToRefs(settings);
     /** All bank account records. */
     const items = ref<AccountStoreItem[]>([]);
 
@@ -65,7 +64,7 @@ export const useAccountsStore = defineStore("accounts", function () {
 
     /** Whether the currently active account is a depot clearing account. */
     const isDepot = computed((): boolean => {
-        const ind = getIndexById.value(activeAccountId.value);
+        const ind = getIndexById.value(settings.activeAccountId);
         if (ind > -1) {
             return items.value[ind].cWithDepot;
         } else {
