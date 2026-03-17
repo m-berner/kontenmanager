@@ -15,8 +15,7 @@ import type {
     StockItem,
     StockStoreContract
 } from "@/types";
-import {DATE} from "@/constants";
-import {INDEXED_DB} from "@/constants";
+import {DATE, INDEXED_DB} from "@/constants";
 import {log, round2, utcDate, utcMs} from "@/domains/utils/utils";
 
 let hideImportAlert = false;

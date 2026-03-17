@@ -7,13 +7,7 @@
 import {useRuntimeStore} from "@/stores/runtime";
 import {useRecordsStore} from "@/stores/records";
 import {bookingsRepository, stocksRepository} from "@/services/database/repositories";
-import type {
-    ActionHandler,
-    DialogNameType,
-    HighlightColor,
-    HighlightOptions,
-    MenuActionType
-} from "@/types";
+import type {ActionHandler, DialogNameType, HighlightColor, HighlightOptions, MenuActionType} from "@/types";
 import {computed, onUnmounted, readonly, ref} from "vue";
 import {browserService} from "@/services/browserService";
 import {alertService} from "@/services/alert";

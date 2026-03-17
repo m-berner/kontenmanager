@@ -20,9 +20,11 @@ The mission of the components layer is to:
 General-purpose, reusable UI elements located directly in `src/components/`:
 
 - **`AlertOverlay.vue`**: Global notification system for info, success, and error messages.
-- **`DialogPort.vue`**: The central "hub" for all dialogs. Uses Vue `<Teleport>` to render dynamic components based on the `runtime` store state.
+- **`DialogPort.vue`**: The central "hub" for all dialogs. Uses Vue `<Teleport>` to render dynamic components based on
+  the `runtime` store state.
 - **`ContentCard.vue`**: A standardized wrapper for main screen content.
-- **`ThemeSelector.vue` / `CurrencyInput.vue` / `Favicon.vue`**: Specialized input, configuration, and display components.
+- **`ThemeSelector.vue` / `CurrencyInput.vue` / `Favicon.vue`**: Specialized input, configuration, and display
+  components.
 
 ### 💬 Dialogs (`/dialogs`)
 

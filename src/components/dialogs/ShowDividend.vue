@@ -7,7 +7,6 @@
 <script lang="ts" setup>
 import {computed} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useSettingsStore} from "@/stores/settings";
 import {useRecordsStore} from "@/stores/records";
 import {useRuntimeStore} from "@/stores/runtime";
@@ -16,7 +15,6 @@ import {createDividendHeaders} from "@/constants";
 
 const {d, n, t} = useI18n();
 const settings = useSettingsStore();
-const {dividendsPerPage} = storeToRefs(settings);
 const setDividendsPerPage = (value: number) =>
     settings.setDividendsPerPage(value);
 const {activeId} = useRuntimeStore();
@@ -69,7 +67,7 @@ log("COMPONENTS DIALOGS ShowDividend: setup");
             :hide-no-data="false"
             :hover="false"
             :items="records.bookings.dividendsByStockId(activeId)"
-            :items-per-page="dividendsPerPage"
+            :items-per-page="settings.dividendsPerPage"
             :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
             :items-per-page-text="t('components.dialogs.showDividend.itemsPerPageText')"
             :no-data-text="t('components.dialogs.showDividend.noDataText')"
@@ -88,4 +86,3 @@ log("COMPONENTS DIALOGS ShowDividend: setup");
     </v-card>
   </v-form>
 </template>
-

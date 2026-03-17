@@ -6,11 +6,10 @@
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {createPinia, setActivePinia} from "pinia";
-import {INDEXED_DB} from "@/constants";
+import {DATE, INDEXED_DB} from "@/constants";
 import {useBookingForm} from "@/composables/useForms";
 import {useSettingsStore} from "@/stores/settings";
 import {useRecordsStore} from "@/stores/records";
-import {DATE} from "@/constants";
 import {createDatabaseService} from "@/services/database/service";
 import type {BookingDb} from "@/types";
 

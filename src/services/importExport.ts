@@ -18,10 +18,9 @@ import type {
 } from "@/types";
 import {appError, ERROR_DEFINITIONS, serializeError} from "@/domains/errors";
 import {isoDate} from "@/domains/utils/utils";
-import {ERROR_CATEGORY, INDEXED_DB} from "@/constants";
+import {DATE, ERROR_CATEGORY, INDEXED_DB} from "@/constants";
 import {validateBackup, validateDataIntegrity, validateLegacyDataIntegrity} from "@/domains/importExport/validator";
 import {transformLegacyBooking, transformLegacyStock} from "@/domains/importExport/transformer";
-import {DATE} from "@/constants";
 
 /**
  * Constants for file validation

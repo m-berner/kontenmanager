@@ -1131,7 +1131,10 @@ export interface RollbackData {
  */
 export interface ServiceFetcherType {
     /** Fetches market data for a list of stocks. */
-    (_urls: import("@/types").NumberStringPair[]): Promise<import("@/types").StockMarketData[]>;
+    (
+        _urls: import("@/types").NumberStringPair[],
+        _options?: { signal?: AbortSignal }
+    ): Promise<import("@/types").StockMarketData[]>;
 }
 
 /**
@@ -1414,7 +1417,7 @@ export interface VisibleAlertData {
 
 declare global {
     module "*.vue" {
-        import type { DefineComponent } from "vue";
+        import type {DefineComponent} from "vue";
         const component: DefineComponent<
             Record<string, any>, // props
             Record<string, any>, // return from setup()

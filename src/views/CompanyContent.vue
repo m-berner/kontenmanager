@@ -9,32 +9,45 @@
  * @fileoverview CompanyContent component displays a data table of stock holdings
  * with real-time market data, portfolio information, and interactive menu actions.
  */
-import {computed, onBeforeMount, watch} from "vue";
+import {computed, onBeforeMount, onBeforeUnmount, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useSettingsStore} from "@/stores/settings";
 import {useRecordsStore} from "@/stores/records";
 import {useRuntimeStore} from "@/stores/runtime";
 import {log, winLossClass} from "@/domains/utils/utils";
 import {calculateInvestByStockId, calculatePortfolioByStockId} from "@/domains/logic";
 import DotMenu from "@/components/DotMenu.vue";
-import {createCompanyHeaders, createCompanyMenuItems, ITEMS_PER_PAGE_OPTIONS} from "@/constants";
-import {DATE} from "@/constants";
+import {createCompanyHeaders, createCompanyMenuItems, DATE, ITEMS_PER_PAGE_OPTIONS} from "@/constants";
 import {alertService} from "@/services/alert";
 
 const {d, n, t} = useI18n();
 const records = useRecordsStore();
-const {active: activeStockItems} = storeToRefs(records.stocks);
 const settings = useSettingsStore();
-const {stocksPerPage} = storeToRefs(settings);
 const setStocksPerPage = (value: number) => settings.setStocksPerPage(value);
 const runtime = useRuntimeStore();
-const {stocksPage, isDownloading, isStockLoading} = storeToRefs(runtime);
+
+const activeStockItems = computed(() => records.stocks.active);
+const stocksPerPage = computed(() => settings.stocksPerPage);
 
 const MINIMUM_PORTFOLIO_THRESHOLD = 0.1;
 
 const HEADERS = computed(() => createCompanyHeaders(t));
 const MENU_ITEMS = computed(() => createCompanyMenuItems(t));
+
+let onlineLoadController: AbortController | null = null;
+const startOnlineLoad = (): AbortSignal => {
+  if (onlineLoadController) onlineLoadController.abort();
+  onlineLoadController = new AbortController();
+  return onlineLoadController.signal;
+};
+const isAbortError = (err: unknown): boolean => {
+  return (
+      typeof err === "object" &&
+      err !== null &&
+      "name" in err &&
+      (err as { name: unknown }).name === "AbortError"
+  );
+};
 
 /**
  * Validates whether a date string represents a valid date after the epoch.
@@ -86,6 +99,7 @@ const calculatePercentChange = (
  * @returns {Promise<void>}
  */
 const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
+  const signal = startOnlineLoad();
   const pagesToLoad: number[] = [];
   const totalPages = Math.ceil(
       activeStockItems.value.length / stocksPerPage.value
@@ -102,9 +116,10 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
 
   try {
     await Promise.all(
-        pagesToLoad.map((page) => records.stocks.loadOnlineData(page))
+        pagesToLoad.map((page) => records.stocks.loadOnlineData(page, {signal}))
     );
   } catch (err) {
+    if (isAbortError(err)) return;
     await alertService.feedbackError("COMPANY_CONTENT", err, {
       data: "loadRequiredPages"
     });
@@ -122,19 +137,21 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
  */
 const onUpdatePage = async (page: number): Promise<void> => {
   log("VIEWS CompanyContent: onUpdatePage", page, "info");
-  stocksPage.value = page;
+  runtime.stocksPage = page;
 
   if (runtime.loadedStocksPages.has(page)) return;
 
-  isStockLoading.value = true;
+  runtime.isStockLoading = true;
+  const signal = startOnlineLoad();
   try {
-    await records.stocks.loadOnlineData(page);
+    await records.stocks.loadOnlineData(page, {signal});
   } catch (err) {
+    if (isAbortError(err)) return;
     await alertService.feedbackError("COMPANY_CONTENT", err, {
       data: "onUpdatePage"
     });
   } finally {
-    isStockLoading.value = false;
+    runtime.isStockLoading = false;
   }
 };
 
@@ -164,14 +181,14 @@ onBeforeMount(async () => {
     }
   });
 
-  if (!runtime.loadedStocksPages.has(stocksPage.value)) {
-    isDownloading.value = true;
-    isStockLoading.value = true;
+  if (!runtime.loadedStocksPages.has(runtime.stocksPage)) {
+    runtime.isDownloading = true;
+    runtime.isStockLoading = true;
     try {
-      await loadRequiredPages(stocksPage.value);
+      await loadRequiredPages(runtime.stocksPage);
     } finally {
-      isStockLoading.value = false;
-      isDownloading.value = false;
+      runtime.isStockLoading = false;
+      runtime.isDownloading = false;
     }
   } else {
     // If the page is already cached, we still need to trigger a recalculation
@@ -194,14 +211,18 @@ onBeforeMount(async () => {
  */
 watch(stocksPerPage, async () => {
   runtime.clearStocksPages();
-  isDownloading.value = true;
-  isStockLoading.value = true;
+  runtime.isDownloading = true;
+  runtime.isStockLoading = true;
   try {
-    await loadRequiredPages(stocksPage.value);
+    await loadRequiredPages(runtime.stocksPage);
   } finally {
-    isStockLoading.value = false;
-    isDownloading.value = false;
+    runtime.isStockLoading = false;
+    runtime.isDownloading = false;
   }
+});
+
+onBeforeUnmount(() => {
+  if (onlineLoadController) onlineLoadController.abort();
 });
 
 log("VIEWS CompanyContent: setup");
@@ -216,7 +237,7 @@ log("VIEWS CompanyContent: setup");
       :items-per-page="stocksPerPage"
       :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('views.companyContent.stocksTable.itemsPerPageText')"
-      :loading="isStockLoading"
+      :loading="runtime.isStockLoading"
       :no-data-text="t('views.companyContent.stocksTable.noDataText')"
       density="compact"
       item-key="cID"
@@ -252,8 +273,8 @@ log("VIEWS CompanyContent: setup");
               location="left">
             <template #activator="{ props }">
                <span
-                  :class="winLossClass(item.mEuroChange ?? 0)"
-                  v-bind="props">
+                   :class="winLossClass(item.mEuroChange ?? 0)"
+                   v-bind="props">
                 {{ n(item.mEuroChange ?? 0, "currency") }}
               </span>
             </template>
@@ -268,4 +289,3 @@ log("VIEWS CompanyContent: setup");
     </template>
   </v-data-table>
 </template>
-

@@ -14,8 +14,7 @@ import {useI18n} from "vue-i18n";
 import {useTheme} from "vuetify/framework";
 import {log} from "@/domains/utils/utils";
 import {storageAdapter} from "@/domains/storage/storageAdapter";
-import {BROWSER_STORAGE} from "@/constants";
-import {createThemes} from "@/constants";
+import {BROWSER_STORAGE, createThemes} from "@/constants";
 import {alertService} from "@/services/alert";
 
 const {t} = useI18n();

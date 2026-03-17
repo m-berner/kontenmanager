@@ -15,10 +15,7 @@ import {useI18n} from "vue-i18n";
 import {log} from "@/domains/utils/utils";
 import {storageAdapter} from "@/domains/storage/storageAdapter";
 import type {CheckboxGridProps, MaterialItemKeyType} from "@/types";
-import {SETTINGS} from "@/constants";
-import {BROWSER_STORAGE} from "@/constants";
-import {createMaterialLabel} from "@/constants";
-import {COMPONENTS} from "@/constants";
+import {BROWSER_STORAGE, COMPONENTS, createMaterialLabel, SETTINGS} from "@/constants";
 import {alertService} from "@/services/alert";
 
 const props = defineProps<CheckboxGridProps>();

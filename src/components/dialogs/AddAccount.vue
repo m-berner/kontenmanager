@@ -7,7 +7,6 @@
 <script lang="ts" setup>
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useRecordsStore} from "@/stores/records";
 import {useRuntimeStore} from "@/stores/runtime";
 import {useSettingsStore} from "@/stores/settings";
@@ -16,10 +15,8 @@ import {useAccountForm} from "@/composables/useForms";
 import AccountForm from "@/components/dialogs/forms/AccountForm.vue";
 import BaseDialogForm from "@/components/dialogs/forms/BaseDialogForm.vue";
 import {useDialogGuards} from "@/composables/useDialogGuards";
-import {BROWSER_STORAGE} from "@/constants";
+import {BROWSER_STORAGE, ERROR_CATEGORY, INDEXED_DB} from "@/constants";
 import {databaseService} from "@/services/database/service";
-import {INDEXED_DB} from "@/constants";
-import {ERROR_CATEGORY} from "@/constants";
 import {log} from "@/domains/utils/utils";
 import {normalizeBookingTypeName} from "@/domains/validation/validators";
 import {browserService} from "@/services/browserService";
@@ -115,11 +112,10 @@ const onClickOk = async (): Promise<void> => {
       const {accountId, createdTypes} = result;
 
       // 2) Only if the transaction completed successfully, update UI state
-      const {activeAccountId} = storeToRefs(settings);
       records.accounts.add({...accountData, cID: accountId});
       for (const bt of createdTypes) records.bookingTypes.add(bt);
 
-      activeAccountId.value = accountId;
+      settings.activeAccountId = accountId;
       try {
         await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, accountId);
       } catch (err) {

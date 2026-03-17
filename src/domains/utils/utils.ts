@@ -5,9 +5,8 @@
  */
 
 import type {LogLevelType, NumberParseOptions} from "@/types";
-import {DATE} from "@/constants";
+import {DATE, ERROR_CATEGORY} from "@/constants";
 import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
-import {ERROR_CATEGORY} from "@/constants";
 
 /**
  * Parses an ISO-formatted date string and extracts its year, month, and day components.

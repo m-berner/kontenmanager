@@ -7,8 +7,7 @@
 import type {BookingDb} from "@/types";
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
-import {log} from "@/domains/utils/utils";
-import {utcDate} from "@/domains/utils/utils";
+import {log, utcDate} from "@/domains/utils/utils";
 import {useBookingTypesStore} from "@/stores/bookingTypes";
 import {
     aggregateBookingsPerType,

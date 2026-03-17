@@ -8,7 +8,6 @@
 import type {BookingTypeDb} from "@/types";
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useRecordsStore} from "@/stores/records";
 import {useRuntimeStore} from "@/stores/runtime";
 import {log} from "@/domains/utils/utils";
@@ -25,7 +24,6 @@ import {bookingTypesRepository} from "@/services/database/repositories";
 const {t} = useI18n();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
-const {activeId} = storeToRefs(runtime);
 const {
   bookingTypeFormData,
   mapBookingTypeFormToDb,
@@ -39,14 +37,14 @@ const bookingTypeRef = ref<typeof BookingTypeForm | null>(null);
 const loadCurrentBookingType = (): void => {
   log("COMPONENTS DIALOGS UpdateBookingType: loadCurrentBookingType");
   resetForm();
-  const currentBookingType = records.bookingTypes.getById(activeId.value);
+  const currentBookingType = records.bookingTypes.getById(runtime.activeId);
   if (!currentBookingType) return;
 
-  bookingTypeFormData.id = activeId.value;
+  bookingTypeFormData.id = runtime.activeId;
   bookingTypeFormData.name = currentBookingType.cName;
 
   Object.assign(bookingTypeFormData, {
-    id: activeId.value,
+    id: runtime.activeId,
     name: currentBookingType.cName,
     accountNumberId: currentBookingType.cAccountNumberID
   });
@@ -114,4 +112,3 @@ log("COMPONENTS DIALOGS UpdateBookingType: setup");
     <BookingTypeForm ref="bookingTypeRef" :mode="'update'"/>
   </BaseDialogForm>
 </template>
-

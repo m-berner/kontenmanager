@@ -8,6 +8,7 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 import {createPinia, setActivePinia} from "pinia";
 import {useSettingsStore} from "@/stores/settings";
 import {BROWSER_STORAGE} from "@/constants";
+import type {StorageDataType} from "@/types";
 
 // Mock persistence domain used by the settings store
 const mockSetStorage = vi.fn();
@@ -27,7 +28,7 @@ describe("Settings Store", () => {
     it("init() should hydrate state from provided storage", () => {
         const store = useSettingsStore();
 
-        const storage = {
+        const storage: StorageDataType = {
             [BROWSER_STORAGE.SKIN.key]: "forest",
             [BROWSER_STORAGE.BOOKINGS_PER_PAGE.key]: 15,
             [BROWSER_STORAGE.STOCKS_PER_PAGE.key]: 20,
@@ -39,7 +40,7 @@ describe("Settings Store", () => {
             [BROWSER_STORAGE.MARKETS.key]: ["XETRA"],
             [BROWSER_STORAGE.INDEXES.key]: ["dax"],
             [BROWSER_STORAGE.EXCHANGES.key]: ["EURUSD", "USDJPY"]
-        } as any;
+        };
 
         store.init(storage);
 
@@ -59,35 +60,35 @@ describe("Settings Store", () => {
     it("setters should update state and persist via setStorage", async () => {
         const store = useSettingsStore();
 
-        await store.setBookingsPerPage(12 as any);
+        await store.setBookingsPerPage(12);
         expect(store.bookingsPerPage).toBe(12);
         expect(mockSetStorage).toHaveBeenCalledWith(
             BROWSER_STORAGE.BOOKINGS_PER_PAGE.key,
             12
         );
 
-        await store.setStocksPerPage(18 as any);
+        await store.setStocksPerPage(18);
         expect(store.stocksPerPage).toBe(18);
         expect(mockSetStorage).toHaveBeenCalledWith(
             BROWSER_STORAGE.STOCKS_PER_PAGE.key,
             18
         );
 
-        await store.setDividendsPerPage(22 as any);
+        await store.setDividendsPerPage(22);
         expect(store.dividendsPerPage).toBe(22);
         expect(mockSetStorage).toHaveBeenCalledWith(
             BROWSER_STORAGE.DIVIDENDS_PER_PAGE.key,
             22
         );
 
-        await store.setSumsPerPage(7 as any);
+        await store.setSumsPerPage(7);
         expect(store.sumsPerPage).toBe(7);
         expect(mockSetStorage).toHaveBeenCalledWith(
             BROWSER_STORAGE.SUMS_PER_PAGE.key,
             7
         );
 
-        await store.setActiveAccountId(5 as any);
+        await store.setActiveAccountId(5);
         expect(store.activeAccountId).toBe(5);
         expect(mockSetStorage).toHaveBeenCalledWith(
             BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,

@@ -24,8 +24,7 @@ import {storageAdapter} from "@/domains/storage/storageAdapter";
 import {useAccountsDB} from "@/composables/useIndexedDB";
 import {useDialogGuards} from "@/composables/useDialogGuards";
 import {importExportService} from "@/services/importExport";
-import {BROWSER_STORAGE} from "@/constants";
-import {INDEXED_DB} from "@/constants";
+import {BROWSER_STORAGE, INDEXED_DB} from "@/constants";
 import {validateBooking} from "@/domains/validation/validators";
 
 const SM_RESTORE_ACCOUNT_ID = 1;

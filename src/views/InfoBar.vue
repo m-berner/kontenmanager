@@ -17,8 +17,7 @@ import {storeToRefs} from "pinia";
 import {useRuntimeStore} from "@/stores/runtime";
 import {useSettingsStore} from "@/stores/settings";
 import {log} from "@/domains/utils/utils";
-import {SETTINGS} from "@/constants";
-import {createMaterialLabel} from "@/constants";
+import {createMaterialLabel, SETTINGS} from "@/constants";
 import type {MaterialItemKeyType} from "@/types";
 
 const {n, t} = useI18n();

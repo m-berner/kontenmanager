@@ -92,7 +92,7 @@ describe("BatchOperationService", () => {
         it("should build and execute a batch of operations", async () => {
             const builder = service.createBuilder();
             const account = {id: 1, name: "Test"};
-            
+
             builder
                 .insert(INDEXED_DB.STORE.ACCOUNTS.NAME, account)
                 .remove(INDEXED_DB.STORE.BOOKINGS.NAME, 123)
@@ -111,7 +111,7 @@ describe("BatchOperationService", () => {
             const builder = service.createBuilder();
             builder.insert(INDEXED_DB.STORE.ACCOUNTS.NAME, {});
             expect(builder.getOperationCount()).toBe(1);
-            
+
             builder.reset();
             expect(builder.getOperationCount()).toBe(0);
         });

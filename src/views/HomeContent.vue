@@ -11,7 +11,6 @@
  */
 import {computed, onBeforeMount, onUnmounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useSettingsStore} from "@/stores/settings";
 import {useRecordsStore} from "@/stores/records";
 import {log, utcDate} from "@/domains/utils/utils";
@@ -24,9 +23,7 @@ import {createHomeHeaders, createHomeMenuItems, ITEMS_PER_PAGE_OPTIONS} from "@/
 const {d, n, t} = useI18n();
 const {clearStorage, installStorageLocal} = storageAdapter();
 const records = useRecordsStore();
-const {items: bookingItems} = storeToRefs(records.bookings);
 const settings = useSettingsStore();
-const {bookingsPerPage} = storeToRefs(settings);
 const setBookingsPerPage = (value: number) => settings.setBookingsPerPage(value);
 
 const HEADERS = computed(() => createHomeHeaders(t));
@@ -83,8 +80,8 @@ log("VIEWS HomeContent: setup");
       :headers="HEADERS"
       :hide-no-data="false"
       :hover="true"
-      :items="bookingItems"
-      :items-per-page="bookingsPerPage"
+      :items="records.bookings.items"
+      :items-per-page="settings.bookingsPerPage"
       :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
       :items-per-page-text="t('views.homeContent.bookingsTable.itemsPerPageText')"
       :no-data-text="t('views.homeContent.bookingsTable.noDataText')"
@@ -108,4 +105,3 @@ log("VIEWS HomeContent: setup");
     </template>
   </v-data-table>
 </template>
-

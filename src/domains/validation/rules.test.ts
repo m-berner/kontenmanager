@@ -36,12 +36,18 @@ describe("Validation Rules", () => {
 
         it("should return invalid for incorrect format", () => {
             // Invalid character '@'
-            expect(validateIBAN("DE89 3704 0044 0532 0130 @0")).toEqual({isValid: false, error: VALIDATION_CODES.INVALID_FORMAT});
+            expect(validateIBAN("DE89 3704 0044 0532 0130 @0")).toEqual({
+                isValid: false,
+                error: VALIDATION_CODES.INVALID_FORMAT
+            });
         });
 
         it("should return invalid for incorrect checksum", () => {
             // Change one digit of a valid IBAN
-            expect(validateIBAN("DE88 3704 0044 0532 0130 00")).toEqual({isValid: false, error: VALIDATION_CODES.INVALID_CHECKSUM});
+            expect(validateIBAN("DE88 3704 0044 0532 0130 00")).toEqual({
+                isValid: false,
+                error: VALIDATION_CODES.INVALID_CHECKSUM
+            });
         });
     });
 

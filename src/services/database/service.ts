@@ -5,6 +5,7 @@
  */
 
 import {log} from "@/domains/utils/utils";
+import type {ValidStoreNameType} from "@/constants";
 import {INDEXED_DB} from "@/constants";
 import type {
     BatchOperationDescriptor,
@@ -15,7 +16,6 @@ import type {
     RepositoryMap,
     RepositoryType
 } from "@/types";
-import type {ValidStoreNameType} from "@/constants";
 
 import {createDatabaseConnectionManager} from "./connection/manager";
 import {createTransactionManager} from "./transaction/manager";

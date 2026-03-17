@@ -8,7 +8,6 @@
 import type {StockDb} from "@/types";
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useRecordsStore} from "@/stores/records";
 import {useRuntimeStore} from "@/stores/runtime";
 import {useSettingsStore} from "@/stores/settings";
@@ -27,7 +26,6 @@ const {save} = useStocksDB();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
 const {activeAccountId} = useSettingsStore();
-const {activeId} = storeToRefs(runtime);
 const {stockFormData, mapStockFormToDb, reset: resetForm} = useStockForm();
 const {submitGuard} = useDialogGuards(t);
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
@@ -35,10 +33,10 @@ const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 const loadCurrentStock = (): void => {
   log("COMPONENTS DIALOGS UpdateStock: loadCurrentStock");
   resetForm();
-  const currentStock = records.stocks.getById(activeId.value);
+  const currentStock = records.stocks.getById(runtime.activeId);
 
   Object.assign(stockFormData, {
-    id: activeId.value,
+    id: runtime.activeId,
     isin: currentStock?.cISIN.toUpperCase().replace(/\s/g, ""),
     company: currentStock?.cCompany,
     symbol: currentStock?.cSymbol,
@@ -87,4 +85,3 @@ log("COMPONENTS DIALOGS UpdateStock: setup");
     <StockForm :isUpdate="true"/>
   </BaseDialogForm>
 </template>
-

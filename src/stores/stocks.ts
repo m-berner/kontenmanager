@@ -11,13 +11,11 @@ import {useSettingsStore} from "@/stores/settings";
 import {fetchService} from "@/services/fetch";
 import {useRuntimeStore} from "@/stores/runtime";
 import {isoDate, log, toNumber, utcDate} from "@/domains/utils/utils";
-import {DATE, ERROR_CATEGORY} from "@/constants";
+import {CURRENCIES, DATE, ERROR_CATEGORY, INDEXED_DB} from "@/constants";
 import {storageAdapter} from "@/domains/storage/storageAdapter";
 import {browserService} from "@/services/browserService";
 import {useBookingsStore} from "@/stores/bookings";
 import * as DomainLogic from "@/domains/logic";
-import {CURRENCIES} from "@/constants";
-import {INDEXED_DB} from "@/constants";
 import {appError} from "@/domains/errors";
 
 const ASK_DATE_INTERVAL = 7;
@@ -228,17 +226,15 @@ export const useStocksStore = defineStore("stocks", function () {
     }
 
     /**
-     * Loads and enriches stock market data for the given page.
+     * Loads online stock data for a specified page and updates the stock information based on fetched data.
      *
-     * - Uses the current page size from settings to slice active stocks
-     * - Fetches min/rate/max values and next meeting/quarter dates
-     * - Converts to EUR using runtime exchange rates
-     * - Updates in-memory (RAM) fields on the corresponding stock entries
+     * @param {number} page - The page number to load data for. Determines the range of stocks to be processed.
+     * @param {Object} [options] - Optional parameters for the operation.
+     * @param {AbortSignal} [options.signal] - An AbortSignal to allow aborting the fetch requests.
      *
-     * @param page - The 1-based page index to load.
-     * @returns A promise that resolves when enrichment finishes; returns early if there are no active stocks.
+     * @returns A promise that resolves when the stock data has been successfully loaded and updated.
      */
-    async function loadOnlineData(page: number) {
+    async function loadOnlineData(page: number, options?: { signal?: AbortSignal }) {
         log("STORES stocks: loadOnlineData");
         const {getStorage} = storageAdapter();
 
@@ -277,8 +273,10 @@ export const useStocksStore = defineStore("stocks", function () {
         }
 
         const [minRateMaxResponse, dateResponse] = await Promise.all([
-            fetchService.fetchMinRateMaxData(isin, getStorage),
-            fetchService.fetchDateData(isinDates)
+            fetchService.fetchMinRateMaxData(isin, getStorage, {
+                signal: options?.signal
+            }),
+            fetchService.fetchDateData(isinDates, {signal: options?.signal})
         ]);
 
         pageStocks.forEach((stock, i) => {

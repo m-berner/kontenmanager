@@ -18,8 +18,7 @@ import {useSettingsStore} from "@/stores/settings";
 import {log} from "@/domains/utils/utils";
 import {storageAdapter} from "@/domains/storage/storageAdapter";
 import {fetchService} from "@/services/fetch";
-import {BROWSER_STORAGE} from "@/constants";
-import {COMPONENTS} from "@/constants";
+import {BROWSER_STORAGE, COMPONENTS} from "@/constants";
 import {alertService} from "@/services/alert";
 
 const props = defineProps<DynamicListProps>();

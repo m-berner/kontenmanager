@@ -8,8 +8,7 @@
 import {onBeforeMount, ref} from "vue";
 import {log} from "@/domains/utils/utils";
 import {storageAdapter} from "@/domains/storage/storageAdapter";
-import {BROWSER_STORAGE} from "@/constants";
-import {FETCH} from "@/constants";
+import {BROWSER_STORAGE, FETCH} from "@/constants";
 import type {ServiceName} from "@/types";
 import {alertService} from "@/services/alert";
 

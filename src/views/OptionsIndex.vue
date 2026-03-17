@@ -19,8 +19,7 @@ import ThemeSelector from "@/components/ThemeSelector.vue";
 import ServiceSelector from "@/components/ServiceSelector.vue";
 import CheckboxGrid from "@/components/CheckboxGrid.vue";
 import AlertOverlay from "@/components/AlertOverlay.vue";
-import {COMPONENTS} from "@/constants";
-import {createTabs} from "@/constants";
+import {COMPONENTS, createTabs} from "@/constants";
 
 const {t} = useI18n();
 

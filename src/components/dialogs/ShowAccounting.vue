@@ -7,18 +7,15 @@
 <script lang="ts" setup>
 import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import {useRecordsStore} from "@/stores/records";
 import {useSettingsStore} from "@/stores/settings";
 import type {AccountEntry} from "@/types";
-import {createAccountingHeaders} from "@/constants";
-import {COMPONENTS} from "@/constants";
+import {COMPONENTS, createAccountingHeaders} from "@/constants";
 import {log} from "@/domains/utils/utils";
 
 const {n, t} = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
-const {sumsPerPage} = storeToRefs(settings);
 const setSumsPerPage = (value: number) => settings.setSumsPerPage(value);
 
 const ITEMS_PER_PAGE_OPTIONS = [
@@ -162,7 +159,7 @@ log("COMPONENTS DIALOGS ShowAccounting: setup");
             :hide-no-data="false"
             :hover="false"
             :items="accountEntries"
-            :items-per-page="sumsPerPage"
+            :items-per-page="settings.sumsPerPage"
             :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
             :items-per-page-text="t('components.dialogs.showAccounting.itemsPerPageText')"
             :no-data-text="t('components.dialogs.showAccounting.noDataText')"

@@ -5,8 +5,7 @@
  */
 
 import {beforeAll, beforeEach, describe, expect, it, vi} from "vitest";
-import {fetchService} from "@/services/fetch";
-import {sanitizeArdDetailUrlFromOnclick} from "@/services/fetch";
+import {fetchService, sanitizeArdDetailUrlFromOnclick} from "@/services/fetch";
 import {isAppError} from "@/domains/errors";
 import {BROWSER_STORAGE} from "@/constants";
 
@@ -102,6 +101,37 @@ describe("FetchService", () => {
 
             await assertion;
             expect(fetchMock).toHaveBeenCalledTimes(3);
+        });
+
+        it("should not retry when caller aborts the request", async () => {
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((_url, init) => {
+                const signal = init?.signal as AbortSignal | undefined;
+                return new Promise((_resolve, reject) => {
+                    if (!signal) {
+                        reject(new Error("expected abortable fetch"));
+                        return;
+                    }
+                    if (signal.aborted) {
+                        reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
+                        return;
+                    }
+                    signal.addEventListener(
+                        "abort",
+                        () => reject(signal.reason ?? new DOMException("Aborted", "AbortError")),
+                        {once: true}
+                    );
+                }) as unknown as Promise<Response>;
+            });
+
+            const controller = new AbortController();
+            controller.abort(new DOMException("Aborted", "AbortError"));
+
+            await expect(
+                fetchService.fetchWithRetry("https://example.test", {signal: controller.signal}, 3)
+            ).rejects.toBeTruthy();
+
+            // One attempt only, no retries on abort.
+            expect(fetchMock).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -431,6 +461,159 @@ describe("FetchService", () => {
                 max: "20.00",
                 cur: "EUR"
             });
+        });
+    });
+
+    describe("fetchMinRateMaxData (goyax)", () => {
+        it("should parse rate and year high/low by labels (not fixed row positions)", async () => {
+            const goyaxHtml = `
+                <div id="instrument-ueberblick">
+                  <div>
+                    <table>
+                      <tbody>
+                        <tr><td>52 Wochen Hoch</td><td>9,00</td></tr>
+                        <tr><td>52 Wochen Tief</td><td>1,00</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div>
+                    <ul class="list-rows">
+                      <li>Foo</li>
+                    </ul>
+                    <ul class="list-rows">
+                      <li>Bar</li>
+                      <li>Kurs (EUR) 2,00</li>
+                    </ul>
+                  </div>
+                </div>
+            `;
+
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((_url) => {
+                return Promise.resolve({
+                    ok: true,
+                    status: 200,
+                    url: String(_url),
+                    text: async () => goyaxHtml
+                } as unknown as Response);
+            });
+
+            const result = await fetchService.fetchMinRateMaxData(
+                [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
+                async (keys) => {
+                    if (keys.includes(BROWSER_STORAGE.SERVICE.key)) {
+                        return {[BROWSER_STORAGE.SERVICE.key]: "goyax"};
+                    }
+                    return {};
+                }
+            );
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result[0]).toMatchObject({
+                id: 1,
+                rate: "2.00",
+                min: "1.00",
+                max: "9.00",
+                cur: "EUR"
+            });
+        });
+    });
+
+    describe("fetchMinRateMaxData (acheck)", () => {
+        it("should parse rate/min/max by labels and detect currency beyond fixed cells", async () => {
+            const acheckHtml = `
+                <div id="content">
+                  <table>
+                    <tbody>
+                      <tr><td>Something else</td><td>n/a</td></tr>
+                      <tr><td>Kurs</td><td>3,00</td><td>$</td></tr>
+                    </tbody>
+                  </table>
+                  <table><tbody><tr><td>unused</td></tr></tbody></table>
+                  <table>
+                    <tbody>
+                      <tr><td>Other</td><td>n/a</td></tr>
+                      <tr><td>52 Wochen Hoch</td><td>5,00</td></tr>
+                      <tr><td>52 Wochen Tief</td><td>1,00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+            `;
+
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((_url) => {
+                return Promise.resolve({
+                    ok: true,
+                    status: 200,
+                    url: String(_url),
+                    text: async () => acheckHtml
+                } as unknown as Response);
+            });
+
+            const result = await fetchService.fetchMinRateMaxData(
+                [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
+                async (keys) => {
+                    if (keys.includes(BROWSER_STORAGE.SERVICE.key)) {
+                        return {[BROWSER_STORAGE.SERVICE.key]: "acheck"};
+                    }
+                    return {};
+                }
+            );
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result[0]).toMatchObject({
+                id: 1,
+                rate: "3.00",
+                min: "1.00",
+                max: "5.00",
+                cur: "USD"
+            });
+        });
+    });
+
+    describe("fetchIndexData", () => {
+        it("should extract index values even when the link wraps the value in nested markup", async () => {
+            const indexHtml = `
+                <div class="index-world-map">
+                  <a title="DAX"><span><strong>18.123,45</strong></span></a>
+                  <a title="DJI">42.000,00</a>
+                </div>
+            `;
+
+            const fetchMock = vi
+                .spyOn(globalThis, "fetch")
+                .mockResolvedValue(new Response(indexHtml, {status: 200}));
+
+            const result = await fetchService.fetchIndexData();
+
+            // Should not depend on exact SETTINGS mapping, but must return at least one number.
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result.some((r) => Number.isFinite(r.value))).toBe(true);
+        });
+    });
+
+    describe("fetchMaterialData", () => {
+        it("should parse material prices using table cells (not children indices) and ignore extra columns", async () => {
+            const materialHtml = `
+                <div id="commodity_prices">
+                  <table><tbody>
+                    <tr><td>Gold</td><td>2.345,67</td><td>ignored</td></tr>
+                    <tr><td>Brent</td><td>80,12 USD</td><td>ignored</td></tr>
+                  </tbody></table>
+                </div>
+            `;
+
+            const fetchMock = vi
+                .spyOn(globalThis, "fetch")
+                .mockResolvedValue(new Response(materialHtml, {status: 200}));
+
+            const result = await fetchService.fetchMaterialData();
+
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            expect(result).toEqual(
+                expect.arrayContaining([
+                    {key: "Gold", value: 2345.67},
+                    {key: "Brent", value: 80.12}
+                ])
+            );
         });
     });
 });

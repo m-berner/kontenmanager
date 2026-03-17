@@ -5,7 +5,7 @@
  */
 
 import {describe, expect, it, vi} from "vitest";
-import { appError, ERROR_DEFINITIONS } from "@/domains/errors";
+import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
 
 // Mock browserService since it's used in appError
 vi.mock("@/services/browserService", () => ({

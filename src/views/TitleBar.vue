@@ -5,9 +5,8 @@
   -->
 
 <script lang="ts" setup>
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {storeToRefs} from "pinia";
 import connectionIcon from "@/assets/connection48.png";
 import defaultIcon from "@/assets/icon48.png";
 import {useSettingsStore} from "@/stores/settings";
@@ -16,10 +15,8 @@ import {useRecordsStore} from "@/stores/records";
 import {storageAdapter} from "@/domains/storage/storageAdapter";
 import {log} from "@/domains/utils/utils";
 import {fetchService} from "@/services/fetch";
-import {INDEXED_DB} from "@/constants";
+import {BROWSER_STORAGE, COMPONENTS, INDEXED_DB} from "@/constants";
 import {databaseService} from "@/services/database/service";
-import {BROWSER_STORAGE} from "@/constants";
-import {COMPONENTS} from "@/constants";
 import {alertService} from "@/services/alert";
 import type {ViewTypeSelectionType} from "@/types";
 
@@ -30,9 +27,9 @@ const records = useRecordsStore();
 const settings = useSettingsStore();
 const runtime = useRuntimeStore();
 const {setStorage} = storageAdapter();
-const {activeAccountId} = storeToRefs(settings);
 
 let depotTimer: number | undefined;
+let accountUpdateSeq = 0;
 
 const connectionState = ref<"checking" | "online" | "offline">("checking");
 const showDepotChip = ref(false);
@@ -65,7 +62,7 @@ const logoUrl = computed((): string => {
   }
 
   const account = records.accounts.items.find(
-      (a) => a.cID === activeAccountId.value
+      (a) => a.cID === settings.activeAccountId
   );
   return account?.cLogoUrl || defaultIcon;
 });
@@ -85,18 +82,20 @@ const depot = computed((): string => {
 const onUpdateTitleBar = async (): Promise<void> => {
   log("VIEWS TitleBar: onUpdateTitleBar");
 
+  const seq = ++accountUpdateSeq;
+  const selectedAccountId = settings.activeAccountId;
+
   try {
-    await setStorage(
-        BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
-        activeAccountId.value
-    );
-    const storesDB = await databaseService.getAccountRecords(
-        activeAccountId.value
-    );
+    const storesDB = await databaseService.getAccountRecords(selectedAccountId);
+    if (seq !== accountUpdateSeq) return; // stale selection
+
     await records.init(storesDB, {
       title: t("mixed.smImportOnly.title"),
       message: t("mixed.smImportOnly.message")
     });
+
+    if (seq !== accountUpdateSeq) return; // stale selection
+    await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, selectedAccountId);
   } catch (err) {
     await alertService.feedbackError("VIEWS TitleBar", err, {});
   }
@@ -135,6 +134,10 @@ onMounted(async () => {
   }
 });
 
+onBeforeUnmount(() => {
+  if (depotTimer) clearTimeout(depotTimer);
+});
+
 log("VIEWS TitleBar: setup");
 </script>
 
@@ -163,8 +166,8 @@ log("VIEWS TitleBar: setup");
     </v-chip>
     <v-spacer/>
     <v-select
-        v-if="activeAccountId > 0"
-        v-model="activeAccountId"
+        v-if="settings.activeAccountId > 0"
+        v-model="settings.activeAccountId"
         :disabled="runtime.getCurrentView === COMPANY"
         :item-title="INDEXED_DB.STORE.ACCOUNTS.FIELDS.IBAN"
         :item-value="INDEXED_DB.STORE.ACCOUNTS.FIELDS.ID"

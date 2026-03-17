@@ -148,12 +148,12 @@ export const ERROR_DEFINITIONS = {
 } as const;
 
 type ExtractErrorCodes<T> =
-    T extends {CODE: infer C}
+    T extends { CODE: infer C }
         ? C extends string
             ? C
             : never
         : T extends object
-            ? {[K in keyof T]: ExtractErrorCodes<T[K]>}[keyof T]
+            ? { [K in keyof T]: ExtractErrorCodes<T[K]> }[keyof T]
             : never;
 
 export type ErrorCodes = ExtractErrorCodes<typeof ERROR_DEFINITIONS>;
@@ -166,7 +166,7 @@ export type Messages = keyof typeof deNotifications;
  * @returns True if the value is an AppError, otherwise false.
  */
 export function isAppError(err: unknown): err is AppError {
-    const name = (err as {name?: unknown} | null)?.name;
+    const name = (err as { name?: unknown } | null)?.name;
     return (
         typeof err === "object" &&
         err !== null &&
@@ -216,8 +216,8 @@ export function toError(err: unknown): Error {
 
 function findErrorMsg(node: object, code: string): string | undefined {
     if ("CODE" in node && "MSG" in node) {
-        return (node as {CODE: string; MSG: string}).CODE === code
-            ? (node as {CODE: string; MSG: string}).MSG
+        return (node as { CODE: string; MSG: string }).CODE === code
+            ? (node as { CODE: string; MSG: string }).MSG
             : undefined;
     }
     for (const child of Object.values(node)) {
