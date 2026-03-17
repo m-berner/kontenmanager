@@ -66,7 +66,7 @@ describe("Alert Store", () => {
         const store = useAlertsStore();
 
         // Undefined ID
-        store.dismissAlert(undefined as any);
+        store.dismissAlert(undefined);
         expect(DomainUtils.log).toHaveBeenCalled();
 
         // Missing ID
@@ -118,4 +118,3 @@ describe("Alert Store", () => {
         expect(store.showConfirmation).toBe(false);
     });
 });
-

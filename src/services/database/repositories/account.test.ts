@@ -7,6 +7,7 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {AccountRepository} from "@/services/database/repositories/account";
 import {INDEXED_DB} from "@/constants";
+import type {AccountDb} from "@/types";
 
 describe("AccountRepository", () => {
     let repository: any;
@@ -99,7 +100,7 @@ describe("AccountRepository", () => {
         const newAccount = {cSwift: "NEW", cIban: "DE456", cLogoUrl: "", cWithDepot: false};
         requestMock.result = 2;
 
-        const promise = repository.save(newAccount as any);
+        const promise = repository.save(newAccount as Omit<AccountDb, "cID">);
         requestMock.onsuccess();
         const id = await promise;
 

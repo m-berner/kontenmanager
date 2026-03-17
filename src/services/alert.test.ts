@@ -33,8 +33,8 @@ vi.mock("@/domains/errors", async (importOriginal) => {
     const findErrorMsg = (node: unknown, code: string): string | undefined => {
         if (!node || typeof node !== "object") return undefined;
         if ("CODE" in node && "MSG" in node) {
-            const asCode = (node as any).CODE;
-            const asMsg = (node as any).MSG;
+            const asCode = (node as { CODE?: unknown }).CODE;
+            const asMsg = (node as { MSG?: unknown }).MSG;
             return typeof asCode === "string" && asCode === code && typeof asMsg === "string"
                 ? asMsg
                 : undefined;
@@ -48,16 +48,16 @@ vi.mock("@/domains/errors", async (importOriginal) => {
 
     return {
         ...actual,
-        isAppError: vi.fn((err) => err && (err as any).name === "AppError"),
+        isAppError: vi.fn((err) => (err as { name?: unknown } | null)?.name === "AppError"),
         appError: vi.fn((code, category) => {
             const message =
                 typeof code === "string"
                     ? (findErrorMsg(actual.ERROR_DEFINITIONS, code) ?? code)
                     : String(code);
-            const err = new Error(message) as any;
-            err.name = "AppError";
-            err.category = category;
-            return err;
+            return Object.assign(new Error(message), {
+                name: "AppError",
+                category
+            });
         })
     };
 });

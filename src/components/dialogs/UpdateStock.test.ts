@@ -11,6 +11,7 @@ import {useStocksStore} from "@/stores/stocks";
 import {useSettingsStore} from "@/stores/settings";
 import {useRuntimeStore} from "@/stores/runtime";
 import {createDatabaseService} from "@/services/database/service";
+import type {StockDb} from "@/types";
 
 const testDb = createDatabaseService("test-db", 1);
 
@@ -87,8 +88,10 @@ describe("UpdateStock Logic Test", () => {
 
         // In useStocksDB.ts, it strips 'm' properties, but our form mapper already returns a clean DB object.
         // However, we simulate what the component does.
-        await stocksRepo.save(stockData as any);
-        stocksStore.update(stockData as any);
+        // stockFormData.id is set, so the mapper returns a StockDb (includes cID).
+        const stockDb = stockData as StockDb;
+        await stocksRepo.save(stockDb);
+        stocksStore.update(stockDb);
 
         // 5. Verify database interaction
         expect(saveSpy).toHaveBeenCalledWith(

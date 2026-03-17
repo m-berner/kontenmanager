@@ -65,7 +65,7 @@ describe("AddStock Logic Test", () => {
         // 3. Directly test the mapping and adding logic (simulating onClickOk's core operation)
         const stockData = mapStockFormToDb(settings.activeAccountId);
 
-        const addStockID = await stocksRepo.save(stockData as any);
+        const addStockID = await stocksRepo.save(stockData);
 
         if (addStockID !== -1) {
             records.stocks.add({...stockData, cID: addStockID as number});

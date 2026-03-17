@@ -11,6 +11,7 @@ import {useBookingTypesStore} from "@/stores/bookingTypes";
 import {useSettingsStore} from "@/stores/settings";
 import {useRuntimeStore} from "@/stores/runtime";
 import {databaseService} from "@/services/database/service";
+import type {BookingTypeDb} from "@/types";
 
 // Mock browser API
 const browserMock = {
@@ -68,8 +69,10 @@ describe("UpdateBookingType Logic Test", () => {
         // 4. Directly test the mapping and updating logic (simulating onClickOk)
         const bookingTypeData = mapBookingTypeFormToDb(settings.activeAccountId);
 
-        await bookingTypesRepo.save(bookingTypeData as any);
-        bookingTypesStore.update(bookingTypeData as any);
+        // bookingTypeFormData.id is set, so the mapper returns a BookingTypeDb (includes cID).
+        const bookingTypeDb = bookingTypeData as BookingTypeDb;
+        await bookingTypesRepo.save(bookingTypeDb);
+        bookingTypesStore.update(bookingTypeDb);
 
         // 5. Verify database interaction
         expect(saveSpy).toHaveBeenCalledWith(

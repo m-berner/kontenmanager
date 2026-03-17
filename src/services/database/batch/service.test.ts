@@ -7,42 +7,62 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {createBatchOperationService} from "@/services/database/batch/service";
 import {INDEXED_DB} from "@/constants";
+import type {BatchOperationDescriptor} from "@/types";
+import type {TransactionManagerContract} from "@/services/database/transaction/manager";
 
 describe("BatchOperationService", () => {
-    let service: any;
-    let transactionManagerMock: any;
-    let txMock: any;
-    let storeMock: any;
+    let service: ReturnType<typeof createBatchOperationService>;
+    let transactionManagerMock: TransactionManagerContract;
+    let txMock: Pick<IDBTransaction, "objectStore">;
+    let storeMock: Pick<IDBObjectStore, "add" | "put" | "delete" | "clear">;
+
+    type FakeRequest<T> = {
+        // Keep the fake minimal and ergonomic for tests; the real IDBRequest
+        // handlers take an Event argument, but we don't need that here.
+        onsuccess: (() => void) | null;
+        onerror: (() => void) | null;
+        result: T;
+        error: IDBRequest<T>["error"];
+    };
+
+    function createRequest<T>(result: T): FakeRequest<T> {
+        const req: FakeRequest<T> = {onsuccess: null, onerror: null, result, error: null};
+        return req;
+    }
+
+    function asIdbRequest<T>(req: FakeRequest<T>): IDBRequest<T> {
+        return req as unknown as IDBRequest<T>;
+    }
 
     beforeEach(() => {
         storeMock = {
             add: vi.fn().mockImplementation(() => {
-                const req = {onsuccess: null, onerror: null, result: null} as any;
+                const req = createRequest(null);
                 setTimeout(() => {
                     if (req.onsuccess) req.onsuccess();
                 }, 0);
-                return req;
+                return asIdbRequest(req);
             }),
             put: vi.fn().mockImplementation(() => {
-                const req = {onsuccess: null, onerror: null, result: null} as any;
+                const req = createRequest(null);
                 setTimeout(() => {
                     if (req.onsuccess) req.onsuccess();
                 }, 0);
-                return req;
+                return asIdbRequest(req);
             }),
             delete: vi.fn().mockImplementation(() => {
-                const req = {onsuccess: null, onerror: null, result: null} as any;
+                const req = createRequest(null);
                 setTimeout(() => {
                     if (req.onsuccess) req.onsuccess();
                 }, 0);
-                return req;
+                return asIdbRequest(req);
             }),
             clear: vi.fn().mockImplementation(() => {
-                const req = {onsuccess: null, onerror: null, result: null} as any;
+                const req = createRequest(null);
                 setTimeout(() => {
                     if (req.onsuccess) req.onsuccess();
                 }, 0);
-                return req;
+                return asIdbRequest(req);
             })
         };
 
@@ -52,23 +72,24 @@ describe("BatchOperationService", () => {
 
         transactionManagerMock = {
             execute: vi.fn().mockImplementation(async (_stores, _mode, operation) => {
-                return operation(txMock);
-            })
-        };
+                return operation(txMock as unknown as IDBTransaction);
+            }),
+            executeMultiple: vi.fn()
+        } as unknown as TransactionManagerContract;
 
         service = createBatchOperationService(transactionManagerMock);
     });
 
     describe("executeAtomic", () => {
         it("should execute multiple operations in a single transaction", async () => {
-            const descriptors = [
+            const descriptors: BatchOperationDescriptor[] = [
                 {
                     storeName: INDEXED_DB.STORE.ACCOUNTS.NAME,
                     operations: [
                         {type: "add", data: {id: 1, name: "Account 1"}},
                         {type: "put", data: {id: 2, name: "Account 2"}}
                     ]
-                } as any
+                }
             ];
 
             await service.executeAtomic(descriptors);
@@ -83,7 +104,9 @@ describe("BatchOperationService", () => {
         });
 
         it("should throw an error for an invalid store name", async () => {
-            const descriptors = [{storeName: "INVALID_STORE", operations: [{type: "add", data: {}}]} as any];
+            const descriptors = [
+                {storeName: "INVALID_STORE", operations: [{type: "add", data: {}}]}
+            ] as unknown as BatchOperationDescriptor[];
             await expect(service.executeAtomic(descriptors)).rejects.toThrow();
         });
     });

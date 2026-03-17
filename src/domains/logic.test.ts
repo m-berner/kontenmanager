@@ -116,7 +116,7 @@ describe("DomainLogic", () => {
 
             await DomainLogic.initializeRecords(
                 storesDB,
-                mockStores as any,
+                mockStores as unknown as Parameters<typeof DomainLogic.initializeRecords>[1],
                 messages
             );
 
@@ -130,13 +130,13 @@ describe("DomainLogic", () => {
 
     describe("hasBookings", () => {
         it("should return true if stock has bookings", () => {
-            const bookings = [{cStockID: 1}, {cStockID: 2}];
-            expect(DomainLogic.hasBookings(1, bookings as any)).toBe(true);
+            const bookings: Array<Pick<BookingDb, "cStockID">> = [{cStockID: 1}, {cStockID: 2}];
+            expect(DomainLogic.hasBookings(1, bookings)).toBe(true);
         });
 
         it("should return false if stock has no bookings", () => {
-            const bookings = [{cStockID: 2}, {cStockID: 3}];
-            expect(DomainLogic.hasBookings(1, bookings as any)).toBe(false);
+            const bookings: Array<Pick<BookingDb, "cStockID">> = [{cStockID: 2}, {cStockID: 3}];
+            expect(DomainLogic.hasBookings(1, bookings)).toBe(false);
         });
 
         it("should return false for empty bookings", () => {

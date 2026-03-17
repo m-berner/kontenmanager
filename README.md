@@ -142,6 +142,15 @@ npm run lint:addon
 
 This uses Mozilla's `addons-linter` against `./releases/firefox/kontenmanager@gmx.de.xpi`.
 
+### Known Addons-Linter Warnings
+
+`addons-linter` may report `UNSAFE_VAR_ASSIGNMENT` for `innerHTML` assignments in the generated bundle (currently `style.js` inside the packaged `.xpi`).
+
+- Scope: This is build output, not source (`src/`). The line numbers can change between builds.
+- Why it happens: some runtime/style injection code writes HTML (commonly emitted by bundlers/frameworks/UI libs).
+- Action: treat this as a release checklist item and confirm that no untrusted user input can reach the injected HTML.
+- Action: if you want the warning to go away, you need to change the generated output by adjusting the upstream source (e.g. framework/plugin behavior) or the build pipeline. There is nothing actionable to "fix" in `src/` if it is purely emitted code.
+
 ## npm Scripts
 
 - `npm run build:dev`: Build extension in development mode.

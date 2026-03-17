@@ -11,6 +11,7 @@ import {useSettingsStore} from "@/stores/settings";
 import {useAccountsStore} from "@/stores/accounts";
 import {createDatabaseService} from "@/services/database/service";
 import type {AccountDb} from "@/types";
+import type {RepositoryMap} from "@/types";
 
 const testDb = createDatabaseService("test-db", 1);
 
@@ -54,11 +55,14 @@ describe("AddAccount Logic Test", () => {
         accountFormData.withDepot = false;
 
         // 2. Mock the DB save operation success
-        const mockRepository = {
+        const mockRepository: Pick<RepositoryMap["accounts"], "save"> = {
             save: vi.fn().mockResolvedValue(123)
         };
         const saveSpy = mockRepository.save;
-        vi.spyOn(testDb, "getRepository").mockReturnValue(mockRepository as any);
+        vi.spyOn(testDb, "getRepository").mockImplementation((type) => {
+            if (type === "accounts") return mockRepository as RepositoryMap["accounts"];
+            throw new Error(`Unexpected repository type: ${type}`);
+        });
 
         // 3. Directly test the mapping and adding logic (simulating onClickOk's core operation)
         const accountData: Omit<AccountDb, "cID"> = {

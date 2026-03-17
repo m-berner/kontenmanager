@@ -99,8 +99,7 @@ describe("Runtime Store", () => {
         });
 
         // Switch to a different view (HOME already default; use a different one)
-        // Use a number cast because ViewTypeSelectionType is a union from configs
-        const someOtherView = 999 as any;
+        const someOtherView = "settings";
         runtime.setCurrentView(someOtherView);
 
         expect(runtime.getCurrentView).toBe(someOtherView);

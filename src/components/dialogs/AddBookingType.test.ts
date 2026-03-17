@@ -11,6 +11,7 @@ import {useSettingsStore} from "@/stores/settings";
 import {useRecordsStore} from "@/stores/records";
 import {createDatabaseService} from "@/services/database/service";
 import type {BookingTypeDb} from "@/types";
+import type {RepositoryMap} from "@/types";
 
 const testDb = createDatabaseService("test-db", 1);
 
@@ -56,11 +57,14 @@ describe("AddBookingType Logic Test", () => {
         bookingTypeFormData.name = "Test Type";
 
         // 2. Mock the DB save operation success
-        const mockRepository = {
+        const mockRepository: Pick<RepositoryMap["bookingTypes"], "save"> = {
             save: vi.fn().mockResolvedValue(101)
         };
         const saveSpy = mockRepository.save;
-        vi.spyOn(testDb, "getRepository").mockReturnValue(mockRepository as any);
+        vi.spyOn(testDb, "getRepository").mockImplementation((type) => {
+            if (type === "bookingTypes") return mockRepository as RepositoryMap["bookingTypes"];
+            throw new Error(`Unexpected repository type: ${type}`);
+        });
 
         // 3. Directly test the mapping and adding logic (simulating onClickOk's core operation)
         // Ensure no duplicate (isDuplicate is a computed property returning a function)

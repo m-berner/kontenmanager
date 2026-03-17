@@ -12,6 +12,7 @@ import {useSettingsStore} from "@/stores/settings";
 import {useRuntimeStore} from "@/stores/runtime";
 import {DATE} from "@/constants";
 import {createDatabaseService} from "@/services/database/service";
+import type {BookingDb} from "@/types";
 
 const testDb = createDatabaseService("test-db", 1);
 
@@ -97,8 +98,10 @@ describe("UpdateBooking Logic Test", () => {
         // 4. Directly test the mapping and updating logic (simulating onClickOk)
         const bookingData = mapBookingFormToDb(settings.activeAccountId, DATE.ISO);
 
-        await bookingsRepo.save(bookingData as any);
-        bookingsStore.update(bookingData as any);
+        // bookingFormData.id is set, so the mapper returns a BookingDb (includes cID).
+        const bookingDb = bookingData as BookingDb;
+        await bookingsRepo.save(bookingDb);
+        bookingsStore.update(bookingDb);
 
         // 5. Verify database interaction
         expect(saveSpy).toHaveBeenCalledWith(

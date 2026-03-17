@@ -5,7 +5,7 @@
  */
 
 import {describe, expect, it, vi} from "vitest";
-import {appError, ERROR_DEFINITIONS} from "@/domains/errors";
+import {appError, type ErrorCodes, ERROR_DEFINITIONS} from "@/domains/errors";
 
 // Mock browserService since it's used in appError
 vi.mock("@/services/browserService", () => ({
@@ -29,7 +29,7 @@ describe("appError lookup", () => {
     });
 
     it("falls back for unknown codes", () => {
-        const err = appError("#unknown" as any, "TECHNICAL");
+        const err = appError("#unknown" as unknown as ErrorCodes, "TECHNICAL");
         expect(err.message).toBe("Error code: #unknown");
     });
 });
@@ -40,10 +40,11 @@ function flattenCodes(
 ): Array<{ path: string; code: string }> {
     const out: Array<{ path: string; code: string }> = [];
 
-    if ("CODE" in obj && typeof (obj as any).CODE === "string") {
+    const codeValue = (obj as { CODE?: unknown }).CODE;
+    if (typeof codeValue === "string") {
         out.push({
             path: prefix ? `${prefix}.CODE` : "CODE",
-            code: (obj as any).CODE
+            code: codeValue
         });
         return out;
     }

@@ -228,11 +228,11 @@ export const useStocksStore = defineStore("stocks", function () {
     /**
      * Loads online stock data for a specified page and updates the stock information based on fetched data.
      *
-     * @param {number} page - The page number to load data for. Determines the range of stocks to be processed.
-     * @param {Object} [options] - Optional parameters for the operation.
-     * @param {AbortSignal} [options.signal] - An AbortSignal to allow aborting the fetch requests.
+     * @param page - Page number to load; determines which stocks are processed.
+     * @param options - Optional parameters.
+     * @param options.signal - Abort signal for the underlying fetch requests.
      *
-     * @returns A promise that resolves when the stock data has been successfully loaded and updated.
+     * @returns Resolves when the stock data has been loaded and updated.
      */
     async function loadOnlineData(page: number, options?: { signal?: AbortSignal }) {
         log("STORES stocks: loadOnlineData");

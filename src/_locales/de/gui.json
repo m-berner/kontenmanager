@@ -47,14 +47,12 @@
           "dividend": "Dividende"
         },
         "messages": {
-          "success": "Das Konto wurde erfolgreich angelegt",
-          "error": "Das Konto wurde nicht angelegt"
+          "success": "Das Konto wurde erfolgreich angelegt"
         }
       },
       "addBooking": {
         "title": "Buchung hinzufügen",
         "messages": {
-          "error": "Buchung konnte nicht hinzugefügt werden",
           "success": "Buchung erfolgreich hinzugefügt"
         }
       },
@@ -63,14 +61,12 @@
         "placeholder": "Name eingeben",
         "messages": {
           "success": "Buchungskategorie wurde hinzugefügt",
-          "error": "Buchungskategorie konnte nicht hinzugefügt werden",
           "duplicate": "Buchungskategorie existiert bereits"
         }
       },
       "addStock": {
         "title": "Unternehmen hinzufügen",
         "messages": {
-          "error": "Unternehmen konnte nicht hinzugefügt werden",
           "success": "Unternehmen wurde hinzugefügt"
         }
       },

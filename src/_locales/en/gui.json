@@ -47,14 +47,12 @@
           "dividend": "Dividend"
         },
         "messages": {
-          "success": "Successfully added the account",
-          "error": "Account could not be added"
+          "success": "Successfully added the account"
         }
       },
       "addBooking": {
         "title": "Add booking",
         "messages": {
-          "error": "Booking could not be added",
           "success": "Successfully added booking"
         }
       },
@@ -63,14 +61,12 @@
         "placeholder": "Enter name",
         "messages": {
           "success": "Booking type added",
-          "error": "Booking type could not be added",
           "duplicate": "Booking type already exists"
         }
       },
       "addStock": {
         "title": "Add company",
         "messages": {
-          "error": "Company could not be added",
           "success": "Successfully added the company"
         }
       },

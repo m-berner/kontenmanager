@@ -11,7 +11,7 @@ import {useBookingForm} from "@/composables/useForms";
 import {useSettingsStore} from "@/stores/settings";
 import {useRecordsStore} from "@/stores/records";
 import {createDatabaseService} from "@/services/database/service";
-import type {BookingDb} from "@/types";
+import type {RepositoryMap} from "@/types";
 
 const testDb = createDatabaseService("test-db", 1);
 
@@ -63,19 +63,20 @@ describe("AddBooking Logic Test", () => {
         bookingFormData.count = 10;
 
         // 2. Mock the DB saved operation success
-        const mockRepository = {
+        const mockRepository: Pick<RepositoryMap["bookings"], "save"> = {
             save: vi.fn().mockResolvedValue(789)
         };
 
         const saveSpy = mockRepository.save;
-        vi.spyOn(testDb, "getRepository").mockReturnValue(mockRepository as any);
+        vi.spyOn(testDb, "getRepository").mockImplementation((type) => {
+            if (type === "bookings") return mockRepository as RepositoryMap["bookings"];
+            throw new Error(`Unexpected repository type: ${type}`);
+        });
 
         // 3. Directly test the mapping and adding logic (simulating onClickOk's core operation)
         const bookingData = mapBookingFormToDb(settings.activeAccountId, DATE.ISO);
 
-        const addBookingID = await testDb.getRepository("bookings").save(
-            bookingData as BookingDb
-        );
+        const addBookingID = await testDb.getRepository("bookings").save(bookingData);
 
         if (addBookingID !== -1) {
             records.bookings.add(
