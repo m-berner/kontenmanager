@@ -1,0 +1,180 @@
+# Kontenmanager
+
+A modern WebExtension for private account management and stock portfolio tracking.
+
+## Overview
+
+Kontenmanager is a powerful browser extension (primarily targeting Firefox) designed to help users manage their private accounts and investments. It provides a sophisticated user interface for tracking financial records, managing companies/accounts, and viewing detailed accounting and dividend analytics.
+
+Key features include:
+- **Multi-Account Management:** Track different bank accounts or portfolios separately.
+- **Stock Portfolio Tracking:** Real-time market data integration (via external services).
+- **Accounting Tools:** Automated calculation of balances, taxes, and fees.
+- **Data Privacy:** All data is stored locally in your browser using IndexedDB.
+- **Data Portability:** Robust JSON-based import and export system for backups.
+
+## Stack
+
+- **Language:** [TypeScript](https://www.typescriptlang.org/) (Strictly typed)
+- **Framework:** [Vue 3](https://vuejs.org/) (Composition API)
+- **UI Component Framework:** [Vuetify 3](https://vuetifyjs.com/) (Material Design)
+- **State Management:** [Pinia](https://pinia.vuejs.org/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **Database:** [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (via DI-provided `databaseService`)
+- **Package Manager:** [npm](https://www.npmjs.com/) (v11.11.x)
+
+## Requirements
+
+- **Node.js:** v24.0.0 or later
+- **Package Manager:** npm v11.3.0 or later
+
+## Quick Start
+
+### Installation
+
+```powershell
+npm install
+```
+
+### Build (Development package)
+
+```powershell
+npm run build:dev
+```
+
+> Note: Building requires either a `.env.development` or `.env.production` file to be present.
+
+What this does:
+- Runs Vue SFC/TypeScript checks (`vue-tsc`).
+- Bundles the extension with Vite.
+- Copies static assets and creates a ready-to-load extension under `kontenmanager@gmx.de/`.
+- Produces a zipped `.xpi` in `releases/` when environment variables are provided (see `vite.config.js`).
+
+Build production package:
+
+```powershell
+npm run build:prod
+```
+
+Load the folder `kontenmanager@gmx.de/` as a temporary addon in Firefox (about:debugging → This Firefox → Load Temporary Add-on... → select any file within that folder).
+
+### Test
+
+```powershell
+npm run test:logic
+```
+
+Type-check with Vue/TypeScript:
+
+```powershell
+npm run test:typescript
+```
+
+### Lint i18n
+
+```powershell
+npm run lint:i18n
+```
+
+## Project Structure
+
+The project follows a modular architecture with a clear separation of concerns:
+
+- `src/`: Core source code.
+  - `assets/`: Static assets (icons, images).
+  - `components/`: Reusable UI components, specialized dialogs, and form fragments.
+  - [**`composables/`**](src/composables/README.md): Vue composition functions providing a reactive interface to the application's services and domain logic.
+  - [**`domains/`**](src/domains/README.md): The "Brain" — pure business logic, financial calculations, URL parsing, and data mapping.
+  - `usecases/`: Application-layer workflows (multi-step operations used by dialogs/views).
+  - `services/`: Infrastructure and orchestration services (Database, Fetch, Favicon, Alerts). See [services/README.md](src/services/README.md).
+  - `stores/`: Pinia state management (Records, Settings, Runtime, Alerts). See [stores/README.md](src/stores/README.md).
+  - `types/`: Layer-focused types (`domain`, `infra`, `backup`). `src/types.d.ts` re-exports the public surface as `@/types`.
+  - `views/`: Main screen layouts and entry point components. See [views/README.md](src/views/README.md).
+  - `config/`: Centralized configuration (Storage keys, Entry points, DB schema).
+  - [**`plugins/`**](src/plugins/README.md): Vue plugin configurations (Vuetify, i18n, Router).
+  - `entrypoints/`: HTML/TS entry points for the extension (App, Background, Options).
+- `kontenmanager@gmx.de/`: The built extension package.
+- `releases/`: Packaged `.xpi` files for distribution.
+
+## Architecture & Data Flow
+
+1. **User Interaction:** Vue components in `views/` or `components/` capture user input.
+2. **Application Workflows:** Multi-step operations live in `src/usecases/` (dialogs/views call usecases).
+3. **State Management:** UI and usecases interact with **Pinia Stores** (`src/stores/`).
+4. **Persistence:** Data is persisted via DI-provided **Services** and **Repositories** (`src/services/`, `src/services/database/`) to **IndexedDB** and **Browser Storage** (`storageAdapter`).
+5. **Browser Integration:** WebExtension API access is abstracted behind DI-provided services (for example `browserService`).
+
+## Development Workflow
+
+1. Make changes in `src/`.
+2. Run tests locally to validate logic:
+   - Unit tests focus on domain utilities and Pinia stores.
+3. Build the extension with `npm run build:dev` (or `npm run build:prod`).
+4. Reload the temporary addon in Firefox and verify behavior in the Browser Console.
+
+## Tests
+
+The project uses [Vitest](https://vitest.dev/) for unit testing, focusing on domain logic and store state.
+
+To run the tests:
+
+```powershell
+npm run test:logic
+```
+
+## Linting & Formatting
+
+- ESLint with TypeScript and Vue rules (`eslint.config.js`).
+- i18n dictionaries are verified via custom scripts under `scripts/`.
+
+Use:
+
+```powershell
+npm run lint
+```
+
+## Packaging & Verification
+
+- The Vite config supports copying built artifacts into the extension directory and optionally zipping a release.
+- To verify a packaged Firefox extension, run:
+
+```powershell
+npm run lint:addon
+```
+
+This uses Mozilla's `addons-linter` against `./releases/firefox/kontenmanager@gmx.de.xpi`.
+
+### Known Addons-Linter Warnings
+
+`addons-linter` may report `UNSAFE_VAR_ASSIGNMENT` for `innerHTML` assignments in the generated bundle (currently `style.js` inside the packaged `.xpi`).
+
+- Scope: This is build output, not source (`src/`). The line numbers can change between builds.
+- Why it happens: some runtime/style injection code writes HTML (commonly emitted by bundlers/frameworks/UI libs).
+- Action: treat this as a release checklist item and confirm that no untrusted user input can reach the injected HTML.
+- Action: if you want the warning to go away, you need to change the generated output by adjusting the upstream source (e.g. framework/plugin behavior) or the build pipeline. There is nothing actionable to "fix" in `src/` if it is purely emitted code.
+
+## npm Scripts
+
+- `npm run build:dev`: Build extension in development mode.
+- `npm run build:prod`: Build extension in production mode.
+- `npm run lint`: Run ESLint for `src/` (`.ts` and `.vue`).
+- `npm run lint:i18n`: Lint i18n dictionaries.
+- `npm run test:logic`: Run Vitest unit tests.
+- `npm run test:typescript`: Run Vue/TypeScript type checks.
+- `npm run lint:addon`: Run Mozilla addons linter for the packaged `.xpi`.
+
+## Developer Information
+
+- [MDN WebExtensions Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)
+- [Vue 3 Documentation](https://vuejs.org/guide/introduction.html)
+- [Vuetify 3 Documentation](https://vuetifyjs.com/en/introduction/why-vuetify/)
+
+## License
+
+This project is licensed under the **Mozilla Public License 2.0**. See the [LICENSE](LICENSE) file for details.
+
+## Troubleshooting
+
+- Tests cannot resolve `@/...` imports: ensure Vite alias is configured (already set in `vite.config.js`).
+- DOM-related tests: use the `happy-dom` environment provided by Vitest config.
+- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace) via `DomainUtils.normalizeBookingTypeName`.

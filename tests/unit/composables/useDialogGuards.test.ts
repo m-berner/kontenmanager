@@ -1,0 +1,67 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * one could get a copy at https://mozilla.org/MPL/2.0/.
+ */
+
+import {describe, expect, it} from "vitest";
+import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
+
+describe("useDialogGuards", () => {
+    const deps = {
+        alertService: {
+            feedbackInfo: async () => undefined,
+            feedbackWarning: async () => undefined,
+            feedbackConfirm: async () => undefined,
+            feedbackError: async () => undefined
+        },
+        browserService: {
+            getMessage: (k: string) => k
+        },
+        taskService: {
+            withRetry: async <T>(op: () => Promise<T>) => op(),
+            ensureConnected: () => undefined
+        }
+    };
+
+    it("should use a counter for operation IDs in withLoading", async () => {
+        const {withLoading, loadingOperations} = useDialogGuards(undefined, deps);
+
+        const op1 = withLoading(async () => {
+            expect(loadingOperations.value.has("op-1")).toBe(true);
+            await new Promise((resolve) => setTimeout(resolve, 10));
+        });
+
+        const op2 = withLoading(async () => {
+            expect(loadingOperations.value.has("op-2")).toBe(true);
+            await new Promise((resolve) => setTimeout(resolve, 10));
+        });
+
+        await Promise.all([op1, op2]);
+
+        expect(loadingOperations.value.size).toBe(0);
+    });
+
+    it("should reset the counter for each useDialogGuards call", async () => {
+        const {withLoading: withLoading1, loadingOperations: ops1} =
+            useDialogGuards(undefined, deps);
+        const {withLoading: withLoading2, loadingOperations: ops2} =
+            useDialogGuards(undefined, deps);
+
+        await withLoading1(async () => {
+            expect(ops1.value.has("op-1")).toBe(true);
+        });
+
+        await withLoading2(async () => {
+            expect(ops2.value.has("op-1")).toBe(true);
+        });
+    });
+
+    it("should allow providing a custom operationId", async () => {
+        const {withLoading, loadingOperations} = useDialogGuards(undefined, deps);
+
+        await withLoading(async () => {
+            expect(loadingOperations.value.has("custom-id")).toBe(true);
+        }, "custom-id");
+    });
+});
