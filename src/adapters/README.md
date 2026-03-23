@@ -8,16 +8,16 @@ Vue components, stores, composables, plugins, entrypoints, assets, and locales t
 
 ## `secondary/` — Service-facing adapters
 
-Infrastructure services that communicate with external systems:
+Infrastructure adapters that communicate with external systems:
 
-- `src/adapters/secondary/services/database/*` (IndexedDB access)
-- `src/adapters/secondary/services/browserService.ts` (WebExtension APIs)
-- `src/adapters/secondary/services/storageAdapter.ts` (browser storage)
-- `src/adapters/secondary/services/fetch.ts` (network IO — thin orchestrator; per-provider scrapers live in
-  `src/adapters/secondary/services/fetch/providers/`)
+- `src/adapters/secondary/database/*` (IndexedDB access)
+- `src/adapters/secondary/browserAdapter.ts` (WebExtension APIs)
+- `src/adapters/secondary/storageAdapter.ts` (browser storage)
+- `src/adapters/secondary/fetchAdapter.ts` (network IO — thin orchestrator; per-provider scrapers live in
+  `src/adapters/secondary/fetch/providers/`)
 
 Guidelines:
 
 - Secondary adapters talk to external systems (browser APIs, IndexedDB, fetch).
 - Keep secondary adapters side-effectful; business rules belong in `src/domain/`.
-- Prefer exposing secondary adapters through DI (`src/adapters/secondary/services/container.ts`) and small ports (`src/app/usecases/ports.ts`).
+- Prefer exposing secondary adapters through DI (`src/adapters/container.ts`) and small ports (`src/app/usecases/ports.ts`).

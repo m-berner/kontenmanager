@@ -1,9 +1,9 @@
 # Tests
 
-This project keeps automated tests under `src/adapters/primary/tests/`:
+Automated tests live under `tests/`:
 
-- `src/adapters/primary/tests/unit`: unit tests executed by Vitest (runs in `happy-dom`).
-- `src/adapters/primary/tests/e2e`: Playwright E2E tests executed in Firefox.
+- `tests/unit`: unit tests executed by Vitest (runs in `happy-dom`).
+- `tests/e2e`: Playwright E2E tests executed in Firefox.
 
 ## Commands
 
@@ -12,22 +12,43 @@ This project keeps automated tests under `src/adapters/primary/tests/`:
 - `npm run lint`: lint `src/` (ESLint).
 - `npm run test:e2e`: build (`build:dev`) and run Playwright E2E tests.
 
-## Unit Tests (`src/adapters/primary/tests/unit`)
+## Unit Tests (`tests/unit`)
 
-Unit tests are located in `src/adapters/primary/tests/unit/**.test.ts` and `src/adapters/primary/tests/unit/**.spec.ts`.
+Unit tests are located in `tests/unit/**.test.ts` and follow the hexagonal architecture of `src/`:
+
+```
+tests/unit/
+├── adapters/
+│   ├── primary/
+│   │   ├── components/dialogs/   – Vue dialog component tests
+│   │   ├── composables/          – composable tests
+│   │   └── stores/               – Pinia store tests
+│   └── secondary/
+│       └── database/             – database adapter tests (batch, repositories)
+├── app/
+│   └── usecases/                 – use case tests
+├── domain/                       – pure domain logic tests
+│   ├── importExport/
+│   ├── mapping/
+│   ├── utils/
+│   └── validation/
+├── support/                      – shared test helpers
+├── architecture.test.ts
+└── backupImportRefresh.test.ts
+```
 
 ### Test Helpers
 
-Helpers used by unit tests live in `src/adapters/primary/tests/unit/support` and are imported via the `@test/*` alias:
+Helpers used by unit tests live in `tests/unit/support` and are imported via the `@test/*` alias:
 
 - `@test/pinia`
 - `@test/usecases`
 
 `@test/*` is intentionally **test-only**. ESLint disallows importing `@test/*` from `src/**`.
 
-## E2E Tests (`src/adapters/primary/tests/e2e`)
+## E2E Tests (`tests/e2e`)
 
-E2E tests are in `src/adapters/primary/tests/e2e/*.spec.ts` and run with Playwright in Firefox.
+E2E tests are in `tests/e2e/*.spec.ts` and run with Playwright in Firefox.
 
 ### What We Test
 
@@ -44,11 +65,10 @@ most UI and wiring regressions in a deterministic way.
 
 ### Fixtures
 
-- `src/adapters/primary/tests/e2e/fixtures/backup.modern.min.json`: minimal modern backup used by the happy path test.
+- `tests/e2e/fixtures/backup.modern.min.json`: minimal modern backup used by the happy path test.
 
 ### Debugging Tips
 
 - Run headed: `npm run test:e2e:headed`
 - Run UI mode: `npm run test:e2e:ui`
 - On failure, Playwright keeps trace/video/screenshot artifacts (see `test-results/`).
-

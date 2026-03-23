@@ -21,8 +21,8 @@ const LARGE_FILE_THRESHOLD_KB = 10000;
 
 export type ExportDatabaseUsecaseDeps = {
     repositories: RepositoryMap;
-    browserService: BrowserPort;
-    importExportService: ImportExportPort;
+    browserAdapter: BrowserPort;
+    importExportAdapter: ImportExportPort;
     runtime: RuntimePort;
 };
 
@@ -46,15 +46,15 @@ export async function exportDatabaseUsecase(
         throw appError(ERROR_DEFINITIONS.EXPORT_DATABASE.A.CODE, ERROR_CATEGORY.DATABASE, false);
     }
 
-    const metaData = createExportMetadata(deps.browserService.manifest().version);
-    const dataString = deps.importExportService.stringifyDatabase(
+    const metaData = createExportMetadata(deps.browserAdapter.manifest().version);
+    const dataString = deps.importExportAdapter.stringifyDatabase(
         metaData,
         accounts,
         stocks,
         bookingTypes,
         bookings
     );
-    const verification = deps.importExportService.verifyExportIntegrity(dataString);
+    const verification = deps.importExportAdapter.verifyExportIntegrity(dataString);
     if (!verification.valid) {
         throw appError(ERROR_DEFINITIONS.EXPORT_DATABASE.B.CODE, ERROR_CATEGORY.DATABASE, false);
     }
@@ -69,7 +69,7 @@ export async function exportDatabaseUsecase(
         await input.notifyEstimatedSize(estimatedSize);
     }
 
-    await deps.browserService.writeBufferToFile(exportData, input.filename);
+    await deps.browserAdapter.writeBufferToFile(exportData, input.filename);
     deps.runtime.resetTeleport();
     return {estimatedSizeKb: estimatedSize, cancelled: false};
 }

@@ -11,7 +11,7 @@ import {useI18n} from "vue-i18n";
 import {INDEXED_DB} from "@/domain/constants";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import CreditDebitFieldset from "@/adapters/primary/components/CreditDebitFieldset.vue";
 import {useBookingForm} from "@/adapters/primary/composables/useForms";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
@@ -21,7 +21,7 @@ const {t} = useI18n();
 const {bookingFormData} = useBookingForm();
 const {bookingTypes, stocks} = useRecordsStore();
 const {markets} = useSettingsStore();
-const {validationService} = useServices();
+const {validationAdapter} = useAdapters();
 
 const DATE_RULES = [
   t("validators.isoDateRules.required"),
@@ -139,7 +139,7 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
         <v-text-field
             v-model="bookingFormData.bookDate"
             :label="t('components.dialogs.forms.bookingForm.dateLabel')"
-            :rules="validationService.isoDateRules(DATE_RULES)"
+            :rules="validationAdapter.isoDateRules(DATE_RULES)"
             autofocus
             density="compact"
             type="date"
@@ -167,7 +167,7 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
             :item-value="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID"
             :items="sortedBookingTypes"
             :label="t('components.dialogs.forms.bookingForm.bookingTypeLabel')"
-            :rules="validationService.bookingTypeRules(BOOKING_TYPE_RULES)"
+            :rules="validationAdapter.bookingTypeRules(BOOKING_TYPE_RULES)"
             clearable
             density="compact"
             max-width="300"
@@ -191,7 +191,7 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
             ref="date-input"
             v-model="bookingFormData.exDate"
             :label="t('components.dialogs.forms.bookingForm.exDateLabel')"
-            :rules="validationService.isoDateRules(DATE_RULES)"
+            :rules="validationAdapter.isoDateRules(DATE_RULES)"
             density="compact"
             required
             type="date"
@@ -213,8 +213,8 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
           v-model="creditDebitModel"
           :legend="t('components.dialogs.forms.bookingForm.bookingLabel')"
           :rules="[
-          (v: number) => validationService.amountRules(v, RULES),
-          (v: number) => validationService.amountRules(v, RULES)
+          (v: number) => validationAdapter.amountRules(v, RULES),
+          (v: number) => validationAdapter.amountRules(v, RULES)
         ]"/>
     </v-row>
     <v-row v-if="isDividendSellType" justify="center">
@@ -222,8 +222,8 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
           v-model="taxModel"
           :legend="t('components.dialogs.forms.bookingForm.taxLabel')"
           :rules="[
-          (v: number) => validationService.amountRules(v, RULES),
-          (v: number) => validationService.amountRules(v, RULES)
+          (v: number) => validationAdapter.amountRules(v, RULES),
+          (v: number) => validationAdapter.amountRules(v, RULES)
         ]"/>
     </v-row>
     <v-row v-if="isDividendSellType" justify="center">
@@ -231,8 +231,8 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
           v-model="soliModel"
           :legend="t('components.dialogs.forms.bookingForm.soliLabel')"
           :rules="[
-          (v: number) => validationService.amountRules(v, RULES),
-          (v: number) => validationService.amountRules(v, RULES)
+          (v: number) => validationAdapter.amountRules(v, RULES),
+          (v: number) => validationAdapter.amountRules(v, RULES)
         ]"/>
     </v-row>
     <v-row v-if="isDividendSellType" justify="center">
@@ -240,8 +240,8 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
           v-model="sourceTaxModel"
           :legend="t('components.dialogs.forms.bookingForm.sourceTaxLabel')"
           :rules="[
-          (v: number) => validationService.amountRules(v, RULES),
-          (v: number) => validationService.amountRules(v, RULES)
+          (v: number) => validationAdapter.amountRules(v, RULES),
+          (v: number) => validationAdapter.amountRules(v, RULES)
         ]"/>
     </v-row>
     <v-row v-if="isBuySellType" justify="center">
@@ -249,8 +249,8 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
           v-model="feeModel"
           :legend="t('components.dialogs.forms.bookingForm.feeLabel')"
           :rules="[
-          (v: number) => validationService.amountRules(v, RULES),
-          (v: number) => validationService.amountRules(v, RULES)
+          (v: number) => validationAdapter.amountRules(v, RULES),
+          (v: number) => validationAdapter.amountRules(v, RULES)
         ]"/>
     </v-row>
     <v-row v-if="isBuyType" justify="center">
@@ -258,8 +258,8 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
           v-model="transactionTaxModel"
           :legend="t('components.dialogs.forms.bookingForm.transactionTaxLabel')"
           :rules="[
-          (v: number) => validationService.amountRules(v, RULES),
-          (v: number) => validationService.amountRules(v, RULES)
+          (v: number) => validationAdapter.amountRules(v, RULES),
+          (v: number) => validationAdapter.amountRules(v, RULES)
         ]"/>
     </v-row>
     <v-row justify="center">

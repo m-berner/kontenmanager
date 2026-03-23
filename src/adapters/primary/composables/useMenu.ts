@@ -10,7 +10,7 @@ import {hasBookings} from "@/domain/logic";
 import type {ActionHandler, DialogNameType, HighlightColor, HighlightOptions, MenuActionType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useOnlineStockData} from "@/adapters/primary/composables/useOnlineStockData";
 import {useRepositories} from "@/adapters/primary/composables/useRepositories";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
@@ -143,17 +143,17 @@ export function useMenuHighlight() {
  * - open dialogs via runtime teleport state
  * - execute delete operations for bookings/stocks
  * - perform view navigation actions
- * - send user feedback messages via `alertService`
+ * - send user feedback messages via `alertAdapter`
  *
  * The optional `translate` function allows using vue-i18n translations while
- * still falling back to browser i18n messages via `browserService.getMessage()`.
+ * still falling back to browser i18n messages via `browserAdapter.getMessage()`.
  *
  * @module composables/useMenuAction
  */
 export function useMenuAction(translate?: (_key: string) => string) {
     const runtime = useRuntimeStore();
     const records = useRecordsStore();
-    const {alertService, browserService} = useServices();
+    const {alertAdapter, browserAdapter} = useAdapters();
     const {loadOnlineData} = useOnlineStockData();
     const {bookingsRepository, stocksRepository} = useRepositories();
 
@@ -187,7 +187,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
      *
      * Resolution order:
      * 1. `translate` (if provided)
-     * 2. `getMessage` fallback from `browserService.getMessage`
+     * 2. `getMessage` fallback from `browserAdapter.getMessage`
      *
      * @param key - Translation/message key.
      */
@@ -198,7 +198,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
         const translated = translate(key);
         return translated && translated !== key
             ? translated
-            : browserService.getMessage(key as Parameters<BrowserAdapter["getMessage"]>[0]);
+            : browserAdapter.getMessage(key as Parameters<BrowserAdapter["getMessage"]>[0]);
     };
 
     const actionHandlers: Record<MenuActionType, ActionHandler> = {
@@ -213,7 +213,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
         async deleteBooking(recordId: number) {
             records.bookings.remove(recordId);
             await bookingsRepository.delete(recordId);
-            await alertService.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
+            await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
         },
 
         // Stock Actions
@@ -227,13 +227,13 @@ export function useMenuAction(translate?: (_key: string) => string) {
 
         async deleteStock(recordId: number) {
             if (checkStockHasBookings(recordId)) {
-                await alertService.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.noDelete"));
+                await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.noDelete"));
                 return;
             }
 
             records.stocks.remove(recordId);
             await stocksRepository.delete(recordId);
-            await alertService.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
+            await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
         },
 
         async fadeInStock() {
@@ -297,7 +297,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
             if (url) {
                 window.open(url, "_blank", "noopener,noreferrer");
             } else {
-                await alertService.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.noLink"));
+                await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.noLink"));
             }
         },
 
@@ -339,7 +339,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
         const handler = actionHandlers[actionType];
 
         if (!handler) {
-            await alertService.feedbackError(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.invalidCode"), {
+            await alertAdapter.feedbackError(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.invalidCode"), {
                 data: actionType
             });
             return;
@@ -348,7 +348,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
         try {
             await handler(recordId);
         } catch (err) {
-            await alertService.feedbackError(resolveMessage("composables.useMenu.title"), err, {
+            await alertAdapter.feedbackError(resolveMessage("composables.useMenu.title"), err, {
                 data: actionType
             });
         }

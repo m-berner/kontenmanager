@@ -18,12 +18,12 @@ export default [
       "src/adapters/primary/composables/**/*.{js,ts,vue}"
     ],
     rules: {
-      // UI code should access services via DI (useServices), not import concrete modules.
+      // UI code should access adapters via DI (useAdapters), not import concrete modules.
       "no-restricted-imports": ["error", {
         patterns: [
           {
-            group: ["@/infra/services/*", "!@/infra/services/context", "!@/infra/services/types"],
-            message: "Import services via '@/infra/services/context' (useServices) and types via '@/infra/services/types'."
+            group: ["@/adapters/secondary/*", "!@/adapters/secondary/types"],
+            message: "Import adapters via '@/adapters/context' (useAdapters) and types via '@/adapters/secondary/types'."
           }
         ]
       }]
@@ -32,7 +32,7 @@ export default [
   {
     files: ["src/adapters/primary/components/**/*.{test,spec}.{js,ts,vue}", "src/adapters/primary/composables/**/*.{test,spec}.{js,ts,vue}", "src/adapters/primary/views/**/*.{test,spec}.{js,ts,vue}"],
     rules: {
-      // Tests may import concrete services directly.
+      // Tests may import concrete adapters directly.
       "no-restricted-imports": "off"
     }
   },
@@ -46,7 +46,7 @@ export default [
       "src/**/*.{test,spec}.{js,ts,vue}"
     ],
     rules: {
-      // Creating the service container is an entrypoint concern.
+      // Creating the adapter container is an entrypoint concern.
       "no-restricted-imports": ["error", {
         patterns: [
           {
@@ -56,8 +56,12 @@ export default [
         ],
         paths: [
           {
-            name: "@/infra/services/container",
-            message: "Only entrypoints should import '@/infra/services/container'. Use '@/infra/services/context' in runtime code."
+            name: "@/adapters/container",
+            message: "Only entrypoints should import '@/adapters/container'. Use '@/adapters/context' (useAdapters) in runtime code."
+          },
+          {
+            name: "@/adapters/containerBackground",
+            message: "Only entrypoints should import '@/adapters/containerBackground'. Use '@/adapters/context' (useAdapters) in runtime code."
           }
         ]
       }]
@@ -69,9 +73,8 @@ export default [
       // Domain must stay framework- and infrastructure-agnostic.
       "no-restricted-imports": ["error", {
         patterns: [
-          "@/infra/services/*",
+          "@/adapters/*",
           "@test/*",
-          "@/infra/stores/*",
           "vue",
           "vue/*",
           "pinia",
@@ -96,43 +99,53 @@ export default [
   {
     files: ["src/adapters/primary/stores/**/*.ts"],
     rules: {
-      // Stores should receive services via deps injection, not import them directly.
-      "no-restricted-imports": ["error", {patterns: ["@/infra/services/*", "@test/*"]}]
+      // Stores should receive adapters via DI, not import them directly.
+      "no-restricted-imports": ["error", {
+        patterns: [
+          {"group": ["@/adapters/secondary/*", "!@/adapters/secondary/types"], "message": "Stores must not import concrete secondary adapters. Use DI via 'attachStoreDeps' / 'getStoreDeps'."},
+          "@test/*"
+        ]
+      }]
     }
   },
   {
     files: ["src/adapters/primary/stores/**/*.{test,spec}.ts"],
     rules: {
-      // Tests may mock/import services directly.
+      // Tests may mock/import adapters directly.
       "no-restricted-imports": "off"
     }
   },
 
-  // Usecases must depend on ports, not concrete services.
+  // Usecases must depend on ports, not concrete adapters.
   {
     files: ["src/app/usecases/**/*.{js,ts}"],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [
           {
-            group: ["@/infra/services/*"],
-            message: "Usecases must not import concrete services. Depend on ports in '@/app/usecases/ports' and inject implementations at the boundary."
+            group: ["@/adapters/secondary/*", "!@/adapters/secondary/types"],
+            message: "Usecases must not import concrete adapters. Depend on ports in '@/app/usecases/ports' and inject implementations at the boundary."
           }
         ]
       }]
     }
   },
 
-  // General rule: outside the service/entrypoint layer, only import the DI surface from services.
+  // General rule: outside the secondary/entrypoint layer, only import the DI surface and types from adapters.
   {
     files: ["src/**/*.{js,ts,vue}"],
-    ignores: ["src/adapters/secondary/**", "src/adapters/primary/entrypoints/**"],
+    ignores: [
+      "src/adapters/secondary/**",
+      "src/adapters/primary/entrypoints/**",
+      "src/adapters/containerBackground.ts",  // ← add this
+      "src/adapters/container.ts"
+    ],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [
           {
-            group: ["@/infra/services/*", "!@/infra/services/context", "!@/infra/services/types"],
-            message: "Outside services/entrypoints, only import '@/infra/services/context' (DI) and '@/infra/services/types' (types)."
+            group: ["@/adapters/secondary/*", "!@/adapters/secondary/types"],
+            message: "Outside secondary/entrypoints, only import '@/adapters/context' (DI) and '@/adapters/secondary/types' (types)."
           }
         ]
       }]
@@ -151,7 +164,7 @@ export default [
           ["^(?!@/)(?!\\.)[^.]"],  // External libraries
           ["^@/app/"],              // App layer
           ["^@/domain/"],           // Domain layer
-          ["^@/infra/"],            // Infra layer
+          ["^@/adapters/"],         // Adapters layer
           ["^\\."]                  // Relative imports (fallback)
         ]
       }],

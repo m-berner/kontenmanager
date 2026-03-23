@@ -13,7 +13,7 @@ import {toRecordsPort} from "@/app/usecases/portAdapters";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import BookingTypeForm from "@/adapters/primary/components/dialogs/forms/BookingTypeForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {createBookingTypeFormManager, provideBookingTypeFormManager} from "@/adapters/primary/composables/useForms";
@@ -27,7 +27,7 @@ const {t} = useI18n();
 const {isLoading, submitGuard} = useDialogGuards(t);
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
-const {databaseService, alertService, repositories} = useServices();
+const {databaseAdapter, alertAdapter, repositories} = useAdapters();
 
 const canDeleteBookingType = (bookingTypeId: number): boolean => {
   return !records.bookings.hasBookingType(bookingTypeId);
@@ -43,9 +43,9 @@ const onClickOk = async (): Promise<void> => {
   }
 
   await submitGuard({
-    isConnected: databaseService.isConnected(),
+    isConnected: databaseAdapter.isConnected(),
     connectionErrorMessage: t("components.dialogs.deleteBookingType.messages.dbNotConnected"),
-    showSystemNotification: alertService.feedbackInfo,
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorTitle: t("components.dialogs.deleteBookingType.title"),
     errorContext: "DELETE_BOOKING_TYPE",
     operation: async () => {
@@ -62,14 +62,14 @@ const onClickOk = async (): Promise<void> => {
       );
 
       if (res.status === "not_allowed") {
-        await alertService.feedbackInfo(
+        await alertAdapter.feedbackInfo(
             t("components.dialogs.deleteBookingType.title"),
             t("components.dialogs.deleteBookingType.messages.noDelete")
         );
         return;
       }
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           t("components.dialogs.deleteBookingType.title"),
           t("components.dialogs.deleteBookingType.messages.success")
       );

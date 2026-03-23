@@ -12,7 +12,7 @@ import {INDEXED_DB} from "@/domain/constants";
 import type {BookingTypeFormProps} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useBookingTypeForm} from "@/adapters/primary/composables/useForms";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
 
@@ -21,7 +21,7 @@ const props = defineProps<BookingTypeFormProps>();
 const {t} = useI18n();
 const records = useRecordsStore();
 const {bookingTypeFormData} = useBookingTypeForm();
-const {validationService} = useServices();
+const {validationAdapter} = useAdapters();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -80,7 +80,7 @@ log("COMPONENTS DIALOGS FORMS BookingTypeForm: setup");
       :counter="32"
       :label="t(`components.dialogs.${props.mode}BookingType.title`)"
       :placeholder="t('components.dialogs.addBookingType.placeholder')"
-      :rules="validationService.nameRules(NAME_RULES)"
+      :rules="validationAdapter.nameRules(NAME_RULES)"
       density="compact"
       variant="outlined"/>
 </template>

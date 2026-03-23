@@ -30,7 +30,7 @@ describe("backup import refresh integration", () => {
                 addStorageChangedListener: vi.fn(() => vi.fn()),
                 installStorageLocal: vi.fn().mockResolvedValue(undefined)
             }),
-            alertService: {
+            alertAdapter: {
                 feedbackInfo: vi.fn(),
                 feedbackWarning: vi.fn(),
                 feedbackConfirm: vi.fn(),
@@ -78,7 +78,7 @@ describe("backup import refresh integration", () => {
 
         await importDatabaseUsecase(
             {
-                importExportService: {
+                importExportAdapter: {
                     readJsonFile: vi.fn().mockResolvedValue(backup),
                     validateBackup: vi.fn().mockReturnValue({isValid: true, version: backup.sm.cDBVersion}),
                     validateLegacyDataIntegrity: vi.fn().mockReturnValue([]),

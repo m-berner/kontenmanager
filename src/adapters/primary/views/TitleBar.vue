@@ -12,7 +12,7 @@ import {BROWSER_STORAGE, COMPONENTS, INDEXED_DB} from "@/domain/constants";
 import type {ViewTypeSelectionType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import connectionIcon from "@/adapters/primary/assets/connection48.png";
 import defaultIcon from "@/adapters/primary/assets/icon48.png";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
@@ -25,7 +25,7 @@ const {n, t} = useI18n();
 const records = useRecordsStore();
 const settings = useSettingsStore();
 const runtime = useRuntimeStore();
-const {databaseService, alertService, fetchService, storageAdapter} = useServices();
+const {databaseAdapter, alertAdapter, fetchAdapter, storageAdapter} = useAdapters();
 const {setStorage} = storageAdapter();
 
 let depotTimer: number | undefined;
@@ -86,7 +86,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
   const selectedAccountId = settings.activeAccountId;
 
   try {
-    const storesDB = await databaseService.getAccountRecords(selectedAccountId);
+    const storesDB = await databaseAdapter.getAccountRecords(selectedAccountId);
     if (seq !== accountUpdateSeq) return; // stale selection
 
     await records.init(storesDB, {
@@ -97,7 +97,7 @@ const onUpdateTitleBar = async (): Promise<void> => {
     if (seq !== accountUpdateSeq) return; // stale selection
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, selectedAccountId);
   } catch (err) {
-    await alertService.feedbackError("VIEWS TitleBar", err, {});
+    await alertAdapter.feedbackError("VIEWS TitleBar", err, {});
   }
 };
 
@@ -126,7 +126,7 @@ watch(
  */
 onMounted(async () => {
   try {
-    const online = await fetchService.fetchIsOk();
+    const online = await fetchAdapter.fetchIsOk();
     connectionState.value = online ? "online" : "offline";
   } catch (err) {
     void err;

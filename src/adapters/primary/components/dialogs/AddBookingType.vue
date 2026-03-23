@@ -13,7 +13,7 @@ import {toRecordsPort} from "@/app/usecases/portAdapters";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDialogForm.vue";
 import BookingTypeForm from "@/adapters/primary/components/dialogs/forms/BookingTypeForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
@@ -24,7 +24,7 @@ import {useSettingsStore} from "@/adapters/primary/stores/settings";
 const {t} = useI18n();
 const records = useRecordsStore();
 const {activeAccountId} = useSettingsStore();
-const {databaseService, browserService, alertService, repositories} = useServices();
+const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const bookingTypeForm = createBookingTypeFormManager();
 provideBookingTypeFormManager(bookingTypeForm);
 const {mapBookingTypeFormToDb, reset} = bookingTypeForm;
@@ -36,9 +36,9 @@ const onClickOk = async (): Promise<void> => {
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: browserService.getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.feedbackInfo,
+    isConnected: databaseAdapter.isConnected(),
+    connectionErrorMessage: browserAdapter.getMessage("xx_db_connection_err"),
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorContext: "BOOKING_TYPE",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -52,14 +52,14 @@ const onClickOk = async (): Promise<void> => {
       );
 
       if (res.status === "duplicate") {
-        await alertService.feedbackInfo(
+        await alertAdapter.feedbackInfo(
             t("components.dialogs.addBookingType.title"),
             t("components.dialogs.addBookingType.messages.duplicate")
         );
         return;
       }
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           t("components.dialogs.addBookingType.title"),
           t("components.dialogs.addBookingType.messages.success")
       );

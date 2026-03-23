@@ -14,7 +14,7 @@ import {toRecordsPort} from "@/app/usecases/portAdapters";
 import type {AccountDb} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import AccountForm from "@/adapters/primary/components/dialogs/forms/AccountForm.vue";
 import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDialogForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
@@ -31,7 +31,7 @@ provideAccountFormManager(accountForm);
 const {accountFormData, mapAccountFormToDb} = accountForm;
 const records = useRecordsStore();
 const {submitGuard} = useDialogGuards(t);
-const {databaseService, browserService, alertService, repositories} = useServices();
+const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentAccount = (): void => {
@@ -55,9 +55,9 @@ const onClickOk = async (): Promise<void> => {
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: browserService.getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.feedbackInfo,
+    isConnected: databaseAdapter.isConnected(),
+    connectionErrorMessage: browserAdapter.getMessage("xx_db_connection_err"),
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorContext: "UPDATE_ACCOUNT",
     errorTitle: t("components.dialogs.updateAccount.title"),
     operation: async () => {
@@ -71,7 +71,7 @@ const onClickOk = async (): Promise<void> => {
           {account}
       );
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           t("components.dialogs.updateAccount.title"),
           t("components.dialogs.updateAccount.messages.success")
       );

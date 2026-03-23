@@ -11,7 +11,7 @@ The mission of the entrypoints layer is to:
 - **Application Bootstrapping**: Initialize Vue instances, mount plugins (Pinia, Vuetify, Router, i18n), and attach
   global error handlers.
 - **Context Management**: Define the distinct environments in which the extension runs (Popup/App, Background, Options).
-- **DI Wiring**: Create the service container per context and provide it via Vue DI (`provideServices`).
+- **DI Wiring**: Create the adapter container per context and provide it via Vue DI (`provideAdapters`).
 - **Lifecycle Orchestration**: Register listeners for extension-specific events (e.g., installation, clicking the
   extension icon).
 - **DOM Anchoring**: Provide the static HTML structures where the dynamic UI is mounted.
@@ -47,9 +47,9 @@ The mission of the entrypoints layer is to:
 3. **Plugin Consistency**: Ensure that all contexts (app and options) share the same plugin configurations (like i18n
    and Vuetify) to maintain a consistent look and feel. The app context also installs the router and global components
    plugin.
-4. **Service Container**: Use `createServices()` and `provideServices(app, services)` so runtime code can access the DI
-   surface via `useServices()` (do not import `@/adapters/secondary/container` outside entrypoints).
-   Background uses `createBackgroundServices()` to avoid bundling UI/app services into the background chunk.
+4. **Adapter Container**: Use `createAdapters()` and `provideAdapters(app, adapters)` so runtime code can access the DI
+   surface via `useAdapters()` (do not import `@/adapters/container` outside entrypoints).
+   Background uses `createBackgroundAdapters()` to avoid bundling UI/app adapters into the background chunk.
 5. **Lifecycle Hooks**: Use the background script to manage long-lived state or cross-tab orchestration that doesn't
    belong to a specific UI instance.
 

@@ -24,7 +24,7 @@ type StorageAdapterApi = {
     installStorageLocal: () => Promise<void>;
 };
 
-type AlertServiceLike = {
+type AlertAdapterLike = {
     feedbackInfo?: (
         _title: string,
         _msg: unknown,
@@ -49,7 +49,7 @@ type AlertServiceLike = {
 
 type StoreDeps = {
     storageAdapter: () => StorageAdapterApi;
-    alertService: AlertServiceLike;
+    alertAdapter: AlertAdapterLike;
 };
 
 const STORE_DEPS_KEY: unique symbol = Symbol("kontenmanager.storeDeps");

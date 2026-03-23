@@ -217,7 +217,7 @@ test("happy path (firefox): import backup and see Company content", async ({page
     // Confirm import (OK button).
     await page.locator('button[type="submit"]').click();
 
-    // Import flow shows a confirmation dialog (via alertService.feedbackConfirm).
+    // Import flow shows a confirmation dialog (via alertAdapter.feedbackConfirm).
     // Click the confirmation button (last button) on the top-most dialog.
     const dialogs = page.getByRole("dialog");
     await dialogs.last().getByRole("button").last().click();
@@ -229,7 +229,7 @@ test("happy path (firefox): import backup and see Company content", async ({page
       {timeout: 30_000}
     );
 
-    // Import flow also shows an info alert overlay after success (via alertService.feedbackInfo).
+    // Import flow also shows an info alert overlay after success (via alertAdapter.feedbackInfo).
     // Close it if present, so it doesn't block clicks.
     const alertOverlay = page.locator(".v-overlay").filter({has: page.locator(".v-alert")});
     if (await alertOverlay.isVisible().catch(() => false)) {

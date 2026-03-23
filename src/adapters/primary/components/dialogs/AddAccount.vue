@@ -13,7 +13,7 @@ import {toRecordsPort, toSettingsPort} from "@/app/usecases/portAdapters";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import AccountForm from "@/adapters/primary/components/dialogs/forms/AccountForm.vue";
 import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDialogForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
@@ -23,8 +23,8 @@ import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 
 const {t} = useI18n();
-const {databaseService, browserService, alertService, storageAdapter, repositories} =
-    useServices();
+const {databaseAdapter, browserAdapter, alertAdapter, storageAdapter, repositories} =
+    useAdapters();
 const {setStorage} = storageAdapter();
 const accountForm = createAccountFormManager();
 provideAccountFormManager(accountForm);
@@ -40,9 +40,9 @@ const onClickOk = async (): Promise<void> => {
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: browserService.getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.feedbackInfo,
+    isConnected: databaseAdapter.isConnected(),
+    connectionErrorMessage: browserAdapter.getMessage("xx_db_connection_err"),
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorContext: "ADD_ACCOUNT",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -51,7 +51,7 @@ const onClickOk = async (): Promise<void> => {
 
       await addAccountUsecase(
           {
-            databaseService,
+            databaseAdapter,
             repositories,
             records: toRecordsPort(records),
             settings: toSettingsPort(settings),
@@ -69,7 +69,7 @@ const onClickOk = async (): Promise<void> => {
           }
       );
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           title,
           t("components.dialogs.addAccount.messages.success")
       );

@@ -11,7 +11,7 @@ import {useI18n} from "vue-i18n";
 import type {StockItem} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
@@ -20,7 +20,7 @@ const {t} = useI18n();
 const {isLoading, submitGuard} = useDialogGuards(t);
 const runtime = useRuntimeStore();
 const records = useRecordsStore();
-const {databaseService, browserService, alertService, repositories} = useServices();
+const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 
 const selected = ref<StockItem | null>(null);
 
@@ -28,14 +28,14 @@ const onClickOk = async (): Promise<void> => {
   log("COMPONENTS DIALOGS FadeInStock: onClickOk");
 
   if (!selected.value) {
-    await alertService.feedbackInfo("FadeInStock", browserService.getMessage("xx_db_no_selected"));
+    await alertAdapter.feedbackInfo("FadeInStock", browserAdapter.getMessage("xx_db_no_selected"));
     return;
   }
 
   await submitGuard({
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: browserService.getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.feedbackInfo,
+    isConnected: databaseAdapter.isConnected(),
+    connectionErrorMessage: browserAdapter.getMessage("xx_db_connection_err"),
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorTitle: t("components.dialogs.fadeInStock.title"),
     errorContext: "FADE_IN_STOCK",
     operation: async () => {
@@ -44,7 +44,7 @@ const onClickOk = async (): Promise<void> => {
 
       await repositories.stocks.save(stock);
       records.stocks.update(stock);
-      await alertService.feedbackInfo("FadeInStock", browserService.getMessage("xx_db_fade_in"));
+      await alertAdapter.feedbackInfo("FadeInStock", browserAdapter.getMessage("xx_db_fade_in"));
       runtime.resetTeleport();
     }
   });

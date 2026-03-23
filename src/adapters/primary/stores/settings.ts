@@ -55,7 +55,7 @@ export const useSettingsStore = defineStore(
      * @property {Function} setActiveAccountId - Switches the currently active bank account.
      */,
     function () {
-        const {storageAdapter, alertService} = getSettingsStoreDeps();
+        const {storageAdapter, alertAdapter} = getSettingsStoreDeps();
         const {getStorage, setStorage, addStorageChangedListener} = storageAdapter();
         let removeStorageChangeListener: (() => void) | null = null;
 
@@ -175,7 +175,7 @@ export const useSettingsStore = defineStore(
                 await setStorage(key, value);
             } catch (err) {
                 refVar.value = prev;
-                await alertService.feedbackError("STORES Settings", err, {});
+                await alertAdapter.feedbackError("STORES Settings", err, {});
             }
         }
 
@@ -188,7 +188,7 @@ export const useSettingsStore = defineStore(
                 const storage = await getStorage();
                 init(storage);
             } catch (err) {
-                await alertService.feedbackError("STORES Settings", err, {});
+                await alertAdapter.feedbackError("STORES Settings", err, {});
             }
         }
 

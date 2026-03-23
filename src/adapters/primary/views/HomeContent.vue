@@ -15,14 +15,14 @@ import {useI18n} from "vue-i18n";
 import {createHomeHeaders, createHomeMenuItems, ITEMS_PER_PAGE_OPTIONS} from "@/domain/constants";
 import {log, utcDate} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import DotMenu from "@/adapters/primary/components/DotMenu.vue";
 import {useKeyboardShortcuts} from "@/adapters/primary/composables/useKeyboardShortcuts";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 
 const {d, n, t} = useI18n();
-const {databaseService, storageAdapter} = useServices();
+const {databaseAdapter, storageAdapter} = useAdapters();
 const {clearStorage, installStorageLocal} = storageAdapter();
 const records = useRecordsStore();
 const settings = useSettingsStore();
@@ -39,7 +39,7 @@ const search = ref<string>("");
  */
 const onBeforeUnload = (): void => {
   log("VIEWS HomeContent: onBeforeUnload");
-  databaseService.disconnect();
+  databaseAdapter.disconnect();
 };
 
 const {register, unregister} = useKeyboardShortcuts();

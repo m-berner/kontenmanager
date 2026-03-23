@@ -1,34 +1,34 @@
-# Services Layer
+# Secondary Adapters Layer (`src/adapters/secondary/`)
 
-This directory contains the **Infrastructure and Orchestration** services of the application. The Services Layer is
-responsible for interacting with external systems (IndexedDB, WebExtension APIs, External Web APIs) and coordinating the
-flow of data between the [Domain Layer](../domains/README.md) and the application/UI layers.
+This directory contains the **infrastructure adapters** of the application. The secondary adapters layer is
+responsible for interacting with external systems (IndexedDB, WebExtension APIs, external web APIs) and coordinating the
+flow of data between the [Domain Layer](../../domain/README.md) and the application/UI layers.
 
-Services are created per-extension-context:
+Adapters are created per-extension-context:
 
-- app/options: `src/adapters/secondary/services/container.ts` (full DI surface)
-- background: `src/adapters/secondary/services/containerBackground.ts` (minimal surface to keep the background bundle small)
+- app/options: `src/adapters/container.ts` (full DI surface)
+- background: `src/adapters/containerBackground.ts` (minimal surface to keep the background bundle small)
 
-Services are exposed to runtime UI code via Vue DI (`provideServices` / `useServices` in
-`src/adapters/secondary/services/context.ts`).
+Adapters are exposed to runtime UI code via Vue DI (`provideAdapters` / `useAdapters` in
+`src/adapters/context.ts`).
 
 ## Role and Responsibilities
 
-The mission of the services layer is to:
+The mission of the secondary adapters layer is to:
 
 - **Infrastructure Abstraction**: Provide a clean interface for complex technical APIs like IndexedDB or `fetch`.
-- **Side effect Management**: Handle all asynchronous operations and external communications.
+- **Side Effect Management**: Handle all asynchronous operations and external communications.
 - **Orchestration**: Coordinate multistep operations that involve both domain logic and infrastructure (e.g.,
   application initialization or backup/restore).
 - **Data Integrity**: Enforce data persistence rules and handle database migrations.
 
-## Key Services
+## Key Adapters
 
-### 🗄️ `database/` (`databaseService`)
+### 🗄️ `database/` (`databaseAdapter`)
 
 The core persistence engine based on IndexedDB, implemented as a functional module.
 
-- **Modular Architecture**: Service functionality is split into specialized modules for connection, transactions, and
+- **Modular Architecture**: Adapter functionality is split into specialized modules for connection, transactions, and
   repositories.
 - **Repository Pattern**: Specialized functions create repositories for CRUD operations.
 - **Transaction Management**: Orchestrates atomic operations and ensures data consistency.
@@ -37,17 +37,17 @@ The core persistence engine based on IndexedDB, implemented as a functional modu
 
 Notes:
 
-- Runtime code should not import a database singleton. Use DI (`useServices().databaseService`).
-- Repositories are cached on the DI surface as `useServices().repositories` for consistent access.
+- Runtime code should not import a database singleton. Use DI (`useAdapters().databaseAdapter`).
+- Repositories are cached on the DI surface as `useAdapters().repositories` for consistent access.
 
-### 🚀 `app.ts` (`appService`)
+### 🚀 `appAdapter.ts` (`appAdapter`)
 
 A functional module handling the application lifecycle and initialization.
 
 - Orchestrates the startup sequence (storage → database → store hydration).
 - Manages the initial fetch of market data (exchanges, indexes, materials).
 
-### 🌐 `fetch.ts` (`fetchService`)
+### 🌐 `fetchAdapter.ts` (`fetchAdapter`)
 
 Thin orchestrator for all external network requests. Provider-specific scraping logic lives in `fetch/providers/`.
 
@@ -60,25 +60,25 @@ Thin orchestrator for all external network requests. Provider-specific scraping 
 - **Shared helpers** (`fetch/shared.ts`): Constants (`DEFAULT_VALUE`, `DEFAULT_CURRENCY`) and pure helpers (
   `detectCurrency`, `parseCurrency`, `calculateMidQuote`, `createDefaultStockData`) used across providers.
 
-### 🖼️ `faviconService.ts` (`faviconService`)
+### 🖼️ `faviconAdapter.ts` (`faviconAdapter`)
 
 Functional utility for generating and fetching favicon URLs.
 
 - Supports multiple providers (Google S2, DuckDuckGo) with a built-in fallback chain.
 - Ensures consistent UI representation for accounts and companies.
 
-### 🧩 `browserService.ts` (`browserService`)
+### 🧩 `browserAdapter.ts` (`browserAdapter`)
 
-Thin wrapper around the WebExtension APIs (`tabs`, `downloads`, `notifications`, `i18n`, etc.) used by UI and services.
+Thin wrapper around the WebExtension APIs (`tabs`, `downloads`, `notifications`, `i18n`, etc.) used by UI and adapters.
 
-### ⚙️ `taskService.ts` (`taskService`)
+### ⚙️ `taskAdapter.ts` (`taskAdapter`)
 
 Functional utility for managing asynchronous operations.
 
 - **Retry Logic**: Implements robust retry-with-backoff for operations that may fail transiently.
 - **Connection Guards**: Provides standardized checks for database connectivity.
 
-### 🔔 `alert.ts` (`alertService`)
+### 🔔 `alertAdapter.ts` (`alertAdapter`)
 
 Centralized functional alert orchestration.
 
@@ -87,24 +87,24 @@ Centralized functional alert orchestration.
 - Adds rate limiting for duplicate messages.
 - Logs structured technical context while delegating rendering to the alerts store.
 
-### 📂 `importExport.ts` (`importExportService`)
+### 📂 `importExportAdapter.ts` (`importExportAdapter`)
 
 Functional bridge for data portability.
 
 - Handles File I/O for JSON backups.
 - Orchestrates the validation and transformation of imported data using functional domain helpers.
 
-`importExportService` is created via `createImportExportService()` and provided via the DI container (it is not a
+`importExportAdapter` is created via `createImportExportAdapter()` and provided via the DI container (it is not a
 global singleton).
 
-### ⚖️ `validation.ts` (`validationService`)
+### ⚖️ `validationAdapter.ts` (`validationAdapter`)
 
-A functional bridge service that translates domain validation rules into a format compatible with Vuetify forms,
+A functional bridge adapter that translates domain validation rules into a format compatible with Vuetify forms,
 including internationalized error messages.
 
 ### 💾 `storageAdapter.ts` (`storageAdapter`)
 
-Service wrapper around `browser.storage.local` that provides a typed API, default installation, and consistent error
+Adapter wrapper around `browser.storage.local` that provides a typed API, default installation, and consistent error
 handling.
 
 ## Directory Structure
@@ -119,16 +119,15 @@ handling.
     - `http.ts`: HTTP utilities (`fetchWithRetry`, `fetchWithCache`, `fetchTextWithCacheFollowRedirect`, `parseHTML`).
     - `cache.ts`: In-memory TTL cache shared across all providers.
     - `shared.ts`: Shared constants and pure helpers used across providers.
-- `*.ts`: Individual service implementations.
-- `*.test.ts`: Integration and unit tests for services.
+- `*Adapter.ts`: Individual adapter implementations.
 
 ## Development Principles
 
-1. **No Business Rules**: Pure logic belongs in the `domain`. Services should only "do" things, not "decide" business
+1. **No Business Rules**: Pure logic belongs in the `domain`. Adapters should only "do" things, not "decide" business
    outcomes.
-2. **Asynchronicity**: Most service methods return `Promises`. Always handle errors using the centralized `AppError`
+2. **Asynchronicity**: Most adapter methods return `Promises`. Always handle errors using the centralized `AppError`
    structure.
-3. **Factories + Modules**: Services are implemented as factories (preferred when stateful) or stateless functional
+3. **Factories + Modules**: Adapters are implemented as factories (preferred when stateful) or stateless functional
    modules and then wired through the DI container.
 4. **Fail Gracefully**: Infrastructure operations (especially network requests) must handle failures without crashing
    the UI, providing meaningful feedback via the `alerts` system.
@@ -137,4 +136,4 @@ handling.
 
 - Prefer integration-style unit tests that mock network/DB boundaries.
 - Stub IndexedDB and `browser.*` APIs in Vitest where needed.
-- Assert that services translate technical failures into `AppError` instances with stable error codes.
+- Assert that adapters translate technical failures into `AppError` instances with stable error codes.

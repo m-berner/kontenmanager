@@ -17,11 +17,11 @@ import {BROWSER_STORAGE, COMPONENTS, createMaterialLabel, SETTINGS} from "@/doma
 import type {CheckboxGridProps, MaterialItemKeyType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 
 const props = defineProps<CheckboxGridProps>();
 const {t} = useI18n();
-const {storageAdapter, alertService} = useServices();
+const {storageAdapter, alertAdapter} = useAdapters();
 const {getStorage, setStorage} = storageAdapter();
 
 const checked = ref<string[]>([]);
@@ -65,7 +65,7 @@ const setChecked = async (): Promise<void> => {
   try {
     await setStorage(config.value.storageKey, [...checked.value]);
   } catch (err) {
-    await alertService.feedbackError(t("components.checkboxGrid.title"), err, {});
+    await alertAdapter.feedbackError(t("components.checkboxGrid.title"), err, {});
   } finally {
     isSaving.value = false;
   }
@@ -83,7 +83,7 @@ onBeforeMount(async () => {
         ? stored.filter((entry): entry is string => typeof entry === "string")
         : [];
   } catch (err) {
-    await alertService.feedbackError(t("components.checkboxGrid.title"), err, {});
+    await alertAdapter.feedbackError(t("components.checkboxGrid.title"), err, {});
   } finally {
     isLoading.value = false;
   }

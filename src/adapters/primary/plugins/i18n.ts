@@ -126,10 +126,10 @@ const i18nConfig = {
  * number/date formats, and a missing-key logger.
  */
 export function createI18nPlugin(
-    browserService: Pick<BrowserAdapter, "getUserLocale">
+    browserAdapter: Pick<BrowserAdapter, "getUserLocale">
 ) {
     const i18nInstance = createI18n(i18nConfig);
-    i18nInstance.global.locale = browserService.getUserLocale();
+    i18nInstance.global.locale = browserAdapter.getUserLocale();
     log("PLUGINS i18n");
     return i18nInstance;
 }

@@ -15,7 +15,7 @@ import {buildLegacyImportPlan, buildModernImportPlan, getImportCounts, type Impo
 const SM_RESTORE_ACCOUNT_ID = 1;
 
 export type ImportDatabaseUsecaseDeps = {
-    importExportService: ImportExportPort;
+    importExportAdapter: ImportExportPort;
     atomicImport: (stores: BatchOperationDescriptor[]) => Promise<void>;
     records: RecordsPort;
     settings: SettingsPort;
@@ -51,8 +51,8 @@ export async function importDatabaseUsecase(
     const originalActiveId = deps.settings.activeAccountId;
 
     try {
-        const backup = await deps.importExportService.readJsonFile(input.fileBlob);
-        const validation = deps.importExportService.validateBackup(backup);
+        const backup = await deps.importExportAdapter.readJsonFile(input.fileBlob);
+        const validation = deps.importExportAdapter.validateBackup(backup);
 
         if (!validation.isValid) {
             await input.onInvalidBackup();
@@ -69,8 +69,8 @@ export async function importDatabaseUsecase(
 
         const dataIntegrityErrors =
             validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION
-                ? deps.importExportService.validateLegacyDataIntegrity(backup)
-                : deps.importExportService.validateDataIntegrity(backup);
+                ? deps.importExportAdapter.validateLegacyDataIntegrity(backup)
+                : deps.importExportAdapter.validateDataIntegrity(backup);
 
         if (dataIntegrityErrors.length > 0) {
             await input.onIntegrityErrors(
@@ -101,8 +101,8 @@ export async function importDatabaseUsecase(
                 backup: backup as LegacyBackupData,
                 activeId,
                 labels: input.legacyDefaultBookingTypeLabels,
-                transformLegacyStock: deps.importExportService.transformLegacyStock,
-                transformLegacyBooking: deps.importExportService.transformLegacyBooking
+                transformLegacyStock: deps.importExportAdapter.transformLegacyStock,
+                transformLegacyBooking: deps.importExportAdapter.transformLegacyBooking
             });
             await deps.atomicImport(plan.descriptors);
             deps.records.init(plan.initData, input.initMessages);

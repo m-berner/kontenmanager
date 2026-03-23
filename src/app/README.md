@@ -6,7 +6,7 @@ In this codebase, the app layer is primarily implemented in:
 
 - `src/app/usecases/` (orchestration workflows via ports)
 - `src/app/usecases/portAdapters.ts` (composition boundary: wiring concrete runtime objects into usecase ports)
-- `src/adapters/secondary/services/app.ts` (bootstrap/orchestration service used by entrypoints)
+- `src/adapters/secondary/appAdapter.ts` (bootstrap/orchestration adapter used by entrypoints)
 
 Guidelines:
 

@@ -8,7 +8,7 @@ import {CURRENCIES, DATE} from "@/domain/constants";
 import type {NumberStringPair, OnlineStorageData} from "@/domain/types";
 import {isoDate, log, toNumber, utcDate} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {usePortfolioStore} from "@/adapters/primary/stores/portfolio";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
@@ -28,7 +28,7 @@ const MILLISECONDS_PER_DAY = 86400000;
  * Callers supply AbortSignal support for cancellation on unmount/navigation.
  */
 export function useOnlineStockData() {
-    const {fetchService, storageAdapter, browserService, alertService} = useServices();
+    const {fetchAdapter, storageAdapter, browserAdapter, alertAdapter} = useAdapters();
     const portfolio = usePortfolioStore();
     const stocks = useStocksStore();
     const runtime = useRuntimeStore();
@@ -61,8 +61,8 @@ export function useOnlineStockData() {
         }
 
         const [minRateMaxResponse, dateResponse] = await Promise.all([
-            fetchService.fetchMinRateMaxData(isin, getStorage, {signal: options?.signal}),
-            fetchService.fetchDateData(isinDates, {signal: options?.signal})
+            fetchAdapter.fetchMinRateMaxData(isin, getStorage, {signal: options?.signal}),
+            fetchAdapter.fetchDateData(isinDates, {signal: options?.signal})
         ]);
 
         if (minRateMaxResponse.failedIsins.length > 0) {
@@ -72,7 +72,7 @@ export function useOnlineStockData() {
             const names = companies.length > 0
                 ? companies.join(", ")
                 : minRateMaxResponse.failedIsins.join(", ");
-            await alertService.feedbackInfo("network", `failed to receive data: ${names}`, {duration: null});
+            await alertAdapter.feedbackInfo("network", `failed to receive data: ${names}`, {duration: null});
         }
 
         pageStocks.forEach((stock, i) => {
@@ -82,7 +82,7 @@ export function useOnlineStockData() {
             const stockToUpdate = stocks.getById(stock.cID as number);
             if (!stockToUpdate) return;
 
-            const locale = browserService.getUserLocale();
+            const locale = browserAdapter.getUserLocale();
             let region: string | undefined;
             try {
                 region = new Intl.Locale(locale).region?.toLowerCase();

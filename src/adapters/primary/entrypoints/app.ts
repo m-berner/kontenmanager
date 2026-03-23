@@ -8,8 +8,8 @@ import {createApp} from "vue";
 
 import {log} from "@/domain/utils/utils";
 
-import {createServices} from "@/adapters/container";
-import {provideServices} from "@/adapters/context";
+import {createAdapters} from "@/adapters/container";
+import {provideAdapters} from "@/adapters/context";
 import {installUnhandledRejectionLogger, installVueGlobalHandlers} from "@/adapters/primary/entrypoints/errorHandling";
 import componentsPlugin from "@/adapters/primary/plugins/components";
 import {createI18nPlugin} from "@/adapters/primary/plugins/i18n";
@@ -27,11 +27,11 @@ installUnhandledRejectionLogger("app");
  * Initializes and mounts the main application instance for the app view.
  */
 const app = createApp(AppIndex);
-const services = createServices();
-const pinia = createAppPinia(services); // inject services into pinia
-const i18n = createI18nPlugin(services.browserService);
+const adapters = createAdapters();
+const pinia = createAppPinia(adapters); // inject services into pinia
+const i18n = createI18nPlugin(adapters.browserAdapter);
 
-provideServices(app, services); // inject services into vue
+provideAdapters(app, adapters); // inject services into vue
 
 installVueGlobalHandlers(app, "app");
 
@@ -47,6 +47,6 @@ app.mount("#app");
 
 log(
     "ENTRYPOINTS app",
-    {version: services.browserService.manifest().version, mode: import.meta.env.MODE},
+    {version: adapters.browserAdapter.manifest().version, mode: import.meta.env.MODE},
     "info"
 );

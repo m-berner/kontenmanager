@@ -10,7 +10,7 @@ import {isAppError} from "@/domain/errors";
 import {BROWSER_STORAGE} from "@/domain/constants";
 
 describe("FetchService", () => {
-    const fetchService = createFetchAdapter();
+    const fetchAdapter = createFetchAdapter();
 
     beforeAll(() => {
         vi.stubGlobal("browser", {
@@ -23,7 +23,7 @@ describe("FetchService", () => {
     beforeEach(() => {
         vi.restoreAllMocks();
         vi.useRealTimers();
-        fetchService.clearCache();
+        fetchAdapter.clearCache();
     });
 
     describe("fetchWithRetry", () => {
@@ -32,7 +32,7 @@ describe("FetchService", () => {
                 .spyOn(globalThis, "fetch")
                 .mockResolvedValue(new Response("ok", {status: 200}));
 
-            const response = await fetchService.fetchWithRetry("https://example.test");
+            const response = await fetchAdapter.fetchWithRetry("https://example.test");
 
             expect(response.ok).toBe(true);
             expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -44,7 +44,7 @@ describe("FetchService", () => {
                 .mockResolvedValueOnce(new Response("fail", {status: 500}))
                 .mockResolvedValueOnce(new Response("ok", {status: 200}));
 
-            const response = await fetchService.fetchWithRetry("https://example.test");
+            const response = await fetchAdapter.fetchWithRetry("https://example.test");
 
             expect(response.ok).toBe(true);
             expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -56,7 +56,7 @@ describe("FetchService", () => {
                 .mockResolvedValue(new Response("missing", {status: 404}));
 
             await expect(
-                fetchService.fetchWithRetry("https://example.test")
+                fetchAdapter.fetchWithRetry("https://example.test")
             ).rejects.toSatisfy(isAppError);
             expect(fetchMock).toHaveBeenCalledTimes(1);
         });
@@ -89,7 +89,7 @@ describe("FetchService", () => {
 
             const caller = new AbortController();
 
-            const promise = fetchService.fetchWithRetry(
+            const promise = fetchAdapter.fetchWithRetry(
                 "https://example.test",
                 {signal: caller.signal},
                 3
@@ -129,7 +129,7 @@ describe("FetchService", () => {
             controller.abort(new DOMException("Aborted", "AbortError"));
 
             await expect(
-                fetchService.fetchWithRetry("https://example.test", {signal: controller.signal}, 3)
+                fetchAdapter.fetchWithRetry("https://example.test", {signal: controller.signal}, 3)
             ).rejects.toBeTruthy();
 
             // One attempt only, no retries on abort.
@@ -143,10 +143,10 @@ describe("FetchService", () => {
                 .spyOn(globalThis, "fetch")
                 .mockResolvedValue(new Response("cached", {status: 200}));
 
-            const first = await fetchService.fetchWithCache(
+            const first = await fetchAdapter.fetchWithCache(
                 "https://example.test/data"
             );
-            const second = await fetchService.fetchWithCache(
+            const second = await fetchAdapter.fetchWithCache(
                 "https://example.test/data"
             );
 
@@ -164,19 +164,19 @@ describe("FetchService", () => {
                 .mockResolvedValueOnce(new Response("first", {status: 200}))
                 .mockResolvedValueOnce(new Response("second", {status: 200}));
 
-            const first = await fetchService.fetchWithCache(
+            const first = await fetchAdapter.fetchWithCache(
                 "https://example.test/data",
                 1_000
             );
 
             vi.setSystemTime(new Date("2026-01-01T00:00:00.500Z"));
-            const second = await fetchService.fetchWithCache(
+            const second = await fetchAdapter.fetchWithCache(
                 "https://example.test/data",
                 1_000
             );
 
             vi.setSystemTime(new Date("2026-01-01T00:00:02.000Z"));
-            const third = await fetchService.fetchWithCache(
+            const third = await fetchAdapter.fetchWithCache(
                 "https://example.test/data",
                 1_000
             );
@@ -190,11 +190,11 @@ describe("FetchService", () => {
 
     describe("validation and guards", () => {
         it("should throw AppError when parsing empty HTML", async () => {
-            await expect(fetchService.parseHTML("")).rejects.toSatisfy(isAppError);
+            await expect(fetchAdapter.parseHTML("")).rejects.toSatisfy(isAppError);
         });
 
         it("should throw AppError for invalid ISIN in fetchCompanyData", async () => {
-            await expect(fetchService.fetchCompanyData("SHORT")).rejects.toSatisfy(
+            await expect(fetchAdapter.fetchCompanyData("SHORT")).rejects.toSatisfy(
                 isAppError
             );
         });
@@ -202,7 +202,7 @@ describe("FetchService", () => {
         it("should return empty list for empty online storage", async () => {
             const getStorage = vi.fn();
 
-            const result = await fetchService.fetchMinRateMaxData([], getStorage);
+            const result = await fetchAdapter.fetchMinRateMaxData([], getStorage);
 
             expect(result.data).toEqual([]);
             expect(getStorage).not.toHaveBeenCalled();
@@ -214,7 +214,7 @@ describe("FetchService", () => {
             }));
 
             await expect(
-                fetchService.fetchMinRateMaxData(
+                fetchAdapter.fetchMinRateMaxData(
                     [{id: 1, isin: "US0378331005", min: "0", rate: "0", max: "0", cur: "USD"}],
                     getStorage
                 )
@@ -295,7 +295,7 @@ describe("FetchService", () => {
                 } as unknown as Response);
             });
 
-            const data = await fetchService.fetchCompanyData("DE0000000001");
+            const data = await fetchAdapter.fetchCompanyData("DE0000000001");
             expect(data).toEqual({company: "Example AG", symbol: "EXM"});
             expect(fetchMock).toHaveBeenCalledTimes(2);
         });
@@ -331,7 +331,7 @@ describe("FetchService", () => {
                 .mockResolvedValueOnce(new Response(searchHtml, {status: 200}))
                 .mockResolvedValueOnce(new Response(detailHtml, {status: 200}));
 
-            const result = await fetchService.fetchMinRateMaxData(
+            const result = await fetchAdapter.fetchMinRateMaxData(
                 [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
                 async (keys) => {
                     const k = keys ?? [];
@@ -380,7 +380,7 @@ describe("FetchService", () => {
                 } as unknown as Response);
             });
 
-            const result = await fetchService.fetchMinRateMaxData(
+            const result = await fetchAdapter.fetchMinRateMaxData(
                 [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
                 async (keys) => {
                     const k = keys ?? [];
@@ -449,7 +449,7 @@ describe("FetchService", () => {
                 } as unknown as Response);
             });
 
-            const result = await fetchService.fetchMinRateMaxData(
+            const result = await fetchAdapter.fetchMinRateMaxData(
                 [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
                 async (keys) => {
                     const k = keys ?? [];
@@ -505,7 +505,7 @@ describe("FetchService", () => {
                 } as unknown as Response);
             });
 
-            const result = await fetchService.fetchMinRateMaxData(
+            const result = await fetchAdapter.fetchMinRateMaxData(
                 [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
                 async (keys) => {
                     const k = keys ?? [];
@@ -557,7 +557,7 @@ describe("FetchService", () => {
                 } as unknown as Response);
             });
 
-            const result = await fetchService.fetchMinRateMaxData(
+            const result = await fetchAdapter.fetchMinRateMaxData(
                 [{id: 1, isin: "US0378331005", min: "0", rate: "0", max: "0", cur: "USD"}],
                 async (keys) => {
                     const k = keys ?? [];
@@ -607,7 +607,7 @@ describe("FetchService", () => {
                 } as unknown as Response);
             });
 
-            const result = await fetchService.fetchMinRateMaxData(
+            const result = await fetchAdapter.fetchMinRateMaxData(
                 [{id: 1, isin: "DE0000000001", min: "0", rate: "0", max: "0", cur: "EUR"}],
                 async (keys) => {
                     const k = keys ?? [];
@@ -642,7 +642,7 @@ describe("FetchService", () => {
                 .spyOn(globalThis, "fetch")
                 .mockResolvedValue(new Response(indexHtml, {status: 200}));
 
-            const result = await fetchService.fetchIndexData();
+            const result = await fetchAdapter.fetchIndexData();
 
             // Should not depend on exact SETTINGS mapping, but must return at least one number.
             expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -665,7 +665,7 @@ describe("FetchService", () => {
                 .spyOn(globalThis, "fetch")
                 .mockResolvedValue(new Response(materialHtml, {status: 200}));
 
-            const result = await fetchService.fetchMaterialData();
+            const result = await fetchAdapter.fetchMaterialData();
 
             expect(fetchMock).toHaveBeenCalledTimes(1);
             expect(result).toEqual(

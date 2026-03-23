@@ -8,8 +8,8 @@ import {createApp} from "vue";
 
 import {log} from "@/domain/utils/utils";
 
-import {createServices} from "@/adapters/container";
-import {provideServices} from "@/adapters/context";
+import {createAdapters} from "@/adapters/container";
+import {provideAdapters} from "@/adapters/context";
 import {installUnhandledRejectionLogger, installVueGlobalHandlers} from "@/adapters/primary/entrypoints/errorHandling";
 import {createI18nPlugin} from "@/adapters/primary/plugins/i18n";
 import {createAppPinia} from "@/adapters/primary/plugins/pinia";
@@ -24,11 +24,11 @@ installUnhandledRejectionLogger("options");
  * Initializes and mounts the options application instance for the options view.
  */
 const app = createApp(OptionsIndex);
-const services = createServices();
-const pinia = createAppPinia(services);
-const i18n = createI18nPlugin(services.browserService);
+const adapters = createAdapters();
+const pinia = createAppPinia(adapters);
+const i18n = createI18nPlugin(adapters.browserAdapter);
 
-provideServices(app, services);
+provideAdapters(app, adapters);
 
 installVueGlobalHandlers(app, "options");
 

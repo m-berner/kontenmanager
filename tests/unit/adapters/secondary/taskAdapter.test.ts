@@ -8,12 +8,12 @@ import {describe, expect, it, vi} from "vitest";
 import {createTaskAdapter} from "@/adapters/secondary/taskAdapter";
 
 describe("TaskService", () => {
-    const taskService = createTaskAdapter();
+    const taskAdapter = createTaskAdapter();
 
     describe("withRetry", () => {
         it("should return the result of the operation if it succeeds on first try", async () => {
             const operation = vi.fn().mockResolvedValue("success");
-            const result = await taskService.withRetry(operation);
+            const result = await taskAdapter.withRetry(operation);
             expect(result).toBe("success");
             expect(operation).toHaveBeenCalledTimes(1);
         });
@@ -23,7 +23,7 @@ describe("TaskService", () => {
                 .mockRejectedValueOnce(new Error("fail"))
                 .mockResolvedValue("success");
 
-            const result = await taskService.withRetry(operation, {delay: 0});
+            const result = await taskAdapter.withRetry(operation, {delay: 0});
             expect(result).toBe("success");
             expect(operation).toHaveBeenCalledTimes(2);
         });
@@ -31,7 +31,7 @@ describe("TaskService", () => {
         it("should throw AppError if all retries fail", async () => {
             const operation = vi.fn().mockRejectedValue(new Error("fail"));
 
-            await expect(taskService.withRetry(operation, {maxRetries: 2, delay: 0}))
+            await expect(taskAdapter.withRetry(operation, {maxRetries: 2, delay: 0}))
                 .rejects.toThrow();
             expect(operation).toHaveBeenCalledTimes(2);
         });
@@ -42,18 +42,18 @@ describe("TaskService", () => {
                 .mockRejectedValueOnce(new Error("fail"))
                 .mockResolvedValue("success");
 
-            await taskService.withRetry(operation, {onRetry, delay: 0});
+            await taskAdapter.withRetry(operation, {onRetry, delay: 0});
             expect(onRetry).toHaveBeenCalledWith(1, expect.any(Error));
         });
     });
 
     describe("ensureConnected", () => {
         it("should not throw if connected", () => {
-            expect(() => taskService.ensureConnected(true)).not.toThrow();
+            expect(() => taskAdapter.ensureConnected(true)).not.toThrow();
         });
 
         it("should throw error if not connected", () => {
-            expect(() => taskService.ensureConnected(false, "No connection"))
+            expect(() => taskAdapter.ensureConnected(false, "No connection"))
                 .toThrow("No connection");
         });
     });

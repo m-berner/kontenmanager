@@ -8,9 +8,9 @@ import {INDEXED_DB} from "@/domain/constants";
 import type {BookingDb, QueryOptions} from "@/domain/types";
 import {validateBooking} from "@/domain/validation/validators";
 
-import {createBaseRepository} from "./base";
-
 import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+
+import {createBaseRepository} from "./base";
 
 /**
  * Creates a booking repository instance.

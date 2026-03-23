@@ -12,7 +12,7 @@ import {appError, ERROR_DEFINITIONS, serializeError} from "@/domain/errors";
 import type {FormContract, FormValidateResultType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import type {BrowserAdapter} from "@/adapters/secondary/types";
 
 type ShowSystemNotificationFn = (
@@ -37,7 +37,7 @@ type ShowSystemNotificationFn = (
  *                        loading state, and consistent error handling.
  */
 type DialogGuardsDeps = {
-    alertService: {
+    alertAdapter: {
         feedbackInfo?: (
             _title: string,
             _msg: unknown,
@@ -59,8 +59,8 @@ type DialogGuardsDeps = {
             _options: unknown
         ) => Promise<unknown> | unknown;
     };
-    browserService: Pick<BrowserAdapter, "getMessage">;
-    taskService: {
+    browserAdapter: Pick<BrowserAdapter, "getMessage">;
+    taskAdapter: {
         withRetry: <T>(
             operation: () => Promise<T>,
             options?: {
@@ -77,7 +77,7 @@ export function useDialogGuards(
     translate?: (_key: string) => string,
     deps?: DialogGuardsDeps
 ) {
-    const {alertService, browserService, taskService} = deps ?? useServices();
+    const {alertAdapter, browserAdapter, taskAdapter} = deps ?? useAdapters();
 
     /** Global loading flag for the dialog. */
     const isLoading = ref<boolean>(false);
@@ -95,10 +95,10 @@ export function useDialogGuards(
      */
     const resolveMessage = (key: Parameters<BrowserAdapter["getMessage"]>[0]): string => {
         if (!translate) {
-            return browserService.getMessage(key);
+            return browserAdapter.getMessage(key);
         }
         const translated = translate(key);
-        return translated && translated !== key ? translated : browserService.getMessage(key);
+        return translated && translated !== key ? translated : browserAdapter.getMessage(key);
     };
 
     /**
@@ -116,7 +116,7 @@ export function useDialogGuards(
         errorMessage = "Database is not connected"
     ): Promise<boolean> {
         try {
-            taskService.ensureConnected(isConnected, errorMessage);
+            taskAdapter.ensureConnected(isConnected, errorMessage);
             return true;
         } catch (err) {
             log(
@@ -196,7 +196,7 @@ export function useDialogGuards(
             onRetry?: (_attempt: number, _error: Error) => void;
         } = {}
     ): Promise<T> {
-        return taskService.withRetry(operation, options);
+        return taskAdapter.withRetry(operation, options);
     }
 
     /**
@@ -246,7 +246,7 @@ export function useDialogGuards(
             try {
                 await operation();
             } catch (err) {
-                await alertService.feedbackError(errorTitle ?? "", err, {data: errorContext ?? ""});
+                await alertAdapter.feedbackError(errorTitle ?? "", err, {data: errorContext ?? ""});
             } finally {
                 onFinally?.();
             }

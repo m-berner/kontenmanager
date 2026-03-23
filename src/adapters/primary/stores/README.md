@@ -1,7 +1,7 @@
 # Stores Layer
 
 **Pinia State Stores** manage the application’s reactive state. The Stores Layer serves
-as a central repository for data and coordinates between the [Services Layer](../services/README.md) for persistence,
+as a central repository for data and coordinates between the [Secondary Adapters Layer](../../secondary/README.md) for persistence,
 and the [Components Layer](../components/README.md) for presentation.
 
 ## Role and Responsibilities
@@ -80,7 +80,7 @@ Manages the application’s notification system.
    be delegated to the `DomainLogic`.
 4. **Action Consistency**: Actions should handle state transitions and coordinate with services. Ensure asynchronous
    actions handle errors gracefully.
-5. **Validation**: Data entering the stores from the UI should ideally be validated via the `ValidationService` before
+5. **Validation**: Data entering the stores from the UI should ideally be validated via the `validationAdapter` before
    reaching the persistence layer.
 
 6. **Minimize leaf-to-leaf imports**: Avoid tight coupling between leaf stores. Use `useRecordsStore()` for high-level

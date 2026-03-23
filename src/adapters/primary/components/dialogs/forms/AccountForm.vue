@@ -13,7 +13,7 @@ import type {AccountFormProps} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 import {createIbanMessages, createSwiftMessages} from "@/domain/validation/messages";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useDomain} from "@/adapters/primary/composables/useDomain";
 import {useFavicon} from "@/adapters/primary/composables/useFavicon";
 import {useAccountForm} from "@/adapters/primary/composables/useForms";
@@ -22,7 +22,7 @@ const props = defineProps<AccountFormProps>();
 
 const {t} = useI18n();
 const {accountFormData} = useAccountForm();
-const {validationService} = useServices();
+const {validationAdapter} = useAdapters();
 
 const SWIFT_RULES = createSwiftMessages(t);
 const IBAN_RULES = createIbanMessages(t);
@@ -91,7 +91,7 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
       v-model="accountFormData.swift"
       :counter="11"
       :label="`${t('components.dialogs.forms.accountForm.swiftLabel')}${swiftLabel}`"
-      :rules="validationService.swiftRules(SWIFT_RULES)"
+      :rules="validationAdapter.swiftRules(SWIFT_RULES)"
       autofocus
       variant="outlined"
       @update:model-value="onUpdateSwift"/>
@@ -100,7 +100,7 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
       :disabled="props.isUpdate"
       :label="`${t('components.dialogs.forms.accountForm.ibanLabel')}${ibanLabel}`"
       :placeholder="t('components.dialogs.forms.accountForm.ibanPlaceholder')"
-      :rules="validationService.ibanRules(IBAN_RULES)"
+      :rules="validationAdapter.ibanRules(IBAN_RULES)"
       variant="outlined"
       @update:model-value="onUpdateIban"/>
   <v-text-field

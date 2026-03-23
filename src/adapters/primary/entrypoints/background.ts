@@ -6,11 +6,11 @@
 
 import {log} from "@/domain/utils/utils";
 
-import {createBackgroundServices} from "@/adapters/containerBackground";
+import {createBackgroundAdapters} from "@/adapters/containerBackground";
 
-const services = createBackgroundServices();
+const services = createBackgroundAdapters();
 const {installStorageLocal} = services.storageAdapter();
-const {browserService} = services;
+const {browserAdapter} = services;
 
 /**
  * Handles extension installation/update lifecycle.
@@ -37,10 +37,10 @@ async function onClick(): Promise<void> {
     log("ENTRYPOINTS background: onClick");
 
     try {
-        const foundTabs = await browserService.tabsQuery();
+        const foundTabs = await browserAdapter.tabsQuery();
         // NOTE: An event listener called by an API reloads the background.js script.
         if (foundTabs.length === 0) {
-            const extensionTab = await browserService.tabsCreate();
+            const extensionTab = await browserAdapter.tabsCreate();
             if (extensionTab.id === undefined) {
                 log(
                     "ENTRYPOINTS background: Created new tab error",
@@ -63,8 +63,8 @@ async function onClick(): Promise<void> {
                 );
                 return;
             }
-            await browserService.windowsUpdate(firstTab.windowId);
-            await browserService.tabsUpdate(firstTab.id);
+            await browserAdapter.windowsUpdate(firstTab.windowId);
+            await browserAdapter.tabsUpdate(firstTab.id);
             log(
                 "ENTRYPOINTS background: Focused existing tab",
                 firstTab.id
@@ -79,7 +79,7 @@ async function onClick(): Promise<void> {
                     );
                     continue;
                 }
-                await browserService.removeTab(tab.id);
+                await browserAdapter.removeTab(tab.id);
             }
         }
     } catch (err) {
@@ -87,7 +87,7 @@ async function onClick(): Promise<void> {
     }
 }
 
-browserService.runtimeOnInstalled(onInstall);
-browserService.actionOnClicked(onClick);
+browserAdapter.runtimeOnInstalled(onInstall);
+browserAdapter.actionOnClicked(onClick);
 
 log("ENTRYPOINTS background", window.location.href, "info");

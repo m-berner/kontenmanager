@@ -36,13 +36,13 @@ The source is organized into three layers:
 
 ### `adapters/secondary/` — Service-facing adapters
 
-- `adapters/secondary/services/`: Side-effectful infrastructure (IndexedDB, fetch, browser APIs, import/export, alerts).
+- `adapters/secondary/`: Side-effectful infrastructure adapters (IndexedDB, fetch, browser APIs, import/export, alerts).
 
 ## How Things Fit Together
 
 - UI (`adapters/primary/views/`, `adapters/primary/components/`) reads/writes state via `adapters/primary/stores/`,
   uses `adapters/primary/composables/` for UI helpers, and calls `app/usecases/` for multi-step workflows.
-- `adapters/secondary/services/` perform I/O (IndexedDB, network, file download, etc.) and call into `domain/` for
+- `adapters/secondary/` adapters perform I/O (IndexedDB, network, file download, etc.) and call into `domain/` for
   rules/validation.
 - `domain/` defines stable rules and helper logic (including `AppError` + `ERROR_DEFINITIONS`).
 

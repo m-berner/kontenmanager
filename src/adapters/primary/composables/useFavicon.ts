@@ -9,7 +9,7 @@ import {computed, ref} from "vue";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 
 /**
  * Composable that provides a favicon URL with fallback providers and
@@ -21,7 +21,7 @@ import {useServices} from "@/adapters/context";
  * @module composables/useFavicon
  */
 export function useFavicon(domain: ComputedRef<string>, size = 48) {
-    const {faviconService} = useServices();
+    const {faviconAdapter} = useAdapters();
     const error = ref<boolean>(false);
     const loading = ref<boolean>(true);
     const retryCount = ref<number>(0);
@@ -30,7 +30,7 @@ export function useFavicon(domain: ComputedRef<string>, size = 48) {
      * The best-effort favicon URL based on the current retry stage.
      */
     const faviconUrl = computed(() => {
-        return faviconService.getFaviconUrl(domain.value, retryCount.value, size);
+        return faviconAdapter.getFaviconUrl(domain.value, retryCount.value, size);
     });
 
     /**
@@ -45,7 +45,7 @@ export function useFavicon(domain: ComputedRef<string>, size = 48) {
      * Image error event handler. Advances to the next provider or marks error.
      */
     function onError() {
-        if (retryCount.value < faviconService.MAX_RETRIES) {
+        if (retryCount.value < faviconAdapter.MAX_RETRIES) {
             retryCount.value++;
             loading.value = true;
         } else {

@@ -10,17 +10,17 @@ import type {AppStatus, ExchangeData, RecordsDbData, StorageDataType} from "@/do
 import {log} from "@/domain/utils/utils";
 
 import type {BrowserAdapter} from "@/adapters/secondary/browserAdapter";
-import type {Service as DatabaseService} from "@/adapters/secondary/database/service";
+import type {Service as DatabaseAdapter} from "@/adapters/secondary/database/service";
 import type {FetchAdapter} from "@/adapters/secondary/fetchAdapter";
 import type {storageAdapter} from "@/adapters/secondary/storageAdapter";
 
 export type AppAdapter = ReturnType<typeof createAppAdapter>;
 
 export type AppAdapterDeps = {
-    browserService: BrowserAdapter;
+    browserAdapter: BrowserAdapter;
     storageAdapter: typeof storageAdapter;
-    databaseService: DatabaseService;
-    fetchService: FetchAdapter;
+    databaseAdapter: DatabaseAdapter;
+    fetchAdapter: FetchAdapter;
 };
 
 export type AppStores = {
@@ -49,9 +49,9 @@ export type AppStores = {
  * Handles app startup, data loading, and external API coordination.
  */
 export function createAppAdapter(deps: AppAdapterDeps) {
-    const {browserService, storageAdapter, databaseService, fetchService} = deps;
+    const {browserAdapter, storageAdapter, databaseAdapter, fetchAdapter} = deps;
     const storage = storageAdapter();
-    const fetch = fetchService;
+    const fetch = fetchAdapter;
 
     // Cached result of the last initializeApp call, used by getStatus.
     let lastStatusSnapshot: AppStatus | undefined;
@@ -115,7 +115,7 @@ export function createAppAdapter(deps: AppAdapterDeps) {
      * Extracts currency code from user locale
      */
     function getCurrencyFromLocale(): string | undefined {
-        const rawLocale = browserService.getUserLocale();
+        const rawLocale = browserAdapter.getUserLocale();
         if (!rawLocale) {
             return undefined;
         }
@@ -341,10 +341,10 @@ export function createAppAdapter(deps: AppAdapterDeps) {
         if (signal?.aborted) return;
 
         try {
-            await databaseService.connect();
+            await databaseAdapter.connect();
             if (signal?.aborted) return;
 
-            const databaseStores = await databaseService.getAccountRecords(
+            const databaseStores = await databaseAdapter.getAccountRecords(
                 stores.settings.activeAccountId
             );
 
@@ -561,7 +561,7 @@ export function createAppAdapter(deps: AppAdapterDeps) {
         // Reuse last known initializeApp status if present, otherwise derive a snapshot
         const derived: AppStatus = {
             storage: stores.settings.activeAccountId > 0 ? "ok" : "error",
-            db: databaseService.isConnected() ? "ok" : "error",
+            db: databaseAdapter.isConnected() ? "ok" : "error",
             fetch: {
                 exchanges: stores.runtime.infoExchanges.size > 0,
                 indexes: stores.runtime.infoIndexes.size > 0,

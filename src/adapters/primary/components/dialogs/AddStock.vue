@@ -13,7 +13,7 @@ import {addStockUsecase} from "@/app/usecases/stocks";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDialogForm.vue";
 import StockForm from "@/adapters/primary/components/dialogs/forms/StockForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
@@ -27,7 +27,7 @@ const {t} = useI18n();
 const {activeAccountId} = useSettingsStore();
 const runtime = useRuntimeStore();
 const records = useRecordsStore();
-const {databaseService, browserService, alertService, repositories} = useServices();
+const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const {refreshOnlineData} = useOnlineStockData();
 const stockForm = createStockFormManager();
 provideStockFormManager(stockForm);
@@ -40,9 +40,9 @@ const onClickOk = async (): Promise<void> => {
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: browserService.getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.feedbackInfo,
+    isConnected: databaseAdapter.isConnected(),
+    connectionErrorMessage: browserAdapter.getMessage("xx_db_connection_err"),
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorContext: "ADD_STOCK",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -58,7 +58,7 @@ const onClickOk = async (): Promise<void> => {
           {stockData}
       );
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           t("components.dialogs.addStock.title"),
           t("components.dialogs.addStock.messages.success")
       );

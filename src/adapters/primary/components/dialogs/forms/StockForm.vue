@@ -12,14 +12,14 @@ import {appError, ERROR_DEFINITIONS, serializeError} from "@/domain/errors";
 import type {StockFormProps} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useStockForm} from "@/adapters/primary/composables/useForms";
 
 const props = defineProps<StockFormProps>();
 
 const {t} = useI18n();
 const {stockFormData} = useStockForm();
-const {fetchService, validationService, alertService} = useServices();
+const {fetchAdapter, validationAdapter, alertAdapter} = useAdapters();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -41,7 +41,7 @@ const onUpdateIsin = async () => {
   try {
     if (!props.isUpdate && stockFormData.isin.length === 12) {
       stockFormData.isin = stockFormData.isin.toUpperCase().replace(/\s/g, "");
-      const companyData = await fetchService.fetchCompanyData(
+      const companyData = await fetchAdapter.fetchCompanyData(
           stockFormData.isin
       );
       stockFormData.company = companyData.company;
@@ -50,7 +50,7 @@ const onUpdateIsin = async () => {
   } catch (err) {
     stockFormData.company = "";
     stockFormData.symbol = "";
-    await alertService.feedbackError(
+    await alertAdapter.feedbackError(
         "StockForm ISIN update",
         appError(
             ERROR_DEFINITIONS.STOCK_FORM.CODE,
@@ -72,7 +72,7 @@ log("COMPONENTS DIALOGS FORMS StockForm: setup");
           v-model="stockFormData.isin"
           :counter="12"
           :label="t('components.dialogs.forms.stockForm.isinLabel')"
-          :rules="validationService.isinRules(ISIN_RULES)"
+          :rules="validationAdapter.isinRules(ISIN_RULES)"
           autofocus
           variant="outlined"
           @update:model-value="onUpdateIsin"/>
@@ -90,7 +90,7 @@ log("COMPONENTS DIALOGS FORMS StockForm: setup");
         <v-text-field
             v-model="stockFormData.symbol"
             :label="t('components.dialogs.forms.stockForm.symbolLabel')"
-            :rules="validationService.nameRules(NAME_RULES)"
+            :rules="validationAdapter.nameRules(NAME_RULES)"
             required
             variant="outlined"/>
       </v-col>

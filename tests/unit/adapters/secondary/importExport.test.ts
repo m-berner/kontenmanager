@@ -8,7 +8,7 @@ import {describe, expect, it} from "vitest";
 import {createImportExportAdapter} from "@/adapters/secondary/importExportAdapter";
 
 describe("ImportExportService", () => {
-    const importExportService = createImportExportAdapter();
+    const importExportAdapter = createImportExportAdapter();
 
     describe("stringifyDatabase", () => {
         it("should stringify valid database data", () => {
@@ -20,7 +20,7 @@ describe("ImportExportService", () => {
             const bookingTypes: any[] = [];
             const bookings: any[] = [];
 
-            const result = importExportService.stringifyDatabase(
+            const result = importExportAdapter.stringifyDatabase(
                 sm,
                 accounts,
                 stocks,
@@ -38,7 +38,7 @@ describe("ImportExportService", () => {
             const accounts: any = null; // Should fail because it's not an array
 
             expect(() =>
-                importExportService.stringifyDatabase(sm, accounts, [], [], [])
+                importExportAdapter.stringifyDatabase(sm, accounts, [], [], [])
             ).toThrow();
         });
     });
@@ -56,7 +56,7 @@ describe("ImportExportService", () => {
                 type: "application/json"
             });
 
-            const result = await importExportService.readJsonFile(blob);
+            const result = await importExportAdapter.readJsonFile(blob);
             expect(result).toEqual(data);
         });
 
@@ -66,7 +66,7 @@ describe("ImportExportService", () => {
                 type: "application/json"
             } as Blob;
             await expect(
-                importExportService.readJsonFile(largeBlob)
+                importExportAdapter.readJsonFile(largeBlob)
             ).rejects.toThrow();
         });
     });
@@ -85,7 +85,7 @@ describe("ImportExportService", () => {
                 cURL: "http://url"
             };
 
-            const result = importExportService.transformLegacyStock(legacyStock, 123);
+            const result = importExportAdapter.transformLegacyStock(legacyStock, 123);
 
             expect(result.cID).toBe(1);
             expect(result.cSymbol).toBe("SYM");

@@ -9,7 +9,7 @@ import type {RepositoryMap} from "@/domain/types";
 import {createAlertAdapter} from "@/adapters/secondary/alertAdapter";
 import {createAppAdapter} from "@/adapters/secondary/appAdapter";
 import {createBrowserAdapter} from "@/adapters/secondary/browserAdapter";
-import {createDatabaseService} from "@/adapters/secondary/database/service";
+import {createDatabaseAdapter} from "@/adapters/secondary/database/service";
 import {createFaviconAdapter} from "@/adapters/secondary/faviconAdapter";
 import {createFetchAdapter} from "@/adapters/secondary/fetchAdapter";
 import {createImportExportAdapter} from "@/adapters/secondary/importExportAdapter";
@@ -17,57 +17,57 @@ import {storageAdapter} from "@/adapters/secondary/storageAdapter";
 import {createTaskAdapter} from "@/adapters/secondary/taskAdapter";
 import {createValidationAdapter} from "@/adapters/secondary/validationAdapter";
 
-export type Services = ReturnType<typeof createServices>;
+export type Adapters = ReturnType<typeof createAdapters>;
 
 /**
- * Creates the runtime service container for a single extension context
- * (app/options/background). Consumers should access services via DI.
+ * Creates the runtime adapter container for a single extension context
+ * (app/options/background). Consumers should access adapters via DI.
  */
-export type ServicesOverrides = Partial<{
-    browserService: ReturnType<typeof createBrowserAdapter>;
-    alertService: ReturnType<typeof createAlertAdapter>;
-    databaseService: ReturnType<typeof createDatabaseService>;
-    fetchService: ReturnType<typeof createFetchAdapter>;
-    faviconService: ReturnType<typeof createFaviconAdapter>;
-    importExportService: ReturnType<typeof createImportExportAdapter>;
-    taskService: ReturnType<typeof createTaskAdapter>;
-    validationService: ReturnType<typeof createValidationAdapter>;
+export type AdaptersOverrides = Partial<{
+    browserAdapter: ReturnType<typeof createBrowserAdapter>;
+    alertAdapter: ReturnType<typeof createAlertAdapter>;
+    databaseAdapter: ReturnType<typeof createDatabaseAdapter>;
+    fetchAdapter: ReturnType<typeof createFetchAdapter>;
+    faviconAdapter: ReturnType<typeof createFaviconAdapter>;
+    importExportAdapter: ReturnType<typeof createImportExportAdapter>;
+    taskAdapter: ReturnType<typeof createTaskAdapter>;
+    validationAdapter: ReturnType<typeof createValidationAdapter>;
     storageAdapter: typeof storageAdapter;
     repositories: RepositoryMap;
-    appService: ReturnType<typeof createAppAdapter>;
+    appAdapter: ReturnType<typeof createAppAdapter>;
 }>;
 
-export function createServices(overrides: ServicesOverrides = {}) {
-    const browserService = overrides.browserService ?? createBrowserAdapter();
-    const alertService = overrides.alertService ?? createAlertAdapter();
-    const databaseService = overrides.databaseService ?? createDatabaseService();
-    const repositories = overrides.repositories ?? databaseService.getAllRepositories();
-    const fetchService = overrides.fetchService ?? createFetchAdapter();
-    const faviconService = overrides.faviconService ?? createFaviconAdapter();
-    const importExportService =
-        overrides.importExportService ?? createImportExportAdapter();
-    const taskService = overrides.taskService ?? createTaskAdapter();
-    const validationService = overrides.validationService ?? createValidationAdapter();
-    const appService =
-        overrides.appService ??
+export function createAdapters(overrides: AdaptersOverrides = {}) {
+    const browserAdapter = overrides.browserAdapter ?? createBrowserAdapter();
+    const alertAdapter = overrides.alertAdapter ?? createAlertAdapter();
+    const databaseAdapter = overrides.databaseAdapter ?? createDatabaseAdapter();
+    const repositories = overrides.repositories ?? databaseAdapter.getAllRepositories();
+    const fetchAdapter = overrides.fetchAdapter ?? createFetchAdapter();
+    const faviconAdapter = overrides.faviconAdapter ?? createFaviconAdapter();
+    const importExportAdapter =
+        overrides.importExportAdapter ?? createImportExportAdapter();
+    const taskAdapter = overrides.taskAdapter ?? createTaskAdapter();
+    const validationAdapter = overrides.validationAdapter ?? createValidationAdapter();
+    const appAdapter =
+        overrides.appAdapter ??
         createAppAdapter({
-            browserService,
+            browserAdapter,
             storageAdapter,
-            databaseService,
-            fetchService
+            databaseAdapter,
+            fetchAdapter
         });
 
     return {
-        browserService,
-        databaseService,
-        fetchService,
-        faviconService,
+        browserAdapter,
+        databaseAdapter,
+        fetchAdapter,
+        faviconAdapter,
         storageAdapter,
-        importExportService,
-        taskService,
-        validationService,
-        appService,
-        alertService,
+        importExportAdapter,
+        taskAdapter,
+        validationAdapter,
+        appAdapter,
+        alertAdapter,
         repositories,
     };
 }

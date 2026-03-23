@@ -4,14 +4,14 @@ This directory contains the refactored, modular IndexedDB persistence engine. It
 central service orchestrates specialized components for connection management, transactions, repositories, and
 maintenance.
 
-The database service is created via `createDatabaseService()` and then provided through the runtime DI container as
-`useServices().databaseService`.
+The database adapter is created via `createDatabaseAdapter()` and then provided through the runtime DI container as
+`useAdapters().databaseAdapter`.
 
 ## Architecture Overview
 
 The database infrastructure is divided into several specialized modules:
 
-- **`service.ts`**: The `createDatabaseService()` factory (Facade). It provides a high-level API for the rest of the
+- **`service.ts`**: The `createDatabaseAdapter()` factory (Facade). It provides a high-level API for the rest of the
   application (connect/disconnect, transactions, repositories, health/batch utilities).
 - **`connection/`**: Manages the low-level `IDBDatabase` connection, including opening/closing and version change
   events.
@@ -21,7 +21,7 @@ The database infrastructure is divided into several specialized modules:
   implementation. These repositories are the single source of truth for database operations,
   used by both stores and composables.
 - **`health/`**: Specialized service for database integrity checks and automated repair routines.
-- **`batch/`**: Services for high-performance bulk operations and atomic multi-store imports.
+- **`batch/`**: Adapters for high-performance bulk operations and atomic multi-store imports.
 - **`migrator.ts`**: Handles schema versioning and store creation during database upgrades.
 
 ## Key Concepts
@@ -31,9 +31,9 @@ The database infrastructure is divided into several specialized modules:
 Instead of direct store access, use typed repositories:
 
 ```typescript
-import {useServices} from "@/adapters/secondary/context";
+import {useAdapters} from "@/adapters/context";
 
-const {repositories} = useServices();
+const {repositories} = useAdapters();
 const accountsRepo = repositories.accounts;
 const allAccounts = await accountsRepo.findAll();
 ```
@@ -44,14 +44,14 @@ The `TransactionManager` ensures that operations are atomic and safe. You can ex
 single transaction:
 
 ```typescript
-import {useServices} from "@/adapters/secondary/context";
+import {useAdapters} from "@/adapters/context";
 import {INDEXED_DB} from "@/constants";
 
-const {databaseService, repositories} = useServices();
+const {databaseAdapter, repositories} = useAdapters();
 const accountsRepo = repositories.accounts;
 const bookingsRepo = repositories.bookings;
 
-await databaseService.transactionManager.execute(
+await databaseAdapter.transactionManager.execute(
   [INDEXED_DB.STORE.ACCOUNTS.NAME, INDEXED_DB.STORE.BOOKINGS.NAME],
   "readwrite",
   async (tx) => {
@@ -66,12 +66,12 @@ await databaseService.transactionManager.execute(
 The system can detect and repair common database issues:
 
 ```typescript
-import {useServices} from "@/adapters/secondary/context";
+import {useAdapters} from "@/adapters/context";
 
-const {databaseService} = useServices();
-const report = await databaseService.healthCheck();
+const {databaseAdapter} = useAdapters();
+const report = await databaseAdapter.healthCheck();
 if (report.issues.length > 0) {
-  await databaseService.repairDatabase();
+  await databaseAdapter.repairDatabase();
 }
 ```
 
@@ -96,5 +96,5 @@ if (report.issues.length > 0) {
 
 ## Testing Notes
 
-- Create an isolated instance via `createDatabaseService()` and inject it through `createServices({databaseService})`
+- Create an isolated instance via `createDatabaseAdapter()` and inject it through `createAdapters({databaseAdapter})`
   (or pass it as an explicit dependency to the unit under test).

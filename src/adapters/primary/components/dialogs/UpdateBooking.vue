@@ -15,7 +15,7 @@ import {DATE} from "@/domain/constants";
 import type {BookingDb} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDialogForm.vue";
 import BookingForm from "@/adapters/primary/components/dialogs/forms/BookingForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
@@ -32,7 +32,7 @@ provideBookingFormManager(bookingForm);
 const {bookingFormData, mapBookingFormToDb, reset: resetForm} = bookingForm;
 const records = useRecordsStore();
 const {submitGuard} = useDialogGuards(t);
-const {databaseService, browserService, alertService, repositories} = useServices();
+const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentBooking = (): void => {
@@ -72,9 +72,9 @@ const onClickOk = async (): Promise<void> => {
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: browserService.getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.feedbackInfo,
+    isConnected: databaseAdapter.isConnected(),
+    connectionErrorMessage: browserAdapter.getMessage("xx_db_connection_err"),
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorContext: "UPDATE_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -92,7 +92,7 @@ const onClickOk = async (): Promise<void> => {
           {booking}
       );
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           t("components.dialogs.updateBooking.title"),
           t("components.dialogs.updateBooking.messages.success")
       );
