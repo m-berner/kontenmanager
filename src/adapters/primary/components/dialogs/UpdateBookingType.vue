@@ -14,7 +14,7 @@ import {toRecordsPort} from "@/app/usecases/portAdapters";
 import type {BookingTypeDb} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDialogForm.vue";
 import BookingTypeForm from "@/adapters/primary/components/dialogs/forms/BookingTypeForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
@@ -31,7 +31,7 @@ provideBookingTypeFormManager(bookingTypeForm);
 const {bookingTypeFormData, mapBookingTypeFormToDb, reset: resetForm} = bookingTypeForm;
 const {submitGuard} = useDialogGuards(t);
 const {activeAccountId} = useSettingsStore();
-const {databaseService, browserService, alertService, repositories} = useServices();
+const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 const bookingTypeRef = ref<typeof BookingTypeForm | null>(null);
 
@@ -56,20 +56,20 @@ const onClickOk = async (): Promise<void> => {
 
   // Check if a booking type is selected for editing
   if (!bookingTypeRef.value?.edit) {
-    await alertService.feedbackInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noSelection"));
+    await alertAdapter.feedbackInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noSelection"));
     return;
   }
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: browserService.getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.feedbackInfo,
+    isConnected: databaseAdapter.isConnected(),
+    connectionErrorMessage: browserAdapter.getMessage("xx_db_connection_err"),
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorContext: "UPDATE_BOOKING_TYPE",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       if (!bookingTypeFormData.id) {
-        await alertService.feedbackInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noId"));
+        await alertAdapter.feedbackInfo(t("components.dialogs.updateBookingType.title"), t("components.dialogs.updateBookingType.messages.noId"));
         return;
       }
 
@@ -89,14 +89,14 @@ const onClickOk = async (): Promise<void> => {
       );
 
       if (res.status === "duplicate") {
-        await alertService.feedbackInfo(
+        await alertAdapter.feedbackInfo(
             t("components.dialogs.updateBookingType.title"),
             t("components.dialogs.updateBookingType.messages.duplicate")
         );
         return;
       }
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           t("components.dialogs.updateBookingType.title"),
           t("components.dialogs.updateBookingType.messages.success")
       );

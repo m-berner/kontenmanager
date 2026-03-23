@@ -9,18 +9,18 @@ import type {RuntimePort} from "@/app/usecases/ports";
 
 import {INDEXED_DB} from "@/domain/constants";
 
-import type {AlertService, BrowserService, RepositoryMap, Services} from "@/adapters/secondary/types";
+import type {Adapters, AlertAdapter, BrowserAdapter, RepositoryMap} from "@/adapters/secondary/types";
 
 type TFunction = (key: string, params?: Record<string, unknown>) => string;
-type ImportExportService = Services["importExportService"];
+type ImportExportService = Adapters["importExportAdapter"];
 
 export function useExportDatabaseDialogController(input: {
     t: TFunction;
     runtime: RuntimePort;
     services: {
-        browserService: BrowserService;
-        alertService: AlertService;
-        importExportService: ImportExportService;
+        browserAdapter: BrowserAdapter;
+        alertAdapter: AlertAdapter;
+        importExportAdapter: ImportExportService;
         repositories: RepositoryMap;
     };
 }) {
@@ -32,14 +32,14 @@ export function useExportDatabaseDialogController(input: {
         await exportDatabaseUsecase(
             {
                 repositories: input.services.repositories,
-                browserService: input.services.browserService,
-                importExportService: input.services.importExportService,
+                browserAdapter: input.services.browserAdapter,
+                importExportAdapter: input.services.importExportAdapter,
                 runtime: input.runtime
             },
             {
                 filename,
                 notifyEstimatedSize: async (estimatedSizeKb) => {
-                    await input.services.alertService.feedbackInfo(
+                    await input.services.alertAdapter.feedbackInfo(
                         input.t("components.dialogs.exportDatabase.largeFileTitle"),
                         input.t("components.dialogs.exportDatabase.messages.estimatedSize", {
                             size: estimatedSizeKb.toFixed(2)
@@ -47,7 +47,7 @@ export function useExportDatabaseDialogController(input: {
                     );
                 },
                 confirmLargeFile: async (estimatedSizeKb) => {
-                    return !!(await input.services.alertService.feedbackConfirm?.(
+                    return !!(await input.services.alertAdapter.feedbackConfirm?.(
                         input.t("components.dialogs.exportDatabase.largeFileTitle"),
                         [
                             input.t("components.dialogs.exportDatabase.messages.toBig", {

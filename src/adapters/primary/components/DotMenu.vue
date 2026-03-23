@@ -11,13 +11,13 @@ import {useI18n} from "vue-i18n";
 import type {MenuConfigData, MenuItemData} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import MenuItem from "@/adapters/primary/components/MenuItem.vue";
 import {useMenuAction, useMenuHighlight} from "@/adapters/primary/composables/useMenu";
 
 const props = defineProps<MenuConfigData>();
 const {t} = useI18n();
-const {alertService} = useServices();
+const {alertAdapter} = useAdapters();
 
 const {executeAction} = useMenuAction(t);
 const {highlightedItems, highlightTemporary, clearAllHighlights} =
@@ -44,7 +44,7 @@ const handleItemClick = async (item: MenuItemData) => {
     clearAllHighlights();
   } catch (err) {
     log("COMPONENTS DotMenu: action failed", err, "error");
-    await alertService.feedbackError("Menu Action Failed", err, {data: item.action});
+    await alertAdapter.feedbackError("Menu Action Failed", err, {data: item.action});
   }
 };
 

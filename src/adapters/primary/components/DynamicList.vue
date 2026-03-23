@@ -17,14 +17,14 @@ import {BROWSER_STORAGE, COMPONENTS} from "@/domain/constants";
 import type {DynamicListProps, ExchangeData} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 
 const props = defineProps<DynamicListProps>();
 
 const {t} = useI18n();
-const {storageAdapter, fetchService, alertService} = useServices();
+const {storageAdapter, fetchAdapter, alertAdapter} = useAdapters();
 const {getStorage, setStorage} = storageAdapter();
 const runtime = useRuntimeStore();
 const {infoExchanges} = storeToRefs(runtime);
@@ -72,7 +72,7 @@ const addItem = async (item: string): Promise<void> => {
           exchanges.value.push(item.toUpperCase());
           await setStorage(BROWSER_STORAGE.EXCHANGES.key, [...list.value]);
           const exchangesInfoData: ExchangeData[] =
-              await fetchService.fetchExchangesData([newItem.value]);
+              await fetchAdapter.fetchExchangesData([newItem.value]);
           infoExchanges.value.set(
               exchanges.value[exchanges.value.length - 1],
               exchangesInfoData[0].value
@@ -83,7 +83,7 @@ const addItem = async (item: string): Promise<void> => {
       newItem.value = "";
     }
   } catch (err) {
-    await alertService.feedbackError("Components DynamicList", err, {});
+    await alertAdapter.feedbackError("Components DynamicList", err, {});
   } finally {
     isAdding.value = false; // Stop loading
   }
@@ -108,7 +108,7 @@ const removeItem = async (n: number): Promise<void> => {
       default:
     }
   } catch (err) {
-    await alertService.feedbackError("Components DynamicList", err, {});
+    await alertAdapter.feedbackError("Components DynamicList", err, {});
   }
 };
 
@@ -143,7 +143,7 @@ onBeforeMount(async () => {
         break;
     }
   } catch (err) {
-    await alertService.feedbackError("Components DynamicList", err, {});
+    await alertAdapter.feedbackError("Components DynamicList", err, {});
   } finally {
     isLoading.value = false;
   }

@@ -8,9 +8,9 @@ import {INDEXED_DB} from "@/domain/constants";
 import type {QueryOptions, StockDb} from "@/domain/types";
 import {validateStock} from "@/domain/validation/validators";
 
-import {createBaseRepository} from "./base";
-
 import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+
+import {createBaseRepository} from "./base";
 
 /**
  * Creates a stock repository instance.

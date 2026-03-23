@@ -14,7 +14,7 @@ import {useI18n} from "vue-i18n";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {useImportDatabaseDialogController} from "@/adapters/primary/composables/useImportDialog";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
@@ -22,8 +22,8 @@ import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 
 const {t} = useI18n();
-const {browserService, alertService, storageAdapter, importExportService, databaseService, fetchService} =
-    useServices();
+const {browserAdapter, alertAdapter, storageAdapter, importExportAdapter, databaseAdapter, fetchAdapter} =
+    useAdapters();
 const {isLoading, submitGuard} = useDialogGuards(t);
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
@@ -40,22 +40,22 @@ const {
   runtime,
   settings,
   records,
-  services: {browserService, alertService, storageAdapter, importExportService, databaseService, fetchService}
+  services: {browserAdapter, alertAdapter, storageAdapter, importExportAdapter, databaseAdapter, fetchAdapter}
 });
 
 const onClickOk = async (): Promise<void> => {
   log("COMPONENTS DIALOGS ImportDatabase: onClickOk");
 
   if (!isFileSelected.value) {
-    await alertService.feedbackInfo(
+    await alertAdapter.feedbackInfo(
         t("components.dialogs.importDatabase.title"),
-        browserService.getMessage("xx_db_no_file")
+        browserAdapter.getMessage("xx_db_no_file")
     );
     return;
   }
 
   await submitGuard({
-    showSystemNotification: alertService.feedbackInfo,
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorTitle: t("components.dialogs.importDatabase.title"),
     errorContext: "IMPORT_DATABASE",
     operation: async () => {

@@ -9,16 +9,16 @@ import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 
 describe("useDialogGuards", () => {
     const deps = {
-        alertService: {
+        alertAdapter: {
             feedbackInfo: async () => undefined,
             feedbackWarning: async () => undefined,
             feedbackConfirm: async () => undefined,
             feedbackError: async () => undefined
         },
-        browserService: {
+        browserAdapter: {
             getMessage: (k: string) => k
         },
-        taskService: {
+        taskAdapter: {
             withRetry: async <T>(op: () => Promise<T>) => op(),
             ensureConnected: () => undefined
         }

@@ -18,7 +18,7 @@ import {RouterView} from "vue-router";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import AlertOverlay from "@/adapters/primary/components/AlertOverlay.vue";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
@@ -28,10 +28,10 @@ const {t} = useI18n();
 const settings = useSettingsStore();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
-const {alertService, appService, fetchService} = useServices();
+const {alertAdapter, appAdapter, fetchAdapter} = useAdapters();
 
 // Invalidate online-rate caches when provider settings change (single instance for the app lifetime).
-watch(() => settings.service, () => { runtime.clearStocksPages(); fetchService.clearCache?.(); });
+watch(() => settings.service, () => { runtime.clearStocksPages(); fetchAdapter.clearCache?.(); });
 watch(() => settings.activeAccountId, () => runtime.clearStocksPages());
 watch(() => settings.stocksPerPage, () => runtime.clearStocksPages());
 
@@ -43,7 +43,7 @@ onBeforeMount(async () => {
 
   try {
     controller = new AbortController();
-    const status = await appService.initializeApp(
+    const status = await appAdapter.initializeApp(
         {records, settings, runtime},
         {
           title: t("mixed.smImportOnly.title"),
@@ -63,7 +63,7 @@ onBeforeMount(async () => {
       log("VIEWS AppIndex: Initialization aborted");
       return;
     }
-    await alertService.feedbackError(t("views.appIndex.init"), err, {});
+    await alertAdapter.feedbackError(t("views.appIndex.init"), err, {});
   }
 });
 

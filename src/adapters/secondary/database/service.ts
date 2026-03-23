@@ -29,7 +29,7 @@ export type {RepositoryMap, RepositoryType} from "@/domain/types";
 /**
  * Main database service instance creator.
  */
-export function createDatabaseService(
+export function createDatabaseAdapter(
     dbName: string = INDEXED_DB.NAME,
     version: number = INDEXED_DB.CURRENT_VERSION
 ) {
@@ -218,4 +218,4 @@ export function createDatabaseService(
     };
 }
 
-export type Service = ReturnType<typeof createDatabaseService>;
+export type Service = ReturnType<typeof createDatabaseAdapter>;

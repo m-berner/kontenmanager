@@ -19,7 +19,7 @@ import type {AccountDb, StorageValueType} from "@/domain/types";
 import {normalizeBookingTypeName} from "@/domain/validation/validators";
 
 export type AddAccountUsecaseDeps = {
-    databaseService: DatabaseAccountsPort;
+    databaseAdapter: DatabaseAccountsPort;
     repositories: RepositoriesPort;
     records: RecordsPort;
     settings: SettingsPort;
@@ -28,7 +28,7 @@ export type AddAccountUsecaseDeps = {
 };
 
 export type DeleteAccountUsecaseDeps = {
-    databaseService: DatabaseAccountsPort;
+    databaseAdapter: DatabaseAccountsPort;
     records: RecordsPort;
     settings: SettingsPort;
     runtime: RuntimePort;
@@ -45,7 +45,7 @@ export async function addAccountUsecase(
         bookingTypeLabels: { buy: string; sell: string; dividend: string };
     }
 ): Promise<{ accountId: number; createdBookingTypes: number }> {
-    const result = await deps.databaseService.transactionManager.execute(
+    const result = await deps.databaseAdapter.transactionManager.execute(
         [INDEXED_DB.STORE.ACCOUNTS.NAME, INDEXED_DB.STORE.BOOKING_TYPES.NAME],
         "readwrite",
         async (tx: IDBTransaction) => {
@@ -119,7 +119,7 @@ export async function deleteActiveAccountUsecase(
     }
 ): Promise<{ newActiveAccountId: number }> {
     const accountToDelete = deps.settings.activeAccountId;
-    await deps.databaseService.deleteAccountRecords(accountToDelete);
+    await deps.databaseAdapter.deleteAccountRecords(accountToDelete);
     deps.records.accounts.remove(accountToDelete);
 
     if (deps.records.accounts.items.length === 0) {
@@ -132,7 +132,7 @@ export async function deleteActiveAccountUsecase(
             deps.settings.activeAccountId
         );
 
-        const storesDB = await deps.databaseService.getAccountRecords(
+        const storesDB = await deps.databaseAdapter.getAccountRecords(
             deps.settings.activeAccountId
         );
         await deps.records.init(storesDB, input.initMessages);

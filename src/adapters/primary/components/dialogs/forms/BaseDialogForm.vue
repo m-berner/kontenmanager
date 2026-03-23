@@ -17,11 +17,11 @@ import {computed, onErrorCaptured, ref} from "vue";
 import type {FormContract} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 
 const {isLoading} = useDialogGuards();
-const {alertService} = useServices();
+const {alertAdapter} = useAdapters();
 const formRef = ref<FormContract | null>(null);
 const hasError = ref(false);
 const validationErrors = ref<string[]>([]);
@@ -30,7 +30,7 @@ const validationErrors = ref<string[]>([]);
 onErrorCaptured((err, _instance, info) => {
   log("COMPONENTS DIALOGS FORMS BaseDialogForm: Error captured", {err, info}, "error");
   hasError.value = true;
-  void alertService.feedbackError("Dialog Error", err, {data: info});
+  void alertAdapter.feedbackError("Dialog Error", err, {data: info});
   return false; // Prevent error from propagating
 });
 

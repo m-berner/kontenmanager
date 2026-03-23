@@ -14,7 +14,7 @@ import {toRecordsPort} from "@/app/usecases/portAdapters";
 import {DATE} from "@/domain/constants";
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDialogForm.vue";
 import BookingForm from "@/adapters/primary/components/dialogs/forms/BookingForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
@@ -29,7 +29,7 @@ const {mapBookingFormToDb, reset} = bookingForm;
 const {submitGuard} = useDialogGuards(t);
 const records = useRecordsStore();
 const {activeAccountId} = useSettingsStore();
-const {databaseService, browserService, alertService, repositories} = useServices();
+const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
@@ -37,9 +37,9 @@ const onClickOk = async (): Promise<void> => {
 
   await submitGuard({
     formRef: baseDialogRef.value?.formRef,
-    isConnected: databaseService.isConnected(),
-    connectionErrorMessage: browserService.getMessage("xx_db_connection_err"),
-    showSystemNotification: alertService.feedbackInfo,
+    isConnected: databaseAdapter.isConnected(),
+    connectionErrorMessage: browserAdapter.getMessage("xx_db_connection_err"),
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorContext: "ADD_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
@@ -50,7 +50,7 @@ const onClickOk = async (): Promise<void> => {
           {bookingData}
       );
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           t("components.dialogs.addBooking.title"),
           t("components.dialogs.addBooking.messages.success")
       );

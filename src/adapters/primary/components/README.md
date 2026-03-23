@@ -10,7 +10,7 @@ The mission of the components layer is to:
 - **User Interaction**: Provide the visual interface for all user actions.
 - **State Presentation**: Render reactive state from Pinia stores.
 - **Form Handling**: Implement data entry interfaces using Vuetify components, integrated with `useForms` and
-  `validationService` / `src/domain/validation/*`.
+  `validationAdapter` / `src/domain/validation/*`.
 - **Modality Management**: Handle complex user flows via the centralized `DialogPort` system.
 
 ## Directory Structure

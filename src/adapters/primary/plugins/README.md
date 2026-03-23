@@ -30,7 +30,7 @@ Configures [Vue I18n](https://vue-i18n.intlify.dev/) for multi-language support.
 - **Locales**: Supports German (`de-DE`) and English (`en-US`).
 - **Formatting**: Defines locale-specific rules for date, time, and currency (including high-precision currency
   formats).
-- **Auto-detection**: Integrates with `browserService` to detect the user's preferred language.
+- **Auto-detection**: Integrates with `browserAdapter` to detect the user's preferred language.
 
 ### 🍍 State Management (`pinia.ts`)
 

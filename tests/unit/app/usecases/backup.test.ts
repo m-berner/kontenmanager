@@ -128,7 +128,7 @@ describe("usecases/backup helpers", () => {
             stocks: []
         };
 
-        const importExportService = {
+        const importExportAdapter = {
             readJsonFile: vi.fn().mockResolvedValue(backup),
             validateBackup: vi.fn().mockReturnValue({isValid: true, version: backup.sm.cDBVersion}),
             validateLegacyDataIntegrity: vi.fn().mockReturnValue([]),
@@ -151,7 +151,7 @@ describe("usecases/backup helpers", () => {
 
         await importDatabaseUsecase(
             {
-                importExportService: importExportService as never,
+                importExportAdapter: importExportAdapter as never,
                 atomicImport,
                 records: records as never,
                 settings: settings as never,

@@ -10,13 +10,13 @@ Composables in this project are responsible for:
 - Converting service calls into reactive UI-facing state.
 - Coordinating store updates with service operations (and guarding long-running dialog flows).
 - Managing form state and mapping between view models and domain/database models.
-- Providing typed convenience access to DI-provided services and repositories (`useServices`, `useRepositories`).
+- Providing typed convenience access to DI-provided adapters and repositories (`useAdapters`, `useRepositories`).
 
 ## File Overview
 
 ### Persistence and Data Access
 
-- `useRepositories.ts`: Typed access to DI-provided repositories (`useServices().repositories`).
+- `useRepositories.ts`: Typed access to DI-provided repositories (`useAdapters().repositories`).
 
 ### Forms and Dialogs
 
@@ -26,7 +26,7 @@ Composables in this project are responsible for:
 
 ### Integration Helpers
 
-- `useFavicon.ts`: Reactive favicon loading interface. Delegates fetch logic to `src/adapters/secondary/services/faviconService.ts`.
+- `useFavicon.ts`: Reactive favicon loading interface. Delegates fetch logic to `src/adapters/secondary/faviconAdapter.ts`.
 - `useDomain.ts`: Reactive URL/domain parsing interface. Delegates parsing logic to `src/domain/utils/url.ts`.
 
 ### UI Interaction
@@ -40,7 +40,7 @@ Composables in this project are responsible for:
 2. Prefer moving multi-step workflows into `src/app/usecases/*` (dialogs/views call usecases; composables stay
    UI-focused).
 3. Prefer structured error propagation (`AppError` or domain-specific errors), then map errors to user feedback.
-4. Prefer `alertService` (via components/dialogs) for foreground feedback; use system notifications only when
+4. Prefer `alertAdapter` (via components/dialogs) for foreground feedback; use system notifications only when
    background visibility is required.
 5. Always clean up sideeffects (`onUnmounted`): listeners, timers, intervals, and subscriptions.
 6. Route persistence writes through domain validation before `add`/`update`.

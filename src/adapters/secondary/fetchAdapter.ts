@@ -40,13 +40,13 @@ const FX = {
     QUOTE: "https://fx-rate.net/calculator/?c_input="
 };
 
-export type FetchService = ReturnType<typeof createFetchService>;
+export type FetchAdapter = ReturnType<typeof createFetchAdapter>;
 
 export {clearCache, fetchWithRetry, getCache, getCacheStats, setCache};
 export {fetchTextWithCacheFollowRedirect, fetchWithCache, parseHTML};
 export {sanitizeArdDetailUrlFromOnclick};
 
-export function createFetchService() {
+export function createFetchAdapter() {
     return {
         fetchWithRetry,
         fetchWithCache,

@@ -202,7 +202,7 @@ function fromDomain(
     };
 }
 
-export function createValidationService() {
+export function createValidationAdapter() {
     return {
         createRule,
         cleanString,
@@ -222,4 +222,4 @@ export function createValidationService() {
     };
 }
 
-export type ValidationService = ReturnType<typeof createValidationService>;
+export type ValidationAdapter = ReturnType<typeof createValidationAdapter>;

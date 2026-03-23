@@ -23,7 +23,7 @@ export function setActiveTestPinia() {
             addStorageChangedListener: vi.fn(() => vi.fn()),
             installStorageLocal: vi.fn().mockResolvedValue(undefined)
         }),
-        alertService: {
+        alertAdapter: {
             feedbackInfo: vi.fn(),
             feedbackWarning: vi.fn(),
             feedbackConfirm: vi.fn(),

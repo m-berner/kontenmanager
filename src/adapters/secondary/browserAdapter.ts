@@ -13,9 +13,9 @@ const APP_URL = "entrypoints/app.html";
 const APP_TITLE = "KontenManager";
 const COMPLETE: EventTypes = "complete";
 
-export type BrowserService = ReturnType<typeof createBrowserService>;
+export type BrowserAdapter = ReturnType<typeof createBrowserAdapter>;
 
-export function createBrowserService() {
+export function createBrowserAdapter() {
     return {
         actionOnClicked,
         getMessage,
@@ -109,7 +109,7 @@ function getUserLocale(): "de-DE" | "en-US" {
         return "en-US";
     } catch (err) {
         // Keep this service independent of UI/Pinia/alerts.
-        log("SERVICES browserService: getUserLocale fallback", err, "warn");
+        log("SERVICES browserAdapter: getUserLocale fallback", err, "warn");
         return "en-US";
     }
 }
@@ -211,7 +211,7 @@ async function showSystemNotification(
         await browser.notifications.create(notificationOption);
     } catch (err) {
         log(
-            "SERVICES browserService: Notification failed",
+            "SERVICES browserAdapter: Notification failed",
             {error: serializeError(err)},
             "error"
         );

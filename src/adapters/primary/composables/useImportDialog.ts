@@ -16,7 +16,7 @@ import type {RecordOperation, RollbackData, StorageValueType} from "@/domain/typ
 import {log} from "@/domain/utils/utils";
 import {validateBooking} from "@/domain/validation/validators";
 
-import type {AlertService, BrowserService, DatabaseService, Services} from "@/adapters/secondary/types";
+import type {Adapters, AlertAdapter, BrowserAdapter, DatabaseAdapter} from "@/adapters/secondary/types";
 
 type TFunction = (key: string, params?: Record<string, unknown>) => string;
 type RuntimeLike = RuntimePort & {
@@ -25,8 +25,8 @@ type RuntimeLike = RuntimePort & {
     clearStocksPages?: () => void;
 };
 type SettingsLike = SettingsPort;
-type ImportExportService = Services["importExportService"];
-type FetchService = Services["fetchService"];
+type ImportExportService = Adapters["importExportAdapter"];
+type FetchService = Adapters["fetchAdapter"];
 
 export function useImportDatabaseDialogController(input: {
     t: TFunction;
@@ -34,12 +34,12 @@ export function useImportDatabaseDialogController(input: {
     settings: SettingsLike;
     records: RecordsLike;
     services: {
-        browserService: BrowserService;
-        alertService: AlertService;
+        browserAdapter: BrowserAdapter;
+        alertAdapter: AlertAdapter;
         storageAdapter: () => { setStorage: (_key: string, _value: StorageValueType) => Promise<void> };
-        importExportService: ImportExportService;
-        databaseService: Pick<DatabaseService, "atomicImport">;
-        fetchService?: FetchService;
+        importExportAdapter: ImportExportService;
+        databaseAdapter: Pick<DatabaseAdapter, "atomicImport">;
+        fetchAdapter?: FetchService;
     };
 }) {
     const files = ref<File[] | File | null>(null);
@@ -75,9 +75,9 @@ export function useImportDatabaseDialogController(input: {
 
         const validationError = validateFile(file);
         if (validationError) {
-            await input.services.browserService.showSystemNotification(
+            await input.services.browserAdapter.showSystemNotification(
                 input.t("components.dialogs.importDatabase.title"),
-                input.services.browserService.getMessage("xx_invalid_backup")
+                input.services.browserAdapter.getMessage("xx_invalid_backup")
             );
             resetFileInput();
             return;
@@ -122,7 +122,7 @@ export function useImportDatabaseDialogController(input: {
 
     const restoreFromRollback = async (rollbackData: RollbackData): Promise<void> => {
         const {setStorage} = input.services.storageAdapter();
-        const atomicImport = input.services.databaseService.atomicImport;
+        const atomicImport = input.services.databaseAdapter.atomicImport;
 
         try {
             log("COMPONENTS DIALOGS ImportDatabase: Starting rollback");
@@ -167,7 +167,7 @@ export function useImportDatabaseDialogController(input: {
 
             log("COMPONENTS DIALOGS ImportDatabase: Rollback completed successfully");
         } catch (err) {
-            await input.services.alertService.feedbackError(input.t("components.dialogs.importDatabase.title"), err, {
+            await input.services.alertAdapter.feedbackError(input.t("components.dialogs.importDatabase.title"), err, {
                 data: "Rollback failed"
             });
         }
@@ -175,13 +175,13 @@ export function useImportDatabaseDialogController(input: {
 
     async function runImport(): Promise<void> {
         const {setStorage} = input.services.storageAdapter();
-        const atomicImport = input.services.databaseService.atomicImport;
+        const atomicImport = input.services.databaseAdapter.atomicImport;
 
         const rollbackData = await createRollbackPoint();
         if (!rollbackData) {
-            await input.services.alertService.feedbackInfo(
+            await input.services.alertAdapter.feedbackInfo(
                 input.t("components.dialogs.importDatabase.title"),
-                input.services.browserService.getMessage("xx_db_no_rollback")
+                input.services.browserAdapter.getMessage("xx_db_no_rollback")
             );
             return;
         }
@@ -189,14 +189,14 @@ export function useImportDatabaseDialogController(input: {
         try {
             await importDatabaseUsecase(
                 {
-                    importExportService: input.services.importExportService,
+                    importExportAdapter: input.services.importExportAdapter,
                     atomicImport,
                     records: toRecordsPort(input.records),
                     settings: toSettingsPort(input.settings),
                     runtime: input.runtime,
                     setStorage,
                     clearStocksPages: input.runtime.clearStocksPages,
-                    clearHttpCache: input.services.fetchService?.clearCache
+                    clearHttpCache: input.services.fetchAdapter?.clearCache
                 },
                 {
                     fileBlob: fileBlob.value,
@@ -214,20 +214,20 @@ export function useImportDatabaseDialogController(input: {
                     },
                     onResetFileInput: resetFileInput,
                     onInvalidBackup: async () => {
-                        await input.services.alertService.feedbackError(
+                        await input.services.alertAdapter.feedbackError(
                             input.t("components.dialogs.importDatabase.title"),
-                            input.services.browserService.getMessage("xx_invalid_backup"),
+                            input.services.browserAdapter.getMessage("xx_invalid_backup"),
                             {}
                         );
                     },
                     onLegacyAlreadyRestored: async () => {
-                        await input.services.browserService.showSystemNotification(
+                        await input.services.browserAdapter.showSystemNotification(
                             input.t("components.dialogs.importDatabase.title"),
-                            input.services.browserService.getMessage("xx_db_restored")
+                            input.services.browserAdapter.getMessage("xx_db_restored")
                         );
                     },
                     onIntegrityErrors: async (errors, totalCount) => {
-                        await input.services.alertService.feedbackError(
+                        await input.services.alertAdapter.feedbackError(
                             input.t("components.dialogs.importDatabase.title"),
                             errors,
                             {data: {count: totalCount}}
@@ -235,7 +235,7 @@ export function useImportDatabaseDialogController(input: {
                     },
                     confirmProceed: async (counts) => {
                         const summary = countsToSummary(counts);
-                        return !!(await input.services.alertService.feedbackConfirm?.(
+                        return !!(await input.services.alertAdapter.feedbackConfirm?.(
                             input.t("components.dialogs.importDatabase.confirmImportTitle"),
                             summary,
                             {
@@ -248,19 +248,19 @@ export function useImportDatabaseDialogController(input: {
                         ));
                     },
                     onUnsupportedVersion: async () => {
-                        await input.services.alertService.feedbackInfo(
+                        await input.services.alertAdapter.feedbackInfo(
                             input.t("components.dialogs.importDatabase.title"),
-                            input.services.browserService.getMessage("xx_db_no_restored")
+                            input.services.browserAdapter.getMessage("xx_db_no_restored")
                         );
                     },
                     onImported: async (counts) => {
-                        await input.services.alertService.feedbackInfo(
+                        await input.services.alertAdapter.feedbackInfo(
                             input.t("components.dialogs.importDatabase.title"),
                             countsToSummary(counts)
                         );
                     },
                     onError: async (message) => {
-                        await input.services.alertService.feedbackError(
+                        await input.services.alertAdapter.feedbackError(
                             input.t("components.dialogs.importDatabase.title"),
                             message,
                             {data: "IMPORT_DATABASE_PROCESS"}
@@ -271,12 +271,12 @@ export function useImportDatabaseDialogController(input: {
         } catch (err) {
             try {
                 await restoreFromRollback(rollbackData);
-                await input.services.alertService.feedbackInfo(
+                await input.services.alertAdapter.feedbackInfo(
                     input.t("components.dialogs.importDatabase.title"),
-                    input.services.browserService.getMessage("xx_db_rollback")
+                    input.services.browserAdapter.getMessage("xx_db_rollback")
                 );
             } catch (rollbackErr) {
-                await input.services.alertService.feedbackError(
+                await input.services.alertAdapter.feedbackError(
                     input.t("components.dialogs.importDatabase.title"),
                     rollbackErr,
                     {}

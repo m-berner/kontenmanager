@@ -21,19 +21,19 @@ Usecases:
 Typical call site (from a dialog/view):
 
 ```ts
-import {useServices} from "@/adapters/secondary/context";
+import {useAdapters} from "@/adapters/context";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 import {toRecordsPort, toSettingsPort} from "@/app/usecases/portAdapters";
 import {addAccountUsecase} from "@/app/usecases/accounts";
 
-const {databaseService, repositories, alertService, storageAdapter} = useServices();
+const {databaseAdapter, repositories, alertAdapter, storageAdapter} = useAdapters();
 const {setStorage} = storageAdapter();
 
 const res = await addAccountUsecase(
     {
-        databaseService,
+        databaseAdapter,
         repositories,
         records: toRecordsPort(useRecordsStore()),
         runtime: useRuntimeStore(),
@@ -49,7 +49,7 @@ const res = await addAccountUsecase(
 );
 ```
 
-Most concrete types (`repositories`, `runtime`, `databaseService`) satisfy their port interfaces
+Most concrete types (`repositories`, `runtime`, `databaseAdapter`) satisfy their port interfaces
 structurally and can be passed directly. `records` and `settings` require the thin adapter wrappers
 from `src/app/usecases/portAdapters.ts` to preserve Pinia reactivity.
 

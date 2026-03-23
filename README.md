@@ -101,7 +101,7 @@ The project follows a modular architecture with a clear separation of concerns:
 1. **User Interaction:** Vue components in `views/` or `components/` capture user input.
 2. **Application Workflows:** Multi-step operations live in `src/usecases/` (dialogs/views call usecases).
 3. **State Management:** UI and usecases interact with **Pinia Stores** (`src/stores/`).
-4. **Persistence:** Data is persisted via DI-provided **Services** and **Repositories** (`src/services/`, `src/services/database/`) to **IndexedDB** and **Browser Storage** (`storageAdapter`).
+4. **Persistence:** Data is persisted via DI-provided **Adapters** and **Repositories** (`src/services/`, `src/services/database/`) to **IndexedDB** and **Browser Storage** (`storageAdapter`).
 5. **Browser Integration:** WebExtension API access is abstracted behind DI-provided services (for example `browserService`).
 
 ## Development Workflow

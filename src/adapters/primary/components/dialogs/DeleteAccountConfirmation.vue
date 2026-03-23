@@ -12,14 +12,14 @@ import {toRecordsPort, toSettingsPort} from "@/app/usecases/portAdapters";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 
 const {t} = useI18n();
-const {databaseService, alertService, storageAdapter} = useServices();
+const {databaseAdapter, alertAdapter, storageAdapter} = useAdapters();
 const {setStorage} = storageAdapter();
 const settings = useSettingsStore();
 const runtime = useRuntimeStore();
@@ -30,15 +30,15 @@ const onClickOk = async (): Promise<void> => {
   log("COMPONENTS DIALOGS DeleteAccountConfirmation: onClickOk");
 
   await submitGuard({
-    isConnected: databaseService.isConnected(),
+    isConnected: databaseAdapter.isConnected(),
     connectionErrorMessage: t("components.dialogs.deleteAccountConfirmation.messages.dbNotConnected"),
-    showSystemNotification: alertService.feedbackInfo,
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorTitle: t("components.dialogs.deleteAccountConfirmation.title"),
     errorContext: "DELETE_ACCOUNT",
     operation: async () => {
       await deleteActiveAccountUsecase(
           {
-            databaseService,
+            databaseAdapter,
             records: toRecordsPort(records),
             settings: toSettingsPort(settings),
             runtime,
@@ -52,7 +52,7 @@ const onClickOk = async (): Promise<void> => {
           }
       );
 
-      await alertService.feedbackInfo(
+      await alertAdapter.feedbackInfo(
           t("components.dialogs.deleteAccountConfirmation.title"),
           t("components.dialogs.deleteAccountConfirmation.messages.success")
       );

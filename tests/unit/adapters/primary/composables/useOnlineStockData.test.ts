@@ -18,11 +18,11 @@ const fetchDateData = vi.fn();
 const getStorage = vi.fn().mockResolvedValue({});
 
 vi.mock("@/adapters/context", () => ({
-    useServices: () => ({
-        fetchService: {fetchMinRateMaxData, fetchDateData, clearCache: vi.fn()},
+    useAdapters: () => ({
+        fetchAdapter: {fetchMinRateMaxData, fetchDateData, clearCache: vi.fn()},
         storageAdapter: () => ({getStorage}),
-        browserService: {getUserLocale: () => "de-DE"},
-        alertService: {feedbackInfo: vi.fn(), feedbackError: vi.fn()}
+        browserAdapter: {getUserLocale: () => "de-DE"},
+        alertAdapter: {feedbackInfo: vi.fn(), feedbackError: vi.fn()}
     })
 }));
 

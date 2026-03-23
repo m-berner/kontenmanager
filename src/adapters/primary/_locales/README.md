@@ -47,8 +47,8 @@ The project includes custom scripts to ensure translation quality:
 ### In TypeScript (via WebExtension API and `messages.json`)
 
 ```typescript
-import {useServices} from "@/adapters/secondary/context";
+import {useAdapters} from "@/adapters/context";
 
-const {browserService} = useServices();
-const message = browserService.getMessage("xx_error_code");
+const {browserAdapter} = useAdapters();
+const message = browserAdapter.getMessage("xx_error_code");
 ```

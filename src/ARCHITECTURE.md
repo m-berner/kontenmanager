@@ -18,7 +18,7 @@ extension fetches live market data from several financial data providers.
 8. [Dependency Injection](#8-dependency-injection)
 9. [State Management](#9-state-management)
 10. [Database](#10-database)
-11. [Fetch Service & Online Data](#11-fetch-service--online-data)
+11. [Fetch Adapter & Online Data](#11-fetch-adapter--online-data)
 12. [Browser Storage & Settings](#12-browser-storage--settings)
 13. [Backup & Restore](#13-backup--restore)
 14. [Alert System](#14-alert-system)
@@ -65,18 +65,19 @@ src/
 │   │   ├── plugins/            ← Vue plugins (pinia, router, i18n, vuetify, components)
 │   │   └── _locales/           ← i18n translation files (de, en)
 │   │
+│   ├── context.ts              ← Vue provide/inject bridge (provideAdapters / useAdapters)
+│   │
 │   └── secondary/              ← driven by the application (infrastructure layer)
-│       ├── alert.ts            ← alert / feedback service
-│       ├── app.ts              ← 3-phase app initialisation service
-│       ├── browserService.ts   ← browser API wrapper (tabs, windows, downloads, …)
-│       ├── context.ts          ← Vue provide/inject bridge for services
-│       ├── faviconService.ts   ← favicon caching
-│       ├── fetch.ts            ← market-data HTTP service (multi-provider + cache)
-│       ├── importExport.ts     ← backup serialisation & validation
+│       ├── alertAdapter.ts     ← alert / feedback adapter
+│       ├── appAdapter.ts       ← 3-phase app initialisation adapter
+│       ├── browserAdapter.ts   ← browser API wrapper (tabs, windows, downloads, …)
+│       ├── faviconAdapter.ts   ← favicon caching
+│       ├── fetchAdapter.ts     ← market-data HTTP adapter (multi-provider + cache)
+│       ├── importExportAdapter.ts ← backup serialisation & validation
 │       ├── storageAdapter.ts   ← browser.storage.local wrapper
-│       ├── taskService.ts      ← task scheduling
-│       ├── types.ts            ← re-exports of shared service types
-│       ├── validation.ts       ← ISIN / IBAN / BIC validation
+│       ├── taskAdapter.ts      ← task scheduling
+│       ├── types.ts            ← re-exports of shared adapter types
+│       ├── validationAdapter.ts ← ISIN / IBAN / BIC validation
 │       └── database/           ← IndexedDB: connection, repositories, migrations,
 │                                  transactions, batch operations, health checks
 │
@@ -158,31 +159,31 @@ Contexts cannot share JavaScript objects; they communicate via
 ```
 entrypoints/app.ts
 │
-├─ createServices()          ← build the full service container
-├─ createAppPinia(services)  ← create Pinia, wire store deps, configure alert sink
+├─ createAdapters()          ← build the full adapter container
+├─ createAppPinia(adapters)  ← create Pinia, wire store deps, configure alert sink
 ├─ createI18nPlugin(...)
-├─ provideServices(app, services)   ← make services available to the Vue tree
+├─ provideAdapters(app, adapters)   ← make adapters available to the Vue tree
 ├─ app.use(pinia, i18n, router, vuetify, components)
 ├─ startThemeSync(...)
 └─ app.mount("#app")
         │
         └─ AppIndex.vue  onBeforeMount
                │
-               └─ appService.initializeApp(stores, translations, signal)
+               └─ appAdapter.initializeApp(stores, translations, signal)
                       │
                       ├─ Phase 1 — Storage
                       │     storageAdapter.getStorage()
                       │     settingsStore.init(storageData)
                       │
                       ├─ Phase 2 — Database
-                      │     databaseService.connect()
-                      │     databaseService.getAccountRecords(activeAccountId)
+                      │     databaseAdapter.connect()
+                      │     databaseAdapter.getAccountRecords(activeAccountId)
                       │     recordsStore.init(dbData, translations)
                       │
                       └─ Phase 3 — External data (non-critical, allSettled)
-                            fetchService.fetchExchangesData()
-                            fetchService.fetchIndexData()
-                            fetchService.fetchMaterialData()
+                            fetchAdapter.fetchExchangesData()
+                            fetchAdapter.fetchIndexData()
+                            fetchAdapter.fetchMaterialData()
 ```
 
 **Key points:**
@@ -201,21 +202,21 @@ entrypoints/app.ts
 ```
 entrypoints/background.ts
 │
-├─ createBackgroundServices()   ← minimal container: browserService + storageAdapter only
+├─ createBackgroundAdapters()   ← minimal container: browserAdapter + storageAdapter only
 │
-├─ browserService.runtimeOnInstalled(onInstall)
+├─ browserAdapter.runtimeOnInstalled(onInstall)
 │       └─ storageAdapter.installStorageLocal()
 │               └─ writes all BROWSER_STORAGE defaults on first install / update
 │
-└─ browserService.actionOnClicked(onClick)
+└─ browserAdapter.actionOnClicked(onClick)
         └─ tabsQuery() to find existing app tabs
                ├─ none found  → tabsCreate()  (opens a new tab)
                └─ found       → windowsUpdate() + tabsUpdate()  (focus the first tab)
                                  + removeTab() for any duplicate tabs
 ```
 
-The background bundle is deliberately kept small: only `browserService` and
-`storageAdapter` are included to avoid pulling in the full service graph.
+The background bundle is deliberately kept small: only `browserAdapter` and
+`storageAdapter` are included to avoid pulling in the full adapter graph.
 
 ---
 
@@ -224,11 +225,11 @@ The background bundle is deliberately kept small: only `browserService` and
 ```
 entrypoints/options.ts
 │
-├─ createServices()
-├─ createAppPinia(services)
-├─ provideServices(app, services)
+├─ createAdapters()
+├─ createAppPinia(adapters)
+├─ provideAdapters(app, adapters)
 ├─ app.use(pinia, i18n, vuetify)
-├─ useSettingsStore(pinia).load()   ← manual init (no appService bootstrap)
+├─ useSettingsStore(pinia).load()   ← manual init (no appAdapter bootstrap)
 ├─ startThemeSync(...)
 └─ app.mount("#options")
         └─ OptionsIndex.vue
@@ -246,33 +247,33 @@ The project uses two complementary DI mechanisms:
 
 ### 8.1 Service container (composition root)
 
-`src/adapters/container.ts` creates all secondary services and returns them as
+`src/adapters/container.ts` creates all secondary adapters and returns them as
 a plain object:
 
 ```typescript
-const services = createServices(overrides?)
-// { browserService, databaseService, fetchService, alertService,
-//   storageAdapter, repositories, appService, … }
+const adapters = createAdapters(overrides?)
+// { browserAdapter, databaseAdapter, fetchAdapter, alertAdapter,
+//   storageAdapter, repositories, appAdapter, … }
 ```
 
-`overrides` accepts test doubles for any service, enabling unit tests without
+`overrides` accepts test doubles for any adapter, enabling unit tests without
 real IndexedDB or network calls.
 
-`container.ts` is the **only** file allowed to import concrete service
-implementations. Everything else receives services through the mechanisms
+`container.ts` is the **only** file allowed to import concrete adapter
+implementations. Everything else receives adapters through the mechanisms
 below.
 
 ### 8.2 Vue provide / inject (for components and composables)
 
 ```typescript
 // entrypoint
-provideServices(app, services)  // context.ts
+provideAdapters(app, adapters)  // context.ts
 
 // any component or composable
-const { fetchService, alertService } = useServices()
+const { fetchAdapter, alertAdapter } = useAdapters()
 ```
 
-`useServices()` calls Vue's `inject()` internally. Because it uses Vue's
+`useAdapters()` calls Vue's `inject()` internally. Because it uses Vue's
 injection system, it only works inside `setup()` or a composable called from
 `setup()`.
 
@@ -283,25 +284,25 @@ Stores cannot use `inject()` because they run outside Vue's component tree.
 
 ```typescript
 // wired once per Pinia instance (plugins/pinia.ts)
-attachStoreDeps(pinia, { storageAdapter, alertService })
+attachStoreDeps(pinia, { storageAdapter, alertAdapter })
 
 // retrieved inside any store definition
-const { storageAdapter, alertService } = getStoreDeps()
+const { storageAdapter, alertAdapter } = getStoreDeps()
 ```
 
-This avoids circular imports between stores and services.
+This avoids circular imports between stores and adapters.
 
 ### 8.4 Alert sink (two-phase wiring)
 
-`alertService` is created before Pinia (because Pinia needs it), but rendering
+`alertAdapter` is created before Pinia (because Pinia needs it), but rendering
 alerts requires `useAlertsStore`. The wiring is deferred:
 
 ```typescript
 // plugins/pinia.ts, after createPinia()
-services.alertService.configureAlertSink(() => useAlertsStore(pinia))
+adapters.alertAdapter.configureAlertSink(() => useAlertsStore(pinia))
 ```
 
-`alertService` calls the sink lazily the first time feedback is requested,
+`alertAdapter` calls the sink lazily the first time feedback is requested,
 breaking the circular dependency.
 
 ---
@@ -392,7 +393,7 @@ importing a backup atomically replaces all four stores).
 
 ---
 
-## 11. Fetch Service & Online Data
+## 11. Fetch Adapter & Online Data
 
 ### Providers
 
@@ -429,12 +430,12 @@ useOnlineStockData.loadOnlineData(page)
 ├─ Identify stocks needing date refresh (meeting / quarter day overdue)
 │
 ├─ Promise.all([
-│     fetchService.fetchMinRateMaxData(isinList, getStorage),
-│     fetchService.fetchDateData(isinDatesNeeded)
+│     fetchAdapter.fetchMinRateMaxData(isinList, getStorage),
+│     fetchAdapter.fetchDateData(isinDatesNeeded)
 │   ])
 │
 ├─ Apply currency conversion
-│     browserService.getUserLocale() → region → expected currency
+│     browserAdapter.getUserLocale() → region → expected currency
 │     stockCur vs uiCur → divisor from runtime.curUsd / runtime.curEur
 │
 ├─ Write mMin, mValue, mMax, mEuroChange back into stocks.items (in place)
@@ -451,7 +452,7 @@ useOnlineStockData.loadOnlineData(page)
 Cache invalidation watchers run **once** in `AppIndex.vue` (not per call site):
 
 ```typescript
-watch(() => settings.service,       () => { runtime.clearStocksPages(); fetchService.clearCache?.() })
+watch(() => settings.service,       () => { runtime.clearStocksPages(); fetchAdapter.clearCache?.() })
 watch(() => settings.activeAccountId, () => runtime.clearStocksPages())
 watch(() => settings.stocksPerPage,   () => runtime.clearStocksPages())
 ```
@@ -516,7 +517,7 @@ Alerts are the mechanism for all user-facing feedback (info, warning,
 confirmation dialogs, and errors).
 
 ```
-alertService.feedbackInfo(title, message, options?)
+alertAdapter.feedbackInfo(title, message, options?)
         │
         └─ alertsSink()              ← configured once in plugins/pinia.ts
                 │                      returns useAlertsStore(pinia)
@@ -526,11 +527,11 @@ alertService.feedbackInfo(title, message, options?)
                                polls alertsStore and renders v-alert / v-dialog
 ```
 
-`alertService` rate-limits duplicate messages (1.5 s window) to prevent
+`alertAdapter` rate-limits duplicate messages (1.5 s window) to prevent
 flooding the user when an error is repeated in a fast loop.
 
 `feedbackConfirm` returns a `Promise<boolean>` that resolves when the user
-clicks OK or Cancel, enabling `await alertService.feedbackConfirm(…)` idiom
+clicks OK or Cancel, enabling `await alertAdapter.feedbackConfirm(…)` idiom
 in use cases.
 
 ---
@@ -584,6 +585,7 @@ the port interface.
 
 ### PersistDeps — shared use-case dependency bundle
 
+
 Five use cases (accounts, bookings, bookingTypes, stocks, backup) all need the
 same three ports. Rather than repeating the inline type, `ports.ts` exports:
 
@@ -603,9 +605,9 @@ satisfies it. This keeps the app layer free of Pinia imports.
 
 ### Single composition root
 
-`container.ts` is the **only** file that imports concrete service
+`container.ts` is the **only** file that imports concrete adapter
 implementations. This is enforced by the architecture test. All other files
-receive services via `useServices()` or the Pinia DI symbol.
+receive adapters via `useAdapters()` or the Pinia DI symbol.
 
 ---
 
@@ -633,14 +635,14 @@ receive services via `useServices()` or the Pinia DI symbol.
 **New data provider:**
 
 1. Add a provider file in `src/adapters/secondary/fetch/providers/`.
-2. Register it in `src/adapters/secondary/fetch.ts`.
+2. Register it in `src/adapters/secondary/fetchAdapter.ts`.
 3. Add the provider key to `BROWSER_STORAGE.SERVICE` options.
 4. Add a `<v-radio>` entry in the `ServiceSelector` component.
 
 **Testing conventions:**
 
-- Inject test doubles via `createServices(overrides)` or `attachStoreDeps(pinia, overrides)`.
-- Mock `useServices()` with `vi.mock("@/adapters/secondary/context", …)` when
-  testing composables that call `useServices()` directly.
+- Inject test doubles via `createAdapters(overrides)` or `attachStoreDeps(pinia, overrides)`.
+- Mock `useAdapters()` with `vi.mock("@/adapters/context", …)` when
+  testing composables that call `useAdapters()` directly.
 - Use `setActiveTestPinia()` from `tests/unit/support/pinia.ts` as the
   standard Pinia setup in every unit test.

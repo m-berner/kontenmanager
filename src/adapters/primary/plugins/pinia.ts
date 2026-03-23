@@ -10,24 +10,24 @@ import {log} from "@/domain/utils/utils";
 
 import {useAlertsStore} from "@/adapters/primary/stores/alerts";
 import {attachStoreDeps} from "@/adapters/primary/stores/deps";
-import type {Services} from "@/adapters/secondary/types";
+import type {Adapters} from "@/adapters/secondary/types";
 
-export type PiniaServices = Pick<Services, "storageAdapter" | "alertService">;
+export type PiniaAdapters = Pick<Adapters, "storageAdapter" | "alertAdapter">;
 
 /**
  * Creates a Pinia instance and wires store/service dependencies.
  */
-export function createAppPinia(services: PiniaServices): Pinia {
+export function createAppPinia(adapters: PiniaAdapters): Pinia {
     const pinia = createPinia();
 
     // Central place to wire store dependencies for the app runtime.
     attachStoreDeps(pinia, {
-        storageAdapter: services.storageAdapter,
-        alertService: services.alertService
+        storageAdapter: adapters.storageAdapter,
+        alertAdapter: adapters.alertAdapter
     });
 
     // Wire alert rendering to the alerts store without making alert service import Pinia/stores.
-    services.alertService.configureAlertSink(() => useAlertsStore(pinia));
+    adapters.alertAdapter.configureAlertSink(() => useAlertsStore(pinia));
 
     log("PLUGINS pinia");
     return pinia;

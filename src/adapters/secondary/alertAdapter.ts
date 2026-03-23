@@ -18,11 +18,11 @@ const ALERT_INFO = {
 }
 
 /**
- * Public alert service interface for consumers (components, composables, stores).
+ * Public alert adapter interface for consumers (components, composables, stores).
  * Deliberately excludes `configureAlertSink`, which is an infrastructure-level
  * setup concern and must not be callable from UI code.
  */
-export type AlertService = {
+export type AlertAdapter = {
     feedbackInfo: (_title: string, _msg: unknown, _options?: HandleUserAlertOptions) => Promise<number | void>;
     feedbackWarning: (_title: string, _msg: unknown, _options?: HandleUserAlertOptions) => Promise<number | void>;
     feedbackConfirm: (_title: string, _msg: unknown, _options?: HandleUserAlertOptions) => Promise<boolean | void>;
@@ -45,7 +45,7 @@ export type AlertSink = {
  *
  * @returns True if the alert is rate-limited.
  */
-export function createAlertService() {
+export function createAlertAdapter() {
     /**
      * Tracks the last shown timestamp for each alert signature.
      */

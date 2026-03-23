@@ -21,7 +21,7 @@ import {
 } from "@/domain/constants";
 import {log, winLossClass} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import DotMenu from "@/adapters/primary/components/DotMenu.vue";
 import {useOnlineStockData} from "@/adapters/primary/composables/useOnlineStockData";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
@@ -33,7 +33,7 @@ const records = useRecordsStore();
 const settings = useSettingsStore();
 const setStocksPerPage = (value: number) => settings.setStocksPerPage(value);
 const runtime = useRuntimeStore();
-const {alertService} = useServices();
+const {alertAdapter} = useAdapters();
 const {loadOnlineData} = useOnlineStockData();
 
 const activeStockItems = computed(() => records.portfolio.active);
@@ -130,7 +130,7 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
     );
   } catch (err) {
     if (isAbortError(err)) return;
-    await alertService.feedbackError("COMPANY_CONTENT", err, {
+    await alertAdapter.feedbackError("COMPANY_CONTENT", err, {
       data: "loadRequiredPages"
     });
   }
@@ -157,7 +157,7 @@ const onUpdatePage = async (page: number): Promise<void> => {
     await loadOnlineData(page, {signal});
   } catch (err) {
     if (isAbortError(err)) return;
-    await alertService.feedbackError("COMPANY_CONTENT", err, {
+    await alertAdapter.feedbackError("COMPANY_CONTENT", err, {
       data: "onUpdatePage"
     });
   } finally {

@@ -62,6 +62,7 @@
           <option value="http://www.springframework.org/schema/" />
           <option value="http://www.springframework.org/security/tags" />
           <option value="http://www.springframework.org/tags" />
+          <option value="http://www.tagesschau.de" />
           <option value="http://www.thymeleaf.org" />
           <option value="http://www.w3.org/" />
           <option value="http://xmlns.jcp.org/" />

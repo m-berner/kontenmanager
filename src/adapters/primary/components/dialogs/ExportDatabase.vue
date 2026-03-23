@@ -14,7 +14,7 @@ import {useI18n} from "vue-i18n";
 
 import {log} from "@/domain/utils/utils";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {useExportDatabaseDialogController} from "@/adapters/primary/composables/useExportDialog";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
@@ -22,19 +22,19 @@ import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 const {t} = useI18n();
 const {isLoading, submitGuard} = useDialogGuards(t);
 const runtime = useRuntimeStore();
-const {browserService, alertService, importExportService, repositories} = useServices();
+const {browserAdapter, alertAdapter, importExportAdapter, repositories} = useAdapters();
 
 const {dialogText, run} = useExportDatabaseDialogController({
   t,
   runtime,
-  services: {browserService, alertService, importExportService, repositories}
+  services: {browserAdapter, alertAdapter, importExportAdapter, repositories}
 });
 
 const onClickOk = async (): Promise<void> => {
   log("COMPONENTS DIALOGS ExportDatabase: onClickOk");
 
   await submitGuard({
-    showSystemNotification: alertService.feedbackInfo,
+    showSystemNotification: alertAdapter.feedbackInfo,
     errorTitle: t("components.dialogs.exportDatabase.title"),
     errorContext: "EXPORT_DATABASE",
     operation: async () => {

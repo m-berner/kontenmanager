@@ -6,7 +6,7 @@
 
 import type {DialogNameType, MenuActionType} from "@/domain/types";
 
-import {useServices} from "@/adapters/context";
+import {useAdapters} from "@/adapters/context";
 import {useOnlineStockData} from "@/adapters/primary/composables/useOnlineStockData";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
@@ -16,7 +16,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 } {
     const runtime = useRuntimeStore();
     const records = useRecordsStore();
-    const {browserService, alertService, fetchService} = useServices();
+    const {browserAdapter, alertAdapter, fetchAdapter} = useAdapters();
     const {refreshAllOnlineData} = useOnlineStockData();
 
     const openDialog = (dialogName: DialogNameType, dialogOk: boolean = true): void => {
@@ -32,10 +32,10 @@ export function useHeaderBarActions(t: (_key: string) => string): {
             try {
                 runtime.isStockLoading = true;
                 runtime.isDownloading = true;
-                fetchService.clearCache();
+                fetchAdapter.clearCache();
                 await refreshAllOnlineData();
             } catch (err) {
-                await alertService.feedbackError(t("views.headerBar.infoTitle"), err, {
+                await alertAdapter.feedbackError(t("views.headerBar.infoTitle"), err, {
                     data: {context: "UPDATE_QUOTE"},
                     logLevel: "error"
                 });
@@ -47,7 +47,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         fadeInStock: async () => {
             if (records.stocks.passive.length === 0) {
-                await alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noCompany"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noCompany"));
             } else {
                 openDialog("fadeInStock");
             }
@@ -67,7 +67,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         updateAccount: async () => {
             if (records.accounts.items.length === 0) {
-                await alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
             } else {
                 openDialog("updateAccount");
             }
@@ -75,7 +75,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         deleteAccountConfirmation: async () => {
             if (records.accounts.items.length === 0) {
-                await alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
             } else {
                 openDialog("deleteAccountConfirmation");
             }
@@ -83,7 +83,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         addBookingType: async () => {
             if (records.accounts.items.length === 0) {
-                await alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
             } else {
                 openDialog("addBookingType");
             }
@@ -91,7 +91,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         updateBookingType: async () => {
             if (records.bookingTypes.items.length === 0) {
-                await alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBookingType"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBookingType"));
             } else {
                 openDialog("updateBookingType");
             }
@@ -99,7 +99,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         deleteBookingType: async () => {
             if (records.bookingTypes.items.length === 0) {
-                await alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBookingType"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBookingType"));
             } else {
                 openDialog("deleteBookingType");
             }
@@ -107,7 +107,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         addBooking: async () => {
             if (records.accounts.items.length === 0) {
-                void alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+                void alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
             } else {
                 openDialog("addBooking");
             }
@@ -115,7 +115,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         exportDatabase: () => {
             if (records.accounts.items.length === 0) {
-                void alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+                void alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
             } else {
                 openDialog("exportDatabase");
             }
@@ -127,7 +127,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         showAccounting: () => {
             if (records.bookings.items.length === 0) {
-                void alertService.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBooking"));
+                void alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBooking"));
             } else {
                 openDialog("showAccounting", false);
             }
@@ -160,7 +160,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
         },
 
         setting: async () => {
-            await browserService.openOptionsPage();
+            await browserAdapter.openOptionsPage();
         }
     };
 

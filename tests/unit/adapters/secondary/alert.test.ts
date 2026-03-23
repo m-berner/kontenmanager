@@ -5,8 +5,8 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import type {AlertSink} from "@/adapters/secondary/alert";
-import {createAlertService} from "@/adapters/secondary/alert";
+import type {AlertSink} from "@/adapters/secondary/alertAdapter";
+import {createAlertAdapter} from "@/adapters/secondary/alertAdapter";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
 import {ERROR_CATEGORY} from "@/domain/constants";
 
@@ -60,17 +60,17 @@ vi.mock("@/domain/errors", async (importOriginal) => {
 });
 
 describe("AlertService", () => {
-    const alertService = createAlertService();
+    const alertAdapter = createAlertAdapter();
 
     beforeEach(() => {
         vi.clearAllMocks();
-        alertService.configureAlertSink(() => storeMock as unknown as AlertSink);
+        alertAdapter.configureAlertSink(() => storeMock as unknown as AlertSink);
     });
 
     it("feedbackInfo should normalize strings and use the default duration", async () => {
         storeMock.info.mockReturnValueOnce(10);
 
-        const result = await alertService.feedbackInfo("Info", "text message");
+        const result = await alertAdapter.feedbackInfo("Info", "text message");
 
         expect(result).toBe(10);
         expect(storeMock.info).toHaveBeenCalledWith("Info", "text message", 4000);
@@ -80,7 +80,7 @@ describe("AlertService", () => {
         const error = new Error("disk full");
         storeMock.warning.mockReturnValueOnce(11);
 
-        const result = await alertService.feedbackWarning("Warn", error);
+        const result = await alertAdapter.feedbackWarning("Warn", error);
 
         expect(result).toBe(11);
         expect(storeMock.warning).toHaveBeenCalledWith(
@@ -93,7 +93,7 @@ describe("AlertService", () => {
     it("feedbackConfirm should pass the normalized array message and confirm options", async () => {
         storeMock.confirm.mockResolvedValueOnce(true);
 
-        const result = await alertService.feedbackConfirm("Confirm", ["line1", "line2"], {
+        const result = await alertAdapter.feedbackConfirm("Confirm", ["line1", "line2"], {
             confirm: {
                 confirmText: "Yes",
                 cancelText: "No",
@@ -114,7 +114,7 @@ describe("AlertService", () => {
         error.stack = "stack trace";
         storeMock.error.mockReturnValueOnce(12);
 
-        const result = await alertService.feedbackError("Failure", error, {
+        const result = await alertAdapter.feedbackError("Failure", error, {
             logLevel: "error",
             data: {id: 5},
             correlationId: "corr-1"
@@ -132,7 +132,7 @@ describe("AlertService", () => {
     it("feedbackError should normalize AppError category and message", async () => {
         storeMock.error.mockReturnValueOnce(13);
 
-        const result = await alertService.feedbackError("Business", appError(ERROR_DEFINITIONS.SERVICES.APP.FEEDBACK.CODE, ERROR_CATEGORY.BUSINESS), {});
+        const result = await alertAdapter.feedbackError("Business", appError(ERROR_DEFINITIONS.SERVICES.APP.FEEDBACK.CODE, ERROR_CATEGORY.BUSINESS), {});
 
         expect(result).toBe(13);
         expect(storeMock.error).toHaveBeenCalledWith(
@@ -145,8 +145,8 @@ describe("AlertService", () => {
     it("should rate-limit duplicate messages with the default interval", async () => {
         storeMock.info.mockReturnValue(20);
 
-        const first = await alertService.feedbackInfo("Info", "same");
-        const second = await alertService.feedbackInfo("Info", "same");
+        const first = await alertAdapter.feedbackInfo("Info", "same");
+        const second = await alertAdapter.feedbackInfo("Info", "same");
 
         expect(first).toBe(20);
         expect(second).toBeUndefined();
@@ -156,8 +156,8 @@ describe("AlertService", () => {
     it("should allow duplicate messages when rateLimitMs is zero", async () => {
         storeMock.warning.mockReturnValue(21);
 
-        const first = await alertService.feedbackWarning("Warn", "same", {rateLimitMs: 0});
-        const second = await alertService.feedbackWarning("Warn", "same", {rateLimitMs: 0});
+        const first = await alertAdapter.feedbackWarning("Warn", "same", {rateLimitMs: 0});
+        const second = await alertAdapter.feedbackWarning("Warn", "same", {rateLimitMs: 0});
 
         expect(first).toBe(21);
         expect(second).toBe(21);
@@ -167,7 +167,7 @@ describe("AlertService", () => {
     it("should support custom durations and unknown error normalization", async () => {
         storeMock.info.mockReturnValueOnce(22);
 
-        const result = await alertService.feedbackInfo("Info", {invalid: true}, {
+        const result = await alertAdapter.feedbackInfo("Info", {invalid: true}, {
             duration: 7000
         });
 

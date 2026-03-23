@@ -24,7 +24,7 @@ describe("usecases/accounts", () => {
             .mockResolvedValueOnce(101)
             .mockResolvedValueOnce(102);
 
-        const databaseService = createDatabaseAccountsPortMock();
+        const databaseAdapter = createDatabaseAccountsPortMock();
         const records = createRecordsPortMock();
         const settings = createSettingsPortMock(-1);
         const runtime = createRuntimePortMock();
@@ -32,7 +32,7 @@ describe("usecases/accounts", () => {
 
         const res = await addAccountUsecase(
             {
-                databaseService,
+                databaseAdapter,
                 repositories: createRepositoriesPortMock({
                     accounts: {save: accountsSave},
                     bookingTypes: {save: bookingTypesSave}
@@ -61,12 +61,12 @@ describe("usecases/accounts", () => {
 
     it("addAccountUsecase throws if repository save returns INVALID_ID", async () => {
         const accountsSave = vi.fn().mockResolvedValue(INDEXED_DB.INVALID_ID);
-        const databaseService = createDatabaseAccountsPortMock();
+        const databaseAdapter = createDatabaseAccountsPortMock();
 
         await expect(
             addAccountUsecase(
                 {
-                    databaseService,
+                    databaseAdapter,
                     repositories: createRepositoriesPortMock({
                         accounts: {save: accountsSave},
                         bookingTypes: {save: vi.fn()}
@@ -101,7 +101,7 @@ describe("usecases/accounts", () => {
     });
 
     it("deleteActiveAccountUsecase deletes active account and switches to next", async () => {
-        const databaseService = createDatabaseAccountsPortMock({
+        const databaseAdapter = createDatabaseAccountsPortMock({
             deleteAccountRecords: vi.fn().mockResolvedValue(undefined),
             getAccountRecords: vi.fn().mockResolvedValue({
                 accountsDB: [],
@@ -116,13 +116,13 @@ describe("usecases/accounts", () => {
         const setStorage = createSetStorageMock();
 
         const res = await deleteActiveAccountUsecase(
-            {databaseService, records, settings, runtime, setStorage},
+            {databaseAdapter, records, settings, runtime, setStorage},
             {
                 initMessages: {title: "IT", message: "IM"}
             }
         );
 
-        expect(databaseService.deleteAccountRecords).toHaveBeenCalledWith(1);
+        expect(databaseAdapter.deleteAccountRecords).toHaveBeenCalledWith(1);
         expect(records.accounts.remove).toHaveBeenCalledWith(1);
         expect(settings.activeAccountId).toBe(2);
         expect(setStorage).toHaveBeenCalled();

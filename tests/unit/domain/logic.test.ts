@@ -11,7 +11,7 @@ import {setActiveTestPinia} from "@test/pinia";
 
 // Mock browserStorage
 vi.mock("@/adapters/secondary/browserStorage", () => ({
-    browserService: () => ({})
+    browserAdapter: () => ({})
 }));
 
 // Mock storageAdapter

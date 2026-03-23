@@ -288,7 +288,7 @@ function validateExportData(
     }
 }
 
-export function createImportExportService() {
+export function createImportExportAdapter() {
     return {
         validateBackup: validateBackupData,
         validateDataIntegrity: validateDataIntegrityStatus,
@@ -301,4 +301,4 @@ export function createImportExportService() {
     };
 }
 
-export type ImportExportService = ReturnType<typeof createImportExportService>;
+export type ImportExportAdapter = ReturnType<typeof createImportExportAdapter>;
