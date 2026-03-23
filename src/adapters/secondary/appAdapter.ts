@@ -9,18 +9,18 @@ import {appError, ERROR_DEFINITIONS, isAppError, serializeError} from "@/domain/
 import type {AppStatus, ExchangeData, RecordsDbData, StorageDataType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import type {BrowserService} from "@/adapters/secondary/browserService";
+import type {BrowserAdapter} from "@/adapters/secondary/browserAdapter";
 import type {Service as DatabaseService} from "@/adapters/secondary/database/service";
-import type {FetchService} from "@/adapters/secondary/fetch";
+import type {FetchAdapter} from "@/adapters/secondary/fetchAdapter";
 import type {storageAdapter} from "@/adapters/secondary/storageAdapter";
 
-export type AppService = ReturnType<typeof createAppService>;
+export type AppAdapter = ReturnType<typeof createAppAdapter>;
 
-export type AppServiceDeps = {
-    browserService: BrowserService;
+export type AppAdapterDeps = {
+    browserService: BrowserAdapter;
     storageAdapter: typeof storageAdapter;
     databaseService: DatabaseService;
-    fetchService: FetchService;
+    fetchService: FetchAdapter;
 };
 
 export type AppStores = {
@@ -48,7 +48,7 @@ export type AppStores = {
  * Application initialization and bootstrapping service.
  * Handles app startup, data loading, and external API coordination.
  */
-export function createAppService(deps: AppServiceDeps) {
+export function createAppAdapter(deps: AppAdapterDeps) {
     const {browserService, storageAdapter, databaseService, fetchService} = deps;
     const storage = storageAdapter();
     const fetch = fetchService;

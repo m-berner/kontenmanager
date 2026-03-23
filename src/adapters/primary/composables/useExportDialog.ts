@@ -9,7 +9,7 @@ import type {RuntimePort} from "@/app/usecases/ports";
 
 import {INDEXED_DB} from "@/domain/constants";
 
-import type {AlertService, BrowserService, RepositoryMap, Services} from "@/adapters/secondary/types";
+import type {AlertAdapter, BrowserAdapter, RepositoryMap, Services} from "@/adapters/secondary/types";
 
 type TFunction = (key: string, params?: Record<string, unknown>) => string;
 type ImportExportService = Services["importExportService"];
@@ -18,8 +18,8 @@ export function useExportDatabaseDialogController(input: {
     t: TFunction;
     runtime: RuntimePort;
     services: {
-        browserService: BrowserService;
-        alertService: AlertService;
+        browserService: BrowserAdapter;
+        alertService: AlertAdapter;
         importExportService: ImportExportService;
         repositories: RepositoryMap;
     };

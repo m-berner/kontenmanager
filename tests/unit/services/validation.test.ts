@@ -7,7 +7,7 @@
 import {describe, expect, it} from "vitest";
 import * as ValidationRules from "@/domain/validation/rules";
 import {VALIDATION_CODES} from "@/domain/constants";
-import * as ValidationService from "@/adapters/secondary/validation";
+import * as ValidationService from "@/adapters/secondary/validationAdapter";
 
 describe("ValidationService (Bridge)", () => {
     describe("validateISIN", () => {

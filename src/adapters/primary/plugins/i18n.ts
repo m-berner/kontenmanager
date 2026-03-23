@@ -10,7 +10,7 @@ import {log} from "@/domain/utils/utils";
 
 import deDE from "@/adapters/primary/_locales/de/gui.json";
 import enUS from "@/adapters/primary/_locales/en/gui.json";
-import type {BrowserService} from "@/adapters/secondary/types";
+import type {BrowserAdapter} from "@/adapters/secondary/types";
 
 const i18nConfig = {
     locale: "en-US", // Default, will be updated after creation
@@ -126,7 +126,7 @@ const i18nConfig = {
  * number/date formats, and a missing-key logger.
  */
 export function createI18nPlugin(
-    browserService: Pick<BrowserService, "getUserLocale">
+    browserService: Pick<BrowserAdapter, "getUserLocale">
 ) {
     const i18nInstance = createI18n(i18nConfig);
     i18nInstance.global.locale = browserService.getUserLocale();

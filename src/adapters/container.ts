@@ -6,16 +6,16 @@
 
 import type {RepositoryMap} from "@/domain/types";
 
-import {createAlertService} from "@/adapters/secondary/alert";
-import {createAppService} from "@/adapters/secondary/app";
-import {createBrowserService} from "@/adapters/secondary/browserService";
+import {createAlertAdapter} from "@/adapters/secondary/alertAdapter";
+import {createAppAdapter} from "@/adapters/secondary/appAdapter";
+import {createBrowserAdapter} from "@/adapters/secondary/browserAdapter";
 import {createDatabaseService} from "@/adapters/secondary/database/service";
-import {createFaviconService} from "@/adapters/secondary/faviconService";
-import {createFetchService} from "@/adapters/secondary/fetch";
-import {createImportExportService} from "@/adapters/secondary/importExport";
+import {createFaviconAdapter} from "@/adapters/secondary/faviconAdapter";
+import {createFetchAdapter} from "@/adapters/secondary/fetchAdapter";
+import {createImportExportAdapter} from "@/adapters/secondary/importExportAdapter";
 import {storageAdapter} from "@/adapters/secondary/storageAdapter";
-import {createTaskService} from "@/adapters/secondary/taskService";
-import {createValidationService} from "@/adapters/secondary/validation";
+import {createTaskAdapter} from "@/adapters/secondary/taskAdapter";
+import {createValidationAdapter} from "@/adapters/secondary/validationAdapter";
 
 export type Services = ReturnType<typeof createServices>;
 
@@ -24,34 +24,33 @@ export type Services = ReturnType<typeof createServices>;
  * (app/options/background). Consumers should access services via DI.
  */
 export type ServicesOverrides = Partial<{
-    browserService: ReturnType<typeof createBrowserService>;
-    alertService: ReturnType<typeof createAlertService>;
+    browserService: ReturnType<typeof createBrowserAdapter>;
+    alertService: ReturnType<typeof createAlertAdapter>;
     databaseService: ReturnType<typeof createDatabaseService>;
-    fetchService: ReturnType<typeof createFetchService>;
-    faviconService: ReturnType<typeof createFaviconService>;
-    importExportService: ReturnType<typeof createImportExportService>;
-    taskService: ReturnType<typeof createTaskService>;
-    validationService: ReturnType<typeof createValidationService>;
+    fetchService: ReturnType<typeof createFetchAdapter>;
+    faviconService: ReturnType<typeof createFaviconAdapter>;
+    importExportService: ReturnType<typeof createImportExportAdapter>;
+    taskService: ReturnType<typeof createTaskAdapter>;
+    validationService: ReturnType<typeof createValidationAdapter>;
     storageAdapter: typeof storageAdapter;
     repositories: RepositoryMap;
-    appService: ReturnType<typeof createAppService>;
+    appService: ReturnType<typeof createAppAdapter>;
 }>;
 
 export function createServices(overrides: ServicesOverrides = {}) {
-    const browserService = overrides.browserService ?? createBrowserService();
-    const alertService = overrides.alertService ?? createAlertService();
+    const browserService = overrides.browserService ?? createBrowserAdapter();
+    const alertService = overrides.alertService ?? createAlertAdapter();
     const databaseService = overrides.databaseService ?? createDatabaseService();
     const repositories = overrides.repositories ?? databaseService.getAllRepositories();
-    const fetchService = overrides.fetchService ?? createFetchService();
-    const faviconService = overrides.faviconService ?? createFaviconService();
+    const fetchService = overrides.fetchService ?? createFetchAdapter();
+    const faviconService = overrides.faviconService ?? createFaviconAdapter();
     const importExportService =
-        overrides.importExportService ?? createImportExportService();
-    const taskService = overrides.taskService ?? createTaskService();
-    const validationService = overrides.validationService ?? createValidationService();
-
+        overrides.importExportService ?? createImportExportAdapter();
+    const taskService = overrides.taskService ?? createTaskAdapter();
+    const validationService = overrides.validationService ?? createValidationAdapter();
     const appService =
         overrides.appService ??
-        createAppService({
+        createAppAdapter({
             browserService,
             storageAdapter,
             databaseService,

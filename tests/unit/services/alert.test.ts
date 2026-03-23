@@ -5,8 +5,8 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import type {AlertSink} from "@/adapters/secondary/alert";
-import {createAlertService} from "@/adapters/secondary/alert";
+import type {AlertSink} from "@/adapters/secondary/alertAdapter";
+import {createAlertAdapter} from "@/adapters/secondary/alertAdapter";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
 import {ERROR_CATEGORY} from "@/domain/constants";
 
@@ -60,7 +60,7 @@ vi.mock("@/domain/errors", async (importOriginal) => {
 });
 
 describe("AlertService", () => {
-    const alertService = createAlertService();
+    const alertService = createAlertAdapter();
 
     beforeEach(() => {
         vi.clearAllMocks();

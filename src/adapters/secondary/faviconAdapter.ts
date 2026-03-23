@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-export type FaviconService = ReturnType<typeof createFaviconService>;
+export type FaviconAdapter = ReturnType<typeof createFaviconAdapter>;
 
 /**
  * Service that provides favicon URLs with fallback providers.
@@ -14,7 +14,7 @@ export type FaviconService = ReturnType<typeof createFaviconService>;
  * 2. DuckDuckGo IP3 `.ico`
  * 3. Google S2 16px as the final fallback
  */
-export function createFaviconService() {
+export function createFaviconAdapter() {
     const MAX_RETRIES = 2;
 
     function getFaviconUrl(domain: string, retryCount: number, size = 48): string {

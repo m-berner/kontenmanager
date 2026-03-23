@@ -8,9 +8,9 @@
 // This allows guardrails to forbid importing concrete services from UI code.
 
 export type {Services, ServicesOverrides} from "@/adapters/container";
-export type {AlertService} from "@/adapters/secondary/alert";
-export type {AppService, AppServiceDeps} from "@/adapters/secondary/app";
-export type {BrowserService} from "@/adapters/secondary/browserService";
+export type {AlertAdapter} from "@/adapters/secondary/alertAdapter";
+export type {AppAdapter, AppAdapterDeps} from "@/adapters/secondary/appAdapter";
+export type {BrowserAdapter} from "@/adapters/secondary/browserAdapter";
 export type {Service as DatabaseService} from "@/adapters/secondary/database/service";
-export type {ImportExportService} from "@/adapters/secondary/importExport";
+export type {ImportExportAdapter} from "@/adapters/secondary/importExportAdapter";
 export type {RepositoryMap, RepositoryType} from "@/domain/types";

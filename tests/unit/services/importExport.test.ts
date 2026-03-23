@@ -5,10 +5,10 @@
  */
 
 import {describe, expect, it} from "vitest";
-import {createImportExportService} from "@/adapters/secondary/importExport";
+import {createImportExportAdapter} from "@/adapters/secondary/importExportAdapter";
 
 describe("ImportExportService", () => {
-    const importExportService = createImportExportService();
+    const importExportService = createImportExportAdapter();
 
     describe("stringifyDatabase", () => {
         it("should stringify valid database data", () => {

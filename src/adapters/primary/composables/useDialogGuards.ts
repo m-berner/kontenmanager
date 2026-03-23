@@ -13,7 +13,7 @@ import type {FormContract, FormValidateResultType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
 import {useServices} from "@/adapters/context";
-import type {BrowserService} from "@/adapters/secondary/types";
+import type {BrowserAdapter} from "@/adapters/secondary/types";
 
 type ShowSystemNotificationFn = (
     _mod: string,
@@ -59,7 +59,7 @@ type DialogGuardsDeps = {
             _options: unknown
         ) => Promise<unknown> | unknown;
     };
-    browserService: Pick<BrowserService, "getMessage">;
+    browserService: Pick<BrowserAdapter, "getMessage">;
     taskService: {
         withRetry: <T>(
             operation: () => Promise<T>,
@@ -93,7 +93,7 @@ export function useDialogGuards(
      * @param key - The key identifying the message to be resolved.
      * @returns The resolved message, either translated or the default message from the browser service.
      */
-    const resolveMessage = (key: Parameters<BrowserService["getMessage"]>[0]): string => {
+    const resolveMessage = (key: Parameters<BrowserAdapter["getMessage"]>[0]): string => {
         if (!translate) {
             return browserService.getMessage(key);
         }

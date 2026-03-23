@@ -5,10 +5,10 @@
  */
 
 import {describe, expect, it, vi} from "vitest";
-import {createTaskService} from "@/adapters/secondary/taskService";
+import {createTaskAdapter} from "@/adapters/secondary/taskAdapter";
 
 describe("TaskService", () => {
-    const taskService = createTaskService();
+    const taskService = createTaskAdapter();
 
     describe("withRetry", () => {
         it("should return the result of the operation if it succeeds on first try", async () => {

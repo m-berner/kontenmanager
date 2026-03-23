@@ -13,9 +13,9 @@ const APP_URL = "entrypoints/app.html";
 const APP_TITLE = "KontenManager";
 const COMPLETE: EventTypes = "complete";
 
-export type BrowserService = ReturnType<typeof createBrowserService>;
+export type BrowserAdapter = ReturnType<typeof createBrowserAdapter>;
 
-export function createBrowserService() {
+export function createBrowserAdapter() {
     return {
         actionOnClicked,
         getMessage,

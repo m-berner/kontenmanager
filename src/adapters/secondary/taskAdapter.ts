@@ -86,11 +86,11 @@ export function ensureConnected(isConnected: boolean, errorMessage = "Database i
     }
 }
 
-export function createTaskService() {
+export function createTaskAdapter() {
     return {
         withRetry,
         ensureConnected
     };
 }
 
-export type TaskService = ReturnType<typeof createTaskService>;
+export type TaskAdapter = ReturnType<typeof createTaskAdapter>;

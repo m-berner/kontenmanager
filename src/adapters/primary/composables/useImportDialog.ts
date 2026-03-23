@@ -16,7 +16,7 @@ import type {RecordOperation, RollbackData, StorageValueType} from "@/domain/typ
 import {log} from "@/domain/utils/utils";
 import {validateBooking} from "@/domain/validation/validators";
 
-import type {AlertService, BrowserService, DatabaseService, Services} from "@/adapters/secondary/types";
+import type {AlertAdapter, BrowserAdapter, DatabaseService, Services} from "@/adapters/secondary/types";
 
 type TFunction = (key: string, params?: Record<string, unknown>) => string;
 type RuntimeLike = RuntimePort & {
@@ -34,8 +34,8 @@ export function useImportDatabaseDialogController(input: {
     settings: SettingsLike;
     records: RecordsLike;
     services: {
-        browserService: BrowserService;
-        alertService: AlertService;
+        browserService: BrowserAdapter;
+        alertService: AlertAdapter;
         storageAdapter: () => { setStorage: (_key: string, _value: StorageValueType) => Promise<void> };
         importExportService: ImportExportService;
         databaseService: Pick<DatabaseService, "atomicImport">;

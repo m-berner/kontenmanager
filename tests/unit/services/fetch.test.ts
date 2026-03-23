@@ -5,12 +5,12 @@
  */
 
 import {beforeAll, beforeEach, describe, expect, it, vi} from "vitest";
-import {createFetchService, sanitizeArdDetailUrlFromOnclick} from "@/adapters/secondary/fetch";
+import {createFetchAdapter, sanitizeArdDetailUrlFromOnclick} from "@/adapters/secondary/fetchAdapter";
 import {isAppError} from "@/domain/errors";
 import {BROWSER_STORAGE} from "@/domain/constants";
 
 describe("FetchService", () => {
-    const fetchService = createFetchService();
+    const fetchService = createFetchAdapter();
 
     beforeAll(() => {
         vi.stubGlobal("browser", {

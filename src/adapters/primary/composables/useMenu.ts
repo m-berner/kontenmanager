@@ -15,7 +15,7 @@ import {useOnlineStockData} from "@/adapters/primary/composables/useOnlineStockD
 import {useRepositories} from "@/adapters/primary/composables/useRepositories";
 import {useRecordsStore} from "@/adapters/primary/stores/records";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
-import type {BrowserService} from "@/adapters/secondary/types";
+import type {BrowserAdapter} from "@/adapters/secondary/types";
 
 /**
  * Manages temporary row highlighting for table-like UIs.
@@ -191,14 +191,14 @@ export function useMenuAction(translate?: (_key: string) => string) {
      *
      * @param key - Translation/message key.
      */
-    const resolveMessage = (key: Parameters<BrowserService["getMessage"]>[0] | string): string => {
+    const resolveMessage = (key: Parameters<BrowserAdapter["getMessage"]>[0] | string): string => {
         if (!translate) {
             return "System error: resolveMessage";
         }
         const translated = translate(key);
         return translated && translated !== key
             ? translated
-            : browserService.getMessage(key as Parameters<BrowserService["getMessage"]>[0]);
+            : browserService.getMessage(key as Parameters<BrowserAdapter["getMessage"]>[0]);
     };
 
     const actionHandlers: Record<MenuActionType, ActionHandler> = {

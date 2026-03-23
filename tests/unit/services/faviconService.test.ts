@@ -5,10 +5,10 @@
  */
 
 import {describe, expect, it} from "vitest";
-import {createFaviconService} from "@/adapters/secondary/faviconService";
+import {createFaviconAdapter} from "@/adapters/secondary/faviconAdapter";
 
 describe("faviconService", () => {
-    const faviconService = createFaviconService();
+    const faviconService = createFaviconAdapter();
     const domain = "example.com";
 
     it("should return Google S2 URL for retryCount 0", () => {
