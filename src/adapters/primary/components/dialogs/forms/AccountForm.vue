@@ -14,9 +14,9 @@ import {log} from "@/domain/utils/utils";
 import {createIbanMessages, createSwiftMessages} from "@/domain/validation/messages";
 
 import {useAdapters} from "@/adapters/context";
-import {useDomain} from "@/adapters/primary/composables/useDomain";
 import {useFavicon} from "@/adapters/primary/composables/useFavicon";
 import {useAccountForm} from "@/adapters/primary/composables/useForms";
+import {useUrl} from "@/adapters/primary/composables/useUrl";
 
 const props = defineProps<AccountFormProps>();
 
@@ -31,7 +31,7 @@ const search = ref<string>("");
 const swiftLabel = ref<string>("");
 const ibanLabel = ref<string>("");
 
-const {domain} = useDomain(search);
+const {domain} = useUrl(search);
 const {faviconUrl} = useFavicon(domain);
 
 const onUpdateSwift = (swift: string): void => {

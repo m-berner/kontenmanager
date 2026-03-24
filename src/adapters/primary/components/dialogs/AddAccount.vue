@@ -18,7 +18,7 @@ import AccountForm from "@/adapters/primary/components/dialogs/forms/AccountForm
 import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDialogForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {createAccountFormManager, provideAccountFormManager} from "@/adapters/primary/composables/useForms";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 

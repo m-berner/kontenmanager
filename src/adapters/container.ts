@@ -9,7 +9,7 @@ import type {RepositoryMap} from "@/domain/types";
 import {createAlertAdapter} from "@/adapters/secondary/alertAdapter";
 import {createAppAdapter} from "@/adapters/secondary/appAdapter";
 import {createBrowserAdapter} from "@/adapters/secondary/browserAdapter";
-import {createDatabaseAdapter} from "@/adapters/secondary/database/service";
+import {createDatabaseAdapter} from "@/adapters/secondary/database/databaseAdapter";
 import {createFaviconAdapter} from "@/adapters/secondary/faviconAdapter";
 import {createFetchAdapter} from "@/adapters/secondary/fetchAdapter";
 import {createImportExportAdapter} from "@/adapters/secondary/importExportAdapter";

@@ -5,7 +5,7 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {BookingRepository} from "@/adapters/secondary/database/repositories/booking";
+import {BookingRepository} from "@/adapters/secondary/database/repositories/bookingRepository";
 import {INDEXED_DB} from "@/domain/constants";
 
 describe("BookingRepository", () => {

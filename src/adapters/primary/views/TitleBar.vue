@@ -15,7 +15,7 @@ import {log} from "@/domain/utils/utils";
 import {useAdapters} from "@/adapters/context";
 import connectionIcon from "@/adapters/primary/assets/connection48.png";
 import defaultIcon from "@/adapters/primary/assets/icon48.png";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 

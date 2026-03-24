@@ -8,7 +8,7 @@ import {ERROR_CATEGORY} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
 import type {BaseEntity, QueryOptions} from "@/domain/types";
 
-import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+import type {TransactionManagerContract} from "@/adapters/secondary/database/transactionManager";
 
 async function executeRequest<R>(request: IDBRequest<R>, storeName: string): Promise<R> {
     return new Promise((resolve, reject) => {

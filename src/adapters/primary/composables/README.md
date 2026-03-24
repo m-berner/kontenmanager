@@ -27,7 +27,7 @@ Composables in this project are responsible for:
 ### Integration Helpers
 
 - `useFavicon.ts`: Reactive favicon loading interface. Delegates fetch logic to `src/adapters/secondary/faviconAdapter.ts`.
-- `useDomain.ts`: Reactive URL/domain parsing interface. Delegates parsing logic to `src/domain/utils/url.ts`.
+- `useUrl.ts`: Reactive URL parsing interface. Delegates parsing logic to `src/domain/utils/url.ts`.
 
 ### UI Interaction
 

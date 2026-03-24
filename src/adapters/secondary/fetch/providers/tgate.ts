@@ -7,8 +7,8 @@
 import {CACHE_POLICY} from "@/domain/constants";
 import type {NumberStringPair, StockMarketData} from "@/domain/types";
 
-import {fetchWithCache, parseHTML} from "@/adapters/secondary/fetch/http";
-import {calculateMidQuote, DEFAULT_CURRENCY, DEFAULT_VALUE} from "@/adapters/secondary/fetch/shared";
+import {fetchWithCache, parseHTML} from "@/adapters/secondary/fetch/httpClient";
+import {calculateMidQuote, DEFAULT_CURRENCY, DEFAULT_VALUE} from "@/adapters/secondary/fetch/providerUtils";
 
 export async function tgateFetcher(
     urls: NumberStringPair[],

@@ -8,8 +8,8 @@ import {CACHE_POLICY} from "@/domain/constants";
 import type {FetchResult, NumberStringPair, StockMarketData} from "@/domain/types";
 import {log, normalizeNumber} from "@/domain/utils/utils";
 
-import {fetchTextWithCacheFollowRedirect, parseHTML} from "@/adapters/secondary/fetch/http";
-import {DEFAULT_CURRENCY, DEFAULT_VALUE} from "@/adapters/secondary/fetch/shared";
+import {fetchTextWithCacheFollowRedirect, parseHTML} from "@/adapters/secondary/fetch/httpClient";
+import {DEFAULT_CURRENCY, DEFAULT_VALUE} from "@/adapters/secondary/fetch/providerUtils";
 
 export async function goyaxFetcher(
     urls: NumberStringPair[],

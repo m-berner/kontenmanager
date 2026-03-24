@@ -14,7 +14,7 @@ import {log} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 

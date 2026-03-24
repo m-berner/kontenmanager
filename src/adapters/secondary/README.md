@@ -54,10 +54,10 @@ Thin orchestrator for all external network requests. Provider-specific scraping 
 - **Providers** (`fetch/providers/`): One file per data source (`ard`, `acheck`, `fnet`, `goyax`, `tgate`, `wstreet`).
   Each exports a single fetcher function that scrapes and normalizes quote data (rate, min, max, currency) for that
   portal.
-- **HTTP utilities** (`fetch/http.ts`): `fetchWithRetry` (timeout + exponential backoff), `fetchWithCache`,
+- **HTTP utilities** (`fetch/httpClient.ts`): `fetchWithRetry` (timeout + exponential backoff), `fetchWithCache`,
   `fetchTextWithCacheFollowRedirect`, `parseHTML`.
-- **Cache** (`fetch/cache.ts`): In-memory TTL cache shared across all providers.
-- **Shared helpers** (`fetch/shared.ts`): Constants (`DEFAULT_VALUE`, `DEFAULT_CURRENCY`) and pure helpers (
+- **Cache** (`fetch/httpCache.ts`): In-memory TTL cache shared across all providers.
+- **Shared helpers** (`fetch/providerUtils.ts`): Constants (`DEFAULT_VALUE`, `DEFAULT_CURRENCY`) and pure helpers (
   `detectCurrency`, `parseCurrency`, `calculateMidQuote`, `createDefaultStockData`) used across providers.
 
 ### 🖼️ `faviconAdapter.ts` (`faviconAdapter`)
@@ -110,15 +110,15 @@ handling.
 ## Directory Structure
 
 - `database/`: Contains database-specific modules, migration logic, and repository factories.
-    - `connection/`: Connection lifecycle management.
-    - `transaction/`: Transaction orchestration logic.
     - `repositories/`: Specialized repositories for each entity type.
+    - `connectionManager.ts`: Connection lifecycle management.
+    - `transactionManager.ts`: Transaction orchestration logic.
     - `migrator.ts`: Database schema versioning and migration logic.
 - `fetch/`: Network I/O layer.
     - `providers/`: One file per data source (`ard`, `acheck`, `fnet`, `goyax`, `tgate`, `wstreet`).
-    - `http.ts`: HTTP utilities (`fetchWithRetry`, `fetchWithCache`, `fetchTextWithCacheFollowRedirect`, `parseHTML`).
-    - `cache.ts`: In-memory TTL cache shared across all providers.
-    - `shared.ts`: Shared constants and pure helpers used across providers.
+    - `httpClient.ts`: HTTP utilities (`fetchWithRetry`, `fetchWithCache`, `fetchTextWithCacheFollowRedirect`, `parseHTML`).
+    - `httpCache.ts`: In-memory TTL cache shared across all providers.
+    - `providerUtils.ts`: Shared constants and pure helpers used across providers.
 - `*Adapter.ts`: Individual adapter implementations.
 
 ## Development Principles

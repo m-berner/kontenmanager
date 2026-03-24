@@ -19,7 +19,7 @@ import {log} from "@/domain/utils/utils";
 
 import DialogPort from "@/adapters/primary/components/DialogPort.vue";
 import {useHeaderBarActions} from "@/adapters/primary/composables/useHeaderBarActions";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 
 const COMPANY: ViewTypeSelectionType = "company";

@@ -10,7 +10,7 @@ import type {AppStatus, ExchangeData, RecordsDbData, StorageDataType} from "@/do
 import {log} from "@/domain/utils/utils";
 
 import type {BrowserAdapter} from "@/adapters/secondary/browserAdapter";
-import type {Service as DatabaseAdapter} from "@/adapters/secondary/database/service";
+import type {Service as DatabaseAdapter} from "@/adapters/secondary/database/databaseAdapter";
 import type {FetchAdapter} from "@/adapters/secondary/fetchAdapter";
 import type {storageAdapter} from "@/adapters/secondary/storageAdapter";
 

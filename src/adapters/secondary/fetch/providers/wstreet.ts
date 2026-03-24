@@ -8,8 +8,8 @@ import {CACHE_POLICY, FETCH} from "@/domain/constants";
 import type {FetchResult, NumberStringPair, StockMarketData} from "@/domain/types";
 import {log, normalizeNumber} from "@/domain/utils/utils";
 
-import {fetchWithCache, fetchWithRetry, parseHTML} from "@/adapters/secondary/fetch/http";
-import {DEFAULT_VALUE, detectCurrency} from "@/adapters/secondary/fetch/shared";
+import {fetchWithCache, fetchWithRetry, parseHTML} from "@/adapters/secondary/fetch/httpClient";
+import {DEFAULT_VALUE, detectCurrency} from "@/adapters/secondary/fetch/providerUtils";
 
 export async function wstreetFetcher(
     urls: NumberStringPair[],
