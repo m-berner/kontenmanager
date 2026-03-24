@@ -16,9 +16,9 @@ import {log} from "@/domain/utils/utils";
  *
  * @param url - Reactive URL string to parse.
  * @returns Computed getters for `domain`, `subdomain`, `protocol`, `pathname`.
- * @module composables/useDomain
+ * @module composables/useUrl
  */
-export function useDomain(url: Ref<string>) {
+export function useUrl(url: Ref<string>) {
     /**
      * Hostname without the `www.` prefix (e.g., `example.com`).
      */
@@ -48,5 +48,4 @@ export function useDomain(url: Ref<string>) {
     };
 }
 
-log("COMPOSABLES useDomain");
-
+log("COMPOSABLES useUrl");

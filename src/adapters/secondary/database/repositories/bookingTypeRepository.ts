@@ -8,9 +8,9 @@ import {INDEXED_DB} from "@/domain/constants";
 import type {BookingTypeDb, QueryOptions} from "@/domain/types";
 import {validateBookingType} from "@/domain/validation/validators";
 
-import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+import type {TransactionManagerContract} from "@/adapters/secondary/database/transactionManager";
 
-import {createBaseRepository} from "./base";
+import {createBaseRepository} from "./baseRepository";
 
 /**
  * Creates a booking type repository instance.
@@ -68,4 +68,3 @@ export function createBookingTypeRepository(transactionManager: TransactionManag
 export const BookingTypeRepository = {
     create: createBookingTypeRepository
 };
-

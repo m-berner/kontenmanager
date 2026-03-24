@@ -5,10 +5,10 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {createBatchOperationService} from "@/adapters/secondary/database/batch/service";
+import {createBatchOperationService} from "@/adapters/secondary/database/batchOperations";
 import {INDEXED_DB} from "@/domain/constants";
 import type {BatchOperationDescriptor} from "@/domain/types";
-import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+import type {TransactionManagerContract} from "@/adapters/secondary/database/transactionManager";
 
 describe("BatchOperationService", () => {
     let service: ReturnType<typeof createBatchOperationService>;

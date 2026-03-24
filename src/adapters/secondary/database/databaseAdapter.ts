@@ -17,12 +17,12 @@ import type {
 } from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {createBatchOperationService} from "./batch/service";
-import {createDatabaseConnectionManager} from "./connection/manager";
-import {createDatabaseHealthService} from "./health/service";
+import {createBatchOperationService} from "./batchOperations";
+import {createDatabaseConnectionManager} from "./connectionManager";
+import {createDatabaseHealthService} from "./healthChecker";
 import {setupDatabase} from "./migrator";
-import {createRepositoryFactory} from "./repositories/factory";
-import {createTransactionManager} from "./transaction/manager";
+import {createRepositoryFactory} from "./repositories/repositoryFactory";
+import {createTransactionManager} from "./transactionManager";
 
 export type {RepositoryMap, RepositoryType} from "@/domain/types";
 

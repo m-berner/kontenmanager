@@ -11,17 +11,17 @@ The database adapter is created via `createDatabaseAdapter()` and then provided 
 
 The database infrastructure is divided into several specialized modules:
 
-- **`service.ts`**: The `createDatabaseAdapter()` factory (Facade). It provides a high-level API for the rest of the
+- **`databaseAdapter.ts`**: The `createDatabaseAdapter()` factory (Facade). It provides a high-level API for the rest of the
   application (connect/disconnect, transactions, repositories, health/batch utilities).
-- **`connection/`**: Manages the low-level `IDBDatabase` connection, including opening/closing and version change
+- **`connectionManager.ts`**: Manages the low-level `IDBDatabase` connection, including opening/closing and version change
   events.
-- **`transaction/`**: Provides a robust `transactionManager` to handle IndexedDB transactions with support for timeouts
+- **`transactionManager.ts`**: Provides a robust `transactionManager` to handle IndexedDB transactions with support for timeouts
   and progress tracking.
 - **`repositories/`**: Implements the Repository pattern. Each entity (Accounts, Bookings, etc.) has its own repository
   implementation. These repositories are the single source of truth for database operations,
   used by both stores and composables.
-- **`health/`**: Specialized service for database integrity checks and automated repair routines.
-- **`batch/`**: Adapters for high-performance bulk operations and atomic multi-store imports.
+- **`healthChecker.ts`**: Specialized service for database integrity checks and automated repair routines.
+- **`batchOperations.ts`**: Adapters for high-performance bulk operations and atomic multi-store imports.
 - **`migrator.ts`**: Handles schema versioning and store creation during database upgrades.
 
 ## Key Concepts
@@ -77,15 +77,15 @@ if (report.issues.length > 0) {
 
 ## Directory Structure
 
-- `connection/`: Connection lifecycle management.
-- `transaction/`: Transaction orchestration logic.
+- `connectionManager.ts`: Connection lifecycle management.
+- `transactionManager.ts`: Transaction orchestration logic.
 - `repositories/`: Entity-specific CRUD logic.
-    - `base.ts`: The generic base class for all repositories.
-    - `factory.ts`: Creates and caches repository instances.
-- `health/`: Data integrity and repair services.
-- `batch/`: Bulk operation and import services.
+    - `baseRepository.ts`: The generic base class for all repositories.
+    - `repositoryFactory.ts`: Creates and caches repository instances.
+- `healthChecker.ts`: Data integrity and repair services.
+- `batchOperations.ts`: Bulk operation and import services.
 - `migrator.ts`: Schema definitions and migration logic.
-- `service.ts`: The primary entry point (Facade).
+- `databaseAdapter.ts`: The primary entry point (Facade).
 
 ## Development Guidelines
 

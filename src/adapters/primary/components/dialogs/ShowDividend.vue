@@ -11,7 +11,7 @@ import {useI18n} from "vue-i18n";
 import {createDividendHeaders} from "@/domain/constants";
 import {log} from "@/domain/utils/utils";
 
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 

@@ -8,11 +8,11 @@ import {ERROR_CATEGORY} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
 import type {RepositoryMap, RepositoryType} from "@/domain/types";
 
-import {createAccountRepository} from "@/adapters/secondary/database/repositories/account";
-import {createBookingRepository} from "@/adapters/secondary/database/repositories/booking";
-import {createBookingTypeRepository} from "@/adapters/secondary/database/repositories/bookingType";
-import {createStockRepository} from "@/adapters/secondary/database/repositories/stock";
-import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+import {createAccountRepository} from "@/adapters/secondary/database/repositories/accountRepository";
+import {createBookingRepository} from "@/adapters/secondary/database/repositories/bookingRepository";
+import {createBookingTypeRepository} from "@/adapters/secondary/database/repositories/bookingTypeRepository";
+import {createStockRepository} from "@/adapters/secondary/database/repositories/stockRepository";
+import type {TransactionManagerContract} from "@/adapters/secondary/database/transactionManager";
 
 /**
  * Factory for creating repository instances

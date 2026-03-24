@@ -157,4 +157,3 @@ export function createDatabaseConnectionManager(
 export const DatabaseConnectionManager = {
     create: createDatabaseConnectionManager
 };
-

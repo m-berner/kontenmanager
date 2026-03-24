@@ -92,7 +92,7 @@ Manages the application’s notification system.
 ### Example usage
 
 ```ts
-import { useRecordsStore } from "@/adapters/primary/stores/records";
+import { useRecordsStore } from "@/adapters/primary/stores/recordsHub";
 import type { RecordsDbData } from "@/types";
 
 const records = useRecordsStore();

@@ -12,7 +12,7 @@ import {COMPONENTS, createAccountingHeaders} from "@/domain/constants";
 import type {AccountEntry} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 
 const {n, t} = useI18n();

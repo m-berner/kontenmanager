@@ -20,7 +20,7 @@ import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDial
 import BookingForm from "@/adapters/primary/components/dialogs/forms/BookingForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {createBookingFormManager, provideBookingFormManager} from "@/adapters/primary/composables/useForms";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 

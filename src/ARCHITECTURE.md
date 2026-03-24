@@ -315,7 +315,7 @@ breaking the circular dependency.
 |---|---|---|
 | `settings` | browser.storage.local | User preferences (theme, provider, active account, pagination) |
 | `runtime` | memory only | Volatile UI state (current view, dialogs, exchange rates, page cache) |
-| `records` | memory (loaded from DB) | Hub: owns and coordinates all entity sub-stores |
+| `recordsHub` | memory (loaded from DB) | Hub: owns and coordinates all entity sub-stores |
 | `accounts` | memory | AccountDb items |
 | `stocks` | memory | StockItem items (includes mutable online fields: mValue, mMin, mMax) |
 | `bookings` | memory | BookingDb items |
@@ -365,24 +365,20 @@ The extension stores all user data in **IndexedDB** (database name
 
 ```
 database/
-├── service.ts          ← public API: connect(), disconnect(), getAccountRecords(),
-│                          getAllRepositories(), executeBatch(), checkHealth(), repair()
-├── connection/
-│   └── manager.ts      ← opens / upgrades / closes the IDBDatabase
-├── migrator.ts         ← runs schema migrations on version upgrade
-├── transaction/
-│   └── manager.ts      ← wraps IDB transactions with Promise API
-├── repositories/
-│   ├── base.ts         ← shared save / delete / query helpers
-│   ├── account.ts
-│   ├── stock.ts
-│   ├── booking.ts
-│   ├── bookingType.ts
-│   └── factory.ts      ← creates all repositories from a single IDBDatabase instance
-├── batch/
-│   └── service.ts      ← atomic multi-step write operations
-└── health/
-    └── service.ts      ← integrity checks and repair routines
+├── databaseAdapter.ts      ← public API: connect(), disconnect(), getAccountRecords(),
+│                              getAllRepositories(), executeBatch(), checkHealth(), repair()
+├── connectionManager.ts    ← opens / upgrades / closes the IDBDatabase
+├── migrator.ts             ← runs schema migrations on version upgrade
+├── transactionManager.ts   ← wraps IDB transactions with Promise API
+├── batchOperations.ts      ← atomic multi-step write operations
+├── healthChecker.ts        ← integrity checks and repair routines
+└── repositories/
+    ├── baseRepository.ts   ← shared save / delete / query helpers
+    ├── accountRepository.ts
+    ├── stockRepository.ts
+    ├── bookingRepository.ts
+    ├── bookingTypeRepository.ts
+    └── repositoryFactory.ts  ← creates all repositories from a single IDBDatabase instance
 ```
 
 ### Transactions
@@ -414,7 +410,7 @@ fails.
 
 ### Cache layers
 
-1. **HTTP response cache** (`secondary/fetch/cache.ts`) — caches raw HTTP
+1. **HTTP response cache** (`secondary/fetch/httpCache.ts`) — caches raw HTTP
    responses by URL with a configurable TTL (`CACHE_POLICY.DEFAULT_HTTP_TTL_MS`
    = 5 min, `CACHE_POLICY.QUOTE_TTL_MS` = 1 min).
 2. **UI page freshness cache** (`runtime.loadedStocksPages`) — tracks which
@@ -618,9 +614,9 @@ receive adapters via `useAdapters()` or the Pinia DI symbol.
 1. Add types to `src/domain/types/`.
 2. Add constants (store name, defaults) to `src/domain/constants/`.
 3. Write a repository in `src/adapters/secondary/database/repositories/`.
-4. Register the repository in `factory.ts` and expose it from `service.ts`.
+4. Register the repository in `repositoryFactory.ts` and expose it from `databaseAdapter.ts`.
 5. Add a Pinia store in `src/adapters/primary/stores/`.
-6. Add the store to `records.ts` (init / clean lifecycle).
+6. Add the store to `recordsHub.ts` (init / clean lifecycle).
 7. Extend `RecordsLike` and `RecordsPort` in `portAdapters.ts` / `ports.ts`.
 8. Write use cases in `src/app/usecases/`.
 9. Build Vue components in `src/adapters/primary/components/`.

@@ -8,7 +8,7 @@ import type {DialogNameType, MenuActionType} from "@/domain/types";
 
 import {useAdapters} from "@/adapters/context";
 import {useOnlineStockData} from "@/adapters/primary/composables/useOnlineStockData";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 
 export function useHeaderBarActions(t: (_key: string) => string): {

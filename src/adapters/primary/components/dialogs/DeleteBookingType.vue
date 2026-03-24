@@ -17,7 +17,7 @@ import {useAdapters} from "@/adapters/context";
 import BookingTypeForm from "@/adapters/primary/components/dialogs/forms/BookingTypeForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {createBookingTypeFormManager, provideBookingTypeFormManager} from "@/adapters/primary/composables/useForms";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 
 const bookingTypeForm = createBookingTypeFormManager();

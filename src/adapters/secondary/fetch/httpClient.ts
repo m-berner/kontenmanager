@@ -8,7 +8,7 @@ import {CACHE_POLICY, ERROR_CATEGORY} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS, serializeError} from "@/domain/errors";
 import {log} from "@/domain/utils/utils";
 
-import {getCache, setCache} from "@/adapters/secondary/fetch/cache";
+import {getCache, setCache} from "@/adapters/secondary/fetch/httpCache";
 
 /** Resolves after `ms` milliseconds — used for exponential backoff between retries. */
 function delay(ms: number): Promise<void> {
