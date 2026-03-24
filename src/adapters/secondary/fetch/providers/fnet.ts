@@ -8,8 +8,8 @@ import {CACHE_POLICY} from "@/domain/constants";
 import type {FetchResult, NumberStringPair, StockMarketData} from "@/domain/types";
 import {normalizeNumber} from "@/domain/utils/utils";
 
-import {fetchTextWithCacheFollowRedirect, parseHTML} from "@/adapters/secondary/fetch/http";
-import {DEFAULT_VALUE, detectCurrency} from "@/adapters/secondary/fetch/shared";
+import {fetchTextWithCacheFollowRedirect, parseHTML} from "@/adapters/secondary/fetch/httpClient";
+import {DEFAULT_VALUE, detectCurrency} from "@/adapters/secondary/fetch/providerUtils";
 
 export async function fnetFetcher(
     urls: NumberStringPair[],

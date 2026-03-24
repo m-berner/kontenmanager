@@ -24,7 +24,7 @@ import {log, winLossClass} from "@/domain/utils/utils";
 import {useAdapters} from "@/adapters/context";
 import DotMenu from "@/adapters/primary/components/DotMenu.vue";
 import {useOnlineStockData} from "@/adapters/primary/composables/useOnlineStockData";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 

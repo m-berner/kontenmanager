@@ -25,7 +25,7 @@ import {useStocksStore} from "@/adapters/primary/stores/stocks";
  * Orchestrates the cleaning and initialization of accounts, bookings,
  * booking types, and stocks stores.
  *
- * @module stores/records
+ * @module stores/recordsHub
  * @returns Reactive records state, computed aggregations,
  * and methods to mutate and enrich records.
  */
@@ -110,4 +110,4 @@ export const useRecordsStore = defineStore("records", function () {
     };
 });
 
-log("STORES records");
+log("STORES recordsHub");

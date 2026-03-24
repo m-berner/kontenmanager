@@ -18,8 +18,8 @@ import type {
 } from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import type {RepositoryFactoryContract} from "@/adapters/secondary/database/repositories/factory";
-import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+import type {RepositoryFactoryContract} from "@/adapters/secondary/database/repositories/repositoryFactory";
+import type {TransactionManagerContract} from "@/adapters/secondary/database/transactionManager";
 
 /**
  * Service for database health checks and repairs

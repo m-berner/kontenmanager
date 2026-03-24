@@ -8,9 +8,9 @@ import {INDEXED_DB} from "@/domain/constants";
 import type {AccountDb} from "@/domain/types";
 import {validateAccount} from "@/domain/validation/validators";
 
-import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+import type {TransactionManagerContract} from "@/adapters/secondary/database/transactionManager";
 
-import {createBaseRepository} from "./base";
+import {createBaseRepository} from "./baseRepository";
 
 /**
  * Creates an account repository instance.

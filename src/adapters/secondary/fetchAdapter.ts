@@ -19,8 +19,8 @@ import type {
 } from "@/domain/types";
 import {log, toNumber} from "@/domain/utils/utils";
 
-import {clearCache, getCache, getCacheStats, setCache} from "@/adapters/secondary/fetch/cache";
-import {fetchTextWithCacheFollowRedirect, fetchWithCache, fetchWithRetry, parseHTML} from "@/adapters/secondary/fetch/http";
+import {clearCache, getCache, getCacheStats, setCache} from "@/adapters/secondary/fetch/httpCache";
+import {fetchTextWithCacheFollowRedirect, fetchWithCache, fetchWithRetry, parseHTML} from "@/adapters/secondary/fetch/httpClient";
 import {acheckFetcher} from "@/adapters/secondary/fetch/providers/acheck";
 import {ardFetcher, sanitizeArdDetailUrlFromOnclick} from "@/adapters/secondary/fetch/providers/ard";
 import {fnetFetcher} from "@/adapters/secondary/fetch/providers/fnet";

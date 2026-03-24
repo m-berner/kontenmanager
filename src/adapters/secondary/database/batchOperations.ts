@@ -9,7 +9,7 @@ import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
 import type {BatchOperationDescriptor, RecordOperation} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import type {TransactionManagerContract} from "@/adapters/secondary/database/transaction/manager";
+import type {TransactionManagerContract} from "@/adapters/secondary/database/transactionManager";
 
 export type BatchOperationBuilder = {
     add: (_storeName: ValidStoreNameType, _operation: RecordOperation) => BatchOperationBuilder;

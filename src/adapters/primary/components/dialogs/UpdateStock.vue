@@ -19,7 +19,7 @@ import BaseDialogForm from "@/adapters/primary/components/dialogs/forms/BaseDial
 import StockForm from "@/adapters/primary/components/dialogs/forms/StockForm.vue";
 import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
 import {createStockFormManager, provideStockFormManager} from "@/adapters/primary/composables/useForms";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 

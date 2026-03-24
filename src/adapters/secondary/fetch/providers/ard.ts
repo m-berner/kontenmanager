@@ -8,8 +8,8 @@ import {CACHE_POLICY} from "@/domain/constants";
 import type {FetchResult, NumberStringPair, StockMarketData} from "@/domain/types";
 import {normalizeNumber} from "@/domain/utils/utils";
 
-import {fetchWithCache, parseHTML} from "@/adapters/secondary/fetch/http";
-import {DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_VALUE} from "@/adapters/secondary/fetch/shared";
+import {fetchWithCache, parseHTML} from "@/adapters/secondary/fetch/httpClient";
+import {DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_VALUE} from "@/adapters/secondary/fetch/providerUtils";
 
 /** Base URL used to resolve relative tagesschau.de navigation paths. */
 const ARD_BASE_URL = "https://www.tagesschau.de";

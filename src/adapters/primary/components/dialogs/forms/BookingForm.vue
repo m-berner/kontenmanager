@@ -14,7 +14,7 @@ import {log} from "@/domain/utils/utils";
 import {useAdapters} from "@/adapters/context";
 import CreditDebitFieldset from "@/adapters/primary/components/CreditDebitFieldset.vue";
 import {useBookingForm} from "@/adapters/primary/composables/useForms";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 
 const {t} = useI18n();

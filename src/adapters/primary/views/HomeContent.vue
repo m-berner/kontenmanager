@@ -18,7 +18,7 @@ import {log, utcDate} from "@/domain/utils/utils";
 import {useAdapters} from "@/adapters/context";
 import DotMenu from "@/adapters/primary/components/DotMenu.vue";
 import {useKeyboardShortcuts} from "@/adapters/primary/composables/useKeyboardShortcuts";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useSettingsStore} from "@/adapters/primary/stores/settings";
 
 const {d, n, t} = useI18n();

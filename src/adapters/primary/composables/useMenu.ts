@@ -13,7 +13,7 @@ import {log} from "@/domain/utils/utils";
 import {useAdapters} from "@/adapters/context";
 import {useOnlineStockData} from "@/adapters/primary/composables/useOnlineStockData";
 import {useRepositories} from "@/adapters/primary/composables/useRepositories";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
 import type {BrowserAdapter} from "@/adapters/secondary/types";
 

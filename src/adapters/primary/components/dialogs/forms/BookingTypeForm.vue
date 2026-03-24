@@ -14,7 +14,7 @@ import {log} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
 import {useBookingTypeForm} from "@/adapters/primary/composables/useForms";
-import {useRecordsStore} from "@/adapters/primary/stores/records";
+import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
 
 const props = defineProps<BookingTypeFormProps>();
 
