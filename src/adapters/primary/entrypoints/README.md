@@ -45,7 +45,7 @@ The mission of the entrypoints layer is to:
 2. **Global Error Handling**: Always register `app.config.errorHandler` to capture and log unhandled exceptions in a way
    that is visible in the extension's console.
 3. **Plugin Consistency**: Ensure that all contexts (app and options) share the same plugin configurations (like i18n
-   and Vuetify) to maintain a consistent look and feel. The app context also installs the router and global components
+   and Vuetify) to maintain a consistent look and feel. The app context also installs the router and global´ components
    plugin.
 4. **Adapter Container**: Use `createAdapters()` and `provideAdapters(app, adapters)` so runtime code can access the DI
    surface via `useAdapters()` (do not import `@/adapters/container` outside entrypoints).

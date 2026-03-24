@@ -49,7 +49,7 @@ Configures [Vue Router](https://router.vuejs.org/) using hash history (ideal for
 
 ### 🌗 Theme Sync (`themeSync.ts`)
 
-Keeps Vuetify's active theme in sync with the persisted `settings.skin` value outside of any component.
+Keeps Vuetify's active theme in sync with the persisted `settings.skin` value out of any component.
 
 - Runs in a detached Vue `effectScope` so it can be started from entrypoints without a root component hook.
 - Watches `settings.skin` reactively (with `immediate: true`) and writes changes directly to

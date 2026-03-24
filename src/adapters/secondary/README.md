@@ -2,7 +2,7 @@
 
 This directory contains the **infrastructure adapters** of the application. The secondary adapters layer is
 responsible for interacting with external systems (IndexedDB, WebExtension APIs, external web APIs) and coordinating the
-flow of data between the [Domain Layer](../../domain/README.md) and the application/UI layers.
+flow of data between the [Domain Layer](domain/README.md) and the application/UI layers.
 
 Adapters are created per-extension-context:
 

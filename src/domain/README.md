@@ -7,7 +7,7 @@ APIs (like `browser.storage` or `browser.tabs`), the UI framework (Vue/Vuetify),
 ## Core Principles
 
 - **Framework Independence**: Logic here should not depend on Vue or Pinia.
-- **Mostly Side-Effect Free**: Most functions are pure. A few utilities intentionally wrap browser primitives (see
+- **Mostly Side Effect Free**: Most functions are pure. A few utilities intentionally wrap browser primitives (see
   `utils/`).
 - **Single Source of Truth**: All business rules (validations, calculations, data transformations) are defined here.
 
@@ -21,7 +21,7 @@ layer-focused modules under `src/domain/types/` (domain/infra/backup) and re-exp
 Central error definitions and helpers:
 
 - `ERROR_DEFINITIONS`: The canonical list of stable error codes (`CODE`) and English fallback messages (`MSG`).
-- `appError(code, category, ...)`: Creates a typed `AppError` and resolves a human readable message (WebExtension i18n
+- `appError(code, category, ...)`: Creates a typed `AppError` and resolves a human-readable message (WebExtension i18n
   `messages.json` is used when available, otherwise `ERROR_DEFINITIONS`).
 
 Use `ERROR_DEFINITIONS.*.CODE` when throwing typed application errors. Avoid inventing new `"#xyz"` codes inline.

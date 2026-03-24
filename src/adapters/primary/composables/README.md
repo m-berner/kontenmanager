@@ -37,12 +37,12 @@ Composables in this project are responsible for:
 ## Conventions
 
 1. Keep domain/business rules in `src/domain/*`; composables orchestrate, they do not own core business logic.
-2. Prefer moving multi-step workflows into `src/app/usecases/*` (dialogs/views call usecases; composables stay
+2. Prefer moving multistep workflows into `src/app/usecases/*` (dialogs/views call usecases; composables stay
    UI-focused).
 3. Prefer structured error propagation (`AppError` or domain-specific errors), then map errors to user feedback.
 4. Prefer `alertAdapter` (via components/dialogs) for foreground feedback; use system notifications only when
    background visibility is required.
-5. Always clean up sideeffects (`onUnmounted`): listeners, timers, intervals, and subscriptions.
+5. Always clean up effects (`onUnmounted`): listeners, timers, intervals, and subscriptions.
 6. Route persistence writes through domain validation before `add`/`update`.
 
 ## Testing Guidance

@@ -50,6 +50,12 @@ export async function importDatabaseUsecase(
 ): Promise<void> {
     const originalActiveId = deps.settings.activeAccountId;
 
+    const rollbackAndError = async (message: string) => {
+        deps.settings.activeAccountId = originalActiveId;
+        await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
+        await input.onError(message);
+    };
+
     try {
         const backup = await deps.importExportAdapter.readJsonFile(input.fileBlob);
         const validation = deps.importExportAdapter.validateBackup(backup);
@@ -95,7 +101,8 @@ export async function importDatabaseUsecase(
 
         if (backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION) {
             if (!("transfers" in backup)) {
-                throw new Error("Legacy backup expected 'transfers' array");
+                await rollbackAndError("Legacy backup expected 'transfers' array");
+            return;
             }
             const plan = buildLegacyImportPlan({
                 backup: backup as LegacyBackupData,
@@ -108,7 +115,8 @@ export async function importDatabaseUsecase(
             deps.records.init(plan.initData, input.initMessages);
         } else if (backup.sm.cDBVersion > INDEXED_DB.LEGACY_IMPORT_VERSION) {
             if ("transfers" in backup) {
-                throw new Error("Modern backup must not contain 'transfers'");
+                await rollbackAndError("Modern backup must not contain 'transfers'");
+            return;
             }
             const plan = buildModernImportPlan({backup, activeId});
             await deps.atomicImport(plan.descriptors);

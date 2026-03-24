@@ -309,7 +309,7 @@ function i18nMessage(key: string): string | undefined {
 
     try {
         const msg = getMessage(key);
-        if (typeof msg === "string" && msg.trim() !== "") {
+        if (msg.trim() !== "") {
             return msg;
         }
     } catch {

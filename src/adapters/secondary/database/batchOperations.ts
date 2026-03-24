@@ -85,12 +85,11 @@ async function executeOperation(
             await promisifyRequest(store.clear());
             break;
         default: {
-            const exhaustiveCheck: never = operation;
             throw appError(
                 ERROR_DEFINITIONS.SERVICES.DATABASE.D.CODE,
                 ERROR_CATEGORY.DATABASE,
                 false,
-                {operation: exhaustiveCheck}
+                {operation}
             );
         }
     }

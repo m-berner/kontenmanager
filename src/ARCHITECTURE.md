@@ -30,18 +30,18 @@ extension fetches live market data from several financial data providers.
 
 ## 1. Technology Stack
 
-| Concern | Technology |
-|---|---|
-| Extension format | Firefox Manifest V3 |
-| UI framework | Vue 3 (Composition API, `<script setup>`) |
-| Component library | Vuetify 3 |
-| State management | Pinia |
-| Routing | Vue Router 4 (hash history) |
-| Localisation | Vue I18n |
-| Database | IndexedDB (via custom repository layer) |
-| Build | Vite |
-| Testing | Vitest (unit) · Playwright (E2E) |
-| Language | TypeScript (strict) |
+| Concern           | Technology                                |
+|-------------------|-------------------------------------------|
+| Extension format  | Firefox Manifest V3                       |
+| UI framework      | Vue 3 (Composition API, `<script setup>`) |
+| Component library | Vuetify 3                                 |
+| State management  | Pinia                                     |
+| Routing           | Vue Router 4 (hash history)               |
+| Localisation      | Vue I18n                                  |
+| Database          | IndexedDB (via custom repository layer)   |
+| Build             | Vite                                      |
+| Testing           | Vitest (unit) · Playwright (E2E)          |
+| Language          | TypeScript (strict)                       |
 
 ---
 
@@ -143,11 +143,11 @@ rules at CI time:
 A Firefox extension runs in **three isolated JavaScript contexts**. Each has
 its own entry point and its own composition root.
 
-| Context | Entry point | HTML shell | Purpose |
-|---|---|---|---|
-| **App** | `entrypoints/app.ts` | `app.html` | Main popup / full-screen app tab |
+| Context        | Entry point                 | HTML shell        | Purpose                                          |
+|----------------|-----------------------------|-------------------|--------------------------------------------------|
+| **App**        | `entrypoints/app.ts`        | `app.html`        | Main popup / full-screen app tab                 |
 | **Background** | `entrypoints/background.ts` | `background.html` | Service worker: lifecycle events + toolbar click |
-| **Options** | `entrypoints/options.ts` | `options.html` | Extension settings page |
+| **Options**    | `entrypoints/options.ts`    | `options.html`    | Extension settings page                          |
 
 Contexts cannot share JavaScript objects; they communicate via
 `browser.storage.local` and `browser.runtime`.
@@ -191,7 +191,7 @@ entrypoints/app.ts
   the database must be ready before records are loaded.
 - Phase 3 uses `Promise.allSettled`, so a failed network request does not
   prevent the app from rendering.
-- An `AbortController` is created in `AppIndex` and cancelled in `onUnmounted`,
+- An `AbortController` is created in `AppIndex` and canceled in `onUnmounted`,
   so in-flight requests are aborted on navigation.
 - A spinner is shown until `isInitialized` becomes `true`.
 
@@ -236,7 +236,7 @@ entrypoints/options.ts
 ```
 
 The options page skips the full three-phase bootstrap: no database connection,
-no records loading. Only settings are initialised so the preference tabs can
+no records loading. Only settings are initialized so the preference tabs can
 read and persist values.
 
 ---
@@ -251,7 +251,7 @@ The project uses two complementary DI mechanisms:
 a plain object:
 
 ```typescript
-const adapters = createAdapters(overrides?)
+const adapters = createAdapters(overrides)
 // { browserAdapter, databaseAdapter, fetchAdapter, alertAdapter,
 //   storageAdapter, repositories, appAdapter, … }
 ```
@@ -311,18 +311,18 @@ breaking the circular dependency.
 
 ### Store overview
 
-| Store | Persistence | Purpose |
-|---|---|---|
-| `settings` | browser.storage.local | User preferences (theme, provider, active account, pagination) |
-| `runtime` | memory only | Volatile UI state (current view, dialogs, exchange rates, page cache) |
-| `recordsHub` | memory (loaded from DB) | Hub: owns and coordinates all entity sub-stores |
-| `accounts` | memory | AccountDb items |
-| `stocks` | memory | StockItem items (includes mutable online fields: mValue, mMin, mMax) |
-| `bookings` | memory | BookingDb items |
-| `bookingTypes` | memory | BookingTypeDb items |
-| `portfolio` | derived (computed) | Active + passive stock lists; sumDepot calculation |
-| `accounting` | derived (computed) | Per-account sums, gains, and yields |
-| `alerts` | memory | Queue of pending alert messages for the AlertOverlay |
+| Store          | Persistence             | Purpose                                                               |
+|----------------|-------------------------|-----------------------------------------------------------------------|
+| `settings`     | browser.storage.local   | User preferences (theme, provider, active account, pagination)        |
+| `runtime`      | memory only             | Volatile UI state (current view, dialogs, exchange rates, page cache) |
+| `recordsHub`   | memory (loaded from DB) | Hub: owns and coordinates all entity sub-stores                       |
+| `accounts`     | memory                  | AccountDb items                                                       |
+| `stocks`       | memory                  | StockItem items (includes mutable online fields: mValue, mMin, mMax)  |
+| `bookings`     | memory                  | BookingDb items                                                       |
+| `bookingTypes` | memory                  | BookingTypeDb items                                                   |
+| `portfolio`    | derived (computed)      | Active + passive stock lists; sumDepot calculation                    |
+| `accounting`   | derived (computed)      | Per-account sums, gains, and yields                                   |
+| `alerts`       | memory                  | Queue of pending alert messages for the AlertOverlay                  |
 
 ### Settings auto-persistence
 
@@ -339,7 +339,7 @@ timestamp. `isStocksPageFresh(page, maxAgeMs)` combines both to decide whether
 a network request is needed. Cache is cleared by `clearStocksPages()` whenever
 the account, provider, or pagination settings change.
 
-### Records initialisation
+### Records initialization
 
 `recordsStore.init(dbData, translations)` populates all entity stores from the
 data returned by the database service. On account switch the store calls
@@ -354,12 +354,12 @@ The extension stores all user data in **IndexedDB** (database name
 
 ### Object stores
 
-| Store | Key | Content |
-|---|---|---|
-| `accounts` | `cID` | Bank / brokerage accounts (IBAN, BIC, logo URL) |
-| `stocks` | `cID` | Securities (ISIN, symbol, company, URL, meeting dates) |
-| `bookings` | `cID` | Transactions (buy, sell, dividend, fee, tax, …) |
-| `bookingTypes` | `cID` | Transaction type labels per account |
+| Store          | Key     | Content                                                |
+|----------------|---------|--------------------------------------------------------|
+| `accounts`     | `cID`   | Bank / brokerage accounts (IBAN, BIC, logo URL)        |
+| `stocks`       | `cID`   | Securities (ISIN, symbol, company, URL, meeting dates) |
+| `bookings`     | `cID`   | Transactions (buy, sell, dividend, fee, tax, …)        |
+| `bookingTypes` | `cID`   | Transaction type labels per account                    |
 
 ### Layers inside `secondary/database/`
 
@@ -383,7 +383,7 @@ database/
 
 ### Transactions
 
-All multi-step writes go through the transaction manager so they are atomic.
+All multistep writes go through the transaction manager so they are atomic.
 `executeBatch()` is the entry point for use-case–level operations (e.g.
 importing a backup atomically replaces all four stores).
 
@@ -395,14 +395,14 @@ importing a backup atomically replaces all four stores).
 
 Six financial data providers are supported:
 
-| Provider | Key data |
-|---|---|
-| Wallstreet-Online | min / current / max prices |
-| Finanzen.Net | min / current / max prices |
-| Aktien-Check | price check |
-| Goyax | price check |
-| Tradegate | price check |
-| ARD Börse | general meeting / quarter dates |
+| Provider            | Key data                        |
+|---------------------|---------------------------------|
+| Wallstreet-Online   | min / current / max prices      |
+| Finanzen.Net        | min / current / max prices      |
+| Aktien-Check        | price check                     |
+| Goyax               | price check                     |
+| Tradegate           | price check                     |
+| ARD Börse           | general meeting / quarter dates |
 
 The active provider is stored in `settings.service`. The fetch service routes
 requests to the correct provider and falls back gracefully when a request
@@ -460,19 +460,19 @@ watch(() => settings.stocksPerPage,   () => runtime.clearStocksPages())
 `browser.storage.local` holds user preferences as flat key-value pairs. All
 keys and their defaults are defined in `domain/constants` as `BROWSER_STORAGE`:
 
-| Key constant | Default | Meaning |
-|---|---|---|
-| `ACTIVE_ACCOUNT_ID` | `-1` | Currently selected account |
-| `SKIN` | `"ocean"` | UI theme |
-| `SERVICE` | `"wstreet"` | Data provider |
-| `BOOKINGS_PER_PAGE` | `15` | Pagination |
-| `STOCKS_PER_PAGE` | `10` | Pagination |
-| `DIVIDENDS_PER_PAGE` | `10` | Pagination |
-| `SUMS_PER_PAGE` | `10` | Pagination |
-| `EXCHANGES` | `["EURUSD", "USDJPY"]` | Displayed exchange rates |
-| `INDEXES` | `["dax"]` | Displayed market indexes |
-| `MATERIALS` | `["au"]` | Displayed commodity prices |
-| `MARKETS` | `["XETRA"]` | Displayed markets |
+| Key constant          | Default                | Meaning                    |
+|-----------------------|------------------------|----------------------------|
+| `ACTIVE_ACCOUNT_ID`   | `-1`                   | Currently selected account |
+| `SKIN`                | `"ocean"`              | UI theme                   |
+| `SERVICE`             | `"wstreet"`            | Data provider              |
+| `BOOKINGS_PER_PAGE`   | `15`                   | Pagination                 |
+| `STOCKS_PER_PAGE`     | `10`                   | Pagination                 |
+| `DIVIDENDS_PER_PAGE`  | `10`                   | Pagination                 |
+| `SUMS_PER_PAGE`       | `10`                   | Pagination                 |
+| `EXCHANGES`           | `["EURUSD", "USDJPY"]` | Displayed exchange rates   |
+| `INDEXES`             | `["dax"]`              | Displayed market indexes   |
+| `MATERIALS`           | `["au"]`               | Displayed commodity prices |
+| `MARKETS`             | `["XETRA"]`            | Displayed markets          |
 
 `storageAdapter.installStorageLocal()` writes all defaults on first install (or
 after an extension update that adds new keys). This is called by the background
@@ -537,12 +537,12 @@ in use cases.
 The router uses **hash history** (`createWebHashHistory`), which works without
 a server and is compatible with WebExtension URL schemes.
 
-| Route | Path | Default view | Named slots |
-|---|---|---|---|
-| Home | `/` | `HomeContent` | `TitleBar`, `HeaderBar`, `InfoBar`, `FooterBar` |
+| Route   | Path       | Default view     | Named slots                                     |
+|---------|------------|------------------|-------------------------------------------------|
+| Home    | `/`        | `HomeContent`    | `TitleBar`, `HeaderBar`, `InfoBar`, `FooterBar` |
 | Company | `/company` | `CompanyContent` | `TitleBar`, `HeaderBar`, `InfoBar`, `FooterBar` |
-| Privacy | `/privacy` | `PrivacyContent` | `TitleBar`, `HeaderBar` |
-| Help | `/help` | `HelpContent` | `TitleBar`, `HeaderBar` |
+| Privacy | `/privacy` | `PrivacyContent` | `TitleBar`, `HeaderBar`                         |
+| Help    | `/help`    | `HelpContent`    | `TitleBar`, `HeaderBar`                         |
 
 `AppIndex.vue` renders five `<RouterView>` outlets: `title`, `header`, `info`,
 `default`, and `footer`. Named outlets allow different views to share the same
@@ -564,16 +564,15 @@ the matching port interface:
 ```typescript
 // ports.ts
 export interface RecordsPort {
-    accounts: { items: AccountDb[]; add(...): Promise<void>; … }
-    stocks:   { add(...): Promise<void>; … }
-    …
+    accounts: { items: AccountDb[]; add(): Promise<void>;  }
+    stocks:   { add(): Promise<void>; }
 }
 
 // portAdapters.ts
-export function toRecordsPort(records: RecordsLike): RecordsPort { … }
+export function toRecordsPort(records: RecordsLike): RecordsPort { }
 
 // use site (a dialog composable)
-await addStockUsecase({ records: toRecordsPort(records), … }, payload)
+await addStockUsecase({ records: toRecordsPort(records), }, payload)
 ```
 
 This keeps use cases testable without Pinia: pass any object that satisfies

@@ -1,6 +1,6 @@
 # Adapters Layer (`src/adapters/`)
 
-This folder documents the **adapters layer** boundary, split into two sub-directories:
+This folder documents the **adapters layer** boundary, split into two subdirectories:
 
 ## `primary/` — UI-facing adapters
 

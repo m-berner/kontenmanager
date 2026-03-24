@@ -28,10 +28,10 @@ installUnhandledRejectionLogger("app");
  */
 const app = createApp(AppIndex);
 const adapters = createAdapters();
-const pinia = createAppPinia(adapters); // inject services into pinia
+const pinia = createAppPinia(adapters); // inject adapters into pinia
 const i18n = createI18nPlugin(adapters.browserAdapter);
 
-provideAdapters(app, adapters); // inject services into vue
+provideAdapters(app, adapters); // inject adapters into vue
 
 installVueGlobalHandlers(app, "app");
 

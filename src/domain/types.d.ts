@@ -29,7 +29,7 @@ export type {
     RollbackData,
     StorageDataType,
     StorageValueType
-} from "@/domain/types/infra";
+} from "@/domain/types/adapter";
 export type {
     AccountFormData,
     BookingFormData,

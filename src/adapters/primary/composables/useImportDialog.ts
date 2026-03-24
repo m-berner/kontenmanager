@@ -152,7 +152,7 @@ export function useImportDatabaseDialogController(input: {
             input.records.init(
                 {
                     accountsDB: rollbackData.accounts,
-                    bookingsDB: rollbackData.bookings.map((b) => validateBooking(b)),
+                    bookingsDB: rollbackData.bookings.map((b: unknown) => validateBooking(b)),
                     bookingTypesDB: rollbackData.bookingTypes,
                     stocksDB: rollbackData.stocks
                 },

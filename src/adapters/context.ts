@@ -19,7 +19,7 @@ export function useAdapters(): Adapters {
     const adapters = inject(ADAPTERS_KEY, null);
     if (!adapters) {
         throw new Error(
-            "Adapters are not provided. Call provideAdapters(app, services) in the entrypoint."
+            "Adapters are not provided. Call provideAdapters(app, adapters) in the entrypoint."
         );
     }
     return adapters;

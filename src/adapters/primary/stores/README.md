@@ -1,8 +1,8 @@
 # Stores Layer
 
 **Pinia State Stores** manage the application’s reactive state. The Stores Layer serves
-as a central repository for data and coordinates between the [Secondary Adapters Layer](../../secondary/README.md) for persistence,
-and the [Components Layer](../components/README.md) for presentation.
+as a central repository for data and coordinates between the [Secondary Adapters Layer](adapters/secondary/README.md) for persistence,
+and the [Components Layer](adapters/primary/components/README.md) for presentation.
 
 ## Role and Responsibilities
 
@@ -11,7 +11,7 @@ The mission of the stores layer is to:
 - **Reactive State Management**: Provide a single source of truth for UI and domain data that components can react to.
 - **Data Coordination**: Synchronize state across different parts of the application (e.g., updating balances when a
   booking is added).
-- **Business Logic Integration**: Utilize functional [Domain Logic](../domains/README.md) to provide calculated
+- **Business Logic Integration**: Utilize functional [Domain Logic](domain/README.md) to provide calculated
   properties (getters) for the UI.
 - **Persistence Sync**: Coordinate with DI-provided services (database + storage) to ensure data survives sessions.
 
@@ -84,7 +84,7 @@ Manages the application’s notification system.
    reaching the persistence layer.
 
 6. **Minimize leaf-to-leaf imports**: Avoid tight coupling between leaf stores. Use `useRecordsStore()` for high-level
-   orchestration or ensure that cross-imports do not create circularities.
+   orchestration or ensure that cross-imports do not create circularity.
 7. **Hydration entrypoint**: Domain record data should be hydrated through `records.init(...)`.
 8. **No Service Imports**: Stores receive services via dependency injection (wired in `src/adapters/primary/plugins/pinia.ts` and
    `src/adapters/primary/stores/deps.ts`). Do not import concrete service modules from stores.
@@ -110,6 +110,6 @@ records.clean(false); // keeps accounts
 ## Testing
 
 - Unit test getters and critical actions in isolation using Pinia (see also `setActiveTestPinia()` in
-  `tests/unit/support/pinia.ts` (via the `@test/*` alias).
+  `tests/unit/support/pinia.ts` via the `@test/*` alias).
 - For cross-store interactions, prefer testing via the `useRecordsStore` orchestrator.
 - When persistence is involved, provide stubbed store deps and assert that stores send normalized data to services.

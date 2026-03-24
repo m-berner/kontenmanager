@@ -64,7 +64,7 @@ Centralized constants for the component layer, including:
 ## Development Principles
 
 1. **Dumb Forms, Thin Dialogs**: Keep form components focused on presentation and validation rules. Keep dialogs focused
-   on guard + mapping + calling a usecase; put multi-step workflows in `src/app/usecases/*`.
+   on guard + mapping + calling a usecase; put multistep workflows in `src/app/usecases/*`.
 2. **Vuetify Best Practices**: Use standard Vuetify components and slots to maintain a consistent Look & Feel.
 3. **Ref-based Validation**: Always use `v-form` with a `ref` and `validate-on="submit"` to ensure predictable
    validation behavior.
