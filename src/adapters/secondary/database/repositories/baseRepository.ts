@@ -148,7 +148,7 @@ export function createBaseRepository<T extends BaseEntity>(
         const operation = async (tx: IDBTransaction): Promise<number> => {
             const store = tx.objectStore(storeName);
 
-            if ("cID" in entity && entity.cID) {
+            if ("cID" in entity && entity.cID != null && entity.cID > 0) {
                 // Update existing
                 const result = await executeRequest<IDBValidKey>(store.put(entity), storeName);
                 return result as number;

@@ -134,9 +134,14 @@ export function createTransactionManager(connection: DatabaseConnection) {
             // Abort transaction on error
             try {
                 tx.abort();
-            } catch (err) {
-                // Transaction may already be aborted
-                void err;
+            } catch (abortErr) {
+                // Transaction may have already auto-committed before the error was thrown,
+                // meaning partial writes could be persisted despite the error path.
+                log(
+                    "DATABASE transaction: abort failed — writes may have been committed",
+                    {stores, mode, abortErr},
+                    "error"
+                );
             }
 
             throw wrapTransactionError(err, stores, mode);

@@ -31,7 +31,10 @@ const runtime = useRuntimeStore();
 const {alertAdapter, appAdapter, fetchAdapter} = useAdapters();
 
 // Invalidate online-rate caches when provider settings change (single instance for the app lifetime).
-watch(() => settings.service, () => { runtime.clearStocksPages(); fetchAdapter.clearCache?.(); });
+watch(() => settings.service, () => {
+  runtime.clearStocksPages();
+  fetchAdapter.clearCache?.();
+});
 watch(() => settings.activeAccountId, () => runtime.clearStocksPages());
 watch(() => settings.stocksPerPage, () => runtime.clearStocksPages());
 

@@ -62,10 +62,12 @@ The mission of the views layer is to:
 
 There are two cache layers affecting stock quote updates:
 
-- **HTTP response cache (fetch adapter)**: `src/adapters/secondary/fetch/http.ts` caches quote HTML responses for a short
+- **HTTP response cache (fetch adapter)**: `src/adapters/secondary/fetch/http.ts` caches quote HTML responses for a
+  short
   TTL
   (`CACHE_POLICY.QUOTE_TTL_MS`). Non-quote endpoints use `CACHE_POLICY.DEFAULT_HTTP_TTL_MS`.
-- **UI page freshness (runtime store)**: `src/adapters/primary/stores/runtime.ts` tracks when a stocks table page was last loaded
+- **UI page freshness (runtime store)**: `src/adapters/primary/stores/runtime.ts` tracks when a stocks table page was
+  last loaded
   and
   `CompanyContent.vue` skips reloads while the page is still "fresh" (`CACHE_POLICY.ONLINE_RATES_MAX_AGE_MS`).
 

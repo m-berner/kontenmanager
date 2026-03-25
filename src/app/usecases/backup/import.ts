@@ -102,7 +102,7 @@ export async function importDatabaseUsecase(
         if (backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION) {
             if (!("transfers" in backup)) {
                 await rollbackAndError("Legacy backup expected 'transfers' array");
-            return;
+                return;
             }
             const plan = buildLegacyImportPlan({
                 backup: backup as LegacyBackupData,
@@ -112,15 +112,15 @@ export async function importDatabaseUsecase(
                 transformLegacyBooking: deps.importExportAdapter.transformLegacyBooking
             });
             await deps.atomicImport(plan.descriptors);
-            deps.records.init(plan.initData, input.initMessages);
+            await deps.records.init(plan.initData, input.initMessages);
         } else if (backup.sm.cDBVersion > INDEXED_DB.LEGACY_IMPORT_VERSION) {
             if ("transfers" in backup) {
                 await rollbackAndError("Modern backup must not contain 'transfers'");
-            return;
+                return;
             }
             const plan = buildModernImportPlan({backup, activeId});
             await deps.atomicImport(plan.descriptors);
-            deps.records.init(plan.initData, input.initMessages);
+            await deps.records.init(plan.initData, input.initMessages);
         } else {
             await input.onUnsupportedVersion();
             deps.settings.activeAccountId = originalActiveId;

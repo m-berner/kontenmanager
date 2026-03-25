@@ -20,7 +20,12 @@ import type {
 import {log, toNumber} from "@/domain/utils/utils";
 
 import {clearCache, getCache, getCacheStats, setCache} from "@/adapters/secondary/fetch/httpCache";
-import {fetchTextWithCacheFollowRedirect, fetchWithCache, fetchWithRetry, parseHTML} from "@/adapters/secondary/fetch/httpClient";
+import {
+    fetchTextWithCacheFollowRedirect,
+    fetchWithCache,
+    fetchWithRetry,
+    parseHTML
+} from "@/adapters/secondary/fetch/httpClient";
 import {acheckFetcher} from "@/adapters/secondary/fetch/providers/acheck";
 import {ardFetcher, sanitizeArdDetailUrlFromOnclick} from "@/adapters/secondary/fetch/providers/ard";
 import {fnetFetcher} from "@/adapters/secondary/fetch/providers/fnet";
@@ -88,9 +93,7 @@ export async function fetchCompanyData(isin: string): Promise<CompanyData> {
         );
     }
 
-    const firstResponse = await fetchWithRetry(service.QUOTE + isin);
-    const secondResponse = await fetchWithRetry(firstResponse.url);
-    const html = await secondResponse.text();
+    const html = await fetchTextWithCacheFollowRedirect(service.QUOTE + isin);
     const doc = await parseHTML(html);
 
     const col1 = doc.querySelector("#col1_content");
@@ -171,11 +174,17 @@ export async function fetchDateData(
             const gmqf = {gm: 0, qf: 0};
 
             try {
-                const firstResponse = await fetchWithRetry(
-                    `${FNET.SEARCH}${entry.value}`,
-                    {signal: options?.signal}
-                );
-                const atoms = firstResponse.url.split("/");
+                const searchUrl = `${FNET.SEARCH}${entry.value}`;
+                const cachedRedirectUrl = getCache(searchUrl, CACHE_POLICY.DEFAULT_HTTP_TTL_MS);
+                let redirectUrl: string;
+                if (cachedRedirectUrl) {
+                    redirectUrl = cachedRedirectUrl;
+                } else {
+                    const searchResponse = await fetchWithRetry(searchUrl, {signal: options?.signal});
+                    redirectUrl = searchResponse.url;
+                    setCache(searchUrl, redirectUrl);
+                }
+                const atoms = redirectUrl.split("/");
                 const stockName = atoms[atoms.length - 1].replace("-aktie", "");
 
                 const html = await fetchWithCache(

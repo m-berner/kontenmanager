@@ -42,7 +42,7 @@ export async function updateBookingUsecase(
     deps: UpdateBookingUsecaseDeps,
     input: { booking: BookingDb }
 ): Promise<void> {
-    deps.records.bookings.update(input.booking);
     await deps.repositories.bookings.save(input.booking);
+    deps.records.bookings.update(input.booking);
     deps.runtime.resetTeleport();
 }

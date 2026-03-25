@@ -149,7 +149,7 @@ export function useImportDatabaseDialogController(input: {
             input.settings.activeAccountId = rollbackData.activeAccountId;
             await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, rollbackData.activeAccountId);
 
-            input.records.init(
+            await input.records.init(
                 {
                     accountsDB: rollbackData.accounts,
                     bookingsDB: rollbackData.bookings.map((b: unknown) => validateBooking(b)),

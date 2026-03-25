@@ -146,7 +146,7 @@ export async function updateAccountUsecase(
     deps: UpdateAccountUsecaseDeps,
     input: { account: AccountDb }
 ): Promise<void> {
-    deps.records.accounts.update(input.account);
     await deps.repositories.accounts.save(input.account);
+    deps.records.accounts.update(input.account);
     deps.runtime.resetTeleport();
 }

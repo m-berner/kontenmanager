@@ -20,4 +20,5 @@ Guidelines:
 
 - Secondary adapters talk to external systems (browser APIs, IndexedDB, fetch).
 - Keep secondary adapters side-effectful; business rules belong in `src/domain/`.
-- Prefer exposing secondary adapters through DI (`src/adapters/container.ts`) and small ports (`src/app/usecases/ports.ts`).
+- Prefer exposing secondary adapters through DI (`src/adapters/container.ts`) and small ports (
+  `src/app/usecases/ports.ts`).

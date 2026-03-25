@@ -108,8 +108,7 @@ const calculatePercentChange = (
  * @param {number} [startPage=1] - First page index to load (1-based)
  * @returns {Promise<void>}
  */
-const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
-  const signal = startOnlineLoad();
+const loadRequiredPages = async (startPage: number = 1, signal: AbortSignal): Promise<void> => {
   const pagesToLoad: number[] = [];
   const totalPages = Math.ceil(
       activeStockItems.value.length / stocksPerPage.value
@@ -119,21 +118,14 @@ const loadRequiredPages = async (startPage: number = 1): Promise<void> => {
     const pageFirstIndex = stocksPerPage.value * (page - 1);
     const stock = activeStockItems.value[pageFirstIndex];
 
-    if (!stock || !hasPortfolio(stock.mPortfolio)) break;
+    if (!stock || !hasPortfolio(stock.mPortfolio)) continue;
 
     pagesToLoad.push(page);
   }
 
-  try {
-    await Promise.all(
-        pagesToLoad.map((page) => loadOnlineData(page, {signal}))
-    );
-  } catch (err) {
-    if (isAbortError(err)) return;
-    await alertAdapter.feedbackError("COMPANY_CONTENT", err, {
-      data: "loadRequiredPages"
-    });
-  }
+  await Promise.all(
+      pagesToLoad.map((page) => loadOnlineData(page, {signal}))
+  );
 };
 
 /**
@@ -156,12 +148,15 @@ const onUpdatePage = async (page: number): Promise<void> => {
   try {
     await loadOnlineData(page, {signal});
   } catch (err) {
-    if (isAbortError(err)) return;
-    await alertAdapter.feedbackError("COMPANY_CONTENT", err, {
-      data: "onUpdatePage"
-    });
+    if (!isAbortError(err)) {
+      await alertAdapter.feedbackError("COMPANY_CONTENT", err, {
+        data: "onUpdatePage"
+      });
+    }
   } finally {
-    runtime.isStockLoading = false;
+    if (!signal.aborted) {
+      runtime.isStockLoading = false;
+    }
   }
 };
 
@@ -179,11 +174,18 @@ onBeforeMount(async () => {
   if (!runtime.isStocksPageFresh(runtime.stocksPage, CACHE_POLICY.ONLINE_RATES_MAX_AGE_MS)) {
     runtime.isDownloading = true;
     runtime.isStockLoading = true;
+    const signal = startOnlineLoad();
     try {
-      await loadRequiredPages(runtime.stocksPage);
+      await loadRequiredPages(runtime.stocksPage, signal);
+    } catch (err) {
+      if (!isAbortError(err)) {
+        await alertAdapter.feedbackError("COMPANY_CONTENT", err, {data: "loadRequiredPages"});
+      }
     } finally {
-      runtime.isStockLoading = false;
-      runtime.isDownloading = false;
+      if (!signal.aborted) {
+        runtime.isStockLoading = false;
+        runtime.isDownloading = false;
+      }
     }
   }
 });
@@ -197,11 +199,18 @@ watch(stocksPerPage, async () => {
   runtime.clearStocksPages();
   runtime.isDownloading = true;
   runtime.isStockLoading = true;
+  const signal = startOnlineLoad();
   try {
-    await loadRequiredPages(runtime.stocksPage);
+    await loadRequiredPages(runtime.stocksPage, signal);
+  } catch (err) {
+    if (!isAbortError(err)) {
+      await alertAdapter.feedbackError("COMPANY_CONTENT", err, {data: "loadRequiredPages"});
+    }
   } finally {
-    runtime.isStockLoading = false;
-    runtime.isDownloading = false;
+    if (!signal.aborted) {
+      runtime.isStockLoading = false;
+      runtime.isDownloading = false;
+    }
   }
 });
 

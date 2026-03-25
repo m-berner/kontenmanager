@@ -56,8 +56,8 @@ export async function deleteBookingTypeUsecase(
         return {status: "not_allowed"};
     }
 
-    deps.records.bookingTypes.remove(input.bookingTypeId);
     await deps.repositories.bookingTypes.delete(input.bookingTypeId);
+    deps.records.bookingTypes.remove(input.bookingTypeId);
     deps.runtime.resetTeleport();
     return {status: "deleted"};
 }
@@ -73,8 +73,8 @@ export async function updateBookingTypeUsecase(
         return {status: "duplicate"};
     }
 
-    deps.records.bookingTypes.update(input.bookingType);
     await deps.repositories.bookingTypes.save(input.bookingType);
+    deps.records.bookingTypes.update(input.bookingType);
     deps.runtime.resetTeleport();
     return {status: "updated"};
 }

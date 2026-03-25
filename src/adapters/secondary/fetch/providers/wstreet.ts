@@ -8,7 +8,7 @@ import {CACHE_POLICY, FETCH} from "@/domain/constants";
 import type {FetchResult, NumberStringPair, StockMarketData} from "@/domain/types";
 import {log, normalizeNumber} from "@/domain/utils/utils";
 
-import {fetchWithCache, fetchWithRetry, parseHTML} from "@/adapters/secondary/fetch/httpClient";
+import {fetchWithCache, parseHTML} from "@/adapters/secondary/fetch/httpClient";
 import {DEFAULT_VALUE, detectCurrency} from "@/adapters/secondary/fetch/providerUtils";
 
 export async function wstreetFetcher(
@@ -17,10 +17,12 @@ export async function wstreetFetcher(
 ): Promise<StockMarketData[]> {
     return Promise.all(
         urls.map(async (urlObj: NumberStringPair): Promise<StockMarketData> => {
-            const response = await fetchWithRetry(urlObj.value, {
-                signal: options?.signal
-            });
-            const responseJson = await response.json();
+            const searchText = await fetchWithCache(
+                urlObj.value,
+                CACHE_POLICY.QUOTE_TTL_MS,
+                {signal: options?.signal}
+            );
+            const responseJson = JSON.parse(searchText);
             const detailUrl = buildWStreetDetailUrl(responseJson);
 
             if (!detailUrl) {

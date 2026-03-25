@@ -19,7 +19,6 @@ import type {
 import {log, round2, utcDate, utcMs} from "@/domain/utils/utils";
 
 const BOOKING_TYPES = INDEXED_DB.STORE.BOOKING_TYPES;
-let hideImportAlert = false;
 
 /**
  * Aggregates booking sums per type for a specific year.
@@ -71,9 +70,13 @@ export function calculateInvestByStockId(
                 entry.cStockID === stockId &&
                 entry.cBookingTypeID === BOOKING_TYPES.BUY
         )
+        .sort((a, b) => utcMs(b.cBookDate) - utcMs(a.cBookDate))
         .reduce((acc, entry) => {
+            const prev = runningCount;
             runningCount += entry.cCount;
-            return runningCount <= totalPortfolio ? acc + entry.cDebit : acc;
+            if (prev >= totalPortfolio) return acc;
+            const used = Math.min(entry.cCount, totalPortfolio - prev);
+            return acc + (used / entry.cCount) * entry.cDebit;
         }, 0);
 }
 
@@ -242,14 +245,13 @@ export async function initializeRecords(
         true
     );
 
-    // Check for empty accounts and show alert if necessary
-    if (stores.accounts.items.length === 0 && !hideImportAlert) {
+    // Check for empty accounts and log if necessary
+    if (stores.accounts.items.length === 0) {
         log(
             "DOMAINS DomainLogic: initializeRecords",
             messages,
             "info"
         );
-        hideImportAlert = true;
     }
 }
 

@@ -201,6 +201,12 @@ export function useMenuAction(translate?: (_key: string) => string) {
             : browserAdapter.getMessage(key as Parameters<BrowserAdapter["getMessage"]>[0]);
     };
 
+    let updateQuoteController: AbortController | null = null;
+    onUnmounted(() => {
+        updateQuoteController?.abort();
+        updateQuoteController = null;
+    });
+
     const actionHandlers: Record<MenuActionType, ActionHandler> = {
         async updateBooking() {
             openDialog("updateBooking", true);
@@ -211,8 +217,8 @@ export function useMenuAction(translate?: (_key: string) => string) {
         },
 
         async deleteBooking(recordId: number) {
-            records.bookings.remove(recordId);
             await bookingsRepository.delete(recordId);
+            records.bookings.remove(recordId);
             await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
         },
 
@@ -241,11 +247,15 @@ export function useMenuAction(translate?: (_key: string) => string) {
         },
 
         async updateQuote() {
+            updateQuoteController?.abort();
+            updateQuoteController = new AbortController();
+            const signal = updateQuoteController.signal;
             runtime.isStockLoading = true;
             runtime.isDownloading = true;
             try {
-                await loadOnlineData(runtime.stocksPage);
+                await loadOnlineData(runtime.stocksPage, {signal});
             } finally {
+                updateQuoteController = null;
                 runtime.isStockLoading = false;
                 runtime.isDownloading = false;
             }

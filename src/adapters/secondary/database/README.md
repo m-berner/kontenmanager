@@ -11,11 +11,14 @@ The database adapter is created via `createDatabaseAdapter()` and then provided 
 
 The database infrastructure is divided into several specialized modules:
 
-- **`databaseAdapter.ts`**: The `createDatabaseAdapter()` factory (Facade). It provides a high-level API for the rest of the
+- **`databaseAdapter.ts`**: The `createDatabaseAdapter()` factory (Facade). It provides a high-level API for the rest of
+  the
   application (connect/disconnect, transactions, repositories, health/batch utilities).
-- **`connectionManager.ts`**: Manages the low-level `IDBDatabase` connection, including opening/closing and version change
+- **`connectionManager.ts`**: Manages the low-level `IDBDatabase` connection, including opening/closing and version
+  change
   events.
-- **`transactionManager.ts`**: Provides a robust `transactionManager` to handle IndexedDB transactions with support for timeouts
+- **`transactionManager.ts`**: Provides a robust `transactionManager` to handle IndexedDB transactions with support for
+  timeouts
   and progress tracking.
 - **`repositories/`**: Implements the Repository pattern. Each entity (Accounts, Bookings, etc.) has its own repository
   implementation. These repositories are the single source of truth for database operations,
@@ -52,12 +55,12 @@ const accountsRepo = repositories.accounts;
 const bookingsRepo = repositories.bookings;
 
 await databaseAdapter.transactionManager.execute(
-  [INDEXED_DB.STORE.ACCOUNTS.NAME, INDEXED_DB.STORE.BOOKINGS.NAME],
-  "readwrite",
-  async (tx) => {
-    const accountId = await accountsRepo.save(newAccount, {tx});
-    await bookingsRepo.save({...booking, cAccountNumberID: accountId}, {tx});
-  }
+    [INDEXED_DB.STORE.ACCOUNTS.NAME, INDEXED_DB.STORE.BOOKINGS.NAME],
+    "readwrite",
+    async (tx) => {
+        const accountId = await accountsRepo.save(newAccount, {tx});
+        await bookingsRepo.save({...booking, cAccountNumberID: accountId}, {tx});
+    }
 );
 ```
 

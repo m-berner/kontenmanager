@@ -44,7 +44,7 @@ export async function updateStockUsecase(
     deps: UpdateStockUsecaseDeps,
     input: { stock: StockDb }
 ): Promise<void> {
-    deps.records.stocks.update(input.stock);
     await deps.repositories.stocks.save(input.stock);
+    deps.records.stocks.update(input.stock);
     deps.runtime.resetTeleport();
 }

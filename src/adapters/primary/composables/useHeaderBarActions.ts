@@ -107,15 +107,15 @@ export function useHeaderBarActions(t: (_key: string) => string): {
 
         addBooking: async () => {
             if (records.accounts.items.length === 0) {
-                void alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
             } else {
                 openDialog("addBooking");
             }
         },
 
-        exportDatabase: () => {
+        exportDatabase: async () => {
             if (records.accounts.items.length === 0) {
-                void alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
             } else {
                 openDialog("exportDatabase");
             }
@@ -125,9 +125,9 @@ export function useHeaderBarActions(t: (_key: string) => string): {
             openDialog("importDatabase");
         },
 
-        showAccounting: () => {
+        showAccounting: async () => {
             if (records.bookings.items.length === 0) {
-                void alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBooking"));
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBooking"));
             } else {
                 openDialog("showAccounting", false);
             }

@@ -559,9 +559,10 @@ export function createAppAdapter(deps: AppAdapterDeps) {
      */
     function getStatus(stores: AppStores): AppStatus {
         // Reuse last known initializeApp status if present, otherwise derive a snapshot
+        const dbOk = databaseAdapter.isConnected();
         const derived: AppStatus = {
-            storage: stores.settings.activeAccountId > 0 ? "ok" : "error",
-            db: databaseAdapter.isConnected() ? "ok" : "error",
+            storage: dbOk ? "ok" : "error",
+            db: dbOk ? "ok" : "error",
             fetch: {
                 exchanges: stores.runtime.infoExchanges.size > 0,
                 indexes: stores.runtime.infoIndexes.size > 0,

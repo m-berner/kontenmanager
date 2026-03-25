@@ -116,7 +116,8 @@ handling.
     - `migrator.ts`: Database schema versioning and migration logic.
 - `fetch/`: Network I/O layer.
     - `providers/`: One file per data source (`ard`, `acheck`, `fnet`, `goyax`, `tgate`, `wstreet`).
-    - `httpClient.ts`: HTTP utilities (`fetchWithRetry`, `fetchWithCache`, `fetchTextWithCacheFollowRedirect`, `parseHTML`).
+    - `httpClient.ts`: HTTP utilities (`fetchWithRetry`, `fetchWithCache`, `fetchTextWithCacheFollowRedirect`,
+      `parseHTML`).
     - `httpCache.ts`: In-memory TTL cache shared across all providers.
     - `providerUtils.ts`: Shared constants and pure helpers used across providers.
 - `*Adapter.ts`: Individual adapter implementations.

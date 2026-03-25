@@ -24,7 +24,7 @@
   "host_permissions": [
     "https://www.tradegatebsx.com/*",
     "https://www.tradegate.de/*",
-    "https://*.finanzen.net/*",
+    "https://www.finanzen.net/*",
     "https://fx-rate.net/*",
     "https://www.goyax.de/*",
     "https://www.wallstreet-online.de/*",

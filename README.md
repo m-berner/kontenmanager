@@ -21,7 +21,7 @@ Key features include:
 - **State Management:** [Pinia](https://pinia.vuejs.org/)
 - **Build Tool:** [Vite](https://vitejs.dev/)
 - **Database:** [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (via DI-provided `databaseService`)
-- **Package Manager:** [npm](https://www.npmjs.com/) (v11.11.x)
+- **Package Manager:** [npm](https://www.npmjs.com/) (v11.12.x)
 
 ## Requirements
 

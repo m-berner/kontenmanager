@@ -187,6 +187,7 @@ entrypoints/app.ts
 ```
 
 **Key points:**
+
 - Phases run sequentially. Storage must succeed before the database is opened;
   the database must be ready before records are loaded.
 - Phase 3 uses `Promise.allSettled`, so a failed network request does not
@@ -354,12 +355,12 @@ The extension stores all user data in **IndexedDB** (database name
 
 ### Object stores
 
-| Store          | Key     | Content                                                |
-|----------------|---------|--------------------------------------------------------|
-| `accounts`     | `cID`   | Bank / brokerage accounts (IBAN, BIC, logo URL)        |
-| `stocks`       | `cID`   | Securities (ISIN, symbol, company, URL, meeting dates) |
-| `bookings`     | `cID`   | Transactions (buy, sell, dividend, fee, tax, …)        |
-| `bookingTypes` | `cID`   | Transaction type labels per account                    |
+| Store          | Key   | Content                                                |
+|----------------|-------|--------------------------------------------------------|
+| `accounts`     | `cID` | Bank / brokerage accounts (IBAN, BIC, logo URL)        |
+| `stocks`       | `cID` | Securities (ISIN, symbol, company, URL, meeting dates) |
+| `bookings`     | `cID` | Transactions (buy, sell, dividend, fee, tax, …)        |
+| `bookingTypes` | `cID` | Transaction type labels per account                    |
 
 ### Layers inside `secondary/database/`
 
@@ -395,14 +396,14 @@ importing a backup atomically replaces all four stores).
 
 Six financial data providers are supported:
 
-| Provider            | Key data                        |
-|---------------------|---------------------------------|
-| Wallstreet-Online   | min / current / max prices      |
-| Finanzen.Net        | min / current / max prices      |
-| Aktien-Check        | price check                     |
-| Goyax               | price check                     |
-| Tradegate           | price check                     |
-| ARD Börse           | general meeting / quarter dates |
+| Provider          | Key data                        |
+|-------------------|---------------------------------|
+| Wallstreet-Online | min / current / max prices      |
+| Finanzen.Net      | min / current / max prices      |
+| Aktien-Check      | price check                     |
+| Goyax             | price check                     |
+| Tradegate         | price check                     |
+| ARD Börse         | general meeting / quarter dates |
 
 The active provider is stored in `settings.service`. The fetch service routes
 requests to the correct provider and falls back gracefully when a request
@@ -460,19 +461,19 @@ watch(() => settings.stocksPerPage,   () => runtime.clearStocksPages())
 `browser.storage.local` holds user preferences as flat key-value pairs. All
 keys and their defaults are defined in `domain/constants` as `BROWSER_STORAGE`:
 
-| Key constant          | Default                | Meaning                    |
-|-----------------------|------------------------|----------------------------|
-| `ACTIVE_ACCOUNT_ID`   | `-1`                   | Currently selected account |
-| `SKIN`                | `"ocean"`              | UI theme                   |
-| `SERVICE`             | `"wstreet"`            | Data provider              |
-| `BOOKINGS_PER_PAGE`   | `15`                   | Pagination                 |
-| `STOCKS_PER_PAGE`     | `10`                   | Pagination                 |
-| `DIVIDENDS_PER_PAGE`  | `10`                   | Pagination                 |
-| `SUMS_PER_PAGE`       | `10`                   | Pagination                 |
-| `EXCHANGES`           | `["EURUSD", "USDJPY"]` | Displayed exchange rates   |
-| `INDEXES`             | `["dax"]`              | Displayed market indexes   |
-| `MATERIALS`           | `["au"]`               | Displayed commodity prices |
-| `MARKETS`             | `["XETRA"]`            | Displayed markets          |
+| Key constant         | Default                | Meaning                    |
+|----------------------|------------------------|----------------------------|
+| `ACTIVE_ACCOUNT_ID`  | `-1`                   | Currently selected account |
+| `SKIN`               | `"ocean"`              | UI theme                   |
+| `SERVICE`            | `"wstreet"`            | Data provider              |
+| `BOOKINGS_PER_PAGE`  | `15`                   | Pagination                 |
+| `STOCKS_PER_PAGE`    | `10`                   | Pagination                 |
+| `DIVIDENDS_PER_PAGE` | `10`                   | Pagination                 |
+| `SUMS_PER_PAGE`      | `10`                   | Pagination                 |
+| `EXCHANGES`          | `["EURUSD", "USDJPY"]` | Displayed exchange rates   |
+| `INDEXES`            | `["dax"]`              | Displayed market indexes   |
+| `MATERIALS`          | `["au"]`               | Displayed commodity prices |
+| `MARKETS`            | `["XETRA"]`            | Displayed markets          |
 
 `storageAdapter.installStorageLocal()` writes all defaults on first install (or
 after an extension update that adds new keys). This is called by the background
@@ -564,22 +565,22 @@ the matching port interface:
 ```typescript
 // ports.ts
 export interface RecordsPort {
-    accounts: { items: AccountDb[]; add(): Promise<void>;  }
-    stocks:   { add(): Promise<void>; }
+    accounts: { items: AccountDb[]; add(): Promise<void>; }
+    stocks: { add(): Promise<void>; }
 }
 
 // portAdapters.ts
-export function toRecordsPort(records: RecordsLike): RecordsPort { }
+export function toRecordsPort(records: RecordsLike): RecordsPort {
+}
 
 // use site (a dialog composable)
-await addStockUsecase({ records: toRecordsPort(records), }, payload)
+await addStockUsecase({records: toRecordsPort(records),}, payload)
 ```
 
 This keeps use cases testable without Pinia: pass any object that satisfies
 the port interface.
 
 ### PersistDeps — shared use-case dependency bundle
-
 
 Five use cases (accounts, bookings, bookingTypes, stocks, backup) all need the
 same three ports. Rather than repeating the inline type, `ports.ts` exports:

@@ -63,6 +63,7 @@ onBeforeMount(() => {
 });
 
 onUnmounted(() => {
+  window.removeEventListener("beforeunload", onBeforeUnload);
   unregister("Ctrl+Alt+R");
 });
 

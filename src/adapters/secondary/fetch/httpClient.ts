@@ -10,9 +10,21 @@ import {log} from "@/domain/utils/utils";
 
 import {getCache, setCache} from "@/adapters/secondary/fetch/httpCache";
 
-/** Resolves after `ms` milliseconds — used for exponential backoff between retries. */
-function delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+/**
+ * Resolves after `ms` milliseconds.
+ * Resolves immediately (without delay) if `signal` is already aborted or fires during the wait,
+ * so the retry loop can re-check the signal on the very next iteration instead of waiting the
+ * full backoff period after a caller cancellation.
+ */
+function delay(ms: number, signal?: AbortSignal): Promise<void> {
+    if (signal?.aborted) return Promise.resolve();
+    return new Promise<void>((resolve) => {
+        const t = setTimeout(resolve, ms);
+        signal?.addEventListener("abort", () => {
+            clearTimeout(t);
+            resolve();
+        }, {once: true});
+    });
 }
 
 /**
@@ -88,7 +100,7 @@ export async function fetchWithRetry(
                 }
 
                 if (attempt < maxRetries) {
-                    await delay(1000 * attempt); // 1 s, 2 s, … per attempt
+                    await delay(1000 * attempt, controller.signal); // 1 s, 2 s, … per attempt
                 }
             }
         }

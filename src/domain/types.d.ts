@@ -5,6 +5,18 @@
  */
 
 export type {
+    BatchOperationDescriptor,
+    QueryOptions,
+    RecordOperation,
+    RecordsDbData,
+    RepairResult,
+    RepositoryMap,
+    RepositoryType,
+    RollbackData,
+    StorageDataType,
+    StorageValueType
+} from "@/domain/types/adapter";
+export type {
     BackupData,
     BackupValidationResult,
     LegacyBackupData,
@@ -18,18 +30,6 @@ export type {
     LegacyStockDb,
     StockDb
 } from "@/domain/types/domain";
-export type {
-    BatchOperationDescriptor,
-    QueryOptions,
-    RecordOperation,
-    RecordsDbData,
-    RepairResult,
-    RepositoryMap,
-    RepositoryType,
-    RollbackData,
-    StorageDataType,
-    StorageValueType
-} from "@/domain/types/adapter";
 export type {
     AccountFormData,
     BookingFormData,

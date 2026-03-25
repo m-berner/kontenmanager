@@ -132,6 +132,7 @@ export type EventTypes =
     | "close"
     | "complete"
     | "error"
+    | "interrupted"
     | "focus"
     | "input"
     | "keydown"

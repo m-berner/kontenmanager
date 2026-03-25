@@ -18,6 +18,7 @@ export function createDatabaseConnectionManager(
     migrator: DatabaseMigratorContract
 ): DatabaseConnection {
     let db: IDBDatabase | undefined;
+    let connectingPromise: Promise<void> | undefined;
     let versionChangeHandler: (() => void) | undefined;
 
     function resetConnection(): void {
@@ -58,15 +59,21 @@ export function createDatabaseConnectionManager(
     }
 
     /**
-     * Establishes connection to IndexedDB
+     * Establishes connection to IndexedDB.
+     * Concurrent calls while a connection attempt is in progress share the same
+     * Promise, preventing duplicate IDBDatabase handles from being opened.
      */
-    async function connect(): Promise<void> {
+    function connect(): Promise<void> {
         if (db) {
             log("DATABASE connection: already connected", null, "warn");
-            return;
+            return Promise.resolve();
         }
 
-        return new Promise((resolve, reject) => {
+        if (connectingPromise) {
+            return connectingPromise;
+        }
+
+        connectingPromise = new Promise<void>((resolve, reject) => {
             const request = indexedDB.open(dbName, version);
 
             request.onerror = () => {
@@ -97,7 +104,11 @@ export function createDatabaseConnectionManager(
                 });
                 migrator.setupDatabase(request.result, ev);
             };
+        }).finally(() => {
+            connectingPromise = undefined;
         });
+
+        return connectingPromise;
     }
 
     /**

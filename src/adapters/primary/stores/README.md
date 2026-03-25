@@ -1,7 +1,8 @@
 # Stores Layer
 
 **Pinia State Stores** manage the application’s reactive state. The Stores Layer serves
-as a central repository for data and coordinates between the [Secondary Adapters Layer](adapters/secondary/README.md) for persistence,
+as a central repository for data and coordinates between the [Secondary Adapters Layer](adapters/secondary/README.md)
+for persistence,
 and the [Components Layer](adapters/primary/components/README.md) for presentation.
 
 ## Role and Responsibilities
@@ -17,20 +18,24 @@ The mission of the stores layer is to:
 
 ## Key Stores
 
-### 📦 `records.ts` (`useRecordsStore`)
+### 📦 `recordsHub.ts` (`useRecordsStore`)
 
-The orchestrator for all domain-specific data stores.
+The central hub that wires together all domain data stores and aggregation stores.
 
-- Acts as a central hub for `accounts`, `bookings`, `bookingTypes`, and `stocks`.
-- Manages the bulk initialization and cleanup of the entire data set.
+- Orchestrates `accounts`, `bookings`, `bookingTypes`, and `stocks` for mass operations (init, clean).
+- Exposes the `accounting` and `portfolio` aggregation stores as named properties.
+- Provides the `isDepot` computed property (whether the active account is a depot).
 
 #### Cross-store dependency policy
 
-- **Leaf Stores**: Individual domain stores (e.g., `accounts`, `bookings`, `bookingTypes`, `stocks`, `settings`,
+- **Leaf Stores**: Individual domain stores (`accounts`, `bookings`, `bookingTypes`, `stocks`, `settings`,
   `runtime`, `alerts`).
-- **Orchestration**: `records.ts` is the primary orchestrator for mass operations (init, clean).
+- **Aggregation Stores**: Derived-state stores (`accounting`, `portfolio`) that combine multiple leaf stores into
+  computed aggregates. They have no persistent state of their own.
+- **Hub**: `recordsHub.ts` is the primary orchestrator for mass operations (init, clean) and the single import point
+  for consumers that need multiple store domains.
 - **Dependencies**: Leaf stores should minimize direct imports of other leaf stores. When a store requires data or logic
-  from another store, it is permitted if it avoids circular dependencies. Prefer using `records` for cross-entity
+  from another store, it is permitted if it avoids circular dependencies. Prefer using `recordsHub` for cross-entity
   coordination when possible.
 
 #### Single hydration entrypoint
@@ -42,9 +47,19 @@ The orchestrator for all domain-specific data stores.
 ### 🏦 Domain Data Stores
 
 - **`accounts.ts`**: Manages the list of bank accounts and their metadata.
-- **`stocks.ts`**: Manages stock holdings, including real-time market data and portfolio calculations.
+- **`stocks.ts`**: Manages stock holdings and raw market data. Portfolio calculations are delegated to `portfolio.ts`.
 - **`bookings.ts`**: Manages financial transactions providing complex aggregations for sums, for taxes, and for fees.
 - **`bookingTypes.ts`**: Manages categories for bookings (e.g., Buy, Sell, Dividend).
+
+### 🧮 Aggregation Stores
+
+Pure derived-state stores with no persistent state. They compose leaf stores into higher-level computed properties.
+
+- **`accounting.ts`** (`useAccountingStore`): Combines `bookings` and `bookingTypes` to derive per-type booking sums
+  (`sumBookingsPerType`, `sumBookingsPerTypeAndYear`).
+- **`portfolio.ts`** (`usePortfolioStore`): Combines `stocks`, `bookings`, and `settings` to derive active/passive
+  stock lists with computed portfolio values, investment totals, and depot sum (`active`, `passive`, `sumDepot`).
+  Network side effects (online price fetching) are handled separately in the `useOnlineStockData` composable.
 
 ### ⚙️ `settings.ts` (`useSettingsStore`)
 
@@ -86,14 +101,17 @@ Manages the application’s notification system.
 6. **Minimize leaf-to-leaf imports**: Avoid tight coupling between leaf stores. Use `useRecordsStore()` for high-level
    orchestration or ensure that cross-imports do not create circularity.
 7. **Hydration entrypoint**: Domain record data should be hydrated through `records.init(...)`.
-8. **No Service Imports**: Stores receive services via dependency injection (wired in `src/adapters/primary/plugins/pinia.ts` and
+8. **No Service Imports**: Stores receive services via dependency injection (wired in
+   `src/adapters/primary/plugins/pinia.ts` and
    `src/adapters/primary/stores/deps.ts`). Do not import concrete service modules from stores.
+9. **Aggregation stores are read-only**: `accounting.ts` and `portfolio.ts` expose only `computed` properties — they
+   must never hold mutable state or trigger persistence side effects.
 
 ### Example usage
 
 ```ts
 import { useRecordsStore } from "@/adapters/primary/stores/recordsHub";
-import type { RecordsDbData } from "@/types";
+import type { RecordsDbData } from "@/domain/types";
 
 const records = useRecordsStore();
 

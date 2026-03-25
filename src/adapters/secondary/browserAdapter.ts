@@ -12,6 +12,7 @@ import {log} from "@/domain/utils/utils";
 const APP_URL = "entrypoints/app.html";
 const APP_TITLE = "KontenManager";
 const COMPLETE: EventTypes = "complete";
+const INTERRUPTED: EventTypes = "interrupted";
 
 export type BrowserAdapter = ReturnType<typeof createBrowserAdapter>;
 
@@ -333,7 +334,10 @@ async function writeBufferToFile(
         const onDownloadChange = (
             change: browser.downloads._OnChangedDownloadDelta
         ): void => {
-            if (change.state?.current === COMPLETE) {
+            if (
+                change.state?.current === COMPLETE ||
+                change.state?.current === INTERRUPTED
+            ) {
                 URL.revokeObjectURL(blobUrl);
                 browser.downloads.onChanged.removeListener(onDownloadChange);
             }

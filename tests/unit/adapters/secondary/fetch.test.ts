@@ -274,19 +274,7 @@ describe("FetchService", () => {
                 </tbody></table>
             `;
 
-            let call = 0;
             const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(() => {
-                call += 1;
-                // First call returns a redirect-like response (we only need `url`).
-                if (call === 1) {
-                    return Promise.resolve({
-                        ok: true,
-                        status: 200,
-                        url: "https://example.test/detail"
-                    } as unknown as Response);
-                }
-
-                // Second call returns the HTML body.
                 return Promise.resolve({
                     ok: true,
                     status: 200,
@@ -297,7 +285,7 @@ describe("FetchService", () => {
 
             const data = await fetchAdapter.fetchCompanyData("DE0000000001");
             expect(data).toEqual({company: "Example AG", symbol: "EXM"});
-            expect(fetchMock).toHaveBeenCalledTimes(2);
+            expect(fetchMock).toHaveBeenCalledTimes(1);
         });
     });
 

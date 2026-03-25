@@ -34,7 +34,7 @@ export function useOnlineStockData() {
     const runtime = useRuntimeStore();
     const settings = useSettingsStore();
 
-    async function loadOnlineData(page: number, options?: {signal?: AbortSignal}): Promise<void> {
+    async function loadOnlineData(page: number, options?: { signal?: AbortSignal }): Promise<void> {
         log("COMPOSABLES useOnlineStockData: loadOnlineData");
         const {getStorage} = storageAdapter();
 
@@ -95,7 +95,7 @@ export function useOnlineStockData() {
             // USD for US-domiciled securities (ISIN prefix "US").
             const stockCur = data.cur || (stock.cISIN.startsWith("US") ? CURRENCIES.USD : "");
 
-            const divisor =
+            const rawDivisor =
                 !stockCur || stockCur === uiCur
                     ? 1
                     : stockCur === "USD"
@@ -103,6 +103,7 @@ export function useOnlineStockData() {
                         : stockCur === "EUR"
                             ? runtime.curEur
                             : 1;
+            const divisor = rawDivisor > 0 ? rawDivisor : 1;
 
             stockToUpdate.mMin = toNumber(data.min) / divisor;
             stockToUpdate.mValue = toNumber(data.rate) / divisor;
@@ -123,18 +124,17 @@ export function useOnlineStockData() {
         runtime.markStocksPageLoaded(page);
     }
 
-    async function refreshOnlineData(page: number): Promise<void> {
+    async function refreshOnlineData(page: number, options?: { signal?: AbortSignal }): Promise<void> {
         runtime.invalidateStocksPage(page);
-        await loadOnlineData(page);
+        await loadOnlineData(page, options);
     }
 
-    async function refreshAllOnlineData(): Promise<void> {
+    async function refreshAllOnlineData(options?: { signal?: AbortSignal }): Promise<void> {
         const totalPages = Math.ceil(portfolio.active.length / settings.stocksPerPage);
         runtime.clearStocksPages();
         for (let page = 1; page <= totalPages; page++) {
-            const firstStock = portfolio.active[(page - 1) * settings.stocksPerPage];
-            if (!firstStock || !((firstStock.mPortfolio ?? 0) > 0)) break;
-            await loadOnlineData(page);
+            if (options?.signal?.aborted) break;
+            await loadOnlineData(page, options);
         }
     }
 
