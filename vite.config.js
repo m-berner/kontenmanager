@@ -102,9 +102,6 @@ export default defineConfig(({ mode }) => {
         targets: [
           { src: "../manifest.json", dest: BUILD_DIR, overwrite: true },
           { src: "adapters/primary/assets/icon16.png", dest: "./", overwrite: true },
-          //{ src: "adapters/primary/assets/icon48.png", dest: "assets/", overwrite: true },
-          //{ src: "adapters/primary/assets/icon64.png", dest: "assets/", overwrite: true },
-          //{ src: "adapters/primary/assets/connection48.png", dest: "assets/", overwrite: true },
           { src: "adapters/primary/_locales/", dest: "./", overwrite: true },
           EXTENSIONS_DIR && { src: `../${BUILD_DIR}`, dest: EXTENSIONS_DIR, overwrite: true }
         ].filter(Boolean)
