@@ -14,8 +14,12 @@ import zipPack from "vite-plugin-zip-pack";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const { BUILD_DIR, EXTENSIONS_DIR, RELEASE_DIR, RELEASE_XPI  } = env;
-
+  const {
+    BUILD_DIR = "build",
+    EXTENSIONS_DIR = "extension",
+    RELEASE_DIR = "extension",
+    RELEASE_XPI = "kontenmanager@gmx.de.xpi"
+  } = env;
   // Base configs shared across all modes (including test)
   const baseConfig = {
     resolve: {
