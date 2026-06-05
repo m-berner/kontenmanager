@@ -116,7 +116,7 @@ export default defineConfig(({ mode }) => {
     base: "./",
     build: {
       minify: false,
-      sourcemap: false, // if enabled, one has to change outDir as well
+      sourcemap: false, // if enabled, one has to change outDir too
       cssMinify: false,
       cssCodeSplit: true,
       target: ["es2022", "firefox140"],
