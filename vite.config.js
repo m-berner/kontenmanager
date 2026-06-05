@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
     RELEASE_DIR = "extension",
     RELEASE_XPI = "kontenmanager@gmx.de.xpi"
   } = env;
+
   // Base configs shared across all modes (including test)
   const baseConfig = {
     resolve: {
@@ -43,8 +44,11 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [
           { src: "../manifest.json", dest: BUILD_DIR, overwrite: true },
-          { src: "adapters/primary/assets/icon16.png", dest: "./", overwrite: true },
-          { src: "adapters/primary/_locales/", dest: "./", overwrite: true },
+          { src: "adapters/primary/assets/icon16.png", dest: ".", rename: "../../../assets/icon16.png", overwrite: true },
+          { src: "adapters/primary/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
+          { src: "adapters/primary/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
+          { src: "adapters/primary/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
+          { src: "adapters/primary/_locales/en/messages.json", dest: ".", rename: "../../../../_locales/en/messages.json", overwrite: true },
           EXTENSIONS_DIR && { src: `../${BUILD_DIR}`, dest: EXTENSIONS_DIR, overwrite: true }
         ].filter(Boolean)
       }),
@@ -63,7 +67,7 @@ export default defineConfig(({ mode }) => {
       cssMinify: false,
       cssCodeSplit: true,
       target: ["es2022", "firefox140"],
-      assetsDir: "assets",
+      assetsDir: "./assets",
       assetsInlineLimit: 0,
       emptyOutDir: false,
       outDir: `../${BUILD_DIR}`,
@@ -105,8 +109,11 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [
           { src: "../manifest.json", dest: BUILD_DIR, overwrite: true },
-          { src: "adapters/primary/assets/icon16.png", dest: "./", overwrite: true },
-          { src: "adapters/primary/_locales/", dest: "./", overwrite: true },
+          { src: "adapters/primary/assets/icon16.png", dest: ".", rename: "../../../assets/icon16.png", overwrite: true },
+          { src: "adapters/primary/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
+          { src: "adapters/primary/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
+          { src: "adapters/primary/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
+          { src: "adapters/primary/_locales/en/messages.json", dest: ".", rename: "../../../../_locales/en/messages.json", overwrite: true },
           EXTENSIONS_DIR && { src: `../${BUILD_DIR}`, dest: EXTENSIONS_DIR, overwrite: true }
         ].filter(Boolean)
       })
