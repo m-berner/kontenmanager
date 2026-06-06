@@ -211,7 +211,7 @@
       "depotSumLabel": "Depot account",
       "selectAccountLabel": "IBAN",
       "iconsAlt": {
-        "logo": "Bank logo"
+        "logo": "KontenManager logo"
       }
     },
     "headerBar": {

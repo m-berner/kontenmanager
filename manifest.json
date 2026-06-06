@@ -1,23 +1,23 @@
 {
   "manifest_version": 3,
   "name": "KontenManager",
-  "version": "2026.0.4.4",
+  "version": "2026.0.6.0",
   "default_locale": "de",
   "author": "Martin Berner",
   "icons": {
-    "16": "assets/icon16.png",
-    "48": "assets/icon48.png",
-    "64": "assets/icon64.png"
+    "16": "adapters/primary/assets/icon16.png",
+    "48": "adapters/primary/assets/icon48.png",
+    "64": "adapters/primary/assets/icon64.png"
   },
   "action": {
     "default_icon": {
-      "64": "assets/icon64.png"
+      "64": "adapters/primary/assets/icon64.png"
     },
     "default_title": "KontenManager",
     "default_area": "navbar"
   },
   "background": {
-    "scripts": ["entrypoints/background.js"],
+    "scripts": ["adapters/primary/entrypoints/background.js"],
     "type": "module"
   },
   "permissions": ["downloads", "notifications", "storage", "tabs"],
@@ -34,7 +34,7 @@
   "options_ui": {
     "browser_style": false,
     "open_in_tab": false,
-    "page": "entrypoints/options.html"
+    "page": "adapters/primary/entrypoints/options.html"
   },
   "browser_specific_settings": {
     "gecko": {

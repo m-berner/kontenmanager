@@ -9,7 +9,7 @@ import {appError, ERROR_DEFINITIONS, isAppError, serializeError,} from "@/domain
 import type {EventTypes} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-const APP_URL = "entrypoints/app.html";
+const APP_URL = "adapters/primary/entrypoints/app.html";
 const APP_TITLE = "KontenManager";
 const COMPLETE: EventTypes = "complete";
 const INTERRUPTED: EventTypes = "interrupted";

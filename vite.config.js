@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [
           { src: "../manifest.json", dest: BUILD_DIR, overwrite: true },
-          { src: "adapters/primary/assets/icon16.png", dest: ".", rename: "../../../assets/icon16.png", overwrite: true },
+          { src: "adapters/primary/assets/icon16.png", dest: ".", overwrite: true },
           { src: "adapters/primary/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
           { src: "adapters/primary/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
           { src: "adapters/primary/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
@@ -67,7 +67,7 @@ export default defineConfig(({ mode }) => {
       cssMinify: false,
       cssCodeSplit: true,
       target: ["es2022", "firefox140"],
-      assetsDir: "./assets",
+      assetsDir: "adapters/primary/assets",
       assetsInlineLimit: 0,
       emptyOutDir: false,
       outDir: `../${BUILD_DIR}`,
@@ -80,9 +80,9 @@ export default defineConfig(({ mode }) => {
           options: "src/adapters/primary/entrypoints/options.html"
         },
         output: {
-          entryFileNames: "entrypoints/[name].js",
+          entryFileNames: "adapters/primary/entrypoints/[name].js",
           chunkFileNames: "[name].js",
-          assetFileNames: "assets/[name].[ext]",
+          assetFileNames: "adapters/primary/assets/[name].[ext]",
           format: "es"
         }
       }
@@ -109,7 +109,7 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [
           { src: "../manifest.json", dest: BUILD_DIR, overwrite: true },
-          { src: "adapters/primary/assets/icon16.png", dest: ".", rename: "../../../assets/icon16.png", overwrite: true },
+          { src: "adapters/primary/assets/icon16.png", dest: ".", overwrite: true },
           { src: "adapters/primary/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
           { src: "adapters/primary/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
           { src: "adapters/primary/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
@@ -127,7 +127,7 @@ export default defineConfig(({ mode }) => {
       cssMinify: false,
       cssCodeSplit: true,
       target: ["es2022", "firefox140"],
-      assetsDir: "assets",
+      assetsDir: "adapters/primary/assets",
       assetsInlineLimit: 0,
       emptyOutDir: false,
       outDir: `../${BUILD_DIR}`,
@@ -142,7 +142,7 @@ export default defineConfig(({ mode }) => {
         output: {
           entryFileNames: "entrypoints/[name].js",
           chunkFileNames: "[name].js",
-          assetFileNames: "assets/[name].[ext]",
+          assetFileNames: "adapters/primary/assets/[name].[ext]",
           format: "es"
         }
       }
