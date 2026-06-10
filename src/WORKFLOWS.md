@@ -766,10 +766,10 @@ Vue Component / Composable
     ├─ Use Case    ──────────────►  app/usecases/
     │                               (orchestrates ports)
     │
-    ├─ Repository  ──────────────►  adapters/secondary/database/
+    ├─ Repository  ──────────────►  adapters/driven/database/
     │               (read/write)    IndexedDB
     │
-    ├─ Pinia Store ──────────────►  adapters/primary/stores/
+    ├─ Pinia Store ──────────────►  adapters/ui/stores/
     │               (state update)  (reactive, in-memory)
     │
     └─ UI Update   ──────────────►  Vue reactivity propagates
@@ -781,10 +781,10 @@ External data (market prices) flows separately:
 ```
 CompanyContent / HeaderBar refresh trigger
     │
-    ├─ fetchAdapter  ────────────►  adapters/secondary/fetch/
+    ├─ fetchAdapter  ────────────►  adapters/driven/fetch/
     │                               (HTTP + in-memory cache)
     │
-    ├─ Provider scraper  ────────►  adapters/secondary/fetch/providers/
+    ├─ Provider scraper  ────────►  adapters/driven/fetch/providers/
     │
     └─ stocksStore.updateOnlineFields()
         └─ Vue reactivity → CompanyContent table cells update

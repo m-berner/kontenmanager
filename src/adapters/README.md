@@ -10,11 +10,11 @@ Vue components, stores, composables, plugins, entrypoints, assets, and locales t
 
 Infrastructure adapters that communicate with external systems:
 
-- `src/adapters/secondary/database/*` (IndexedDB access)
-- `src/adapters/secondary/browserAdapter.ts` (WebExtension APIs)
-- `src/adapters/secondary/storageAdapter.ts` (browser storage)
-- `src/adapters/secondary/fetchAdapter.ts` (network IO — thin orchestrator; per-provider scrapers live in
-  `src/adapters/secondary/fetch/providers/`)
+- `src/adapters/driven/database/*` (IndexedDB access)
+- `src/adapters/driven/browserAdapter.ts` (WebExtension APIs)
+- `src/adapters/driven/storageAdapter.ts` (browser storage)
+- `src/adapters/driven/fetchAdapter.ts` (network IO — thin orchestrator; per-provider scrapers live in
+  `src/adapters/driven/fetch/providers/`)
 
 Guidelines:
 

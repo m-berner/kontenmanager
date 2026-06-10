@@ -4,8 +4,8 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {createBrowserAdapter} from "@/adapters/secondary/browserAdapter";
-import {storageAdapter} from "@/adapters/secondary/storageAdapter";
+import {createBrowserAdapter} from "@/adapters/driven/browserAdapter";
+import {storageAdapter} from "@/adapters/driven/storageAdapter";
 
 /** Inferred type of the background service container. */
 export type BackgroundAdapters = ReturnType<typeof createBackgroundAdapters>;

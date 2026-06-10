@@ -5,7 +5,7 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {AccountRepository} from "@/adapters/secondary/database/repositories/accountRepository";
+import {AccountRepository} from "@/adapters/driven/database/repositories/accountRepository";
 import {INDEXED_DB} from "@/domain/constants";
 import type {AccountDb} from "@/domain/types";
 

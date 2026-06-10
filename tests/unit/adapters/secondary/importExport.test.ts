@@ -5,7 +5,7 @@
  */
 
 import {describe, expect, it} from "vitest";
-import {createImportExportAdapter} from "@/adapters/secondary/importExportAdapter";
+import {createImportExportAdapter} from "@/adapters/driven/importExportAdapter";
 
 describe("ImportExportService", () => {
     const importExportAdapter = createImportExportAdapter();

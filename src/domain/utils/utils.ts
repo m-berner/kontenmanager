@@ -191,7 +191,7 @@ export function toNumber(
     const cleaned = value
         .toString()
         .trim()
-        .replace(/\s|\t/g, "")
+        .replace(/[\s\t]/g, "")
         .replace(/%$/g, "");
 
     if (cleaned === "") return fallback;

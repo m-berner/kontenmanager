@@ -6,7 +6,7 @@
 
 import {beforeEach, describe, expect, it} from "vitest";
 import {setActiveTestPinia} from "@test/pinia";
-import {useBookingTypesStore} from "@/adapters/primary/stores/bookingTypes";
+import {useBookingTypesStore} from "@/adapters/ui/stores/bookingTypes";
 import type {BookingTypeDb} from "@/domain/types";
 
 describe("BookingTypes Store", () => {

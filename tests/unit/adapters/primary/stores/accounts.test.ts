@@ -6,11 +6,11 @@
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {setActiveTestPinia} from "@test/pinia";
-import {useAccountsStore} from "@/adapters/primary/stores/accounts";
+import {useAccountsStore} from "@/adapters/ui/stores/accounts";
 import type {AccountStoreItem} from "@/domain/types";
 
 // Mock persistence composable used by the settings store
-vi.mock("@/adapters/secondary/storageAdapter", () => ({
+vi.mock("@/adapters/driven/storageAdapter", () => ({
     storageAdapter: () => ({
         getStorage: vi.fn(),
         setStorage: vi.fn(),

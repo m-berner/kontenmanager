@@ -6,7 +6,7 @@
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {setActiveTestPinia} from "@test/pinia";
-import {useAlertsStore} from "@/adapters/primary/stores/alerts";
+import {useAlertsStore} from "@/adapters/ui/stores/alerts";
 import * as DomainUtils from "@/domain/utils/utils";
 
 // Mock DomainUtils to keep test output clean and assert on warnings/errors if needed

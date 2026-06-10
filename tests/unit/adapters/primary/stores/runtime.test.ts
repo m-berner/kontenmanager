@@ -6,7 +6,7 @@
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {setActiveTestPinia} from "@test/pinia";
-import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
+import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 
 // Silence logs in tests
 vi.mock("@/domain/utils", () => ({

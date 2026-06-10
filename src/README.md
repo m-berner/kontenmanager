@@ -3,7 +3,7 @@
 This folder contains the full WebExtension application: Vue UI, domain logic, infrastructure services, and localized
 strings.
 
-The project uses the `@` path alias for `src/` (example: `@/adapters/secondary/alertAdapter`).
+The project uses the `@` path alias for `src/` (example: `@/adapters/driven/alertAdapter`).
 
 ## Layout
 
@@ -37,33 +37,33 @@ The source is organized into three layers:
 - `adapters/containerBackground.ts`: Minimal DI surface for the background context (keeps bundle small).
 - `adapters/context.ts`: `provideAdapters` / `useAdapters` — Vue DI bridge for the adapter surface.
 
-### `adapters/primary/` — UI-facing adapters
+### `adapters/ui/` — UI-facing adapters
 
-- `adapters/primary/components/`: Reusable UI components and dialogs.
-- `adapters/primary/views/`: Top-level screens (route targets and layout shells).
-- `adapters/primary/composables/`: Vue composables for UI-facing orchestration.
-- `adapters/primary/stores/`: Pinia state stores (leaf stores + aggregation stores `accounting`, `portfolio` + hub
+- `adapters/ui/components/`: Reusable UI components and dialogs.
+- `adapters/ui/views/`: Top-level screens (route targets and layout shells).
+- `adapters/ui/composables/`: Vue composables for UI-facing orchestration.
+- `adapters/ui/stores/`: Pinia state stores (leaf stores + aggregation stores `accounting`, `portfolio` + hub
   `recordsHub`).
-- `adapters/primary/plugins/`: Vue plugin setup (Vuetify, Pinia, Router, i18n, themeSync, global components).
-- `adapters/primary/entrypoints/`: HTML + TS entry points for app/options/background.
-- `adapters/primary/assets/`: Static assets bundled by Vite.
-- `adapters/primary/_locales/`: Translations (`messages.json` for WebExtension i18n, `gui.json` for Vue i18n).
-- `adapters/primary/style.css`: Global styles.
+- `adapters/ui/plugins/`: Vue plugin setup (Vuetify, Pinia, Router, i18n, themeSync, global components).
+- `adapters/ui/entrypoints/`: HTML + TS entry points for app/options/background.
+- `adapters/ui/assets/`: Static assets bundled by Vite.
+- `adapters/ui/_locales/`: Translations (`messages.json` for WebExtension i18n, `gui.json` for Vue i18n).
+- `adapters/ui/style.css`: Global styles.
 
-### `adapters/secondary/` — Service-facing adapters
+### `adapters/driven/` — Service-facing adapters
 
-- `adapters/secondary/database/`: IndexedDB persistence engine with connection management, transaction orchestration,
+- `adapters/driven/database/`: IndexedDB persistence engine with connection management, transaction orchestration,
   migration logic, and per-entity repositories under `database/repositories/`.
-- `adapters/secondary/fetch/`: Network I/O layer with per-provider scrapers under `fetch/providers/`, shared HTTP
+- `adapters/driven/fetch/`: Network I/O layer with per-provider scrapers under `fetch/providers/`, shared HTTP
   utilities (`httpClient.ts`, `httpCache.ts`), and provider helpers (`providerUtils.ts`).
-- `adapters/secondary/*Adapter.ts`: Individual adapter implementations (app, alert, browser, favicon, importExport,
+- `adapters/driven/*Adapter.ts`: Individual adapter implementations (app, alert, browser, favicon, importExport,
   storage, task, validation).
 
 ## How Things Fit Together
 
-- UI (`adapters/primary/views/`, `adapters/primary/components/`) reads/writes state via `adapters/primary/stores/`,
-  uses `adapters/primary/composables/` for UI helpers, and calls `app/usecases/` for multistep workflows.
-- `adapters/secondary/` adapters perform I/O (IndexedDB, network, file download, etc.) and call into `domain/` for
+- UI (`adapters/ui/views/`, `adapters/ui/components/`) reads/writes state via `adapters/ui/stores/`,
+  uses `adapters/ui/composables/` for UI helpers, and calls `app/usecases/` for multistep workflows.
+- `adapters/driven/` adapters perform I/O (IndexedDB, network, file download, etc.) and call into `domain/` for
   rules/validation.
 - `domain/` defines stable rules and helper logic (including `AppError` + `ERROR_DEFINITIONS`).
 - All adapters are wired via `adapters/container.ts` / `adapters/containerBackground.ts` and exposed to Vue via

@@ -6,7 +6,7 @@
 
 import {createPinia, setActivePinia} from "pinia";
 import {vi} from "vitest";
-import {attachStoreDeps} from "@/adapters/primary/stores/deps";
+import {attachStoreDeps} from "@/adapters/ui/stores/deps";
 
 /**
  * Creates a Pinia instance, attaches default store deps, and makes it active.

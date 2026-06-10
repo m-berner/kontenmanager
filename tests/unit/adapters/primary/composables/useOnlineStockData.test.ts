@@ -6,10 +6,10 @@
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {setActiveTestPinia} from "@test/pinia";
-import {useStocksStore} from "@/adapters/primary/stores/stocks";
-import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
-import {useSettingsStore} from "@/adapters/primary/stores/settings";
-import {useOnlineStockData} from "@/adapters/primary/composables/useOnlineStockData";
+import {useStocksStore} from "@/adapters/ui/stores/stocks";
+import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
+import {useSettingsStore} from "@/adapters/ui/stores/settings";
+import {useOnlineStockData} from "@/adapters/ui/composables/useOnlineStockData";
 import {DATE} from "@/domain/constants";
 import type {StockItem} from "@/domain/types";
 

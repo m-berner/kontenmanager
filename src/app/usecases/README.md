@@ -22,9 +22,9 @@ Typical call site (from a dialog/view):
 
 ```ts
 import {useAdapters} from "@/adapters/context";
-import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
-import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
-import {useSettingsStore} from "@/adapters/primary/stores/settings";
+import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
+import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
+import {useSettingsStore} from "@/adapters/ui/stores/settings";
 import {toRecordsPort, toSettingsPort} from "@/app/usecases/portAdapters";
 import {addAccountUsecase} from "@/app/usecases/accounts";
 

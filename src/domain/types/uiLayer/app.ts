@@ -6,7 +6,7 @@
 
 import type {ErrorCodes} from "@/domain/errors";
 
-import deNotifications from "@/adapters/primary/_locales/de/messages.json";
+import deNotifications from "@/adapters/ui/_locales/de/messages.json";
 
 /**
  * Represents a custom application error that extends the standard JavaScript Error object.

@@ -5,7 +5,7 @@
  */
 
 import {describe, expect, it, vi} from "vitest";
-import {createTaskAdapter} from "@/adapters/secondary/taskAdapter";
+import {createTaskAdapter} from "@/adapters/driven/taskAdapter";
 
 describe("TaskService", () => {
     const taskAdapter = createTaskAdapter();

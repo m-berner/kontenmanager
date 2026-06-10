@@ -143,11 +143,11 @@ rules at CI time:
 A Firefox extension runs in **three isolated JavaScript contexts**. Each has
 its own entry point and its own composition root.
 
-| Context        | Entry point                 | HTML shell        | Purpose                                          |
-|----------------|-----------------------------|-------------------|--------------------------------------------------|
-| **App**        | `entrypoints/app.ts`        | `app.html`        | Main popup / full-screen app tab                 |
-| **Background** | `entrypoints/background.ts` | `background.html` | Service worker: lifecycle events + toolbar click |
-| **Options**    | `entrypoints/options.ts`    | `options.html`    | Extension settings page                          |
+| Context        | Entry point                                  | HTML shell        | Purpose                                          |
+|----------------|----------------------------------------------|-------------------|--------------------------------------------------|
+| **App**        | `adapters/ui/entrypoints/app.ts`        | `app.html`        | Main popup / full-screen app tab                 |
+| **Background** | `adapters/ui/entrypoints/background.ts` | `background.html` | Service worker: lifecycle events + toolbar click |
+| **Options**    | `adapters/ui/entrypoints/options.ts`    | `options.html`    | Extension settings page                          |
 
 Contexts cannot share JavaScript objects; they communicate via
 `browser.storage.local` and `browser.runtime`.
@@ -157,7 +157,7 @@ Contexts cannot share JavaScript objects; they communicate via
 ## 5. Startup Flow — App Context
 
 ```
-entrypoints/app.ts
+adapters/ui/entrypoints/app.ts
 │
 ├─ createAdapters()          ← build the full adapter container
 ├─ createAppPinia(adapters)  ← create Pinia, wire store deps, configure alert sink
@@ -201,7 +201,7 @@ entrypoints/app.ts
 ## 6. Startup Flow — Background Context
 
 ```
-entrypoints/background.ts
+adapters/ui/entrypoints/background.ts
 │
 ├─ createBackgroundAdapters()   ← minimal container: browserAdapter + storageAdapter only
 │
@@ -224,7 +224,7 @@ The background bundle is deliberately kept small: only `browserAdapter` and
 ## 7. Startup Flow — Options Context
 
 ```
-entrypoints/options.ts
+adapters/ui/entrypoints/options.ts
 │
 ├─ createAdapters()
 ├─ createAppPinia(adapters)
@@ -281,7 +281,7 @@ injection system, it only works inside `setup()` or a composable called from
 ### 8.3 Pinia symbol-based DI (for stores)
 
 Stores cannot use `inject()` because they run outside Vue's component tree.
-`src/adapters/primary/stores/deps.ts` provides a symbol-keyed side-channel:
+`src/adapters/ui/stores/deps.ts` provides a symbol-keyed side-channel:
 
 ```typescript
 // wired once per Pinia instance (plugins/pinia.ts)
@@ -318,7 +318,7 @@ breaking the circular dependency.
 | `runtime`      | memory only             | Volatile UI state (current view, dialogs, exchange rates, page cache) |
 | `recordsHub`   | memory (loaded from DB) | Hub: owns and coordinates all entity sub-stores                       |
 | `accounts`     | memory                  | AccountDb items                                                       |
-| `stocks`       | memory                  | StockItem items (includes mutable online fields: mValue, mMin, mMax)  |
+| `stocks`       | memory                  | Stock items (includes mutable online fields: mValue, mMin, mMax)      |
 | `bookings`     | memory                  | BookingDb items                                                       |
 | `bookingTypes` | memory                  | BookingTypeDb items                                                   |
 | `portfolio`    | derived (computed)      | Active + passive stock lists; sumDepot calculation                    |
@@ -613,25 +613,25 @@ receive adapters via `useAdapters()` or the Pinia DI symbol.
 
 1. Add types to `src/domain/types/`.
 2. Add constants (store name, defaults) to `src/domain/constants/`.
-3. Write a repository in `src/adapters/secondary/database/repositories/`.
+3. Write a repository in `src/adapters/driven/database/repositories/`.
 4. Register the repository in `repositoryFactory.ts` and expose it from `databaseAdapter.ts`.
-5. Add a Pinia store in `src/adapters/primary/stores/`.
+5. Add a Pinia store in `src/adapters/ui/stores/`.
 6. Add the store to `recordsHub.ts` (init / clean lifecycle).
 7. Extend `RecordsLike` and `RecordsPort` in `portAdapters.ts` / `ports.ts`.
 8. Write use cases in `src/app/usecases/`.
-9. Build Vue components in `src/adapters/primary/components/`.
+9. Build Vue components in `src/adapters/ui/components/`.
 
 **New settings preference:**
 
 1. Add a key/default to `BROWSER_STORAGE` in `domain/constants/`.
 2. Call `installStorageLocal` (already called on install; just add the new key).
-3. Add state + getter + setter to `src/adapters/primary/stores/settings.ts`.
+3. Add state + getter + setter to `src/adapters/ui/stores/settings.ts`.
 4. Expose a UI control in `OptionsIndex.vue`.
 
 **New data provider:**
 
-1. Add a provider file in `src/adapters/secondary/fetch/providers/`.
-2. Register it in `src/adapters/secondary/fetchAdapter.ts`.
+1. Add a provider file in `src/adapters/driven/fetch/providers/`.
+2. Register it in `src/adapters/driven/fetchAdapter.ts`.
 3. Add the provider key to `BROWSER_STORAGE.SERVICE` options.
 4. Add a `<v-radio>` entry in the `ServiceSelector` component.
 
