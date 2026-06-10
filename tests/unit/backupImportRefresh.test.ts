@@ -6,10 +6,10 @@
 
 import {describe, expect, it, vi} from "vitest";
 import {setActiveTestPinia} from "@test/pinia";
-import {attachStoreDeps} from "@/adapters/primary/stores/deps";
-import {useRuntimeStore} from "@/adapters/primary/stores/runtime";
-import {useStocksStore} from "@/adapters/primary/stores/stocks";
-import {useSettingsStore} from "@/adapters/primary/stores/settings";
+import {attachStoreDeps} from "@/adapters/ui/stores/deps";
+import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
+import {useStocksStore} from "@/adapters/ui/stores/stocks";
+import {useSettingsStore} from "@/adapters/ui/stores/settings";
 import {importDatabaseUsecase} from "@/app/usecases/backup";
 import {BROWSER_STORAGE, CACHE_POLICY, DATE, INDEXED_DB} from "@/domain/constants";
 import type {ModernBackupData, StockItem} from "@/domain/types";

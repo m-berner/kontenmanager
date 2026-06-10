@@ -7,7 +7,7 @@
 import type {App, InjectionKey} from "vue";
 import {inject} from "vue";
 
-import type {Adapters} from "@/adapters/secondary/types";
+import type {Adapters} from "@/adapters/driven/types";
 
 const ADAPTERS_KEY: InjectionKey<Adapters> = Symbol("kontenmanager.adapters");
 

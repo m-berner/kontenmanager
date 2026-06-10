@@ -13,24 +13,24 @@ export default [
   // Architecture guardrails
   {
     files: [
-      "src/adapters/primary/components/**/*.{js,ts,vue}",
-      "src/adapters/primary/views/**/*.{js,ts,vue}",
-      "src/adapters/primary/composables/**/*.{js,ts,vue}"
+      "src/adapters/ui/components/**/*.{js,ts,vue}",
+      "src/adapters/ui/views/**/*.{js,ts,vue}",
+      "src/adapters/ui/composables/**/*.{js,ts,vue}"
     ],
     rules: {
       // UI code should access adapters via DI (useAdapters), not import concrete modules.
       "no-restricted-imports": ["error", {
         patterns: [
           {
-            group: ["@/adapters/secondary/*", "!@/adapters/secondary/types"],
-            message: "Import adapters via '@/adapters/context' (useAdapters) and types via '@/adapters/secondary/types'."
+            group: ["@/adapters/driven/*", "!@/adapters/driven/types"],
+            message: "Import adapters via '@/adapters/context' (useAdapters) and types via '@/adapters/driven/types'."
           }
         ]
       }]
     }
   },
   {
-    files: ["src/adapters/primary/components/**/*.{test,spec}.{js,ts,vue}", "src/adapters/primary/composables/**/*.{test,spec}.{js,ts,vue}", "src/adapters/primary/views/**/*.{test,spec}.{js,ts,vue}"],
+    files: ["src/adapters/ui/components/**/*.{test,spec}.{js,ts,vue}", "src/adapters/ui/composables/**/*.{test,spec}.{js,ts,vue}", "src/adapters/ui/views/**/*.{test,spec}.{js,ts,vue}"],
     rules: {
       // Tests may import concrete adapters directly.
       "no-restricted-imports": "off"
@@ -39,8 +39,8 @@ export default [
   {
     files: ["src/**/*.{js,ts,vue}"],
     ignores: [
-      "src/adapters/primary/entrypoints/**",
-      "src/adapters/secondary/**",
+      "src/adapters/ui/entrypoints/**",
+      "src/adapters/driven/**",
       "src/domain/**",
       "src/**/__tests__/**",
       "src/**/*.{test,spec}.{js,ts,vue}"
@@ -97,19 +97,19 @@ export default [
     }
   },
   {
-    files: ["src/adapters/primary/stores/**/*.ts"],
+    files: ["src/adapters/ui/stores/**/*.ts"],
     rules: {
       // Stores should receive adapters via DI, not import them directly.
       "no-restricted-imports": ["error", {
         patterns: [
-          {"group": ["@/adapters/secondary/*", "!@/adapters/secondary/types"], "message": "Stores must not import concrete secondary adapters. Use DI via 'attachStoreDeps' / 'getStoreDeps'."},
+          {"group": ["@/adapters/driven/*", "!@/adapters/driven/types"], "message": "Stores must not import concrete secondary adapters. Use DI via 'attachStoreDeps' / 'getStoreDeps'."},
           "@test/*"
         ]
       }]
     }
   },
   {
-    files: ["src/adapters/primary/stores/**/*.{test,spec}.ts"],
+    files: ["src/adapters/ui/stores/**/*.{test,spec}.ts"],
     rules: {
       // Tests may mock/import adapters directly.
       "no-restricted-imports": "off"
@@ -123,7 +123,7 @@ export default [
       "no-restricted-imports": ["error", {
         patterns: [
           {
-            group: ["@/adapters/secondary/*", "!@/adapters/secondary/types"],
+            group: ["@/adapters/driven/*", "!@/adapters/driven/types"],
             message: "Usecases must not import concrete adapters. Depend on ports in '@/app/usecases/ports' and inject implementations at the boundary."
           }
         ]
@@ -135,8 +135,8 @@ export default [
   {
     files: ["src/**/*.{js,ts,vue}"],
     ignores: [
-      "src/adapters/secondary/**",
-      "src/adapters/primary/entrypoints/**",
+      "src/adapters/driven/**",
+      "src/adapters/ui/entrypoints/**",
       "src/adapters/containerBackground.ts",  // ← add this
       "src/adapters/container.ts"
     ],
@@ -144,8 +144,8 @@ export default [
       "no-restricted-imports": ["error", {
         patterns: [
           {
-            group: ["@/adapters/secondary/*", "!@/adapters/secondary/types"],
-            message: "Outside secondary/entrypoints, only import '@/adapters/context' (DI) and '@/adapters/secondary/types' (types)."
+            group: ["@/adapters/driven/*", "!@/adapters/driven/types"],
+            message: "Outside secondary/entrypoints, only import '@/adapters/context' (DI) and '@/adapters/driven/types' (types)."
           }
         ]
       }]

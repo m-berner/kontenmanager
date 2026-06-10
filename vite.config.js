@@ -44,11 +44,11 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [
           { src: "../manifest.json", dest: BUILD_DIR, overwrite: true },
-          { src: "adapters/primary/assets/icon16.png", dest: ".", overwrite: true },
-          { src: "adapters/primary/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
-          { src: "adapters/primary/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
-          { src: "adapters/primary/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
-          { src: "adapters/primary/_locales/en/messages.json", dest: ".", rename: "../../../../_locales/en/messages.json", overwrite: true },
+          { src: "adapters/ui/assets/icon16.png", dest: ".", overwrite: true },
+          { src: "adapters/ui/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
+          { src: "adapters/ui/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
+          { src: "adapters/ui/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
+          { src: "adapters/ui/_locales/en/messages.json", dest: ".", rename: "../../../../_locales/en/messages.json", overwrite: true },
           EXTENSIONS_DIR && { src: `../${BUILD_DIR}`, dest: EXTENSIONS_DIR, overwrite: true }
         ].filter(Boolean)
       }),
@@ -67,7 +67,7 @@ export default defineConfig(({ mode }) => {
       cssMinify: false,
       cssCodeSplit: true,
       target: ["es2022", "firefox140"],
-      assetsDir: "adapters/primary/assets",
+      assetsDir: "adapters/ui/assets",
       assetsInlineLimit: 0,
       emptyOutDir: false,
       outDir: `../${BUILD_DIR}`,
@@ -75,14 +75,14 @@ export default defineConfig(({ mode }) => {
       css: { devSourcemap: false },
       rollupOptions: {
         input: {
-          background: "src/adapters/primary/entrypoints/background.html",
-          app: "src/adapters/primary/entrypoints/app.html",
-          options: "src/adapters/primary/entrypoints/options.html"
+          background: "src/adapters/ui/entrypoints/background.html",
+          app: "src/adapters/ui/entrypoints/app.html",
+          options: "src/adapters/ui/entrypoints/options.html"
         },
         output: {
-          entryFileNames: "adapters/primary/entrypoints/[name].js",
+          entryFileNames: "adapters/ui/entrypoints/[name].js",
           chunkFileNames: "[name].js",
-          assetFileNames: "adapters/primary/assets/[name].[ext]",
+          assetFileNames: "adapters/ui/assets/[name].[ext]",
           format: "es"
         }
       }
@@ -109,11 +109,11 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [
           { src: "../manifest.json", dest: BUILD_DIR, overwrite: true },
-          { src: "adapters/primary/assets/icon16.png", dest: ".", overwrite: true },
-          { src: "adapters/primary/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
-          { src: "adapters/primary/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
-          { src: "adapters/primary/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
-          { src: "adapters/primary/_locales/en/messages.json", dest: ".", rename: "../../../../_locales/en/messages.json", overwrite: true },
+          { src: "adapters/ui/assets/icon16.png", dest: ".", overwrite: true },
+          { src: "adapters/ui/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
+          { src: "adapters/ui/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
+          { src: "adapters/ui/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
+          { src: "adapters/ui/_locales/en/messages.json", dest: ".", rename: "../../../../_locales/en/messages.json", overwrite: true },
           EXTENSIONS_DIR && { src: `../${BUILD_DIR}`, dest: EXTENSIONS_DIR, overwrite: true }
         ].filter(Boolean)
       })
@@ -127,7 +127,7 @@ export default defineConfig(({ mode }) => {
       cssMinify: false,
       cssCodeSplit: true,
       target: ["es2022", "firefox140"],
-      assetsDir: "adapters/primary/assets",
+      assetsDir: "adapters/ui/assets",
       assetsInlineLimit: 0,
       emptyOutDir: false,
       outDir: `../${BUILD_DIR}`,
@@ -135,14 +135,14 @@ export default defineConfig(({ mode }) => {
       css: { devSourcemap: false },
       rollupOptions: {
         input: {
-          background: "src/adapters/primary/entrypoints/background.html",
-          app: "src/adapters/primary/entrypoints/app.html",
-          options: "src/adapters/primary/entrypoints/options.html"
+          background: "src/adapters/ui/entrypoints/background.html",
+          app: "src/adapters/ui/entrypoints/app.html",
+          options: "src/adapters/ui/entrypoints/options.html"
         },
         output: {
           entryFileNames: "entrypoints/[name].js",
           chunkFileNames: "[name].js",
-          assetFileNames: "adapters/primary/assets/[name].[ext]",
+          assetFileNames: "adapters/ui/assets/[name].[ext]",
           format: "es"
         }
       }

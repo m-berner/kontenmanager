@@ -6,16 +6,16 @@
 
 import type {RepositoryMap} from "@/domain/types";
 
-import {createAlertAdapter} from "@/adapters/secondary/alertAdapter";
-import {createAppAdapter} from "@/adapters/secondary/appAdapter";
-import {createBrowserAdapter} from "@/adapters/secondary/browserAdapter";
-import {createDatabaseAdapter} from "@/adapters/secondary/database/databaseAdapter";
-import {createFaviconAdapter} from "@/adapters/secondary/faviconAdapter";
-import {createFetchAdapter} from "@/adapters/secondary/fetchAdapter";
-import {createImportExportAdapter} from "@/adapters/secondary/importExportAdapter";
-import {storageAdapter} from "@/adapters/secondary/storageAdapter";
-import {createTaskAdapter} from "@/adapters/secondary/taskAdapter";
-import {createValidationAdapter} from "@/adapters/secondary/validationAdapter";
+import {createAlertAdapter} from "@/adapters/driven/alertAdapter";
+import {createAppAdapter} from "@/adapters/driven/appAdapter";
+import {createBrowserAdapter} from "@/adapters/driven/browserAdapter";
+import {createDatabaseAdapter} from "@/adapters/driven/database/databaseAdapter";
+import {createFaviconAdapter} from "@/adapters/driven/faviconAdapter";
+import {createFetchAdapter} from "@/adapters/driven/fetchAdapter";
+import {createImportExportAdapter} from "@/adapters/driven/importExportAdapter";
+import {storageAdapter} from "@/adapters/driven/storageAdapter";
+import {createTaskAdapter} from "@/adapters/driven/taskAdapter";
+import {createValidationAdapter} from "@/adapters/driven/validationAdapter";
 
 export type Adapters = ReturnType<typeof createAdapters>;
 

@@ -5,8 +5,8 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import type {AlertSink} from "@/adapters/secondary/alertAdapter";
-import {createAlertAdapter} from "@/adapters/secondary/alertAdapter";
+import type {AlertSink} from "@/adapters/driven/alertAdapter";
+import {createAlertAdapter} from "@/adapters/driven/alertAdapter";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
 import {ERROR_CATEGORY} from "@/domain/constants";
 

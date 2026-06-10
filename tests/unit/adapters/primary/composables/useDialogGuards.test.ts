@@ -5,7 +5,7 @@
  */
 
 import {describe, expect, it} from "vitest";
-import {useDialogGuards} from "@/adapters/primary/composables/useDialogGuards";
+import {useDialogGuards} from "@/adapters/ui/composables/useDialogGuards";
 
 describe("useDialogGuards", () => {
     const deps = {

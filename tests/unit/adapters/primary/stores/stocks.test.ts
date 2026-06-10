@@ -6,11 +6,11 @@
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {setActiveTestPinia} from "@test/pinia";
-import {attachStoreDeps} from "@/adapters/primary/stores/deps";
-import {useStocksStore} from "@/adapters/primary/stores/stocks";
-import {usePortfolioStore} from "@/adapters/primary/stores/portfolio";
-import {useBookingsStore} from "@/adapters/primary/stores/bookings";
-import {useSettingsStore} from "@/adapters/primary/stores/settings";
+import {attachStoreDeps} from "@/adapters/ui/stores/deps";
+import {useStocksStore} from "@/adapters/ui/stores/stocks";
+import {usePortfolioStore} from "@/adapters/ui/stores/portfolio";
+import {useBookingsStore} from "@/adapters/ui/stores/bookings";
+import {useSettingsStore} from "@/adapters/ui/stores/settings";
 import {DATE} from "@/domain/constants";
 import type {BookingDb, StockItem} from "@/domain/types";
 

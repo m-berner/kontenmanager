@@ -5,7 +5,7 @@
  */
 
 import {beforeAll, beforeEach, describe, expect, it, vi} from "vitest";
-import {createFetchAdapter, sanitizeArdDetailUrlFromOnclick} from "@/adapters/secondary/fetchAdapter";
+import {createFetchAdapter, sanitizeArdDetailUrlFromOnclick} from "@/adapters/driven/fetchAdapter";
 import {isAppError} from "@/domain/errors";
 import {BROWSER_STORAGE} from "@/domain/constants";
 

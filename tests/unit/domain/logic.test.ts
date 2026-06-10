@@ -10,12 +10,12 @@ import type {BookingDb, RecordsDbData} from "@/domain/types";
 import {setActiveTestPinia} from "@test/pinia";
 
 // Mock browserStorage
-vi.mock("@/adapters/secondary/browserStorage", () => ({
+vi.mock("@/adapters/driven/browserStorage", () => ({
     browserAdapter: () => ({})
 }));
 
 // Mock storageAdapter
-vi.mock("@/adapters/secondary/storageAdapter", () => ({
+vi.mock("@/adapters/driven/storageAdapter", () => ({
     storageAdapter: () => ({
         getStorage: vi.fn().mockResolvedValue({}),
         setStorage: vi.fn().mockResolvedValue(undefined)

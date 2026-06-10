@@ -6,7 +6,7 @@
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {setActiveTestPinia} from "@test/pinia";
-import {useRecordsStore} from "@/adapters/primary/stores/recordsHub";
+import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
 
 // Mock browser API
 const browserMock = {

@@ -77,7 +77,7 @@ function getAllImports(file: string, text: string): string[] {
 
 describe("Architecture", () => {
     it("UI code must not import concrete services (except types)", () => {
-        const uiRoots = ["src/adapters/primary/components", "src/adapters/primary/views", "src/adapters/primary/composables", "src/adapters/primary/plugins"];
+        const uiRoots = ["src/adapters/ui/components", "src/adapters/ui/views", "src/adapters/ui/composables", "src/adapters/ui/plugins"];
         const bad: string[] = [];
 
         for (const root of uiRoots) {
@@ -86,8 +86,8 @@ describe("Architecture", () => {
                 const text = readFileSync(file, "utf8");
 
                 for (const spec of getAllImports(file, text)) {
-                    if (!spec.startsWith("@/adapters/secondary/")) continue;
-                    const servicePath = spec.slice("@/adapters/secondary/".length);
+                    if (!spec.startsWith("@/adapters/driven/")) continue;
+                    const servicePath = spec.slice("@/adapters/driven/".length);
                     if (servicePath === "types") continue;
                     bad.push(`${norm(file)} -> ${spec}`);
                 }
@@ -109,8 +109,8 @@ describe("Architecture", () => {
             const n = norm(file);
             if (
                 n.startsWith("src/adapters/container") ||
-                n.startsWith("src/adapters/secondary/") ||
-                n.startsWith("src/adapters/primary/entrypoints/") ||
+                n.startsWith("src/adapters/driven/") ||
+                n.startsWith("src/adapters/ui/entrypoints/") ||
                 n.startsWith("tests/unit/")
             ) {
                 continue;

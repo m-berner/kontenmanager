@@ -6,7 +6,7 @@
 
 import type {AppError, AppErrorCategoryType} from "@/domain/types";
 
-import deNotifications from "@/adapters/primary/_locales/de/messages.json";
+import deNotifications from "@/adapters/ui/_locales/de/messages.json";
 
 export const ERROR_DEFINITIONS = {
     ADD_ACCOUNT: {CODE: "#olt", MSG: "Failed to add the account"},

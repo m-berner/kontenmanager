@@ -5,7 +5,7 @@
  */
 
 import {describe, expect, it} from "vitest";
-import {createFaviconAdapter} from "@/adapters/secondary/faviconAdapter";
+import {createFaviconAdapter} from "@/adapters/driven/faviconAdapter";
 
 describe("faviconAdapter", () => {
     const faviconAdapter = createFaviconAdapter();

@@ -5,15 +5,15 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {useSettingsStore} from "@/adapters/primary/stores/settings";
+import {useSettingsStore} from "@/adapters/ui/stores/settings";
 import {BROWSER_STORAGE} from "@/domain/constants";
 import type {StorageDataType} from "@/domain/types";
-import {attachStoreDeps} from "@/adapters/primary/stores/deps";
+import {attachStoreDeps} from "@/adapters/ui/stores/deps";
 import {setActiveTestPinia} from "@test/pinia";
 
 // Mock persistence domain used by the settings store
 const mockSetStorage = vi.fn();
-vi.mock("@/adapters/secondary/storageAdapter", () => ({
+vi.mock("@/adapters/driven/storageAdapter", () => ({
     storageAdapter: () => ({
         getStorage: vi.fn(),
         setStorage: mockSetStorage,
