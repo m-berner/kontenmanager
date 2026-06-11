@@ -55,7 +55,7 @@ src/
 │   ├── container.ts            ← composition root for the app/options contexts
 │   ├── containerBackground.ts  ← minimal composition root for the background context
 │   │
-│   ├── primary/                ← drives the application (UI layer)
+│   ├── ui/                     ← drives the application (UI layer)
 │   │   ├── entrypoints/        ← bootstrap scripts (app.ts, background.ts, options.ts)
 │   │   │                          and corresponding HTML shells
 │   │   ├── views/              ← page-level Vue components (AppIndex, CompanyContent, …)
@@ -67,7 +67,7 @@ src/
 │   │
 │   ├── context.ts              ← Vue provide/inject bridge (provideAdapters / useAdapters)
 │   │
-│   └── secondary/              ← driven by the application (infrastructure layer)
+│   └── driven/                 ← driven by the application (infrastructure layer)
 │       ├── alertAdapter.ts     ← alert / feedback adapter
 │       ├── appAdapter.ts       ← 3-phase app initialisation adapter
 │       ├── browserAdapter.ts   ← browser API wrapper (tabs, windows, downloads, …)
@@ -110,7 +110,7 @@ layer outside it.
 ┌─────────────────────────────────────────────────────┐
 │                      adapters/                       │
 │                                                     │
-│   primary/           ──────►   secondary/           │
+│   ui/                ──────►   driven/              │
 │   (UI, stores,                 (DB, HTTP, storage,  │
 │    composables)                 browser APIs)        │
 │         │                           │               │
@@ -130,10 +130,10 @@ layer outside it.
 The **architecture test** (`tests/unit/architecture.test.ts`) enforces these
 rules at CI time:
 
-- UI code (`primary/components`, `views`, `composables`, `plugins`) must not
-  import concrete secondary services — only `context` (service locator) and
+- UI code (`ui/components`, `views`, `composables`, `plugins`) must not
+  import concrete driven services — only `context` (service locator) and
   `types`.
-- Only `entrypoints/` and `secondary/` may import the DI container.
+- Only `entrypoints/` and `driven/` may import the DI container.
 - Use cases must not import Vue, Pinia, or stores.
 
 ---
@@ -362,12 +362,11 @@ The extension stores all user data in **IndexedDB** (database name
 | `bookings`     | `cID` | Transactions (buy, sell, dividend, fee, tax, …)        |
 | `bookingTypes` | `cID` | Transaction type labels per account                    |
 
-### Layers inside `secondary/database/`
+### Layers inside `driven/database/`
 
 ```
 database/
 ├── databaseAdapter.ts      ← public API: connect(), disconnect(), getAccountRecords(),
-│                              getAllRepositories(), executeBatch(), checkHealth(), repair()
 ├── connectionManager.ts    ← opens / upgrades / closes the IDBDatabase
 ├── migrator.ts             ← runs schema migrations on version upgrade
 ├── transactionManager.ts   ← wraps IDB transactions with Promise API
@@ -411,7 +410,7 @@ fails.
 
 ### Cache layers
 
-1. **HTTP response cache** (`secondary/fetch/httpCache.ts`) — caches raw HTTP
+1. **HTTP response cache** (`driven/fetch/httpCache.ts`) — caches raw HTTP
    responses by URL with a configurable TTL (`CACHE_POLICY.DEFAULT_HTTP_TTL_MS`
    = 5 min, `CACHE_POLICY.QUOTE_TTL_MS` = 1 min).
 2. **UI page freshness cache** (`runtime.loadedStocksPages`) — tracks which

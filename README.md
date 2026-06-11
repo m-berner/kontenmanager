@@ -128,8 +128,8 @@ Firefox WebExtension (Manifest V3) using a hexagonal (ports & adapters) architec
 
 - **Domain logic**: `src/domain/` — pure functions, no framework dependencies
 - **Use cases**: `src/app/usecases/` — orchestrate domain + adapters
-- **Primary adapters**: `src/adapters/ui/` — Vue 3 components, Pinia stores, composables
-- **Secondary adapters**: `src/adapters/driven/` — IndexedDB, fetch, browser APIs
+- **UI adapters**: `src/adapters/ui/` — Vue 3 components, Pinia stores, composables
+- **Driven adapters**: `src/adapters/driven/` — IndexedDB, fetch, browser APIs
 
 Three isolated JS contexts: **app** (popup), **background** (service worker), **options page**.
 

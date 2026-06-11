@@ -2,11 +2,11 @@
 
 This folder documents the **adapters layer** boundary, split into two subdirectories:
 
-## `primary/` — UI-facing adapters
+## `ui/` — UI-facing adapters
 
 Vue components, stores, composables, plugins, entrypoints, assets, and locales that face the user interface.
 
-## `secondary/` — Service-facing adapters
+## `driven/` — Service-facing adapters
 
 Infrastructure adapters that communicate with external systems:
 

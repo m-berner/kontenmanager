@@ -76,7 +76,7 @@ function getAllImports(file: string, text: string): string[] {
 }
 
 describe("Architecture", () => {
-    it("UI code must not import concrete services (except types)", () => {
+    it("UI code must not import concrete driven services (except types)", () => {
         const uiRoots = ["src/adapters/ui/components", "src/adapters/ui/views", "src/adapters/ui/composables", "src/adapters/ui/plugins"];
         const bad: string[] = [];
 
@@ -97,7 +97,7 @@ describe("Architecture", () => {
         expect(bad, bad.join("\n")).toEqual([]);
     });
 
-    it("Only entrypoints/services may import the DI container", () => {
+    it("Only entrypoints/driven may import the DI container", () => {
         const files = walkFiles("src", [".ts", ".vue"]);
         const bad: string[] = [];
 

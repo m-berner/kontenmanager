@@ -102,7 +102,7 @@ export default [
       // Stores should receive adapters via DI, not import them directly.
       "no-restricted-imports": ["error", {
         patterns: [
-          {"group": ["@/adapters/driven/*", "!@/adapters/driven/types"], "message": "Stores must not import concrete secondary adapters. Use DI via 'attachStoreDeps' / 'getStoreDeps'."},
+          {"group": ["@/adapters/driven/*", "!@/adapters/driven/types"], "message": "Stores must not import concrete driven adapters. Use DI via 'attachStoreDeps' / 'getStoreDeps'."},
           "@test/*"
         ]
       }]
@@ -131,7 +131,7 @@ export default [
     }
   },
 
-  // General rule: outside the secondary/entrypoint layer, only import the DI surface and types from adapters.
+  // General rule: outside the driven/entrypoint layer, only import the DI surface and types from adapters.
   {
     files: ["src/**/*.{js,ts,vue}"],
     ignores: [
@@ -145,7 +145,7 @@ export default [
         patterns: [
           {
             group: ["@/adapters/driven/*", "!@/adapters/driven/types"],
-            message: "Outside secondary/entrypoints, only import '@/adapters/context' (DI) and '@/adapters/driven/types' (types)."
+            message: "Outside driven/entrypoints, only import '@/adapters/context' (DI) and '@/adapters/driven/types' (types)."
           }
         ]
       }]

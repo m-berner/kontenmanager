@@ -33,6 +33,10 @@ const TARGET_DIRS = [
   "src/domain/types",
   "src/domain/validation",
   "tests",
+  "tests/unit",
+  "tests/unit/adapters",
+  "tests/unit/adapters/ui",
+  "tests/unit/adapters/driven",
   "scripts",
 ];
 
@@ -110,7 +114,7 @@ function generateDirectoryStructure(dirPath) {
 const DESCRIPTIONS = {
   "src": "The main source code of the extension, organized into hexagonal layers (domain, app, adapters).",
   "src/adapters": "Implementation of interfaces that communicate with the outside world (UI, database, browser APIs).",
-  "src/adapters/driven": "Outbound adapters (secondary ports) for data persistence and external service communication.",
+  "src/adapters/driven": "Outbound adapters (driven ports) for data persistence and external service communication.",
   "src/adapters/driven/database": "IndexedDB persistence layer implementation.",
   "src/adapters/driven/database/repositories": "Concrete repository classes for managing domain entities in IndexedDB.",
   "src/adapters/ui": "User interface implementation using Vue 3, Vuetify, and Pinia.",

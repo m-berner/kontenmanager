@@ -19,11 +19,11 @@ Unit tests are located in `tests/unit/**.test.ts` and follow the hexagonal archi
 ```
 tests/unit/
 ├── adapters/
-│   ├── primary/
+│   ├── ui/
 │   │   ├── components/dialogs/   – Vue dialog component tests
 │   │   ├── composables/          – composable tests
 │   │   └── stores/               – Pinia store tests
-│   └── secondary/
+│   └── driven/
 │       └── database/             – database adapter tests (batch, repositories)
 ├── app/
 │   └── usecases/                 – use case tests
