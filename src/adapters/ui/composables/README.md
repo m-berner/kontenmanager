@@ -52,3 +52,20 @@ Composables in this project are responsible for:
 - Stub browser globals for composables that depend on WebExtension APIs.
 - Verify mapping/normalization behavior in `useForms` to protect DB contract stability.
 - Assert cleanup behavior for composables that register listeners or timers.
+
+## Directory Structure
+
+### Files
+
+- `useDialogGuards.ts`: useDialogGuards
+- `useExportDialog.ts`: useExportDatabaseDialogController
+- `useFavicon.ts`: useFavicon
+- `useForms.ts`: createStockFormManager, createAccountFormManager, createBookingFormManager, createBookingTypeFormManager, StockFormManager, ...
+- `useHeaderBarActions.ts`: useHeaderBarActions
+- `useImportDialog.ts`: useImportDatabaseDialogController
+- `useKeyboardShortcuts.ts`: useKeyboardShortcuts
+- `useMenu.ts`: useMenuHighlight, useMenuAction
+- `useOnlineStockData.ts`: useOnlineStockData
+- `useRepositories.ts`: useRepositories
+- `useUrl.ts`: useUrl
+

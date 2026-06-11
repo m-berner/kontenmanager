@@ -72,3 +72,11 @@ most UI and wiring regressions in a deterministic way.
 - Run headed: `npm run test:e2e:headed`
 - Run UI mode: `npm run test:e2e:ui`
 - On failure, Playwright keeps trace/video/screenshot artifacts (see `test-results/`).
+
+## Directory Structure
+
+### Directories
+
+- `e2e/`
+- `unit/`
+

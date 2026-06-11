@@ -58,3 +58,21 @@ from `src/app/usecases/portAdapters.ts` to preserve Pinia reactivity.
 Backup import/export lives under `src/app/usecases/backup/*` with pure helper functions for unit testing. The public
 surface
 is re-exported from [`backup.ts`](backup.ts).
+
+## Directory Structure
+
+### Directories
+
+- `backup/`
+- `records/`
+
+### Files
+
+- `accounts.ts`: AddAccountUsecaseDeps, DeleteAccountUsecaseDeps, UpdateAccountUsecaseDeps
+- `backup.ts`: exportDatabaseUsecase, createExportFilename, createExportMetadata, estimateSizeKb, findExportConsistencyIssues, ...
+- `bookings.ts`: AddBookingUsecaseDeps, UpdateBookingUsecaseDeps
+- `bookingTypes.ts`: AddBookingTypeUsecaseDeps, DeleteBookingTypeUsecaseDeps, UpdateBookingTypeUsecaseDeps
+- `portAdapters.ts`: RecordsLike, toSettingsPort, toRecordsPort
+- `ports.ts`: TxOptions, AccountRepositoryPort, AlertPort, BookingRepositoryPort, BookingTypeRepositoryPort, ...
+- `stocks.ts`: AddStockUsecaseDeps, UpdateStockUsecaseDeps
+

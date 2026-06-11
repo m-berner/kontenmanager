@@ -75,3 +75,18 @@ The source is organized into three layers:
 - Unit tests: `npm run test:logic`
 - Lint: `npm run lint`
 - Build: `npm run build:dev` / `npm run build:prod`
+
+## Directory Structure
+
+### Directories
+
+- `adapters/`
+- `app/`
+- `domain/`
+
+### Files
+
+- `ARCHITECTURE.md`
+- `vue-shims.d.ts`: (default)
+- `WORKFLOWS.md`
+

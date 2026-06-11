@@ -22,3 +22,17 @@ Guidelines:
 - Keep secondary adapters side-effectful; business rules belong in `src/domain/`.
 - Prefer exposing secondary adapters through DI (`src/adapters/container.ts`) and small ports (
   `src/app/usecases/ports.ts`).
+
+## Directory Structure
+
+### Directories
+
+- `driven/`
+- `ui/`
+
+### Files
+
+- `container.ts`: Adapters, AdaptersOverrides, createAdapters
+- `containerBackground.ts`: BackgroundAdapters, BackgroundAdaptersOverrides, createBackgroundAdapters
+- `context.ts`: provideAdapters, useAdapters
+

@@ -18,3 +18,18 @@ smaller, layer-focused modules under `src/domain/types/`.
 - Add new types to the closest module (domain/infra/backup) and re-export via `src/domain/types.d.ts`.
 - Keep domain types independent of Vue/Pinia and runtime services.
 - Keep backup types explicit: legacy and modern formats are different shapes; avoid "intersection" hacks.
+
+## Directory Structure
+
+### Directories
+
+- `uiLayer/`
+
+### Files
+
+- `adapter.ts`: QueryOptions, RecordOperation, BatchOperationDescriptor, RecordsDbData, RepairResult, ...
+- `backup.ts`: BackupMetadata, LegacyBackupData, ModernBackupData, BackupData, BackupValidationResult
+- `domain.ts`: AccountDb, BookingDb, BookingTypeDb, StockDb, LegacyBookingDb, ...
+- `ui.ts`: AccountFormData, BookingFormData, BookingTypeFormData, StockFormData, HandleUserAlertOptions, ...
+- `uiLayer.ts`
+

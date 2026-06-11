@@ -80,24 +80,16 @@ if (report.issues.length > 0) {
 
 ## Directory Structure
 
-- `connectionManager.ts`: Connection lifecycle management.
-- `transactionManager.ts`: Transaction orchestration logic.
-- `repositories/`: Entity-specific CRUD logic.
-    - `baseRepository.ts`: The generic base class for all repositories.
-    - `repositoryFactory.ts`: Creates and caches repository instances.
-- `healthChecker.ts`: Data integrity and repair services.
-- `batchOperations.ts`: Bulk operation and import services.
-- `migrator.ts`: Schema definitions and migration logic.
-- `databaseAdapter.ts`: The primary entry point (Facade).
+### Directories
 
-## Development Guidelines
+- `repositories/`
 
-1. **Use Repositories**: Avoid manual `IDBRequest` handling. Always use the repository functions and objects.
-2. **Transaction Safety**: Always pass the `tx` object when performing multiple related operations to ensure atomicity.
-3. **Schema Changes**: All schema modifications (new stores or indices) must be implemented in `migrator.ts`.
-4. **Error Handling**: Use the centralized `AppError` system for database-related failures.
+### Files
 
-## Testing Notes
+- `batchOperations.ts`: BatchOperationBuilder, createBatchOperationService, createBatchOperationBuilder, BatchOperationBuilder
+- `connectionManager.ts`: createDatabaseConnectionManager, DatabaseConnectionManager
+- `databaseAdapter.ts`: createDatabaseAdapter, Service
+- `healthChecker.ts`: createDatabaseHealthService
+- `migrator.ts`: setupDatabase, DatabaseMigrator
+- `transactionManager.ts`: createTransactionManager, TransactionManagerContract, TransactionManager
 
-- Create an isolated instance via `createDatabaseAdapter()` and inject it through `createAdapters({databaseAdapter})`
-  (or pass it as an explicit dependency to the unit under test).
