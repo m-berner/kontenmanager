@@ -84,50 +84,17 @@ Manages the application’s notification system.
 
 ## Directory Structure
 
-- `*.ts`: Individual store implementations using the Pinia “setup” syntax.
-- `*.test.ts`: Unit tests for store logic and state transitions.
+### Files
 
-## Development Principles
+- `accounting.ts`: useAccountingStore
+- `accounts.ts`: useAccountsStore
+- `alerts.ts`: useAlertsStore
+- `bookings.ts`: useBookingsStore
+- `bookingTypes.ts`: useBookingTypesStore
+- `deps.ts`: attachStoreDeps, getStoreDeps, getSettingsStoreDeps
+- `portfolio.ts`: usePortfolioStore
+- `recordsHub.ts`: useRecordsStore
+- `runtime.ts`: useRuntimeStore
+- `settings.ts`: useSettingsStore
+- `stocks.ts`: useStocksStore
 
-1. **State Isolation**: Keep unrelated state in separate stores to minimize re-renders and improve modularity.
-2. **Setup Syntax**: All stores use the Pinia setup function syntax for better composition and TypeScript support.
-3. **Getters for Logic**: Use `computed` properties for derived state (e.g., total balance). Complex calculations should
-   be delegated to the `DomainLogic`.
-4. **Action Consistency**: Actions should handle state transitions and coordinate with services. Ensure asynchronous
-   actions handle errors gracefully.
-5. **Validation**: Data entering the stores from the UI should ideally be validated via the `validationAdapter` before
-   reaching the persistence layer.
-
-6. **Minimize leaf-to-leaf imports**: Avoid tight coupling between leaf stores. Use `useRecordsStore()` for high-level
-   orchestration or ensure that cross-imports do not create circularity.
-7. **Hydration entrypoint**: Domain record data should be hydrated through `records.init(...)`.
-8. **No Service Imports**: Stores receive services via dependency injection (wired in
-   `src/adapters/ui/plugins/pinia.ts` and
-   `src/adapters/ui/stores/deps.ts`). Do not import concrete service modules from stores.
-9. **Aggregation stores are read-only**: `accounting.ts` and `portfolio.ts` expose only `computed` properties — they
-   must never hold mutable state or trigger persistence side effects.
-
-### Example usage
-
-```ts
-import { useRecordsStore } from "@/adapters/ui/stores/recordsHub";
-import type { RecordsDbData } from "@/domain/types";
-
-const records = useRecordsStore();
-
-// Hydration (single entrypoint)
-async function boot(storesDB: RecordsDbData, messages: Record<string, string>) {
-  await records.init(storesDB, messages, /* removeAccounts */ true);
-}
-
-// Coordinated cleanup
-records.clean(true); // also clears accounts
-records.clean(false); // keeps accounts
-```
-
-## Testing
-
-- Unit test getters and critical actions in isolation using Pinia (see also `setActiveTestPinia()` in
-  `tests/unit/support/pinia.ts` via the `@test/*` alias).
-- For cross-store interactions, prefer testing via the `useRecordsStore` orchestrator.
-- When persistence is involved, provide stubbed store deps and assert that stores send normalized data to services.

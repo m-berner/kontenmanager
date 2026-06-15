@@ -65,7 +65,7 @@ test("background smoke (firefox): registers listeners and initializes storage de
 
   const repoRoot = process.cwd();
   const buildDir = path.join(repoRoot, ADDON_ID);
-  const backgroundHtmlPath = path.join(buildDir, "entrypoints", "background.html");
+  const backgroundHtmlPath = path.join(buildDir, "adapters", "ui", "entrypoints", "background.html");
 
   await expect(async () => fs.access(backgroundHtmlPath)).resolves.toBeUndefined();
 
@@ -179,7 +179,7 @@ test("background smoke (firefox): registers listeners and initializes storage de
       };
     });
 
-    await page.goto(`${server.baseUrl}/entrypoints/background.html`, {waitUntil: "domcontentloaded"});
+    await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/background.html`, {waitUntil: "domcontentloaded"});
 
     await page.waitForFunction(() => {
       const t = (window as unknown as {__kmTest?: {installedListeners: unknown[]; clickedListeners: unknown[]}}).__kmTest;

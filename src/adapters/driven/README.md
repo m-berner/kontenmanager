@@ -109,32 +109,21 @@ handling.
 
 ## Directory Structure
 
-- `database/`: Contains database-specific modules, migration logic, and repository factories.
-    - `repositories/`: Specialized repositories for each entity type.
-    - `connectionManager.ts`: Connection lifecycle management.
-    - `transactionManager.ts`: Transaction orchestration logic.
-    - `migrator.ts`: Database schema versioning and migration logic.
-- `fetch/`: Network I/O layer.
-    - `providers/`: One file per data source (`ard`, `acheck`, `fnet`, `goyax`, `tgate`, `wstreet`).
-    - `httpClient.ts`: HTTP utilities (`fetchWithRetry`, `fetchWithCache`, `fetchTextWithCacheFollowRedirect`,
-      `parseHTML`).
-    - `httpCache.ts`: In-memory TTL cache shared across all providers.
-    - `providerUtils.ts`: Shared constants and pure helpers used across providers.
-- `*Adapter.ts`: Individual adapter implementations.
+### Directories
 
-## Development Principles
+- `database/`
+- `fetch/`
 
-1. **No Business Rules**: Pure logic belongs in the `domain`. Adapters should only "do" things, not "decide" business
-   outcomes.
-2. **Asynchronicity**: Most adapter methods return `Promises`. Always handle errors using the centralized `AppError`
-   structure.
-3. **Factories + Modules**: Adapters are implemented as factories (preferred when stateful) or stateless functional
-   modules and then wired through the DI container.
-4. **Fail Gracefully**: Infrastructure operations (especially network requests) must handle failures without crashing
-   the UI, providing meaningful feedback via the `alerts` system.
+### Files
 
-## Testing
+- `alertAdapter.ts`: AlertAdapter, AlertSink, createAlertAdapter
+- `appAdapter.ts`: AppAdapter, AppAdapterDeps, AppStores, createAppAdapter
+- `browserAdapter.ts`: BrowserAdapter, createBrowserAdapter
+- `faviconAdapter.ts`: FaviconAdapter, createFaviconAdapter
+- `fetchAdapter.ts`: FetchAdapter, createFetchAdapter, clearCache, fetchWithRetry, getCache, ...
+- `importExportAdapter.ts`: validateBackupData, validateDataIntegrityStatus, validateLegacyDataIntegrityStatus, stringifyDatabase, verifyExportIntegrity, ...
+- `storageAdapter.ts`: storageAdapter
+- `taskAdapter.ts`: ensureConnected, createTaskAdapter, TaskAdapter
+- `types.ts`
+- `validationAdapter.ts`: createRule, cleanString, oneOfTwo, required, stringLength, ...
 
-- Prefer integration-style unit tests that mock network/DB boundaries.
-- Stub IndexedDB and `browser.*` APIs in Vitest where needed.
-- Assert that adapters translate technical failures into `AppError` instances with stable error codes.

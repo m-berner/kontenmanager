@@ -76,3 +76,15 @@ A custom plugin that registers dialog components globally. This enables the **Di
 
 - Plugin files themselves are thin; prefer testing behavior where they are used (components/views).
 - For i18n-dependent tests, set the locale explicitly and assert on formatted output rather than raw numbers/dates.
+
+## Directory Structure
+
+### Files
+
+- `components.ts`: (default)
+- `i18n.ts`: createI18nPlugin, I18nPlugin
+- `pinia.ts`: PiniaAdapters, createAppPinia
+- `router.ts`: (default)
+- `themeSync.ts`: startThemeSync
+- `vuetify.ts`: vuetify, (default)
+

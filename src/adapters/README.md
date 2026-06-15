@@ -2,11 +2,11 @@
 
 This folder documents the **adapters layer** boundary, split into two subdirectories:
 
-## `primary/` — UI-facing adapters
+## `ui/` — UI-facing adapters
 
 Vue components, stores, composables, plugins, entrypoints, assets, and locales that face the user interface.
 
-## `secondary/` — Service-facing adapters
+## `driven/` — Service-facing adapters
 
 Infrastructure adapters that communicate with external systems:
 
@@ -22,3 +22,17 @@ Guidelines:
 - Keep secondary adapters side-effectful; business rules belong in `src/domain/`.
 - Prefer exposing secondary adapters through DI (`src/adapters/container.ts`) and small ports (
   `src/app/usecases/ports.ts`).
+
+## Directory Structure
+
+### Directories
+
+- `driven/`
+- `ui/`
+
+### Files
+
+- `container.ts`: Adapters, AdaptersOverrides, createAdapters
+- `containerBackground.ts`: BackgroundAdapters, BackgroundAdaptersOverrides, createBackgroundAdapters
+- `context.ts`: provideAdapters, useAdapters
+

@@ -19,11 +19,11 @@ Unit tests are located in `tests/unit/**.test.ts` and follow the hexagonal archi
 ```
 tests/unit/
 ├── adapters/
-│   ├── primary/
+│   ├── ui/
 │   │   ├── components/dialogs/   – Vue dialog component tests
 │   │   ├── composables/          – composable tests
 │   │   └── stores/               – Pinia store tests
-│   └── secondary/
+│   └── driven/
 │       └── database/             – database adapter tests (batch, repositories)
 ├── app/
 │   └── usecases/                 – use case tests
@@ -72,3 +72,11 @@ most UI and wiring regressions in a deterministic way.
 - Run headed: `npm run test:e2e:headed`
 - Run UI mode: `npm run test:e2e:ui`
 - On failure, Playwright keeps trace/video/screenshot artifacts (see `test-results/`).
+
+## Directory Structure
+
+### Directories
+
+- `e2e/`
+- `unit/`
+

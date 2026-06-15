@@ -52,3 +52,11 @@ import {useAdapters} from "@/adapters/context";
 const {browserAdapter} = useAdapters();
 const message = browserAdapter.getMessage("xx_error_code");
 ```
+
+## Directory Structure
+
+### Directories
+
+- `de/`
+- `en/`
+

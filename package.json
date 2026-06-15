@@ -41,11 +41,12 @@
     "minimatch": "^10.2.1"
   },
   "scripts": {
-    "build:dev": "vue-tsc -p tsconfig.build.json && vite build --mode development",
-    "build:prod": "vue-tsc -p tsconfig.build.json && vite build --mode production",
+    "build:dev": "vue-tsc && vite build --mode development",
+    "build:prod": "vue-tsc && vite build --mode production",
     "lint": "npx eslint --ext .ts,.vue src/",
     "lint:addon": "addons-linter ./releases/firefox/kontenmanager@gmx.de.xpi",
     "lint:i18n": "node scripts/i18n-lint.mjs",
+    "update:readmes": "node scripts/update-readmes.mjs",
     "test:e2e": "npm run build:dev && playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",

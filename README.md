@@ -58,6 +58,14 @@ npm run build:prod
 
 Load the folder `kontenmanager@gmx.de/` as a temporary addon in Firefox (about:debugging → This Firefox → Load Temporary Add-on... → select any file within that folder).
 
+### Update Documentation
+
+```powershell
+npm run update:readmes
+```
+
+Updates all directory READMEs with the current file structure and exports.
+
 ### Test
 
 ```powershell
@@ -112,6 +120,112 @@ The project follows a modular architecture with a clear separation of concerns:
 3. Build the extension with `npm run build:dev` (or `npm run build:prod`).
 4. Reload the temporary addon in Firefox and verify behavior in the Browser Console.
 
+## Development Conventions
+
+### Architecture
+
+Firefox WebExtension (Manifest V3) using a hexagonal (ports & adapters) architecture.
+
+- **Domain logic**: `src/domain/` — pure functions, no framework dependencies
+- **Use cases**: `src/app/usecases/` — orchestrate domain + adapters
+- **UI adapters**: `src/adapters/ui/` — Vue 3 components, Pinia stores, composables
+- **Driven adapters**: `src/adapters/driven/` — IndexedDB, fetch, browser APIs
+
+Three isolated JS contexts: **app** (popup), **background** (service worker), **options page**.
+
+### Critical Conventions
+
+#### DB-first ordering in use cases
+
+**All IndexedDB writes must complete before Pinia store mutations.**
+
+```ts
+// CORRECT
+await deps.repositories.bookings.save(booking);
+deps.records.bookings.update(booking);
+
+// WRONG — if the DB write fails, the store is desynchronised
+deps.records.bookings.update(booking);          // store mutated
+await deps.repositories.bookings.save(booking); // DB might fail
+```
+
+This applies to every use case operation: add, update, delete. The same rule applies in
+composables that call repositories directly (e.g. `useMenu.ts`).
+
+**Rationale**: A failed DB write cannot be easily rolled back from Pinia. DB-first means
+a failure leaves the store in the old (still-correct) state, and the error surfaces to
+the user before the UI reflects phantom data.
+
+#### Always await `records.init()`
+
+`records.init()` is **async** — it calls `initRecordsUsecase` which sorts and hydrates all
+Pinia stores. Forgetting the `await` leaves stores unpopulated when the next line runs.
+
+```ts
+// CORRECT
+await deps.records.init(storesDB, messages);
+
+// WRONG — stores not yet populated when execution continues
+deps.records.init(storesDB, messages);
+```
+
+#### AbortSignal propagation
+
+Every long-running fetch operation must accept and forward an `AbortSignal` so it can be
+canceled on component unmount or user navigation.
+
+- `loadOnlineData(page, {signal})` — always pass the signal from the calling context
+- `refreshOnlineData(page, {signal})` — same
+- Callers that own the AbortController must abort it in `onBeforeUnmount` / `onUnmounted`
+
+Pattern used in `CompanyContent.vue`:
+
+```ts
+const signal = startOnlineLoad(); // aborts previous, returns new signal
+try {
+    await loadRequiredPages(startPage, signal);
+} catch (err) {
+    if (!isAbortError(err)) await alertAdapter.feedbackError();
+} finally {
+    if (!signal.aborted) {
+        runtime.isStockLoading = false;
+    }
+}
+```
+
+#### Loading-state guards after abort
+
+Use `if (!signal.aborted)` in `finally` blocks before resetting loading flags.
+Without the guard, the flag is reset even when a newer concurrent load has already
+started, making the loading spinner disappear prematurely.
+
+### IndexedDB
+
+- Managed via `connectionManager` → `transactionManager` → `baseRepository`
+- `connectingPromise` in `connectionManager` serialises concurrent `connect()` calls
+- `atomicImport` in `batchOperations` writes multiple stores in one transaction (ACID)
+- Schema migrations live in `migrator.ts`; every migration is guarded with
+  `if (oldVersion < N)` and `if (!store.indexNames.contains(...))` to be idempotent
+
+### FIFO Investment Calculation
+
+`calculateInvestByStockId` in `logic.ts` computes cost basis under FIFO by iterating
+BUY bookings **newest-first** (as stored in Pinia after `initializeRecords` sorts them
+by `cBookDate` DESC) and prorating the boundary lot:
+
+```ts
+sort((a, b) => utcMs(b.cBookDate) - utcMs(a.cBookDate))
+.reduce((acc, entry) => {
+    const prev = runningCount;
+    runningCount += entry.cCount;
+    if (prev >= totalPortfolio) return acc;
+    const used = Math.min(entry.cCount, totalPortfolio - prev);
+    return acc + (used / entry.cCount) * entry.cDebit;
+}, 0);
+```
+
+The explicit `.sort()` makes the function correct regardless of input order.
+
 ## Tests
 
 The project uses [Vitest](https://vitest.dev/) for unit testing, focusing on domain logic and store state.
@@ -159,6 +273,7 @@ This uses Mozilla's `addons-linter` against `./releases/firefox/kontenmanager@gm
 - `npm run build:prod`: Build extension in production mode.
 - `npm run lint`: Run ESLint for `src/` (`.ts` and `.vue`).
 - `npm run lint:i18n`: Lint i18n dictionaries.
+- `npm run update:readmes`: Create or update README.md files across the project.
 - `npm run test:logic`: Run Vitest unit tests.
 - `npm run test:typescript`: Run Vue/TypeScript type checks.
 - `npm run lint:addon`: Run Mozilla addons linter for the packaged `.xpi`.

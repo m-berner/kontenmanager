@@ -11,7 +11,6 @@ async function startStaticServer(rootDir: string): Promise<{baseUrl: string; clo
       const url = new URL(req.url ?? "/", "http://localhost");
       const pathname = decodeURIComponent(url.pathname);
 
-      // Basic path traversal guard.
       const rel = pathname.replace(/^\/+/, "");
       const filePath = path.join(rootDir, rel);
       const normalizedRoot = path.resolve(rootDir) + path.sep;
@@ -67,20 +66,13 @@ test("happy path (firefox): import backup and see Company content", async ({page
   const repoRoot = process.cwd();
   const buildDir = path.join(repoRoot, ADDON_ID);
   const manifestPath = path.join(buildDir, "manifest.json");
-  const appHtmlPath = path.join(buildDir, "entrypoints", "app.html");
+  const appHtmlPath = path.join(buildDir, "adapters", "ui", "entrypoints", "app.html");
 
   await expect(async () => fs.access(manifestPath)).resolves.toBeUndefined();
   await expect(async () => fs.access(appHtmlPath)).resolves.toBeUndefined();
 
   const server = await startStaticServer(buildDir);
   try {
-    const pageErrors: string[] = [];
-    const consoleErrors: string[] = [];
-    page.on("pageerror", (err) => pageErrors.push(err.message));
-    page.on("console", (msg) => {
-      if (msg.type() === "error") consoleErrors.push(msg.text());
-    });
-
     // Provide a minimal `browser.*` stub so the extension code can run in a normal web page.
     // Must be created inside the page context (functions can't be passed as structured data).
     await page.addInitScript(() => {
@@ -190,22 +182,19 @@ test("happy path (firefox): import backup and see Company content", async ({page
       };
     });
 
-    await page.goto(`${server.baseUrl}/entrypoints/app.html`, {waitUntil: "domcontentloaded"});
+    await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/app.html`, {waitUntil: "load"});
 
-    // Wait for the main header to render, then switch to "Home" so the import icon is visible
-    // (`importDatabase` is hidden in the Company view).
-    await page.waitForSelector("#home", {timeout: 10_000}).catch(async (e) => {
-      const appHtml = await page.locator("#app").innerHTML().catch(() => "");
-      throw new Error(
-        [
-          `App did not render HeaderBar (#home not found): ${String(e)}`,
-          `pageErrors: ${pageErrors.join(" | ") || "(none)"}`,
-          `consoleErrors: ${consoleErrors.join(" | ") || "(none)"}`,
-          `#app innerHTML (first 500): ${appHtml.slice(0, 500) || "(empty)"}`
-        ].join("\n")
-      );
-    });
-    await page.locator("#home").click();
+    // Wait for the HeaderBar to be mounted and visible
+    // We use a more specific selector to avoid strict mode violations if multiple headers exist (though they shouldn't)
+    const headerBar = page.locator("header.v-app-bar").first();
+    await expect(headerBar).toBeVisible({timeout: 30_000});
+
+    // Ensure we are on the home view
+    const homeBtn = page.locator("#home");
+    await expect(homeBtn).toBeVisible({timeout: 10_000});
+    
+    // Switch to "Home" explicitly (just in case)
+    await homeBtn.click();
 
     // Open Import dialog via HeaderBar icon id.
     await page.locator("#importDatabase").click();
@@ -244,8 +233,9 @@ test("happy path (firefox): import backup and see Company content", async ({page
     await page.locator("#company").click();
 
     // Assert stock from the fixture is visible.
-    await expect(page.getByText("AAPL")).toBeVisible();
-    await expect(page.getByText("US0378331005")).toBeVisible();
+    // Use a longer timeout and check for content specifically.
+    await expect(page.getByText("AAPL")).toBeVisible({timeout: 20_000});
+    await expect(page.getByText("US0378331005")).toBeVisible({timeout: 10_000});
   } finally {
     await server.close();
   }

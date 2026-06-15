@@ -13,3 +13,10 @@ Guidelines:
 - App layer coordinates domain + infra, but should not contain UI framework code (Vue/Pinia).
 - Prefer depending on `src/app/usecases/ports.ts` shapes instead of importing concrete stores/services.
 - Keep pure domain rules in `src/domain/`.
+
+## Directory Structure
+
+### Directories
+
+- `usecases/`
+
