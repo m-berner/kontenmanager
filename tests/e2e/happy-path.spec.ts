@@ -11,7 +11,6 @@ async function startStaticServer(rootDir: string): Promise<{baseUrl: string; clo
       const url = new URL(req.url ?? "/", "http://localhost");
       const pathname = decodeURIComponent(url.pathname);
 
-      // Basic path traversal guard.
       const rel = pathname.replace(/^\/+/, "");
       const filePath = path.join(rootDir, rel);
       const normalizedRoot = path.resolve(rootDir) + path.sep;
@@ -74,13 +73,6 @@ test("happy path (firefox): import backup and see Company content", async ({page
 
   const server = await startStaticServer(buildDir);
   try {
-    const pageErrors: string[] = [];
-    const consoleErrors: string[] = [];
-    page.on("pageerror", (err) => pageErrors.push(err.message));
-    page.on("console", (msg) => {
-      if (msg.type() === "error") consoleErrors.push(msg.text());
-    });
-
     // Provide a minimal `browser.*` stub so the extension code can run in a normal web page.
     // Must be created inside the page context (functions can't be passed as structured data).
     await page.addInitScript(() => {

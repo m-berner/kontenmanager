@@ -52,7 +52,7 @@ function extractExports(filePath) {
   }
   
   // Named exports: export { a, b }
-  const namedExportRegex = /export\s+\{([^}]+)\}/g;
+  const namedExportRegex = /export\s+\{([^}]+)}/g;
   while ((match = namedExportRegex.exec(content)) !== null) {
     const names = match[1].split(",").map(n => n.trim().split(" as ")[0]);
     exports.push(...names);
