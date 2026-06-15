@@ -140,7 +140,7 @@ export default defineConfig(({ mode }) => {
           options: "src/adapters/ui/entrypoints/options.html"
         },
         output: {
-          entryFileNames: "entrypoints/[name].js",
+          entryFileNames: "adapters/ui/entrypoints/[name].js",
           chunkFileNames: "[name].js",
           assetFileNames: "adapters/ui/assets/[name].[ext]",
           format: "es"
