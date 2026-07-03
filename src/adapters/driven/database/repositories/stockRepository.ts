@@ -28,8 +28,23 @@ export function createStockRepository(transactionManager: TransactionManagerCont
         ])
     );
 
+
     async function save(data: StockDb | Omit<StockDb, "cID">, options = {}): Promise<number> {
-        return base.save(validateStock(data), options);
+        // Validate first to apply domain normalizations
+        const validated = validateStock(data);
+        // Important: Avoid unique index collisions on blank identifiers.
+        // IndexedDB will index empty strings. With unique composite indexes
+        // (accountId + ISIN) and (accountId + SYMBOL), multiple stocks with blank
+        // identifiers for the same account would violate uniqueness on insert.
+        // By omitting blank fields, no index entry is created for them.
+        const toPersist: Record<string, unknown> = { ...validated };
+        if (typeof toPersist.cISIN === "string" && (toPersist.cISIN as string).trim() === "") {
+            delete toPersist.cISIN;
+        }
+        if (typeof toPersist.cSymbol === "string" && (toPersist.cSymbol as string).trim() === "") {
+            delete toPersist.cSymbol;
+        }
+        return base.save(toPersist as unknown as StockDb, options);
     }
 
     /**

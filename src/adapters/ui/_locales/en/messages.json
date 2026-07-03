@@ -34,5 +34,8 @@
   },
   "xx_db_rollback": {
     "message": "Rollback successful"
+  },
+  "xx_no_active_account": {
+    "message": "No account selected"
   }
 }

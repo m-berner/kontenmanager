@@ -13,15 +13,22 @@ import type {TransactionManagerContract} from "@/adapters/driven/database/transa
 async function executeRequest<R>(request: IDBRequest<R>, storeName: string): Promise<R> {
     return new Promise((resolve, reject) => {
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () =>
+        request.onerror = () => {
+            const err = request.error as DOMException | null;
+            const details = {
+                storeName,
+                name: err?.name,
+                message: err?.message
+            } as const;
             reject(
                 appError(
                     ERROR_DEFINITIONS.SERVICES.DATABASE.REQUEST_FAILED.CODE,
                     ERROR_CATEGORY.DATABASE,
                     false,
-                    {storeName}
+                    details
                 )
             );
+        };
     });
 }
 

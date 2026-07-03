@@ -46,6 +46,15 @@ const onClickOk = async (): Promise<void> => {
     errorContext: "ADD_STOCK",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
+      // Ensure an active account is selected before saving
+      if (!activeAccountId || activeAccountId <= 0) {
+        await alertAdapter.feedbackError(
+            t("components.dialogs.onClickOk"),
+            browserAdapter.getMessage("xx_no_active_account"),
+            { data: "ADD_STOCK_NO_ACCOUNT" }
+        );
+        return;
+      }
       const stockData = mapStockFormToDb(activeAccountId);
 
       const res = await addStockUsecase(
