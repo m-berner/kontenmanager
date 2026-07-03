@@ -153,7 +153,7 @@ export interface ServiceFetcherType {
 /**
  * Permitted service provider names.
  */
-export type ServiceName = "goyax" | "fnet" | "wstreet" | "acheck" | "ard" | "tgate";
+export type ServiceName = "none" | "goyax" | "fnet" | "wstreet" | "acheck" | "ard" | "tgate";
 
 /**
  * Represents a stock item that combines database fields with calculated RAM-only values.

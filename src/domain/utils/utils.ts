@@ -26,7 +26,9 @@ export function detectNumberFormat(str: string): "de" | "en" {
     const lastComma = str.lastIndexOf(",");
 
     // Only dots: US format
-    if (commaCount === 0 && dotCount > 0) return "en";
+    if (commaCount === 0 && dotCount > 0) {
+        return "en";
+    }
 
     // Only commas: check position (last 3-4 chars = decimal)
     if (dotCount === 0 && commaCount > 0) {
@@ -67,7 +69,8 @@ export function haveSameStrings(arr1: string[], arr2: string[]): boolean {
  * @throws {@link AppError} If the timestamp is invalid.
  */
 export function isoDate(ms: number): string {
-    if (!Number.isFinite(ms)) {
+    const MAX_MS = 8.64e15;
+    if (!Number.isFinite(ms) || Math.abs(ms) > MAX_MS) {
         throw appError(
             ERROR_DEFINITIONS.UTILS.B.CODE,
             ERROR_CATEGORY.VALIDATION,

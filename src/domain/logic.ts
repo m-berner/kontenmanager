@@ -213,11 +213,23 @@ export async function initializeRecords(
     stores.bookingTypes.clean();
     stores.stocks.clean();
 
-    // Bulk add to stores
-    storesDB.accountsDB.forEach((a) => stores.accounts.add(a));
+    // Bulk add to stores (normalize optional identifiers for uniform UI)
+    storesDB.accountsDB.forEach((a) =>
+        stores.accounts.add({
+            ...a,
+            cIban: a.cIban ?? ""
+        })
+    );
     storesDB.bookingTypesDB.forEach((bt) => stores.bookingTypes.add(bt));
     storesDB.stocksDB.forEach((s) =>
-        stores.stocks.add({...s, ...INDEXED_DB.STORE.STOCK_MEMORY})
+        stores.stocks.add(
+            {
+                ...s,
+                cISIN: s.cISIN ?? "",
+                cSymbol: s.cSymbol ?? "",
+                ...INDEXED_DB.STORE.STOCK_MEMORY
+            }
+        )
     );
     storesDB.bookingsDB.forEach((b) => stores.bookings.add(b));
 

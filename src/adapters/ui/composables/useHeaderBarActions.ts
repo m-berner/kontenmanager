@@ -165,8 +165,11 @@ export function useHeaderBarActions(t: (_key: string) => string): {
     };
 
     const onIconClick = async (ev: Event): Promise<void> => {
-        const target = ev.target as Element;
-        const dialogId = target.closest("[id]")?.id;
+        // Prefer the element the listener is attached to (currentTarget) to resolve the ID,
+        // because clicks on inner icons may set `event.target` to a child without the desired id.
+        const current = ev.currentTarget as Element | null;
+        const target = ev.target as Element | null;
+        const dialogId = current?.closest("[id]")?.id ?? target?.closest("[id]")?.id;
 
         if (!dialogId) return;
         if (!(dialogId in dialogActions)) return;

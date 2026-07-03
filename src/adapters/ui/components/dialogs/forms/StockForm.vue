@@ -14,12 +14,14 @@ import {log} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
 import {useStockForm} from "@/adapters/ui/composables/useForms";
+import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
 const props = defineProps<StockFormProps>();
 
 const {t} = useI18n();
 const {stockFormData} = useStockForm();
 const {fetchAdapter, validationAdapter, alertAdapter} = useAdapters();
+const settings = useSettingsStore();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -41,9 +43,13 @@ const onUpdateIsin = async () => {
   try {
     if (!props.isUpdate && stockFormData.isin.length === 12) {
       stockFormData.isin = stockFormData.isin.toUpperCase().replace(/\s/g, "");
-      const companyData = await fetchAdapter.fetchCompanyData(
-          stockFormData.isin
-      );
+      // In E2E/offline mode the service may be disabled; skip auto-fetch to avoid alerts
+      if (settings.service === "none") {
+        stockFormData.company = stockFormData.company || "";
+        stockFormData.symbol = stockFormData.symbol || "";
+        return;
+      }
+      const companyData = await fetchAdapter.fetchCompanyData(stockFormData.isin);
       stockFormData.company = companyData.company;
       stockFormData.symbol = companyData.symbol;
     }

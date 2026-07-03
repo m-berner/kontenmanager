@@ -32,6 +32,7 @@ export type AppStores = {
         init: (_storage: StorageDataType) => void;
         activeAccountId: number;
         exchanges: string[];
+        service?: string;
     };
     runtime: {
         curUsd: number;
@@ -381,6 +382,14 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             phase: "fetchExternalData",
             event: "start"
         });
+
+        // In test/e2e scenarios we may disable external fetching by selecting
+        // the special provider 'none'. When active, skip all external calls
+        // gracefully to avoid noisy alerts and CORS errors in CI.
+        if (stores.settings.service === "none") {
+            log("SERVICES app", { phase: "fetchExternalData", info: "service=none; skipping" });
+            return { exchanges: false, indexes: false, materials: false };
+        }
 
         const currency = getCurrencyFromLocale();
         if (!currency) {

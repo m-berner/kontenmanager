@@ -428,6 +428,11 @@ export const CURRENCIES = {
 
 export const FETCH = {
     PROVIDERS: {
+        none: {
+            NAME: "Disabled",
+            HOME: "",
+            QUOTE: ""
+        },
         goyax: {
             NAME: "Goyax",
             HOME: "https://www.goyax.de/",

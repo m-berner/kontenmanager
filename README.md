@@ -104,6 +104,11 @@ The project follows a modular architecture with a clear separation of concerns:
 - `kontenmanager@gmx.de/`: The built extension package.
 - `releases/`: Packaged `.xpi` files for distribution.
 
+## Documentation
+
+- Architecture guide: [src/ARCHITECTURE.md](src/ARCHITECTURE.md)
+- Detailed workflows: [src/WORKFLOWS.md](src/WORKFLOWS.md)
+
 ## Architecture & Data Flow
 
 1. **User Interaction:** Vue components in `views/` or `components/` capture user input.
