@@ -55,7 +55,7 @@ export async function fetchWithRetry(
     let lastError: unknown;
 
     // Always enforce our own timeout, but still respect any caller-provided abort signal.
-    // We do this by always passing our controller.signal to fetch, and mirroring the
+    // We do this by always passing our controller signal to fetch and mirroring the
     // caller abort into it.
     const callerSignal = options.signal;
     const onCallerAbort = () => controller.abort(callerSignal?.reason);
@@ -88,7 +88,7 @@ export async function fetchWithRetry(
                     break;
                 }
             } catch (error) {
-                // Prefer a structured abort reason (e.g. timeout AppError) if available.
+                // Prefer a structured abort reason (e.g., timeout AppError) if available.
                 lastError =
                     controller.signal.aborted && controller.signal.reason !== undefined
                         ? controller.signal.reason
@@ -147,8 +147,8 @@ export async function fetchWithCache(
 
 /**
  * Fetches text content while following redirects to the canonical URL.
- * Caches the returned HTML under both the original URL and the final (redirected) URL
- * so subsequent lookups under either key hit the cache.
+ * Caches the returned HTML under both the original URL and the final (redirected) URL,
+ * so the next lookups under either key hit the cache.
  *
  * @param url - URL to fetch
  * @param ttl - Cache time-to-live in milliseconds (default: 5 minutes)

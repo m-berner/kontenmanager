@@ -113,7 +113,7 @@ export function createAppAdapter(deps: AppAdapterDeps) {
     }
 
     /**
-     * Extracts currency code from user locale
+     * Extracts currency code from the user locale
      */
     function getCurrencyFromLocale(): string | undefined {
         const rawLocale = browserAdapter.getUserLocale();

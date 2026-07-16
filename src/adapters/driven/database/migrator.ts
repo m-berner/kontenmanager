@@ -25,7 +25,7 @@ function createStores(db: IDBDatabase): void {
         );
     }
 
-    // Bookings store
+    // Booking store
     if (!db.objectStoreNames.contains(INDEXED_DB.STORE.BOOKINGS.NAME)) {
         const store = db.createObjectStore(INDEXED_DB.STORE.BOOKINGS.NAME, {
             keyPath: INDEXED_DB.STORE.BOOKINGS.FIELDS.ID,
@@ -183,7 +183,7 @@ export function setupDatabase(db: IDBDatabase, ev: IDBVersionChangeEvent): void 
     const tx = request?.transaction ?? undefined;
 
     log(
-        "SERVICES DATABASE migrator: upgrade",
+        "SERVICE DATABASE migrator: upgrade",
         {oldVersion, newVersion},
         "info"
     );

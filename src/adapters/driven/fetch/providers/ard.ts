@@ -58,14 +58,14 @@ export function sanitizeArdDetailUrlFromOnclick(onclickAttr: string): string | n
 
 /**
  * Fetches stock market data (rate, min, max, currency) from tagesschau.de (ARD).
- * Performs two HTTP requests per stock: first to the search result page to obtain the
+ * Performs two HTTP requests per stock: first to the search result page to receive the
  * detail page URL, then to the detail page itself to extract the quote data.
  * Both responses are cached under `CACHE_POLICY.QUOTE_TTL_MS`.
  *
  * @param urls - Array of `{ key: storeId, value: searchUrl }` pairs, one per stock.
  * @param options - Optional fetch options; `signal` is forwarded to all HTTP calls.
  * @returns Resolved array of normalized stock market data in dot-decimal format.
- * @throws When the detail URL cannot be found or the quote data cannot be parsed.
+ * @throws When the detail URL cannot be found, or the quote data cannot be parsed.
  */
 export async function ardFetcher(
     urls: NumberStringPair[],

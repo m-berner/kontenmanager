@@ -38,7 +38,7 @@ export const useSettingsStore = defineStore(
      * @property {Ref<number>} dividendsPerPage - Number of dividend records displayed per table page.
      * @property {Ref<number>} sumsPerPage - Number of summary/total records displayed per table page.
      * @property {Ref<number>} activeAccountId - Identifier of the currently selected bank account.
-     *                                           Default value is -1 if no account is selected.
+     *                                           The default value is -1 if no account is selected.
      * @property {Ref<string>} service - Key of the external financial service used for data fetching.
      * @property {Ref<string[]>} materials - List of enabled/visible material categories.
      * @property {Ref<string[]>} markets - List of enabled/visible stock market identifiers.
@@ -181,7 +181,7 @@ export const useSettingsStore = defineStore(
 
         /**
          * Loads settings from browser storage and initializes the store.
-         * Useful for contexts that don't run the full app bootstrap (e.g. options page).
+         * Useful for contexts that don't run the full app bootstrap (e.g., option page).
          */
         async function load(): Promise<void> {
             try {

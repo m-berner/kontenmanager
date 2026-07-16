@@ -9,7 +9,7 @@ export type FaviconAdapter = ReturnType<typeof createFaviconAdapter>;
 /**
  * Service that provides favicon URLs with fallback providers.
  *
- * Providers chain:
+ * Provider chain:
  * 1. Google S2 favicons (requested size)
  * 2. DuckDuckGo IP3 `.ico`
  * 3. Google S2 16px as the final fallback

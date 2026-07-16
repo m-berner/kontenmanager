@@ -17,6 +17,8 @@ export type AddStockUsecaseDeps = {
     stocksPage: number;
 };
 
+export type RemoveStockUsecaseDeps = PersistDeps;
+
 export type UpdateStockUsecaseDeps = PersistDeps;
 
 export async function addStockUsecase(
@@ -38,6 +40,15 @@ export async function addStockUsecase(
 
     deps.records.stocks.add({...input.stockData, cID: id});
     return {id, page: deps.stocksPage};
+}
+
+export async function removeStockUsecase(
+    deps: RemoveStockUsecaseDeps,
+    input: { stockId: number }
+): Promise<void> {
+    await deps.repositories.stocks.delete(input.stockId);
+    deps.records.stocks.remove(input.stockId);
+    deps.runtime.resetTeleport();
 }
 
 export async function updateStockUsecase(

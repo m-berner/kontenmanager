@@ -26,7 +26,7 @@ export function createAppPinia(adapters: PiniaAdapters): Pinia {
         alertAdapter: adapters.alertAdapter
     });
 
-    // Wire alert rendering to the alerts store without making alert service import Pinia/stores.
+    // Wire alert rendering to the alert store without making alert service import Pinia/stores.
     adapters.alertAdapter.configureAlertSink(() => useAlertsStore(pinia));
 
     log("PLUGINS pinia");

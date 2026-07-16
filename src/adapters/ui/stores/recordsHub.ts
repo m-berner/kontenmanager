@@ -53,7 +53,7 @@ export const useRecordsStore = defineStore("records", function () {
     /**
      * Clears all record stores.
      *
-     * @param withAccounts - When true, also clears the accounts store (default: true).
+     * @param withAccounts - When true, also clears the account store (default: true).
      * @returns Void.
      */
     function clean(withAccounts: boolean = true): void {
@@ -91,9 +91,9 @@ export const useRecordsStore = defineStore("records", function () {
     }
 
     return {
-        /** The accounts store instance. */
+        /** The account store instance. */
         accounts: entityStores.accounts,
-        /** The bookings store instance. */
+        /** The booking store instance. */
         bookings: entityStores.bookings,
         /** The booking types store instance. */
         bookingTypes: entityStores.bookingTypes,

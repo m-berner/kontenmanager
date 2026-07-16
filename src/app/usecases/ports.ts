@@ -45,6 +45,7 @@ export interface AlertPort {
 
 export interface BookingRepositoryPort {
     save: (_data: BookingDb | Omit<BookingDb, "cID">, _options?: TxOptions) => Promise<number>;
+    delete: (_id: number, _options?: TxOptions) => Promise<void>;
 }
 
 export interface BookingTypeRepositoryPort {
@@ -96,6 +97,7 @@ export interface RecordsBookingTypesPort {
 export interface RecordsBookingsPort {
     add: (_booking: BookingDb, _prepend?: boolean) => void;
     update: (_booking: BookingDb) => void;
+    remove: (_id: number) => void;
 }
 
 export interface RecordsPort {
@@ -110,6 +112,7 @@ export interface RecordsPort {
 export interface RecordsStocksPort {
     add: (_stock: StockDb) => void;
     update: (_stock: StockDb) => void;
+    remove: (_id: number) => void;
 }
 
 export interface RepositoriesPort {
@@ -119,7 +122,7 @@ export interface RepositoriesPort {
     stocks: StockRepositoryPort;
 }
 
-/** Common deps bundle for use cases that persist to DB, update in-memory records, and reset UI state. */
+/** Common deps bundle for use cases that persist to DB, update in-memory records, and reset the UI state. */
 export type PersistDeps = {
     repositories: RepositoriesPort;
     records: RecordsPort;
@@ -137,6 +140,7 @@ export interface SettingsPort {
 
 export interface StockRepositoryPort {
     save: (_data: StockDb | Omit<StockDb, "cID">, _options?: TxOptions) => Promise<number>;
+    delete: (_id: number, _options?: TxOptions) => Promise<void>;
 }
 
 export interface StoragePort {

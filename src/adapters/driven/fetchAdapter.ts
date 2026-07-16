@@ -99,7 +99,7 @@ export async function fetchCompanyData(isin: string): Promise<CompanyData> {
             col1?.querySelector("h2")?.textContent ??
             col1?.textContent ??
             "";
-        const company = companyRaw.split(/[\,\n\r]/)[0]?.trim() || "";
+        const company = companyRaw.split(/[,\n\r]/)[0]?.trim() || "";
 
         // Prefer label-based extraction for resilience against layout changes.
         let symbol = "";

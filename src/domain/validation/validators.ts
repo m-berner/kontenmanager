@@ -35,7 +35,7 @@ export function validateAccount(data: unknown): AccountDb {
     const ibanRes = validateIBAN(normalizedIban);
     if (!ibanRes.isValid) {
         log(
-            "DOMAINS VALIDATION validators: Invalid IBAN",
+            "DOMAIN VALIDATION validators: Invalid IBAN",
             normalizedIban,
             "warn"
         );
@@ -97,7 +97,7 @@ export function validateBooking(data: unknown): BookingDb {
     // Domain rules
     if (normalized.cAccountNumberID === 0) {
         log(
-            "DOMAINS VALIDATION validators: Booking missing account ID",
+            "DOMAIN VALIDATION validators: Booking missing account ID",
             normalized,
             "warn"
         );
@@ -151,7 +151,7 @@ export function validateStock(data: unknown): StockDb {
     const isinRes = validateISIN(normalizedIsin);
     if (!isinRes.isValid) {
         log(
-            "DOMAINS VALIDATION validators: Invalid ISIN",
+            "DOMAIN VALIDATION validators: Invalid ISIN",
             normalizedIsin,
             "warn"
         );

@@ -167,9 +167,9 @@ export function round2(value: number): number {
 
 /**
  * Converts a string, number, or boolean to a number.
- * Handles various number formats including
- * - European format: 1.234,56 (dot as thousands separator, comma as decimal)
- * - US format: 1,234.56 (comma as thousands separator, dot as decimal)
+ * Handles various of number formats including
+ * - European format: 1.234,56 (dot as a thousand separator, comma as decimal)
+ * - US format: 1,234.56 (comma as a thousand separator, dot as decimal)
  * - Percentages: 25% -> 25
  * - Whitespace and tabs
  *

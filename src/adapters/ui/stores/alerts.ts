@@ -95,7 +95,7 @@ export const useAlertsStore = defineStore("alerts", () => {
     }
 
     /**
-     * Clears a specific timeout and removes it from the timeouts map.
+     * Clears a specific timeout and removes it from the timeout map.
      *
      * @param id - Alert ID associated with the timeout.
      */
@@ -318,7 +318,7 @@ export const useAlertsStore = defineStore("alerts", () => {
             try {
                 confirmationDialog.value.resolve();
             } catch (err) {
-                log("STORES alert: Error in confirm handler", err, "error");
+                log("STORES alert: Error in the confirmation handler", err, "error");
                 resetConfirmationDialog();
             }
         }
@@ -332,7 +332,7 @@ export const useAlertsStore = defineStore("alerts", () => {
             try {
                 confirmationDialog.value.reject();
             } catch (err) {
-                log("STORES alert: Error in cancel handler", err, "error");
+                log("STORES alert: Error in the cancel handler", err, "error");
                 resetConfirmationDialog();
             }
         }

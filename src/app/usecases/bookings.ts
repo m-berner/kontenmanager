@@ -15,6 +15,8 @@ export type AddBookingUsecaseDeps = {
     records: RecordsPort;
 };
 
+export type RemoveBookingUsecaseDeps = PersistDeps;
+
 export type UpdateBookingUsecaseDeps = PersistDeps;
 
 export async function addBookingUsecase(
@@ -36,6 +38,15 @@ export async function addBookingUsecase(
 
     deps.records.bookings.add({...input.bookingData, cID: addBookingID}, true);
     return {id: addBookingID};
+}
+
+export async function removeBookingUsecase(
+    deps: RemoveBookingUsecaseDeps,
+    input: { bookingId: number }
+): Promise<void> {
+    await deps.repositories.bookings.delete(input.bookingId);
+    deps.records.bookings.remove(input.bookingId);
+    deps.runtime.resetTeleport();
 }
 
 export async function updateBookingUsecase(

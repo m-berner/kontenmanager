@@ -135,11 +135,13 @@ export function createRecordsPortMock(input: {
         },
         bookings: {
             add: vi.fn(),
-            update: vi.fn()
+            update: vi.fn(),
+            remove: vi.fn()
         },
         stocks: {
             add: vi.fn(),
-            update: vi.fn()
+            update: vi.fn(),
+            remove: vi.fn()
         },
         clean: vi.fn(),
         init: vi.fn().mockResolvedValue(undefined)
@@ -156,12 +158,17 @@ export type RepositoriesPortOverrides = Partial<{
 export function createRepositoriesPortMock(overrides: RepositoriesPortOverrides = {}): RepositoriesPort {
     const base: RepositoriesPort = {
         accounts: {save: vi.fn().mockResolvedValue(1)},
-        bookings: {save: vi.fn().mockResolvedValue(1)},
+        bookings: {
+            save: vi.fn().mockResolvedValue(1),
+            delete: vi.fn().mockResolvedValue(undefined)
+        },
         bookingTypes: {
             save: vi.fn().mockResolvedValue(1),
             delete: vi.fn().mockResolvedValue(undefined)
         },
-        stocks: {save: vi.fn().mockResolvedValue(1)}
+        stocks: {
+            save: vi.fn().mockResolvedValue(1),
+            delete: vi.fn().mockResolvedValue(undefined)}
     };
 
     return {

@@ -35,7 +35,7 @@ export const useBookingsStore = defineStore("bookings", function () {
     const items = ref<BookingDb[]>([]);
 
     /**
-     * Inserts an item into the items array, either at the beginning or the end, based on prepended parameter.
+     * Inserts an item into the item array, either at the beginning or the end, based on prepended parameter.
      *
      * @param item - The item to insert into the array.
      * @param prepend - Determines the position of the insertion; if true, the item is added at the beginning, otherwise at the end.
@@ -45,7 +45,7 @@ export const useBookingsStore = defineStore("bookings", function () {
     }
 
     /**
-     * Replaces an item in the items collection with a new item based on the specified ID.
+     * Replaces an item in the item collection with a new item based on the specified ID.
      *
      * @param id - The ID of the item to be replaced.
      * @param next - The new item to replace the existing item.

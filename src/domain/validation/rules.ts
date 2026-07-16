@@ -136,7 +136,7 @@ export function validateIBAN(iban: string): DomainValidationResult {
 
 /**
  * Validates an International Securities Identification Number (ISIN).
- * Checks length (12 chars), format (2-letter country + 9 alphanumeric + check digit),
+ * Checks length (12 chars), format (2-letter country, 9 alphanumeric and check digit),
  * known country code, and Luhn checksum.
  *
  * @param isin - The ISIN string to validate.
@@ -193,7 +193,7 @@ export function validateSWIFT(swift: string): DomainValidationResult {
     if (!/^[A-Z]{4}$/.test(bankCode))
         return {isValid: false, error: VALIDATION_CODES.INVALID_BANK};
 
-    // Country code presence is validated by the regex above; strict membership
+    // Country code presence validates by the regex above; strict membership
     // check against VALID_COUNTRY_CODES is intentionally skipped to allow
     // specialized BIC country codes not in the standard list.
     const locationCode = cleaned.substring(6, 8);

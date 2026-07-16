@@ -55,7 +55,7 @@ export function createAlertAdapter() {
 
     /**
      * Registers the alert sink factory used to show alerts to the user.
-     * This keeps the services layer independent of Pinia/store imports.
+     * This keeps the service layer independent of Pinia/store imports.
      */
     function configureAlertSink(factory: (() => AlertSink) | undefined): void {
         alertSinkFactory = factory;

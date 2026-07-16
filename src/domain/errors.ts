@@ -110,7 +110,7 @@ export const ERROR_DEFINITIONS = {
                 J: {CODE: "#dbv", MSG: "Database operation failed"}
             },
             A: {CODE: "#dbx", MSG: "Failed to open the IndexedDB connection"},
-            B: {CODE: "#dca", MSG: "Error closing database"},
+            B: {CODE: "#dca", MSG: "Error closing the database"},
             C: {CODE: "#dcb", MSG: "Delete operation requires a key"},
             D: {CODE: "#dcc", MSG: "Unknown operation type"},
             E: {CODE: "#dcd", MSG: "Delete operation requires a key"},
@@ -140,7 +140,7 @@ export const ERROR_DEFINITIONS = {
         D: {CODE: "#ubd", MSG: "Failed to query browser tabs"},
         E: {CODE: "#ube", MSG: "Failed to focus the browser window"},
         F: {CODE: "#ubf", MSG: "Failed to activate the browser tab"},
-        G: {CODE: "#ubg", MSG: "Failed to open the options page"},
+        G: {CODE: "#ubg", MSG: "Failed to open the option's page"},
         H: {CODE: "#ubh", MSG: "Failed to show browser notification"},
         I: {CODE: "#ubi", MSG: "Invalid export filename"},
         J: {CODE: "#ubj", MSG: "Failed to download the export file"}

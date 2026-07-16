@@ -22,7 +22,7 @@ const MILLISECONDS_PER_DAY = 86400000;
  *
  * Owns all side effects that were previously inside the portfolio store:
  * - Fetching min/rate/max and date data per page
- * - Writing fetched values back to the stocks store
+ * - Writing fetched values back to the stock store
  * - Cache invalidation when provider settings change
  *
  * Callers supply AbortSignal support for cancellation on unmount/navigation.

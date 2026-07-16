@@ -44,7 +44,7 @@ export async function fnetFetcher(
 /**
  * Extracts the arithmetic mean of German-formatted numbers from a string.
  * Input example: "9,67 / 9,98 EUR" (bid / ask).
- * German format: dot as thousands separator, comma as decimal separator.
+ * German format: dot as a thousand separator comma as decimal separator.
  * Returns a German-formatted string (e.g. "9,825") or DEFAULT_VALUE on failure.
  */
 function extractFnetMean(s: string): string {

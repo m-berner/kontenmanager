@@ -21,7 +21,7 @@ import OptionsIndex from "@/adapters/ui/views/OptionsIndex.vue";
 installUnhandledRejectionLogger("options");
 
 /**
- * Initializes and mounts the options application instance for the options view.
+ * Initializes and mounts the option application instance for the options view.
  */
 const app = createApp(OptionsIndex);
 const adapters = createAdapters();

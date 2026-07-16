@@ -123,7 +123,7 @@ function manifest() {
 }
 
 /**
- * Opens the extension's options page.
+ * Opens the extension's option page.
  *
  * @throws {AppError} If the browser API call fails.
  */

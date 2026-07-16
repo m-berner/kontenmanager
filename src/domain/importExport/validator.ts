@@ -77,7 +77,7 @@ export function validateBackup(data: unknown): BackupValidationResult {
  */
 export function validateDataIntegrity(backup: BackupData): string[] {
     if ("transfers" in backup) {
-        return ["Expected modern backup data, got legacy format"];
+        return ["Expected modern backup data, got the legacy format"];
     }
     const errors: string[] = [];
 
@@ -107,7 +107,7 @@ export function validateDataIntegrity(backup: BackupData): string[] {
  */
 export function validateLegacyDataIntegrity(backup: BackupData): string[] {
     if (!("transfers" in backup)) {
-        return ["Expected legacy backup data, got modern format"];
+        return ["Expected legacy backup data, got the modern format"];
     }
     const errors: string[] = [];
 
@@ -268,7 +268,7 @@ function pushDuplicateIdError(
 }
 
 /**
- * Pushes an error message into the errors array if the specified count is greater than zero.
+ * Pushes an error message into the error array if the specified count is greater than zero.
  *
  * @param errors - The array to which the error message will be added.
  * @param count - The number of entities with undefined IDs.

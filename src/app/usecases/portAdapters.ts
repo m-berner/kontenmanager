@@ -9,14 +9,14 @@ import type {RecordsPort, SettingsPort} from "@/app/usecases/ports";
 import type {AccountDb, BookingDb, BookingTypeDb, RecordsDbData, StockDb} from "@/domain/types";
 
 /**
- * Structural contract for the records stores passed to port adapters.
+ * Structural contract for the record stores passed to port adapters.
  * Intentionally defined here (not imported from infra) to keep the app layer
  * free of Pinia/store imports.
  *
  * Serves a dual purpose:
  * - Input to `toRecordsPort()` — maps store methods to the narrower RecordsPort
- *   interface that use cases depend on.
- * - Direct interface in composables (e.g. useImportDialog) that need access to
+ *   interface that usecases depend on.
+ * - Direct interface in composables (e.g., useImportDialog) that need access to
  *   `.items` for snapshot/rollback operations, which RecordsPort does not expose.
  */
 export type RecordsLike = {
@@ -36,11 +36,13 @@ export type RecordsLike = {
         items: BookingDb[];
         add: (_booking: BookingDb, _prepend?: boolean) => void;
         update: (_booking: BookingDb) => void;
+        remove: (_id: number) => void;
     };
     stocks: {
         items: StockDb[];
         add: (_stock: StockDb) => void;
         update: (_stock: StockDb) => void;
+        remove: (_id: number) => void;
     };
     clean: (_hard?: boolean) => void;
     init: (_db: RecordsDbData, _messages: { title: string; message: string }) => Promise<void> | void;
@@ -74,11 +76,13 @@ export function toRecordsPort(records: RecordsLike): RecordsPort {
         },
         bookings: {
             add: records.bookings.add.bind(records.bookings),
-            update: records.bookings.update.bind(records.bookings)
+            update: records.bookings.update.bind(records.bookings),
+            remove: records.bookings.remove.bind(records.bookings)
         },
         stocks: {
             add: records.stocks.add.bind(records.stocks),
-            update: records.stocks.update.bind(records.stocks)
+            update: records.stocks.update.bind(records.stocks),
+            remove: records.stocks.remove.bind(records.stocks)
         },
         clean: records.clean.bind(records),
         init: records.init.bind(records)
