@@ -93,7 +93,7 @@ export function useOnlineStockData() {
 
             // When the provider couldn't detect a currency, fall back to inferring
             // USD for US-domiciled securities (ISIN prefix "US").
-            const stockCur = data.cur || (stock.cISIN.startsWith("US") ? CURRENCIES.USD : "");
+            const stockCur = data.cur || (stock.cISIN?.startsWith("US") ? CURRENCIES.USD : "");
 
             const rawDivisor =
                 !stockCur || stockCur === uiCur

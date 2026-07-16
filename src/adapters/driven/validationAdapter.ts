@@ -142,8 +142,11 @@ export function isoDateRules(msgArray: string[]): ValidationRuleType[] {
     ];
 }
 
-export function ibanRules(msgArray: readonly string[]): ValidationRuleType[] {
-    return [
+export function ibanRules(
+    msgArray: readonly string[],
+    isDuplicate?: (_iban: string) => boolean
+): ValidationRuleType[] {
+    const rules: ValidationRuleType[] = [
         required(msgArray[0]),
         fromDomain((v) => ValidationRules.validateIBAN(v as string), {
             [VALIDATION_CODES.INVALID_LENGTH]: msgArray[1],
@@ -152,6 +155,15 @@ export function ibanRules(msgArray: readonly string[]): ValidationRuleType[] {
             [VALIDATION_CODES.REQUIRED]: msgArray[0]
         })
     ];
+
+    if (isDuplicate) {
+        rules.push(createRule((v) => {
+            const cleaned = cleanString(v);
+            return !cleaned || !isDuplicate(cleaned.toUpperCase());
+        }, msgArray[4]));
+    }
+
+    return rules;
 }
 
 export function validateISIN(isin: string): boolean {

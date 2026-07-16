@@ -17,7 +17,7 @@ import type {
     RecordOperation,
     StockDb
 } from "@/domain/types";
-import {validateBooking} from "@/domain/validation/validators";
+import {validateAccount, validateBooking, validateBookingType, validateStock} from "@/domain/validation/validators";
 
 export type ImportCounts = {
     accounts: number;
@@ -61,7 +61,7 @@ export function buildLegacyImportPlan(input: {
     if (input.backup.stocks && Array.isArray(input.backup.stocks)) {
         for (const rec of input.backup.stocks as LegacyStockDb[]) {
             const stock = input.transformLegacyStock(rec, input.activeId);
-            stocksOps.push({type: "add", data: stock});
+            stocksOps.push({type: "add", data: validateStock(stock)});
         }
     }
 
@@ -228,6 +228,9 @@ export function getImportCounts(backup: BackupData): ImportCounts {
 
 export function normalizeModernBackup(backup: ModernBackupData): ModernBackupData {
     const safeBackup = structuredClone(backup);
+    safeBackup.accounts = (safeBackup.accounts || []).map((a) => validateAccount(a));
+    safeBackup.bookingTypes = (safeBackup.bookingTypes || []).map((bt) => validateBookingType(bt));
+    safeBackup.stocks = (safeBackup.stocks || []).map((s) => validateStock(s));
     safeBackup.bookings = (safeBackup.bookings || []).map((b) => validateBooking(b));
     return safeBackup;
 }

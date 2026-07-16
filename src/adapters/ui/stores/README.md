@@ -1,9 +1,9 @@
 # Stores Layer
 
 **Pinia State Stores** manage the application’s reactive state. The Stores Layer serves
-as a central repository for data and coordinates between the [Secondary Adapters Layer](adapters/driven/README.md)
+as a central repository for data and coordinates between the [Secondary Adapters Layer](../../driven/README.md)
 for persistence,
-and the [Components Layer](adapters/ui/components/README.md) for presentation.
+and the [Components Layer](../components/README.md) for presentation.
 
 ## Role and Responsibilities
 
@@ -12,7 +12,7 @@ The mission of the stores layer is to:
 - **Reactive State Management**: Provide a single source of truth for UI and domain data that components can react to.
 - **Data Coordination**: Synchronize state across different parts of the application (e.g., updating balances when a
   booking is added).
-- **Business Logic Integration**: Utilize functional [Domain Logic](domain/README.md) to provide calculated
+- **Business Logic Integration**: Utilize functional [Domain Logic](../../../domain/README.md) to provide calculated
   properties (getters) for the UI.
 - **Persistence Sync**: Coordinate with DI-provided services (database + storage) to ensure data survives sessions.
 

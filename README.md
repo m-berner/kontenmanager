@@ -20,7 +20,7 @@ Key features include:
 - **UI Component Framework:** [Vuetify 3](https://vuetifyjs.com/) (Material Design)
 - **State Management:** [Pinia](https://pinia.vuejs.org/)
 - **Build Tool:** [Vite](https://vitejs.dev/)
-- **Database:** [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (via DI-provided `databaseService`)
+- **Database:** [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (via DI-provided `databaseAdapter`)
 - **Package Manager:** [npm](https://www.npmjs.com/) (v11.3.0)
 
 ## Requirements
@@ -58,14 +58,6 @@ npm run build:prod
 
 Load the folder `kontenmanager@gmx.de/` as a temporary addon in Firefox (about:debugging → This Firefox → Load Temporary Add-on... → select any file within that folder).
 
-### Update Documentation
-
-```powershell
-npm run update:readmes
-```
-
-Updates all directory READMEs with the current file structure and exports.
-
 ### Test
 
 ```powershell
@@ -86,21 +78,22 @@ npm run lint:i18n
 
 ## Project Structure
 
-The project follows a modular architecture with a clear separation of concerns:
+The project follows a hexagonal (ports & adapters) architecture. Dependencies point inward:
+`adapters → app → domain`. See [src/README.md](src/README.md) for the full layer breakdown.
 
 - `src/`: Core source code.
-  - `assets/`: Static assets (icons, images).
-  - `components/`: Reusable UI components, specialized dialogs, and form fragments.
-  - [**`composables/`**](src/composables/README.md): Vue composition functions providing a reactive interface to the application's services and domain logic.
-  - [**`domains/`**](src/domains/README.md): The "Brain" — pure business logic, financial calculations, URL parsing, and data mapping.
-  - `usecases/`: Application-layer workflows (multi-step operations used by dialogs/views).
-  - `services/`: Infrastructure and orchestration services (Database, Fetch, Favicon, Alerts). See [services/README.md](src/services/README.md).
-  - `stores/`: Pinia state management (Records, Settings, Runtime, Alerts). See [stores/README.md](src/stores/README.md).
-  - `types/`: Layer-focused types (`domain`, `infra`, `backup`). `src/types.d.ts` re-exports the public surface as `@/types`.
-  - `views/`: Main screen layouts and entry point components. See [views/README.md](src/views/README.md).
-  - `config/`: Centralized configuration (Storage keys, Entry points, DB schema).
-  - [**`plugins/`**](src/plugins/README.md): Vue plugin configurations (Vuetify, i18n, Router).
-  - `entrypoints/`: HTML/TS entry points for the extension (App, Background, Options).
+  - [**`domain/`**](src/domain/README.md): The "Brain" — pure business logic, financial calculations, validation, and data mapping. No framework dependencies.
+  - [**`app/usecases/`**](src/app/usecases/README.md): Application-layer workflows (multi-step operations used by dialogs/views), expressed against port interfaces.
+  - [**`adapters/ui/`**](src/adapters/ui/README.md): Vue-facing layer.
+    - [`components/`](src/adapters/ui/components/README.md): Reusable UI components, dialogs, and form fragments.
+    - [`views/`](src/adapters/ui/views/README.md): Main screen layouts and route targets.
+    - [`composables/`](src/adapters/ui/composables/README.md): Vue composition functions bridging UI to stores/adapters.
+    - [`stores/`](src/adapters/ui/stores/README.md): Pinia state management (Records, Settings, Runtime, Alerts).
+    - [`plugins/`](src/adapters/ui/plugins/README.md): Vue plugin configurations (Vuetify, i18n, Router, Pinia).
+    - [`entrypoints/`](src/adapters/ui/entrypoints/README.md): HTML/TS entry points for the extension (App, Background, Options).
+    - `_locales/`: Translations (`messages.json` for WebExtension i18n, `gui.json` for Vue i18n).
+  - [**`adapters/driven/`**](src/adapters/driven/README.md): Infrastructure adapters — [`database/`](src/adapters/driven/database/README.md) (IndexedDB), `fetch/` (market data providers), plus browser, storage, alert, favicon, and validation adapters.
+  - `adapters/container.ts` / `containerBackground.ts`: Composition roots — the only files allowed to import concrete adapter implementations.
 - `kontenmanager@gmx.de/`: The built extension package.
 - `releases/`: Packaged `.xpi` files for distribution.
 
@@ -111,11 +104,11 @@ The project follows a modular architecture with a clear separation of concerns:
 
 ## Architecture & Data Flow
 
-1. **User Interaction:** Vue components in `views/` or `components/` capture user input.
-2. **Application Workflows:** Multi-step operations live in `src/usecases/` (dialogs/views call usecases).
-3. **State Management:** UI and usecases interact with **Pinia Stores** (`src/stores/`).
-4. **Persistence:** Data is persisted via DI-provided **Adapters** and **Repositories** (`src/services/`, `src/services/database/`) to **IndexedDB** and **Browser Storage** (`storageAdapter`).
-5. **Browser Integration:** WebExtension API access is abstracted behind DI-provided services (for example `browserService`).
+1. **User Interaction:** Vue components in `src/adapters/ui/views/` or `src/adapters/ui/components/` capture user input.
+2. **Application Workflows:** Multi-step operations live in `src/app/usecases/` (dialogs/views call usecases).
+3. **State Management:** UI and usecases interact with **Pinia Stores** (`src/adapters/ui/stores/`).
+4. **Persistence:** Data is persisted via DI-provided **Adapters** and **Repositories** (`src/adapters/driven/`, `src/adapters/driven/database/`) to **IndexedDB** and **Browser Storage** (`storageAdapter`).
+5. **Browser Integration:** WebExtension API access is abstracted behind DI-provided adapters (for example `browserAdapter`).
 
 ## Development Workflow
 
@@ -278,9 +271,10 @@ This uses Mozilla's `addons-linter` against `./releases/firefox/kontenmanager@gm
 - `npm run build:prod`: Build extension in production mode.
 - `npm run lint`: Run ESLint for `src/` (`.ts` and `.vue`).
 - `npm run lint:i18n`: Lint i18n dictionaries.
-- `npm run update:readmes`: Create or update README.md files across the project.
 - `npm run test:logic`: Run Vitest unit tests.
 - `npm run test:typescript`: Run Vue/TypeScript type checks.
+- `npm run test:e2e`: Build (`build:dev`) and run Playwright E2E tests.
+- `npm run test:e2e:headed` / `test:e2e:ui`: Run Playwright E2E tests headed / in UI mode.
 - `npm run lint:addon`: Run Mozilla addons linter for the packaged `.xpi`.
 
 ## Developer Information
@@ -297,4 +291,4 @@ This project is licensed under the **Mozilla Public License 2.0**. See the [LICE
 
 - Tests cannot resolve `@/...` imports: ensure Vite alias is configured (already set in `vite.config.js`).
 - DOM-related tests: use the `happy-dom` environment provided by Vitest config.
-- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace) via `DomainUtils.normalizeBookingTypeName`.
+- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace) via `normalizeBookingTypeName` in `src/domain/validation/validators.ts`.

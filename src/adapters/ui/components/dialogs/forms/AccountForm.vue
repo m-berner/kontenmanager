@@ -17,12 +17,14 @@ import {useAdapters} from "@/adapters/context";
 import {useFavicon} from "@/adapters/ui/composables/useFavicon";
 import {useAccountForm} from "@/adapters/ui/composables/useForms";
 import {useUrl} from "@/adapters/ui/composables/useUrl";
+import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
 
 const props = defineProps<AccountFormProps>();
 
 const {t} = useI18n();
 const {accountFormData} = useAccountForm();
 const {validationAdapter} = useAdapters();
+const records = useRecordsStore();
 
 const SWIFT_RULES = createSwiftMessages(t);
 const IBAN_RULES = createIbanMessages(t);
@@ -100,7 +102,7 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
       :disabled="props.isUpdate"
       :label="`${t('components.dialogs.forms.accountForm.ibanLabel')}${ibanLabel}`"
       :placeholder="t('components.dialogs.forms.accountForm.ibanPlaceholder')"
-      :rules="validationAdapter.ibanRules(IBAN_RULES)"
+      :rules="validationAdapter.ibanRules(IBAN_RULES, props.isUpdate ? undefined : records.accounts.isDuplicate)"
       variant="outlined"
       @update:model-value="onUpdateIban"/>
   <v-text-field
