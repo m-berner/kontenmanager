@@ -4,16 +4,14 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type {ErrorCodes} from "@/domain/errors";
-
-import deNotifications from "@/adapters/ui/_locales/de/messages.json";
+import type {ErrorCodes, Messages} from "@/domain/errors";
 
 /**
  * Represents a custom application error that extends the standard JavaScript Error object.
  * This interface provides additional properties to categorize and handle errors specific to the application.
  */
 export interface AppError extends Error {
-    code: keyof typeof deNotifications | ErrorCodes;
+    code: Messages | ErrorCodes;
     category: AppErrorCategoryType;
     recoverable: boolean;
     context?: Record<string, unknown>;
