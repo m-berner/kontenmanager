@@ -1,7 +1,8 @@
 # Driven (`tests/unit/adapters/driven/`)
 
 Unit tests for `src/adapters/driven/` — database (IndexedDB), fetch providers, and the individual
-adapter implementations (alert, favicon, task, import/export, validation).
+adapter implementations (alert, browser, favicon, task, import/export). Validation adapter tests
+live under `tests/unit/adapters/ui/` alongside `src/adapters/ui/validationAdapter.ts`.
 
 ## Directory Structure
 
@@ -13,10 +14,9 @@ adapter implementations (alert, favicon, task, import/export, validation).
 ### Files
 
 - `alert.test.ts`
+- `browserAdapter.test.ts`
 - `faviconAdapter.test.ts`
 - `fetch.test.ts`
 - `importExport.test.ts`
 - `taskAdapter.test.ts`
-- `validation.test.ts`
-- `validationAdapter.test.ts`
 

@@ -36,4 +36,5 @@ The UI is built with **Vue 3** and **Vuetify**, using **Pinia** for state manage
 ### Files
 
 - `style.css`
+- `validationAdapter.ts`: createRule, cleanString, oneOfTwo, required, stringLength, createValidationAdapter, ...
 
