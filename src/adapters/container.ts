@@ -15,7 +15,7 @@ import {createFetchAdapter} from "@/adapters/driven/fetchAdapter";
 import {createImportExportAdapter} from "@/adapters/driven/importExportAdapter";
 import {storageAdapter} from "@/adapters/driven/storageAdapter";
 import {createTaskAdapter} from "@/adapters/driven/taskAdapter";
-import {createValidationAdapter} from "@/adapters/driven/validationAdapter";
+import {createValidationAdapter} from "@/adapters/ui/validationAdapter";
 
 export type Adapters = ReturnType<typeof createAdapters>;
 

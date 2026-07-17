@@ -16,7 +16,7 @@ import {
     required,
     stringLength,
     swiftRules
-} from "@/adapters/driven/validationAdapter";
+} from "@/adapters/ui/validationAdapter";
 
 // A valid IBAN/ISIN/SWIFT are needed to reach the "duplicate" and "checksum-passed" branches.
 const VALID_IBAN = "DE89370400440532013000";
