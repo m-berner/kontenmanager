@@ -1,0 +1,301 @@
+# Kontenmanager
+
+A modern WebExtension for private account management and stock portfolio tracking.
+
+## Overview
+
+Kontenmanager is a powerful browser extension (primarily targeting Firefox) designed to help users manage their private accounts and investments. It provides a sophisticated user interface for tracking financial records, managing companies/accounts, and viewing detailed accounting and dividend analytics.
+
+Key features include:
+- **Multi-Account Management:** Track different bank accounts or portfolios separately.
+- **Stock Portfolio Tracking:** Real-time market data integration (via external services).
+- **Accounting Tools:** Automated calculation of balances, taxes, and fees.
+- **Data Privacy:** All data is stored locally in your browser using IndexedDB.
+- **Data Portability:** Robust JSON-based import and export system for backups.
+
+## Stack
+
+- **Language:** [TypeScript](https://www.typescriptlang.org/) (Strictly typed)
+- **Framework:** [Vue 3](https://vuejs.org/) (Composition API)
+- **UI Component Framework:** [Vuetify 3](https://vuetifyjs.com/) (Material Design)
+- **State Management:** [Pinia](https://pinia.vuejs.org/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **Database:** [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (via DI-provided `databaseAdapter`)
+- **Package Manager:** [npm](https://www.npmjs.com/) (v11.3.0)
+
+## Requirements
+
+- **Node.js:** v24.0.0 or later
+- **Package Manager:** npm v11.3.0 or later
+
+## Quick Start
+
+### Installation
+
+```powershell
+npm install
+```
+
+### Build (Development package)
+
+```powershell
+npm run build:dev
+```
+
+> Note: `.env.development` / `.env.production` are optional in the sense that `vite.config.js`
+> falls back to defaults (`BUILD_DIR=build`, `EXTENSIONS_DIR=extension`, `RELEASE_DIR=extension`)
+> so a build won't hard-fail without one — that's how CI runs it. In this repo they're still
+> meant to be kept: `EXTENSIONS_DIR` points at a local Firefox profile's `extensions/` folder so a
+> build is picked up there automatically, and `.env.production`'s `RELEASE_DIR` is what makes the
+> release `.xpi` land in `releases/firefox/`, which `npm run lint:addon` depends on
+> (`addons-linter ./releases/firefox/kontenmanager@gmx.de.xpi` is a fixed path). Removing
+> `.env.production` would silently break `lint:addon`.
+
+What this does:
+- Runs Vue SFC/TypeScript checks (`vue-tsc`).
+- Bundles the extension with Vite.
+- Copies static assets and creates a ready-to-load extension under `kontenmanager@gmx.de/`.
+- Produces a zipped `.xpi` in `releases/` when environment variables are provided (see `vite.config.js`).
+
+Build production package:
+
+```powershell
+npm run build:prod
+```
+
+Load the folder `kontenmanager@gmx.de/` as a temporary addon in Firefox (about:debugging → This Firefox → Load Temporary Add-on... → select any file within that folder).
+
+### Test
+
+```powershell
+npm run test:logic
+```
+
+Type-check with Vue/TypeScript:
+
+```powershell
+npm run test:typescript
+```
+
+### Lint i18n
+
+```powershell
+npm run lint:i18n
+```
+
+## Project Structure
+
+The project follows a hexagonal (ports & adapters) architecture. Dependencies point inward:
+`adapters → app → domain`. See [src/README.md](src/README.md) for the full layer breakdown.
+
+- `src/`: Core source code.
+  - [**`domain/`**](src/domain/README.md): The "Brain" — pure business logic, financial calculations, validation, and data mapping. No framework dependencies.
+  - [**`app/usecases/`**](src/app/usecases/README.md): Application-layer workflows (multi-step operations used by dialogs/views), expressed against port interfaces.
+  - [**`adapters/ui/`**](src/adapters/ui/README.md): Vue-facing layer.
+    - [`components/`](src/adapters/ui/components/README.md): Reusable UI components, dialogs, and form fragments.
+    - [`views/`](src/adapters/ui/views/README.md): Main screen layouts and route targets.
+    - [`composables/`](src/adapters/ui/composables/README.md): Vue composition functions bridging UI to stores/adapters.
+    - [`stores/`](src/adapters/ui/stores/README.md): Pinia state management (Records, Settings, Runtime, Alerts).
+    - [`plugins/`](src/adapters/ui/plugins/README.md): Vue plugin configurations (Vuetify, i18n, Router, Pinia).
+    - [`entrypoints/`](src/adapters/ui/entrypoints/README.md): HTML/TS entry points for the extension (App, Background, Options).
+    - `_locales/`: Translations (`messages.json` for WebExtension i18n, `gui.json` for Vue i18n).
+  - [**`adapters/driven/`**](src/adapters/driven/README.md): Infrastructure adapters — [`database/`](src/adapters/driven/database/README.md) (IndexedDB), `fetch/` (market data providers), plus browser, storage, alert, favicon, and validation adapters.
+  - `adapters/container.ts` / `containerBackground.ts`: Composition roots — the only files allowed to import concrete adapter implementations.
+- `kontenmanager@gmx.de/`: The built extension package.
+- `releases/`: Packaged `.xpi` files for distribution.
+
+## Documentation
+
+- Architecture guide: [src/ARCHITECTURE.md](src/ARCHITECTURE.md)
+- Detailed workflows: [src/WORKFLOWS.md](src/WORKFLOWS.md)
+
+## Architecture & Data Flow
+
+1. **User Interaction:** Vue components in `src/adapters/ui/views/` or `src/adapters/ui/components/` capture user input.
+2. **Application Workflows:** Multi-step operations live in `src/app/usecases/` (dialogs/views call usecases).
+3. **State Management:** UI and usecases interact with **Pinia Stores** (`src/adapters/ui/stores/`).
+4. **Persistence:** Data is persisted via DI-provided **Adapters** and **Repositories** (`src/adapters/driven/`, `src/adapters/driven/database/`) to **IndexedDB** and **Browser Storage** (`storageAdapter`).
+5. **Browser Integration:** WebExtension API access is abstracted behind DI-provided adapters (for example `browserAdapter`).
+
+## Development Workflow
+
+1. Make changes in `src/`.
+2. Run tests locally to validate logic:
+   - Unit tests focus on domain utilities and Pinia stores.
+3. Build the extension with `npm run build:dev` (or `npm run build:prod`).
+4. Reload the temporary addon in Firefox and verify behavior in the Browser Console.
+
+## Development Conventions
+
+### Architecture
+
+Firefox WebExtension (Manifest V3) using a hexagonal (ports & adapters) architecture.
+
+- **Domain logic**: `src/domain/` — pure functions, no framework dependencies
+- **Use cases**: `src/app/usecases/` — orchestrate domain + adapters
+- **UI adapters**: `src/adapters/ui/` — Vue 3 components, Pinia stores, composables
+- **Driven adapters**: `src/adapters/driven/` — IndexedDB, fetch, browser APIs
+
+Three isolated JS contexts: **app** (popup), **background** (service worker), **options page**.
+
+### Critical Conventions
+
+#### DB-first ordering in use cases
+
+**All IndexedDB writes must complete before Pinia store mutations.**
+
+```ts
+// CORRECT
+await deps.repositories.bookings.save(booking);
+deps.records.bookings.update(booking);
+
+// WRONG — if the DB write fails, the store is desynchronised
+deps.records.bookings.update(booking);          // store mutated
+await deps.repositories.bookings.save(booking); // DB might fail
+```
+
+This applies to every use case operation: add, update, delete. The same rule applies in
+composables that call repositories directly (e.g. `useMenu.ts`).
+
+**Rationale**: A failed DB write cannot be easily rolled back from Pinia. DB-first means
+a failure leaves the store in the old (still-correct) state, and the error surfaces to
+the user before the UI reflects phantom data.
+
+#### Always await `records.init()`
+
+`records.init()` is **async** — it calls `initRecordsUsecase` which sorts and hydrates all
+Pinia stores. Forgetting the `await` leaves stores unpopulated when the next line runs.
+
+```ts
+// CORRECT
+await deps.records.init(storesDB, messages);
+
+// WRONG — stores not yet populated when execution continues
+deps.records.init(storesDB, messages);
+```
+
+#### AbortSignal propagation
+
+Every long-running fetch operation must accept and forward an `AbortSignal` so it can be
+canceled on component unmount or user navigation.
+
+- `loadOnlineData(page, {signal})` — always pass the signal from the calling context
+- `refreshOnlineData(page, {signal})` — same
+- Callers that own the AbortController must abort it in `onBeforeUnmount` / `onUnmounted`
+
+Pattern used in `CompanyContent.vue`:
+
+```ts
+const signal = startOnlineLoad(); // aborts previous, returns new signal
+try {
+    await loadRequiredPages(startPage, signal);
+} catch (err) {
+    if (!isAbortError(err)) await alertAdapter.feedbackError();
+} finally {
+    if (!signal.aborted) {
+        runtime.isStockLoading = false;
+    }
+}
+```
+
+#### Loading-state guards after abort
+
+Use `if (!signal.aborted)` in `finally` blocks before resetting loading flags.
+Without the guard, the flag is reset even when a newer concurrent load has already
+started, making the loading spinner disappear prematurely.
+
+### IndexedDB
+
+- Managed via `connectionManager` → `transactionManager` → `baseRepository`
+- `connectingPromise` in `connectionManager` serialises concurrent `connect()` calls
+- `atomicImport` in `batchOperations` writes multiple stores in one transaction (ACID)
+- Schema migrations live in `migrator.ts`; every migration is guarded with
+  `if (oldVersion < N)` and `if (!store.indexNames.contains(...))` to be idempotent
+
+### FIFO Investment Calculation
+
+`calculateInvestByStockId` in `logic.ts` computes cost basis under FIFO by iterating
+BUY bookings **newest-first** (as stored in Pinia after `initializeRecords` sorts them
+by `cBookDate` DESC) and prorating the boundary lot:
+
+```ts
+sort((a, b) => utcMs(b.cBookDate) - utcMs(a.cBookDate))
+.reduce((acc, entry) => {
+    const prev = runningCount;
+    runningCount += entry.cCount;
+    if (prev >= totalPortfolio) return acc;
+    const used = Math.min(entry.cCount, totalPortfolio - prev);
+    return acc + (used / entry.cCount) * entry.cDebit;
+}, 0);
+```
+
+The explicit `.sort()` makes the function correct regardless of input order.
+
+## Tests
+
+The project uses [Vitest](https://vitest.dev/) for unit testing, focusing on domain logic and store state.
+
+To run the tests:
+
+```powershell
+npm run test:logic
+```
+
+## Linting & Formatting
+
+- ESLint with TypeScript and Vue rules (`eslint.config.js`).
+- i18n dictionaries are verified via custom scripts under `scripts/`.
+
+Use:
+
+```powershell
+npm run lint
+```
+
+## Packaging & Verification
+
+- The Vite config supports copying built artifacts into the extension directory and optionally zipping a release.
+- To verify a packaged Firefox extension, run:
+
+```powershell
+npm run lint:addon
+```
+
+This uses Mozilla's `addons-linter` against `./releases/firefox/kontenmanager@gmx.de.xpi`.
+
+### Known Addons-Linter Warnings
+
+`addons-linter` may report `UNSAFE_VAR_ASSIGNMENT` for `innerHTML` assignments in the generated bundle (currently `style.js` inside the packaged `.xpi`).
+
+- Scope: This is build output, not source (`src/`). The line numbers can change between builds.
+- Why it happens: some runtime/style injection code writes HTML (commonly emitted by bundlers/frameworks/UI libs).
+- Action: treat this as a release checklist item and confirm that no untrusted user input can reach the injected HTML.
+- Action: if you want the warning to go away, you need to change the generated output by adjusting the upstream source (e.g. framework/plugin behavior) or the build pipeline. There is nothing actionable to "fix" in `src/` if it is purely emitted code.
+
+## npm Scripts
+
+- `npm run build:dev`: Build extension in development mode.
+- `npm run build:prod`: Build extension in production mode.
+- `npm run lint`: Run ESLint for `src/` (`.ts` and `.vue`).
+- `npm run lint:i18n`: Lint i18n dictionaries.
+- `npm run test:logic`: Run Vitest unit tests.
+- `npm run test:typescript`: Run Vue/TypeScript type checks.
+- `npm run test:e2e`: Build (`build:dev`) and run Playwright E2E tests.
+- `npm run test:e2e:headed` / `test:e2e:ui`: Run Playwright E2E tests headed / in UI mode.
+- `npm run lint:addon`: Run Mozilla addons linter for the packaged `.xpi`.
+
+## Developer Information
+
+- [MDN WebExtensions Documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)
+- [Vue 3 Documentation](https://vuejs.org/guide/introduction.html)
+- [Vuetify 3 Documentation](https://vuetifyjs.com/en/introduction/why-vuetify/)
+
+## License
+
+This project is licensed under the **Mozilla Public License 2.0**. See the [LICENSE](LICENSE) file for details.
+
+## Troubleshooting
+
+- Tests cannot resolve `@/...` imports: ensure Vite alias is configured (already set in `vite.config.js`).
+- DOM-related tests: use the `happy-dom` environment provided by Vitest config.
+- Duplicate BookingType detection: names are normalized (trimmed, collapsed whitespace) via `normalizeBookingTypeName` in `src/domain/validation/validators.ts`.
