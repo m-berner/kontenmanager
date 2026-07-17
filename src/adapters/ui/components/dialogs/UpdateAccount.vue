@@ -30,7 +30,7 @@ const accountForm = createAccountFormManager();
 provideAccountFormManager(accountForm);
 const {accountFormData, mapAccountFormToDb} = accountForm;
 const records = useRecordsStore();
-const {submitGuard} = useDialogGuards(t);
+const {submitGuard, isLoading} = useDialogGuards(t);
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
@@ -79,7 +79,7 @@ const onClickOk = async (): Promise<void> => {
   });
 };
 
-defineExpose({onClickOk, title: t("components.dialogs.updateAccount.title")});
+defineExpose({onClickOk, title: t("components.dialogs.updateAccount.title"), isLoading: () => isLoading.value});
 
 onBeforeMount(() => {
   log("COMPONENTS DIALOGS UpdateAccount: onBeforeMount");
@@ -90,7 +90,7 @@ log("COMPONENTS DIALOGS UpdateAccount: setup");
 </script>
 
 <template>
-  <BaseDialogForm ref="baseDialogRef">
+  <BaseDialogForm ref="baseDialogRef" :is-loading="isLoading">
     <AccountForm :isUpdate="true"/>
   </BaseDialogForm>
 </template>

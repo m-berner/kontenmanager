@@ -106,7 +106,8 @@ export const ERROR_DEFINITIONS = {
                 G: {CODE: "#dbr", MSG: "Failed to clear store"},
                 H: {CODE: "#dbs", MSG: "Failed to get all records by index"},
                 I: {CODE: "#dbt", MSG: "Database is not connected"},
-                J: {CODE: "#dbv", MSG: "Database operation failed"}
+                J: {CODE: "#dbv", MSG: "Database operation failed"},
+                K: {CODE: "#dbw", MSG: "Transaction mode mismatch"}
             },
             A: {CODE: "#dbx", MSG: "Failed to open the IndexedDB connection"},
             B: {CODE: "#dca", MSG: "Error closing the database"},

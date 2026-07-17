@@ -31,11 +31,6 @@ export function createBookingRepository(transactionManager: TransactionManagerCo
         return base.save(validateBooking(data), options);
     }
 
-    async function findAll(options: QueryOptions = {}): Promise<BookingDb[]> {
-        const records = await base.findAll(options);
-        return records.map((rec) => validateBooking(rec));
-    }
-
     /**
      * Finds all bookings for an account
      */
@@ -97,7 +92,6 @@ export function createBookingRepository(transactionManager: TransactionManagerCo
     return {
         ...base,
         save,
-        findAll,
         findByAccount,
         findByDate,
         findByBookingType,
@@ -106,7 +100,3 @@ export function createBookingRepository(transactionManager: TransactionManagerCo
         countByAccount
     };
 }
-
-export const BookingRepository = {
-    create: createBookingRepository
-};

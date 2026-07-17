@@ -326,7 +326,7 @@ async function writeBufferToFile(
         const blob = new Blob([buffer], {type: "application/json"});
         const blobUrl = URL.createObjectURL(blob);
 
-        await browser.downloads.download({
+        const downloadId = await browser.downloads.download({
             url: blobUrl,
             filename
         });
@@ -334,6 +334,10 @@ async function writeBufferToFile(
         const onDownloadChange = (
             change: browser.downloads._OnChangedDownloadDelta
         ): void => {
+            // Only react to this call's own download — the listener would
+            // otherwise fire for every download in the browser, potentially
+            // revoking this blob URL early or never observing its completion.
+            if (change.id !== downloadId) return;
             if (
                 change.state?.current === COMPLETE ||
                 change.state?.current === INTERRUPTED

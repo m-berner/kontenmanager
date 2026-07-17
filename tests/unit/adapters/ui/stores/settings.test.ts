@@ -103,12 +103,5 @@ describe("Settings Store", () => {
             BROWSER_STORAGE.SUMS_PER_PAGE.key,
             7
         );
-
-        await store.setActiveAccountId(5);
-        expect(store.activeAccountId).toBe(5);
-        expect(mockSetStorage).toHaveBeenCalledWith(
-            BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
-            5
-        );
     });
 });

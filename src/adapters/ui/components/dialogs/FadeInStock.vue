@@ -50,7 +50,7 @@ const onClickOk = async (): Promise<void> => {
   });
 };
 
-defineExpose({onClickOk, title: t("components.dialogs.fadeInStock.title")});
+defineExpose({onClickOk, title: t("components.dialogs.fadeInStock.title"), isLoading: () => isLoading.value});
 
 onBeforeMount(() => {
   log("COMPONENTS DIALOGS FadeInStock: onBeforeMount");

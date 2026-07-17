@@ -5,7 +5,7 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {BookingTypeRepository} from "@/adapters/driven/database/repositories/bookingTypeRepository";
+import {createBookingTypeRepository} from "@/adapters/driven/database/repositories/bookingTypeRepository";
 import {INDEXED_DB} from "@/domain/constants";
 
 describe("BookingTypeRepository", () => {
@@ -46,7 +46,7 @@ describe("BookingTypeRepository", () => {
             })
         };
 
-        repository = BookingTypeRepository.create(transactionManagerMock);
+        repository = createBookingTypeRepository(transactionManagerMock);
     });
 
     it("should find booking types by account", async () => {

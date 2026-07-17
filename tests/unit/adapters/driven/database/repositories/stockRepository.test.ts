@@ -5,7 +5,7 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {StockRepository} from "@/adapters/driven/database/repositories/stockRepository";
+import {createStockRepository} from "@/adapters/driven/database/repositories/stockRepository";
 import {INDEXED_DB} from "@/domain/constants";
 
 describe("StockRepository", () => {
@@ -47,7 +47,7 @@ describe("StockRepository", () => {
             })
         };
 
-        repository = StockRepository.create(transactionManagerMock);
+        repository = createStockRepository(transactionManagerMock);
     });
 
     it("should find stocks by account", async () => {

@@ -37,7 +37,6 @@
         },
         "baseDialogForm": {
           "errorTitle": "Dialogfehler",
-          "validationSummary": "Bitte beheben Sie die folgenden Fehler:",
           "loadError": "Beim Laden dieses Dialogs ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
         }
       },

@@ -194,7 +194,3 @@ export function setupDatabase(db: IDBDatabase, ev: IDBVersionChangeEvent): void 
 
     runMigrations(db, oldVersion, newVersion, tx);
 }
-
-export const DatabaseMigrator = {
-    setupDatabase
-};

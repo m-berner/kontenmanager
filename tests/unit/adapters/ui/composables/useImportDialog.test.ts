@@ -248,6 +248,37 @@ describe("useImportDatabaseDialogController", () => {
             expect(services.databaseAdapter.atomicImport).not.toHaveBeenCalled();
         });
 
+        it("rolls back to the pre-import snapshot when atomicImport fails", async () => {
+            let atomicImportCalls = 0;
+            const {controller, services, records, settings} = makeController({
+                activeAccountId: 7,
+                atomicImportImpl: () => {
+                    atomicImportCalls += 1;
+                    // First call is the real import (fails); the rollback's
+                    // clear+restore call should still succeed.
+                    return atomicImportCalls === 1
+                        ? Promise.reject(new Error("disk full"))
+                        : Promise.resolve();
+                }
+            });
+            await controller.onChange(makeFile("backup.json", "{}"));
+
+            await controller.runImport();
+
+            expect(atomicImportCalls).toBe(2);
+            expect(records.init).toHaveBeenCalled();
+            expect(settings.activeAccountId).toBe(7);
+            expect(services.alertAdapter.feedbackError).toHaveBeenCalledWith(
+                "components.dialogs.importDatabase.title",
+                "disk full",
+                {data: "IMPORT_DATABASE_PROCESS"}
+            );
+            expect(services.alertAdapter.feedbackInfo).toHaveBeenCalledWith(
+                "components.dialogs.importDatabase.title",
+                "xx_db_rollback"
+            );
+        });
+
         it("attempts a rollback and rethrows when the error handler itself fails", async () => {
             const {controller, services, settings} = makeController({
                 activeAccountId: 7,

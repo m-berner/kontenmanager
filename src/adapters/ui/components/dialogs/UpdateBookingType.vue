@@ -29,7 +29,7 @@ const runtime = useRuntimeStore();
 const bookingTypeForm = createBookingTypeFormManager();
 provideBookingTypeFormManager(bookingTypeForm);
 const {bookingTypeFormData, mapBookingTypeFormToDb, reset: resetForm} = bookingTypeForm;
-const {submitGuard} = useDialogGuards(t);
+const {submitGuard, isLoading} = useDialogGuards(t);
 const {activeAccountId} = useSettingsStore();
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
@@ -106,7 +106,8 @@ const onClickOk = async (): Promise<void> => {
 
 defineExpose({
   onClickOk,
-  title: t("components.dialogs.updateBookingType.title")
+  title: t("components.dialogs.updateBookingType.title"),
+  isLoading: () => isLoading.value
 });
 
 onBeforeMount(() => {
@@ -118,7 +119,7 @@ log("COMPONENTS DIALOGS UpdateBookingType: setup");
 </script>
 
 <template>
-  <BaseDialogForm ref="baseDialogRef">
+  <BaseDialogForm ref="baseDialogRef" :is-loading="isLoading">
     <BookingTypeForm ref="bookingTypeRef" :mode="'update'"/>
   </BaseDialogForm>
 </template>

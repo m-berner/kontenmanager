@@ -44,8 +44,10 @@ export const UrlUtils = {
             const parts = hostname.split(".");
             if (parts.length <= 2) return null;
 
-            // Handle common two-part TLDs like .co.uk, .com.au, etc.
-            const isTwoPartTld = parts.length > 3 && (
+            // Handle common two-part TLDs like .co.uk, .com.au, etc. Checked
+            // regardless of total part count so a bare `example.co.uk` (3
+            // parts, no subdomain) is recognized too, not just `sub.example.co.uk`.
+            const isTwoPartTld = parts.length >= 3 && (
                 (parts[parts.length - 2] === "co" && parts[parts.length - 1] === "uk") ||
                 (parts[parts.length - 2] === "com" && parts[parts.length - 1] === "au")
             );

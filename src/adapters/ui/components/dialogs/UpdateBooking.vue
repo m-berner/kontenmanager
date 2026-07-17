@@ -31,7 +31,7 @@ const bookingForm = createBookingFormManager();
 provideBookingFormManager(bookingForm);
 const {bookingFormData, mapBookingFormToDb, reset: resetForm} = bookingForm;
 const records = useRecordsStore();
-const {submitGuard} = useDialogGuards(t);
+const {submitGuard, isLoading} = useDialogGuards(t);
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
@@ -100,7 +100,7 @@ const onClickOk = async (): Promise<void> => {
   });
 };
 
-defineExpose({onClickOk, title: t("components.dialogs.updateBooking.title")});
+defineExpose({onClickOk, title: t("components.dialogs.updateBooking.title"), isLoading: () => isLoading.value});
 
 onBeforeMount(() => {
   log("COMPONENTS DIALOGS UpdateBooking: onBeforeMount");
@@ -111,7 +111,7 @@ log("COMPONENTS DIALOGS UpdateBooking: setup");
 </script>
 
 <template>
-  <BaseDialogForm ref="baseDialogRef">
+  <BaseDialogForm ref="baseDialogRef" :is-loading="isLoading">
     <BookingForm :isUpdate="true"/>
   </BaseDialogForm>
 </template>

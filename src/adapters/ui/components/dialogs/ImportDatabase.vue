@@ -66,7 +66,8 @@ const onClickOk = async (): Promise<void> => {
 
 defineExpose({
   onClickOk,
-  title: t("components.dialogs.importDatabase.title")
+  title: t("components.dialogs.importDatabase.title"),
+  isLoading: () => isLoading.value
 });
 
 log("COMPONENTS DIALOGS ImportDatabase: setup");

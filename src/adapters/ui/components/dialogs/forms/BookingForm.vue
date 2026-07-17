@@ -188,7 +188,6 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
       <v-col cols="6">
         <v-text-field
             v-if="isDividendType"
-            ref="date-input"
             v-model="bookingFormData.exDate"
             :label="t('components.dialogs.forms.bookingForm.exDateLabel')"
             :rules="validationAdapter.isoDateRules(DATE_RULES)"

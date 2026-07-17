@@ -164,7 +164,3 @@ export function createDatabaseConnectionManager(
         onVersionChange
     };
 }
-
-export const DatabaseConnectionManager = {
-    create: createDatabaseConnectionManager
-};

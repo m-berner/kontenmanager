@@ -39,6 +39,7 @@ export async function addStockUsecase(
     }
 
     deps.records.stocks.add({...input.stockData, cID: id});
+    deps.runtime.resetTeleport();
     return {id, page: deps.stocksPage};
 }
 

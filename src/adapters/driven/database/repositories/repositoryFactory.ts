@@ -78,7 +78,3 @@ export function createRepositoryFactory(transactionManager: TransactionManagerCo
 }
 
 export type RepositoryFactoryContract = ReturnType<typeof createRepositoryFactory>;
-
-export const RepositoryFactory = {
-    create: createRepositoryFactory
-};

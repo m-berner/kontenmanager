@@ -38,6 +38,15 @@ describe("UrlUtils", () => {
         it("should return null if the subdomain is www", () => {
             expect(UrlUtils.getSubdomain("https://www.example.com")).toBe(null);
         });
+
+        it("should return null for a bare two-part-TLD domain with no subdomain", () => {
+            expect(UrlUtils.getSubdomain("https://example.co.uk")).toBe(null);
+            expect(UrlUtils.getSubdomain("https://example.com.au")).toBe(null);
+        });
+
+        it("should extract the subdomain of a two-part-TLD domain", () => {
+            expect(UrlUtils.getSubdomain("https://sub.example.co.uk")).toBe("sub");
+        });
     });
 
     describe("getProtocol", () => {

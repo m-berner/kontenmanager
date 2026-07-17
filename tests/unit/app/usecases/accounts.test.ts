@@ -59,6 +59,73 @@ describe("usecases/accounts", () => {
         expect(res).toEqual({accountId: 10, createdBookingTypes: 3});
     });
 
+    it("addAccountUsecase cleans stale per-account records before adding the new booking types", async () => {
+        const accountsSave = vi.fn().mockResolvedValue(10);
+        const bookingTypesSave = vi.fn()
+            .mockResolvedValueOnce(100)
+            .mockResolvedValueOnce(101)
+            .mockResolvedValueOnce(102);
+
+        const databaseAdapter = createDatabaseAccountsPortMock();
+        const records = createRecordsPortMock();
+
+        await addAccountUsecase(
+            {
+                databaseAdapter,
+                repositories: createRepositoriesPortMock({
+                    accounts: {save: accountsSave},
+                    bookingTypes: {save: bookingTypesSave}
+                }),
+                records,
+                settings: createSettingsPortMock(-1),
+                runtime: createRuntimePortMock(),
+                setStorage: createSetStorageMock()
+            },
+            {
+                accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
+                withDepot: true,
+                bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
+            }
+        );
+
+        // clean(false) must run before the new account's booking types are added,
+        // otherwise it wipes them back out immediately (records.clean clears the
+        // real Pinia store's items array even though this mock is a no-op).
+        const cleanCallOrder = (records.clean as ReturnType<typeof vi.fn>).mock.invocationCallOrder[0];
+        const firstAddCallOrder = (records.bookingTypes.add as ReturnType<typeof vi.fn>).mock.invocationCallOrder[0];
+        expect(cleanCallOrder).toBeLessThan(firstAddCallOrder);
+    });
+
+    it("addAccountUsecase reverts activeAccountId when persisting it fails", async () => {
+        const accountsSave = vi.fn().mockResolvedValue(10);
+        const databaseAdapter = createDatabaseAccountsPortMock();
+        const settings = createSettingsPortMock(-1);
+        const setStorage = vi.fn().mockRejectedValue(new Error("storage unavailable"));
+
+        await expect(
+            addAccountUsecase(
+                {
+                    databaseAdapter,
+                    repositories: createRepositoriesPortMock({
+                        accounts: {save: accountsSave},
+                        bookingTypes: {save: vi.fn()}
+                    }),
+                    records: createRecordsPortMock(),
+                    settings,
+                    runtime: createRuntimePortMock(),
+                    setStorage
+                },
+                {
+                    accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false},
+                    withDepot: false,
+                    bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
+                }
+            )
+        ).rejects.toThrow("storage unavailable");
+
+        expect(settings.activeAccountId).toBe(-1);
+    });
+
     it("addAccountUsecase throws if repository save returns INVALID_ID", async () => {
         const accountsSave = vi.fn().mockResolvedValue(INDEXED_DB.INVALID_ID);
         const databaseAdapter = createDatabaseAccountsPortMock();

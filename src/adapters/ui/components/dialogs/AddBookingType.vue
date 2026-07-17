@@ -28,7 +28,7 @@ const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapter
 const bookingTypeForm = createBookingTypeFormManager();
 provideBookingTypeFormManager(bookingTypeForm);
 const {mapBookingTypeFormToDb, reset} = bookingTypeForm;
-const {submitGuard} = useDialogGuards(t);
+const {submitGuard, isLoading} = useDialogGuards(t);
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const onClickOk = async (): Promise<void> => {
@@ -70,7 +70,8 @@ const onClickOk = async (): Promise<void> => {
 
 defineExpose({
   onClickOk,
-  title: t("components.dialogs.addBookingType.title")
+  title: t("components.dialogs.addBookingType.title"),
+  isLoading: () => isLoading.value
 });
 
 onBeforeMount(() => {
@@ -82,7 +83,7 @@ log("COMPONENTS DIALOGS AddBookingType: setup");
 </script>
 
 <template>
-  <BaseDialogForm ref="baseDialogRef">
+  <BaseDialogForm ref="baseDialogRef" :is-loading="isLoading">
     <BookingTypeForm :mode="'add'"/>
   </BaseDialogForm>
 </template>

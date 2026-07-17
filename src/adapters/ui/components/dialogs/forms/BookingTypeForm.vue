@@ -7,6 +7,7 @@
 <script lang="ts" setup>
 import {nextTick, ref} from "vue";
 import {useI18n} from "vue-i18n";
+import type {VTextField} from "vuetify/components";
 
 import {INDEXED_DB} from "@/domain/constants";
 import type {BookingTypeFormProps} from "@/domain/types";
@@ -30,7 +31,7 @@ const NAME_RULES = [
 ];
 
 const edit = ref(false);
-const nameInput = ref<HTMLElement | null>(null);
+const nameInput = ref<InstanceType<typeof VTextField> | null>(null);
 
 const onSelect = (id: number | null) => {
   if (!id) return;

@@ -10,20 +10,19 @@
  * Renders dialog components by name via Vue Teleport, driven by `useRuntimeStore`.
  * Ensures a single, centralized point for modal orchestration across the app.
  */
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 import type {DialogComponent} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import {useDialogGuards} from "@/adapters/ui/composables/useDialogGuards";
 import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 
 const {t} = useI18n();
 const runtime = useRuntimeStore();
-const {isLoading} = useDialogGuards(t);
 
 const dialogRef = ref<DialogComponent>();
+const isLoading = computed(() => dialogRef.value?.isLoading?.() ?? false);
 
 log("COMPONENTS DialogPort: setup");
 </script>

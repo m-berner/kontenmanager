@@ -79,7 +79,8 @@ const onClickOk = async (): Promise<void> => {
 
 defineExpose({
   onClickOk,
-  title: t("components.dialogs.deleteBookingType.title")
+  title: t("components.dialogs.deleteBookingType.title"),
+  isLoading: () => isLoading.value
 });
 
 onBeforeMount(() => {

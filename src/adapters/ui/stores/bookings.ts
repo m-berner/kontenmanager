@@ -250,15 +250,6 @@ export const useBookingsStore = defineStore("bookings", function () {
         items.value = [];
     }
 
-    /**
-     * Sets the entire booking's collection.
-     *
-     * @param bookings - New bookings array.
-     */
-    function set(bookings: BookingDb[]): void {
-        items.value = bookings;
-    }
-
     return {
         items,
         bookedYears,
@@ -281,7 +272,6 @@ export const useBookingsStore = defineStore("bookings", function () {
         add,
         update,
         remove,
-        set,
         clean
     };
 });

@@ -62,7 +62,8 @@ const onClickOk = async (): Promise<void> => {
 
 defineExpose({
   onClickOk,
-  title: t("components.dialogs.deleteAccountConfirmation.title")
+  title: t("components.dialogs.deleteAccountConfirmation.title"),
+  isLoading: () => isLoading.value
 });
 
 log("COMPONENTS DIALOGS DeleteAccountConfirmation: setup");
