@@ -109,16 +109,6 @@ export function formMapper() {
             return typeId === BOOKING_TYPES.DIVIDEND;
         };
 
-        const hasMarketplace = (typeId: number): boolean => {
-            return (
-                [
-                    BOOKING_TYPES.BUY,
-                    BOOKING_TYPES.SELL,
-                    BOOKING_TYPES.DIVIDEND
-                ] as number[]
-            ).includes(typeId);
-        };
-
         const booking: Omit<BookingDb, "cID"> = {
             cAccountNumberID: accountId,
             cBookDate: data.bookDate,
@@ -139,7 +129,7 @@ export function formMapper() {
             cStockID: isStockRelated(data.selected) ? data.stockId : 0,
             cCount: isStockRelated(data.selected) ? data.count : 0,
             cExDate: isDividend(data.selected) ? data.exDate : defaultISODate,
-            cMarketPlace: hasMarketplace(data.selected)
+            cMarketPlace: isStockRelated(data.selected)
                 ? data.marketPlace.trim()
                 : ""
         };

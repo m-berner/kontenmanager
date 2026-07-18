@@ -180,7 +180,3 @@ export function createTransactionManager(connection: DatabaseConnection) {
 }
 
 export type TransactionManagerContract = ReturnType<typeof createTransactionManager>;
-
-export const TransactionManager = {
-    create: createTransactionManager
-};

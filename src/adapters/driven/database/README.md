@@ -43,7 +43,7 @@ const allAccounts = await accountsRepo.findAll();
 
 ### 2. Transaction Management
 
-The `TransactionManager` ensures that operations are atomic and safe. You can execute multiple operations within a
+The transaction manager ensures that operations are atomic and safe. You can execute multiple operations within a
 single transaction:
 
 ```typescript
@@ -87,9 +87,9 @@ if (report.issues.length > 0) {
 ### Files
 
 - `batchOperations.ts`: BatchOperationBuilder, createBatchOperationService, createBatchOperationBuilder, BatchOperationBuilder
-- `connectionManager.ts`: createDatabaseConnectionManager, DatabaseConnectionManager
+- `connectionManager.ts`: createDatabaseConnectionManager
 - `databaseAdapter.ts`: createDatabaseAdapter, Service
 - `healthChecker.ts`: createDatabaseHealthService
-- `migrator.ts`: setupDatabase, DatabaseMigrator
-- `transactionManager.ts`: createTransactionManager, TransactionManagerContract, TransactionManager
+- `migrator.ts`: setupDatabase
+- `transactionManager.ts`: createTransactionManager, TransactionManagerContract
 

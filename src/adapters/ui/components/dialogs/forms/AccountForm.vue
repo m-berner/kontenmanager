@@ -34,7 +34,9 @@ const swiftLabel = ref<string>("");
 const ibanLabel = ref<string>("");
 
 const {domain} = useUrl(search);
-const {faviconUrl} = useFavicon(domain);
+const {faviconUrl, onLoad, onError, reset} = useFavicon(domain);
+
+watch(domain, () => reset());
 
 const onUpdateSwift = (swift: string): void => {
   if (!swift) {
@@ -115,7 +117,9 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
     <v-avatar class="me-3" color="white" size="48">
       <v-img
           :alt="t('components.dialogs.forms.accountForm.missingLogo')"
-          :src="accountFormData.logoUrl"/>
+          :src="accountFormData.logoUrl"
+          @error="onError"
+          @load="onLoad"/>
     </v-avatar>
   </div>
 </template>

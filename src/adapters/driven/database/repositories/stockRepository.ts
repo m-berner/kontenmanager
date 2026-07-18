@@ -83,7 +83,3 @@ export function createStockRepository(transactionManager: TransactionManagerCont
         countByAccount
     };
 }
-
-export const StockRepository = {
-    create: createStockRepository
-};

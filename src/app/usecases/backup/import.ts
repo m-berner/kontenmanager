@@ -4,6 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import {setActiveAccountIdPersisted} from "@/app/usecases/portAdapters";
 import type {ImportExportPort, RecordsPort, RuntimePort, SettingsPort} from "@/app/usecases/ports";
 
 import {BROWSER_STORAGE, INDEXED_DB} from "@/domain/constants";
@@ -96,8 +97,7 @@ export async function importDatabaseUsecase(
             "transfers" in backup
                 ? SM_RESTORE_ACCOUNT_ID
                 : (backup as ModernBackupData).accounts?.[0]?.cID ?? SM_RESTORE_ACCOUNT_ID;
-        deps.settings.activeAccountId = activeId;
-        await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, activeId);
+        await setActiveAccountIdPersisted(deps, activeId);
 
         if (backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION) {
             if (!("transfers" in backup)) {

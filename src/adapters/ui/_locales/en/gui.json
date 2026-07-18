@@ -37,7 +37,6 @@
         },
         "baseDialogForm": {
           "errorTitle": "Dialog Error",
-          "validationSummary": "Please fix the following errors:",
           "loadError": "An error occurred while loading this dialog. Please try again."
         }
       },

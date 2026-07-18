@@ -72,7 +72,7 @@ is re-exported from [`backup.ts`](backup.ts).
 - `backup.ts`: exportDatabaseUsecase, createExportFilename, createExportMetadata, estimateSizeKb, findExportConsistencyIssues, ...
 - `bookings.ts`: AddBookingUsecaseDeps, UpdateBookingUsecaseDeps
 - `bookingTypes.ts`: AddBookingTypeUsecaseDeps, DeleteBookingTypeUsecaseDeps, UpdateBookingTypeUsecaseDeps
-- `portAdapters.ts`: RecordsLike, toSettingsPort, toRecordsPort
+- `portAdapters.ts`: RecordsLike, toSettingsPort, setActiveAccountIdPersisted, toRecordsPort
 - `ports.ts`: TxOptions, AccountRepositoryPort, AlertPort, BookingRepositoryPort, BookingTypeRepositoryPort, ...
 - `stocks.ts`: AddStockUsecaseDeps, UpdateStockUsecaseDeps
 

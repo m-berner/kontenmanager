@@ -64,7 +64,3 @@ export function createBookingTypeRepository(transactionManager: TransactionManag
         countByAccount
     };
 }
-
-export const BookingTypeRepository = {
-    create: createBookingTypeRepository
-};

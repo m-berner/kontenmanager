@@ -97,11 +97,6 @@ Functional bridge for data portability.
 `importExportAdapter` is created via `createImportExportAdapter()` and provided via the DI container (it is not a
 global singleton).
 
-### ⚖️ `validationAdapter.ts` (`validationAdapter`)
-
-A functional bridge adapter that translates domain validation rules into a format compatible with Vuetify forms,
-including internationalized error messages.
-
 ### 💾 `storageAdapter.ts` (`storageAdapter`)
 
 Adapter wrapper around `browser.storage.local` that provides a typed API, default installation, and consistent error
@@ -125,5 +120,4 @@ handling.
 - `storageAdapter.ts`: storageAdapter
 - `taskAdapter.ts`: ensureConnected, createTaskAdapter, TaskAdapter
 - `types.ts`
-- `validationAdapter.ts`: createRule, cleanString, oneOfTwo, required, stringLength, ...
 

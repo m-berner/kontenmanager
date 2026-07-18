@@ -1,64 +1,7 @@
 import {test, expect} from "@playwright/test";
 import fs from "node:fs/promises";
-import http from "node:http";
 import path from "node:path";
-
-const ADDON_ID = "kontenmanager@gmx.de";
-
-async function startStaticServer(rootDir: string): Promise<{baseUrl: string; close: () => Promise<void>}> {
-  const server = http.createServer(async (req, res) => {
-    try {
-      const url = new URL(req.url ?? "/", "http://localhost");
-      const pathname = decodeURIComponent(url.pathname);
-
-      const rel = pathname.replace(/^\/+/, "");
-      const filePath = path.join(rootDir, rel);
-      const normalizedRoot = path.resolve(rootDir) + path.sep;
-      const normalizedFile = path.resolve(filePath);
-      if (!normalizedFile.startsWith(normalizedRoot)) {
-        res.writeHead(403);
-        res.end("Forbidden");
-        return;
-      }
-
-      const stat = await fs.stat(normalizedFile).catch(() => null);
-      if (!stat) {
-        res.writeHead(404);
-        res.end("Not found");
-        return;
-      }
-
-      const toServe = stat.isDirectory() ? path.join(normalizedFile, "index.html") : normalizedFile;
-      const data = await fs.readFile(toServe);
-      const ext = path.extname(toServe).toLowerCase();
-      const contentType =
-        ext === ".html" ? "text/html; charset=utf-8" :
-        ext === ".js" ? "application/javascript; charset=utf-8" :
-        ext === ".css" ? "text/css; charset=utf-8" :
-        ext === ".json" ? "application/json; charset=utf-8" :
-        ext === ".png" ? "image/png" :
-        "application/octet-stream";
-
-      res.writeHead(200, {"content-type": contentType});
-      res.end(data);
-    } catch (e) {
-      res.writeHead(500);
-      res.end(String(e));
-    }
-  });
-
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
-  const addr = server.address();
-  if (!addr || typeof addr === "string") throw new Error("Failed to bind server");
-  const baseUrl = `http://127.0.0.1:${addr.port}`;
-
-  return {
-    baseUrl,
-    close: async () => {
-      await new Promise<void>((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())));
-    }
-  };
-}
+import {ADDON_ID, closeAllAlerts, startStaticServer, stubBrowser} from "./support/harness";
 
 test("happy path (firefox): import backup and see Company content", async ({page, browserName}) => {
   expect(browserName).toBe("firefox");
@@ -74,113 +17,7 @@ test("happy path (firefox): import backup and see Company content", async ({page
   const server = await startStaticServer(buildDir);
   try {
     // Provide a minimal `browser.*` stub so the extension code can run in a normal web page.
-    // Must be created inside the page context (functions can't be passed as structured data).
-    await page.addInitScript(() => {
-      type Listener = (...args: unknown[]) => unknown;
-
-      const storage = new Map<string, unknown>();
-      const makeEvent = () => {
-        const listeners = new Set<Listener>();
-        return {
-          addListener(cb: Listener) {
-            listeners.add(cb);
-          },
-          removeListener(cb: Listener) {
-            listeners.delete(cb);
-          },
-          hasListener(cb: Listener) {
-            return listeners.has(cb);
-          },
-          _emit(...args: unknown[]) {
-            for (const cb of listeners) {
-              try {
-                cb(...args);
-              } catch {
-                /* ignore */
-              }
-            }
-          }
-        };
-      };
-
-      const downloadsChanged = makeEvent();
-      const storageChanged = makeEvent();
-
-      // The ambient `browser` type (webext typings) is huge; for this E2E test we only need a runtime stub.
-      (window as unknown as {browser: unknown}).browser = {
-        i18n: {getMessage: (key: string) => key},
-        action: {onClicked: makeEvent()},
-        runtime: {
-          getURL: (p: string) => p,
-          getManifest: () => ({manifest_version: 3, name: "KontenManager", version: "0.0.0"}),
-          onInstalled: makeEvent(),
-          openOptionsPage: async () => undefined
-        },
-        tabs: {
-          create: async () => ({id: 1, windowId: 1}),
-          query: async () => ([]),
-          update: async () => ({id: 1, windowId: 1}),
-          remove: async () => undefined
-        },
-        windows: {
-          update: async () => ({id: 1})
-        },
-        notifications: {
-          create: async () => undefined
-        },
-        downloads: {
-          download: async () => 1,
-          onChanged: downloadsChanged
-        },
-        storage: {
-          local: {
-            get: async (keys: unknown) => {
-              const out: Record<string, unknown> = {};
-              if (keys == null) {
-                for (const [k, v] of storage.entries()) out[k] = v;
-                return out;
-              }
-              const arr = Array.isArray(keys) ? keys : [keys];
-              for (const k of arr) {
-                const key = String(k);
-                out[key] = storage.get(key);
-              }
-              return out;
-            },
-            set: async (items: unknown) => {
-              const changes: Record<string, {oldValue: unknown; newValue: unknown}> = {};
-              for (const [k, v] of Object.entries(items as Record<string, unknown>)) {
-                const oldValue = storage.get(k);
-                storage.set(k, v);
-                changes[k] = {oldValue, newValue: v};
-              }
-              storageChanged._emit(changes, "local");
-            },
-            remove: async (keys: unknown) => {
-              const arr = Array.isArray(keys) ? keys : [keys];
-              const changes: Record<string, {oldValue: unknown; newValue: unknown}> = {};
-              for (const k of arr) {
-                const key = String(k);
-                if (!storage.has(key)) continue;
-                const oldValue = storage.get(key);
-                storage.delete(key);
-                changes[key] = {oldValue, newValue: undefined};
-              }
-              storageChanged._emit(changes, "local");
-            },
-            clear: async () => {
-              const changes: Record<string, {oldValue: unknown; newValue: unknown}> = {};
-              for (const [k, v] of storage.entries()) {
-                changes[k] = {oldValue: v, newValue: undefined};
-              }
-              storage.clear();
-              storageChanged._emit(changes, "local");
-            }
-          },
-          onChanged: storageChanged
-        }
-      };
-    });
+    await page.addInitScript(stubBrowser);
 
     await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/app.html`, {waitUntil: "load"});
 
@@ -254,88 +91,8 @@ test("add company by ISIN (firefox): create new company with ISIN DE000BASF111",
 
   const server = await startStaticServer(buildDir);
   try {
-    // Helper to dismiss any visible Vuetify alert overlays that can block clicks
-    const closeAllAlerts = async () => {
-      for (let i = 0; i < 3; i++) {
-        const overlay = page.locator('.v-overlay').filter({ has: page.locator('.v-alert') });
-        if (await overlay.isVisible().catch(() => false)) {
-          const closeBtn = overlay.locator('.v-alert__close button');
-          if (await closeBtn.count()) {
-            await closeBtn.first().click().catch(() => undefined);
-          }
-          await overlay.waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => undefined);
-          // small delay before checking again in case multiple stacked alerts exist
-          await page.waitForTimeout(100);
-          continue;
-        }
-        break;
-      }
-    };
-    // (removed debug console/pageerror logging)
-
     // Stub minimal `browser.*` so the app can run in a normal page
-    await page.addInitScript(() => {
-      type Listener = (...args: unknown[]) => unknown;
-      const storage = new Map<string, unknown>();
-      // Preseed storage with E2E-friendly defaults
-      storage.set('sActiveAccountId', 1);
-      storage.set('sService', 'none');
-      const makeEvent = () => {
-        const listeners = new Set<Listener>();
-        return {
-          addListener(cb: Listener) { listeners.add(cb); },
-          removeListener(cb: Listener) { listeners.delete(cb); },
-          hasListener(cb: Listener) { return listeners.has(cb); },
-          _emit(...args: unknown[]) { for (const cb of listeners) { try { cb(...args); } catch { /* ignore */ } } }
-        } as const;
-      };
-      const downloadsChanged = makeEvent();
-      const storageChanged = makeEvent();
-      (window as unknown as {browser: unknown}).browser = {
-        i18n: {getMessage: (key: string) => key},
-        action: {onClicked: makeEvent()},
-        runtime: {
-          getURL: (p: string) => p,
-          getManifest: () => ({manifest_version: 3, name: "KontenManager", version: "0.0.0"}),
-          onInstalled: makeEvent(),
-          openOptionsPage: async () => undefined
-        },
-        tabs: { create: async () => ({id: 1, windowId: 1}), query: async () => ([]), update: async () => ({id: 1, windowId: 1}), remove: async () => undefined },
-        windows: { update: async () => ({id: 1}) },
-        notifications: { create: async () => undefined },
-        downloads: { download: async () => 1, onChanged: downloadsChanged },
-        storage: {
-          local: {
-            get: async (keys: unknown) => {
-              const out: Record<string, unknown> = {};
-              if (keys == null) { for (const [k, v] of storage.entries()) out[k] = v; return out; }
-              const arr = Array.isArray(keys) ? keys : [keys];
-              for (const k of arr) { const key = String(k); out[key] = storage.get(key); }
-              return out;
-            },
-            set: async (items: unknown) => {
-              const changes: Record<string, {oldValue: unknown; newValue: unknown}> = {};
-              for (const [k, v] of Object.entries(items as Record<string, unknown>)) {
-                const oldValue = storage.get(k); storage.set(k, v); changes[k] = {oldValue, newValue: v};
-              }
-              storageChanged._emit(changes, "local");
-            },
-            remove: async (keys: unknown) => {
-              const arr = Array.isArray(keys) ? keys : [keys];
-              const changes: Record<string, {oldValue: unknown; newValue: unknown}> = {};
-              for (const k of arr) { const key = String(k); if (!storage.has(key)) continue; const oldValue = storage.get(key); storage.delete(key); changes[key] = {oldValue, newValue: undefined}; }
-              storageChanged._emit(changes, "local");
-            },
-            clear: async () => {
-              const changes: Record<string, {oldValue: unknown; newValue: unknown}> = {};
-              for (const [k, v] of storage.entries()) { changes[k] = {oldValue: v, newValue: undefined}; }
-              storage.clear(); storageChanged._emit(changes, "local");
-            }
-          },
-          onChanged: storageChanged
-        }
-      };
-    });
+    await page.addInitScript(stubBrowser);
 
     await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/app.html`, {waitUntil: "load"});
 
@@ -366,7 +123,7 @@ test("add company by ISIN (firefox): create new company with ISIN DE000BASF111",
     await page.waitForTimeout(100);
 
     // Close any success/error alerts if visible
-    await closeAllAlerts();
+    await closeAllAlerts(page);
 
     // Ensure no scrim overlay is blocking clicks (e.g., leftover dialog/menu/tooltip)
     const scrim = page.locator('.v-overlay__scrim');
@@ -400,7 +157,7 @@ test("add company by ISIN (firefox): create new company with ISIN DE000BASF111",
     await page.locator("#company").click();
 
     // Dismiss any validation/configuration alerts that may appear on the Company view
-    await closeAllAlerts();
+    await closeAllAlerts(page);
 
     // Open Add Company dialog (force in case a transient overlay/tooltip scrim intercepts)
     await page.locator("#addStock").dblclick({ force: true });
@@ -430,7 +187,7 @@ test("add company by ISIN (firefox): create new company with ISIN DE000BASF111",
     ).catch(() => undefined);
 
     // Success or error alerts may appear; dismiss them
-    await closeAllAlerts();
+    await closeAllAlerts(page);
 
     // Verify by querying IndexedDB directly to avoid UI flakiness from background alerts
     await page.waitForFunction(

@@ -4,6 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import {setActiveAccountIdPersisted} from "@/app/usecases/portAdapters";
 import type {
     DatabaseAccountsPort,
     PersistDeps,
@@ -13,7 +14,7 @@ import type {
     SettingsPort
 } from "@/app/usecases/ports";
 
-import {BROWSER_STORAGE, ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
+import {ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
 import type {AccountDb, StorageValueType} from "@/domain/types";
 import {normalizeBookingTypeName} from "@/domain/validation/validators";
@@ -99,12 +100,14 @@ export async function addAccountUsecase(
     );
 
     deps.records.accounts.add({...input.accountData, cID: result.accountId});
+
+    // Clear stale bookings/bookingTypes/stocks left over from the previously
+    // active account before populating the new account's own booking types.
+    deps.records.clean(false);
     for (const bt of result.createdTypes) deps.records.bookingTypes.add(bt);
 
-    deps.settings.activeAccountId = result.accountId;
-    await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, result.accountId);
+    await setActiveAccountIdPersisted(deps, result.accountId);
 
-    deps.records.clean(false);
     deps.runtime.resetTeleport();
     return {
         accountId: result.accountId,
@@ -123,14 +126,9 @@ export async function deleteActiveAccountUsecase(
     deps.records.accounts.remove(accountToDelete);
 
     if (deps.records.accounts.items.length === 0) {
-        deps.settings.activeAccountId = -1;
-        await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, -1);
+        await setActiveAccountIdPersisted(deps, -1);
     } else {
-        deps.settings.activeAccountId = deps.records.accounts.items[0].cID;
-        await deps.setStorage(
-            BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
-            deps.settings.activeAccountId
-        );
+        await setActiveAccountIdPersisted(deps, deps.records.accounts.items[0].cID);
 
         const storesDB = await deps.databaseAdapter.getAccountRecords(
             deps.settings.activeAccountId

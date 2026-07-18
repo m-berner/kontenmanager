@@ -90,6 +90,14 @@ export function createBaseRepository<T extends BaseEntity>(
         options: QueryOptions
     ): Promise<R> {
         if (options.tx) {
+            if (mode === "readwrite" && options.tx.mode === "readonly") {
+                throw appError(
+                    ERROR_DEFINITIONS.SERVICES.DATABASE.BASE.K.CODE,
+                    ERROR_CATEGORY.DATABASE,
+                    false,
+                    {storeName, requiredMode: mode, actualMode: options.tx.mode}
+                );
+            }
             return operation(options.tx);
         }
         return transactionManager.execute(storeName, mode, operation);

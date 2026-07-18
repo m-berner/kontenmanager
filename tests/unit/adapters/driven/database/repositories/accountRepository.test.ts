@@ -5,7 +5,7 @@
  */
 
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {AccountRepository} from "@/adapters/driven/database/repositories/accountRepository";
+import {createAccountRepository} from "@/adapters/driven/database/repositories/accountRepository";
 import {INDEXED_DB} from "@/domain/constants";
 import type {AccountDb} from "@/domain/types";
 
@@ -47,7 +47,7 @@ describe("AccountRepository", () => {
             })
         };
 
-        repository = AccountRepository.create(transactionManagerMock);
+        repository = createAccountRepository(transactionManagerMock);
     });
 
     it("should find an account by ID", async () => {
@@ -118,5 +118,15 @@ describe("AccountRepository", () => {
 
         expect(id).toBe(1);
         expect(storeMock.put).toHaveBeenCalledWith(existingAccount);
+    });
+
+    it("should reject a caller-supplied readonly transaction for a write operation", async () => {
+        const readonlyTx = {...txMock, mode: "readonly"};
+        const newAccount = {cSwift: "NEW", cIban: "DE456", cLogoUrl: "", cWithDepot: false};
+
+        await expect(
+            repository.save(newAccount as Omit<AccountDb, "cID">, {tx: readonlyTx})
+        ).rejects.toThrow();
+        expect(storeMock.add).not.toHaveBeenCalled();
     });
 });

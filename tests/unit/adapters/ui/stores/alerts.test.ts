@@ -62,6 +62,37 @@ describe("Alert Store", () => {
         expect(() => store.dismissAlert(firstId)).not.toThrow();
     });
 
+    it("a queued alert's auto-dismiss timer starts only once it becomes current", () => {
+        const store = useAlertsStore();
+
+        const firstId = store.showAlert("info", "A1", "m1", 5000);
+        const secondId = store.showAlert("info", "A2", "m2", 1000);
+
+        // A1 is shown immediately; A2 is still queued behind it.
+        expect(store.alertTitle).toBe("A1");
+
+        // A2's 1000ms duration must not be counted from when it was queued —
+        // if it were, it would already be eligible for dismissal here, before
+        // ever being shown.
+        vi.advanceTimersByTime(1000);
+        expect(store.alertTitle).toBe("A1");
+        expect(store.pendingCount).toBe(1);
+
+        // A1 dismisses after its own 5000ms, promoting A2 to current — only
+        // now should A2's own timer start.
+        vi.advanceTimersByTime(4000);
+        expect(store.alertTitle).toBe("A2");
+
+        vi.advanceTimersByTime(999);
+        expect(store.alertTitle).toBe("A2");
+
+        vi.advanceTimersByTime(1);
+        expect(store.showOverlay).toBe(false);
+
+        expect(() => store.dismissAlert(firstId)).not.toThrow();
+        expect(() => store.dismissAlert(secondId)).not.toThrow();
+    });
+
     it("dismissAlert should handle undefined and missing IDs gracefully", () => {
         const store = useAlertsStore();
 

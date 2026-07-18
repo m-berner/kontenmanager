@@ -29,7 +29,7 @@ const {setStorage} = storageAdapter();
 const accountForm = createAccountFormManager();
 provideAccountFormManager(accountForm);
 const {accountFormData, mapAccountFormToDb, reset} = accountForm;
-const {submitGuard} = useDialogGuards(t);
+const {submitGuard, isLoading} = useDialogGuards(t);
 const runtime = useRuntimeStore();
 const settings = useSettingsStore();
 const records = useRecordsStore();
@@ -77,7 +77,7 @@ const onClickOk = async (): Promise<void> => {
   });
 };
 
-defineExpose({onClickOk, title: t("components.dialogs.addAccount.title")});
+defineExpose({onClickOk, title: t("components.dialogs.addAccount.title"), isLoading: () => isLoading.value});
 
 onBeforeMount(() => {
   log("COMPONENTS DIALOGS AddAccount: onBeforeMount");
@@ -88,7 +88,7 @@ log("COMPONENTS DIALOGS AddAccount: setup");
 </script>
 
 <template>
-  <BaseDialogForm ref="baseDialogRef">
+  <BaseDialogForm ref="baseDialogRef" :is-loading="isLoading">
     <AccountForm :isUpdate="false"/>
   </BaseDialogForm>
 </template>

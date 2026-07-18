@@ -325,18 +325,6 @@ export const useSettingsStore = defineStore(
             );
         }
 
-        /**
-         * Switches the currently active account.
-         * @param id - The ID of the account to activate.
-         */
-        async function setActiveAccountId(id: number): Promise<void> {
-            await updateSetting(
-                activeAccountId,
-                BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
-                id
-            );
-        }
-
         /** Updates the active UI skin/theme. */
         async function setSkin(v: string): Promise<void> {
             await updateSetting(skin, BROWSER_STORAGE.SKIN.key, v);
@@ -366,7 +354,6 @@ export const useSettingsStore = defineStore(
             setBookingsPerPage,
             setDividendsPerPage,
             setStocksPerPage,
-            setActiveAccountId,
             setService
         };
     }

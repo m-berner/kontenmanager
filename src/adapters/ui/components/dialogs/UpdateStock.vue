@@ -30,7 +30,7 @@ const {activeAccountId} = useSettingsStore();
 const stockForm = createStockFormManager();
 provideStockFormManager(stockForm);
 const {stockFormData, mapStockFormToDb, reset: resetForm} = stockForm;
-const {submitGuard} = useDialogGuards(t);
+const {submitGuard, isLoading} = useDialogGuards(t);
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
@@ -82,7 +82,7 @@ const onClickOk = async (): Promise<void> => {
   });
 };
 
-defineExpose({onClickOk, title: t("components.dialogs.updateStock.title")});
+defineExpose({onClickOk, title: t("components.dialogs.updateStock.title"), isLoading: () => isLoading.value});
 
 onBeforeMount(() => {
   log("COMPONENTS DIALOGS UpdateStock: onBeforeMount");
@@ -93,7 +93,7 @@ log("COMPONENTS DIALOGS UpdateStock: setup");
 </script>
 
 <template>
-  <BaseDialogForm ref="baseDialogRef">
+  <BaseDialogForm ref="baseDialogRef" :is-loading="isLoading">
     <StockForm :isUpdate="true"/>
   </BaseDialogForm>
 </template>

@@ -30,6 +30,7 @@ describe("usecases/stocks", () => {
 
         expect(save).toHaveBeenCalled();
         expect(records.stocks.add).toHaveBeenCalledWith(expect.objectContaining({cID: 5}));
+        expect(runtime.resetTeleport).toHaveBeenCalledTimes(1);
         expect(res).toEqual({id: 5, page: 3});
     });
 

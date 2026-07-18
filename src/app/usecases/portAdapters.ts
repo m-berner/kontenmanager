@@ -6,7 +6,8 @@
 
 import type {RecordsPort, SettingsPort} from "@/app/usecases/ports";
 
-import type {AccountDb, BookingDb, BookingTypeDb, RecordsDbData, StockDb} from "@/domain/types";
+import {BROWSER_STORAGE} from "@/domain/constants";
+import type {AccountDb, BookingDb, BookingTypeDb, RecordsDbData, StockDb, StorageValueType} from "@/domain/types";
 
 /**
  * Structural contract for the record stores passed to port adapters.
@@ -57,6 +58,28 @@ export function toSettingsPort(settings: { activeAccountId: number }): SettingsP
             settings.activeAccountId = value;
         }
     };
+}
+
+/**
+ * Sets the active account and persists it, reverting the in-memory value if
+ * the storage write fails so it doesn't end up pointing at an account that
+ * was never actually persisted.
+ */
+export async function setActiveAccountIdPersisted(
+    deps: {
+        settings: SettingsPort;
+        setStorage: (_key: string, _value: StorageValueType) => Promise<void>;
+    },
+    id: number
+): Promise<void> {
+    const previous = deps.settings.activeAccountId;
+    deps.settings.activeAccountId = id;
+    try {
+        await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, id);
+    } catch (err) {
+        deps.settings.activeAccountId = previous;
+        throw err;
+    }
 }
 
 export function toRecordsPort(records: RecordsLike): RecordsPort {

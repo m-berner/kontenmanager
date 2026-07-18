@@ -138,14 +138,14 @@ describe("useMenuAction", () => {
         );
     });
 
-    it("falls back to a fixed system message when no translate function is supplied", async () => {
+    it("falls back to browserAdapter.getMessage when no translate function is supplied", async () => {
         const {executeAction} = useMenuAction();
 
         await executeAction("notARealAction" as never, 1);
 
         expect(feedbackError).toHaveBeenCalledWith(
-            "System error: resolveMessage",
-            "System error: resolveMessage",
+            "composables.useMenu.title",
+            "composables.useMenu.messages.invalidCode",
             {data: "notARealAction"}
         );
     });

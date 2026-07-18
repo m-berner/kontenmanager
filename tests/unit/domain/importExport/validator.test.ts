@@ -86,5 +86,23 @@ describe("Import/Export Validator", () => {
             const errors = validateDataIntegrity(backupWithViolation);
             expect(errors).toContain("Booking 1000 has positive credit/debit values");
         });
+
+        it("should detect a single negative credit or debit value", () => {
+            const backupWithNegativeCredit = {
+                ...validBackup,
+                bookings: [{cID: 1000, cAccountNumberID: 1, cBookingTypeID: 100, cCredit: -10, cDebit: 0}]
+            };
+            expect(validateDataIntegrity(backupWithNegativeCredit)).toContain(
+                "Booking 1000 has negative credit/debit values"
+            );
+
+            const backupWithNegativeDebit = {
+                ...validBackup,
+                bookings: [{cID: 1001, cAccountNumberID: 1, cBookingTypeID: 100, cCredit: 0, cDebit: -10}]
+            };
+            expect(validateDataIntegrity(backupWithNegativeDebit)).toContain(
+                "Booking 1001 has negative credit/debit values"
+            );
+        });
     });
 });

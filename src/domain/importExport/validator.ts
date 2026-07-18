@@ -295,7 +295,7 @@ function pushUndefinedIdError(
 function validateBusinessRules(backup: ModernBackupData): string[] {
     const errors: string[] = [];
     for (const booking of backup.bookings) {
-        if (booking.cCredit < 0 && booking.cDebit < 0)
+        if (booking.cCredit < 0 || booking.cDebit < 0)
             errors.push(`Booking ${booking.cID} has negative credit/debit values`);
         if (booking.cCredit > 0 && booking.cDebit > 0)
             errors.push(`Booking ${booking.cID} has positive credit/debit values`);

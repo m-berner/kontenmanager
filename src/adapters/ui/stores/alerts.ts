@@ -85,6 +85,8 @@ export const useAlertsStore = defineStore("alerts", () => {
     );
     /** Active auto-dismiss timeouts mapped by alert ID. */
     const timeouts = ref<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+    /** Auto-dismiss durations for queued alerts, applied once each becomes the current alert. */
+    const pendingDurations = ref<Map<number, number>>(new Map());
     /** Number of alerts waiting in the queue. */
     const pendingCount = computed(() => Math.max(0, alertQueue.value.length - 1));
     /** Whether the alert overlay should be visible. */
@@ -140,20 +142,36 @@ export const useAlertsStore = defineStore("alerts", () => {
 
         alertQueue.value.push(alert);
 
+        // Remember the requested auto-dismiss duration; it's only applied
+        // once this alert actually becomes the displayed one (see showNext),
+        // so a queued alert's timer can't expire before it's ever shown.
+        if (duration !== null && duration > 0) {
+            pendingDurations.value.set(id, duration);
+        }
+
         // Show immediately if no alert is currently displayed
         if (currentAlert.value.id === -1) {
             showNext();
         }
 
-        // Set up auto-dismiss if duration is specified
-        if (duration !== null && duration > 0) {
-            const timeoutId = setTimeout(() => {
-                dismissAlert(id);
-            }, duration);
-            timeouts.value.set(id, timeoutId);
-        }
-
         return id;
+    }
+
+    /**
+     * Starts the auto-dismiss timer for an alert that just became current,
+     * using the duration it was queued with (if any).
+     *
+     * @param id - Alert ID that just became the current alert.
+     */
+    function startAutoDismissTimer(id: number): void {
+        const duration = pendingDurations.value.get(id);
+        if (duration === undefined) return;
+        pendingDurations.value.delete(id);
+
+        const timeoutId = setTimeout(() => {
+            dismissAlert(id);
+        }, duration);
+        timeouts.value.set(id, timeoutId);
     }
 
     /**
@@ -162,7 +180,9 @@ export const useAlertsStore = defineStore("alerts", () => {
      */
     function showNext(): void {
         if (alertQueue.value.length > 0) {
-            currentAlert.value = {...alertQueue.value[0]};
+            const next = alertQueue.value[0];
+            currentAlert.value = {...next};
+            startAutoDismissTimer(next.id);
         } else {
             currentAlert.value = createDefaultAlert();
         }
@@ -191,8 +211,9 @@ export const useAlertsStore = defineStore("alerts", () => {
             return;
         }
 
-        // Clear any pending timeout for this alert
+        // Clear any pending timeout/duration for this alert
         clearAlertTimeout(id);
+        pendingDurations.value.delete(id);
 
         const wasCurrentAlert = index === 0;
         alertQueue.value.splice(index, 1);
@@ -361,6 +382,7 @@ export const useAlertsStore = defineStore("alerts", () => {
             clearTimeout(timeoutId);
         });
         timeouts.value.clear();
+        pendingDurations.value.clear();
 
         // Clear alerts
         alertQueue.value = [];

@@ -4,13 +4,6 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type {Ref, UnwrapNestedRefs} from "vue";
-
-export interface BaseDialogForm {
-    formRef: Ref<FormContract | null>;
-    validateForm: () => Promise<boolean>;
-}
-
 export interface BaseEntity {
     cID?: number;
 }
@@ -34,12 +27,6 @@ export type FormContract = {
 };
 
 export type FormModeType = "add" | "update" | "delete";
-
-export interface FormsManager<TForm, TDB, TArgs extends unknown[] = unknown[]> {
-    formData: UnwrapNestedRefs<TForm>;
-    reset: () => void;
-    mapFormToDb: (_data: UnwrapNestedRefs<TForm>, ..._args: TArgs) => TDB;
-}
 
 export type FormValidateResultType = {
     valid: boolean;

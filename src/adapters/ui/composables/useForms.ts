@@ -8,8 +8,14 @@ import {inject, type InjectionKey, provide, reactive, type UnwrapNestedRefs} fro
 
 import {DATE} from "@/domain/constants";
 import {formMapper} from "@/domain/mapping/formMapper";
-import type {AccountFormData, BookingFormData, BookingTypeFormData, FormsManager, StockFormData} from "@/domain/types";
+import type {AccountFormData, BookingFormData, BookingTypeFormData, StockFormData} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
+
+interface FormsManager<TForm, TDB, TArgs extends unknown[] = unknown[]> {
+    formData: UnwrapNestedRefs<TForm>;
+    reset: () => void;
+    mapFormToDb: (_data: UnwrapNestedRefs<TForm>, ..._args: TArgs) => TDB;
+}
 
 /**
  * Base generic form manager that handles reactive data and validation references.

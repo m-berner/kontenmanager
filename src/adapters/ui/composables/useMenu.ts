@@ -192,13 +192,12 @@ export function useMenuAction(translate?: (_key: string) => string) {
      * @param key - Translation/message key.
      */
     const resolveMessage = (key: Parameters<BrowserAdapter["getMessage"]>[0] | string): string => {
+        const typedKey = key as Parameters<BrowserAdapter["getMessage"]>[0];
         if (!translate) {
-            return "System error: resolveMessage";
+            return browserAdapter.getMessage(typedKey);
         }
         const translated = translate(key);
-        return translated && translated !== key
-            ? translated
-            : browserAdapter.getMessage(key as Parameters<BrowserAdapter["getMessage"]>[0]);
+        return translated && translated !== key ? translated : browserAdapter.getMessage(typedKey);
     };
 
     let updateQuoteController: AbortController | null = null;

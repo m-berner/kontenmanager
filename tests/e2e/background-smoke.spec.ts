@@ -1,64 +1,7 @@
 import {test, expect} from "@playwright/test";
 import fs from "node:fs/promises";
-import http from "node:http";
 import path from "node:path";
-
-const ADDON_ID = "kontenmanager@gmx.de";
-
-async function startStaticServer(rootDir: string): Promise<{baseUrl: string; close: () => Promise<void>}> {
-  const server = http.createServer(async (req, res) => {
-    try {
-      const url = new URL(req.url ?? "/", "http://localhost");
-      const pathname = decodeURIComponent(url.pathname);
-
-      const rel = pathname.replace(/^\/+/, "");
-      const filePath = path.join(rootDir, rel);
-      const normalizedRoot = path.resolve(rootDir) + path.sep;
-      const normalizedFile = path.resolve(filePath);
-      if (!normalizedFile.startsWith(normalizedRoot)) {
-        res.writeHead(403);
-        res.end("Forbidden");
-        return;
-      }
-
-      const stat = await fs.stat(normalizedFile).catch(() => null);
-      if (!stat) {
-        res.writeHead(404);
-        res.end("Not found");
-        return;
-      }
-
-      const toServe = stat.isDirectory() ? path.join(normalizedFile, "index.html") : normalizedFile;
-      const data = await fs.readFile(toServe);
-      const ext = path.extname(toServe).toLowerCase();
-      const contentType =
-        ext === ".html" ? "text/html; charset=utf-8" :
-        ext === ".js" ? "application/javascript; charset=utf-8" :
-        ext === ".css" ? "text/css; charset=utf-8" :
-        ext === ".json" ? "application/json; charset=utf-8" :
-        ext === ".png" ? "image/png" :
-        "application/octet-stream";
-
-      res.writeHead(200, {"content-type": contentType});
-      res.end(data);
-    } catch (e) {
-      res.writeHead(500);
-      res.end(String(e));
-    }
-  });
-
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
-  const addr = server.address();
-  if (!addr || typeof addr === "string") throw new Error("Failed to bind server");
-  const baseUrl = `http://127.0.0.1:${addr.port}`;
-
-  return {
-    baseUrl,
-    close: async () => {
-      await new Promise<void>((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())));
-    }
-  };
-}
+import {ADDON_ID, startStaticServer} from "./support/harness";
 
 test("background smoke (firefox): registers listeners and initializes storage defaults", async ({page, browserName}) => {
   expect(browserName).toBe("firefox");

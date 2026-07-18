@@ -49,7 +49,3 @@ export function createAccountRepository(transactionManager: TransactionManagerCo
         ibanExists
     };
 }
-
-export const AccountRepository = {
-    create: createAccountRepository
-};

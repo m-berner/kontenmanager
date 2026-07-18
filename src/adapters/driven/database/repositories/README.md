@@ -2,13 +2,15 @@
 
 This directory contains the concrete implementation of the data access layer. Repositories are responsible for interacting with the IndexedDB database to perform CRUD operations on domain entities.
 
-They extend a `BaseRepository` which provides common functionality for all database tables.
+Each repository is created via `createBaseRepository()`, spreading its returned CRUD operations into
+the entity-specific repository object (functional composition, not class inheritance).
 
 ## Responsibilities
 
 - **Data Access**: Executing queries against IndexedDB.
-- **Mapping**: Converting database records to domain objects and vice versa (via `BaseRepository` mapping logic).
-- **Abstractions**: Providing a clean API for the rest of the application (usually accessed via the `RepositoryFactory`).
+- **Mapping**: Converting database records to domain objects and vice versa (via `createBaseRepository` mapping logic).
+- **Abstractions**: Providing a clean API for the rest of the application, accessed via `useAdapters().repositories`
+  (built internally by `repositoryFactory.ts`).
 
 ## Key Components
 
@@ -22,10 +24,10 @@ They extend a `BaseRepository` which provides common functionality for all datab
 
 ### Files
 
-- `accountRepository.ts`: createAccountRepository, AccountRepository
+- `accountRepository.ts`: createAccountRepository
 - `baseRepository.ts`: createBaseRepository
-- `bookingRepository.ts`: createBookingRepository, BookingRepository
-- `bookingTypeRepository.ts`: createBookingTypeRepository, BookingTypeRepository
-- `repositoryFactory.ts`: createRepositoryFactory, RepositoryFactoryContract, RepositoryFactory
-- `stockRepository.ts`: createStockRepository, StockRepository
+- `bookingRepository.ts`: createBookingRepository
+- `bookingTypeRepository.ts`: createBookingTypeRepository
+- `repositoryFactory.ts`: createRepositoryFactory, RepositoryFactoryContract
+- `stockRepository.ts`: createStockRepository
 

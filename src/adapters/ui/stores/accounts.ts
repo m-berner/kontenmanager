@@ -53,8 +53,8 @@ export const useAccountsStore = defineStore("accounts", function () {
     });
 
     /** Retrieves an account by its ID. */
-    const getById = computed(() => (id: number): AccountStoreItem | undefined => {
-        return items.value.find((account) => account.cID === id);
+    const getById = computed(() => (id: number): AccountStoreItem | null => {
+        return items.value.find((account) => account.cID === id) ?? null;
     });
 
     /** Checks if an account with the given IBAN already exists. */

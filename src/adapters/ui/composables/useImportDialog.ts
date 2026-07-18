@@ -260,15 +260,23 @@ export function useImportDatabaseDialogController(input: {
                         );
                     },
                     onError: async (message) => {
+                        await restoreFromRollback(rollbackData);
                         await input.services.alertAdapter.feedbackError(
                             input.t("components.dialogs.importDatabase.title"),
                             message,
                             {data: "IMPORT_DATABASE_PROCESS"}
                         );
+                        await input.services.alertAdapter.feedbackInfo(
+                            input.t("components.dialogs.importDatabase.title"),
+                            input.services.browserAdapter.getMessage("xx_db_rollback")
+                        );
                     }
                 }
             );
         } catch (err) {
+            // Fallback path: importDatabaseUsecase's onError already attempted a
+            // rollback above, so this only runs if that attempt (or the alert
+            // it showed) itself threw.
             try {
                 await restoreFromRollback(rollbackData);
                 await input.services.alertAdapter.feedbackInfo(

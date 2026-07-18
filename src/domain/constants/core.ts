@@ -512,6 +512,13 @@ export const INDEXED_DB = {
             BUY: 1,
             SELL: 2,
             DIVIDEND: 3,
+            // CREDIT/DEBIT (legacy `cType` switch values) are intentionally
+            // numerically identical to OTHER/FEE (new `cBookingTypeID`
+            // classification values) — see domain/importExport/transformer.ts,
+            // which switches on legacy CREDIT/DEBIT and, in the common case,
+            // infers the new type as OTHER/FEE. Keep each pair equal; changing
+            // one without the other silently breaks legacy import classification.
+            // Covered by tests/unit/domain/constants/core.test.ts.
             CREDIT: 4,
             DEBIT: 5,
             OTHER: 4,

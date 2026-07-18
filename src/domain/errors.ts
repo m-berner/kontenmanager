@@ -6,8 +6,6 @@
 
 import type {AppError, AppErrorCategoryType} from "@/domain/types";
 
-import deNotifications from "@/adapters/ui/_locales/de/messages.json";
-
 export const ERROR_DEFINITIONS = {
     ADD_ACCOUNT: {CODE: "#olt", MSG: "Failed to add the account"},
     CHECKBOX_GRID: {CODE: "#rzg", MSG: "Failed to save selection"},
@@ -108,7 +106,8 @@ export const ERROR_DEFINITIONS = {
                 G: {CODE: "#dbr", MSG: "Failed to clear store"},
                 H: {CODE: "#dbs", MSG: "Failed to get all records by index"},
                 I: {CODE: "#dbt", MSG: "Database is not connected"},
-                J: {CODE: "#dbv", MSG: "Database operation failed"}
+                J: {CODE: "#dbv", MSG: "Database operation failed"},
+                K: {CODE: "#dbw", MSG: "Transaction mode mismatch"}
             },
             A: {CODE: "#dbx", MSG: "Failed to open the IndexedDB connection"},
             B: {CODE: "#dca", MSG: "Error closing the database"},
@@ -150,7 +149,10 @@ export const ERROR_DEFINITIONS = {
 
 export type ErrorCodes = ExtractErrorCodes<typeof ERROR_DEFINITIONS>;
 
-export type Messages = keyof typeof deNotifications;
+/** A WebExtension i18n message key. Kept as `string` here since the concrete
+ *  key set lives in the UI layer's `_locales` resources, which the domain
+ *  layer must not depend on. */
+export type Messages = string;
 
 class AppErrorImpl extends Error {
     code: Messages | ErrorCodes;
@@ -206,15 +208,16 @@ export function appError(
 ): AppError {
     let message: string;
 
-    // Check if it's in messages.json
-    if (code in deNotifications) {
-        message =
-            i18nMessage(code) ??
-            `${i18nMessage("xx_missing_translation") ?? fallbackLabel("xx_missing_translation")}: ${code}`;
-    } else {
+    // Stable error codes (from ERROR_DEFINITIONS) are always "#"-prefixed;
+    // anything else is treated as a WebExtension i18n message key.
+    if (String(code).startsWith("#")) {
         message =
             findErrorMsg(ERROR_DEFINITIONS, String(code)) ??
             `${i18nMessage("xx_error_code") ?? fallbackLabel("xx_error_code")}: ${code}`;
+    } else {
+        message =
+            i18nMessage(code) ??
+            `${i18nMessage("xx_missing_translation") ?? fallbackLabel("xx_missing_translation")}: ${code}`;
     }
 
     return new AppErrorImpl({

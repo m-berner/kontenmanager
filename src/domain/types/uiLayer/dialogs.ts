@@ -56,6 +56,8 @@ export interface DialogComponent {
     onClickOk: () => Promise<void>;
     /** Header title for the dialog. */
     title: string;
+    /** Returns whether the dialog's submit operation is currently in flight. */
+    isLoading?: () => boolean;
 }
 
 /**

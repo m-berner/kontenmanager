@@ -7,26 +7,24 @@
 <script lang="ts" setup>
 /**
  * @fileoverview Base dialog form wrapper component that provides:
- * - Form validation wrapper with visual feedback
  * - Loading overlay
  * - Error boundary for dialog failures
  * - Consistent structure for all dialog forms
  */
-import {computed, onErrorCaptured, ref} from "vue";
+import {onErrorCaptured, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 import type {FormContract} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
-import {useDialogGuards} from "@/adapters/ui/composables/useDialogGuards";
+
+const props = defineProps<{isLoading?: boolean}>();
 
 const {t} = useI18n();
-const {isLoading} = useDialogGuards();
 const {alertAdapter} = useAdapters();
 const formRef = ref<FormContract | null>(null);
 const hasError = ref(false);
-const validationErrors = ref<string[]>([]);
 
 // Error boundary for dialog component failures
 onErrorCaptured((err, _instance, info) => {
@@ -36,33 +34,7 @@ onErrorCaptured((err, _instance, info) => {
   return false; // Prevent error from propagating
 });
 
-// Track validation errors
-const hasValidationErrors = computed(() => validationErrors.value.length > 0);
-
-// Enhanced form validation with error tracking
-const validateForm = async (): Promise<boolean> => {
-  validationErrors.value = [];
-
-  if (!formRef.value) return false;
-
-  try {
-    const result = await formRef.value.validate();
-    const errors = result?.errors ?? [];
-    const valid = !!result?.valid && errors.length === 0;
-
-    if (!valid) {
-      // Extract error messages from validation result
-      validationErrors.value = errors.filter(Boolean);
-    }
-
-    return valid;
-  } catch (err) {
-    log("COMPONENTS DIALOGS FORMS BaseDialogForm: Validation error", err, "error");
-    return false;
-  }
-};
-
-defineExpose({formRef, validateForm});
+defineExpose({formRef});
 
 log("COMPONENTS DIALOGS FORMS BaseDialogForm: setup");
 </script>
@@ -70,22 +42,6 @@ log("COMPONENTS DIALOGS FORMS BaseDialogForm: setup");
 <template>
   <v-form ref="formRef" validate-on="submit" @submit.prevent>
     <template v-if="!hasError">
-      <!-- Validation error summary -->
-      <v-alert
-          v-if="hasValidationErrors"
-          class="ma-4"
-          closable
-          type="warning"
-          variant="tonal"
-          @click:close="validationErrors = []">
-        <div class="text-subtitle-2 mb-2">{{ t("components.dialogs.forms.baseDialogForm.validationSummary") }}</div>
-        <ul class="pl-4">
-          <li v-for="(error, index) in validationErrors" :key="index">
-            {{ error }}
-          </li>
-        </ul>
-      </v-alert>
-
       <slot/>
     </template>
     <template v-else>
@@ -94,7 +50,7 @@ log("COMPONENTS DIALOGS FORMS BaseDialogForm: setup");
       </v-alert>
     </template>
     <v-overlay
-        v-model="isLoading"
+        :model-value="props.isLoading ?? false"
         class="align-center justify-center"
         contained>
       <v-progress-circular color="primary" indeterminate size="64"/>

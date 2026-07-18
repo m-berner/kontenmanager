@@ -161,14 +161,18 @@ export async function fetchDateData(
 
             try {
                 const searchUrl = `${FNET.SEARCH}${entry.value}`;
-                const cachedRedirectUrl = getCache(searchUrl, CACHE_POLICY.DEFAULT_HTTP_TTL_MS);
+                // Prefixed to keep this URL-string cache entry out of the
+                // shared HTTP-text cache's key namespace (used elsewhere for
+                // cached HTML bodies, not bare URLs).
+                const redirectCacheKey = `redirect:${searchUrl}`;
+                const cachedRedirectUrl = getCache(redirectCacheKey, CACHE_POLICY.DEFAULT_HTTP_TTL_MS);
                 let redirectUrl: string;
                 if (cachedRedirectUrl) {
                     redirectUrl = cachedRedirectUrl;
                 } else {
                     const searchResponse = await fetchWithRetry(searchUrl, {signal: options?.signal});
                     redirectUrl = searchResponse.url;
-                    setCache(searchUrl, redirectUrl);
+                    setCache(redirectCacheKey, redirectUrl);
                 }
                 const atoms = redirectUrl.split("/");
                 const stockName = atoms[atoms.length - 1].replace("-aktie", "");
