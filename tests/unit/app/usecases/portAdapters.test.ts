@@ -6,7 +6,7 @@
 
 import {describe, expect, it, vi} from "vitest";
 import {toRecordsPort, toSettingsPort, type RecordsLike} from "@/app/usecases/portAdapters";
-import {makeAccountDb} from "@test/usecases";
+import {makeAccountDb, makeBookingDb, makeStockDb} from "@test/usecases";
 
 describe("usecases/portAdapters", () => {
     describe("toSettingsPort", () => {
@@ -79,13 +79,21 @@ describe("usecases/portAdapters", () => {
             expect(records.init).toHaveBeenCalledWith(dbData, messages);
         });
 
-        it("does not expose .items on bookingTypes/bookings/stocks ports (RecordsPort does not need them)", () => {
+        it("exposes bookingTypes/bookings/stocks .items as live getters onto the source", () => {
             const records = makeRecordsLike();
             const port = toRecordsPort(records);
 
-            expect((port.bookingTypes as {items?: unknown}).items).toBeUndefined();
-            expect((port.bookings as {items?: unknown}).items).toBeUndefined();
-            expect((port.stocks as {items?: unknown}).items).toBeUndefined();
+            expect(port.bookingTypes.items).toEqual(records.bookingTypes.items);
+            expect(port.bookings.items).toEqual(records.bookings.items);
+            expect(port.stocks.items).toEqual(records.stocks.items);
+
+            records.bookingTypes.items = [{cID: 1, cName: "Buy", cAccountNumberID: 1}];
+            records.bookings.items = [makeBookingDb({cID: 1})];
+            records.stocks.items = [makeStockDb({cID: 1})];
+
+            expect(port.bookingTypes.items).toEqual(records.bookingTypes.items);
+            expect(port.bookings.items).toEqual(records.bookings.items);
+            expect(port.stocks.items).toEqual(records.stocks.items);
         });
     });
 });

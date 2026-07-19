@@ -19,9 +19,23 @@ import {log} from "@/domain/utils/utils";
 const props = defineProps<CurrencyInputProps>();
 
 const emit = defineEmits(["update:modelValue"]);
-const {n} = useI18n();
+const {n, locale} = useI18n();
 const formattedValue = ref<string>("");
 const isFocused = ref<boolean>(false);
+
+/**
+ * Detects the active locale's group (thousands) and decimal separator
+ * characters, so a fully formatted display value (e.g. "$1,234.56" or
+ * "1.234,56 €") can be reversed back into a plain number correctly,
+ * instead of assuming "," is always the decimal separator.
+ */
+const getSeparators = (): { group: string; decimal: string } => {
+  const parts = new Intl.NumberFormat(locale.value).formatToParts(1234.5);
+  return {
+    group: parts.find((p) => p.type === "group")?.value ?? ",",
+    decimal: parts.find((p) => p.type === "decimal")?.value ?? "."
+  };
+};
 
 const wrappedRules = computed(() => {
   if (!props.rules) return undefined;
@@ -50,8 +64,24 @@ const formatCurrency = (value: number): string => {
 
 const parseCurrency = (value: string): number => {
   if (!value) return 0;
-  // Remove all spaces and replace comma with a period for parsing
-  const normalized = value.replace(/\s/g, "").replace(",", ".");
+  const trimmed = value.trim();
+
+  // Already-plain numeric input (the raw editing state set by onFocus/onInput,
+  // always dot-decimal with no grouping) is unambiguous — parse it directly
+  // rather than risk treating its "." as a locale group separator (e.g. in
+  // locales like de-DE where "." is the group separator).
+  if (/^-?\d+(\.\d*)?$/.test(trimmed)) {
+    return Number.parseFloat(trimmed);
+  }
+
+  const {group, decimal} = getSeparators();
+  // Strip group (thousands) separators first, then normalize the decimal
+  // separator to ".", so locale-formatted display values like "$1,234.56"
+  // or "1.234,56 €" both parse to 1234.56 instead of silently losing
+  // magnitude (only the first separator was previously converted).
+  const withoutGroups = group ? trimmed.split(group).join("") : trimmed;
+  const withDotDecimal = decimal === "." ? withoutGroups : withoutGroups.split(decimal).join(".");
+  const normalized = withDotDecimal.replace(/\s/g, "");
   const match = normalized.match(/-?\d+(\.\d*)?/);
   return match ? Number.parseFloat(match[0]) : 0;
 };

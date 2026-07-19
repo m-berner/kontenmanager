@@ -14,7 +14,7 @@ const DEFAULT_TTL = CACHE_POLICY.DEFAULT_HTTP_TTL_MS;
  * insertion time, once the cache exceeds MAX_HTTP_CACHE_ENTRIES items.
  * Used primarily for caching HTTP responses to reduce network requests.
  */
-const cache = new Map<string, { data: string; timestamp: number }>();
+const cache = new Map<string, { data: string; timestamp: number; ttl: number }>();
 
 /** Removes all entries from the cache. */
 export function clearCache(): void {
@@ -50,28 +50,32 @@ export function getCacheStats(): { size: number; keys: string[] } {
 }
 
 /**
- * Stores `data` under `key`, recording the current timestamp.
- * Triggers a cleanup pass when the cache grows beyond 100 entries.
+ * Stores `data` under `key`, recording the current timestamp and the TTL
+ * this entry should be swept with (defaults to `DEFAULT_TTL`, but callers
+ * with a different TTL, e.g. quote endpoints, should pass their own so the
+ * automatic cleanup sweep evicts it at the correct age).
+ * Triggers a cleanup pass when the cache grows beyond `MAX_HTTP_CACHE_ENTRIES`.
  *
  * @param key - Cache key.
  * @param data - String value to cache (typically serialized HTML).
+ * @param ttl - Time-to-live in milliseconds used by the automatic cleanup sweep.
  */
-export function setCache(key: string, data: string): void {
-    cache.set(key, {data, timestamp: Date.now()});
+export function setCache(key: string, data: string, ttl: number = DEFAULT_TTL): void {
+    cache.set(key, {data, timestamp: Date.now(), ttl});
     if (cache.size > CACHE_POLICY.MAX_HTTP_CACHE_ENTRIES) cleanupCache();
 }
 
 /**
- * Removes all entries whose age exceeds `DEFAULT_TTL`. If the cache is still
- * over `MAX_HTTP_CACHE_ENTRIES` afterwards (e.g. many distinct URLs cached
- * within the TTL window), evicts the oldest entries until back at the cap,
- * so the cache cannot grow unbounded in a long-lived extension context.
+ * Removes all entries whose age exceeds their own recorded TTL. If the cache
+ * is still over `MAX_HTTP_CACHE_ENTRIES` afterwards (e.g. many distinct URLs
+ * cached within their TTL window), evicts the oldest entries until back at
+ * the cap, so the cache cannot grow unbounded in a long-lived extension context.
  * Called automatically by `setCache` when the cache exceeds the cap.
  */
 function cleanupCache(): void {
     const now = Date.now();
     for (const [key, entry] of cache.entries()) {
-        if (now - entry.timestamp > DEFAULT_TTL) {
+        if (now - entry.timestamp > entry.ttl) {
             cache.delete(key);
         }
     }

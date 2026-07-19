@@ -4,6 +4,8 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import {onUnmounted} from "vue";
+
 import type {DialogNameType, MenuActionType} from "@/domain/types";
 
 import {useAdapters} from "@/adapters/context";
@@ -27,21 +29,37 @@ export function useHeaderBarActions(t: (_key: string) => string): {
         });
     };
 
+    let updateQuoteController: AbortController | null = null;
+    onUnmounted(() => {
+        updateQuoteController?.abort();
+        updateQuoteController = null;
+    });
+
     const dialogActions: Record<MenuActionType, () => void | Promise<void>> = {
         updateQuote: async () => {
+            updateQuoteController?.abort();
+            const controller = new AbortController();
+            updateQuoteController = controller;
             try {
                 runtime.isStockLoading = true;
                 runtime.isDownloading = true;
                 fetchAdapter.clearCache();
-                await refreshAllOnlineData();
+                await refreshAllOnlineData({signal: controller.signal});
             } catch (err) {
+                // Superseded by a newer updateQuote() call; not a real failure.
+                if (controller.signal.aborted) return;
                 await alertAdapter.feedbackError(t("views.headerBar.infoTitle"), err, {
                     data: {context: "UPDATE_QUOTE"},
                     logLevel: "error"
                 });
             } finally {
-                runtime.isStockLoading = false;
-                runtime.isDownloading = false;
+                // Only the still-current call resets shared loading state; a
+                // superseded call must leave it alone since a newer one owns it.
+                if (updateQuoteController === controller) {
+                    updateQuoteController = null;
+                    runtime.isStockLoading = false;
+                    runtime.isDownloading = false;
+                }
             }
         },
 

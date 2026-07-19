@@ -8,7 +8,7 @@ import {CACHE_POLICY} from "@/domain/constants";
 import type {FetchResult, NumberStringPair, StockMarketData} from "@/domain/types";
 import {normalizeNumber} from "@/domain/utils/utils";
 
-import {fetchWithCache, parseHTML} from "@/adapters/driven/fetch/httpClient";
+import {fetchTextWithCacheFollowRedirect, parseHTML} from "@/adapters/driven/fetch/httpClient";
 import {DEFAULT_CURRENCY, DEFAULT_CURRENCY_SYMBOL, DEFAULT_VALUE} from "@/adapters/driven/fetch/providerUtils";
 
 /** Base URL used to resolve relative tagesschau.de navigation paths. */
@@ -73,7 +73,7 @@ export async function ardFetcher(
 ): Promise<StockMarketData[]> {
     return Promise.all(
         urls.map(async (urlObj: NumberStringPair): Promise<StockMarketData> => {
-            const html = await fetchWithCache(
+            const html = await fetchTextWithCacheFollowRedirect(
                 urlObj.value,
                 CACHE_POLICY.QUOTE_TTL_MS,
                 {signal: options?.signal}
@@ -85,7 +85,7 @@ export async function ardFetcher(
                 throw new Error(`ard: no detail URL found for ${urlObj.value}`);
             }
 
-            const detailHtml = await fetchWithCache(
+            const detailHtml = await fetchTextWithCacheFollowRedirect(
                 detailUrl,
                 CACHE_POLICY.QUOTE_TTL_MS,
                 {signal: options?.signal}

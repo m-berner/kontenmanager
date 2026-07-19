@@ -223,7 +223,10 @@ export function createBatchOperationBuilder(service: Pick<BatchServiceContract, 
             ([storeName, operations]) => ({storeName, operations})
         );
 
-        return service.executeAtomic(batchDescriptors);
+        await service.executeAtomic(batchDescriptors);
+        // Consume the batch on success so a later execute() doesn't silently
+        // replay these same operations alongside whatever is added next.
+        descriptors.clear();
     }
 
     function getOperationCount(): number {

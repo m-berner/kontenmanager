@@ -118,6 +118,7 @@
         "confirmImportTitle": "Start import",
         "confirmOk": "Import",
         "confirmCancel": "Cancel",
+        "confirmExistingDataWarning": "This will permanently delete your existing data first:",
         "messages": {
           "invalidSuffix": "Invalid filename",
           "emptyFile": "The file is empty.",

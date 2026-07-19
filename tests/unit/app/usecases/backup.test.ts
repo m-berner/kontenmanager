@@ -140,6 +140,9 @@ describe("usecases/backup helpers", () => {
         const atomicImport = vi.fn().mockResolvedValue(undefined);
         const records = {
             accounts: {items: []},
+            stocks: {items: []},
+            bookings: {items: []},
+            bookingTypes: {items: []},
             init: vi.fn().mockResolvedValue(undefined)
         };
         const settings = {activeAccountId: -1};

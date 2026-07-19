@@ -117,9 +117,15 @@ export function createDatabaseAccountsPortMock(
 
 export function createRecordsPortMock(input: {
     accountIds?: number[];
+    bookingTypeIds?: number[];
+    bookingIds?: number[];
+    stockIds?: number[];
     init?: RecordsDbData;
 } = {}): RecordsPort {
     const accountsItems = (input.accountIds ?? []).map((cID) => ({cID}));
+    const bookingTypeItems = (input.bookingTypeIds ?? []).map((cID) => ({cID}));
+    const bookingItems = (input.bookingIds ?? []).map((cID) => ({cID}));
+    const stockItems = (input.stockIds ?? []).map((cID) => ({cID}));
 
     return {
         accounts: {
@@ -129,16 +135,19 @@ export function createRecordsPortMock(input: {
             remove: vi.fn()
         },
         bookingTypes: {
+            items: bookingTypeItems,
             add: vi.fn(),
             update: vi.fn(),
             remove: vi.fn()
         },
         bookings: {
+            items: bookingItems,
             add: vi.fn(),
             update: vi.fn(),
             remove: vi.fn()
         },
         stocks: {
+            items: stockItems,
             add: vi.fn(),
             update: vi.fn(),
             remove: vi.fn()

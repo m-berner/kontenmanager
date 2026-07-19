@@ -41,10 +41,14 @@ const handleItemClick = async (item: MenuItemData) => {
 
   try {
     await executeAction(item.action, props.recordId);
-    clearAllHighlights();
   } catch (err) {
+    // executeAction() normally swallows and reports handler errors itself;
+    // this only catches truly unexpected failures. Highlights are still
+    // cleared via `finally` below either way.
     log("COMPONENTS DotMenu: action failed", err, "error");
     await alertAdapter.feedbackError(t("components.dotMenu.actionFailedTitle"), err, {data: item.action});
+  } finally {
+    clearAllHighlights();
   }
 };
 

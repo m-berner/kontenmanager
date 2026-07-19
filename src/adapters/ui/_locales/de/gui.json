@@ -118,6 +118,7 @@
         "confirmImportTitle": "Import starten",
         "confirmOk": "Importieren",
         "confirmCancel": "Abbrechen",
+        "confirmExistingDataWarning": "Dadurch werden zunächst Ihre vorhandenen Daten dauerhaft gelöscht:",
         "messages": {
           "invalidSuffix": "Ungültiger Dateiname",
           "emptyFile": "Die Datei ist leer.",

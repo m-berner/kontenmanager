@@ -19,12 +19,18 @@ export function isDuplicateAccountIban(items: AccountStoreItem[], iban: string):
 
 /**
  * Returns true if any existing stock already uses the given ISIN.
+ * Optionally excludes one entry by ID, used when validating an update.
  *
  * @param items - Current list of stocks to check against.
  * @param isin - The ISIN to test for duplicates.
+ * @param excludeId - ID of the entry being edited, excluded from the comparison.
  */
-export function isDuplicateStockIsin(items: StockItem[], isin: string): boolean {
-    return items.some((entry) => entry.cISIN === isin);
+export function isDuplicateStockIsin(items: StockItem[], isin: string, excludeId?: number): boolean {
+    return items.some((entry) => {
+        const isSameIsin = entry.cISIN === isin;
+        const isNotExcluded = excludeId === undefined || entry.cID !== excludeId;
+        return isSameIsin && isNotExcluded;
+    });
 }
 
 /**

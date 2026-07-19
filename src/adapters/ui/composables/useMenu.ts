@@ -247,16 +247,24 @@ export function useMenuAction(translate?: (_key: string) => string) {
 
         async updateQuote() {
             updateQuoteController?.abort();
-            updateQuoteController = new AbortController();
-            const signal = updateQuoteController.signal;
+            const controller = new AbortController();
+            updateQuoteController = controller;
             runtime.isStockLoading = true;
             runtime.isDownloading = true;
             try {
-                await loadOnlineData(runtime.stocksPage, {signal});
+                await loadOnlineData(runtime.stocksPage, {signal: controller.signal});
+            } catch (err) {
+                // Superseded by a newer updateQuote() call; not a real failure.
+                if (controller.signal.aborted) return;
+                throw err;
             } finally {
-                updateQuoteController = null;
-                runtime.isStockLoading = false;
-                runtime.isDownloading = false;
+                // Only the still-current call resets shared loading state; a
+                // superseded call must leave it alone since a newer one owns it.
+                if (updateQuoteController === controller) {
+                    updateQuoteController = null;
+                    runtime.isStockLoading = false;
+                    runtime.isDownloading = false;
+                }
             }
         },
 

@@ -81,7 +81,7 @@ log("COMPONENTS DIALOGS FORMS StockForm: setup");
           v-model="stockFormData.isin"
           :counter="12"
           :label="t('components.dialogs.forms.stockForm.isinLabel')"
-          :rules="validationAdapter.isinRules(ISIN_RULES, props.isUpdate ? undefined : records.stocks.isDuplicate)"
+          :rules="validationAdapter.isinRules(ISIN_RULES, (isin) => records.stocks.isDuplicate(isin, props.isUpdate ? stockFormData.id : undefined))"
           autofocus
           variant="outlined"
           @update:model-value="onUpdateIsin"/>

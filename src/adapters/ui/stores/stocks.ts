@@ -85,8 +85,8 @@ export const useStocksStore = defineStore("stocks", function () {
             }
     );
 
-    const isDuplicate = computed(() => (isin: string): boolean => {
-        return isDuplicateStockIsin(items.value, isin);
+    const isDuplicate = computed(() => (isin: string, excludeId?: number): boolean => {
+        return isDuplicateStockIsin(items.value, isin, excludeId);
     });
 
     const passive = computed((): StockItem[] => {

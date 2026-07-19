@@ -59,6 +59,7 @@ log("COMPONENTS DialogPort: setup");
           <v-tooltip :text="t('components.dialogs.cancel')" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
+                  :disabled="isLoading"
                   class="ml-auto"
                   icon="$close"
                   v-bind="props"
