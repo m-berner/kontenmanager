@@ -28,7 +28,7 @@ const app = createApp(OptionsIndex);
 const adapters = createAdapters();
 const pinia = createAppPinia(adapters);
 const i18n = createI18nPlugin(adapters.browserAdapter);
-attachStoreTranslate(pinia, i18n.global.t); // wire the translate function into stores (see stores/deps.ts)
+attachStoreTranslate(pinia, i18n.global.t); // wire the translation function into stores (see stores/deps.ts)
 
 provideAdapters(app, adapters);
 
