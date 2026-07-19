@@ -7,7 +7,7 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 
-import {ERROR_CATEGORY} from "@/domain/constants";
+import {ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
 import {appError} from "@/domain/errors";
 import {
     aggregateBookingsPerType,
@@ -196,7 +196,8 @@ export const useBookingsStore = defineStore("bookings", function () {
     const dividendsByStockId = computed(() => (ident: number) => {
         return items.value
             .filter((entry: BookingDb) => {
-                return entry.cStockID === ident && entry.cBookingTypeID === 3;
+                return entry.cStockID === ident &&
+                    entry.cBookingTypeID === INDEXED_DB.STORE.BOOKING_TYPES.DIVIDEND;
             })
             .map((entry: BookingDb) => {
                 return {id: ident, year: entry.cExDate, sum: entry.cCredit};

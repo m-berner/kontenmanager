@@ -60,10 +60,20 @@ function validateDescriptors(descriptors: BatchOperationDescriptor[]): void {
     }
 }
 
-function promisifyRequest<T>(request: IDBRequest<T>): Promise<T> {
+function promisifyRequest<T>(request: IDBRequest<T>, storeName: string): Promise<T> {
     return new Promise((resolve, reject) => {
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        request.onerror = () => {
+            const err = request.error as DOMException | null;
+            reject(
+                appError(
+                    ERROR_DEFINITIONS.SERVICES.DATABASE.REQUEST_FAILED.CODE,
+                    ERROR_CATEGORY.DATABASE,
+                    false,
+                    {storeName, name: err?.name, message: err?.message}
+                )
+            );
+        };
     });
 }
 
@@ -73,16 +83,16 @@ async function executeOperation(
 ): Promise<void> {
     switch (operation.type) {
         case "add":
-            await promisifyRequest(store.add(operation.data));
+            await promisifyRequest(store.add(operation.data), store.name);
             break;
         case "put":
-            await promisifyRequest(store.put(operation.data));
+            await promisifyRequest(store.put(operation.data), store.name);
             break;
         case "delete":
-            await promisifyRequest(store.delete(operation.key));
+            await promisifyRequest(store.delete(operation.key), store.name);
             break;
         case "clear":
-            await promisifyRequest(store.clear());
+            await promisifyRequest(store.clear(), store.name);
             break;
         default: {
             throw appError(

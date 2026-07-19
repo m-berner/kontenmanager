@@ -82,44 +82,44 @@ export const useRuntimeStore = defineStore("runtime", function () {
      * Set of page numbers that have successfully loaded stock data.
      * Prevents redundant API calls for the same page.
      */
-    const loadedStocksPages = new Set<number>();
+    const loadedStocksPages = ref<Set<number>>(new Set());
 
     /**
      * Timestamp (ms since epoch) when a given page was last successfully loaded.
      * Used to expire the "loaded" marker after some time, so rates can refresh.
      */
-    const loadedStocksPagesAt = new Map<number, number>();
+    const loadedStocksPagesAt = ref<Map<number, number>>(new Map());
 
     /**
      * Clears all tracked loaded stock pages.
      */
     function clearStocksPages(): void {
-        loadedStocksPages.clear();
-        loadedStocksPagesAt.clear();
+        loadedStocksPages.value.clear();
+        loadedStocksPagesAt.value.clear();
     }
 
     /**
      * Marks a stock page as loaded "now".
      */
     function markStocksPageLoaded(page: number): void {
-        loadedStocksPages.add(page);
-        loadedStocksPagesAt.set(page, Date.now());
+        loadedStocksPages.value.add(page);
+        loadedStocksPagesAt.value.set(page, Date.now());
     }
 
     /**
      * Invalidates a previously loaded page marker (so it will be re-fetched).
      */
     function invalidateStocksPage(page: number): void {
-        loadedStocksPages.delete(page);
-        loadedStocksPagesAt.delete(page);
+        loadedStocksPages.value.delete(page);
+        loadedStocksPagesAt.value.delete(page);
     }
 
     /**
      * Returns whether a page is considered "fresh" based on its last loaded timestamp.
      */
     function isStocksPageFresh(page: number, maxAgeMs: number): boolean {
-        if (!loadedStocksPages.has(page)) return false;
-        const ts = loadedStocksPagesAt.get(page);
+        if (!loadedStocksPages.value.has(page)) return false;
+        const ts = loadedStocksPagesAt.value.get(page);
         if (!ts) return false;
         return Date.now() - ts <= maxAgeMs;
     }

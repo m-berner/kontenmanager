@@ -22,7 +22,12 @@ export async function wstreetFetcher(
                 CACHE_POLICY.QUOTE_TTL_MS,
                 {signal: options?.signal}
             );
-            const responseJson = JSON.parse(searchText);
+            let responseJson: unknown;
+            try {
+                responseJson = JSON.parse(searchText);
+            } catch {
+                throw new Error(`wstreet: invalid JSON response for ${urlObj.value}`);
+            }
             const detailUrl = buildWStreetDetailUrl(responseJson);
 
             if (!detailUrl) {
