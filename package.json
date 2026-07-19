@@ -13,7 +13,6 @@
     "@typescript-eslint/parser": "^8.56.0",
     "@vitejs/plugin-vue": "6.0.4",
     "@web-types/vue": "3.0.0-1",
-    "@web-types/vuetify": "2.0.15-1",
     "addons-linter": "10.9.0",
     "chrome-types": "0.1.415",
     "eslint": "^9.39.3",
