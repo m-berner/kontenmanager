@@ -609,6 +609,15 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
             await page.keyboard.press("Control+Alt+r");
 
+            // The shortcut now asks for confirmation before resetting storage.
+            // Click the confirmation button (last button) on the top-most dialog.
+            const confirmDialog = page.getByRole("dialog").last();
+            await expect(confirmDialog).toBeVisible({timeout: 10_000});
+            await confirmDialog.getByRole("button").last().click();
+
+            // The reset also shows a success info alert; close it before continuing.
+            await closeAllAlerts(page);
+
             await expect
                 .poll(async () => {
                     const stored = await page.evaluate(() => (window as unknown as {
