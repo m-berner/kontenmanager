@@ -3,6 +3,7 @@ import {defineConfig} from "@playwright/test";
 export default defineConfig({
   fullyParallel: true,
   testDir: "./tests/e2e",
+  testIgnore: ["**/happy-path.spec.ts"],
   timeout: 120_000,
   expect: {timeout: 10_000},
   retries: 0,

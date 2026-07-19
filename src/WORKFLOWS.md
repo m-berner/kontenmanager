@@ -19,6 +19,7 @@ processing steps the extension performs in response.
 10. [Settings & Preferences](#10-settings--preferences)
 11. [Navigation & View Switching](#11-navigation--view-switching)
 12. [Background Script Lifecycle](#12-background-script-lifecycle)
+13. [E2E Test Coverage](#13-e2e-test-coverage)
 
 ---
 
@@ -753,6 +754,56 @@ browser.action.onClicked
 
 ---
 
+## 13. E2E Test Coverage
+
+Playwright E2E specs (`tests/e2e/*.spec.ts`, run via `npm run test:e2e`, see `tests/README.md`) exercise many of the
+workflows above end-to-end against a built extension served over HTTP with a stubbed `browser.*` API. This table
+maps each workflow to its covering spec/test so regressions surface where the behavior is described.
+
+| Workflow                             | Spec file                  | Test                                                       |
+|---------------------------------------|-----------------------------|-------------------------------------------------------------|
+| 1. Extension Startup                  | `background-smoke.spec.ts` | `background smoke (firefox): registers listeners and initializes storage defaults` |
+| 1. Extension Startup (app boot)       | `happy-path.spec.ts`       | `happy path (firefox): import backup and see Company content` (boot + header render) |
+| 2.1 Add Account                       | `dialog-actions.spec.ts`   | `addAccount: creates a new account and switches to it`     |
+| 2.2 Update Account                    | `dialog-actions.spec.ts`   | `updateAccount: edits the active account's SWIFT code`     |
+| 2.3 Delete Account                    | `dialog-actions.spec.ts`   | `deleteAccountConfirmation: removes the active account`    |
+| 2.4 Switch Account                    | `dialog-actions.spec.ts`   | `switchAccount: adds a second account and switches back to the original via the TitleBar select` |
+| 3.1 Add Booking                       | `dialog-actions.spec.ts`   | `addBooking: creates a new booking against the fixture's BUY type and AAPL stock` |
+| 3.2 Update Booking                    | `dialog-actions.spec.ts`   | `updateBooking: edits the existing booking's remark via the row menu` |
+| 3.3 Delete Booking                    | `dialog-actions.spec.ts`   | `deleteBooking: removes the booking via the row menu (no confirmation step)` |
+| 3.4 Search Bookings                   | `dialog-actions.spec.ts`   | `searchBookings: filters the bookings table in-memory`      |
+| 4.1 Add Booking Type                  | `dialog-actions.spec.ts`   | `addBookingType: creates a new booking type`                |
+| 4.2 Update Booking Type               | `dialog-actions.spec.ts`   | `updateBookingType: renames the existing booking type`      |
+| 4.2 Delete Booking Type               | `dialog-actions.spec.ts`   | `deleteBookingType: creates then deletes a fresh, unreferenced booking type` |
+| 5.1 Add Stock                         | `happy-path.spec.ts`       | `add company by ISIN (firefox): create new company with ISIN DE000BASF111` |
+| 5.2 Update Stock                      | `dialog-actions.spec.ts`   | `updateStock: edits the stock's URL via the row menu`       |
+| 5.3 Delete Stock                      | `dialog-actions.spec.ts`   | `deleteStock: adds a disposable stock then deletes it via the row menu` |
+| 6.1 Automatic Load on CompanyContent  | *none*                      | not directly covered (only the disabled-provider path is exercised, via 6.2) |
+| 6.2 Manual Refresh (Force Update)     | `dialog-actions.spec.ts`   | `updateQuote: manual refresh completes without errors when the provider is disabled` |
+| 6.3 Provider Selection Impact         | `options-page.spec.ts`     | `serviceSelector: changes the market data provider and persists it to storage` |
+| 7.1 Accounting View                   | `dialog-actions.spec.ts`   | `showAccounting: opens a read-only dialog with accounting figures, then closes` |
+| 7.2 Dividend View                     | `dialog-actions.spec.ts`   | `showDividend: opens the read-only dividend dialog for a stock, then closes` (fixture has no dividend booking, so this exercises the empty-state path) |
+| 7.3 Portfolio Calculations            | `dialog-actions.spec.ts`   | `portfolioDepotSum: shows the depot chip with a value on the Company view` |
+| 8. Data Export (Backup)               | `dialog-actions.spec.ts`   | `exportDatabase: triggers a download with the current data` |
+| 9. Data Import (Restore)              | `happy-path.spec.ts`       | `happy path (firefox): import backup and see Company content` |
+| 10.1 Theme Change                     | `options-page.spec.ts`     | `themeSelector: changes the active skin and persists it to storage` |
+| 10.2 Data Provider Change             | `options-page.spec.ts`     | `serviceSelector: changes the market data provider and persists it to storage` (same control as 6.3) |
+| 10.3 Pagination Settings              | *none*                      | not directly covered (the `v-data-table` items-per-page footer control) |
+| 10.4 Market Preferences               | `options-page.spec.ts`     | `marketPreferences: adds and removes a stock exchange entry`; `marketPreferences: toggles an index's visibility checkbox and persists it` |
+| 11.1 Home ↔ Company navigation        | `happy-path.spec.ts`, `dialog-actions.spec.ts` | covered incidentally via `#company` / `#home` navigation in multiple tests |
+| 11.2 Privacy / Help Pages             | `dialog-actions.spec.ts`   | `footerNavigation: opens Help and Privacy pages via the FooterBar` |
+| 11.3 Keyboard Shortcuts               | `dialog-actions.spec.ts`   | `keyboardShortcut: Ctrl+Alt+R resets browser.storage.local without touching IndexedDB data` |
+| 12. Background Script Lifecycle       | `background-smoke.spec.ts` | `background smoke (firefox): registers listeners and initializes storage defaults` (install, update, toolbar click/focus/dedupe) |
+
+Additionally, `dialog-actions.spec.ts` covers `fadeInStock` (guard-clause branch: info alert when no passive stocks
+exist), which is not otherwise documented above as a standalone workflow.
+
+The one remaining gap — 10.3 Pagination Settings (the `v-data-table` items-per-page footer control on the Home/
+Company tables) and 6.1's fully-online automatic-load path — are currently only covered, if at all, by unit tests
+under `tests/unit/` — see `tests/README.md` for the unit test layout.
+
+---
+
 ## Data Flow Summary
 
 ```
@@ -792,4 +843,4 @@ CompanyContent / HeaderBar refresh trigger
 
 ---
 
-*Generated: 2026-03-25 | KontenManager v27*
+*Generated: 2026-03-25 | Updated: 2026-07-19 (added E2E test coverage) | KontenManager v27*

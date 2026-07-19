@@ -370,4 +370,284 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
             await server.close();
         }
     });
+
+    test("switchAccount: adds a second account and switches back to the original via the TitleBar select", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+
+            // Add a second account. addAccountUsecase makes it active automatically.
+            await page.locator("#addAccount").click({force: true});
+            const addDialog = page.locator(".v-dialog").last();
+            const textboxes = addDialog.getByRole("textbox");
+            await expect(textboxes.first()).toBeVisible({timeout: 10_000});
+            await textboxes.nth(0).fill("SECOND01");
+            await textboxes.nth(1).fill("DE11111111111111111111");
+            await addDialog.locator(".v-card-actions button").first().click();
+            await waitForDialogsClosed(page);
+            await closeAllAlerts(page);
+
+            const accounts = await readStore<AccountRow>(page, "accounts");
+            expect(accounts).toHaveLength(2);
+
+            // Switch back to the original (fixture) account via the TitleBar select.
+            const accountSelect = page.locator("header.v-app-bar .v-select");
+            await accountSelect.click();
+            await page.getByRole("option", {name: "DE00000000000000000000"}).click();
+
+            await expect
+                .poll(async () => {
+                    const stored = await page.evaluate(() => (window as unknown as {
+                        browser: {storage: {local: {get: (_k: unknown) => Promise<Record<string, unknown>>}}}
+                    }).browser.storage.local.get("sActiveAccountId"));
+                    return stored.sActiveAccountId;
+                }, {timeout: 10_000})
+                .toBe(1);
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("updateBooking: edits the existing booking's remark via the row menu", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+
+            const row = page.locator("tr.table-row", {hasText: "BUY AAPL"});
+            await row.getByRole("button", {name: /(Open menu|Menü öffnen)/i}).click({force: true});
+            await page.locator("#update-booking").click();
+
+            const dialog = page.locator(".v-dialog").last();
+            await expect(dialog).toBeVisible({timeout: 10_000});
+            const descriptionField = dialog.getByRole("textbox", {name: /(Remark|Bemerkung)/i});
+            await expect(descriptionField).toBeVisible({timeout: 10_000});
+            const newDescription = `UPDATED${Date.now()}`;
+            await descriptionField.fill(newDescription);
+
+            // updateBookingUsecase calls resetTeleport() on success, so the dialog closes on its own.
+            await dialog.locator(".v-card-actions button").first().click();
+            await waitForDialogsClosed(page);
+            await closeAllAlerts(page);
+
+            const bookings = await readStore<BookingRow>(page, "bookings");
+            expect(bookings.find((b) => b.cID === 1)?.cDescription).toBe(newDescription);
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("deleteBooking: removes the booking via the row menu (no confirmation step)", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+
+            const row = page.locator("tr.table-row", {hasText: "BUY AAPL"});
+            await row.getByRole("button", {name: /(Open menu|Menü öffnen)/i}).click({force: true});
+
+            // deleteBooking has no dialog: it deletes immediately and shows an info alert.
+            await page.locator("#delete-booking").click();
+            await closeAllAlerts(page);
+
+            const bookings = await readStore<BookingRow>(page, "bookings");
+            expect(bookings.find((b) => b.cID === 1)).toBeUndefined();
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("searchBookings: filters the bookings table in-memory", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+
+            const searchField = page.getByRole("textbox", {name: /(Search|Suchen)/i});
+            await expect(searchField).toBeVisible({timeout: 10_000});
+
+            await searchField.fill("NoSuchBookingXYZ");
+            await expect(page.locator("tr.table-row", {hasText: "BUY AAPL"})).toHaveCount(0);
+
+            await searchField.fill("AAPL");
+            await expect(page.locator("tr.table-row", {hasText: "BUY AAPL"})).toBeVisible();
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("updateStock: edits the stock's URL via the row menu", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+            await page.locator("#company").click();
+            await closeAllAlerts(page);
+            // CompanyContent's onBeforeMount kicks off an async stock-load cycle that toggles
+            // the table's `loading` state; opening the row menu while that's in flight can close
+            // it again mid-interaction (see updateQuote's identical wait for the same reason).
+            await page.waitForTimeout(1_000);
+
+            const row = page.locator("tr.table-row", {hasText: "US0378331005"});
+            await row.getByRole("button", {name: /(Open menu|Menü öffnen)/i}).click({force: true});
+            await page.locator("#update-stock").click();
+
+            const dialog = page.locator(".v-dialog").last();
+            await expect(dialog).toBeVisible({timeout: 10_000});
+            const urlField = dialog.getByRole("textbox", {name: /^URL$/i});
+            await expect(urlField).toBeVisible({timeout: 10_000});
+            const newUrl = "https://example.com/aapl";
+            await urlField.fill(newUrl);
+
+            // updateStockUsecase calls resetTeleport() on success, so the dialog closes on its own.
+            await dialog.locator(".v-card-actions button").first().click();
+            await waitForDialogsClosed(page);
+            await closeAllAlerts(page);
+
+            const stocks = await readStore<{ cID: number; cURL: string }>(page, "stocks");
+            expect(stocks.find((s) => s.cID === 1)?.cURL).toBe(newUrl);
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("deleteStock: adds a disposable stock then deletes it via the row menu", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+            await page.locator("#company").click();
+            await closeAllAlerts(page);
+            // See updateStock's identical wait: lets CompanyContent's async stock-load cycle
+            // settle before any row menu interaction, so it isn't closed mid-click by a re-render.
+            await page.waitForTimeout(1_000);
+
+            // The fixture's AAPL stock is referenced by a booking and can't be deleted
+            // (checkStockHasBookings guard), so add a fresh, unreferenced stock instead.
+            await page.locator("#addStock").click({force: true});
+            const addDialog = page.locator(".v-dialog").last();
+            await expect(addDialog).toBeVisible({timeout: 10_000});
+            const isinField = addDialog.getByRole("textbox", {name: /\bISIN\b/i});
+            await expect(isinField).toBeVisible({timeout: 10_000});
+            await isinField.fill("DE000BASF111");
+            await addDialog.getByRole("textbox", {name: /(Company|Unternehmen)/i}).fill("BASF SE");
+            await addDialog.getByRole("textbox", {name: /(Symbol|Kürzel)/i}).fill("BASF");
+            await addDialog.locator(".v-card-actions button").first().click();
+            await waitForDialogsClosed(page);
+            await closeAllAlerts(page);
+
+            let stocks = await readStore<{ cID: number; cISIN: string }>(page, "stocks");
+            expect(stocks.some((s) => s.cISIN === "DE000BASF111")).toBe(true);
+
+            const row = page.locator("tr.table-row", {hasText: "DE000BASF111"});
+            await row.getByRole("button", {name: /(Open menu|Menü öffnen)/i}).click({force: true});
+
+            // deleteStock has no confirmation dialog: it deletes immediately (no bookings reference it).
+            await page.locator("#delete-stock").click();
+            await closeAllAlerts(page);
+
+            stocks = await readStore<{ cID: number; cISIN: string }>(page, "stocks");
+            expect(stocks.some((s) => s.cISIN === "DE000BASF111")).toBe(false);
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("showDividend: opens the read-only dividend dialog for a stock, then closes", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+            await page.locator("#company").click();
+            await closeAllAlerts(page);
+            // See updateStock's identical wait: lets CompanyContent's async stock-load cycle
+            // settle before any row menu interaction, so it isn't closed mid-click by a re-render.
+            await page.waitForTimeout(1_000);
+
+            const row = page.locator("tr.table-row", {hasText: "US0378331005"});
+            await row.getByRole("button", {name: /(Open menu|Menü öffnen)/i}).click({force: true});
+            await page.locator("#show-dividend").click();
+
+            const dialog = page.locator(".v-dialog").last();
+            await expect(dialog).toBeVisible({timeout: 10_000});
+            // The fixture's only booking is a "BUY", not a dividend, so the table is empty.
+            await expect(dialog.getByText(/(No dividends received yet|Bisher keine Dividende erhalten)/i))
+                .toBeVisible({timeout: 10_000});
+
+            await dialog.locator(".v-card-actions button").click();
+            await waitForDialogsClosed(page);
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("portfolioDepotSum: shows the depot chip with a value on the Company view", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+            await page.locator("#company").click();
+            await closeAllAlerts(page);
+
+            // The depot chip appears after a 180ms debounce once stock loading settles.
+            const depotChip = page.locator("header.v-app-bar .v-chip", {hasText: /(Depot account|Depotkonto)/i});
+            await expect(depotChip).toBeVisible({timeout: 10_000});
+            await expect(depotChip).toContainText(/\d/);
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("keyboardShortcut: Ctrl+Alt+R resets browser.storage.local without touching IndexedDB data", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+            await page.locator("#home").click();
+            await closeAllAlerts(page);
+
+            await page.keyboard.press("Control+Alt+r");
+
+            await expect
+                .poll(async () => {
+                    const stored = await page.evaluate(() => (window as unknown as {
+                        browser: {storage: {local: {get: (_k?: unknown) => Promise<Record<string, unknown>>}}}
+                    }).browser.storage.local.get());
+                    return stored.sActiveAccountId;
+                }, {timeout: 10_000})
+                .toBe(-1);
+
+            const stored = await page.evaluate(() => (window as unknown as {
+                browser: {storage: {local: {get: (_k?: unknown) => Promise<Record<string, unknown>>}}}
+            }).browser.storage.local.get());
+            expect(stored.sSkin).toBe("ocean");
+            expect(stored.sService).toBe("wstreet");
+            expect(stored.sBookingsPerPage).toBe(9);
+
+            // The keyboard shortcut clears browser.storage.local only; IndexedDB data is untouched.
+            const accounts = await readStore<AccountRow>(page, "accounts");
+            expect(accounts).toHaveLength(1);
+        } finally {
+            await server.close();
+        }
+    });
+
+    test("footerNavigation: opens Help and Privacy pages via the FooterBar", async ({page}) => {
+        const repoRoot = process.cwd();
+        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        try {
+            await bootWithFixtureImported(page, repoRoot, server.baseUrl);
+
+            const footerNav = page.locator(".v-bottom-navigation");
+            await footerNav.getByText(/^(Help|Hilfe)$/i).click();
+            await expect(page).toHaveURL(/#\/help$/);
+            await expect(page.getByRole("textbox", {name: /(Search|Suchen)/i})).toHaveCount(0);
+
+            await footerNav.getByText(/^(Privacy|Datenschutz)$/i).click();
+            await expect(page).toHaveURL(/#\/privacy$/);
+        } finally {
+            await server.close();
+        }
+    });
 });
