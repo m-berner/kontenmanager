@@ -5,6 +5,7 @@
   -->
 
 <script lang="ts" setup>
+import {storeToRefs} from "pinia";
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
@@ -23,7 +24,7 @@ import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
 const {t} = useI18n();
 const records = useRecordsStore();
-const {activeAccountId} = useSettingsStore();
+const {activeAccountId} = storeToRefs(useSettingsStore());
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const bookingTypeForm = createBookingTypeFormManager();
 provideBookingTypeFormManager(bookingTypeForm);
@@ -42,7 +43,7 @@ const onClickOk = async (): Promise<void> => {
     errorContext: "BOOKING_TYPE",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
-      const bookingTypeData = mapBookingTypeFormToDb(activeAccountId);
+      const bookingTypeData = mapBookingTypeFormToDb(activeAccountId.value);
       const res = await addBookingTypeUsecase(
           {repositories, records: toRecordsPort(records)},
           {

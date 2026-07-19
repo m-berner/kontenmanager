@@ -22,7 +22,7 @@ import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
 const {d, n, t} = useI18n();
-const {databaseAdapter, storageAdapter} = useAdapters();
+const {alertAdapter, databaseAdapter, storageAdapter} = useAdapters();
 const {clearStorage, installStorageLocal} = storageAdapter();
 const records = useRecordsStore();
 const settings = useSettingsStore();
@@ -47,13 +47,40 @@ const {register, unregister} = useKeyboardShortcuts();
 /**
  * Resets the application storage to its initial state.
  * Clears all data and re-installs default local storage values.
+ * Asks for explicit confirmation first, since this is destructive and
+ * triggered by a global keyboard shortcut that is easy to hit by accident.
  *
  * @async
  * @returns {Promise<void>}
  */
 const onResetStorage = async (): Promise<void> => {
-  await clearStorage();
-  await installStorageLocal();
+  const confirmed = await alertAdapter.feedbackConfirm(
+      t("views.homeContent.resetStorage.confirmTitle"),
+      t("views.homeContent.resetStorage.confirmMessage"),
+      {
+        confirm: {
+          confirmText: t("views.homeContent.resetStorage.confirmOk"),
+          cancelText: t("views.homeContent.resetStorage.confirmCancel"),
+          type: "warning"
+        }
+      }
+  );
+  if (!confirmed) return;
+
+  try {
+    await clearStorage();
+    await installStorageLocal();
+    await alertAdapter.feedbackInfo(
+        t("views.homeContent.resetStorage.confirmTitle"),
+        t("views.homeContent.resetStorage.successMessage")
+    );
+  } catch (err) {
+    await alertAdapter.feedbackError(
+        t("views.homeContent.resetStorage.confirmTitle"),
+        err,
+        {}
+    );
+  }
 };
 
 onBeforeMount(() => {

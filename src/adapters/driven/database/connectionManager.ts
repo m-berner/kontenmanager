@@ -104,6 +104,23 @@ export function createDatabaseConnectionManager(
                 });
                 migrator.setupDatabase(request.result, ev);
             };
+
+            request.onblocked = () => {
+                log(
+                    "DATABASE connection: blocked by another open connection",
+                    {dbName, version},
+                    "error"
+                );
+                handleConnectionError();
+                reject(
+                    appError(
+                        ERROR_DEFINITIONS.SERVICES.DATABASE.G.CODE,
+                        ERROR_CATEGORY.DATABASE,
+                        false,
+                        {dbName, version}
+                    )
+                );
+            };
         }).finally(() => {
             connectingPromise = undefined;
         });

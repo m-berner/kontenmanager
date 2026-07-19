@@ -5,6 +5,7 @@
   -->
 
 <script lang="ts" setup>
+import {storeToRefs} from "pinia";
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
@@ -25,7 +26,7 @@ import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
 const {t} = useI18n();
-const {activeAccountId} = useSettingsStore();
+const {activeAccountId} = storeToRefs(useSettingsStore());
 const runtime = useRuntimeStore();
 const bookingForm = createBookingFormManager();
 provideBookingFormManager(bookingForm);
@@ -79,7 +80,7 @@ const onClickOk = async (): Promise<void> => {
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       const booking = mapBookingFormToDb(
-          activeAccountId,
+          activeAccountId.value,
           DATE.ISO
       ) as BookingDb;
 

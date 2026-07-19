@@ -5,6 +5,7 @@
   -->
 
 <script lang="ts" setup>
+import {storeToRefs} from "pinia";
 import {computed} from "vue";
 import {useI18n} from "vue-i18n";
 
@@ -19,7 +20,7 @@ const {d, n, t} = useI18n();
 const settings = useSettingsStore();
 const setDividendsPerPage = (value: number) =>
     settings.setDividendsPerPage(value);
-const {activeId} = useRuntimeStore();
+const {activeId} = storeToRefs(useRuntimeStore());
 const records = useRecordsStore();
 
 const ITEMS_PER_PAGE_OPTIONS = [

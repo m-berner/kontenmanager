@@ -236,8 +236,8 @@ export function useMenuAction(translate?: (_key: string) => string) {
                 return;
             }
 
-            records.stocks.remove(recordId);
             await stocksRepository.delete(recordId);
+            records.stocks.remove(recordId);
             await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
         },
 

@@ -298,6 +298,16 @@ export const DATE = {
     ZERO_TIME: 0
 } as const;
 
+/**
+ * Below this many shares, a stock position is treated as fully sold out
+ * (floating-point residue from BUY/SELL summation) rather than a real holding.
+ * Used consistently to hide portfolio-related fields and to exclude the
+ * position from aggregate totals.
+ */
+export const PORTFOLIO = {
+    MINIMUM_THRESHOLD: 0.1
+} as const;
+
 export const COMPONENTS = {
     TITLE_BAR: {
         LOGO: "../assets/icon64.png"

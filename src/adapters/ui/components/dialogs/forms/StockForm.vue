@@ -14,6 +14,7 @@ import {log} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
 import {useStockForm} from "@/adapters/ui/composables/useForms";
+import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
 const props = defineProps<StockFormProps>();
@@ -22,6 +23,7 @@ const {t} = useI18n();
 const {stockFormData} = useStockForm();
 const {fetchAdapter, validationAdapter, alertAdapter} = useAdapters();
 const settings = useSettingsStore();
+const records = useRecordsStore();
 
 const NAME_RULES = [
   t("validators.nameRules.required"),
@@ -34,7 +36,8 @@ const ISIN_RULES = [
   t("validators.isinRules.length"),
   t("validators.isinRules.format"),
   t("validators.isinRules.country"),
-  t("validators.isinRules.luhn")
+  t("validators.isinRules.luhn"),
+  t("validators.isinRules.duplicate")
 ];
 
 const onUpdateIsin = async () => {
@@ -78,7 +81,7 @@ log("COMPONENTS DIALOGS FORMS StockForm: setup");
           v-model="stockFormData.isin"
           :counter="12"
           :label="t('components.dialogs.forms.stockForm.isinLabel')"
-          :rules="validationAdapter.isinRules(ISIN_RULES)"
+          :rules="validationAdapter.isinRules(ISIN_RULES, props.isUpdate ? undefined : records.stocks.isDuplicate)"
           autofocus
           variant="outlined"
           @update:model-value="onUpdateIsin"/>

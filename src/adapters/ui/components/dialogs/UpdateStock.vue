@@ -5,6 +5,7 @@
   -->
 
 <script lang="ts" setup>
+import {storeToRefs} from "pinia";
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
@@ -26,7 +27,7 @@ import {useSettingsStore} from "@/adapters/ui/stores/settings";
 const {t} = useI18n();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
-const {activeAccountId} = useSettingsStore();
+const {activeAccountId} = storeToRefs(useSettingsStore());
 const stockForm = createStockFormManager();
 provideStockFormManager(stockForm);
 const {stockFormData, mapStockFormToDb, reset: resetForm} = stockForm;
@@ -64,7 +65,7 @@ const onClickOk = async (): Promise<void> => {
     errorContext: "UPDATE_STOCK",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
-      const stock = mapStockFormToDb(activeAccountId) as StockDb;
+      const stock = mapStockFormToDb(activeAccountId.value) as StockDb;
       await updateStockUsecase(
           {
             repositories,

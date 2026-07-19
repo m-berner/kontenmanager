@@ -150,7 +150,9 @@ function getLegacyTaxFeeTotal(legacyTransfer: LegacyBookingDb): number {
  *
  * @param legacyTransfer - The legacy transfer object containing credit, fee, and tax details.
  * @param indexedDb - The indexed database configuration object containing booking type mappings.
- * @returns The inferred booking type identifier, or -1 if no valid type is found.
+ * @returns The inferred booking type identifier. Falls back to OTHER (always created by
+ * createDefaultBookingTypes) for degenerate all-zero legacy transfers, rather than an
+ * invalid foreign key that would silently corrupt the imported booking.
  */
 function inferLegacyCreditDebitType(
     legacyTransfer: LegacyBookingDb,
@@ -168,7 +170,7 @@ function inferLegacyCreditDebitType(
         return BOOKING_TYPES.TAX;
     }
 
-    return -1;
+    return BOOKING_TYPES.OTHER;
 }
 
 /**

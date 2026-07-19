@@ -5,6 +5,7 @@
   -->
 
 <script lang="ts" setup>
+import {storeToRefs} from "pinia";
 import {computed} from "vue";
 import {useI18n} from "vue-i18n";
 
@@ -20,7 +21,7 @@ import {useSettingsStore} from "@/adapters/ui/stores/settings";
 const {t} = useI18n();
 const {bookingFormData} = useBookingForm();
 const {bookingTypes, stocks} = useRecordsStore();
-const {markets} = useSettingsStore();
+const {markets} = storeToRefs(useSettingsStore());
 const {validationAdapter} = useAdapters();
 
 const DATE_RULES = [
@@ -126,7 +127,7 @@ const sortedBookingTypes = computed(() =>
     ].sort((a, b) => a.cName.localeCompare(b.cName))
 );
 const sortedMarkets = computed(() =>
-    [...markets].sort((a, b) => a.localeCompare(b))
+    [...markets.value].sort((a, b) => a.localeCompare(b))
 );
 
 log("COMPONENTS DIALOGS FORMS BookingForm: setup");

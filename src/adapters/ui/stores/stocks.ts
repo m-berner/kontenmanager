@@ -11,6 +11,7 @@ import {ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
 import {appError} from "@/domain/errors";
 import type {StockDb, StockItem, StockRamData} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
+import {isDuplicateStockIsin} from "@/domain/validation/duplicates";
 
 /**
  * Leaf store for stock records.
@@ -84,6 +85,10 @@ export const useStocksStore = defineStore("stocks", function () {
             }
     );
 
+    const isDuplicate = computed(() => (isin: string): boolean => {
+        return isDuplicateStockIsin(items.value, isin);
+    });
+
     const passive = computed((): StockItem[] => {
         return items.value.filter((rec) => rec.cFadeOut === 1 && (rec.cID as number) > 0);
     });
@@ -132,6 +137,7 @@ export const useStocksStore = defineStore("stocks", function () {
         getIndexById,
         active,
         passive,
+        isDuplicate,
         add,
         update,
         remove,

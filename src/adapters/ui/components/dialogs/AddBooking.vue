@@ -5,6 +5,7 @@
   -->
 
 <script lang="ts" setup>
+import {storeToRefs} from "pinia";
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
@@ -28,7 +29,7 @@ provideBookingFormManager(bookingForm);
 const {mapBookingFormToDb, reset} = bookingForm;
 const {submitGuard, isLoading} = useDialogGuards(t);
 const records = useRecordsStore();
-const {activeAccountId} = useSettingsStore();
+const {activeAccountId} = storeToRefs(useSettingsStore());
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
@@ -43,7 +44,7 @@ const onClickOk = async (): Promise<void> => {
     errorContext: "ADD_BOOKING",
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
-      const bookingData = mapBookingFormToDb(activeAccountId, DATE.ISO);
+      const bookingData = mapBookingFormToDb(activeAccountId.value, DATE.ISO);
 
       await addBookingUsecase(
           {repositories, records: toRecordsPort(records)},
