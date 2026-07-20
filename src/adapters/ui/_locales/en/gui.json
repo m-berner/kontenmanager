@@ -391,6 +391,9 @@
         "dark": "Dark",
         "light": "Light"
       },
+      "serviceNames": {
+        "disabled": "Disabled"
+      },
       "markets": {
         "title": "Stock exchanges",
         "label": "New stock exchange"

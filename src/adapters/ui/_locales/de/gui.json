@@ -433,6 +433,9 @@
         "dark": "Dunkel",
         "light": "Hell"
       },
+      "serviceNames": {
+        "disabled": "Deaktiviert"
+      },
       "markets": {
         "title": "Marktplätze",
         "label": "Neuer Marktplatz"
