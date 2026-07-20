@@ -99,7 +99,7 @@ The project follows a hexagonal (ports & adapters) architecture. Dependencies po
     - [`plugins/`](src/adapters/ui/plugins/README.md): Vue plugin configurations (Vuetify, i18n, Router, Pinia).
     - [`entrypoints/`](src/adapters/ui/entrypoints/README.md): HTML/TS entry points for the extension (App, Background, Options).
     - `_locales/`: Translations (`messages.json` for WebExtension i18n, `gui.json` for Vue i18n).
-  - [**`adapters/driven/`**](src/adapters/driven/README.md): Infrastructure adapters — [`database/`](src/adapters/driven/database/README.md) (IndexedDB), `fetch/` (market data providers), plus browser, storage, alert, favicon, and validation adapters.
+  - [**`adapters/driven/`**](src/adapters/driven/README.md): Infrastructure adapters — [`database/`](src/adapters/driven/database/README.md) (IndexedDB), `fetch/` (market data providers), plus browser, storage, alert, favicon, app, and task adapters.
   - `adapters/container.ts` / `containerBackground.ts`: Composition roots — the only files allowed to import concrete adapter implementations.
 - `kontenmanager@gmx.de/`: The built extension package.
 - `releases/`: Packaged `.xpi` files for distribution.

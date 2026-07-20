@@ -6,9 +6,9 @@ The validation logic is strictly separated from the UI and infrastructure, resid
 
 ## Key Components
 
-- `rules.ts`: Contains atomic, reusable validation rules (e.g., `isRequired`, `isEmail`, `isIBAN`, `isPositiveNumber`).
+- `rules.ts`: Contains atomic, reusable validation rules (e.g., `required`, `validateIBAN`, `validateISIN`, `validateSWIFT`).
 - `validators.ts`: Combines atomic rules into higher-level validators for domain entities like Accounts, Bookings, and Stocks.
-- `messages.ts`: Handles the mapping of validation error codes to human-readable (and localizable) messages.
+- `messages.ts`: Factory functions producing localized IBAN/SWIFT validation rule messages.
 - `duplicates.ts`: Specialized logic for detecting duplicate entries in the database.
 
 ## Usage
@@ -19,7 +19,7 @@ Validators typically return a boolean or an object containing error details, whi
 
 ### Files
 
-- `duplicates.ts`: isDuplicateAccountIban, isDuplicateBookingTypeName
+- `duplicates.ts`: isDuplicateAccountIban, isDuplicateStockIsin, isDuplicateBookingTypeName
 - `messages.ts`: createIbanMessages, createSwiftMessages
 - `rules.ts`: required, validateIBAN, validateISIN, validateSWIFT
 - `validators.ts`: normalizeBookingTypeName, validateAccount, validateBooking, validateBookingType, validateStock

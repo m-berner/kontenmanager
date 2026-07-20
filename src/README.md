@@ -49,6 +49,7 @@ The source is organized into three layers:
 - `adapters/ui/assets/`: Static assets bundled by Vite.
 - `adapters/ui/_locales/`: Translations (`messages.json` for WebExtension i18n, `gui.json` for Vue i18n).
 - `adapters/ui/style.css`: Global styles.
+- `adapters/ui/validationAdapter.ts`: Vuetify form validation rules (IBAN/ISIN/SWIFT checks, required/length/regex rules).
 
 ### `adapters/driven/` — Service-facing adapters
 
@@ -57,7 +58,7 @@ The source is organized into three layers:
 - `adapters/driven/fetch/`: Network I/O layer with per-provider scrapers under `fetch/providers/`, shared HTTP
   utilities (`httpClient.ts`, `httpCache.ts`), and provider helpers (`providerUtils.ts`).
 - `adapters/driven/*Adapter.ts`: Individual adapter implementations (app, alert, browser, favicon, importExport,
-  storage, task, validation).
+  storage, task).
 
 ## How Things Fit Together
 

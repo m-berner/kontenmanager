@@ -14,9 +14,10 @@ the entity-specific repository object (functional composition, not class inherit
 
 ## Key Components
 
-- `baseRepository.ts`: The abstract base class containing shared logic for IndexedDB interaction.
+- `baseRepository.ts`: Functional factory (`createBaseRepository`) containing shared logic for IndexedDB interaction.
 - `accountRepository.ts`: Specialized repository for managing account data.
 - `bookingRepository.ts`: Specialized repository for managing financial transactions.
+- `bookingTypeRepository.ts`: Specialized repository for managing booking types.
 - `stockRepository.ts`: Specialized repository for managing stock and security data.
 - `repositoryFactory.ts`: A central point for creating and accessing repository instances.
 

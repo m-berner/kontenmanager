@@ -18,7 +18,9 @@ The UI is built with **Vue 3** and **Vuetify**, using **Pinia** for state manage
 - `stores/`: Pinia stores for reactive state management.
 - `composables/`: Reusable Vue composition functions.
 - `entrypoints/`: Extension entry points (Popup, Options, Background).
+- `plugins/`: Vue plugin configuration (Vuetify, Pinia, Router, i18n).
 - `_locales/`: i18n translation files.
+- `assets/`: Static images (icons) bundled with the extension.
 
 ## Directory Structure
 

@@ -63,7 +63,8 @@ src/
 │   │   ├── stores/             ← Pinia stores (settings, runtime, records, …)
 │   │   ├── composables/        ← Vue composables (useOnlineStockData, useBackupDialogs, …)
 │   │   ├── plugins/            ← Vue plugins (pinia, router, i18n, vuetify, components)
-│   │   └── _locales/           ← i18n translation files (de, en)
+│   │   ├── _locales/           ← i18n translation files (de, en)
+│   │   └── validationAdapter.ts ← Vuetify form validation rules (ISIN / IBAN / BIC checks, …)
 │   │
 │   ├── context.ts              ← Vue provide/inject bridge (provideAdapters / useAdapters)
 │   │
@@ -77,7 +78,6 @@ src/
 │       ├── storageAdapter.ts   ← browser.storage.local wrapper
 │       ├── taskAdapter.ts      ← task scheduling
 │       ├── types.ts            ← re-exports of shared adapter types
-│       ├── validationAdapter.ts ← ISIN / IBAN / BIC validation
 │       └── database/           ← IndexedDB: connection, repositories, migrations,
 │                                  transactions, batch operations, health checks
 │
@@ -89,7 +89,10 @@ src/
 └── domain/                     ← pure business rules (no framework, no browser)
     ├── constants/              ← INDEXED_DB, BROWSER_STORAGE, CACHE_POLICY, CURRENCIES, …
     ├── types/                  ← all TypeScript interfaces (AccountDb, StockItem, …)
-    ├── errors/                 ← AppError class and error definitions
+    ├── errors.ts               ← AppError class and error definitions
+    ├── logic.ts                ← pure domain calculations (e.g. FIFO cost basis, depot totals)
+    ├── importExport/           ← import/export transform & validation helpers
+    ├── mapping/                ← form ↔ domain data mapping helpers
     ├── utils/                  ← pure utility functions (isoDate, toNumber, log, …)
     └── validation/             ← checksum validators (ISIN, IBAN, BIC)
 

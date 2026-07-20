@@ -86,7 +86,7 @@ if (report.issues.length > 0) {
 
 ### Files
 
-- `batchOperations.ts`: BatchOperationBuilder, createBatchOperationService, createBatchOperationBuilder, BatchOperationBuilder
+- `batchOperations.ts`: BatchOperationBuilder, createBatchOperationService, createBatchOperationBuilder
 - `connectionManager.ts`: createDatabaseConnectionManager
 - `databaseAdapter.ts`: createDatabaseAdapter, Service
 - `healthChecker.ts`: createDatabaseHealthService

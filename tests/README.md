@@ -26,10 +26,12 @@ tests/unit/
 │   │   ├── composables/          – composable tests
 │   │   └── stores/               – Pinia store tests
 │   └── driven/
-│       └── database/             – database adapter tests (batch, repositories)
+│       ├── database/             – database adapter tests (batch, repositories)
+│       └── fetch/                – fetch/provider adapter tests (HTTP cache, provider utils)
 ├── app/
 │   └── usecases/                 – use case tests
 ├── domain/                       – pure domain logic tests
+│   ├── constants/
 │   ├── importExport/
 │   ├── mapping/
 │   ├── utils/
