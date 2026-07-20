@@ -37,21 +37,29 @@ const isLoading = ref<boolean>(false);
 const isAdding = ref<boolean>(false);
 const error = ref<string | null>(null);
 
-const labelMap: Record<string, string> = {
-  [COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES]: t(
-      "views.optionsIndex.exchanges.label"
-  ),
-  [COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS]: t("views.optionsIndex.markets.label")
-};
-const titleMap: Record<string, string> = {
-  [COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES]: t(
-      "views.optionsIndex.exchanges.title"
-  ),
-  [COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS]: t("views.optionsIndex.markets.title")
-};
 const fallbackLabel = computed(() => t("components.dynamicList.fallbackLabel"));
-const label = computed(() => labelMap[props.type] || fallbackLabel.value);
-const title = computed(() => titleMap[props.type] || fallbackLabel.value);
+const label = computed(() => {
+  const labelMap: Record<string, string> = {
+    [COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES]: t(
+        "views.optionsIndex.exchanges.label"
+    ),
+    [COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS]: t(
+        "views.optionsIndex.markets.label"
+    )
+  };
+  return labelMap[props.type] || fallbackLabel.value;
+});
+const title = computed(() => {
+  const titleMap: Record<string, string> = {
+    [COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES]: t(
+        "views.optionsIndex.exchanges.title"
+    ),
+    [COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS]: t(
+        "views.optionsIndex.markets.title"
+    )
+  };
+  return titleMap[props.type] || fallbackLabel.value;
+});
 
 const addItem = async (item: string): Promise<void> => {
   log("COMPONENTS DynamicList: addItem");
@@ -86,7 +94,7 @@ const addItem = async (item: string): Promise<void> => {
             throw err;
           }
           const exchangesInfoData: ExchangeData[] =
-              await fetchAdapter.fetchExchangesData([newItem.value]);
+              await fetchAdapter.fetchExchangesData([upperItem]);
           infoExchanges.value.set(
               exchanges.value[exchanges.value.length - 1],
               exchangesInfoData[0].value

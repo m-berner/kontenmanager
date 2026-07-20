@@ -5,42 +5,52 @@
  */
 
 import type {StockMarketData} from "@/domain/types";
-import {log, mean, toNumber} from "@/domain/utils/utils";
+import {log, toNumber} from "@/domain/utils/utils";
 
 export const DEFAULT_CURRENCY = "EUR";
 export const DEFAULT_CURRENCY_SYMBOL = "€";
 export const DEFAULT_VALUE = "0";
 
 /**
+ * Parses a bid/ask side into a finite number, or null if it couldn't be
+ * parsed (as opposed to a genuine, parseable zero price).
+ */
+function parseQuoteSide(raw: string): number | null {
+    try {
+        const parsed = toNumber(raw, {throwOnError: true});
+        return Number.isFinite(parsed) ? parsed : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
  * Computes the mid-quote from bid and ask strings.
- * Returns DEFAULT_VALUE when either input is non-finite.
+ * A genuinely zero side (e.g. no current bid) still participates in the
+ * average; only a side that fails to parse is excluded in favor of the
+ * other. Returns DEFAULT_VALUE when neither side parses.
  *
  * @param bid - Bid price string.
  * @param ask - Ask price string.
  * @returns Mid-quote as a string, or DEFAULT_VALUE on error.
  */
 export function calculateMidQuote(bid: string, ask: string): string {
-    try {
-        const bidNumber = toNumber(bid);
-        const askNumber = toNumber(ask);
+    const bidNumber = parseQuoteSide(bid);
+    const askNumber = parseQuoteSide(ask);
 
-        if (!Number.isFinite(bidNumber) || !Number.isFinite(askNumber)) {
-            log("SERVICES fetch", {
-                parser: "calculateMidQuote",
-                reason: "non-finite bid/ask",
-                bid,
-                ask,
-                bidNumber,
-                askNumber
-            }, "warn");
-            return DEFAULT_VALUE;
-        }
-
-        return mean([bidNumber, askNumber]).toString();
-    } catch (error) {
-        log("SERVICES fetch", {parser: "calculateMidQuote", reason: "exception", error, bid, ask}, "warn");
-        return DEFAULT_VALUE;
+    if (bidNumber !== null && askNumber !== null) {
+        return ((bidNumber + askNumber) / 2).toString();
     }
+    if (bidNumber !== null) return bidNumber.toString();
+    if (askNumber !== null) return askNumber.toString();
+
+    log("SERVICES fetch", {
+        parser: "calculateMidQuote",
+        reason: "non-finite bid/ask",
+        bid,
+        ask
+    }, "warn");
+    return DEFAULT_VALUE;
 }
 
 /**
@@ -92,5 +102,5 @@ export function parseCurrency(code: string): string {
         return "EUR";
     }
 
-    return "";
+    return DEFAULT_CURRENCY;
 }

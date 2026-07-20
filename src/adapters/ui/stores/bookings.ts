@@ -200,7 +200,7 @@ export const useBookingsStore = defineStore("bookings", function () {
                     entry.cBookingTypeID === INDEXED_DB.STORE.BOOKING_TYPES.DIVIDEND;
             })
             .map((entry: BookingDb) => {
-                return {id: ident, year: entry.cExDate, sum: entry.cCredit};
+                return {id: entry.cID, year: entry.cExDate, sum: entry.cCredit};
             });
     });
 

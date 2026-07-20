@@ -219,14 +219,28 @@ export function createBatchOperationBuilder(service: Pick<BatchServiceContract, 
     }
 
     async function execute(): Promise<void> {
-        const batchDescriptors = Array.from(descriptors.entries()).map(
-            ([storeName, operations]) => ({storeName, operations})
+        // Snapshot (clone, not reference) each store's operations so a
+        // concurrent add()/insert()/etc. call made while this execute() is
+        // still awaiting doesn't get swept into the in-flight batch.
+        const snapshot = Array.from(descriptors.entries()).map(
+            ([storeName, operations]) => ({storeName, operations: [...operations]})
         );
 
-        await service.executeAtomic(batchDescriptors);
-        // Consume the batch on success so a later execute() doesn't silently
-        // replay these same operations alongside whatever is added next.
-        descriptors.clear();
+        await service.executeAtomic(snapshot);
+
+        // Remove exactly the operations that were executed, leaving any
+        // operations queued concurrently during the await intact for the
+        // next execute() call instead of silently discarding them.
+        for (const {storeName, operations} of snapshot) {
+            const current = descriptors.get(storeName);
+            if (!current) continue;
+            const remaining = current.slice(operations.length);
+            if (remaining.length > 0) {
+                descriptors.set(storeName, remaining);
+            } else {
+                descriptors.delete(storeName);
+            }
+        }
     }
 
     function getOperationCount(): number {

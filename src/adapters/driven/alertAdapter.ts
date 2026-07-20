@@ -10,6 +10,12 @@ import {log} from "@/domain/utils/utils";
 
 const ALERT_INFO = {
     RATE_LIMIT_MS: 1500,
+    // Generous upper bound on how long a rate-limit entry can matter, and a
+    // hard cap on the map's size as a backstop — keeps recentMessages from
+    // growing unbounded over a long session full of distinct dynamic
+    // messages (per-item errors, URLs, ISINs).
+    MAX_MESSAGE_AGE_MS: 60_000,
+    MAX_TRACKED_MESSAGES: 200,
     DURATIONS: {
         INFO: 4000,
         WARNING: 4000,
@@ -70,6 +76,23 @@ export function createAlertAdapter() {
     }
 
     /**
+     * Removes stale/excess entries from recentMessages so it can't grow
+     * unbounded over a long session.
+     */
+    function pruneRecentMessages(now: number): void {
+        for (const [trackedKey, timestamp] of recentMessages) {
+            if (now - timestamp >= ALERT_INFO.MAX_MESSAGE_AGE_MS) {
+                recentMessages.delete(trackedKey);
+            }
+        }
+        while (recentMessages.size > ALERT_INFO.MAX_TRACKED_MESSAGES) {
+            const oldestKey = recentMessages.keys().next().value;
+            if (oldestKey === undefined) break;
+            recentMessages.delete(oldestKey);
+        }
+    }
+
+    /**
      * Checks if an alert should be suppressed based on rate limiting.
      */
     function isRateLimited(
@@ -81,6 +104,7 @@ export function createAlertAdapter() {
         const rateLimitMs = options?.rateLimitMs ?? ALERT_INFO.RATE_LIMIT_MS;
         const key = `${kind}|${title}|${message}`;
         const now = Date.now();
+        pruneRecentMessages(now);
         const last = recentMessages.get(key) ?? 0;
         if (rateLimitMs > 0 && now - last < rateLimitMs) {
             return true;

@@ -61,7 +61,10 @@ export function calculateInvestByStockId(
     bookings: BookingDb[],
     stockId: number
 ): number {
-    const totalPortfolio = calculatePortfolioByStockId(bookings, stockId);
+    const rawPortfolio = calculatePortfolioByStockId(bookings, stockId);
+    // Match calculateTotalDepotValue: a quantity below the minimum threshold
+    // is floating-point BUY/SELL residue, i.e. the position is sold out.
+    const totalPortfolio = rawPortfolio >= PORTFOLIO.MINIMUM_THRESHOLD ? rawPortfolio : 0;
     let runningCount = 0;
 
     const total = bookings
