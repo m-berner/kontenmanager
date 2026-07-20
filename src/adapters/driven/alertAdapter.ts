@@ -10,8 +10,8 @@ import {log} from "@/domain/utils/utils";
 
 const ALERT_INFO = {
     RATE_LIMIT_MS: 1500,
-    // Generous upper bound on how long a rate-limit entry can matter, and a
-    // hard cap on the map's size as a backstop — keeps recentMessages from
+    // Generous upper bound on how long a rate-limit entry can matter.
+    // A hard cap on the map's size as a backstop — keeps recentMessages from
     // growing unbounded over a long session full of distinct dynamic
     // messages (per-item errors, URLs, ISINs).
     MAX_MESSAGE_AGE_MS: 60_000,

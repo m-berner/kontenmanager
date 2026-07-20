@@ -108,7 +108,12 @@ export function createDatabaseConnectionManager(
             };
 
             request.onupgradeneeded = (ev: IDBVersionChangeEvent) => {
-                if (abandoned) return;
+                // Must run even if this attempt was already abandoned: the
+                // versionchange transaction commits regardless (IndexedDB has
+                // no implicit abort), so skipping setupDatabase here would
+                // silently persist the version bump without ever applying the
+                // schema changes it's supposed to gate. onsuccess (below)
+                // still refuses to adopt the resulting connection.
                 log("DATABASE connection: upgrading", {
                     oldVersion: ev.oldVersion,
                     newVersion: ev.newVersion
