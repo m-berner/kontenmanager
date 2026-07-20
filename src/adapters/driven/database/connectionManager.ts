@@ -75,6 +75,12 @@ export function createDatabaseConnectionManager(
 
         connectingPromise = new Promise<void>((resolve, reject) => {
             const request = indexedDB.open(dbName, version);
+            // Once onblocked fires we've already rejected this attempt, but
+            // the IDBOpenDBRequest can still fire onsuccess/onupgradeneeded
+            // later (per spec) once the blocking connection closes. Without
+            // this guard that stale callback would silently adopt/overwrite
+            // `db` behind a caller's retry, racing two live connections.
+            let abandoned = false;
 
             request.onerror = () => {
                 handleConnectionError();
@@ -89,6 +95,10 @@ export function createDatabaseConnectionManager(
             };
 
             request.onsuccess = () => {
+                if (abandoned) {
+                    request.result.close();
+                    return;
+                }
                 handleConnectionSuccess(request.result);
                 log("DATABASE connection: connected successfully", {
                     dbName,
@@ -98,11 +108,35 @@ export function createDatabaseConnectionManager(
             };
 
             request.onupgradeneeded = (ev: IDBVersionChangeEvent) => {
+                // Must run even if this attempt was already abandoned: the
+                // versionchange transaction commits regardless (IndexedDB has
+                // no implicit abort), so skipping setupDatabase here would
+                // silently persist the version bump without ever applying the
+                // schema changes it's supposed to gate. onsuccess (below)
+                // still refuses to adopt the resulting connection.
                 log("DATABASE connection: upgrading", {
                     oldVersion: ev.oldVersion,
                     newVersion: ev.newVersion
                 });
                 migrator.setupDatabase(request.result, ev);
+            };
+
+            request.onblocked = () => {
+                abandoned = true;
+                log(
+                    "DATABASE connection: blocked by another open connection",
+                    {dbName, version},
+                    "error"
+                );
+                handleConnectionError();
+                reject(
+                    appError(
+                        ERROR_DEFINITIONS.SERVICES.DATABASE.G.CODE,
+                        ERROR_CATEGORY.DATABASE,
+                        false,
+                        {dbName, version}
+                    )
+                );
             };
         }).finally(() => {
             connectingPromise = undefined;

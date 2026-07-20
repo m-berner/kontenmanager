@@ -12,7 +12,8 @@ import type {LogLevelType, NumberParseOptions} from "@/domain/types";
  * Detects whether a number-like string is in German (de) or English (en) format.
  *
  * Heuristics:
- * - Only dots present -> assume US/EN.
+ * - Exactly one dot, no comma -> assume US/EN decimal.
+ * - Multiple dots, no comma -> assume DE thousands-grouping (e.g. "1.234.567").
  * - Only commas present -> if comma occurs in the last 3–4 chars, assume decimal (DE), otherwise EN.
  * - Both present -> if the last comma is after the last dot, prefer DE; else EN.
  *
@@ -25,9 +26,15 @@ export function detectNumberFormat(str: string): "de" | "en" {
     const lastDot = str.lastIndexOf(".");
     const lastComma = str.lastIndexOf(",");
 
-    // Only dots: US format
-    if (commaCount === 0 && dotCount > 0) {
+    // Exactly one dot, no comma: US decimal format.
+    if (commaCount === 0 && dotCount === 1) {
         return "en";
+    }
+
+    // Multiple dots, no comma: German thousands-grouping (e.g. "1.234.567"),
+    // since a valid number never contains more than one decimal point.
+    if (commaCount === 0 && dotCount > 1) {
+        return "de";
     }
 
     // Only commas: check position (last 3-4 chars = decimal)

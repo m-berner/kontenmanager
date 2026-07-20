@@ -15,10 +15,10 @@ import type {AccountDb, BookingDb, BookingTypeDb, RecordsDbData, StockDb, Storag
  * free of Pinia/store imports.
  *
  * Serves a dual purpose:
- * - Input to `toRecordsPort()` — maps store methods to the narrower RecordsPort
+ * - Input to `toRecordsPort()` — maps store methods to the RecordsPort
  *   interface that usecases depend on.
  * - Direct interface in composables (e.g., useImportDialog) that need access to
- *   `.items` for snapshot/rollback operations, which RecordsPort does not expose.
+ *   `.items` for snapshot/rollback operations.
  */
 export type RecordsLike = {
     accounts: {
@@ -93,16 +93,25 @@ export function toRecordsPort(records: RecordsLike): RecordsPort {
             remove: records.accounts.remove.bind(records.accounts)
         },
         bookingTypes: {
+            get items() {
+                return records.bookingTypes.items;
+            },
             add: records.bookingTypes.add.bind(records.bookingTypes),
             update: records.bookingTypes.update.bind(records.bookingTypes),
             remove: records.bookingTypes.remove.bind(records.bookingTypes)
         },
         bookings: {
+            get items() {
+                return records.bookings.items;
+            },
             add: records.bookings.add.bind(records.bookings),
             update: records.bookings.update.bind(records.bookings),
             remove: records.bookings.remove.bind(records.bookings)
         },
         stocks: {
+            get items() {
+                return records.stocks.items;
+            },
             add: records.stocks.add.bind(records.stocks),
             update: records.stocks.update.bind(records.stocks),
             remove: records.stocks.remove.bind(records.stocks)

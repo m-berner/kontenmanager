@@ -87,6 +87,8 @@ export async function fetchWithRetry(
                 if (!isRetryable || attempt === maxRetries) {
                     break;
                 }
+
+                await delay(1000 * attempt, controller.signal); // 1 s, 2 s, … per attempt
             } catch (error) {
                 // Prefer a structured abort reason (e.g., timeout AppError) if available.
                 lastError =
@@ -141,7 +143,7 @@ export async function fetchWithCache(
     const response = await fetchWithRetry(url, options);
     const text = await response.text();
 
-    setCache(url, text);
+    setCache(url, text, ttl);
     return text;
 }
 
@@ -173,9 +175,9 @@ export async function fetchTextWithCacheFollowRedirect(
     // Cache under the canonical/final URL; also store an alias under the original
     // URL so callers that always pass the same URL still get a cache hit.
     const finalUrl = response.url || url;
-    setCache(finalUrl, text);
+    setCache(finalUrl, text, ttl);
     if (finalUrl !== url) {
-        setCache(url, text);
+        setCache(url, text, ttl);
     }
     return text;
 }

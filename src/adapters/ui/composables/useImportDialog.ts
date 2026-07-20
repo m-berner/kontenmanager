@@ -105,11 +105,15 @@ export function useImportDatabaseDialogController(input: {
 
     const createRollbackPoint = async (): Promise<RollbackData | null> => {
         try {
+            // Clone each record (not just the arrays): some composables (e.g.
+            // useOnlineStockData) mutate store items in place, which would
+            // otherwise silently corrupt this point-in-time snapshot if a
+            // refresh runs while the import confirmation is pending.
             return {
-                accounts: [...input.records.accounts.items],
-                stocks: [...input.records.stocks.items],
-                bookingTypes: [...input.records.bookingTypes.items],
-                bookings: [...input.records.bookings.items],
+                accounts: input.records.accounts.items.map((item) => ({...item})),
+                stocks: input.records.stocks.items.map((item) => ({...item})),
+                bookingTypes: input.records.bookingTypes.items.map((item) => ({...item})),
+                bookings: input.records.bookings.items.map((item) => ({...item})),
                 activeAccountId: input.settings.activeAccountId
             };
         } catch (err) {
@@ -233,8 +237,20 @@ export function useImportDatabaseDialogController(input: {
                             {data: {count: totalCount}}
                         );
                     },
-                    confirmProceed: async (counts) => {
-                        const summary = countsToSummary(counts);
+                    confirmProceed: async (counts, existingCounts) => {
+                        const hasExistingData =
+                            existingCounts.accounts > 0 ||
+                            existingCounts.stocks > 0 ||
+                            existingCounts.bookings > 0 ||
+                            existingCounts.bookingTypes > 0;
+                        const summary = hasExistingData
+                            ? [
+                                countsToSummary(counts),
+                                "",
+                                input.t("components.dialogs.importDatabase.confirmExistingDataWarning"),
+                                countsToSummary(existingCounts)
+                            ].join("\n")
+                            : countsToSummary(counts);
                         return !!(await input.services.alertAdapter.feedbackConfirm?.(
                             input.t("components.dialogs.importDatabase.confirmImportTitle"),
                             summary,

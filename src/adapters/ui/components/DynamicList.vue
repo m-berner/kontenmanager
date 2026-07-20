@@ -37,21 +37,29 @@ const isLoading = ref<boolean>(false);
 const isAdding = ref<boolean>(false);
 const error = ref<string | null>(null);
 
-const labelMap: Record<string, string> = {
-  [COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES]: t(
-      "views.optionsIndex.exchanges.label"
-  ),
-  [COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS]: t("views.optionsIndex.markets.label")
-};
-const titleMap: Record<string, string> = {
-  [COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES]: t(
-      "views.optionsIndex.exchanges.title"
-  ),
-  [COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS]: t("views.optionsIndex.markets.title")
-};
 const fallbackLabel = computed(() => t("components.dynamicList.fallbackLabel"));
-const label = computed(() => labelMap[props.type] || fallbackLabel.value);
-const title = computed(() => titleMap[props.type] || fallbackLabel.value);
+const label = computed(() => {
+  const labelMap: Record<string, string> = {
+    [COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES]: t(
+        "views.optionsIndex.exchanges.label"
+    ),
+    [COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS]: t(
+        "views.optionsIndex.markets.label"
+    )
+  };
+  return labelMap[props.type] || fallbackLabel.value;
+});
+const title = computed(() => {
+  const titleMap: Record<string, string> = {
+    [COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES]: t(
+        "views.optionsIndex.exchanges.title"
+    ),
+    [COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS]: t(
+        "views.optionsIndex.markets.title"
+    )
+  };
+  return titleMap[props.type] || fallbackLabel.value;
+});
 
 const addItem = async (item: string): Promise<void> => {
   log("COMPONENTS DynamicList: addItem");
@@ -66,19 +74,33 @@ const addItem = async (item: string): Promise<void> => {
         case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
           list.value.push(item);
           markets.value.push(item);
-          await setStorage(BROWSER_STORAGE.MARKETS.key, [...list.value]);
+          try {
+            await setStorage(BROWSER_STORAGE.MARKETS.key, [...list.value]);
+          } catch (err) {
+            list.value.pop();
+            markets.value.pop();
+            throw err;
+          }
           break;
-        case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-          list.value.push(item.toUpperCase());
-          exchanges.value.push(item.toUpperCase());
-          await setStorage(BROWSER_STORAGE.EXCHANGES.key, [...list.value]);
+        case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES: {
+          const upperItem = item.toUpperCase();
+          list.value.push(upperItem);
+          exchanges.value.push(upperItem);
+          try {
+            await setStorage(BROWSER_STORAGE.EXCHANGES.key, [...list.value]);
+          } catch (err) {
+            list.value.pop();
+            exchanges.value.pop();
+            throw err;
+          }
           const exchangesInfoData: ExchangeData[] =
-              await fetchAdapter.fetchExchangesData([newItem.value]);
+              await fetchAdapter.fetchExchangesData([upperItem]);
           infoExchanges.value.set(
               exchanges.value[exchanges.value.length - 1],
               exchangesInfoData[0].value
           );
           break;
+        }
         default:
       }
       newItem.value = "";
@@ -96,8 +118,21 @@ const removeItem = async (n: number): Promise<void> => {
 
   error.value = null;
 
+  const removedItem = list.value[n];
+  list.value.splice(n, 1);
+
+  const storeList =
+      props.type === COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS
+          ? markets
+          : props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES
+              ? exchanges
+              : undefined;
+  const storeIndex = storeList?.value.indexOf(removedItem) ?? -1;
+  if (storeIndex > -1) {
+    storeList!.value.splice(storeIndex, 1);
+  }
+
   try {
-    list.value.splice(n, 1);
     newItem.value = "";
     switch (props.type) {
       case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
@@ -109,6 +144,10 @@ const removeItem = async (n: number): Promise<void> => {
       default:
     }
   } catch (err) {
+    list.value.splice(n, 0, removedItem);
+    if (storeIndex > -1) {
+      storeList!.value.splice(storeIndex, 0, removedItem);
+    }
     await alertAdapter.feedbackError(t("components.dynamicList.errorTitle"), err, {});
   }
 };

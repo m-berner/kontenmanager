@@ -5,6 +5,7 @@
   -->
 
 <script lang="ts" setup>
+import {storeToRefs} from "pinia";
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
@@ -24,7 +25,7 @@ import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
 const {t} = useI18n();
-const {activeAccountId} = useSettingsStore();
+const {activeAccountId} = storeToRefs(useSettingsStore());
 const runtime = useRuntimeStore();
 const accountForm = createAccountFormManager();
 provideAccountFormManager(accountForm);
@@ -35,9 +36,9 @@ const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapter
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 
 const loadCurrentAccount = (): void => {
-  const currentAccount = records.accounts.getById(activeAccountId);
+  const currentAccount = records.accounts.getById(activeAccountId.value);
   if (!currentAccount) {
-    log("COMPONENTS DIALOGS UpdateAccount: Account not found", activeAccountId);
+    log("COMPONENTS DIALOGS UpdateAccount: Account not found", activeAccountId.value);
     return;
   }
 

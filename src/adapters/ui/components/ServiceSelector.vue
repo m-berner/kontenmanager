@@ -6,14 +6,18 @@
 
 <script lang="ts" setup>
 import {computed} from "vue";
+import {useI18n} from "vue-i18n";
 
-import {FETCH} from "@/domain/constants";
+import {createServiceLabelOverrides, FETCH} from "@/domain/constants";
 import type {ServiceName} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
+const {t} = useI18n();
 const settings = useSettingsStore();
+
+const SERVICE_LABEL_OVERRIDES = computed(() => createServiceLabelOverrides(t));
 
 const service = computed({
   get: () => settings.service,
@@ -24,6 +28,10 @@ const service = computed({
 });
 
 const serviceLabels = (item: ServiceName): string => {
+  const override = SERVICE_LABEL_OVERRIDES.value[item];
+  if (override !== undefined) {
+    return override;
+  }
   const service = FETCH.PROVIDERS[item];
   if (service !== undefined && service?.NAME !== undefined) {
     return service.NAME;

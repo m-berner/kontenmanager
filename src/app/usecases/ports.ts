@@ -89,12 +89,14 @@ export interface RecordsAccountsPort {
 }
 
 export interface RecordsBookingTypesPort {
+    items: Array<Pick<BookingTypeDb, "cID">>;
     add: (_bt: BookingTypeDb) => void;
     update: (_bt: BookingTypeDb) => void;
     remove: (_id: number) => void;
 }
 
 export interface RecordsBookingsPort {
+    items: Array<Pick<BookingDb, "cID">>;
     add: (_booking: BookingDb, _prepend?: boolean) => void;
     update: (_booking: BookingDb) => void;
     remove: (_id: number) => void;
@@ -110,6 +112,7 @@ export interface RecordsPort {
 }
 
 export interface RecordsStocksPort {
+    items: Array<Pick<StockDb, "cID">>;
     add: (_stock: StockDb) => void;
     update: (_stock: StockDb) => void;
     remove: (_id: number) => void;

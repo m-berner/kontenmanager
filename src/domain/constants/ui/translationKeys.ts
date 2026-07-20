@@ -21,6 +21,9 @@ export const TRANSLATION_KEYS = {
     THEME_DARK: "views.optionsIndex.themeNames.dark",
     THEME_LIGHT: "views.optionsIndex.themeNames.light",
 
+    // Services
+    SERVICE_DISABLED: "views.optionsIndex.serviceNames.disabled",
+
     // Tabs
     TAB_GE: "views.optionsIndex.tabs.ge",
     TAB_MP: "views.optionsIndex.tabs.mp",

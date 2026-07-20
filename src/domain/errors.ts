@@ -115,6 +115,7 @@ export const ERROR_DEFINITIONS = {
             D: {CODE: "#dcc", MSG: "Unknown operation type"},
             E: {CODE: "#dcd", MSG: "Delete operation requires a key"},
             F: {CODE: "#dce", MSG: "Unknown operation type"},
+            G: {CODE: "#dcf", MSG: "Database connection blocked by another open tab"},
             TRANSACTION_FAILED: {CODE: "#kkb", MSG: "Transaction failed"},
             NO_INDEX: {CODE: "#qyy", MSG: "Missing index"},
             REQUEST_FAILED: {CODE: "#ppz", MSG: "Request failed"},

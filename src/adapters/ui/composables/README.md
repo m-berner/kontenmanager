@@ -23,17 +23,23 @@ Composables in this project are responsible for:
 - `useForms.ts`: Form managers for initialization and reset. Delegates data mapping to
   `src/domain/mapping/formMapper.ts`.
 - `useDialogGuards.ts`: Guard logic for dialog flows (validation, loading, reconnection checks).
+- `useExportDialog.ts`: Controller for the export-database dialog (`useExportDatabaseDialogController`).
+- `useImportDialog.ts`: Controller for the import-database dialog (`useImportDatabaseDialogController`),
+  including rollback handling.
 
 ### Integration Helpers
 
 - `useFavicon.ts`: Reactive favicon loading interface. Delegates fetch logic to
   `src/adapters/driven/faviconAdapter.ts`.
 - `useUrl.ts`: Reactive URL parsing interface. Delegates parsing logic to `src/domain/utils/url.ts`.
+- `useOnlineStockData.ts`: Online market-data loading for the portfolio view (fetching min/rate/max and
+  date data, writing results back to the stocks store, cache invalidation on provider changes).
 
 ### UI Interaction
 
 - `useMenu.ts`: Menu action execution and temporary row highlighting for table interactions.
 - `useKeyboardShortcuts.ts`: Registration and cleanup of global keyboard shortcuts.
+- `useHeaderBarActions.ts`: Header bar icon/action handling (dialog opening, online data refresh).
 
 ## Conventions
 

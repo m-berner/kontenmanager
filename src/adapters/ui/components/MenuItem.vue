@@ -42,3 +42,13 @@ log("COMPONENTS MenuItem: setup");
   </v-hover>
 </template>
 
+<style scoped>
+.menu-item--danger {
+  color: rgb(var(--v-theme-error));
+}
+
+.menu-item--highlighted {
+  background-color: rgba(var(--v-theme-primary), 0.12);
+}
+</style>
+

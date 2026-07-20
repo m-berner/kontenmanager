@@ -11,8 +11,8 @@ APIs (like `browser.storage` or `browser.tabs`), the UI framework (Vue/Vuetify),
   `utils/`).
 - **Single Source of Truth**: All business rules (validations, calculations, data transformations) are defined here.
 
-Type note: the project keeps `@/types` as a stable import path, but the underlying type definitions are split into
-layer-focused modules under `src/domain/types/` (domain/infra/backup) and re-exported by `src/domain/types.d.ts`.
+Type note: the project keeps `@/domain/types` as a stable import path, but the underlying type definitions are split into
+layer-focused modules under `src/domain/types/` (domain/adapter/backup/ui) and re-exported by `src/domain/types.d.ts`.
 
 ## Directory Structure
 

@@ -118,6 +118,6 @@ handling.
 - `fetchAdapter.ts`: FetchAdapter, createFetchAdapter, clearCache, fetchWithRetry, getCache, ...
 - `importExportAdapter.ts`: validateBackupData, validateDataIntegrityStatus, validateLegacyDataIntegrityStatus, stringifyDatabase, verifyExportIntegrity, ...
 - `storageAdapter.ts`: storageAdapter
-- `taskAdapter.ts`: ensureConnected, createTaskAdapter, TaskAdapter
+- `taskAdapter.ts`: withRetry, ensureConnected, createTaskAdapter, TaskAdapter
 - `types.ts`
 

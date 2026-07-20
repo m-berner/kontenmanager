@@ -17,6 +17,12 @@ export const createThemes = (t: (_key: string) => string): Record<string, string
     light: t(TRANSLATION_KEYS.THEME_LIGHT)
 });
 
+export const createServiceLabelOverrides = (t: (_key: string) => string): Record<string, string> => ({
+    // Only the "none" pseudo-provider is translated; the others are external
+    // provider brand names (Goyax, Fnet, ...) and stay as-is in every locale.
+    none: t(TRANSLATION_KEYS.SERVICE_DISABLED)
+});
+
 export const createTabs = (t: (_key: string) => string): readonly OptionTab[] =>
     [
         {title: t(TRANSLATION_KEYS.TAB_GE), id: "register_ge"},

@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {DATE, INDEXED_DB} from "@/domain/constants";
+import {DATE, INDEXED_DB, PORTFOLIO} from "@/domain/constants";
 import type {
     AccountStoreContract,
     BookingDb,
@@ -61,10 +61,13 @@ export function calculateInvestByStockId(
     bookings: BookingDb[],
     stockId: number
 ): number {
-    const totalPortfolio = calculatePortfolioByStockId(bookings, stockId);
+    const rawPortfolio = calculatePortfolioByStockId(bookings, stockId);
+    // Match calculateTotalDepotValue: a quantity below the minimum threshold
+    // is floating-point BUY/SELL residue, i.e. the position is sold out.
+    const totalPortfolio = rawPortfolio >= PORTFOLIO.MINIMUM_THRESHOLD ? rawPortfolio : 0;
     let runningCount = 0;
 
-    return bookings
+    const total = bookings
         .filter(
             (entry) =>
                 entry.cStockID === stockId &&
@@ -74,10 +77,12 @@ export function calculateInvestByStockId(
         .reduce((acc, entry) => {
             const prev = runningCount;
             runningCount += entry.cCount;
-            if (prev >= totalPortfolio) return acc;
+            if (prev >= totalPortfolio || entry.cCount === 0) return acc;
             const used = Math.min(entry.cCount, totalPortfolio - prev);
             return acc + (used / entry.cCount) * entry.cDebit;
         }, 0);
+
+    return round2(total);
 }
 
 /**
@@ -152,7 +157,7 @@ export function calculateSumTaxes(bookings: BookingDb[], year: number): number {
  */
 export function calculateTotalDepotValue(stocks: StockItem[]): number {
     const sum = stocks.reduce((acc, rec) => {
-        if (rec.mPortfolio !== undefined && rec.mPortfolio >= 0.1) {
+        if (rec.mPortfolio !== undefined && rec.mPortfolio >= PORTFOLIO.MINIMUM_THRESHOLD) {
             return acc + rec.mPortfolio * (rec.mValue ?? 0);
         }
         return acc;

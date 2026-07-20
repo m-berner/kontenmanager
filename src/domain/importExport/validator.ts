@@ -25,6 +25,14 @@ export function validateBackup(data: unknown): BackupValidationResult {
         };
     }
 
+    if (typeof base.sm.cDBVersion !== "number" || !Number.isFinite(base.sm.cDBVersion)) {
+        return {
+            isValid: false,
+            version: -1,
+            error: "Invalid version information"
+        };
+    }
+
     if (base.sm.cDBVersion < INDEXED_DB.LEGACY_IMPORT_VERSION) {
         return {
             isValid: false,

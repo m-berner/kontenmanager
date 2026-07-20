@@ -29,9 +29,9 @@ installUnhandledRejectionLogger("app");
  */
 const app = createApp(AppIndex);
 const adapters = createAdapters();
-const pinia = createAppPinia(adapters); // inject adapters into pinia
 const i18n = createI18nPlugin(adapters.browserAdapter);
-attachStoreTranslate(pinia, i18n.global.t); // wire translated strings into stores (see stores/deps.ts)
+const pinia = createAppPinia(adapters); // inject adapters into pinia
+attachStoreTranslate(pinia, i18n.global.t); // wire the translation function into stores (see stores/deps.ts)
 
 provideAdapters(app, adapters); // inject adapters into vue
 

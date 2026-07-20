@@ -10,7 +10,9 @@ Automated tests live under `tests/`:
 - `npm run test:logic`: run unit tests (Vitest).
 - `npm run test:typescript`: typecheck (vue-tsc).
 - `npm run lint`: lint `src/` (ESLint).
-- `npm run test:e2e`: build (`build:dev`) and run Playwright E2E tests.
+- `npm run test:e2e`: build (`build:dev`), run the main parallel Playwright suite, then run `happy-path.spec.ts`
+  by itself (see below for why).
+- `npm run test:e2e:happy-path`: build, then run only `happy-path.spec.ts`, in isolation.
 
 ## Unit Tests (`tests/unit`)
 
@@ -24,10 +26,12 @@ tests/unit/
 │   │   ├── composables/          – composable tests
 │   │   └── stores/               – Pinia store tests
 │   └── driven/
-│       └── database/             – database adapter tests (batch, repositories)
+│       ├── database/             – database adapter tests (batch, repositories)
+│       └── fetch/                – fetch/provider adapter tests (HTTP cache, provider utils)
 ├── app/
 │   └── usecases/                 – use case tests
 ├── domain/                       – pure domain logic tests
+│   ├── constants/
 │   ├── importExport/
 │   ├── mapping/
 │   ├── utils/
@@ -58,8 +62,12 @@ and injects a minimal `browser.*` stub into the page context so the app can run 
 - `background-smoke.spec.ts`: background script registers listeners and initializes storage defaults.
 - `happy-path.spec.ts`: import a backup and view Company content; add a company by ISIN.
 - `dialog-actions.spec.ts`: HeaderBar dialog actions against an imported fixture — add/update/delete account,
-  add/update/delete booking type, add booking, export database, show accounting, fade-in-stock (empty state),
-  manual quote refresh, and opening the settings (options) page.
+  switch account via the TitleBar select, add/update/delete booking type, add/update/delete booking, search
+  bookings, update/delete stock, show dividend (empty state), export database, show accounting, fade-in-stock
+  (empty state), manual quote refresh, the depot-sum chip, the `Ctrl+Alt+R` storage-reset shortcut, Help/Privacy
+  footer navigation, and opening the settings (options) page.
+- `options-page.spec.ts`: the standalone Options page — theme selection, market data provider selection, and
+  the Markets/Indexes tabs (add/remove a stock exchange, toggle an index checkbox).
 
 This gives reliable, fast regression coverage for:
 
@@ -97,6 +105,18 @@ Shared setup used by every spec file, imported via relative path (`./support/har
   `fullyParallel: true`). Under heavy parallel load in resource-constrained environments, app boot's async
   connectivity check can occasionally miss the header-visibility timeout in `bootWithFixtureImported`
   (`support/harness.ts`) — a re-run or a lower `--workers` count resolves it; it is not a product regression.
+- Leftover `firefox.exe` processes from earlier interrupted/killed runs can starve a later run of CPU/memory and
+  cause the same kind of timeout on an otherwise-passing test. If a test that normally passes suddenly times out
+  on app boot, check for and kill orphaned `firefox.exe` processes before assuming it's a real regression.
+
+### Why `happy-path.spec.ts` runs in its own config
+
+`happy-path.spec.ts` hits the same async-connectivity-check timing sensitivity described above harder than the
+other specs (it waits on `header.v-app-bar` becoming visible within a fixed 30s, with no retry). Rather than
+loosen that timeout for everyone or cap `fullyParallel` globally, `playwright.config.js` excludes this file via
+`testIgnore` and `playwright.happy-path.config.js` runs it alone with `workers: 1`. `npm run test:e2e` runs both
+configs in sequence, so full coverage is still one command; `npm run test:e2e:happy-path` targets just this file
+when you only need to iterate on it.
 
 ## Directory Structure
 

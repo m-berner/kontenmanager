@@ -118,6 +118,7 @@
         "confirmImportTitle": "Import starten",
         "confirmOk": "Importieren",
         "confirmCancel": "Abbrechen",
+        "confirmExistingDataWarning": "Dadurch werden zunächst Ihre vorhandenen Daten dauerhaft gelöscht:",
         "messages": {
           "invalidSuffix": "Ungültiger Dateiname",
           "emptyFile": "Die Datei ist leer.",
@@ -237,7 +238,8 @@
       "length": "Ungültige ISIN Länge",
       "format": "Ungültige ISIN",
       "country": "Falscher Ländercode",
-      "luhn": "Ungültige Prüfsumme (Luhn)"
+      "luhn": "Ungültige Prüfsumme (Luhn)",
+      "duplicate": "Aktie existiert bereits"
     },
     "nameRules": {
       "required": "Name ist erforderlich",
@@ -322,6 +324,13 @@
         },
         "noDataText": "Keine Einträge gefunden.",
         "itemsPerPageText": "Einträge pro Seite:"
+      },
+      "resetStorage": {
+        "confirmTitle": "Alle Einstellungen zurücksetzen",
+        "confirmMessage": "Dadurch werden die aktive Kontoauswahl, das Design und alle Listenanpassungen gelöscht. Dies kann nicht rückgängig gemacht werden. Fortfahren?",
+        "confirmOk": "Zurücksetzen",
+        "confirmCancel": "Abbrechen",
+        "successMessage": "Die Einstellungen wurden auf die Standardwerte zurückgesetzt."
       }
     },
     "companyContent": {
@@ -423,6 +432,9 @@
         "meadow": "Wiese",
         "dark": "Dunkel",
         "light": "Hell"
+      },
+      "serviceNames": {
+        "disabled": "Deaktiviert"
       },
       "markets": {
         "title": "Marktplätze",

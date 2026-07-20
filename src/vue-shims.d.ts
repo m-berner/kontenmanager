@@ -4,6 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+// Lets TypeScript type-check import .vue files, which it can't parse natively.
 declare module "*.vue" {
     import type {DefineComponent} from "vue";
     const component: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>;

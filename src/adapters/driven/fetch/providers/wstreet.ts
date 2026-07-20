@@ -8,7 +8,7 @@ import {CACHE_POLICY, FETCH} from "@/domain/constants";
 import type {FetchResult, NumberStringPair, StockMarketData} from "@/domain/types";
 import {log, normalizeNumber} from "@/domain/utils/utils";
 
-import {fetchWithCache, parseHTML} from "@/adapters/driven/fetch/httpClient";
+import {fetchTextWithCacheFollowRedirect, parseHTML} from "@/adapters/driven/fetch/httpClient";
 import {DEFAULT_VALUE, detectCurrency} from "@/adapters/driven/fetch/providerUtils";
 
 export async function wstreetFetcher(
@@ -17,19 +17,24 @@ export async function wstreetFetcher(
 ): Promise<StockMarketData[]> {
     return Promise.all(
         urls.map(async (urlObj: NumberStringPair): Promise<StockMarketData> => {
-            const searchText = await fetchWithCache(
+            const searchText = await fetchTextWithCacheFollowRedirect(
                 urlObj.value,
                 CACHE_POLICY.QUOTE_TTL_MS,
                 {signal: options?.signal}
             );
-            const responseJson = JSON.parse(searchText);
+            let responseJson: unknown;
+            try {
+                responseJson = JSON.parse(searchText);
+            } catch {
+                throw new Error(`wstreet: invalid JSON response for ${urlObj.value}`);
+            }
             const detailUrl = buildWStreetDetailUrl(responseJson);
 
             if (!detailUrl) {
                 throw new Error(`wstreet: no detail URL found for ${urlObj.value}`);
             }
 
-            const html = await fetchWithCache(
+            const html = await fetchTextWithCacheFollowRedirect(
                 detailUrl,
                 CACHE_POLICY.QUOTE_TTL_MS,
                 {signal: options?.signal}

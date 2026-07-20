@@ -4,7 +4,7 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type {AccountStoreItem, BookingTypeDb} from "@/domain/types";
+import type {AccountStoreItem, BookingTypeDb, StockItem} from "@/domain/types";
 import {normalizeBookingTypeName} from "@/domain/validation/validators";
 
 /**
@@ -15,6 +15,22 @@ import {normalizeBookingTypeName} from "@/domain/validation/validators";
  */
 export function isDuplicateAccountIban(items: AccountStoreItem[], iban: string): boolean {
     return items.some((entry) => entry.cIban === iban);
+}
+
+/**
+ * Returns true if any existing stock already uses the given ISIN.
+ * Optionally excludes one entry by ID, used when validating an update.
+ *
+ * @param items - Current list of stocks to check against.
+ * @param isin - The ISIN to test for duplicates.
+ * @param excludeId - ID of the entry being edited, excluded from the comparison.
+ */
+export function isDuplicateStockIsin(items: StockItem[], isin: string, excludeId?: number): boolean {
+    return items.some((entry) => {
+        const isSameIsin = entry.cISIN === isin;
+        const isNotExcluded = excludeId === undefined || entry.cID !== excludeId;
+        return isSameIsin && isNotExcluded;
+    });
 }
 
 /**

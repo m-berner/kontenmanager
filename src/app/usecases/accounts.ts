@@ -106,7 +106,17 @@ export async function addAccountUsecase(
     deps.records.clean(false);
     for (const bt of result.createdTypes) deps.records.bookingTypes.add(bt);
 
-    await setActiveAccountIdPersisted(deps, result.accountId);
+    try {
+        await setActiveAccountIdPersisted(deps, result.accountId);
+    } catch (err) {
+        // The account and its default booking types are already committed
+        // to IndexedDB and the in-memory store at this point; undo both so
+        // a retry after this failure can't create a duplicate account.
+        deps.records.accounts.remove(result.accountId);
+        deps.records.clean(false);
+        await deps.databaseAdapter.deleteAccountRecords(result.accountId);
+        throw err;
+    }
 
     deps.runtime.resetTeleport();
     return {
@@ -127,6 +137,7 @@ export async function deleteActiveAccountUsecase(
 
     if (deps.records.accounts.items.length === 0) {
         await setActiveAccountIdPersisted(deps, -1);
+        deps.records.clean(false);
     } else {
         await setActiveAccountIdPersisted(deps, deps.records.accounts.items[0].cID);
 

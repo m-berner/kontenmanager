@@ -60,10 +60,20 @@ function validateDescriptors(descriptors: BatchOperationDescriptor[]): void {
     }
 }
 
-function promisifyRequest<T>(request: IDBRequest<T>): Promise<T> {
+function promisifyRequest<T>(request: IDBRequest<T>, storeName: string): Promise<T> {
     return new Promise((resolve, reject) => {
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        request.onerror = () => {
+            const err = request.error as DOMException | null;
+            reject(
+                appError(
+                    ERROR_DEFINITIONS.SERVICES.DATABASE.REQUEST_FAILED.CODE,
+                    ERROR_CATEGORY.DATABASE,
+                    false,
+                    {storeName, name: err?.name, message: err?.message}
+                )
+            );
+        };
     });
 }
 
@@ -73,16 +83,16 @@ async function executeOperation(
 ): Promise<void> {
     switch (operation.type) {
         case "add":
-            await promisifyRequest(store.add(operation.data));
+            await promisifyRequest(store.add(operation.data), store.name);
             break;
         case "put":
-            await promisifyRequest(store.put(operation.data));
+            await promisifyRequest(store.put(operation.data), store.name);
             break;
         case "delete":
-            await promisifyRequest(store.delete(operation.key));
+            await promisifyRequest(store.delete(operation.key), store.name);
             break;
         case "clear":
-            await promisifyRequest(store.clear());
+            await promisifyRequest(store.clear(), store.name);
             break;
         default: {
             throw appError(
@@ -209,11 +219,28 @@ export function createBatchOperationBuilder(service: Pick<BatchServiceContract, 
     }
 
     async function execute(): Promise<void> {
-        const batchDescriptors = Array.from(descriptors.entries()).map(
-            ([storeName, operations]) => ({storeName, operations})
+        // Snapshot (clone, not reference) each store's operations so a
+        // concurrent add()/insert()/etc. call made while this execute() is
+        // still awaiting doesn't get swept into the in-flight batch.
+        const snapshot = Array.from(descriptors.entries()).map(
+            ([storeName, operations]) => ({storeName, operations: [...operations]})
         );
 
-        return service.executeAtomic(batchDescriptors);
+        await service.executeAtomic(snapshot);
+
+        // Remove exactly the operations that were executed, leaving any
+        // operations queued concurrently during the await intact for the
+        // next execute() call instead of silently discarding them.
+        for (const {storeName, operations} of snapshot) {
+            const current = descriptors.get(storeName);
+            if (!current) continue;
+            const remaining = current.slice(operations.length);
+            if (remaining.length > 0) {
+                descriptors.set(storeName, remaining);
+            } else {
+                descriptors.delete(storeName);
+            }
+        }
     }
 
     function getOperationCount(): number {

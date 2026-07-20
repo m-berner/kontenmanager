@@ -14,8 +14,12 @@ import {computed, onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 import {BROWSER_STORAGE, COMPONENTS, createMaterialLabel, SETTINGS} from "@/domain/constants";
+import {ERROR_DEFINITIONS, isAppError} from "@/domain/errors";
 import type {CheckboxGridProps, MaterialItemKeyType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
+
+const toErrorMessage = (err: unknown): string =>
+  isAppError(err) ? err.message : err instanceof Error ? err.message : ERROR_DEFINITIONS.UNKNOWN_ERROR.MSG;
 
 import {useAdapters} from "@/adapters/context";
 
@@ -65,6 +69,7 @@ const setChecked = async (): Promise<void> => {
   try {
     await setStorage(config.value.storageKey, [...checked.value]);
   } catch (err) {
+    error.value = toErrorMessage(err);
     await alertAdapter.feedbackError(t("components.checkboxGrid.title"), err, {});
   } finally {
     isSaving.value = false;
@@ -83,6 +88,7 @@ onBeforeMount(async () => {
         ? stored.filter((entry): entry is string => typeof entry === "string")
         : [];
   } catch (err) {
+    error.value = toErrorMessage(err);
     await alertAdapter.feedbackError(t("components.checkboxGrid.title"), err, {});
   } finally {
     isLoading.value = false;
@@ -101,7 +107,7 @@ log("COMPONENTS CheckboxGrid: setup");
 
   <!-- Error State -->
   <v-col v-if="error && !isLoading" cols="12">
-    <v-alert dismissible type="error" @click:close="error = null">
+    <v-alert closable type="error" @click:close="error = null">
       {{ error }}
     </v-alert>
   </v-col>

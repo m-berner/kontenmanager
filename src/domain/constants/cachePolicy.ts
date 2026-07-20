@@ -17,6 +17,8 @@ export const CACHE_POLICY = {
     /** Max age for stock quote HTTP cache entries (min/rate/max). */
     QUOTE_TTL_MS: 60_000,
     /** Max age for considering a CompanyContent stocks page "fresh" without reloading online data. */
-    ONLINE_RATES_MAX_AGE_MS: 60_000
+    ONLINE_RATES_MAX_AGE_MS: 60_000,
+    /** Hard cap on the in-memory HTTP cache size; oldest entries are evicted once exceeded. */
+    MAX_HTTP_CACHE_ENTRIES: 100
 } as const;
 

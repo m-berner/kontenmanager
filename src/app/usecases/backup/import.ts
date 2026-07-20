@@ -43,7 +43,7 @@ export async function importDatabaseUsecase(
         onInvalidBackup: () => Promise<void>;
         onLegacyAlreadyRestored: () => Promise<void>;
         onIntegrityErrors: (_errors: string[], _totalCount: number) => Promise<void>;
-        confirmProceed: (_counts: ImportCounts) => Promise<boolean>;
+        confirmProceed: (_counts: ImportCounts, _existingCounts: ImportCounts) => Promise<boolean>;
         onUnsupportedVersion: () => Promise<void>;
         onImported: (_counts: ImportCounts) => Promise<void>;
         onError: (_message: string) => Promise<void>;
@@ -90,7 +90,16 @@ export async function importDatabaseUsecase(
         }
 
         const counts = getImportCounts(backup);
-        const shouldProceed = await input.confirmProceed(counts);
+        // Every import fully clears each store before re-adding the backup's
+        // records, so the caller must be able to warn the user about the
+        // existing data that is about to be destroyed, not just what's incoming.
+        const existingCounts: ImportCounts = {
+            accounts: deps.records.accounts.items.length,
+            stocks: deps.records.stocks.items.length,
+            bookings: deps.records.bookings.items.length,
+            bookingTypes: deps.records.bookingTypes.items.length
+        };
+        const shouldProceed = await input.confirmProceed(counts, existingCounts);
         if (!shouldProceed) return;
 
         const activeId =

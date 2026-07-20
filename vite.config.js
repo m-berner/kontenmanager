@@ -23,6 +23,9 @@ export default defineConfig(({ mode }) => {
 
   // Base configs shared across all modes (including test)
   const baseConfig = {
+    // root is "./src" below, but .env files live at the project root — without this, Vite's
+    // client-side import.meta.env injection looks in src/ and silently misses them.
+    envDir: fileURLToPath(new URL(".", import.meta.url)),
     resolve: {
       alias: [
         {

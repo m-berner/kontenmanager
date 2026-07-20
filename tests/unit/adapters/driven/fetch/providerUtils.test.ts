@@ -79,8 +79,8 @@ describe("adapters/driven/fetch/providerUtils", () => {
             expect(parseCurrency("€")).toBe("EUR");
         });
 
-        it("returns an empty string for unrecognized currency text", () => {
-            expect(parseCurrency("GBP")).toBe("");
+        it("falls back to DEFAULT_CURRENCY for unrecognized currency text", () => {
+            expect(parseCurrency("GBP")).toBe(DEFAULT_CURRENCY);
         });
     });
 });

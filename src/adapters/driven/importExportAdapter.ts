@@ -28,7 +28,7 @@ import {isoDate} from "@/domain/utils/utils";
  * Constants for file validation
  */
 const FILE_VALIDATION = {
-    MAX_SIZE: 100 * 1024 * 1024, // 100MB
+    MAX_SIZE: 96 * 1024 * 1024, // 96MB
     MIN_SIZE: 1
 } as const;
 

@@ -24,5 +24,5 @@ npm run lint:i18n
 
 ### Files
 
-- `i18n-lint.mjs`: TRANSLATION_KEYS
+- `i18n-lint.mjs`
 

@@ -91,7 +91,7 @@ Manages the application’s notification system.
 - `alerts.ts`: useAlertsStore
 - `bookings.ts`: useBookingsStore
 - `bookingTypes.ts`: useBookingTypesStore
-- `deps.ts`: attachStoreDeps, getStoreDeps, getSettingsStoreDeps
+- `deps.ts`: attachStoreDeps, getStoreDeps, getSettingsStoreDeps, StoreTranslate, attachStoreTranslate, getStoreTranslate
 - `portfolio.ts`: usePortfolioStore
 - `recordsHub.ts`: useRecordsStore
 - `runtime.ts`: useRuntimeStore

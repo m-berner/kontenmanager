@@ -17,7 +17,8 @@ import {
   createCompanyHeaders,
   createCompanyMenuItems,
   DATE,
-  ITEMS_PER_PAGE_OPTIONS
+  ITEMS_PER_PAGE_OPTIONS,
+  PORTFOLIO
 } from "@/domain/constants";
 import {log, winLossClass} from "@/domain/utils/utils";
 
@@ -38,8 +39,6 @@ const {loadOnlineData} = useOnlineStockData();
 
 const activeStockItems = computed(() => records.portfolio.active);
 const stocksPerPage = computed(() => settings.stocksPerPage);
-
-const MINIMUM_PORTFOLIO_THRESHOLD = 0.1;
 
 const HEADERS = computed(() => createCompanyHeaders(t));
 const MENU_ITEMS = computed(() => createCompanyMenuItems(t));
@@ -80,7 +79,7 @@ const isValidDate = (dateString: string): boolean => {
  * @returns {boolean} True if portfolio contains at least 0.1 share
  */
 const hasPortfolio = (portfolio: number | undefined): boolean => {
-  return (portfolio ?? 0) >= MINIMUM_PORTFOLIO_THRESHOLD;
+  return (portfolio ?? 0) >= PORTFOLIO.MINIMUM_THRESHOLD;
 };
 
 /**

@@ -170,8 +170,11 @@ export function validateISIN(isin: string): boolean {
     return ValidationRules.validateISIN(isin).isValid;
 }
 
-export function isinRules(msgArray: string[]): ValidationRuleType[] {
-    return [
+export function isinRules(
+    msgArray: readonly string[],
+    isDuplicate?: (_isin: string) => boolean
+): ValidationRuleType[] {
+    const rules: ValidationRuleType[] = [
         required(msgArray[0]),
         fromDomain((v) => ValidationRules.validateISIN(v as string), {
             [VALIDATION_CODES.INVALID_LENGTH]: msgArray[1],
@@ -181,6 +184,15 @@ export function isinRules(msgArray: string[]): ValidationRuleType[] {
             [VALIDATION_CODES.REQUIRED]: msgArray[0]
         })
     ];
+
+    if (isDuplicate) {
+        rules.push(createRule((v) => {
+            const cleaned = cleanString(v);
+            return !cleaned || !isDuplicate(cleaned.toUpperCase());
+        }, msgArray[5]));
+    }
+
+    return rules;
 }
 
 export function swiftRules(msgArray: readonly string[]): ValidationRuleType[] {

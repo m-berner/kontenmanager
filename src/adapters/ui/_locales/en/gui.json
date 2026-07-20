@@ -118,6 +118,7 @@
         "confirmImportTitle": "Start import",
         "confirmOk": "Import",
         "confirmCancel": "Cancel",
+        "confirmExistingDataWarning": "This will permanently delete your existing data first:",
         "messages": {
           "invalidSuffix": "Invalid filename",
           "emptyFile": "The file is empty.",
@@ -281,6 +282,13 @@
         },
         "noDataText": "Entries not found.",
         "itemsPerPageText": "Entries per page:"
+      },
+      "resetStorage": {
+        "confirmTitle": "Reset all settings",
+        "confirmMessage": "This clears the active account selection, theme, and all list customizations. This cannot be undone. Continue?",
+        "confirmOk": "Reset",
+        "confirmCancel": "Cancel",
+        "successMessage": "Settings have been reset to defaults."
       }
     },
     "companyContent": {
@@ -383,6 +391,9 @@
         "dark": "Dark",
         "light": "Light"
       },
+      "serviceNames": {
+        "disabled": "Disabled"
+      },
       "markets": {
         "title": "Stock exchanges",
         "label": "New stock exchange"
@@ -441,7 +452,8 @@
       "length": "Invalid ISIN length",
       "format": "Invalid ISIN",
       "country": "Wrong country code",
-      "luhn": "Invalid checksum (Luhn)"
+      "luhn": "Invalid checksum (Luhn)",
+      "duplicate": "Stock already exists"
     },
     "nameRules": {
       "required": "Name is required",

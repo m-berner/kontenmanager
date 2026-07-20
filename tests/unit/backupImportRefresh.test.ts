@@ -89,6 +89,9 @@ describe("backup import refresh integration", () => {
                 atomicImport: vi.fn().mockResolvedValue(undefined),
                 records: {
                     accounts: {items: []},
+                    stocks: {items: []},
+                    bookings: {items: []},
+                    bookingTypes: {items: []},
                     init: vi.fn().mockResolvedValue(undefined)
                 } as never,
                 settings,

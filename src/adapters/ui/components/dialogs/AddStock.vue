@@ -5,6 +5,7 @@
   -->
 
 <script lang="ts" setup>
+import {storeToRefs} from "pinia";
 import {onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
@@ -24,7 +25,7 @@ import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
 const {t} = useI18n();
-const {activeAccountId} = useSettingsStore();
+const {activeAccountId} = storeToRefs(useSettingsStore());
 const runtime = useRuntimeStore();
 const records = useRecordsStore();
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
@@ -47,7 +48,7 @@ const onClickOk = async (): Promise<void> => {
     errorTitle: t("components.dialogs.onClickOk"),
     operation: async () => {
       // Ensure an active account is selected before saving
-      if (!activeAccountId || activeAccountId <= 0) {
+      if (!activeAccountId.value || activeAccountId.value <= 0) {
         await alertAdapter.feedbackError(
             t("components.dialogs.onClickOk"),
             browserAdapter.getMessage("xx_no_active_account"),
@@ -55,7 +56,7 @@ const onClickOk = async (): Promise<void> => {
         );
         return;
       }
-      const stockData = mapStockFormToDb(activeAccountId);
+      const stockData = mapStockFormToDb(activeAccountId.value);
 
       const res = await addStockUsecase(
           {

@@ -13,14 +13,14 @@ export const createHomeMenuItems = (t: (_key: string) => string): readonly MenuI
             id: "update-booking",
             title: t(TRANSLATION_KEYS.HOME_MENU_UPDATE),
             icon: "$updateBooking",
-            action: "updateBooking",
-            variant: "danger"
+            action: "updateBooking"
         },
         {
             id: "delete-booking",
             title: t(TRANSLATION_KEYS.HOME_MENU_DELETE),
             icon: "$deleteBooking",
-            action: "deleteBooking"
+            action: "deleteBooking",
+            variant: "danger"
         }
     ] as const;
 
