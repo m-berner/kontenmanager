@@ -101,6 +101,15 @@ describe("DomainUtils: numbers and parsing", () => {
         expect(detectNumberFormat("1.234,56")).toBe("de");
     });
 
+    it("detectNumberFormat should treat multi-comma grouping as US thousands, not German decimal", () => {
+        expect(detectNumberFormat("1,234,567")).toBe("en");
+        expect(detectNumberFormat("12,345,678")).toBe("en");
+    });
+
+    it("toNumber should auto-detect multi-comma US thousands-grouped values without corrupting them", () => {
+        expect(toNumber("1,234,567")).toBe(1234567);
+    });
+
     it("normalizeNumber should transform to parseFloat-friendly string", () => {
         expect(normalizeNumber("1.234,56", "de")).toBe("1234.56");
         expect(normalizeNumber("1,234.56", "en")).toBe("1234.56");
