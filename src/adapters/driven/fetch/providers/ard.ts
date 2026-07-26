@@ -165,7 +165,7 @@ function extractArdStockData(doc: Document): FetchResult | null {
         for (const row of rows) {
             const label = row.cells[0]?.textContent?.trim().toLowerCase() ?? "";
             if (!label) continue;
-            if (terms.some((t) => label.includes(t))) {
+            if (terms.some((t) => label.includes(t.toLowerCase()))) {
                 return cleanCell(row, 1);
             }
         }

@@ -302,7 +302,7 @@ describe("FetchService", () => {
             const detailHtml = `
                 <div id="USFkursdaten">
                   <table><tbody>
-                    <tr><td>Kurs</td><td>2,00</td></tr>
+                    <tr><td>Wert</td><td>2,00</td></tr>
                     <tr><td>x</td><td>x</td></tr>
                     <tr><td>x</td><td>x</td></tr>
                     <tr><td>x</td><td>x</td></tr>

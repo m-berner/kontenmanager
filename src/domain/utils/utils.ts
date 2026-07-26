@@ -37,8 +37,14 @@ export function detectNumberFormat(str: string): "de" | "en" {
         return "de";
     }
 
-    // Only commas: check position (last 3-4 chars = decimal)
-    if (dotCount === 0 && commaCount > 0) {
+    // Multiple commas, no dot: US thousands-grouping (e.g. "1,234,567"),
+    // since a valid number never contains more than one decimal separator.
+    if (dotCount === 0 && commaCount > 1) {
+        return "en";
+    }
+
+    // Exactly one comma: check position (last 3-4 chars = decimal)
+    if (dotCount === 0 && commaCount === 1) {
         return str.length - lastComma <= 4 ? "de" : "en";
     }
 
