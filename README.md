@@ -43,18 +43,23 @@ npm run build:dev
 ```
 
 > Note: `.env.development` / `.env.production` are optional in the sense that `vite.config.js`
-> falls back to defaults (`BUILD_DIR=build`, `EXTENSIONS_DIR=extension`, `RELEASE_DIR=extension`)
-> so a build won't hard-fail without one — that's how CI runs it. In this repo they're still
-> meant to be kept: `EXTENSIONS_DIR` points at a local Firefox profile's `extensions/` folder so a
-> build is picked up there automatically, and `.env.production`'s `RELEASE_DIR` is what makes the
-> release `.xpi` land in `releases/firefox/`, which `npm run lint:addon` depends on
+> falls back to defaults (`BUILD_DIR=build`, `EXTENSIONS_DIR=extensions`, `RELEASE_DIR=extensions`)
+> so a build won't hard-fail without one — that's how CI runs it. Without an `.env` file the built
+> extension ends up at `build/extensions/kontenmanager@gmx.de/` (nested inside the build output,
+> since `vite-plugin-static-copy` resolves a relative `dest` against `build.outDir`). In this repo
+> `.env.development`/`.env.production` are still meant to be kept: `EXTENSIONS_DIR` is set to an
+> *absolute* path — a local Firefox profile's `extensions/` folder — so a build is copied straight
+> there instead, and `.env.production`'s `RELEASE_DIR` is what makes the release `.xpi` land in
+> `releases/firefox/`, which `npm run lint:addon` depends on
 > (`addons-linter ./releases/firefox/kontenmanager@gmx.de.xpi` is a fixed path). Removing
 > `.env.production` would silently break `lint:addon`.
 
 What this does:
 - Runs Vue SFC/TypeScript checks (`vue-tsc`).
 - Bundles the extension with Vite.
-- Copies static assets and creates a ready-to-load extension under `kontenmanager@gmx.de/`.
+- Copies static assets and creates a ready-to-load extension under `EXTENSIONS_DIR/kontenmanager@gmx.de/`
+  (a local Firefox profile's `extensions/` folder if `.env.development` sets one, otherwise
+  `build/extensions/kontenmanager@gmx.de/`).
 - Produces a zipped `.xpi` in `releases/` when environment variables are provided (see `vite.config.js`).
 
 Build production package:
@@ -63,7 +68,7 @@ Build production package:
 npm run build:prod
 ```
 
-Load the folder `kontenmanager@gmx.de/` as a temporary addon in Firefox (about:debugging → This Firefox → Load Temporary Add-on... → select any file within that folder).
+Load the `kontenmanager@gmx.de/` folder (under `EXTENSIONS_DIR`) as a temporary addon in Firefox (about:debugging → This Firefox → Load Temporary Add-on... → select any file within that folder). With `.env.development` pointing at your Firefox profile's `extensions/` folder, Firefox picks up the build there automatically instead.
 
 ### Test
 
@@ -101,7 +106,10 @@ The project follows a hexagonal (ports & adapters) architecture. Dependencies po
     - `_locales/`: Translations (`messages.json` for WebExtension i18n, `gui.json` for Vue i18n).
   - [**`adapters/driven/`**](src/adapters/driven/README.md): Infrastructure adapters — [`database/`](src/adapters/driven/database/README.md) (IndexedDB), `fetch/` (market data providers), plus browser, storage, alert, favicon, app, and task adapters.
   - `adapters/container.ts` / `containerBackground.ts`: Composition roots — the only files allowed to import concrete adapter implementations.
-- `kontenmanager@gmx.de/`: The built extension package.
+- `build/`: Raw Vite build output (JS bundles, manifest, `_locales/`, assets).
+- `kontenmanager@gmx.de/`: The ready-to-load extension package, copied to `EXTENSIONS_DIR` — a local
+  Firefox profile's `extensions/` folder by default in this repo (see `.env.development`), or
+  `build/extensions/kontenmanager@gmx.de/` if no `.env` is set.
 - `releases/`: Packaged `.xpi` files for distribution.
 
 ## Documentation

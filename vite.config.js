@@ -16,8 +16,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const {
     BUILD_DIR = "build",
-    EXTENSIONS_DIR = "extension",
-    RELEASE_DIR = "extension",
+    EXTENSIONS_DIR = "extensions",
+    RELEASE_DIR = "extensions",
     RELEASE_XPI = "kontenmanager@gmx.de.xpi"
   } = env;
 
@@ -54,9 +54,14 @@ export default defineConfig(({ mode }) => {
           { src: "adapters/ui/_locales/de/gui.json", dest: ".", rename: "../../../../_locales/de/gui.json", overwrite: true },
           { src: "adapters/ui/_locales/de/messages.json", dest: ".", rename: "../../../../_locales/de/messages.json", overwrite: true },
           { src: "adapters/ui/_locales/en/gui.json", dest: ".", rename: "../../../../_locales/en/gui.json", overwrite: true },
-          { src: "adapters/ui/_locales/en/messages.json", dest: ".", rename: "../../../../_locales/en/messages.json", overwrite: true },
-          EXTENSIONS_DIR && { src: `../${BUILD_DIR}`, dest: EXTENSIONS_DIR, overwrite: true }
-        ].filter(Boolean)
+          { src: "adapters/ui/_locales/en/messages.json", dest: ".", rename: "../../../../_locales/en/messages.json", overwrite: true }
+        ]
+      }),
+      viteStaticCopy({
+        hook: "closeBundle",
+        targets: [
+          { src: `../${BUILD_DIR}/**`, dest: `${EXTENSIONS_DIR}/kontenmanager@gmx.de/`, rename: { stripBase: 1 }, overwrite: true }
+        ]
       })
     ].filter(Boolean),
     assetsInclude: ["**/*.svg", "**/*.png"],

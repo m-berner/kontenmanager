@@ -13,7 +13,7 @@ node_modules/**
 releases/**
 resources/**
 build/**
-extension/**
+extensions/**
 out/**
 dist/**
 public/**
