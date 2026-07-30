@@ -337,7 +337,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
         },
 
         async setting() {
-            runtime.setCurrentView("settings");
+            await browserAdapter.openOptionsPage();
         }
     };
 
