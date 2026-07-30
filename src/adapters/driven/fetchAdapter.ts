@@ -263,7 +263,15 @@ export async function fetchExchangesData(exchangeCodes: string[]): Promise<Excha
 
             const rateString = rateElement.getAttribute("data-rate");
             const rateMatch = rateString?.match(/[0-9]*\.?[0-9]+/g);
-            const rate = rateMatch ? Number.parseFloat(rateMatch[0]) : 1;
+            if (!rateMatch) {
+                throw appError(
+                    ERROR_DEFINITIONS.SERVICES.FETCH.J.CODE,
+                    ERROR_CATEGORY.NETWORK,
+                    false,
+                    {code, rateString}
+                );
+            }
+            const rate = Number.parseFloat(rateMatch[0]);
 
             return {key: code, value: rate};
         })
