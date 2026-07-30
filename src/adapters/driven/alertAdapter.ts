@@ -109,6 +109,12 @@ export function createAlertAdapter() {
         if (rateLimitMs > 0 && now - last < rateLimitMs) {
             return true;
         }
+        // Delete before re-inserting: Map.set() on an existing key updates its
+        // value in place without moving it to the end of iteration order, which
+        // would make pruneRecentMessages' "oldest key" eviction target
+        // frequently-repeated (i.e. still relevant) messages ahead of truly
+        // stale ones.
+        recentMessages.delete(key);
         recentMessages.set(key, now);
         return false;
     }

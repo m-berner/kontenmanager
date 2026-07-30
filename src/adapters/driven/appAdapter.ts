@@ -187,15 +187,19 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             return;
         }
 
+        // Keys are composed as `${localCurrency}${targetCurrency}` (see
+        // fetchExternalData), so the target is the suffix. A local-currency
+        // check via .includes() would misclassify e.g. "USDEUR" as USD
+        // whenever the local currency itself is USD.
         baseData.forEach((data) => {
-            if (data.key.includes(CURRENCIES.USD)) {
+            if (data.key.endsWith(CURRENCIES.USD)) {
                 runtime.curUsd = data.value;
                 log("SERVICES app", {
                     phase: "processExchangeBase",
                     key: "USD",
                     value: data.value
                 });
-            } else if (data.key.includes(CURRENCIES.EUR)) {
+            } else if (data.key.endsWith(CURRENCIES.EUR)) {
                 runtime.curEur = data.value;
                 log("SERVICES app", {
                     phase: "processExchangeBase",
