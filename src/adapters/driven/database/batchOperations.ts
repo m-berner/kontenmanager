@@ -42,10 +42,10 @@ function validateDescriptors(descriptors: BatchOperationDescriptor[]): void {
         // Runtime guard for callers that might bypass the type system.
         if (!VALID_STORES.includes(descriptor.storeName as ValidStoreNameType)) {
             throw appError(
-                ERROR_DEFINITIONS.SERVICES.DATABASE.D.CODE,
+                ERROR_DEFINITIONS.SERVICES.DATABASE.INVALID_BATCH.CODE,
                 ERROR_CATEGORY.DATABASE,
                 false,
-                {storeName: descriptor.storeName}
+                {storeName: descriptor.storeName, reason: "Invalid store name"}
             );
         }
 
