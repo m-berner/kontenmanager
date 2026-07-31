@@ -70,18 +70,22 @@ export interface StockDb {
 
 /**
  * Legacy import: old booking format.
+ *
+ * Field names match the real "stockmanager" export format (verified against an
+ * actual v22 backup file), which differs from the current schema's naming:
+ * cNumber (not cCount), cDeposit (not cAmount), cTaxes (not cTax).
  */
 export interface LegacyBookingDb {
     cDate: number;
     cExDay: number;
     cUnitQuotation: number;
-    cAmount: number;
+    cDeposit: number;
     cDescription: string;
-    cCount: number;
+    cNumber: number;
     cType: number;
     cStockID: number;
     cSoli: number;
-    cTax: number;
+    cTaxes: number;
     cFees: number;
     cSTax: number;
     cFTax: number;
@@ -90,6 +94,9 @@ export interface LegacyBookingDb {
 
 /**
  * Legacy import: old stock format.
+ *
+ * cNotFirstPage (not cFirstPage) matches the real export format, and its
+ * meaning is inverted relative to the current schema's cFirstPage.
  */
 export interface LegacyStockDb {
     cID: number;
@@ -99,7 +106,7 @@ export interface LegacyStockDb {
     cCompany: string;
     cISIN: string;
     cFadeOut: number;
-    cFirstPage: number;
+    cNotFirstPage: number;
     cURL: string;
 }
 

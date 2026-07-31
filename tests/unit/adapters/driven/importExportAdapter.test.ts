@@ -165,7 +165,7 @@ describe("importExportAdapter", () => {
                 cCompany: "Acme",
                 cISIN: "DE0001234567",
                 cFadeOut: 0,
-                cFirstPage: 1,
+                cNotFirstPage: 1,
                 cURL: "https://example.com"
             };
 
@@ -181,13 +181,13 @@ describe("importExportAdapter", () => {
                 cDate: Date.UTC(2026, 0, 1),
                 cExDay: Date.UTC(2026, 0, 2),
                 cUnitQuotation: 10,
-                cAmount: 100,
+                cDeposit: 100,
                 cDescription: "legacy booking",
-                cCount: 1,
+                cNumber: 1,
                 cType: INDEXED_DB.STORE.BOOKING_TYPES.CREDIT,
                 cStockID: 42,
                 cSoli: 0,
-                cTax: 0,
+                cTaxes: 0,
                 cFees: 0,
                 cSTax: 0,
                 cFTax: 0,

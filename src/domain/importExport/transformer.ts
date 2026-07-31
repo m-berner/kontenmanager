@@ -36,9 +36,9 @@ export function transformLegacyBooking(
     const transactionTax = splitSignedAmount(legacyTransfer.cFTax);
     const sourceTax = splitSignedAmount(legacyTransfer.cSTax);
     const fee = splitSignedAmount(legacyTransfer.cFees);
-    const tax = splitSignedAmount(legacyTransfer.cTax);
+    const tax = splitSignedAmount(legacyTransfer.cTaxes);
     const soli = splitSignedAmount(legacyTransfer.cSoli);
-    const amount = splitSignedAmount(legacyTransfer.cAmount);
+    const amount = splitSignedAmount(legacyTransfer.cDeposit);
 
     const booking: BookingDb = {
         cID: index + 1,
@@ -47,7 +47,7 @@ export function transformLegacyBooking(
         cBookDate: isoDate(legacyTransfer.cDate),
         cBookingTypeID: legacyTransfer.cType,
         cExDate: isoDate(legacyTransfer.cExDay),
-        cCount: Math.abs(legacyTransfer.cCount),
+        cCount: Math.abs(legacyTransfer.cNumber),
         cDescription: legacyTransfer.cDescription,
         cMarketPlace: legacyTransfer.cMarketPlace,
         cTransactionTaxCredit: transactionTax.credit,
@@ -123,7 +123,7 @@ export function transformLegacyStock(
         cCompany: rec.cCompany,
         cISIN: rec.cISIN,
         cFadeOut: rec.cFadeOut,
-        cFirstPage: rec.cFirstPage,
+        cFirstPage: rec.cNotFirstPage ? 0 : 1,
         cURL: rec.cURL,
         cAskDates: dateConfig.ISO
     };
@@ -140,7 +140,7 @@ function getLegacyTaxFeeTotal(legacyTransfer: LegacyBookingDb): number {
         legacyTransfer.cFees +
         legacyTransfer.cSTax +
         legacyTransfer.cFTax +
-        legacyTransfer.cTax +
+        legacyTransfer.cTaxes +
         legacyTransfer.cSoli
     );
 }
@@ -160,7 +160,7 @@ function inferLegacyCreditDebitType(
 ): number {
     const BOOKING_TYPES = indexedDb.STORE.BOOKING_TYPES;
 
-    if (legacyTransfer.cAmount !== 0) {
+    if (legacyTransfer.cDeposit !== 0) {
         return BOOKING_TYPES.OTHER;
     }
     if (legacyTransfer.cFees !== 0) {
@@ -228,27 +228,27 @@ function transformLegacyOtherFee(
     switch (legacyTransfer.cType) {
         case BOOKING_TYPES.BUY:
             return {
-                value: legacyTransfer.cUnitQuotation * legacyTransfer.cCount,
+                value: legacyTransfer.cUnitQuotation * legacyTransfer.cNumber,
                 type: BOOKING_TYPES.BUY
             };
         case BOOKING_TYPES.SELL:
             return {
-                value: legacyTransfer.cUnitQuotation * -legacyTransfer.cCount,
+                value: legacyTransfer.cUnitQuotation * -legacyTransfer.cNumber,
                 type: BOOKING_TYPES.SELL
             };
         case BOOKING_TYPES.DIVIDEND:
             return {
-                value: legacyTransfer.cUnitQuotation * legacyTransfer.cCount,
+                value: legacyTransfer.cUnitQuotation * legacyTransfer.cNumber,
                 type: BOOKING_TYPES.DIVIDEND
             };
         case BOOKING_TYPES.CREDIT:
             result.value =
-                legacyTransfer.cAmount +
+                legacyTransfer.cDeposit +
                 getLegacyTaxFeeTotal(legacyTransfer);
             return result;
         case BOOKING_TYPES.DEBIT:
             result.value =
-                -(legacyTransfer.cAmount +
+                -(legacyTransfer.cDeposit +
                     getLegacyTaxFeeTotal(legacyTransfer));
             return result;
         default:

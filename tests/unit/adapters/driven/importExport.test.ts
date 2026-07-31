@@ -81,7 +81,7 @@ describe("ImportExportService", () => {
                 cCompany: "Company",
                 cISIN: "ISIN",
                 cFadeOut: 0,
-                cFirstPage: 1,
+                cNotFirstPage: 1,
                 cURL: "http://url"
             };
 
