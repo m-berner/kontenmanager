@@ -153,13 +153,18 @@ describe("useMenuAction", () => {
     it("deleteBooking removes the booking from the repository and the store", async () => {
         const records = useRecordsStore();
         const bookings = useBookingsStore();
+        const runtime = useRuntimeStore();
         bookings.add(makeBookingDb({cID: 1}));
+        runtime.markStocksPageLoaded(1);
         const {executeAction} = useMenuAction((k) => k);
 
         await executeAction("deleteBooking", 1);
 
         expect(bookingsDelete).toHaveBeenCalledWith(1);
         expect(records.bookings.items).toHaveLength(0);
+        // A removed booking can change the stock's holdings (mPortfolio),
+        // portfolio.active's secondary sort key, so page freshness must reset.
+        expect(runtime.loadedStocksPages.size).toBe(0);
     });
 
     it("deleteStock is blocked with a notice when the stock still has bookings", async () => {
@@ -179,13 +184,18 @@ describe("useMenuAction", () => {
 
     it("deleteStock succeeds when the stock has no linked bookings", async () => {
         const records = useRecordsStore();
+        const runtime = useRuntimeStore();
         records.stocks.add(makeStockDb({cID: 1}));
+        runtime.markStocksPageLoaded(1);
         const {executeAction} = useMenuAction((k) => k);
 
         await executeAction("deleteStock", 1);
 
         expect(stocksDelete).toHaveBeenCalledWith(1);
         expect(records.stocks.items).toHaveLength(0);
+        // Removing a stock shifts every later stock's page position, so page
+        // freshness must reset for the shifted-in stocks to refetch.
+        expect(runtime.loadedStocksPages.size).toBe(0);
     });
 
     it("openLink opens the stock's URL when present", async () => {

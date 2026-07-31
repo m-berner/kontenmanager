@@ -21,6 +21,7 @@ import BookingForm from "@/adapters/ui/components/dialogs/forms/BookingForm.vue"
 import {useDialogGuards} from "@/adapters/ui/composables/useDialogGuards";
 import {createBookingFormManager, provideBookingFormManager} from "@/adapters/ui/composables/useForms";
 import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
+import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
 
 const {t} = useI18n();
@@ -29,6 +30,7 @@ provideBookingFormManager(bookingForm);
 const {mapBookingFormToDb, reset} = bookingForm;
 const {submitGuard, isLoading} = useDialogGuards(t);
 const records = useRecordsStore();
+const runtime = useRuntimeStore();
 const {activeAccountId} = storeToRefs(useSettingsStore());
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
@@ -56,6 +58,10 @@ const onClickOk = async (): Promise<void> => {
           t("components.dialogs.addBooking.messages.success")
       );
       reset();
+      // A new booking can change the stock's holdings (mPortfolio), which is
+      // portfolio.active's secondary sort key — clear every page's freshness
+      // marker so whichever page the stock lands on refetches on next visit.
+      runtime.clearStocksPages();
     }
   });
 };

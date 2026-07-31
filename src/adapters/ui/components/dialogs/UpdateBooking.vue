@@ -97,6 +97,11 @@ const onClickOk = async (): Promise<void> => {
           t("components.dialogs.updateBooking.title"),
           t("components.dialogs.updateBooking.messages.success")
       );
+      // A changed booking amount/count can change the stock's holdings
+      // (mPortfolio), which is portfolio.active's secondary sort key — clear
+      // every page's freshness marker so whichever page the stock lands on
+      // refetches on next visit.
+      runtime.clearStocksPages();
     }
   });
 };

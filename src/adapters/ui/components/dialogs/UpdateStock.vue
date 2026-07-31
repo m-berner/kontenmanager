@@ -79,6 +79,11 @@ const onClickOk = async (): Promise<void> => {
           t("components.dialogs.updateStock.title"),
           t("components.dialogs.updateStock.messages.success")
       );
+      // Editing cFirstPage/cFadeOut can move this stock onto a different page
+      // (portfolio.active is sorted by cFirstPage then mPortfolio) — clear
+      // every page's freshness marker so whichever page it lands on refetches
+      // on next visit, matching AddStock.vue/FadeInStock.vue.
+      runtime.clearStocksPages();
     }
   });
 };

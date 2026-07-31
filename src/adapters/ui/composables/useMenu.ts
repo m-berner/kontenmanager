@@ -219,6 +219,10 @@ export function useMenuAction(translate?: (_key: string) => string) {
             await bookingsRepository.delete(recordId);
             records.bookings.remove(recordId);
             await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
+            // Removing a booking can change the stock's holdings (mPortfolio),
+            // portfolio.active's secondary sort key — clear every page's
+            // freshness marker so whichever page the stock lands on refetches.
+            runtime.clearStocksPages();
         },
 
         // Stock Actions
@@ -239,6 +243,10 @@ export function useMenuAction(translate?: (_key: string) => string) {
             await stocksRepository.delete(recordId);
             records.stocks.remove(recordId);
             await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
+            // Removing a stock shifts every later stock's page position
+            // (portfolio.active is a flat sorted/paginated list) — clear
+            // every page's freshness marker so shifted-in stocks refetch.
+            runtime.clearStocksPages();
         },
 
         async fadeInStock() {
