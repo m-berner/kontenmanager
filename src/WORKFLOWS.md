@@ -147,24 +147,28 @@ updateAccountUsecase(deps, payload)
 **Processing:**
 
 ```
-deleteAccountUsecase(deps, accountId)
-    ├─ Checks if this is the last remaining account
-    │   └─ [blocked if true — at least one account must exist]
-    ├─ transactionManager.executeBatch([
-    │   accountRepository.delete(accountId),
-    │   bookingRepository.deleteByAccountId(accountId),
-    │   bookingTypeRepository.deleteByAccountId(accountId),
-    │   stockRepository.deleteByAccountId(accountId)
-    │ ])                                             [atomic IndexedDB transaction]
-    ├─ recordsStore.removeAccount(accountId)         [removes from all sub-stores]
-    └─ settingsStore.setActiveAccountId(nextAccountId)
-        └─ storageAdapter.setStorage(ACTIVE_ACCOUNT_ID, nextId)
+deleteActiveAccountUsecase(deps, input)
+    ├─ databaseAdapter.deleteAccountRecords(accountId)   [removes account + its bookings,
+    │                                                      booking types, stocks from IndexedDB]
+    ├─ recordsStore.accounts.remove(accountId)
+    ├─ if another account remains:
+    │   ├─ settingsStore.setActiveAccountId(nextAccountId)   [first remaining account]
+    │   │   └─ storageAdapter.setStorage(ACTIVE_ACCOUNT_ID, nextId)
+    │   └─ recordsStore.init(...)                            [load the new active account's data]
+    └─ else (this was the last account):
+        ├─ settingsStore.setActiveAccountId(-1)
+        │   └─ storageAdapter.setStorage(ACTIVE_ACCOUNT_ID, -1)
+        └─ recordsStore.clean(false)                         [clear all sub-stores]
 ```
+
+No guard prevents deleting the last remaining account — this is allowed, and the app lands
+in a zero-accounts state rather than being blocked.
 
 **What the user sees:**
 
 - Account disappears from the dropdown
-- Extension automatically switches to the next available account
+- Extension automatically switches to the next available account, or, if none remain, to an
+  empty state with no active account
 
 ---
 
