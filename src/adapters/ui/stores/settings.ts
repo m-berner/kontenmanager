@@ -180,7 +180,13 @@ export const useSettingsStore = defineStore(
             try {
                 await setStorage(key, value);
             } catch (err) {
-                refVar.value = prev;
+                // Only roll back if this call's optimistic value is still current: an
+                // overlapping later call may have already applied and persisted a
+                // different value while this one was in flight, and rolling back
+                // unconditionally would clobber that newer, already-successful write.
+                if (refVar.value === value) {
+                    refVar.value = prev;
+                }
                 await alertAdapter.feedbackError(errorTitle(), err, {});
             }
         }

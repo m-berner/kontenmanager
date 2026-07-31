@@ -6,6 +6,7 @@
 
 import {describe, expect, it, vi} from "vitest";
 import {INDEXED_DB} from "@/domain/constants";
+import type {RecordsDbData} from "@/domain/types";
 import {addAccountUsecase, deleteActiveAccountUsecase, updateAccountUsecase} from "@/app/usecases/accounts";
 import {
     createDatabaseAccountsPortMock,
@@ -45,7 +46,8 @@ describe("usecases/accounts", () => {
             {
                 accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
                 withDepot: true,
-                bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
+                bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
+                initMessages: {title: "IT", message: "IM"}
             }
         );
 
@@ -84,7 +86,8 @@ describe("usecases/accounts", () => {
             {
                 accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
                 withDepot: true,
-                bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
+                bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
+                initMessages: {title: "IT", message: "IM"}
             }
         );
 
@@ -118,12 +121,56 @@ describe("usecases/accounts", () => {
                 {
                     accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false},
                     withDepot: false,
-                    bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
+                    bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
+                    initMessages: {title: "IT", message: "IM"}
                 }
             )
         ).rejects.toThrow("storage unavailable");
 
         expect(settings.activeAccountId).toBe(-1);
+    });
+
+    it("addAccountUsecase restores the previous account's in-memory records when persisting the new active id fails", async () => {
+        const accountsSave = vi.fn().mockResolvedValue(10);
+        const previousAccountRecords: RecordsDbData = {
+            accountsDB: [],
+            bookingsDB: [],
+            bookingTypesDB: [],
+            stocksDB: []
+        };
+        const getAccountRecords = vi.fn().mockResolvedValue(previousAccountRecords);
+        const databaseAdapter = createDatabaseAccountsPortMock({getAccountRecords});
+        // The previously active account (id 1) is what setActiveAccountIdPersisted
+        // reverts settings.activeAccountId back to after the storage write fails.
+        const settings = createSettingsPortMock(1);
+        const records = createRecordsPortMock();
+        const setStorage = vi.fn().mockRejectedValue(new Error("storage unavailable"));
+
+        await expect(
+            addAccountUsecase(
+                {
+                    databaseAdapter,
+                    repositories: createRepositoriesPortMock({
+                        accounts: {save: accountsSave},
+                        bookingTypes: {save: vi.fn()}
+                    }),
+                    records,
+                    settings,
+                    runtime: createRuntimePortMock(),
+                    setStorage
+                },
+                {
+                    accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false},
+                    withDepot: false,
+                    bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
+                    initMessages: {title: "IT", message: "IM"}
+                }
+            )
+        ).rejects.toThrow("storage unavailable");
+
+        expect(settings.activeAccountId).toBe(1);
+        expect(getAccountRecords).toHaveBeenCalledWith(1);
+        expect(records.init).toHaveBeenCalledWith(previousAccountRecords, {title: "IT", message: "IM"});
     });
 
     it("addAccountUsecase throws if repository save returns INVALID_ID", async () => {
@@ -146,7 +193,8 @@ describe("usecases/accounts", () => {
                 {
                     accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false},
                     withDepot: false,
-                    bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
+                    bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
+                    initMessages: {title: "IT", message: "IM"}
                 }
             )
         ).rejects.toThrow();

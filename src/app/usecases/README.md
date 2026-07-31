@@ -44,7 +44,7 @@ const res = await addAccountUsecase(
         accountData,
         withDepot,
         bookingTypeLabels,
-        success: {title, message}
+        initMessages: {title, message}
     }
 );
 ```

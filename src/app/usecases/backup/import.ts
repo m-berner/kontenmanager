@@ -75,7 +75,11 @@ export async function importDatabaseUsecase(
         const shouldProceed = await input.confirmProceed(counts, existingCounts);
         if (!shouldProceed) return;
 
-        const activeId = backup.accounts?.[0]?.cID ?? SM_RESTORE_ACCOUNT_ID;
+        // buildModernImportPlan filters records by === against normalized (Number-coerced)
+        // cAccountNumberID values, so activeId must be coerced the same way here — a backup
+        // with string-typed IDs (e.g. hand-edited JSON) would otherwise never match and
+        // leave the post-import in-memory records empty despite a successful DB write.
+        const activeId = Number(backup.accounts?.[0]?.cID ?? SM_RESTORE_ACCOUNT_ID);
         await setActiveAccountIdPersisted(deps, activeId);
 
         const plan = buildModernImportPlan({backup, activeId});

@@ -115,9 +115,13 @@ const loadRequiredPages = async (startPage: number = 1, signal: AbortSignal): Pr
 
   for (let page = startPage; page <= totalPages; page++) {
     const pageFirstIndex = stocksPerPage.value * (page - 1);
-    const stock = activeStockItems.value[pageFirstIndex];
+    // activeStockItems is sorted by cFirstPage first, then by mPortfolio within
+    // that group, so a page can straddle the boundary between a "pinned, no
+    // holdings" tail and a "not pinned, has holdings" head. Checking only the
+    // page's first item would then wrongly skip real holdings later on the page.
+    const pageItems = activeStockItems.value.slice(pageFirstIndex, pageFirstIndex + stocksPerPage.value);
 
-    if (!stock || !hasPortfolio(stock.mPortfolio)) continue;
+    if (pageItems.length === 0 || !pageItems.some((stock) => hasPortfolio(stock.mPortfolio))) continue;
 
     pagesToLoad.push(page);
   }

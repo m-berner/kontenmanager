@@ -45,6 +45,7 @@ export async function addAccountUsecase(
         accountData: Omit<AccountDb, "cID">;
         withDepot: boolean;
         bookingTypeLabels: { buy: string; sell: string; dividend: string };
+        initMessages: { title: string; message: string };
     }
 ): Promise<{ accountId: number; createdBookingTypes: number }> {
     const result = await deps.databaseAdapter.transactionManager.execute(
@@ -121,6 +122,16 @@ export async function addAccountUsecase(
             // Preserve the original persistence failure as the thrown error;
             // a failure here only means a retry may see a stale DB record.
             log("USECASES accounts: rollback cleanup failed after setActiveAccountIdPersisted failure", cleanupErr);
+        }
+        // setActiveAccountIdPersisted already reverted settings.activeAccountId
+        // to the previously active account, but that account's bookings/
+        // bookingTypes/stocks were already wiped by records.clean(false) above
+        // (in anticipation of the switch succeeding) and never repopulated;
+        // restore them from IndexedDB, which was never touched for that account.
+        const previousAccountId = deps.settings.activeAccountId;
+        if (previousAccountId !== INDEXED_DB.INVALID_ID) {
+            const storesDB = await deps.databaseAdapter.getAccountRecords(previousAccountId);
+            await deps.records.init(storesDB, input.initMessages);
         }
         throw err;
     }

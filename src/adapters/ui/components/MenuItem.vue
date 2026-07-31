@@ -36,7 +36,7 @@ log("COMPONENTS MenuItem: setup");
         :class="itemClass"
         :prepend-icon="item.icon"
         :title="item.title"
-        class="pointer"
+        class="cursor-pointer"
         role="menuitem"
         @click="emit('click', item)"/>
   </v-hover>

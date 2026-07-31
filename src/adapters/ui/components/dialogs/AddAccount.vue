@@ -65,6 +65,10 @@ const onClickOk = async (): Promise<void> => {
               buy: t("components.dialogs.addAccount.bookingTypes.buy"),
               sell: t("components.dialogs.addAccount.bookingTypes.sell"),
               dividend: t("components.dialogs.addAccount.bookingTypes.dividend")
+            },
+            initMessages: {
+              title: t("mixed.smImportOnly.title"),
+              message: t("mixed.smImportOnly.message")
             }
           }
       );

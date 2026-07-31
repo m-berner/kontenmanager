@@ -63,14 +63,15 @@ const title = computed(() => {
 
 const addItem = async (item: string): Promise<void> => {
   log("COMPONENTS DynamicList: addItem");
-  if (!item.trim()) return; // Validate input
+  const trimmedItem = item.trim();
+  if (!trimmedItem) return; // Validate input
 
   // Normalize before the duplicate check, not after: EXCHANGES entries are
   // stored uppercased, so checking the raw (possibly lowercase) input against
   // an already-uppercased list let case variants of the same entry through.
   const normalizedItem = props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES
-      ? item.toUpperCase()
-      : item;
+      ? trimmedItem.toUpperCase()
+      : trimmedItem;
 
   isAdding.value = true; // Start loading
   error.value = null; // Clear previous errors
