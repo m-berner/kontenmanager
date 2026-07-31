@@ -46,6 +46,11 @@ const onClickOk = async (): Promise<void> => {
       records.stocks.update(stock);
       await alertAdapter.feedbackInfo("FadeInStock", browserAdapter.getMessage("xx_db_fade_in"));
       runtime.resetTeleport();
+      // The reactivated stock may land on any page (portfolio.active is
+      // sorted by cFirstPage then mPortfolio); clear every page's freshness
+      // marker so whichever page it's on refetches on next visit instead of
+      // showing placeholder values for up to the freshness window.
+      runtime.clearStocksPages();
     }
   });
 };

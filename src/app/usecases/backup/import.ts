@@ -10,6 +10,7 @@ import type {ImportExportPort, RecordsPort, RuntimePort, SettingsPort} from "@/a
 import {BROWSER_STORAGE} from "@/domain/constants";
 import {ERROR_DEFINITIONS, isAppError} from "@/domain/errors";
 import type {BatchOperationDescriptor, StorageValueType} from "@/domain/types";
+import {log} from "@/domain/utils/utils";
 
 import {buildModernImportPlan, getImportCounts, type ImportCounts} from "./importHelpers";
 
@@ -89,8 +90,17 @@ export async function importDatabaseUsecase(
         deps.runtime.resetTeleport();
         deps.clearStocksPages?.();
         deps.clearHttpCache?.();
-        await input.onImported(counts);
-        input.onResetFileInput();
+
+        // The import has already fully committed (DB + in-memory records) by
+        // this point; a failure in these purely cosmetic follow-up steps must
+        // not fall through to the catch below, which would trigger a full
+        // rollback of an already-successful import.
+        try {
+            await input.onImported(counts);
+            input.onResetFileInput();
+        } catch (postCommitErr) {
+            log("USECASES backup/import: post-commit notification failed", postCommitErr, "warn");
+        }
     } catch (err) {
         deps.settings.activeAccountId = originalActiveId;
         await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);

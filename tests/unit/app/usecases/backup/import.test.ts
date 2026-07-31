@@ -158,4 +158,37 @@ describe("usecases/backup/import", () => {
         expect(input.onError).toHaveBeenCalledWith("disk full");
         expect(input.onImported).not.toHaveBeenCalled();
     });
+
+    it("does not roll back when the post-commit onImported callback throws", async () => {
+        const backup = {
+            sm: {cVersion: 1, cDBVersion: MODERN, cEngine: "x"},
+            accounts: [makeAccountDb({cID: 42})],
+            stocks: [],
+            bookings: [],
+            bookingTypes: []
+        };
+        const {deps, atomicImport, settings, setStorage} = makeDeps({
+            backup,
+            validation: {isValid: true, version: MODERN},
+            originalActiveId: 7
+        });
+        const input = makeInput({
+            onImported: vi.fn().mockRejectedValue(new Error("alert sink exploded")),
+            onResetFileInput: vi.fn()
+        });
+
+        await importDatabaseUsecase(deps, input);
+
+        // The import itself already fully committed; a failure in the purely
+        // cosmetic post-commit notification must not revert activeAccountId,
+        // report an error, or otherwise look like the import failed.
+        expect(atomicImport).toHaveBeenCalledTimes(1);
+        expect(settings.activeAccountId).toBe(42);
+        expect(setStorage).not.toHaveBeenLastCalledWith(expect.any(String), 7);
+        expect(input.onError).not.toHaveBeenCalled();
+        // onResetFileInput is skipped since it's sequenced after the throwing
+        // onImported call within the same inner try, matching normal
+        // throw-stops-execution semantics for that pair of steps.
+        expect(input.onResetFileInput).not.toHaveBeenCalled();
+    });
 });

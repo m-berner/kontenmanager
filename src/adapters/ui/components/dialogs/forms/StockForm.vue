@@ -40,8 +40,16 @@ const ISIN_RULES = [
   t("validators.isinRules.duplicate")
 ];
 
+let isinUpdateSeq = 0;
+
 const onUpdateIsin = async () => {
   log("COMPONENTS DIALOGS FORMS StockForm: onUpdateISIN");
+
+  // Guards against out-of-order fetch resolution: every keystroke that leaves
+  // the ISIN at 12 chars re-triggers a fetch, and nothing else stops an older,
+  // slower request from resolving after a newer one and overwriting
+  // company/symbol with data for a since-corrected ISIN.
+  const seq = ++isinUpdateSeq;
 
   try {
     if (stockFormData.isin.length === 12) {
@@ -55,10 +63,12 @@ const onUpdateIsin = async () => {
         return;
       }
       const companyData = await fetchAdapter.fetchCompanyData(stockFormData.isin);
+      if (seq !== isinUpdateSeq) return; // superseded by a newer ISIN edit
       stockFormData.company = companyData.company;
       stockFormData.symbol = companyData.symbol;
     }
   } catch (err) {
+    if (seq !== isinUpdateSeq) return; // superseded by a newer ISIN edit
     stockFormData.company = "";
     stockFormData.symbol = "";
     await alertAdapter.feedbackError(

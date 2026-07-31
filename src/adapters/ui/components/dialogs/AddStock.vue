@@ -73,6 +73,12 @@ const onClickOk = async (): Promise<void> => {
           t("components.dialogs.addStock.messages.success")
       );
       reset();
+      // The new stock may sort onto a different page than the one currently
+      // viewed (portfolio.active is sorted by cFirstPage then mPortfolio, and
+      // a brand-new stock has no portfolio yet) — clear every page's freshness
+      // marker so whichever page it actually lands on refetches on next
+      // visit, in addition to refreshing the currently-viewed page now.
+      runtime.clearStocksPages();
       await refreshOnlineData(res.page);
     }
   });
