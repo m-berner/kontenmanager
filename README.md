@@ -107,10 +107,25 @@ The project follows a hexagonal (ports & adapters) architecture. Dependencies po
     - `_locales/`: Translations (`messages.json` for WebExtension i18n, `gui.json` for Vue i18n).
   - [**`adapters/driven/`**](src/adapters/driven/README.md): Infrastructure adapters — [`database/`](src/adapters/driven/database/README.md) (IndexedDB), `fetch/` (market data providers), plus browser, storage, alert, favicon, app, and task adapters.
   - `adapters/container.ts` / `containerBackground.ts`: Composition roots — the only files allowed to import concrete adapter implementations.
-- `build/`: Raw Vite build output (JS bundles, manifest, `_locales/`, assets).
-- `kontenmanager@gmx.de/`: The ready-to-load extension package, copied to `EXTENSIONS_DIR` — a local
-  Firefox profile's `extensions/` folder by default in this repo (see `.env.development`), or the
-  repo root if no `.env` is set.
+- `build/`: Raw Vite build output (JS bundles, manifest, `_locales/`, assets) at a fixed,
+  in-repo path (`BUILD_DIR`, default `build`). This is the stable location every other build
+  step reads from: `emptyOutDir` safely wipes and rebuilds it on every run (it's inside the
+  project, so Vite's overwrite-protection doesn't kick in), and `zipPack` reads from it to
+  produce the release `.xpi`. Not loadable by Firefox directly — it's missing the
+  addon-ID-named folder Firefox expects.
+- `kontenmanager@gmx.de/`: A copy of `build/`'s contents, written by a `vite-plugin-static-copy`
+  step to `EXTENSIONS_DIR/kontenmanager@gmx.de/` (folder named after the addon's Gecko ID from
+  `manifest.json`). Where `EXTENSIONS_DIR` points depends on context:
+  - **Local dev** (`.env.development` sets an absolute path): a local Firefox profile's
+    `extensions/` folder, so Firefox picks up new builds automatically.
+  - **CI / `npm run test:e2e`** (no `.env`, or `EXTENSIONS_DIR` forced to `..`): the repo root,
+    which is where `tests/e2e/support/harness.ts` expects to find it to serve over HTTP for
+    Playwright.
+
+  Kept as a separate copy step (rather than pointing Vite's `outDir` straight at
+  `EXTENSIONS_DIR`) because `EXTENSIONS_DIR` can be an absolute path *outside* the repo (a
+  Firefox profile) — letting Vite's `emptyOutDir` wipe that directly would be one config typo
+  away from deleting unrelated files outside the project.
 - `releases/`: Packaged `.xpi` files for distribution.
 
 ## Documentation
