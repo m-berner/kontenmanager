@@ -148,6 +148,30 @@ export const useRuntimeStore = defineStore("runtime", function () {
     }
 
     /**
+     * Monotonic per-page counter. Three independent callers (per-row quote
+     * update, header-bar refresh-all, company-page loads) can each have an
+     * online-data fetch for the same page in flight at once, each with its own
+     * AbortController that only cancels requests from within its own caller.
+     * This counter lets loadOnlineData detect a response that resolved after
+     * being superseded by a newer request for the same page from a *different*
+     * caller, so it can discard the stale write instead of clobbering fresher
+     * data that already landed.
+     */
+    const stocksPageGeneration = ref<Map<number, number>>(new Map());
+
+    /** Marks the start of a new fetch attempt for a page; returns its generation number. */
+    function bumpStocksPageGeneration(page: number): number {
+        const next = (stocksPageGeneration.value.get(page) ?? 0) + 1;
+        stocksPageGeneration.value.set(page, next);
+        return next;
+    }
+
+    /** Returns whether `generation` is still the most recently started fetch attempt for `page`. */
+    function isStocksPageGenerationCurrent(page: number, generation: number): boolean {
+        return stocksPageGeneration.value.get(page) === generation;
+    }
+
+    /**
      * Returns whether a page is considered "fresh" based on its last loaded timestamp.
      */
     function isStocksPageFresh(page: number, maxAgeMs: number): boolean {
@@ -225,6 +249,8 @@ export const useRuntimeStore = defineStore("runtime", function () {
         markStocksPageLoaded,
         invalidateStocksPage,
         isStocksPageFresh,
+        bumpStocksPageGeneration,
+        isStocksPageGenerationCurrent,
         setCurrentView
     };
 });

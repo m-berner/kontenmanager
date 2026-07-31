@@ -135,6 +135,24 @@ describe("Runtime Store", () => {
         expect(runtime.isStocksPageFresh(1, 60_000)).toBe(false);
     });
 
+    it("bumpStocksPageGeneration + isStocksPageGenerationCurrent should identify the latest fetch attempt per page", () => {
+        const runtime = useRuntimeStore();
+
+        const gen1 = runtime.bumpStocksPageGeneration(1);
+        expect(runtime.isStocksPageGenerationCurrent(1, gen1)).toBe(true);
+
+        // A second call for the same page supersedes the first.
+        const gen2 = runtime.bumpStocksPageGeneration(1);
+        expect(gen2).not.toBe(gen1);
+        expect(runtime.isStocksPageGenerationCurrent(1, gen1)).toBe(false);
+        expect(runtime.isStocksPageGenerationCurrent(1, gen2)).toBe(true);
+
+        // Pages are tracked independently.
+        const genOtherPage = runtime.bumpStocksPageGeneration(2);
+        expect(runtime.isStocksPageGenerationCurrent(2, genOtherPage)).toBe(true);
+        expect(runtime.isStocksPageGenerationCurrent(1, gen2)).toBe(true);
+    });
+
     it("exposed refs should be mutable for consumers (currency, flags)", () => {
         const runtime = useRuntimeStore();
         runtime.curUsd = 1.1;

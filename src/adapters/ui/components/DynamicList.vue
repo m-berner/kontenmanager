@@ -139,6 +139,13 @@ const removeItem = async (n: number): Promise<void> => {
     storeList!.value.splice(storeIndex, 1);
   }
 
+  if (props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES) {
+    // Otherwise this Map grows for the lifetime of the session across
+    // add/remove cycles; the stale entry is inert (only ever looked up for
+    // exchanges still present in settings.exchanges) but never freed.
+    infoExchanges.value.delete(removedItem);
+  }
+
   try {
     newItem.value = "";
     switch (props.type) {

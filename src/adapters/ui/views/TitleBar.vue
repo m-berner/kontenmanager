@@ -30,6 +30,7 @@ const {setStorage} = storageAdapter();
 
 let depotTimer: number | undefined;
 let accountUpdateSeq = 0;
+let lastConfirmedAccountId = settings.activeAccountId;
 
 const connectionState = ref<"checking" | "online" | "offline">("checking");
 const showDepotChip = ref(false);
@@ -96,7 +97,15 @@ const onUpdateTitleBar = async (): Promise<void> => {
 
     if (seq !== accountUpdateSeq) return; // stale selection
     await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, selectedAccountId);
+    lastConfirmedAccountId = selectedAccountId;
   } catch (err) {
+    // v-model already applied the optimistic switch to settings.activeAccountId
+    // before this handler ran; records/storage still reflect the previously
+    // confirmed account on failure, so revert the select back to match (unless
+    // a newer selection has since superseded this attempt).
+    if (seq === accountUpdateSeq) {
+      settings.activeAccountId = lastConfirmedAccountId;
+    }
     await alertAdapter.feedbackError(t("views.titleBar.updateErrorTitle"), err, {});
   }
 };

@@ -101,6 +101,49 @@ describe("useOnlineStockData", () => {
         expect(stocks.items[0].mValue).toBeCloseTo(100, 5);
     });
 
+    it("discards a stale response when a newer overlapping call for the same page already wrote fresher data", async () => {
+        // Simulates two independent callers (e.g. per-row quote update and
+        // header-bar refresh-all) racing on the same page: the older, slower
+        // request must not clobber the newer, already-applied result.
+        const stocks = useStocksStore();
+        const runtime = useRuntimeStore();
+        const settings = useSettingsStore();
+
+        settings.activeAccountId = 1;
+        settings.stocksPerPage = 10;
+        stocks.items = [createSampleStock({cID: 1, cISIN: "US123", mValue: 0})];
+
+        let resolveStaleFetch: (value: unknown) => void = () => undefined;
+        const staleFetch = new Promise((resolve) => {
+            resolveStaleFetch = resolve;
+        });
+
+        fetchMinRateMaxData
+            .mockImplementationOnce(() => staleFetch)
+            .mockResolvedValueOnce({
+                data: [{id: 1, isin: "US123", min: "50", rate: "200", max: "250", cur: "EUR"}],
+                failedIsins: []
+            });
+        fetchDateData.mockResolvedValue([]);
+
+        const {loadOnlineData} = useOnlineStockData();
+
+        const olderCall = loadOnlineData(1);
+        const newerCall = loadOnlineData(1);
+        await newerCall;
+
+        expect(stocks.items[0].mValue).toBe(200);
+
+        resolveStaleFetch({
+            data: [{id: 1, isin: "US123", min: "10", rate: "100", max: "110", cur: "EUR"}],
+            failedIsins: []
+        });
+        await olderCall;
+
+        expect(stocks.items[0].mValue).toBe(200);
+        expect(runtime.loadedStocksPages.has(1)).toBe(true);
+    });
+
     it("refreshOnlineData invalidates page cache then reloads", async () => {
         const stocks = useStocksStore();
         const runtime = useRuntimeStore();

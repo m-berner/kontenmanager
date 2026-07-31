@@ -43,6 +43,12 @@ export function useOnlineStockData() {
 
         if (portfolio.active.length === 0) return;
 
+        // Claim this page for this call before any await: if a newer call for the
+        // same page starts (from this or another caller) before this one's fetch
+        // resolves, its write-back below is skipped instead of overwriting fresher
+        // data that already landed.
+        const generation = runtime.bumpStocksPageGeneration(page);
+
         const startIndex = (page - 1) * settings.stocksPerPage;
         const pageStocks = portfolio.active.slice(startIndex, startIndex + settings.stocksPerPage);
         const now = Date.now();
@@ -64,6 +70,8 @@ export function useOnlineStockData() {
             fetchAdapter.fetchMinRateMaxData(isin, getStorage, {signal: options?.signal}),
             fetchAdapter.fetchDateData(isinDates, {signal: options?.signal})
         ]);
+
+        if (!runtime.isStocksPageGenerationCurrent(page, generation)) return;
 
         if (minRateMaxResponse.failedIsins.length > 0) {
             const companies = pageStocks
