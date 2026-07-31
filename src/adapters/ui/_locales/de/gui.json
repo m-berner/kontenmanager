@@ -259,6 +259,9 @@
     },
     "bookingTypeRules": {
       "required": "Buchungstyp ist erforderlich"
+    },
+    "stockRules": {
+      "required": "Unternehmen ist erforderlich"
     }
   },
   "views": {

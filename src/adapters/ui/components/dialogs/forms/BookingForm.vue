@@ -29,6 +29,7 @@ const DATE_RULES = [
   t("validators.isoDateRules.valid")
 ];
 const BOOKING_TYPE_RULES = [t("validators.bookingTypeRules.required")];
+const STOCK_RULES = [t("validators.stockRules.required")];
 const RULES = [t("validators.creditDebitFieldset.onlyOnePositive")];
 
 const creditDebitModel = computed({
@@ -154,6 +155,7 @@ log("COMPONENTS DIALOGS FORMS BookingForm: setup");
             :item-value="INDEXED_DB.STORE.STOCKS.FIELDS.ID"
             :items="sortedStocks"
             :label="t('components.dialogs.forms.bookingForm.stockLabel')"
+            :rules="validationAdapter.stockRules(STOCK_RULES)"
             clearable
             density="compact"
             max-width="300"

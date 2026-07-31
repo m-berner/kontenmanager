@@ -106,7 +106,7 @@ export function createDatabaseHealthService(
         return issues;
     }
 
-    async function removeOrphanedRecords(storeName: string): Promise<void> {
+    async function removeOrphanedRecords(storeName: string): Promise<number> {
         const repos = repositoryFactory.getAllRepositories() as RepositoryMap;
 
         return transactionManager.execute(
@@ -134,18 +134,21 @@ export function createDatabaseHealthService(
                         repository = repos.bookingTypes;
                         break;
                     default:
-                        return;
+                        return 0;
                 }
 
                 // Find and delete orphaned records
                 const records = await repository.findAll({tx}) as Array<
                     BookingDb | StockDb | BookingTypeDb
                 >;
+                let deleted = 0;
                 for (const record of records) {
                     if (!validAccountIds.has(record.cAccountNumberID)) {
                         await repository.delete(record.cID, {tx});
+                        deleted++;
                     }
                 }
+                return deleted;
             }
         );
     }
@@ -160,8 +163,11 @@ export function createDatabaseHealthService(
         for (const issue of issues) {
             try {
                 if (issue.type === "orphaned_records") {
-                    await removeOrphanedRecords(issue.store);
-                    result.fixed += issue.count;
+                    // Use the actual deleted count, not the count collected
+                    // by an earlier, separate collectStats() pass — another
+                    // tab/context could mutate the DB between that snapshot
+                    // and this deletion, making them disagree.
+                    result.fixed += await removeOrphanedRecords(issue.store);
                 }
             } catch (err) {
                 result.success = false;

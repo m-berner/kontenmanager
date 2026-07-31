@@ -117,6 +117,20 @@ export function bookingTypeRules(msgArray: string[]): ValidationRuleType[] {
     return [required(msgArray[0])];
 }
 
+/**
+ * Rule requiring a real, positive stock id. Unlike `required()`, this also
+ * rejects `0` — the sentinel id of the placeholder "no stock" row every
+ * account's stocks store carries — since a stock-related booking (Buy/Sell/
+ * Dividend) must resolve to an actual stock for portfolio/FIFO calculations
+ * to include it.
+ *
+ * @param msgArray - Error message if invalid.
+ * @returns A validation rule array.
+ */
+export function stockRules(msgArray: string[]): ValidationRuleType[] {
+    return [createRule((v) => typeof v === "number" && v > 0, msgArray[0])];
+}
+
 export function amountRules(
     zeroValue: Ref<number> | number,
     msgArray: string[]
@@ -236,6 +250,7 @@ export function createValidationAdapter() {
         regex,
         nameRules,
         bookingTypeRules,
+        stockRules,
         amountRules,
         validateIBAN,
         isoDateRules,

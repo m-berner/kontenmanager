@@ -14,6 +14,7 @@ import {
     isoDateRules,
     oneOfTwo,
     required,
+    stockRules,
     stringLength,
     swiftRules
 } from "@/adapters/ui/validationAdapter";
@@ -60,6 +61,19 @@ describe("validationAdapter", () => {
         it("returns null for non-string input", () => {
             expect(cleanString(42)).toBeNull();
             expect(cleanString(undefined)).toBeNull();
+        });
+    });
+
+    describe("stockRules", () => {
+        it("rejects null, 0, and non-numbers, but accepts a positive stock id", () => {
+            const [rule] = stockRules(["a company is required"]);
+            expect(rule(null)).toBe("a company is required");
+            // 0 is the sentinel id of the placeholder "no stock" row every
+            // account carries — must be rejected like an unset value, unlike
+            // a plain required() check which only rejects null/""/undefined.
+            expect(rule(0)).toBe("a company is required");
+            expect(rule("5")).toBe("a company is required");
+            expect(rule(5)).toBe(true);
         });
     });
 

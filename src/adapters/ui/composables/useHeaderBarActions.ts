@@ -190,7 +190,19 @@ export function useHeaderBarActions(t: (_key: string) => string): {
         if (!dialogId) return;
         if (!(dialogId in dialogActions)) return;
 
-        await dialogActions[dialogId as MenuActionType]();
+        try {
+            await dialogActions[dialogId as MenuActionType]();
+        } catch (err) {
+            // Most actions here just open a dialog and can't fail, but some
+            // (e.g. "setting" -> browserAdapter.openOptionsPage()) call into
+            // a browser API documented to throw. Without this, a rejection
+            // reaches Vue's global error handler with no user-visible
+            // feedback, unlike the equivalent action dispatched through
+            // useMenu.ts's executeAction, which always surfaces the error.
+            await alertAdapter.feedbackError(t("views.headerBar.infoTitle"), err, {
+                data: {context: dialogId}
+            });
+        }
     };
 
     return {onIconClick};

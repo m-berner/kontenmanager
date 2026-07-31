@@ -105,6 +105,12 @@ routerInstance.isReady().then(() => {
         // Ignore if Pinia is not active in this context.
         void err;
     }
+}).catch((err: unknown) => {
+    // isReady() rejects if the initial navigation's async route components
+    // fail to load (e.g. a chunk missing after an extension update replaces
+    // on-disk files a running page still references) — without this, that
+    // becomes an unhandled promise rejection instead of a logged one.
+    log("PLUGINS router: initial navigation failed", err, "warn");
 });
 
 /**

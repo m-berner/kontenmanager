@@ -473,6 +473,9 @@
     },
     "bookingTypeRules": {
       "required": "Booking type is required"
+    },
+    "stockRules": {
+      "required": "Company is required"
     }
   }
 }
