@@ -147,7 +147,7 @@ export function createAlertAdapter() {
 
         const alerts = getAlertSinkSafe();
         if (!alerts) return;
-        const duration = options?.duration ?? ALERT_INFO.DURATIONS.WARNING;
+        const duration = options?.duration !== undefined ? options.duration : ALERT_INFO.DURATIONS.WARNING;
         return alerts.warning(title, message, duration);
     }
 
