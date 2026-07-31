@@ -65,15 +65,22 @@ const addItem = async (item: string): Promise<void> => {
   log("COMPONENTS DynamicList: addItem");
   if (!item.trim()) return; // Validate input
 
+  // Normalize before the duplicate check, not after: EXCHANGES entries are
+  // stored uppercased, so checking the raw (possibly lowercase) input against
+  // an already-uppercased list let case variants of the same entry through.
+  const normalizedItem = props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES
+      ? item.toUpperCase()
+      : item;
+
   isAdding.value = true; // Start loading
   error.value = null; // Clear previous errors
 
   try {
-    if (!list.value?.includes(item)) {
+    if (!list.value?.includes(normalizedItem)) {
       switch (props.type) {
         case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-          list.value.push(item);
-          markets.value.push(item);
+          list.value.push(normalizedItem);
+          markets.value.push(normalizedItem);
           try {
             await setStorage(BROWSER_STORAGE.MARKETS.key, [...list.value]);
           } catch (err) {
@@ -83,9 +90,8 @@ const addItem = async (item: string): Promise<void> => {
           }
           break;
         case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES: {
-          const upperItem = item.toUpperCase();
-          list.value.push(upperItem);
-          exchanges.value.push(upperItem);
+          list.value.push(normalizedItem);
+          exchanges.value.push(normalizedItem);
           try {
             await setStorage(BROWSER_STORAGE.EXCHANGES.key, [...list.value]);
           } catch (err) {
@@ -94,7 +100,7 @@ const addItem = async (item: string): Promise<void> => {
             throw err;
           }
           const exchangesInfoData: ExchangeData[] =
-              await fetchAdapter.fetchExchangesData([upperItem]);
+              await fetchAdapter.fetchExchangesData([normalizedItem]);
           infoExchanges.value.set(
               exchanges.value[exchanges.value.length - 1],
               exchangesInfoData[0].value

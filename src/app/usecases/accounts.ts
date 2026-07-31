@@ -17,6 +17,7 @@ import type {
 import {ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
 import type {AccountDb, StorageValueType} from "@/domain/types";
+import {log} from "@/domain/utils/utils";
 import {normalizeBookingTypeName} from "@/domain/validation/validators";
 
 export type AddAccountUsecaseDeps = {
@@ -114,7 +115,13 @@ export async function addAccountUsecase(
         // a retry after this failure can't create a duplicate account.
         deps.records.accounts.remove(result.accountId);
         deps.records.clean(false);
-        await deps.databaseAdapter.deleteAccountRecords(result.accountId);
+        try {
+            await deps.databaseAdapter.deleteAccountRecords(result.accountId);
+        } catch (cleanupErr) {
+            // Preserve the original persistence failure as the thrown error;
+            // a failure here only means a retry may see a stale DB record.
+            log("USECASES accounts: rollback cleanup failed after setActiveAccountIdPersisted failure", cleanupErr);
+        }
         throw err;
     }
 
