@@ -43,23 +43,24 @@ npm run build:dev
 ```
 
 > Note: `.env.development` / `.env.production` are optional in the sense that `vite.config.js`
-> falls back to defaults (`BUILD_DIR=build`, `EXTENSIONS_DIR=extensions`, `RELEASE_DIR=extensions`)
-> so a build won't hard-fail without one — that's how CI runs it. Without an `.env` file the built
-> extension ends up at `build/extensions/kontenmanager@gmx.de/` (nested inside the build output,
-> since `vite-plugin-static-copy` resolves a relative `dest` against `build.outDir`). In this repo
-> `.env.development`/`.env.production` are still meant to be kept: `EXTENSIONS_DIR` is set to an
-> *absolute* path — a local Firefox profile's `extensions/` folder — so a build is copied straight
-> there instead, and `.env.production`'s `RELEASE_DIR` is what makes the release `.xpi` land in
-> `releases/firefox/`, which `npm run lint:addon` depends on
-> (`addons-linter ./releases/firefox/kontenmanager@gmx.de.xpi` is a fixed path). Removing
-> `.env.production` would silently break `lint:addon`.
+> falls back to defaults (`BUILD_DIR=build`, `EXTENSIONS_DIR=..`, `RELEASE_DIR=extensions`)
+> so a build won't hard-fail without one — that's how CI (and `npm run test:e2e`) runs it. Without
+> an `.env` file the built extension ends up at `kontenmanager@gmx.de/` in the repo root (`..`
+> relative to `build.outDir`, which `vite-plugin-static-copy` resolves the `dest` against) — this is
+> also where `tests/e2e/support/harness.ts` expects to find it. In this repo `.env.development`/
+> `.env.production` are still meant to be kept: `EXTENSIONS_DIR` is set to an *absolute* path — a
+> local Firefox profile's `extensions/` folder (without a trailing `kontenmanager@gmx.de` segment —
+> `vite.config.js` appends that itself) — so a build is copied straight there instead, and
+> `.env.production`'s `RELEASE_DIR` is what makes the release `.xpi` land in `releases/firefox/`,
+> which `npm run lint:addon` depends on (`addons-linter ./releases/firefox/kontenmanager@gmx.de.xpi`
+> is a fixed path). Removing `.env.production` would silently break `lint:addon`.
 
 What this does:
 - Runs Vue SFC/TypeScript checks (`vue-tsc`).
 - Bundles the extension with Vite.
 - Copies static assets and creates a ready-to-load extension under `EXTENSIONS_DIR/kontenmanager@gmx.de/`
-  (a local Firefox profile's `extensions/` folder if `.env.development` sets one, otherwise
-  `build/extensions/kontenmanager@gmx.de/`).
+  (a local Firefox profile's `extensions/` folder if `.env.development` sets one, otherwise the repo
+  root).
 - Produces a zipped `.xpi` in `releases/` when environment variables are provided (see `vite.config.js`).
 
 Build production package:
@@ -108,8 +109,8 @@ The project follows a hexagonal (ports & adapters) architecture. Dependencies po
   - `adapters/container.ts` / `containerBackground.ts`: Composition roots — the only files allowed to import concrete adapter implementations.
 - `build/`: Raw Vite build output (JS bundles, manifest, `_locales/`, assets).
 - `kontenmanager@gmx.de/`: The ready-to-load extension package, copied to `EXTENSIONS_DIR` — a local
-  Firefox profile's `extensions/` folder by default in this repo (see `.env.development`), or
-  `build/extensions/kontenmanager@gmx.de/` if no `.env` is set.
+  Firefox profile's `extensions/` folder by default in this repo (see `.env.development`), or the
+  repo root if no `.env` is set.
 - `releases/`: Packaged `.xpi` files for distribution.
 
 ## Documentation

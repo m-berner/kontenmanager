@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const {
     BUILD_DIR = "build",
-    EXTENSIONS_DIR = "extensions",
+    EXTENSIONS_DIR = "..",
     RELEASE_DIR = "extensions",
     RELEASE_XPI = "kontenmanager@gmx.de.xpi"
   } = env;
