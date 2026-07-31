@@ -16,6 +16,7 @@ import type {
 
 import {ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
+import {createPlaceholderStock} from "@/domain/logic";
 import type {AccountDb, StorageValueType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 import {normalizeBookingTypeName} from "@/domain/validation/validators";
@@ -107,6 +108,13 @@ export async function addAccountUsecase(
     // active account before populating the new account's own booking types.
     deps.records.clean(false);
     for (const bt of result.createdTypes) deps.records.bookingTypes.add(bt);
+    // Every other path that populates the stocks store (initializeRecords,
+    // used by account switch/delete/import/app boot) also seeds this
+    // sentinel "no stock" row that BookingForm.vue's stock picker relies on
+    // for a blank option — without it, a booking added right after creating
+    // this account (before the next switch/reload re-seeds it) would have no
+    // blank entry in that dropdown.
+    deps.records.stocks.add(createPlaceholderStock(result.accountId));
 
     try {
         await setActiveAccountIdPersisted(deps, result.accountId);

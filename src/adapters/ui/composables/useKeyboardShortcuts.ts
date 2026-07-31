@@ -46,7 +46,16 @@ export function useKeyboardShortcuts() {
         const handler = shortcuts.value.get(combination);
         if (handler) {
             ev.preventDefault();
-            handler();
+            // Handlers are typed synchronous, but several registered ones are
+            // actually async (e.g. HomeContent.vue's reset-storage handler,
+            // which awaits a confirmation dialog that rejects instead of
+            // resolving on a re-entrant call, e.g. from OS keyboard
+            // auto-repeat while held). Without this, that rejection would
+            // surface as an unhandled promise rejection instead of being
+            // silently ignored like any other repeated keypress.
+            Promise.resolve(handler()).catch((err: unknown) => {
+                log("COMPOSABLES useKeyboardShortcuts: shortcut handler rejected", err, "warn");
+            });
         }
     };
 

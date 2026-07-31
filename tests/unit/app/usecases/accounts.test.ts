@@ -59,6 +59,13 @@ describe("usecases/accounts", () => {
         expect(setStorage).toHaveBeenCalledTimes(1);
         expect(runtime.resetTeleport).toHaveBeenCalledTimes(1);
         expect(res).toEqual({accountId: 10, createdBookingTypes: 3});
+        // Every other path that populates the stocks store (initializeRecords)
+        // seeds this sentinel "no stock" row for BookingForm.vue's stock
+        // picker; addAccountUsecase's success path must too, since it doesn't
+        // go through initializeRecords.
+        expect(records.stocks.add).toHaveBeenCalledWith(
+            expect.objectContaining({cID: 0, cISIN: "XX0000000000", cAccountNumberID: 10})
+        );
     });
 
     it("addAccountUsecase cleans stale per-account records before adding the new booking types", async () => {

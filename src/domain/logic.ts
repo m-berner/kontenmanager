@@ -13,6 +13,7 @@ import type {
     NumberStringPair,
     RecordsDbData,
     SettingsStoreContract,
+    StockDb,
     StockItem,
     StockStoreContract
 } from "@/domain/types";
@@ -193,6 +194,32 @@ export function hasBookings(stockId: number, bookings: { cStockID: number }[]): 
 }
 
 /**
+ * Builds the sentinel "no stock" row every account's stocks store must carry
+ * (cID 0, faded out) so that stock-select dropdowns (e.g. BookingForm.vue's
+ * stock picker) have a blank entry. Every path that populates the stocks
+ * store from scratch must add this, not just the ones that go through
+ * initializeRecords.
+ *
+ * @param activeAccountId - The account this placeholder belongs to.
+ * @returns The placeholder stock row.
+ */
+export function createPlaceholderStock(activeAccountId: number): StockDb {
+    return {
+        cID: 0,
+        cISIN: "XX0000000000",
+        cSymbol: "XXXOO0",
+        cFadeOut: 1,
+        cFirstPage: 0,
+        cURL: "",
+        cCompany: "",
+        cMeetingDay: "",
+        cQuarterDay: "",
+        cAccountNumberID: activeAccountId,
+        cAskDates: DATE.ISO
+    };
+}
+
+/**
  * Orchestrates the initialization of all records stores with data from the database.
  *
  * @param storesDB - The raw data fetched from IndexedDB.
@@ -245,22 +272,7 @@ export async function initializeRecords(
     );
 
     // Add default stock entry
-    stores.stocks.add(
-        {
-            cID: 0,
-            cISIN: "XX0000000000",
-            cSymbol: "XXXOO0",
-            cFadeOut: 1,
-            cFirstPage: 0,
-            cURL: "",
-            cCompany: "",
-            cMeetingDay: "",
-            cQuarterDay: "",
-            cAccountNumberID: stores.settings.activeAccountId,
-            cAskDates: DATE.ISO
-        },
-        true
-    );
+    stores.stocks.add(createPlaceholderStock(stores.settings.activeAccountId), true);
 
     // Check for empty accounts and log if necessary
     if (stores.accounts.items.length === 0) {

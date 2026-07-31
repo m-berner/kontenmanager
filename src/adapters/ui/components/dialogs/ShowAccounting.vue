@@ -53,7 +53,7 @@ const ITEMS_PER_PAGE_OPTIONS = [
 
 const HEADERS = computed(() => createAccountingHeaders(t));
 
-const selected = ref<number>(COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID);
+const selected = ref<number | null>(COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID);
 
 const yearEntries = computed(() => {
   const years = [
@@ -121,8 +121,14 @@ const accountEntries = computed(() => {
   return result;
 });
 
-const getAccountData = (year: number) => {
-  if (year === COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID) {
+const getAccountData = (year: number | null) => {
+  // The year select is `clearable`, which emits `null` (not `undefined`) when
+  // cleared — treat that the same as "All Years" instead of falling through
+  // to the per-year branch, where aggregateBookingsPerType's truthy year
+  // check would silently return all-time sums while sumTaxes/sumFees's
+  // strict `=== year` equality would silently return 0, producing a
+  // mismatched, wrong total.
+  if (year === COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID || year === null) {
     return {
       sums: records.accounting.sumBookingsPerType,
       taxes: records.bookings.sumAllTaxes,
