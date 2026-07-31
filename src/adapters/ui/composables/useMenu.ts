@@ -249,8 +249,8 @@ export function useMenuAction(translate?: (_key: string) => string) {
             updateQuoteController?.abort();
             const controller = new AbortController();
             updateQuoteController = controller;
-            runtime.isStockLoading = true;
-            runtime.isDownloading = true;
+            runtime.beginStockLoading();
+            runtime.beginDownload();
             try {
                 await loadOnlineData(runtime.stocksPage, {signal: controller.signal});
             } catch (err) {
@@ -258,13 +258,11 @@ export function useMenuAction(translate?: (_key: string) => string) {
                 if (controller.signal.aborted) return;
                 throw err;
             } finally {
-                // Only the still-current call resets shared loading state; a
-                // superseded call must leave it alone since a newer one owns it.
-                if (updateQuoteController === controller) {
-                    updateQuoteController = null;
-                    runtime.isStockLoading = false;
-                    runtime.isDownloading = false;
-                }
+                if (updateQuoteController === controller) updateQuoteController = null;
+                // Ref-counted: other in-flight callers (e.g. the header-bar
+                // refresh-all action) may still be holding the shared flags up.
+                runtime.endStockLoading();
+                runtime.endDownload();
             }
         },
 

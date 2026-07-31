@@ -44,8 +44,10 @@ const onUpdateIsin = async () => {
   log("COMPONENTS DIALOGS FORMS StockForm: onUpdateISIN");
 
   try {
-    if (!props.isUpdate && stockFormData.isin.length === 12) {
+    if (stockFormData.isin.length === 12) {
       stockFormData.isin = stockFormData.isin.toUpperCase().replace(/\s/g, "");
+    }
+    if (!props.isUpdate && stockFormData.isin.length === 12) {
       // In E2E/offline mode the service may be disabled; skip auto-fetch to avoid alerts
       if (settings.service === "none") {
         stockFormData.company = stockFormData.company || "";

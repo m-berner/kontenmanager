@@ -142,7 +142,7 @@ const onUpdatePage = async (page: number): Promise<void> => {
 
   if (runtime.isStocksPageFresh(page, CACHE_POLICY.ONLINE_RATES_MAX_AGE_MS)) return;
 
-  runtime.isStockLoading = true;
+  runtime.beginStockLoading();
   const signal = startOnlineLoad();
   try {
     await loadOnlineData(page, {signal});
@@ -153,9 +153,7 @@ const onUpdatePage = async (page: number): Promise<void> => {
       });
     }
   } finally {
-    if (!signal.aborted) {
-      runtime.isStockLoading = false;
-    }
+    runtime.endStockLoading();
   }
 };
 
@@ -171,8 +169,8 @@ onBeforeMount(async () => {
   log("VIEWS CompanyContent: onBeforeMount");
 
   if (!runtime.isStocksPageFresh(runtime.stocksPage, CACHE_POLICY.ONLINE_RATES_MAX_AGE_MS)) {
-    runtime.isDownloading = true;
-    runtime.isStockLoading = true;
+    runtime.beginDownload();
+    runtime.beginStockLoading();
     const signal = startOnlineLoad();
     try {
       await loadRequiredPages(runtime.stocksPage, signal);
@@ -181,10 +179,8 @@ onBeforeMount(async () => {
         await alertAdapter.feedbackError("COMPANY_CONTENT", err, {data: "loadRequiredPages"});
       }
     } finally {
-      if (!signal.aborted) {
-        runtime.isStockLoading = false;
-        runtime.isDownloading = false;
-      }
+      runtime.endStockLoading();
+      runtime.endDownload();
     }
   }
 });
@@ -196,8 +192,8 @@ onBeforeMount(async () => {
  */
 watch(stocksPerPage, async () => {
   runtime.clearStocksPages();
-  runtime.isDownloading = true;
-  runtime.isStockLoading = true;
+  runtime.beginDownload();
+  runtime.beginStockLoading();
   const signal = startOnlineLoad();
   try {
     await loadRequiredPages(runtime.stocksPage, signal);
@@ -206,10 +202,8 @@ watch(stocksPerPage, async () => {
       await alertAdapter.feedbackError("COMPANY_CONTENT", err, {data: "loadRequiredPages"});
     }
   } finally {
-    if (!signal.aborted) {
-      runtime.isStockLoading = false;
-      runtime.isDownloading = false;
-    }
+    runtime.endStockLoading();
+    runtime.endDownload();
   }
 });
 

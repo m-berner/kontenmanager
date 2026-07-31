@@ -135,20 +135,32 @@ export async function deleteActiveAccountUsecase(
     await deps.databaseAdapter.deleteAccountRecords(accountToDelete);
     deps.records.accounts.remove(accountToDelete);
 
-    if (deps.records.accounts.items.length === 0) {
-        await setActiveAccountIdPersisted(deps, -1);
+    const newActiveAccountId = deps.records.accounts.items.length === 0
+        ? -1
+        : deps.records.accounts.items[0].cID;
+
+    // accountToDelete is already gone from IndexedDB, so if persisting the new
+    // id fails, setActiveAccountIdPersisted would revert settings.activeAccountId
+    // back to a now-nonexistent account. Force it forward regardless, run the
+    // same in-memory cleanup either way, then surface the persistence failure.
+    let persistError: unknown;
+    try {
+        await setActiveAccountIdPersisted(deps, newActiveAccountId);
+    } catch (err) {
+        deps.settings.activeAccountId = newActiveAccountId;
+        persistError = err;
+    }
+
+    if (newActiveAccountId === -1) {
         deps.records.clean(false);
     } else {
-        await setActiveAccountIdPersisted(deps, deps.records.accounts.items[0].cID);
-
-        const storesDB = await deps.databaseAdapter.getAccountRecords(
-            deps.settings.activeAccountId
-        );
+        const storesDB = await deps.databaseAdapter.getAccountRecords(newActiveAccountId);
         await deps.records.init(storesDB, input.initMessages);
     }
 
     deps.runtime.resetTeleport();
-    return {newActiveAccountId: deps.settings.activeAccountId};
+    if (persistError !== undefined) throw persistError;
+    return {newActiveAccountId};
 }
 
 export async function updateAccountUsecase(

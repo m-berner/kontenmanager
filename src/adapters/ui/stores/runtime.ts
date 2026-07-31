@@ -76,6 +76,39 @@ export const useRuntimeStore = defineStore("runtime", function () {
     /** Specific flag indicating if stock data is being fetched or processed. */
     const isStockLoading = ref<boolean>(false);
 
+    /**
+     * Number of in-flight callers currently holding the download/stock-loading
+     * flags up. Multiple independent call sites (header-bar refresh, per-row
+     * quote update, company-page loads) can overlap; a plain boolean would let
+     * whichever finishes first clear the flag while another is still running.
+     */
+    const downloadRefCount = ref<number>(0);
+    const stockLoadingRefCount = ref<number>(0);
+
+    /** Marks one caller as downloading; pair with exactly one endDownload(). */
+    function beginDownload(): void {
+        downloadRefCount.value += 1;
+        isDownloading.value = true;
+    }
+
+    /** Releases one caller's downloading claim; only clears the flag once all have. */
+    function endDownload(): void {
+        downloadRefCount.value = Math.max(0, downloadRefCount.value - 1);
+        if (downloadRefCount.value === 0) isDownloading.value = false;
+    }
+
+    /** Marks one caller as stock-loading; pair with exactly one endStockLoading(). */
+    function beginStockLoading(): void {
+        stockLoadingRefCount.value += 1;
+        isStockLoading.value = true;
+    }
+
+    /** Releases one caller's stock-loading claim; only clears the flag once all have. */
+    function endStockLoading(): void {
+        stockLoadingRefCount.value = Math.max(0, stockLoadingRefCount.value - 1);
+        if (stockLoadingRefCount.value === 0) isStockLoading.value = false;
+    }
+
     const getCurrentView = computed((): ViewTypeSelectionType => currentView.value);
 
     /**
@@ -177,6 +210,10 @@ export const useRuntimeStore = defineStore("runtime", function () {
         infoMaterials,
         isDownloading,
         isStockLoading,
+        beginDownload,
+        endDownload,
+        beginStockLoading,
+        endStockLoading,
         optionMenuColors,
         stocksPage,
         loadedStocksPages,
