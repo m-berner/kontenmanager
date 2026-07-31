@@ -38,12 +38,9 @@ function makeController(overrides: {
         importExportAdapter: {
             validateBackup: vi.fn(),
             validateDataIntegrity: vi.fn(),
-            validateLegacyDataIntegrity: vi.fn(),
             readJsonFile: vi.fn(),
             stringifyDatabase: vi.fn().mockReturnValue(overrides.stringifyResult ?? "{}"),
-            verifyExportIntegrity: vi.fn().mockReturnValue(overrides.verify ?? {valid: true, errors: []}),
-            transformLegacyStock: vi.fn(),
-            transformLegacyBooking: vi.fn()
+            verifyExportIntegrity: vi.fn().mockReturnValue(overrides.verify ?? {valid: true, errors: []})
         },
         repositories
     };

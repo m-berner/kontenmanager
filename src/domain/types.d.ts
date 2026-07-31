@@ -19,15 +19,12 @@ export type {
 export type {
     BackupData,
     BackupValidationResult,
-    LegacyBackupData,
     ModernBackupData
 } from "@/domain/types/backup";
 export type {
     AccountDb,
     BookingDb,
     BookingTypeDb,
-    LegacyBookingDb,
-    LegacyStockDb,
     StockDb
 } from "@/domain/types/domain";
 export type {

@@ -7,11 +7,11 @@
 import {setActiveAccountIdPersisted} from "@/app/usecases/portAdapters";
 import type {ImportExportPort, RecordsPort, RuntimePort, SettingsPort} from "@/app/usecases/ports";
 
-import {BROWSER_STORAGE, INDEXED_DB} from "@/domain/constants";
+import {BROWSER_STORAGE} from "@/domain/constants";
 import {ERROR_DEFINITIONS, isAppError} from "@/domain/errors";
-import type {BatchOperationDescriptor, LegacyBackupData, ModernBackupData, StorageValueType} from "@/domain/types";
+import type {BatchOperationDescriptor, StorageValueType} from "@/domain/types";
 
-import {buildLegacyImportPlan, buildModernImportPlan, getImportCounts, type ImportCounts} from "./importHelpers";
+import {buildModernImportPlan, getImportCounts, type ImportCounts} from "./importHelpers";
 
 const SM_RESTORE_ACCOUNT_ID = 1;
 
@@ -31,31 +31,15 @@ export async function importDatabaseUsecase(
     input: {
         fileBlob: Blob;
         initMessages: { title: string; message: string };
-        legacyDefaultBookingTypeLabels: {
-            buy: string;
-            sell: string;
-            dividend: string;
-            other: string;
-            fee: string;
-            tax: string;
-        };
         onResetFileInput: () => void;
         onInvalidBackup: () => Promise<void>;
-        onLegacyAlreadyRestored: () => Promise<void>;
         onIntegrityErrors: (_errors: string[], _totalCount: number) => Promise<void>;
         confirmProceed: (_counts: ImportCounts, _existingCounts: ImportCounts) => Promise<boolean>;
-        onUnsupportedVersion: () => Promise<void>;
         onImported: (_counts: ImportCounts) => Promise<void>;
         onError: (_message: string) => Promise<void>;
     }
 ): Promise<void> {
     const originalActiveId = deps.settings.activeAccountId;
-
-    const rollbackAndError = async (message: string) => {
-        deps.settings.activeAccountId = originalActiveId;
-        await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
-        await input.onError(message);
-    };
 
     try {
         const backup = await deps.importExportAdapter.readJsonFile(input.fileBlob);
@@ -66,18 +50,7 @@ export async function importDatabaseUsecase(
             return;
         }
 
-        if (
-            validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION &&
-            deps.records.accounts.items.length > 0
-        ) {
-            await input.onLegacyAlreadyRestored();
-            return;
-        }
-
-        const dataIntegrityErrors =
-            validation.version === INDEXED_DB.LEGACY_IMPORT_VERSION
-                ? deps.importExportAdapter.validateLegacyDataIntegrity(backup)
-                : deps.importExportAdapter.validateDataIntegrity(backup);
+        const dataIntegrityErrors = deps.importExportAdapter.validateDataIntegrity(backup);
 
         if (dataIntegrityErrors.length > 0) {
             await input.onIntegrityErrors(
@@ -102,40 +75,12 @@ export async function importDatabaseUsecase(
         const shouldProceed = await input.confirmProceed(counts, existingCounts);
         if (!shouldProceed) return;
 
-        const activeId =
-            "transfers" in backup
-                ? SM_RESTORE_ACCOUNT_ID
-                : (backup as ModernBackupData).accounts?.[0]?.cID ?? SM_RESTORE_ACCOUNT_ID;
+        const activeId = backup.accounts?.[0]?.cID ?? SM_RESTORE_ACCOUNT_ID;
         await setActiveAccountIdPersisted(deps, activeId);
 
-        if (backup.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION) {
-            if (!("transfers" in backup)) {
-                await rollbackAndError("Legacy backup expected 'transfers' array");
-                return;
-            }
-            const plan = buildLegacyImportPlan({
-                backup: backup as LegacyBackupData,
-                activeId,
-                labels: input.legacyDefaultBookingTypeLabels,
-                transformLegacyStock: deps.importExportAdapter.transformLegacyStock,
-                transformLegacyBooking: deps.importExportAdapter.transformLegacyBooking
-            });
-            await deps.atomicImport(plan.descriptors);
-            await deps.records.init(plan.initData, input.initMessages);
-        } else if (backup.sm.cDBVersion > INDEXED_DB.LEGACY_IMPORT_VERSION) {
-            if ("transfers" in backup) {
-                await rollbackAndError("Modern backup must not contain 'transfers'");
-                return;
-            }
-            const plan = buildModernImportPlan({backup, activeId});
-            await deps.atomicImport(plan.descriptors);
-            await deps.records.init(plan.initData, input.initMessages);
-        } else {
-            await input.onUnsupportedVersion();
-            deps.settings.activeAccountId = originalActiveId;
-            await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
-            return;
-        }
+        const plan = buildModernImportPlan({backup, activeId});
+        await deps.atomicImport(plan.descriptors);
+        await deps.records.init(plan.initData, input.initMessages);
 
         deps.runtime.resetTeleport();
         deps.clearStocksPages?.();

@@ -5,7 +5,7 @@
  */
 
 import {INDEXED_DB} from "@/domain/constants";
-import type {BackupData, BackupValidationResult, LegacyBackupData, ModernBackupData} from "@/domain/types";
+import type {BackupData, BackupValidationResult, ModernBackupData} from "@/domain/types";
 
 /**
  * Performs a high-level validation of the backup data format and version.
@@ -33,44 +33,25 @@ export function validateBackup(data: unknown): BackupValidationResult {
         };
     }
 
-    if (base.sm.cDBVersion < INDEXED_DB.LEGACY_IMPORT_VERSION) {
+    if (base.sm.cDBVersion < INDEXED_DB.MIN_SUPPORTED_VERSION) {
         return {
             isValid: false,
             version: base.sm.cDBVersion,
-            error: `Version ${base.sm.cDBVersion} is too old (minimum: ${INDEXED_DB.LEGACY_IMPORT_VERSION})`
+            error: `Version ${base.sm.cDBVersion} is too old (minimum: ${INDEXED_DB.MIN_SUPPORTED_VERSION})`
         };
     }
 
-    // Check for required fields
-    const isLegacy = base.sm.cDBVersion === INDEXED_DB.LEGACY_IMPORT_VERSION;
+    const modern = data as Partial<ModernBackupData>;
+    const requiredFields = [
+        {field: modern.accounts, name: "accounts"},
+        {field: modern.stocks, name: "stocks"},
+        {field: modern.bookingTypes, name: "bookingTypes"},
+        {field: modern.bookings, name: "bookings"}
+    ];
 
-    if (isLegacy) {
-        const legacy = data as Partial<LegacyBackupData>;
-        const stocksValidation = isArrayField(
-            legacy.stocks,
-            base.sm.cDBVersion,
-            "stocks"
-        );
-        if (stocksValidation) return stocksValidation;
-        const transfersValidation = isArrayField(
-            legacy.transfers,
-            base.sm.cDBVersion,
-            "transfers"
-        );
-        if (transfersValidation) return transfersValidation;
-    } else {
-        const modern = data as Partial<ModernBackupData>;
-        const requiredFields = [
-            {field: modern.accounts, name: "accounts"},
-            {field: modern.stocks, name: "stocks"},
-            {field: modern.bookingTypes, name: "bookingTypes"},
-            {field: modern.bookings, name: "bookings"}
-        ];
-
-        for (const {field, name} of requiredFields) {
-            const validation = isArrayField(field, base.sm.cDBVersion, name);
-            if (validation) return validation;
-        }
+    for (const {field, name} of requiredFields) {
+        const validation = isArrayField(field, base.sm.cDBVersion, name);
+        if (validation) return validation;
     }
 
     return {isValid: true, version: base.sm.cDBVersion};
@@ -84,9 +65,6 @@ export function validateBackup(data: unknown): BackupValidationResult {
  * @returns An array of error messages describing any issues found during validation. Returns an empty array if no issues are detected.
  */
 export function validateDataIntegrity(backup: BackupData): string[] {
-    if ("transfers" in backup) {
-        return ["Expected modern backup data, got the legacy format"];
-    }
     const errors: string[] = [];
 
     if (
@@ -102,41 +80,6 @@ export function validateDataIntegrity(backup: BackupData): string[] {
     errors.push(...validateForeignKeys(backup));
     errors.push(...checkDuplicateIds(backup));
     errors.push(...validateBusinessRules(backup));
-
-    return errors;
-}
-
-/**
- * Validates the integrity of legacy data by checking for missing required data arrays, duplicate stock IDs,
- * and invalid transfer references to non-existent stocks.
- *
- * @param backup - The legacy data containing stocks and transfers to validate.
- * @returns An array of error messages, or an empty array if the data is valid.
- */
-export function validateLegacyDataIntegrity(backup: BackupData): string[] {
-    if (!("transfers" in backup)) {
-        return ["Expected legacy backup data, got the modern format"];
-    }
-    const errors: string[] = [];
-
-    const duplicateStocks = findDuplicates(
-        backup.stocks
-            .map((s) => s.cID)
-            .filter((id): id is number => id !== undefined)
-    );
-    if (duplicateStocks.length > 0) {
-        errors.push(`Duplicate stock IDs: ${duplicateStocks.join(", ")}`);
-    }
-
-    const stockIds = new Set(backup.stocks.map((s) => s.cID));
-    for (let i = 0; i < backup.transfers.length; i++) {
-        const transfer = backup.transfers[i];
-        if (transfer.cStockID && !stockIds.has(transfer.cStockID)) {
-            errors.push(
-                `Transfer ${i + 1} references non-existent stock ${transfer.cStockID}`
-            );
-        }
-    }
 
     return errors;
 }

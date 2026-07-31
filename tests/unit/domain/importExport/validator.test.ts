@@ -27,7 +27,7 @@ describe("Import/Export Validator", () => {
         });
 
         it("should return invalid for the version too old", () => {
-            const data = {sm: {cDBVersion: INDEXED_DB.LEGACY_IMPORT_VERSION - 1}};
+            const data = {sm: {cDBVersion: INDEXED_DB.MIN_SUPPORTED_VERSION - 1}};
             expect(validateBackup(data).isValid).toBe(false);
         });
 

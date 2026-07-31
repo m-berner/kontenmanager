@@ -574,15 +574,12 @@ Phase 1 — Read & Validate
     ├─ JSON.parse(text)
     └─ importExportAdapter.validate(parsed)
         ├─ Check top-level structure (version field, entity arrays)
-        ├─ Detect format: legacy (v≤25) vs. modern
+        ├─ Reject versions older than INDEXED_DB.MIN_SUPPORTED_VERSION
         └─ Run schema validators on every entity
 
 Phase 2 — Integrity Check
-    ├─ Legacy backup:
-    │   └─ validateLegacyDataIntegrity() + transform to modern format
-    └─ Modern backup:
-        └─ validateDataIntegrity()
-            ├─ Cross-reference: every booking references a valid accountId
+    └─ validateDataIntegrity()
+        ├─ Cross-reference: every booking references a valid accountId
             ├─ Cross-reference: every stock references a valid accountId
             └─ Cross-reference: every booking type exists
 

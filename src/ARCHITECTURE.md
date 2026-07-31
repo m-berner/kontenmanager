@@ -496,8 +496,7 @@ script's `onInstalled` handler.
 
 1. **Read & validate** — reads the JSON file, validates the top-level structure
    and schema version.
-2. **Integrity check** — for legacy backups (v ≤ 25) calls
-   `validateLegacyDataIntegrity`; for modern backups calls `validateDataIntegrity`.
+2. **Integrity check** — calls `validateDataIntegrity`.
 3. **Confirm** — shows a confirmation dialog (`confirmProceed`).
 4. **Atomic write** — calls `atomicImport(backup)`, which uses
    `executeBatch()` to replace all four stores transactionally. On success,

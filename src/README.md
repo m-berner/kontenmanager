@@ -20,7 +20,7 @@ The source is organized into three layers:
 - `domain/types/`: Layer-focused type modules:
     - `domain.ts` — persisted domain records.
     - `adapter.ts` — adapter/repository/DB-payload types.
-    - `backup.ts` — legacy and modern backup file shapes.
+    - `backup.ts` — backup file shape.
     - `ui.ts` — UI-facing form/alert option shapes (Vue/Vuetify boundary).
     - `uiLayer.ts` / `uiLayer/` — UI/store/component type surface.
 - `domain/types.d.ts`: Public type surface (re-exports) used via `@/domain/types`.

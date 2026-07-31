@@ -68,8 +68,6 @@ export const ERROR_DEFINITIONS = {
         B: {CODE: "#syh", MSG: "Invalid backup format"},
         C: {CODE: "#syi", MSG: "Backup integrity check failed"},
         D: {CODE: "#syj", MSG: "Failed to validate backup data"},
-        E: {CODE: "#syk", MSG: "Failed to transform legacy stock"},
-        F: {CODE: "#syl", MSG: "Unsupported legacy booking"},
         G: {CODE: "#sym", MSG: "Failed to stringify database export"},
         H: {CODE: "#syn", MSG: "Failed to verify export integrity"}
     },

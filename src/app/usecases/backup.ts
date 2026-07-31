@@ -19,10 +19,7 @@ export type {ImportDatabaseUsecaseDeps} from "@/app/usecases/backup/import";
 export {importDatabaseUsecase} from "@/app/usecases/backup/import";
 export type {ImportCounts} from "@/app/usecases/backup/importHelpers";
 export {
-    buildLegacyImportPlan,
     buildModernImportPlan,
-    createDefaultAccount,
-    createDefaultBookingTypes,
     getImportCounts,
     normalizeModernBackup,
     toImportRecords

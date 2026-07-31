@@ -4,18 +4,12 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type {AccountDb, BookingDb, BookingTypeDb, LegacyBookingDb, LegacyStockDb, StockDb} from "@/domain/types/domain";
+import type {AccountDb, BookingDb, BookingTypeDb, StockDb} from "@/domain/types/domain";
 
 export interface BackupMetadata {
     cVersion: number;
     cDBVersion: number;
     cEngine: string;
-}
-
-export interface LegacyBackupData {
-    sm: BackupMetadata;
-    stocks: LegacyStockDb[];
-    transfers: LegacyBookingDb[];
 }
 
 export interface ModernBackupData {
@@ -28,10 +22,8 @@ export interface ModernBackupData {
 
 /**
  * Backup file format is versioned via `sm.cDBVersion`.
- * Legacy backups contain `stocks` + `transfers` only.
- * Modern backups contain the full database arrays.
  */
-export type BackupData = LegacyBackupData | ModernBackupData;
+export type BackupData = ModernBackupData;
 
 export interface BackupValidationResult {
     isValid: boolean;

@@ -14,7 +14,7 @@ import {
     hasExportConsistencyIssues
 } from "@/app/usecases/backup";
 import {INDEXED_DB} from "@/domain/constants";
-import type {LegacyBackupData, ModernBackupData} from "@/domain/types";
+import type {ModernBackupData} from "@/domain/types";
 import {makeAccountDb, makeBookingDb, makeBookingTypeDb, makeStockDb} from "@test/usecases";
 
 describe("usecases/backup helpers", () => {
@@ -40,68 +40,21 @@ describe("usecases/backup helpers", () => {
         expect(md.cEngine).toBe("indexeddb");
     });
 
-    it("getImportCounts returns legacy vs modern counts", () => {
-        const legacy: LegacyBackupData = {
-            sm: {cVersion: 1, cDBVersion: INDEXED_DB.LEGACY_IMPORT_VERSION, cEngine: "indexeddb"},
-            stocks: [
-                {
-                    cID: 1,
-                    cMeetingDay: 0,
-                    cQuarterDay: 0,
-                    cCompany: "C",
-                    cISIN: "ISIN",
-                    cSym: "SYM",
-                    cFadeOut: 0,
-                    cNotFirstPage: 0,
-                    cURL: "",
-                },
-                {
-                    cID: 2,
-                    cMeetingDay: 0,
-                    cQuarterDay: 0,
-                    cCompany: "C2",
-                    cISIN: "ISIN2",
-                    cSym: "SYM2",
-                    cFadeOut: 0,
-                    cNotFirstPage: 0,
-                    cURL: "",
-                }
-            ],
-            transfers: [
-                {
-                    cDate: 0,
-                    cExDay: 0,
-                    cUnitQuotation: 0,
-                    cDeposit: 0,
-                    cDescription: "",
-                    cNumber: 0,
-                    cStockID: 0,
-                    cType: 0,
-                    cSoli: 0,
-                    cTaxes: 0,
-                    cFees: 0,
-                    cSTax: 0,
-                    cFTax: 0,
-                    cMarketPlace: ""
-                }
-            ]
-        };
-
+    it("getImportCounts returns per-entity counts", () => {
         const modern: ModernBackupData = {
-            sm: {cVersion: 1, cDBVersion: INDEXED_DB.LEGACY_IMPORT_VERSION + 1, cEngine: "indexeddb"},
+            sm: {cVersion: 1, cDBVersion: INDEXED_DB.CURRENT_VERSION, cEngine: "indexeddb"},
             accounts: [makeAccountDb({cID: 1})],
             stocks: [makeStockDb({cID: 1})],
             bookings: [makeBookingDb({cID: 1}), makeBookingDb({cID: 2}), makeBookingDb({cID: 3})],
             bookingTypes: [makeBookingTypeDb({cID: 1}), makeBookingTypeDb({cID: 2})]
         };
 
-        expect(getImportCounts(legacy)).toEqual({accounts: 1, stocks: 2, bookings: 1, bookingTypes: 6});
         expect(getImportCounts(modern)).toEqual({accounts: 1, stocks: 1, bookings: 3, bookingTypes: 2});
     });
 
     it("buildModernImportPlan creates clear+add descriptors and filters initData by activeId", () => {
         const backup: ModernBackupData = {
-            sm: {cVersion: 1, cDBVersion: INDEXED_DB.LEGACY_IMPORT_VERSION + 1, cEngine: "indexeddb"},
+            sm: {cVersion: 1, cDBVersion: INDEXED_DB.CURRENT_VERSION, cEngine: "indexeddb"},
             accounts: [makeAccountDb({cID: 1}), makeAccountDb({cID: 2})],
             bookingTypes: [makeBookingTypeDb({cAccountNumberID: 1}), makeBookingTypeDb({cAccountNumberID: 2})],
             stocks: [makeStockDb({cAccountNumberID: 1}), makeStockDb({cAccountNumberID: 2})],
@@ -131,10 +84,7 @@ describe("usecases/backup helpers", () => {
         const importExportAdapter = {
             readJsonFile: vi.fn().mockResolvedValue(backup),
             validateBackup: vi.fn().mockReturnValue({isValid: true, version: backup.sm.cDBVersion}),
-            validateLegacyDataIntegrity: vi.fn().mockReturnValue([]),
-            validateDataIntegrity: vi.fn().mockReturnValue([]),
-            transformLegacyStock: vi.fn(),
-            transformLegacyBooking: vi.fn()
+            validateDataIntegrity: vi.fn().mockReturnValue([])
         };
 
         const atomicImport = vi.fn().mockResolvedValue(undefined);
@@ -166,20 +116,10 @@ describe("usecases/backup helpers", () => {
             {
                 fileBlob: new Blob(["{}"], {type: "application/json"}),
                 initMessages: {title: "t", message: "m"},
-                legacyDefaultBookingTypeLabels: {
-                    buy: "buy",
-                    sell: "sell",
-                    dividend: "dividend",
-                    other: "other",
-                    fee: "fee",
-                    tax: "tax"
-                },
                 onResetFileInput: vi.fn(),
                 onInvalidBackup: vi.fn(),
-                onLegacyAlreadyRestored: vi.fn(),
                 onIntegrityErrors: vi.fn(),
                 confirmProceed: vi.fn().mockResolvedValue(true),
-                onUnsupportedVersion: vi.fn(),
                 onImported,
                 onError: vi.fn()
             }

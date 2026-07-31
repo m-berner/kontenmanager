@@ -4,10 +4,9 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {DATE, ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
+import {ERROR_CATEGORY} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS, serializeError} from "@/domain/errors";
-import {transformLegacyBooking, transformLegacyStock} from "@/domain/importExport/transformer";
-import {validateBackup, validateDataIntegrity, validateLegacyDataIntegrity} from "@/domain/importExport/validator";
+import {validateBackup, validateDataIntegrity} from "@/domain/importExport/validator";
 import type {
     AccountDb,
     AppMetadata,
@@ -16,13 +15,8 @@ import type {
     BookingDb,
     BookingTypeDb,
     ExportData,
-    LegacyBackupData,
-    LegacyBookingDb,
-    LegacyStockDb,
-    ModernBackupData,
     StockDb
 } from "@/domain/types";
-import {isoDate} from "@/domain/utils/utils";
 
 /**
  * Constants for file validation
@@ -88,7 +82,6 @@ function parseJson(text: string): BackupData {
     try {
         parsed = JSON.parse(text);
     } catch (err) {
-        // Parsing errors are format/validation issues, not legacy transformation failures.
         throw appError(
             ERROR_DEFINITIONS.IMPORT_EXPORT_SERVICE.B.CODE,
             ERROR_CATEGORY.VALIDATION,
@@ -140,16 +133,7 @@ export function validateBackupData(data: unknown): BackupValidationResult {
  * @returns Array of error messages (empty if valid)
  */
 export function validateDataIntegrityStatus(backup: BackupData): string[] {
-    return validateDataIntegrity(backup as ModernBackupData);
-}
-
-/**
- * Validates legacy data integrity
- * @param backup - Legacy backup data to validate
- * @returns Array of error messages (empty if valid)
- */
-export function validateLegacyDataIntegrityStatus(backup: BackupData): string[] {
-    return validateLegacyDataIntegrity(backup as LegacyBackupData);
+    return validateDataIntegrity(backup);
 }
 
 /**
@@ -232,37 +216,6 @@ export function verifyExportIntegrity(exportedData: string): {
 }
 
 /**
- * Transforms legacy stock record to current format
- * @param rec - Legacy stock record
- * @param activeId - Active account ID
- * @returns Transformed stock record
- */
-export function transformLegacyStockToCurrent(rec: LegacyStockDb, activeId: number): StockDb {
-    return transformLegacyStock(rec, activeId, DATE, isoDate);
-}
-
-/**
- * Transforms legacy booking record to current format
- * @param smTransfer - Legacy booking record
- * @param index - Index for ordering
- * @param activeId - Active account ID
- * @returns Transformed booking record
- */
-export function transformLegacyBookingToCurrent(
-    smTransfer: LegacyBookingDb,
-    index: number,
-    activeId: number
-): BookingDb {
-    return transformLegacyBooking(
-        smTransfer,
-        index,
-        activeId,
-        INDEXED_DB,
-        isoDate
-    );
-}
-
-/**
  * Validates export data arrays
  * @throws AppError if any data is invalid
  */
@@ -292,12 +245,9 @@ export function createImportExportAdapter() {
     return {
         validateBackup: validateBackupData,
         validateDataIntegrity: validateDataIntegrityStatus,
-        validateLegacyDataIntegrity: validateLegacyDataIntegrityStatus,
         readJsonFile,
         stringifyDatabase,
-        verifyExportIntegrity,
-        transformLegacyStock: transformLegacyStockToCurrent,
-        transformLegacyBooking: transformLegacyBookingToCurrent
+        verifyExportIntegrity
     };
 }
 

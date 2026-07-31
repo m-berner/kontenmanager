@@ -6,56 +6,17 @@
 
 import {describe, expect, it} from "vitest";
 import {
-    buildLegacyImportPlan,
     buildModernImportPlan,
-    createDefaultAccount,
-    createDefaultBookingTypes,
     getImportCounts,
     normalizeModernBackup,
     toImportRecords
 } from "@/app/usecases/backup/importHelpers";
 import {INDEXED_DB} from "@/domain/constants";
-import type {LegacyBookingDb, LegacyStockDb, ModernBackupData, StockDb} from "@/domain/types";
+import type {ModernBackupData, StockDb} from "@/domain/types";
 import {makeAccountDb, makeBookingDb, makeBookingTypeDb, makeStockDb} from "@test/usecases";
 
-const BOOKING_TYPES = INDEXED_DB.STORE.BOOKING_TYPES;
-
 describe("usecases/backup/importHelpers", () => {
-    describe("createDefaultAccount", () => {
-        it("builds a placeholder account tagged with the given activeId", () => {
-            const account = createDefaultAccount(5);
-            expect(account.cID).toBe(5);
-            expect(account.cWithDepot).toBe(true);
-        });
-    });
-
-    describe("createDefaultBookingTypes", () => {
-        it("maps each default label to the fixed booking-type id, scoped to the active account", () => {
-            const types = createDefaultBookingTypes(5, {
-                buy: "Buy", sell: "Sell", dividend: "Dividend", other: "Other", fee: "Fee", tax: "Tax"
-            });
-
-            expect(types).toEqual([
-                {cID: BOOKING_TYPES.BUY, cName: "Buy", cAccountNumberID: 5},
-                {cID: BOOKING_TYPES.SELL, cName: "Sell", cAccountNumberID: 5},
-                {cID: BOOKING_TYPES.DIVIDEND, cName: "Dividend", cAccountNumberID: 5},
-                {cID: BOOKING_TYPES.CREDIT, cName: "Other", cAccountNumberID: 5},
-                {cID: BOOKING_TYPES.DEBIT, cName: "Fee", cAccountNumberID: 5},
-                {cID: BOOKING_TYPES.TAX, cName: "Tax", cAccountNumberID: 5}
-            ]);
-        });
-    });
-
     describe("getImportCounts", () => {
-        it("counts a legacy backup using its stocks/transfers arrays and a fixed booking-type count", () => {
-            const backup = {
-                sm: {cVersion: 1, cDBVersion: INDEXED_DB.LEGACY_IMPORT_VERSION, cEngine: "x"},
-                stocks: [{} as LegacyStockDb],
-                transfers: [{} as LegacyBookingDb, {} as LegacyBookingDb]
-            };
-            expect(getImportCounts(backup)).toEqual({accounts: 1, stocks: 1, bookings: 2, bookingTypes: 6});
-        });
-
         it("counts a modern backup from each of its four entity arrays", () => {
             const backup: ModernBackupData = {
                 sm: {cVersion: 1, cDBVersion: INDEXED_DB.CURRENT_VERSION, cEngine: "x"},
@@ -119,72 +80,6 @@ describe("usecases/backup/importHelpers", () => {
             expect(result.stocks).toEqual([]);
             expect(result.bookings).toEqual([]);
             expect(result.bookingTypes).toEqual([]);
-        });
-    });
-
-    describe("buildLegacyImportPlan", () => {
-        const labels = {buy: "Buy", sell: "Sell", dividend: "Dividend", other: "Other", fee: "Fee", tax: "Tax"};
-
-        it("validates transformed legacy stocks even when the transformer omits identifier fields", () => {
-            // Simulates a corrupted/incomplete legacy record: the transformer returns a
-            // stock without cISIN/cSymbol at all, which must still come out normalized
-            // (empty string, not undefined) so later code can safely call string methods on it.
-            const plan = buildLegacyImportPlan({
-                backup: {
-                    sm: {cVersion: 1, cDBVersion: INDEXED_DB.LEGACY_IMPORT_VERSION, cEngine: "x"},
-                    stocks: [{} as LegacyStockDb],
-                    transfers: []
-                },
-                activeId: 1,
-                labels,
-                transformLegacyStock: () => ({cID: 1, cCompany: "X"} as unknown as StockDb),
-                transformLegacyBooking: () => makeBookingDb()
-            });
-
-            const stocksDescriptor = plan.descriptors.find((d) => d.storeName === INDEXED_DB.STORE.STOCKS.NAME);
-            const addOp = stocksDescriptor?.operations.find((op) => op.type === "add");
-            expect(addOp).toBeDefined();
-            expect((addOp as {data: StockDb}).data.cISIN).toBe("");
-        });
-
-        it("clears every store before inserting, and includes default account + booking types", () => {
-            const plan = buildLegacyImportPlan({
-                backup: {
-                    sm: {cVersion: 1, cDBVersion: INDEXED_DB.LEGACY_IMPORT_VERSION, cEngine: "x"},
-                    stocks: [],
-                    transfers: []
-                },
-                activeId: 3,
-                labels,
-                transformLegacyStock: () => makeStockDb(),
-                transformLegacyBooking: () => makeBookingDb()
-            });
-
-            for (const descriptor of plan.descriptors) {
-                expect(descriptor.operations[0]).toEqual({type: "clear"});
-            }
-            const accountsDescriptor = plan.descriptors.find((d) => d.storeName === INDEXED_DB.STORE.ACCOUNTS.NAME);
-            expect(accountsDescriptor?.operations).toHaveLength(2); // clear + 1 default account
-            const bookingTypesDescriptor = plan.descriptors.find((d) => d.storeName === INDEXED_DB.STORE.BOOKING_TYPES.NAME);
-            expect(bookingTypesDescriptor?.operations).toHaveLength(7); // clear + 6 default types
-        });
-
-        it("scopes initData to the active account id", () => {
-            const plan = buildLegacyImportPlan({
-                backup: {
-                    sm: {cVersion: 1, cDBVersion: INDEXED_DB.LEGACY_IMPORT_VERSION, cEngine: "x"},
-                    stocks: [{} as LegacyStockDb],
-                    transfers: [{} as LegacyBookingDb]
-                },
-                activeId: 9,
-                labels,
-                transformLegacyStock: () => makeStockDb({cAccountNumberID: 9}),
-                transformLegacyBooking: () => makeBookingDb({cAccountNumberID: 9})
-            });
-
-            expect(plan.initData.accountsDB).toEqual([createDefaultAccount(9)]);
-            expect(plan.initData.stocksDB).toHaveLength(1);
-            expect(plan.initData.bookingsDB).toHaveLength(1);
         });
     });
 

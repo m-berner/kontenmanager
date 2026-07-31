@@ -12,8 +12,6 @@ import type {
     BookingDb,
     BookingTypeDb,
     HandleUserAlertOptions,
-    LegacyBookingDb,
-    LegacyStockDb,
     RecordsDbData,
     StockDb,
     StorageValueType
@@ -67,7 +65,6 @@ export interface DatabaseAccountsPort {
 export interface ImportExportPort {
     validateBackup: (_data: unknown) => BackupValidationResult;
     validateDataIntegrity: (_backup: BackupData) => string[];
-    validateLegacyDataIntegrity: (_backup: BackupData) => string[];
     readJsonFile: (_blob: Blob) => Promise<BackupData>;
     stringifyDatabase: (
         _sm: AppMetadata,
@@ -77,8 +74,6 @@ export interface ImportExportPort {
         _bookings: BookingDb[]
     ) => string;
     verifyExportIntegrity: (_exportedData: string) => { valid: boolean; errors: string[] };
-    transformLegacyStock: (_rec: LegacyStockDb, _activeId: number) => StockDb;
-    transformLegacyBooking: (_rec: LegacyBookingDb, _index: number, _activeId: number) => BookingDb;
 }
 
 export interface RecordsAccountsPort {

@@ -54,7 +54,6 @@ function makeController(input: {
         importExportAdapter: {
             validateBackup: vi.fn().mockReturnValue(input.validation ?? {isValid: true, version: INDEXED_DB.CURRENT_VERSION}),
             validateDataIntegrity: vi.fn().mockReturnValue(input.integrityErrors ?? []),
-            validateLegacyDataIntegrity: vi.fn().mockReturnValue(input.integrityErrors ?? []),
             readJsonFile: vi.fn().mockResolvedValue(
                 input.backup ?? {
                     sm: {cVersion: 1, cDBVersion: INDEXED_DB.CURRENT_VERSION, cEngine: "x"},
@@ -65,9 +64,7 @@ function makeController(input: {
                 }
             ),
             stringifyDatabase: vi.fn(),
-            verifyExportIntegrity: vi.fn(),
-            transformLegacyStock: vi.fn(),
-            transformLegacyBooking: vi.fn()
+            verifyExportIntegrity: vi.fn()
         },
         databaseAdapter: {
             atomicImport: input.atomicImportImpl

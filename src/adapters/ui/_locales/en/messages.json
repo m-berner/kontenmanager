@@ -20,12 +20,6 @@
   "xx_db_fade_in": {
     "message": "Record faded in"
   },
-  "xx_db_restored": {
-    "message": "Database restored"
-  },
-  "xx_db_no_restored": {
-    "message": "Database could not be restored"
-  },
   "xx_db_no_file": {
     "message": "The backup file is not selected"
   },

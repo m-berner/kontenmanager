@@ -208,26 +208,12 @@ export function useImportDatabaseDialogController(input: {
                         title: input.t("mixed.smImportOnly.title"),
                         message: input.t("mixed.smImportOnly.message")
                     },
-                    legacyDefaultBookingTypeLabels: {
-                        buy: input.t("components.dialogs.importDatabase.buy"),
-                        sell: input.t("components.dialogs.importDatabase.sell"),
-                        dividend: input.t("components.dialogs.importDatabase.dividend"),
-                        other: input.t("components.dialogs.importDatabase.other"),
-                        fee: input.t("components.dialogs.importDatabase.fee"),
-                        tax: input.t("components.dialogs.importDatabase.tax")
-                    },
                     onResetFileInput: resetFileInput,
                     onInvalidBackup: async () => {
                         await input.services.alertAdapter.feedbackError(
                             input.t("components.dialogs.importDatabase.title"),
                             input.services.browserAdapter.getMessage("xx_invalid_backup"),
                             {}
-                        );
-                    },
-                    onLegacyAlreadyRestored: async () => {
-                        await input.services.browserAdapter.showSystemNotification(
-                            input.t("components.dialogs.importDatabase.title"),
-                            input.services.browserAdapter.getMessage("xx_db_restored")
                         );
                     },
                     onIntegrityErrors: async (errors, totalCount) => {
@@ -262,12 +248,6 @@ export function useImportDatabaseDialogController(input: {
                                 }
                             }
                         ));
-                    },
-                    onUnsupportedVersion: async () => {
-                        await input.services.alertAdapter.feedbackInfo(
-                            input.t("components.dialogs.importDatabase.title"),
-                            input.services.browserAdapter.getMessage("xx_db_no_restored")
-                        );
                     },
                     onImported: async (counts) => {
                         await input.services.alertAdapter.feedbackInfo(

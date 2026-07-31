@@ -70,27 +70,4 @@ describe("ImportExportService", () => {
             ).rejects.toThrow();
         });
     });
-
-    describe("transformLegacyStock", () => {
-        it("should transform legacy stock to the current format", () => {
-            const legacyStock = {
-                cID: 1,
-                cSym: "SYM",
-                cMeetingDay: 20260101,
-                cQuarterDay: 20260101,
-                cCompany: "Company",
-                cISIN: "ISIN",
-                cFadeOut: 0,
-                cNotFirstPage: 1,
-                cURL: "http://url"
-            };
-
-            const result = importExportAdapter.transformLegacyStock(legacyStock, 123);
-
-            expect(result.cID).toBe(1);
-            expect(result.cSymbol).toBe("SYM");
-            expect(result.cAccountNumberID).toBe(123);
-            expect(result.cCompany).toBe("Company");
-        });
-    });
 });

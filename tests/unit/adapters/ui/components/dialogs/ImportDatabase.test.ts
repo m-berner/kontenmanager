@@ -38,7 +38,7 @@ describe("ImportDatabase Logic Test", () => {
     it("should validate backup data structure", () => {
         const validBackup: BackupData = {
             sm: {
-                cVersion: INDEXED_DB.LEGACY_IMPORT_VERSION,
+                cVersion: INDEXED_DB.MIN_SUPPORTED_VERSION,
                 cDBVersion: INDEXED_DB.CURRENT_VERSION,
                 cEngine: "kontenmanager"
             },
@@ -76,22 +76,5 @@ describe("ImportDatabase Logic Test", () => {
 
         // Version check
         expect(invalidBackup.sm.cDBVersion).toBeLessThan(INDEXED_DB.CURRENT_VERSION);
-    });
-
-    it("should handle backup with missing optional fields", () => {
-        const backupWithoutTransfers: Partial<BackupData> = {
-            sm: {
-                cVersion: INDEXED_DB.LEGACY_IMPORT_VERSION,
-                cDBVersion: INDEXED_DB.CURRENT_VERSION,
-                cEngine: "kontenmanager"
-            },
-            accounts: [],
-            bookings: [],
-            bookingTypes: [],
-            stocks: []
-        };
-
-        // Modern backups do not contain legacy transfers.
-        expect("transfers" in backupWithoutTransfers).toBe(false);
     });
 });

@@ -81,10 +81,7 @@ describe("backup import refresh integration", () => {
                 importExportAdapter: {
                     readJsonFile: vi.fn().mockResolvedValue(backup),
                     validateBackup: vi.fn().mockReturnValue({isValid: true, version: backup.sm.cDBVersion}),
-                    validateLegacyDataIntegrity: vi.fn().mockReturnValue([]),
-                    validateDataIntegrity: vi.fn().mockReturnValue([]),
-                    transformLegacyStock: vi.fn(),
-                    transformLegacyBooking: vi.fn()
+                    validateDataIntegrity: vi.fn().mockReturnValue([])
                 } as never,
                 atomicImport: vi.fn().mockResolvedValue(undefined),
                 records: {
@@ -103,20 +100,10 @@ describe("backup import refresh integration", () => {
             {
                 fileBlob: new Blob(["{}"], {type: "application/json"}),
                 initMessages: {title: "t", message: "m"},
-                legacyDefaultBookingTypeLabels: {
-                    buy: "buy",
-                    sell: "sell",
-                    dividend: "dividend",
-                    other: "other",
-                    fee: "fee",
-                    tax: "tax"
-                },
                 onResetFileInput: vi.fn(),
                 onInvalidBackup: vi.fn(),
-                onLegacyAlreadyRestored: vi.fn(),
                 onIntegrityErrors: vi.fn(),
                 confirmProceed: vi.fn().mockResolvedValue(true),
-                onUnsupportedVersion: vi.fn(),
                 onImported,
                 onError
             }

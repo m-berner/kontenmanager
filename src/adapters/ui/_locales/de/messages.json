@@ -20,12 +20,6 @@
   "xx_db_fade_in": {
     "message": "Datensatz ist eingeblendet"
   },
-  "xx_db_restored": {
-    "message": "Datensatz wiederhergestellt"
-  },
-  "xx_db_no_restored": {
-    "message": "Datenbank konnte nicht wiederhergestellt werden"
-  },
   "xx_db_no_file": {
     "message": "Keine Wiederherstellungsdatei ausgewählt"
   },

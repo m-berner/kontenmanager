@@ -8,14 +8,12 @@ import {describe, expect, it} from "vitest";
 import {
     readJsonFile,
     stringifyDatabase,
-    transformLegacyBookingToCurrent,
-    transformLegacyStockToCurrent,
     validateBackupData,
     validateDataIntegrityStatus,
     verifyExportIntegrity
 } from "@/adapters/driven/importExportAdapter";
 import {INDEXED_DB} from "@/domain/constants";
-import type {LegacyBookingDb, LegacyStockDb, ModernBackupData} from "@/domain/types";
+import type {ModernBackupData} from "@/domain/types";
 
 function createValidBackup(): ModernBackupData {
     return {
@@ -152,53 +150,6 @@ describe("importExportAdapter", () => {
         it("validateDataIntegrityStatus returns no errors for consistent data", () => {
             const backup = createValidBackup();
             expect(validateDataIntegrityStatus(backup)).toEqual([]);
-        });
-    });
-
-    describe("legacy transformation delegation", () => {
-        it("transformLegacyStockToCurrent maps a legacy stock record to the current shape", () => {
-            const legacy: LegacyStockDb = {
-                cID: 5,
-                cSym: "AAA",
-                cMeetingDay: Date.UTC(2026, 0, 1),
-                cQuarterDay: Date.UTC(2026, 3, 1),
-                cCompany: "Acme",
-                cISIN: "DE0001234567",
-                cFadeOut: 0,
-                cNotFirstPage: 1,
-                cURL: "https://example.com"
-            };
-
-            const result = transformLegacyStockToCurrent(legacy, 7);
-
-            expect(result.cAccountNumberID).toBe(7);
-            expect(result.cSymbol).toBe("AAA");
-            expect(result.cISIN).toBe("DE0001234567");
-        });
-
-        it("transformLegacyBookingToCurrent maps a legacy booking record to the current shape", () => {
-            const legacy: LegacyBookingDb = {
-                cDate: Date.UTC(2026, 0, 1),
-                cExDay: Date.UTC(2026, 0, 2),
-                cUnitQuotation: 10,
-                cDeposit: 100,
-                cDescription: "legacy booking",
-                cNumber: 1,
-                cType: INDEXED_DB.STORE.BOOKING_TYPES.CREDIT,
-                cStockID: 42,
-                cSoli: 0,
-                cTaxes: 0,
-                cFees: 0,
-                cSTax: 0,
-                cFTax: 0,
-                cMarketPlace: "XETRA"
-            };
-
-            const result = transformLegacyBookingToCurrent(legacy, 0, 7);
-
-            expect(result.cAccountNumberID).toBe(7);
-            expect(result.cCredit).toBe(100);
-            expect(result.cDebit).toBe(0);
         });
     });
 });

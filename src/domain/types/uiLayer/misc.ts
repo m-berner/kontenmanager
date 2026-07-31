@@ -218,17 +218,6 @@ export interface HighlightOptions {
 export type IndexedDbConfigType = typeof import("@/domain/constants").INDEXED_DB;
 
 /**
- * Represents an old booking format used in legacy imports.
- */
-// Re-exported from "@/domain/types/domain".
-
-/**
- * Represents an old stock format used in legacy imports.
- */
-
-// Re-exported from "@/domain/types/domain".
-
-/**
  * Data stored in the browser's local storage (preferences).
  */
 export interface LocalStorageData {
