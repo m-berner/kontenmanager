@@ -12,6 +12,17 @@ import path from "node:path";
 export const ADDON_ID = "kontenmanager@gmx.de";
 
 /**
+ * Absolute path to the built extension folder. The `test:e2e`/`test:e2e:happy-path`
+ * npm scripts force `EXTENSIONS_DIR=../test-app` for their build step, so vite's
+ * copy plugin (which resolves its destination relative to `build.outDir`) lands
+ * the extension at `<repo-root>/test-app/kontenmanager@gmx.de/`, not directly at
+ * repo root.
+ */
+export function getBuildDir(): string {
+  return path.join(process.cwd(), "test-app", ADDON_ID);
+}
+
+/**
  * Serves the built extension folder (`kontenmanager@gmx.de/`) over plain HTTP so a
  * normal Playwright page can load `app.html` like any other static site.
  */

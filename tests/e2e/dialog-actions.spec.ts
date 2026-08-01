@@ -2,9 +2,9 @@ import {expect, test} from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
-    ADDON_ID,
     bootWithFixtureImported,
     closeAllAlerts,
+    getBuildDir,
     readStore,
     startStaticServer,
     waitForDialogsClosed
@@ -28,14 +28,14 @@ interface BookingRow {
 
 test.describe("HeaderBar dialog actions (firefox)", () => {
     test.beforeEach(async () => {
-        const buildDir = path.join(process.cwd(), ADDON_ID);
+        const buildDir = getBuildDir();
         const manifestPath = path.join(buildDir, "manifest.json");
         await expect(async () => fs.access(manifestPath)).resolves.toBeUndefined();
     });
 
     test("addAccount: creates a new account and switches to it", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -59,7 +59,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("updateAccount: edits the active account's SWIFT code", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -82,7 +82,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("deleteAccountConfirmation: removes the active account", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -102,7 +102,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("addBookingType: creates a new booking type", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -142,7 +142,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("updateBookingType: renames the existing booking type", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -171,7 +171,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("deleteBookingType: creates then deletes a fresh, unreferenced booking type", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -219,7 +219,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("addBooking: creates a new booking against the fixture's BUY type and AAPL stock", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -270,7 +270,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("exportDatabase: triggers a download with the current data", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -295,7 +295,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("showAccounting: opens a read-only dialog with accounting figures, then closes", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -314,7 +314,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("fadeInStock: shows an info alert when there are no passive (faded-out) stocks", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
             await page.locator("#company").click();
@@ -336,7 +336,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("updateQuote: manual refresh completes without errors when the provider is disabled", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
             await page.locator("#company").click();
@@ -355,7 +355,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("setting: opens the options page", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -373,7 +373,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("switchAccount: adds a second account and switches back to the original via the TitleBar select", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -411,7 +411,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("updateBooking: edits the existing booking's remark via the row menu", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -440,7 +440,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("deleteBooking: removes the booking via the row menu (no confirmation step)", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -460,7 +460,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("searchBookings: filters the bookings table in-memory", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 
@@ -479,7 +479,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("updateStock: edits the stock's URL via the row menu", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
             await page.locator("#company").click();
@@ -514,7 +514,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("deleteStock: adds a disposable stock then deletes it via the row menu", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
             await page.locator("#company").click();
@@ -556,7 +556,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("showDividend: opens the read-only dividend dialog for a stock, then closes", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
             await page.locator("#company").click();
@@ -584,7 +584,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("portfolioDepotSum: shows the depot chip with a value on the Company view", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
             await page.locator("#company").click();
@@ -601,7 +601,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("keyboardShortcut: Ctrl+Alt+R resets browser.storage.local without touching IndexedDB data", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
             await page.locator("#home").click();
@@ -644,7 +644,7 @@ test.describe("HeaderBar dialog actions (firefox)", () => {
 
     test("footerNavigation: opens Help and Privacy pages via the FooterBar", async ({page}) => {
         const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await bootWithFixtureImported(page, repoRoot, server.baseUrl);
 

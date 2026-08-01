@@ -1,7 +1,7 @@
 import {expect, test} from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
-import {ADDON_ID, startStaticServer, stubBrowser} from "./support/harness";
+import {getBuildDir, startStaticServer, stubBrowser} from "./support/harness";
 
 async function getStorageValue(page: import("@playwright/test").Page, key: string): Promise<unknown> {
     const stored = await page.evaluate((k) => (window as unknown as {
@@ -12,14 +12,13 @@ async function getStorageValue(page: import("@playwright/test").Page, key: strin
 
 test.describe("Options page (firefox)", () => {
     test.beforeEach(async () => {
-        const buildDir = path.join(process.cwd(), ADDON_ID);
+        const buildDir = getBuildDir();
         const manifestPath = path.join(buildDir, "manifest.json");
         await expect(async () => fs.access(manifestPath)).resolves.toBeUndefined();
     });
 
     test("themeSelector: changes the active skin and persists it to storage", async ({page}) => {
-        const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await page.addInitScript(stubBrowser);
             await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/options.html`, {waitUntil: "load"});
@@ -35,8 +34,7 @@ test.describe("Options page (firefox)", () => {
     });
 
     test("serviceSelector: changes the market data provider and persists it to storage", async ({page}) => {
-        const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await page.addInitScript(stubBrowser);
             await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/options.html`, {waitUntil: "load"});
@@ -52,8 +50,7 @@ test.describe("Options page (firefox)", () => {
     });
 
     test("marketPreferences: adds and removes a stock exchange entry", async ({page}) => {
-        const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await page.addInitScript(stubBrowser);
             await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/options.html`, {waitUntil: "load"});
@@ -87,8 +84,7 @@ test.describe("Options page (firefox)", () => {
     });
 
     test("marketPreferences: toggles an index's visibility checkbox and persists it", async ({page}) => {
-        const repoRoot = process.cwd();
-        const server = await startStaticServer(path.join(repoRoot, ADDON_ID));
+        const server = await startStaticServer(getBuildDir());
         try {
             await page.addInitScript(stubBrowser);
             await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/options.html`, {waitUntil: "load"});

@@ -1,13 +1,12 @@
 import {test, expect} from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
-import {ADDON_ID, startStaticServer} from "./support/harness";
+import {getBuildDir, startStaticServer} from "./support/harness";
 
 test("background smoke (firefox): registers listeners and initializes storage defaults", async ({page, browserName}) => {
   expect(browserName).toBe("firefox");
 
-  const repoRoot = process.cwd();
-  const buildDir = path.join(repoRoot, ADDON_ID);
+  const buildDir = getBuildDir();
   const backgroundHtmlPath = path.join(buildDir, "adapters", "ui", "entrypoints", "background.html");
 
   await expect(async () => fs.access(backgroundHtmlPath)).resolves.toBeUndefined();

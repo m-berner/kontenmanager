@@ -1,13 +1,13 @@
 import {test, expect} from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
-import {ADDON_ID, closeAllAlerts, startStaticServer, stubBrowser} from "./support/harness";
+import {closeAllAlerts, getBuildDir, startStaticServer, stubBrowser} from "./support/harness";
 
 test("happy path (firefox): import backup and see Company content", async ({page, browserName}) => {
   expect(browserName).toBe("firefox");
 
   const repoRoot = process.cwd();
-  const buildDir = path.join(repoRoot, ADDON_ID);
+  const buildDir = getBuildDir();
   const manifestPath = path.join(buildDir, "manifest.json");
   const appHtmlPath = path.join(buildDir, "adapters", "ui", "entrypoints", "app.html");
 
@@ -82,7 +82,7 @@ test("add company by ISIN (firefox): create new company with ISIN DE000BASF111",
   expect(browserName).toBe("firefox");
 
   const repoRoot = process.cwd();
-  const buildDir = path.join(repoRoot, ADDON_ID);
+  const buildDir = getBuildDir();
   const manifestPath = path.join(buildDir, "manifest.json");
   const appHtmlPath = path.join(buildDir, "adapters", "ui", "entrypoints", "app.html");
 
