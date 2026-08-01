@@ -113,8 +113,18 @@ export function nameRules(msgArray: string[]): ValidationRuleType[] {
     ];
 }
 
+/**
+ * Rule requiring a real booking type id. Unlike `required()`, this also
+ * rejects `-1` — the sentinel id (`BOOKING_TYPES.NONE`) of the placeholder
+ * "no type" entry the booking-type select always carries — since a booking
+ * must resolve to a real type for `aggregateBookingsPerType`'s strict id
+ * comparison to include it in any per-type/per-year sum.
+ *
+ * @param msgArray - Error message if invalid.
+ * @returns A validation rule array.
+ */
 export function bookingTypeRules(msgArray: string[]): ValidationRuleType[] {
-    return [required(msgArray[0])];
+    return [createRule((v) => typeof v === "number" && v > 0, msgArray[0])];
 }
 
 /**

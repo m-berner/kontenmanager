@@ -152,7 +152,14 @@ export function useImportDatabaseDialogController(input: {
 
             input.settings.activeAccountId = rollbackData.activeAccountId;
             await setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, rollbackData.activeAccountId);
+        } catch (err) {
+            await input.services.alertAdapter.feedbackError(input.t("components.dialogs.importDatabase.title"), err, {
+                data: "Rollback failed"
+            });
+            return;
+        }
 
+        try {
             await input.records.init(
                 {
                     accountsDB: rollbackData.accounts,
@@ -171,8 +178,18 @@ export function useImportDatabaseDialogController(input: {
 
             log("COMPONENTS DIALOGS ImportDatabase: Rollback completed successfully");
         } catch (err) {
+            // The database was already restored successfully above (the
+            // `atomicImport` in the first try block committed) — this failure
+            // only affects re-hydrating the in-memory stores from that
+            // already-correct data, so it must not be reported as a failed
+            // rollback (that would wrongly suggest the DB is still corrupted).
+            log(
+                "COMPONENTS DIALOGS ImportDatabase: Rollback DB restore succeeded but in-memory re-hydration failed",
+                err,
+                "warn"
+            );
             await input.services.alertAdapter.feedbackError(input.t("components.dialogs.importDatabase.title"), err, {
-                data: "Rollback failed"
+                data: "Rollback DB restore succeeded, in-memory re-hydration failed"
             });
         }
     };
