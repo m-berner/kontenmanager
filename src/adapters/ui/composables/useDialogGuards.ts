@@ -226,23 +226,38 @@ export function useDialogGuards(
             errorTitle
         } = options;
 
-        if (formRef && formRef.value) {
-            const validation = await validateForm(formRef);
-            if (!validation.valid) return;
-        }
+        // Belt-and-suspenders reentrancy guard: the OK button's
+        // `:disabled="isLoading"` is what normally blocks a second call, but
+        // that only helps if a caller actually wires that binding up. Guard
+        // here too so `submitGuard` itself can never run two flows at once
+        // regardless of the UI.
+        if (isLoading.value) return;
 
-        if (isConnected !== undefined) {
-            if (
-                !(await ensureConnected(
-                    isConnected,
-                    showSystemNotification,
-                    connectionErrorMessage
-                ))
-            )
-                return;
-        }
-
+        // `withLoading` must wrap the *entire* flow, not just `operation`:
+        // it sets `isLoading` synchronously before its first await, which is
+        // what the OK button's `:disabled="isLoading"` binding relies on to
+        // block a second click. Scoping it to only `operation` (as before)
+        // left the button enabled for the full duration of `validateForm`/
+        // `ensureConnected` - both genuinely async - so a rapid double-click
+        // could pass validation twice and run `operation` twice concurrently
+        // (e.g. creating a duplicate account/booking/stock from one click).
         await withLoading(async () => {
+            if (formRef && formRef.value) {
+                const validation = await validateForm(formRef);
+                if (!validation.valid) return;
+            }
+
+            if (isConnected !== undefined) {
+                if (
+                    !(await ensureConnected(
+                        isConnected,
+                        showSystemNotification,
+                        connectionErrorMessage
+                    ))
+                )
+                    return;
+            }
+
             try {
                 await operation();
             } catch (err) {

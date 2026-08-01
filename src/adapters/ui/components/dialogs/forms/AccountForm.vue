@@ -30,8 +30,17 @@ const SWIFT_RULES = createSwiftMessages(t);
 const IBAN_RULES = createIbanMessages(t);
 
 const search = ref<string>("");
-const swiftLabel = ref<string>("");
-const ibanLabel = ref<string>("");
+
+const groupedLabel = (clean: string): string =>
+    clean.length > 1 ? ` / ${clean.replace(/(.{4})/g, "$1 ")}` : "";
+
+// UpdateAccount.vue's onBeforeMount (parent) populates accountFormData
+// before this component's setup() runs (child), so derive the initial
+// label from whatever value is already there instead of hardcoding "" -
+// otherwise editing an existing account shows a blank label suffix until
+// the user retypes the field.
+const swiftLabel = ref<string>(groupedLabel(accountFormData.swift));
+const ibanLabel = ref<string>(groupedLabel(accountFormData.iban));
 
 const {domain} = useUrl(search);
 const {faviconUrl, onLoad, onError, reset} = useFavicon(domain);
@@ -47,10 +56,7 @@ const onUpdateSwift = (swift: string): void => {
 
   const clean = swift.replace(/\s/g, "").toUpperCase();
   accountFormData.swift = clean;
-  swiftLabel.value =
-      accountFormData.swift.length > 1
-          ? ` / ${clean.replace(/(.{4})/g, "$1 ")}`
-          : "";
+  swiftLabel.value = groupedLabel(clean);
 };
 
 const onUpdateIban = (iban: string): void => {
@@ -62,10 +68,7 @@ const onUpdateIban = (iban: string): void => {
 
   const clean = iban.replace(/\s/g, "").toUpperCase();
   accountFormData.iban = clean;
-  ibanLabel.value =
-      accountFormData.iban.length > 1
-          ? ` / ${clean.replace(/(.{4})/g, "$1 ")}`
-          : "";
+  ibanLabel.value = groupedLabel(clean);
 };
 
 let timeoutId: ReturnType<typeof setTimeout>;
