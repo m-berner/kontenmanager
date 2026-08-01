@@ -14,7 +14,12 @@ export default defineConfig({
   testIgnore: ["**/happy-path.spec.ts"],
   timeout: 120_000,
   expect: {timeout: 10_000},
-  retries: 0,
+  // Serializing workers (above) fixes the multi-window focus contention, but
+  // even a single headed window can occasionally lack real OS foreground
+  // focus on this machine (e.g. the terminal/IDE briefly holds it instead),
+  // causing a synthetic click to silently never land. Headless has no window
+  // to lose focus, so it stays strict at 0 retries.
+  retries: isHeaded ? 1 : 0,
   reporter: [["list"]],
   projects: [
     {
