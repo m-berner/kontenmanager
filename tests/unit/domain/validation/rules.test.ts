@@ -77,6 +77,15 @@ describe("Validation Rules", () => {
             expect(validateISIN("XX0378331005")).toEqual({isValid: false, error: VALIDATION_CODES.INVALID_COUNTRY});
         });
 
+        it("should accept the EU prefix used by European Union / EIB issues", () => {
+            // `EU` is not an ISO-3166 country, so it was missing from
+            // VALID_COUNTRY_CODES alongside the XS/XK securities prefixes that
+            // were there — and isinRules blocked such a stock from being added
+            // at all. Checksum-valid, so this fails on the country check alone
+            // if the prefix is ever dropped again.
+            expect(validateISIN("EU000A1G0AA6")).toEqual({isValid: true});
+        });
+
         it("should return invalid for incorrect checksum", () => {
             expect(validateISIN("US0378331004")).toEqual({isValid: false, error: VALIDATION_CODES.INVALID_CHECKSUM});
         });

@@ -111,6 +111,13 @@ export const VALID_COUNTRY_CODES: ReadonlySet<string> = new Set([
     "ER",
     "ES",
     "ET",
+    // Not an ISO-3166 country: the ISIN prefix used by European Union and EIB
+    // issues (e.g. EU000A1G0AA6). Sits here alphabetically alongside the real
+    // country codes, like the XS/XK securities prefixes further down. Without
+    // it, validateISIN rejected those with INVALID_COUNTRY and isinRules
+    // blocked the stock from being added at all — a legitimate holding for a
+    // European investor.
+    "EU",
     "FI",
     "FJ",
     "FK",
