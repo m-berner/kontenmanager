@@ -70,7 +70,9 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 9.1 | Low | `constants/core.ts:328` | The title-bar logo path is hand-rolled and unmanaged by Vite |
 
 **Totals:** 0 Critical · 1 High · 5 Medium · 15 Low · 4 Info.
-**Status:** 9.2 fixed (2026-08-08); the remaining 24 are open.
+**Status:** the High (9.2) and **all five Mediums** are fixed — 9.2 on 2026-08-08, then 2.1,
+2.2, 4.1, 8.1 and 5.1 on 2026-08-08, one commit each. The 15 Lows and 4 Infos are open;
+6.3 (Info) was re-verified as part of 5.1 rather than merely inherited.
 
 **9.2 is the one to read first.** It is the only finding that is invisible from any single file:
 four modules each derive currency from `getUserLocale()` and agree with one another, so nothing
@@ -78,15 +80,24 @@ looks wrong locally — the defect is the shared premise that a user's *UI langu
 their *currency*, plus the fact that only fetched quotes are converted while stored booking
 amounts are not.
 
-Two further themes run through the Medium findings and are worth naming:
+Two further themes ran through the Medium findings and are worth naming, since both were borne
+out by the fixes:
 
-- **Three of the five are silent.** 2.2, 4.1 and 5.1 all fail without an error, a log line or a
-  type error — an override that is accepted and dropped, an error handler that eats its own
-  error, and a locale that would quietly fall back to formatting euros as dollars. None would
-  be caught by the current tooling, which is clean.
-- **Two are path/config coupling** (8.1, 9.1): strings that name a file location and are not
-  managed by the build, so they are correct only while unrelated settings stay aligned. 8.1 is
-  the case where the alignment already does not hold.
+- **Three of the five were silent.** 2.2, 4.1 and 5.1 all failed without an error, a log line or
+  a type error — an override that is accepted and dropped, an error handler that eats its own
+  error, and a locale that would quietly fall back to formatting euros as dollars. None was
+  caught by the tooling, which was clean throughout. Each fix therefore carries a regression
+  test rather than relying on the next audit to notice.
+- **Two were path/config coupling** (8.1, 9.1): strings that name a file location and are not
+  managed by the build, so they are correct only while unrelated settings stay aligned. 8.1 was
+  the case where the alignment already did not hold; it now resolves through
+  `browser.runtime.getURL`, which removes the coupling rather than re-aligning it. 9.1 (Low) is
+  the same idiom still unmanaged and remains open.
+
+One thing the fixes added that the analysis had not predicted: **5.1's silent-failure shape was
+already present in the plugin's own test**, where an equality assertion over two empty key sets
+passed vacuously the moment `numberFormats` changed type. The analysis found the defect in the
+source; only executing the change found it in the test.
 
 No finding contradicts the extensive in-code reasoning already present in this codebase; the
 "Checked and found correct" sections record ~50 places where a plausible-looking defect turned
