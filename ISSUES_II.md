@@ -49,6 +49,11 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 4.1 | ~~**Medium**~~ **FIXED** | `adapters/container.ts:66` | The documented `storageAdapter` override is accepted and silently ignored |
 | 5.1 | ~~**Medium**~~ **FIXED** | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
 | 8.1 | ~~**Medium**~~ **FIXED** | `driven/browserAdapter.ts:264` | The system-notification `iconUrl` resolves to a path that does not exist in the build |
+| 1.1 | ~~Low~~ **FIXED** | `domain/validation/rules.ts:181` | `validateSWIFT` has three unreachable failure codes, each wired to a translated message |
+| 1.2 | ~~Low~~ **FIXED** | `domain/validation/rules.ts:112` | An unknown IBAN country reports "invalid length" |
+| 1.3 | ~~Low~~ **FIXED** | `domain/constants/core.ts:41` | `VALID_COUNTRY_CODES` omits the `EU` ISIN prefix |
+| 1.4 | ~~Low~~ **FIXED** | `adapters/ui/validationAdapter.ts:259` | `isoDateRules` accepts impossible calendar dates |
+| 1.5 | Info | `domain/utils/utils.ts:23` | `detectNumberFormat` misreads a German whole-thousands string — superseded by **4.4**, cleared |
 | 2.3 | ~~Low~~ **FIXED** | `usecases/backup/exportHelpers.ts:69` | An empty database reports "Export validation failed" |
 | 3.1 | ~~Low~~ **FIXED** | `connectionManager.ts:41` | `onVersionChange` has no caller, so an extension update hard-reloads the tab and discards unsaved dialog input |
 | 3.2 | ~~Low~~ **FIXED** | `driven/database/` | ~8 API surfaces (builder, `executeMultiple`, `countByAccount`, …) reachable only from tests |
@@ -63,17 +68,29 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 6.1 | ~~Low~~ **FIXED** | `useMenu.ts:258` / `useHeaderBarActions.ts:38` | Two action tables over one union, each ~⅔ dead, diverging on `updateQuote` |
 | 6.2 | ~~Low~~ **FIXED** | `useOnlineStockData.ts:136` | A blank-ISIN stock still issues a quote request and raises a non-dismissing alert every refresh |
 | 6.3 | Info | `entrypoints/app.ts:44` | `i18n.global.t` passed unbound — safe today for the same reason as 5.1 |
-| 7.1 | Low | 5 call sites | `item-key` is a Vuetify 2 prop; Vuetify 3 ignores it and `item-value` is never set |
-| 7.2 | Low | `dialogs/ShowAccounting.vue:172` | The totals row is paginated with the data rows |
-| 7.3 | Low | `components/DialogPort.vue:47` | The OK button's `type="submit"` is inert (it sits outside the form) |
-| 8.2 | Low | `views/HomeContent.vue:191` | The bookings search matches hidden numeric fields and cannot search the booking-type column it displays |
-| 8.3 | Low | `adapters/ui/style.css:24-32` | Unscoped `tbody tr` rules keep every table light-themed at ~2.4:1 text contrast |
-| 9.1 | Low | `constants/core.ts:328` | The title-bar logo path is hand-rolled and unmanaged by Vite |
+| 7.1 | ~~Low~~ **FIXED** | 5 call sites | `item-key` is a Vuetify 2 prop; Vuetify 3 ignores it and `item-value` is never set |
+| 7.2 | ~~Low~~ **FIXED** | `dialogs/ShowAccounting.vue:172` | The totals row is paginated with the data rows |
+| 7.3 | ~~Low~~ **FIXED** | `components/DialogPort.vue:47` | The OK button's `type="submit"` is inert (it sits outside the form) |
+| 8.2 | ~~Low~~ **FIXED** | `views/HomeContent.vue:191` | The bookings search matches hidden numeric fields and cannot search the booking-type column it displays |
+| 8.3 | ~~Low~~ **FIXED** | `adapters/ui/style.css:24-32` | Unscoped `tbody tr` rules keep every table light-themed at ~2.4:1 text contrast |
+| 9.1 | ~~Low~~ **FIXED** | `constants/core.ts:328` | The title-bar logo path is hand-rolled and unmanaged by Vite |
 
-**Totals:** 0 Critical · 1 High · 5 Medium · 15 Low · 4 Info.
-**Status:** the High (9.2) and **all five Mediums** are fixed — 9.2 on 2026-08-08, then 2.1,
-2.2, 4.1, 8.1 and 5.1 on 2026-08-08, one commit each. The 15 Lows and 4 Infos are open;
-6.3 (Info) was re-verified as part of 5.1 rather than merely inherited.
+**Totals:** 0 Critical · 1 High · 5 Medium · 19 Low · 5 Info · **30 findings**.
+
+**Status: every Critical, High, Medium and Low is fixed.** 9.2 (High) on 2026-08-08; the five
+Mediums (2.1, 2.2, 4.1, 8.1, 5.1) on 2026-08-08; the nineteen Lows on 2026-08-08/09 — one commit
+each throughout. What remains open is **5 Infos** (1.5, 3.3, 4.3, 4.4, 6.3), none of which is a
+defect, plus **5.5**, a new Low this pass discovered and deliberately did not fix.
+
+**Two corrections to this register, both found while working through it:**
+
+- **The summary table was missing Round 1 entirely.** Findings 1.1–1.5 were written up in the
+  round section but never listed here, so the stated totals (25 findings, 15 Low, 4 Info)
+  undercounted by five. They are now listed, and the totals above are corrected. Anyone who read
+  only the summary would have concluded `domain/validation/` came back clean, which it did not.
+- **3.2 claimed `repositoryFactory.clearCache` was reached from "nothing".** It has a dedicated
+  test (`repositoryFactory.test.ts:52`). Corrected in the table there. Nothing in that finding
+  had zero references, which is why it was resolved by documenting rather than deleting.
 
 **9.2 is the one to read first.** It is the only finding that is invisible from any single file:
 four modules each derive currency from `getUserLocale()` and agree with one another, so nothing
@@ -92,13 +109,33 @@ out by the fixes:
 - **Two were path/config coupling** (8.1, 9.1): strings that name a file location and are not
   managed by the build, so they are correct only while unrelated settings stay aligned. 8.1 was
   the case where the alignment already did not hold; it now resolves through
-  `browser.runtime.getURL`, which removes the coupling rather than re-aligning it. 9.1 (Low) is
-  the same idiom still unmanaged and remains open.
+  `browser.runtime.getURL`. 9.1 was the same idiom, and now imports the asset so Vite manages it.
+  Both are closed, and the constants they lived in carry notes against reintroduction.
 
-One thing the fixes added that the analysis had not predicted: **5.1's silent-failure shape was
-already present in the plugin's own test**, where an equality assertion over two empty key sets
-passed vacuously the moment `numberFormats` changed type. The analysis found the defect in the
-source; only executing the change found it in the test.
+## What fixing them turned up
+
+Three things the analysis had not predicted, all of the same shape — **a defect's own guard
+rails had already absorbed it**:
+
+- **5.1's silent-failure mode was present in the plugin's own test.** An equality assertion over
+  two empty key sets passed vacuously the moment `numberFormats` changed type from a plain object
+  to a `ComputedRef`. Only the two `toContain` assertions failed.
+- **4.2 had three tests asserting the defect**, one of which stated it in its own comment: *"-1
+  is the documented 'no active account' sentinel, i.e. `settings.init()` never successfully
+  populated the store"* — which is precisely the conflation that made an empty install report a
+  storage error.
+- **8.3 could not be fixed alone.** Three separate comments (style.css, `CompanyContent`,
+  `winLossClass`) documented the coupling, and `.color-black`'s said outright to grep it before
+  touching the striping rules and to drop the class in the same change. Following that
+  instruction is what kept the dark theme from regressing on the one cell that relied on it.
+
+Two findings also grew during the fix rather than shrinking:
+
+- **5.4** turned out to rest on a false premise — only one of the six themes has a near-white
+  surface — and the measurement it forced produced **5.5**, a strictly worse contrast problem in
+  the same palette (`error` at 1.08:1 on `sky`), left open as a design decision.
+- **6.2** looked like a one-line guard but the request array is consumed **positionally**, so
+  filtering at the request site alone would have shifted every quote onto the wrong stock.
 
 No finding contradicts the extensive in-code reasoning already present in this codebase; the
 "Checked and found correct" sections record ~50 places where a plausible-looking defect turned
