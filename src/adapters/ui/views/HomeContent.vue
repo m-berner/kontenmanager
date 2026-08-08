@@ -26,6 +26,7 @@ import DotMenu from "@/adapters/ui/components/DotMenu.vue";
 import {useKeyboardShortcuts} from "@/adapters/ui/composables/useKeyboardShortcuts";
 import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
+import {BOOKING_SEARCH_KEYS, createBookingSearchFilter} from "@/adapters/ui/views/bookingSearch";
 
 const {d, n, t} = useI18n();
 const {alertAdapter, databaseAdapter, storageAdapter} = useAdapters();
@@ -38,6 +39,14 @@ const HEADERS = computed(() => createHomeHeaders(t));
 const MENU_ITEMS = computed(() => createHomeMenuItems(t));
 
 const search = ref<string>("");
+
+// Search config lives in `bookingSearch.ts` so it can be unit-tested against
+// Vuetify's real `filterItems` — a `<script setup>` block is not importable, and
+// this config's correctness depends on Vuetify's filter internals.
+// Recomputed so a renamed booking type is searchable under its new name.
+const customSearchKeys = computed(() =>
+    createBookingSearchFilter(records.bookingTypes.getNameById)
+);
 
 /**
  * Cleanup function executed before the component or window unloads.
@@ -179,7 +188,17 @@ log("VIEWS HomeContent: setup");
       prepend-inner-icon="$magnify"
       single-line
       variant="outlined"/>
+  <!--
+    `filter-mode="union"` is load-bearing, not a style choice. Vuetify's default
+    is "intersection", which requires EVERY entry in `custom-key-filter` to
+    match before a row is kept — so with the booking-type filter registered, a
+    search for "Miete" that matched only the description column would be
+    discarded because the type-name filter did not also match. "union" gives the
+    OR semantics a search box is expected to have.
+  -->
   <v-data-table
+      :custom-key-filter="customSearchKeys"
+      :filter-keys="BOOKING_SEARCH_KEYS"
       :headers="HEADERS"
       :hide-no-data="false"
       :hover="true"
@@ -190,6 +209,7 @@ log("VIEWS HomeContent: setup");
       :no-data-text="t('views.homeContent.bookingsTable.noDataText')"
       :search="search"
       density="compact"
+      filter-mode="union"
       item-value="cID"
       @update:items-per-page="setBookingsPerPage">
     <template v-slot:[`item`]="{ item }">
