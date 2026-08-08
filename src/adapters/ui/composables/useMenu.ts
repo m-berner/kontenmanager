@@ -18,7 +18,6 @@ import {log} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
 import type {BrowserAdapter} from "@/adapters/driven/types";
-import {useOnlineStockData} from "@/adapters/ui/composables/useOnlineStockData";
 import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 
@@ -159,8 +158,10 @@ export function useMenuHighlight() {
 export function useMenuAction(translate?: (_key: string) => string) {
     const runtime = useRuntimeStore();
     const records = useRecordsStore();
-    const {alertAdapter, browserAdapter, fetchAdapter, repositories} = useAdapters();
-    const {refreshOnlineData} = useOnlineStockData();
+    // `fetchAdapter` and `useOnlineStockData` were dependencies of the dead
+    // `updateQuote` handler only. Quote refreshing lives in
+    // `useHeaderBarActions`, which is where its dispatcher is.
+    const {alertAdapter, browserAdapter, repositories} = useAdapters();
 
     /**
      * Opens a dialog using runtime teleport state.
@@ -204,12 +205,6 @@ export function useMenuAction(translate?: (_key: string) => string) {
         const translated = translate(key);
         return translated && translated !== key ? translated : browserAdapter.getMessage(typedKey);
     };
-
-    let updateQuoteController: AbortController | null = null;
-    onUnmounted(() => {
-        updateQuoteController?.abort();
-        updateQuoteController = null;
-    });
 
     /**
      * Asks the user to confirm a destructive menu action.
@@ -255,13 +250,40 @@ export function useMenuAction(translate?: (_key: string) => string) {
         }
     };
 
-    const actionHandlers: Record<MenuActionType, ActionHandler> = {
+    /**
+     * The actions this table can actually be asked for.
+     *
+     * `useMenuAction.executeAction` has exactly one dispatcher — `DotMenu.vue`,
+     * whose `item.action` comes from `createHomeMenuItems` (updateBooking,
+     * deleteBooking) or `createCompanyMenuItems` (updateStock, deleteStock,
+     * showDividend, openLink). This table used to be an exhaustive
+     * `Record<MenuActionType, …>` over all 23 members, so 17 of them were
+     * unreachable duplicates of `useHeaderBarActions`' table, which has the
+     * *other* dispatcher (`HeaderBar.vue`, 16 ids).
+     *
+     * They were not equivalent duplicates, which is what made the redundancy
+     * cost something rather than merely being noise. The dead `updateQuote` was
+     * ~25 lines of non-trivial logic — AbortController supersession, ref-counted
+     * loading flags, cache clear — maintained in parallel with the live one, and
+     * it called `refreshOnlineData(runtime.stocksPage)` **without `stockIds`**,
+     * i.e. the positional page slice that `resolvePageStocks`' own doc comment
+     * (`useOnlineStockData.ts:72-83`) identifies as wrong as soon as the user
+     * sorts the table. That is the exact bug the `stockIds` parameter was added
+     * to fix and which `CompanyContent.vue:289` passes. Wiring a per-row "update
+     * quote" control to this table later would have silently reintroduced it.
+     *
+     * Narrowed via `Extract` rather than a hand-written union so a rename in
+     * `MenuActionType` still breaks here. For a header-bar action, extend
+     * `useHeaderBarActions` — not this file.
+     */
+    type RowMenuActionType = Extract<
+        MenuActionType,
+        "updateBooking" | "deleteBooking" | "updateStock" | "deleteStock" | "showDividend" | "openLink"
+    >;
+
+    const actionHandlers: Record<RowMenuActionType, ActionHandler> = {
         async updateBooking() {
             openDialog("updateBooking", true);
-        },
-
-        async addBooking() {
-            openDialog("addBooking", true);
         },
 
         async deleteBooking(recordId: number) {
@@ -286,10 +308,6 @@ export function useMenuAction(translate?: (_key: string) => string) {
         // Stock Actions
         async updateStock() {
             openDialog("updateStock", true);
-        },
-
-        async addStock() {
-            openDialog("addStock", true);
         },
 
         async deleteStock(recordId: number) {
@@ -327,75 +345,9 @@ export function useMenuAction(translate?: (_key: string) => string) {
             await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.delete"));
         },
 
-        async fadeInStock() {
-            openDialog("fadeInStock", true);
-        },
-
-        async updateQuote() {
-            updateQuoteController?.abort();
-            const controller = new AbortController();
-            updateQuoteController = controller;
-            runtime.beginStockLoading();
-            runtime.beginDownload();
-            try {
-                // Match the header-bar refresh (useHeaderBarActions.updateQuote):
-                // clear the HTTP cache and invalidate the page's freshness marker
-                // first. A bare loadOnlineData() re-read the same cached responses
-                // for the whole CACHE_POLICY.QUOTE_TTL_MS window (60s), so asking a
-                // row to update its quote shortly after a load re-rendered identical
-                // values and looked like the action had done nothing.
-                fetchAdapter.clearCache();
-                await refreshOnlineData(runtime.stocksPage, {signal: controller.signal});
-            } catch (err) {
-                // Superseded by a newer updateQuote() call; not a real failure.
-                if (controller.signal.aborted) return;
-                throw err;
-            } finally {
-                if (updateQuoteController === controller) updateQuoteController = null;
-                // Ref-counted: other in-flight callers (e.g. the header-bar
-                // refresh-all action) may still be holding the shared flags up.
-                runtime.endStockLoading();
-                runtime.endDownload();
-            }
-        },
-
-        // Account Actions
-        async addAccount() {
-            openDialog("addAccount", true);
-        },
-
-        async updateAccount() {
-            openDialog("updateAccount", true);
-        },
-
-        async deleteAccount() {
-            openDialog("deleteAccountConfirmation", true);
-        },
-
-        async deleteAccountConfirmation() {
-            openDialog("deleteAccountConfirmation", true);
-        },
-
-        // Booking Type Actions
-        async addBookingType() {
-            openDialog("addBookingType", true);
-        },
-
-        async updateBookingType() {
-            openDialog("updateBookingType", true);
-        },
-
-        async deleteBookingType() {
-            openDialog("deleteBookingType", true);
-        },
-
         // Info & Display Actions
         async showDividend() {
             openDialog("showDividend", false);
-        },
-
-        async showAccounting() {
-            openDialog("showAccounting", false);
         },
 
         async openLink(recordId: number) {
@@ -412,28 +364,6 @@ export function useMenuAction(translate?: (_key: string) => string) {
             } else {
                 await alertAdapter.feedbackInfo(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.noLink"));
             }
-        },
-
-        // Database Actions
-        async exportDatabase() {
-            openDialog("exportDatabase", true);
-        },
-
-        async importDatabase() {
-            openDialog("importDatabase", true);
-        },
-
-        // Navigation Actions
-        async home() {
-            runtime.setCurrentView("home");
-        },
-
-        async company() {
-            runtime.setCurrentView("company");
-        },
-
-        async setting() {
-            await browserAdapter.openOptionsPage();
         }
     };
 
@@ -449,7 +379,12 @@ export function useMenuAction(translate?: (_key: string) => string) {
     ): Promise<void> => {
         runtime.activeId = recordId;
 
-        const handler = actionHandlers[actionType];
+        // Widened lookup, because `actionHandlers` now covers only the row-level
+        // actions while the parameter stays the full `MenuActionType` that
+        // `MenuItemData.action` is typed as. The `!handler` branch below used to
+        // be unreachable (the table was exhaustive); it is now the real answer
+        // for a header-bar action id sent to the row dispatcher.
+        const handler = (actionHandlers as Partial<Record<MenuActionType, ActionHandler>>)[actionType];
 
         if (!handler) {
             await alertAdapter.feedbackError(resolveMessage("composables.useMenu.title"), resolveMessage("composables.useMenu.messages.invalidCode"), {
