@@ -50,8 +50,8 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 5.1 | ~~**Medium**~~ **FIXED** | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
 | 8.1 | ~~**Medium**~~ **FIXED** | `driven/browserAdapter.ts:264` | The system-notification `iconUrl` resolves to a path that does not exist in the build |
 | 2.3 | ~~Low~~ **FIXED** | `usecases/backup/exportHelpers.ts:69` | An empty database reports "Export validation failed" |
-| 3.1 | Low | `connectionManager.ts:41` | `onVersionChange` has no caller, so an extension update hard-reloads the tab and discards unsaved dialog input |
-| 3.2 | Low | `driven/database/` | ~8 API surfaces (builder, `executeMultiple`, `countByAccount`, …) reachable only from tests |
+| 3.1 | ~~Low~~ **FIXED** | `connectionManager.ts:41` | `onVersionChange` has no caller, so an extension update hard-reloads the tab and discards unsaved dialog input |
+| 3.2 | ~~Low~~ **FIXED** | `driven/database/` | ~8 API surfaces (builder, `executeMultiple`, `countByAccount`, …) reachable only from tests |
 | 3.3 | Info | `migrator.ts:143` | The `oldVersion < 27` migration can permanently break a legacy database with blank identifiers |
 | 4.2 | Low | `driven/appAdapter.ts:675` | `getStatus` reports `storage: "error"` for a legitimately empty install |
 | 4.3 | Info | `driven/fetchAdapter.ts:573` | Quote fetches are unbounded-parallel per page (up to 26 requests in one tick) |
@@ -393,7 +393,16 @@ Files read in full: `databaseAdapter.ts`, `connectionManager.ts`, `migrator.ts`,
 `transactionManager.ts`, `batchOperations.ts`, `healthChecker.ts`, and all six
 `repositories/*.ts`.
 
-### 3.1 — Low · `connectionManager.ts:41` · an unhandled `versionchange` reloads the page and discards unsaved input
+### 3.1 — Low · **FIXED** · `connectionManager.ts:41` · an unhandled `versionchange` reloads the page and discards unsaved input
+
+> **Resolved.** `app.ts` now registers a handler, so the `window.location.reload()`
+> default is no longer the branch that runs. It raises a non-dismissing alert
+> (`duration: null`, new `mixed.versionChange` keys in both locales) telling the
+> user the extension was updated, that saved data is safe, that nothing further
+> can be saved in this tab, and to reload when ready. Registered after
+> `createAppPinia` because that is what configures the alert sink. `options.ts`
+> is deliberately left on the plain reload — it holds no dialogs with unsaved
+> input, so there is nothing to protect there.
 
 *Verified.*
 
@@ -415,7 +424,24 @@ discarding whatever is typed into an open dialog. A registered handler could ins
 alert and let the user finish. Low because the trigger is rare and the reload is at least
 functionally correct.
 
-### 3.2 — Low · `adapters/driven/database/` · substantial API surface with no production caller
+### 3.2 — Low · **FIXED** · `adapters/driven/database/` · substantial API surface with no production caller
+
+> **Resolved — by documenting, not deleting**, which is what this finding itself
+> argued for ("not 'delete it' advice — a repository layer reasonably exposes a
+> complete CRUD surface"). The fix adopts the pattern the finding already points
+> to as correct: `healthChecker.ts` is excluded from the list *because* it
+> declares itself a deliberately unwired surface at its own head. So
+> `BatchOperationBuilder` and `transactionManager.executeMultiple` now carry the
+> same kind of note — what is reached, what is not, and what would reach for it —
+> and `database/README.md` gained a table covering the whole set in one place.
+> The cost stays visible without each audit re-deriving it.
+>
+> **One claim in the table above was wrong and is corrected there:**
+> `repositoryFactory.clearCache` was listed as reached from "nothing". It has a
+> dedicated test — `repositoryFactory.test.ts:52`, *"clearCache() forces a fresh
+> instance on the next getRepository() call"*. It is in exactly the same position
+> as every other row, not a step worse. Nothing in this finding has zero
+> references, so nothing was removed.
 
 *Verified by grep across `src/` (excluding the database directory itself and type declarations).*
 
@@ -428,7 +454,7 @@ functionally correct.
 | `accountRepository.findByIBAN` / `ibanExists` | `accountRepository.ts:54,62` | tests |
 | `bookingRepository.findByDate` / `findByBookingType` / `findByStock` | `bookingRepository.ts` | tests |
 | `countByAccount` (all three repositories) | `*Repository.ts` | tests |
-| `repositoryFactory.clearCache` | `repositoryFactory.ts:69` | nothing |
+| `repositoryFactory.clearCache` | `repositoryFactory.ts:69` | ~~nothing~~ **tests** (correction — see below) |
 
 Notable within that list: `countByAccount` was recently reworked to count through the index
 rather than materializing rows (`baseRepository.countBy`, with a doc comment explaining the
