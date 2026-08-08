@@ -9,6 +9,7 @@ import type {Ref} from "vue";
 import {VALIDATION_CODES} from "@/domain/constants";
 import type {DomainValidationResult, ValidationCodeType, ValidationRuleType} from "@/domain/types";
 import {sanitizeExternalUrl} from "@/domain/utils/url";
+import {isValidISODate} from "@/domain/utils/utils";
 import * as ValidationRules from "@/domain/validation/rules";
 
 /**
@@ -256,17 +257,29 @@ export function validateIBAN(iban: string): boolean {
     return ValidationRules.validateIBAN(iban).isValid;
 }
 
+/**
+ * Rules for a `type="date"` field bound to an ISO `YYYY-MM-DD` string.
+ *
+ * The second rule delegates to the domain's `isValidISODate`, which walks
+ * `parseISODateParts` and computes the real days-in-month. It used to test
+ * `!isNaN(new Date(v + "T00:00:00Z").getTime())` instead — but JavaScript's ISO
+ * parser range-checks the month and then *rolls the day over*, so `2024-02-31`
+ * parses as 2 March and passed. The rule therefore only ever added month
+ * `00`/`13` rejection on top of the regex, while claiming to validate the date.
+ *
+ * Reusing the domain function also closes the asymmetry that made this worth
+ * fixing rather than noting. `validateBooking` already uses the strict check on
+ * the write path, and `normalizeDate` returns `""` for a date it rejects — so a
+ * value that slipped past this rule would be stored with a **blank date** while
+ * the in-memory store kept the typed value. Not reachable from the UI today
+ * (both fields using this are `type="date"`, and a native date input never
+ * yields an out-of-range day), which is why it is Low: the defect is that the
+ * rule did not enforce what it claimed, and did not reuse the function that did.
+ */
 export function isoDateRules(msgArray: string[]): ValidationRuleType[] {
-    const isValid = (message: string): ValidationRuleType => {
-        return createRule((v) => {
-            const tv = v as string;
-            const date = new Date(`${tv}T00:00:00Z`);
-            return !isNaN(date.getTime());
-        }, message);
-    };
     return [
         regex(/^\d{4}-\d{2}-\d{2}$/, msgArray[0]),
-        isValid(msgArray[1])
+        createRule((v) => isValidISODate(v as string), msgArray[1])
     ];
 }
 

@@ -275,6 +275,30 @@ describe("validationAdapter", () => {
             expect(rules[0]("2026-13-01")).toBe(true);
             expect(rules[1]("2026-13-01")).toBe("invalid");
         });
+
+        it("rejects a day that does not exist in the given month", () => {
+            // The rule used to test `!isNaN(new Date(v + "T00:00:00Z"))`, and
+            // JavaScript's ISO parser range-checks the month but ROLLS THE DAY
+            // OVER: "2024-02-31" parses to 2 March and passed. So the rule only
+            // ever added month 00/13 rejection on top of the regex while
+            // claiming to validate the date. It now delegates to the domain's
+            // isValidISODate, which computes the real days-in-month.
+            const rules = isoDateRules(MSG);
+
+            for (const impossible of ["2024-02-31", "2024-02-30", "2024-04-31", "2023-02-29"]) {
+                expect(rules[0](impossible)).toBe(true);
+                expect(rules[1](impossible)).toBe("invalid");
+            }
+
+            // 2024 is a leap year, so this one is real and must still pass.
+            expect(rules[1]("2024-02-29")).toBe(true);
+        });
+
+        it("rejects day 00 and month 00", () => {
+            const rules = isoDateRules(MSG);
+            expect(rules[1]("2024-00-10")).toBe("invalid");
+            expect(rules[1]("2024-10-00")).toBe("invalid");
+        });
     });
 
     describe("symbolRules", () => {

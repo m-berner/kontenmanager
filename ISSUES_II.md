@@ -162,7 +162,12 @@ tells the user their IBAN is the wrong length rather than that the country is no
 `VALIDATION_CODES.INVALID_COUNTRY` exists and `ibanRules` has no slot for it —
 `validateISIN` does return it for the same situation, so the two validators are inconsistent.
 
-### 1.3 — Low · `domain/constants/core.ts:41` · `VALID_COUNTRY_CODES` omits the `EU` ISIN prefix
+### 1.3 — Low · **FIXED** · `domain/constants/core.ts:41` · `VALID_COUNTRY_CODES` omits the `EU` ISIN prefix
+
+> **Resolved.** `"EU"` added in alphabetical position with a comment marking it,
+> like `XS`/`XK`, as a securities prefix rather than an ISO-3166 country. The
+> test uses `EU000A1G0AA6`, which is checksum-valid, so it fails on the country
+> check alone if the prefix is dropped again.
 
 *Verified.*
 
@@ -172,7 +177,15 @@ The set is a list of ISO-3166 country codes plus the two special securities pref
 `isinRules` blocks the stock from being added. Narrow, but it is a legitimate ISIN a German
 investor can hold.
 
-### 1.4 — Low · `adapters/ui/validationAdapter.ts:259` · `isoDateRules` accepts impossible calendar dates
+### 1.4 — Low · **FIXED** · `adapters/ui/validationAdapter.ts:259` · `isoDateRules` accepts impossible calendar dates
+
+> **Resolved.** The second rule now delegates to the domain's `isValidISODate`
+> (`utils/utils.ts:80`) — the same strict check the write path already used —
+> instead of round-tripping through `new Date(...)`. That removes the asymmetry
+> as well as the defect: the rule and `validateBooking` can no longer disagree
+> about what a valid date is. Tests cover rolled-over days (`2024-02-31`,
+> `2024-04-31`, `2023-02-29`), the leap-day that must still pass
+> (`2024-02-29`), and day/month `00`.
 
 *Verified by execution* (`node -e "new Date('2024-02-31T00:00:00Z')"` → `2024-03-02`).
 
