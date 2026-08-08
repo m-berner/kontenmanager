@@ -58,7 +58,8 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 4.4 | Info | — | Round 1.5 re-examined against the provider and cleared as a non-issue |
 | 5.2 | ~~Low~~ **FIXED** | `stores/settings.ts:247` | Every local settings write echoes back through the cross-context storage listener |
 | 5.3 | ~~Low~~ **FIXED** | `stores/deps.ts:130` | `attachStoreTranslate` has only a plausible-looking English fallback, no wiring guarantee |
-| 5.4 | Low | `plugins/vuetify.ts:101` | `info: "yellow"` on near-white surfaces in all six themes (~1.1:1 contrast) |
+| 5.4 | ~~Low~~ **FIXED** | `plugins/vuetify.ts:101` | `info: "yellow"` on near-white surfaces in all six themes (~1.1:1 contrast) |
+| 5.5 | Low | `plugins/vuetify.ts` | **NEW (found while fixing 5.4)** — `warning`/`error`/`success` fail AA on the four coloured-surface themes, worse than `info` did |
 | 6.1 | Low | `useMenu.ts:258` / `useHeaderBarActions.ts:38` | Two action tables over one union, each ~⅔ dead, diverging on `updateQuote` |
 | 6.2 | Low | `useOnlineStockData.ts:136` | A blank-ISIN stock still issues a quote request and raises a non-dismissing alert every refresh |
 | 6.3 | Info | `entrypoints/app.ts:44` | `i18n.global.t` passed unbound — safe today for the same reason as 5.1 |
@@ -766,9 +767,57 @@ plausibly ("Settings error", "Confirm", "Cancel"), a missing `attachStoreTransla
 entrypoint would never be noticed. Worth a startup assertion or a dev-mode log rather than a
 silent English default.
 
-### 5.4 — Low · `plugins/vuetify.ts:101` · `info` is yellow in all six themes, on near-white backgrounds
+### 5.4 — Low · **FIXED** · `plugins/vuetify.ts:101` · `info` is yellow in all six themes, on near-white backgrounds
+
+> **Resolved with per-theme values, and the finding's premise corrected.** Only
+> `light` has a near-white surface. `AlertOverlay`'s `v-card` takes the theme's
+> `surface`, and `sky`/`ocean`/`earth`/`meadow` all set a strongly coloured one
+> (`#3282f6`, `#194f7d`, `#780e12`, `#378222`) — so they are not "light themes"
+> for contrast purposes, and no single blue can serve all six. Measured
+> ratios, all clearing WCAG AA:
+>
+> | theme | surface | info | ratio |
+> |-------|---------|------|-------|
+> | light | `#eeeeee` | `#1565C0` | 4.95:1 |
+> | dark | `#23222B` | `#64B5F6` | 7.10:1 |
+> | sky | `#3282f6` | `#031222` | 5.08:1 |
+> | ocean | `#194f7d` | `#90CAF9` | 4.89:1 |
+> | earth | `#780e12` | `#64B5F6` | 5.07:1 |
+> | meadow | `#378222` | `#F5FAFF` | 4.57:1 |
+>
+> `sky` explains the near-black value: `#3282f6` is a mid-tone, the worst case —
+> nothing in the blue family clears 4.5:1 against it in either direction, and
+> pure white reaches only 3.71:1. The table and that reasoning are recorded at
+> the palette so the values do not read as arbitrary. See **5.5** for what this
+> measurement turned up next door.
 
 *Verified.*
+
+### 5.5 — Low · **NEW** · `plugins/vuetify.ts` · the other three severities fail AA on the coloured-surface themes
+
+*Verified by measurement while fixing 5.4.*
+
+Fixing `info` required computing every severity's contrast against each theme's
+actual `surface`. `warning`, `error` and `success` have the same problem, and on
+some themes worse than `info` ever did:
+
+| surface | `warning` orange | `error` red | `success` green |
+|---------|------------------|-------------|-----------------|
+| light `#eeeeee` | 1.70 | 3.45 | 4.43 |
+| dark `#23222B` | 7.96 | 3.93 | 3.06 |
+| sky `#3282f6` | 1.88 | **1.08** | 1.38 |
+| ocean `#194f7d` | 4.33 | 2.14 | 1.66 |
+| earth `#780e12` | 5.69 | 2.81 | 2.19 |
+| meadow `#378222` | 2.43 | 1.20 | **1.07** |
+
+`error` at 1.08:1 on `sky` is exactly as invisible as `info`'s yellow was on
+`light` — and `error` is the severity that never auto-dismisses, so it is the one
+the user is most expected to read.
+
+Deliberately **not** fixed alongside 5.4: three severities × six themes is a
+palette-wide decision, and the honest answer may be that the four
+coloured-surface themes want lighter surfaces rather than eighteen hand-picked
+severity colours. That is a design call, not a defect fix.
 
 Every theme sets `info: "yellow"` (the plain CSS keyword, `#FFFF00`) while five of the six use a
 `#e0e0e0`/`#eeeeee` background. `info` is the most-used severity in the app — every
