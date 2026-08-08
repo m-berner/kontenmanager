@@ -104,4 +104,79 @@ describe("Settings Store", () => {
             7
         );
     });
+
+    // browser.storage.onChanged fires in EVERY extension context, including the
+    // one that performed the write -- so every local updateSetting() round trip
+    // came straight back through the listener and re-applied its own value.
+    describe("cross-context storage listener", () => {
+        function initWithCapturedListener() {
+            let listener: ((_changes: Record<string, {newValue?: unknown}>) => void) | undefined;
+            const pinia = setActiveTestPinia();
+            attachStoreDeps(pinia, {
+                storageAdapter: () => ({
+                    clearStorage: vi.fn().mockResolvedValue(undefined),
+                    getStorage: vi.fn(),
+                    setStorage: mockSetStorage,
+                    addStorageChangedListener: vi.fn((cb) => {
+                        listener = cb;
+                        return vi.fn();
+                    }),
+                    installStorageLocal: vi.fn().mockResolvedValue(undefined)
+                }),
+                alertAdapter: {
+                    feedbackInfo: vi.fn(),
+                    feedbackWarning: vi.fn(),
+                    feedbackConfirm: vi.fn(),
+                    feedbackError: vi.fn()
+                }
+            });
+
+            const store = useSettingsStore();
+            store.init({
+                [BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key]: 42,
+                [BROWSER_STORAGE.EXCHANGES.key]: ["EURUSD", "USDJPY"]
+            } as StorageDataType);
+
+            return {store, fire: (changes: Record<string, {newValue?: unknown}>) => listener?.(changes)};
+        }
+
+        it("ignores an echo of the value this context already holds", () => {
+            const {store, fire} = initWithCapturedListener();
+            const exchangesBefore = store.exchanges;
+
+            fire({
+                [BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key]: {newValue: 42},
+                [BROWSER_STORAGE.EXCHANGES.key]: {newValue: ["EURUSD", "USDJPY"]}
+            });
+
+            expect(store.activeAccountId).toBe(42);
+            // Identity, not just equality: cloneStorageValue returns a NEW array,
+            // so re-applying an unchanged array changed the ref's identity and
+            // re-fired every watcher on it. That is the half of this echo that
+            // was not idempotent.
+            expect(store.exchanges).toBe(exchangesBefore);
+        });
+
+        it("still applies a genuine cross-context change", () => {
+            const {store, fire} = initWithCapturedListener();
+
+            fire({
+                [BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key]: {newValue: 7},
+                [BROWSER_STORAGE.EXCHANGES.key]: {newValue: ["EURUSD"]}
+            });
+
+            expect(store.activeAccountId).toBe(7);
+            expect(store.exchanges).toEqual(["EURUSD"]);
+        });
+
+        it("treats a same-length array with different contents as a change", () => {
+            // Guards the element-wise half of isSameStorageValue: a length-only
+            // comparison would swallow this.
+            const {store, fire} = initWithCapturedListener();
+
+            fire({[BROWSER_STORAGE.EXCHANGES.key]: {newValue: ["EURUSD", "EURGBP"]}});
+
+            expect(store.exchanges).toEqual(["EURUSD", "EURGBP"]);
+        });
+    });
 });

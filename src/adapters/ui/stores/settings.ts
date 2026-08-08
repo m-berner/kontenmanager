@@ -147,7 +147,44 @@ export const useSettingsStore = defineStore(
         }
 
         /**
+         * Compares two storage values for equality.
+         *
+         * Every settings value is a primitive or a flat array of primitives, so
+         * a length-plus-element scan is a complete comparison here — there is no
+         * nested structure to miss. See {@link applyStorageChange} for why the
+         * array case is the one that matters.
+         */
+        function isSameStorageValue<T extends StorageValueType>(a: T, b: T): boolean {
+            if (Array.isArray(a) && Array.isArray(b)) {
+                return a.length === b.length && a.every((entry, i) => entry === b[i]);
+            }
+            return a === b;
+        }
+
+        /**
          * Applies changes from a storage event to a specific key in the target reference and executes an optional callback.
+         *
+         * **Ignores a change that carries the value this context already holds.**
+         * `browser.storage.onChanged` fires in *every* extension context,
+         * including the one that performed the write — so each
+         * `updateSetting()` → `setStorage()` round trip came straight back here
+         * and re-applied its own value locally.
+         *
+         * The re-assignment was idempotent for primitives, but not free:
+         *
+         * - For the four array settings, `cloneStorageValue` hands back a **new
+         *   array**, so the ref's identity changed and any watcher on it fired
+         *   again for a value that had not changed.
+         * - `activeAccountId` is watched in `AppIndex.vue`, which clears the
+         *   stocks page cache — correct either way, but done twice per switch.
+         * - `onChange` (the parameter below) would fire twice for one user
+         *   action, which is a trap for the first side-effecting callback added.
+         *
+         * Value equality rather than an origin marker on the write, deliberately:
+         * a marker has to be applied by *every* writer, and a missed writer is a
+         * silent regression. This needs no cooperation from the write side, and
+         * a genuine cross-context change necessarily differs from what this
+         * context holds.
          *
          * @param changes - A record of storage changes keyed by storage keys.
          * @param key - The specific key whose value needs to be updated in the target reference.
@@ -167,6 +204,8 @@ export const useSettingsStore = defineStore(
 
             const raw = change.newValue as T | undefined;
             const nextValue = cloneStorageValue(raw ?? fallback);
+            if (isSameStorageValue(target.value, nextValue)) return;
+
             target.value = nextValue;
             onChange?.(nextValue);
         }
