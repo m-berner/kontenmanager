@@ -56,7 +56,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 4.2 | ~~Low~~ **FIXED** | `driven/appAdapter.ts:675` | `getStatus` reports `storage: "error"` for a legitimately empty install |
 | 4.3 | Info | `driven/fetchAdapter.ts:573` | Quote fetches are unbounded-parallel per page (up to 26 requests in one tick) |
 | 4.4 | Info | — | Round 1.5 re-examined against the provider and cleared as a non-issue |
-| 5.2 | Low | `stores/settings.ts:247` | Every local settings write echoes back through the cross-context storage listener |
+| 5.2 | ~~Low~~ **FIXED** | `stores/settings.ts:247` | Every local settings write echoes back through the cross-context storage listener |
 | 5.3 | Low | `stores/deps.ts:130` | `attachStoreTranslate` has only a plausible-looking English fallback, no wiring guarantee |
 | 5.4 | Low | `plugins/vuetify.ts:101` | `info: "yellow"` on near-white surfaces in all six themes (~1.1:1 contrast) |
 | 6.1 | Low | `useMenu.ts:258` / `useHeaderBarActions.ts:38` | Two action tables over one union, each ~⅔ dead, diverging on `updateQuote` |
@@ -714,7 +714,23 @@ Recorded as Medium rather than Low because the trigger is a routine dependency u
 one-line deprecation cleanup, and the failure is silent — nothing throws, nothing logs, the app
 just quietly formats money in the wrong currency.
 
-### 5.2 — Low · `stores/settings.ts:247` · self-inflicted echo from the cross-context storage listener
+### 5.2 — Low · **FIXED** · `stores/settings.ts:247` · self-inflicted echo from the cross-context storage listener
+
+> **Resolved.** `applyStorageChange` returns early when the incoming value
+> already equals what this context holds (`isSameStorageValue`: `===` for
+> primitives, length-plus-element for the four flat arrays — there is no nested
+> structure to miss).
+>
+> Value equality rather than an origin marker on the write, deliberately: a
+> marker must be applied by *every* writer and a missed writer is a silent
+> regression, which this project has been bitten by before. This needs no
+> cooperation from the write side.
+>
+> Note that the analysis called the re-assignment "harmless today". That was
+> understated for the array settings: `cloneStorageValue` returns a **new
+> array**, so the ref's identity changed on every echo and any watcher on it
+> re-fired. The regression test asserts array *identity* for exactly that
+> reason, and was confirmed to fail with the guard removed.
 
 *Verified.*
 
