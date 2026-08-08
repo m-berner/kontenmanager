@@ -333,10 +333,15 @@ export const PORTFOLIO = {
     MINIMUM_THRESHOLD: 0.1
 } as const;
 
+// `TITLE_BAR.LOGO` used to live here as the raw string "../assets/icon64.png".
+// Because it sat in a TS constant rather than an HTML attribute literal, Vite
+// never saw it and never rewrote it: the browser resolved it at runtime relative
+// to app.html, so it was correct only while three unrelated settings stayed
+// aligned — the entrypoint's directory depth, `assetsDir`, and the absence of
+// content hashing. TitleBar.vue now imports the asset the Vite way, exactly as
+// it already did for its sibling icon48. Do not reintroduce an asset path as a
+// constant; `import icon from "@/adapters/ui/assets/…"` is the managed form.
 export const COMPONENTS = {
-    TITLE_BAR: {
-        LOGO: "../assets/icon64.png"
-    },
     DYNAMIC_LIST: {
         TYPES: {
             MARKETS: "markets",
