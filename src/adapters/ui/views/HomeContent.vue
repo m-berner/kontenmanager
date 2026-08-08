@@ -190,7 +190,7 @@ log("VIEWS HomeContent: setup");
       :no-data-text="t('views.homeContent.bookingsTable.noDataText')"
       :search="search"
       density="compact"
-      item-key="cID"
+      item-value="cID"
       @update:items-per-page="setBookingsPerPage">
     <template v-slot:[`item`]="{ item }">
       <tr class="table-row">

@@ -169,7 +169,7 @@ log("COMPONENTS DIALOGS ShowAccounting: setup");
             :items-per-page-text="t('components.dialogs.showAccounting.itemsPerPageText')"
             :no-data-text="t('components.dialogs.showAccounting.noDataText')"
             density="compact"
-            item-key="id"
+            item-value="id"
             @update:items-per-page="setSumsPerPage">
           <template v-slot:[`item`]="{ item }">
             <tr class="table-row">

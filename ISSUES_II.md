@@ -61,7 +61,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 5.4 | ~~Low~~ **FIXED** | `plugins/vuetify.ts:101` | `info: "yellow"` on near-white surfaces in all six themes (~1.1:1 contrast) |
 | 5.5 | Low | `plugins/vuetify.ts` | **NEW (found while fixing 5.4)** — `warning`/`error`/`success` fail AA on the four coloured-surface themes, worse than `info` did |
 | 6.1 | ~~Low~~ **FIXED** | `useMenu.ts:258` / `useHeaderBarActions.ts:38` | Two action tables over one union, each ~⅔ dead, diverging on `updateQuote` |
-| 6.2 | Low | `useOnlineStockData.ts:136` | A blank-ISIN stock still issues a quote request and raises a non-dismissing alert every refresh |
+| 6.2 | ~~Low~~ **FIXED** | `useOnlineStockData.ts:136` | A blank-ISIN stock still issues a quote request and raises a non-dismissing alert every refresh |
 | 6.3 | Info | `entrypoints/app.ts:44` | `i18n.global.t` passed unbound — safe today for the same reason as 5.1 |
 | 7.1 | Low | 5 call sites | `item-key` is a Vuetify 2 prop; Vuetify 3 ignores it and `item-value` is never set |
 | 7.2 | Low | `dialogs/ShowAccounting.vue:172` | The totals row is paginated with the data rows |
@@ -905,7 +905,20 @@ loading flags, cache clear) maintained in parallel with the live one, and it use
 problem the `stockIds` parameter was added to fix, and which `CompanyContent.vue:289` does pass.
 Wiring a per-row "update quote" control to it later would silently reintroduce that bug.
 
-### 6.2 — Low · `useOnlineStockData.ts:136` · a stock with no ISIN still issues a quote request
+### 6.2 — Low · **FIXED** · `useOnlineStockData.ts:136` · a stock with no ISIN still issues a quote request
+
+> **Resolved**, with one wrinkle the finding did not name. Filtering only at
+> the request site would have been wrong: `minRateMaxResponse.data[i]` is indexed
+> **positionally** against the request list, so the write-back loop and the
+> `failedIsins` → company-name mapping must iterate the *same* filtered array or
+> every quote lands on the wrong stock. A `quotableStocks` list is therefore
+> computed once and used at all three sites, and a test places the blank-ISIN
+> stock first specifically to catch that off-by-one.
+>
+> The filter runs *after* the `stockIds` bail-out, so ids that resolve fine but
+> have nothing fetchable are not misreported as "resolved to no stocks". A page
+> where nothing has an ISIN marks itself loaded and returns — unlike that
+> bail-out, retrying would find the same nothing.
 
 *Verified.*
 

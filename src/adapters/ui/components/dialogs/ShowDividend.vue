@@ -44,7 +44,7 @@ log("COMPONENTS DIALOGS ShowDividend: setup");
             :items-per-page-text="t('components.dialogs.showDividend.itemsPerPageText')"
             :no-data-text="t('components.dialogs.showDividend.noDataText')"
             density="compact"
-            item-key="id"
+            item-value="id"
             @update:items-per-page="setDividendsPerPage">
           <template v-slot:[`item`]="{ item }">
             <tr class="table-row">

@@ -231,11 +231,19 @@ const sameIds = (a: number[], b: number[]): boolean =>
  * visible symptom was quotes on the first pages and permanently blank price
  * columns on the rest.
  *
- * `key` and `value` are no substitute: both derive from the `item-value` prop,
- * which this table does not set, so they are `undefined` too.
+ * `key` and `value` used to be no substitute either: both derive from the
+ * `item-value` prop, and this table set `item-key="cID"` — a **Vuetify 2** prop
+ * that Vuetify 3 ignores entirely — so `item-value` was never set and they were
+ * `undefined` too. That is now fixed at the source (`item-value="cID"`), which
+ * also gives Vue a stable row key for list diffing instead of the positional
+ * fallback.
  *
- * Non-numeric ids are dropped rather than passed on as `undefined`, so a future
- * shape change fetches fewer rows instead of silently fetching none.
+ * The `.raw ?? row` unwrapping below is deliberately KEPT. It is now
+ * belt-and-braces rather than load-bearing, and it costs one `??`: the handler
+ * is typed `unknown[]` because Vuetify's emitted shape is a version detail, and
+ * reading `cID` off whichever shape arrives is what makes this correct under
+ * both. Non-numeric ids are dropped rather than passed on as `undefined`, so a
+ * future shape change fetches fewer rows instead of silently fetching none.
  */
 const toStockIds = (items: unknown[]): number[] => {
   return items
@@ -364,7 +372,7 @@ log("VIEWS CompanyContent: setup");
       :no-data-text="t('views.companyContent.stocksTable.noDataText')"
       :page="runtime.stocksPage"
       density="compact"
-      item-key="cID"
+      item-value="cID"
       @update:current-items="onCurrentItems"
       @update:items-per-page="setStocksPerPage"
       @update:page="onUpdatePage">
