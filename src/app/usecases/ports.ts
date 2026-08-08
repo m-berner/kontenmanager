@@ -58,6 +58,14 @@ export interface BookingTypeRepositoryPort {
      * made them account-agnostic when it did not.
      */
     findByAccount: (_accountId: number, _options?: TxOptions) => Promise<BookingTypeDb[]>;
+    /**
+     * Declared here for `deleteBookingTypeUsecase`'s role guard, which needs the
+     * `cRole` of the record it is about to delete. Read from the repository
+     * rather than `records.bookingTypes.items` for the same reason
+     * `findByAccount` is: the store holds only the **active** account's types,
+     * so a guard built on it would silently fail *open* for any other account.
+     */
+    findById: (_id: number, _options?: TxOptions) => Promise<BookingTypeDb | null>;
 }
 
 export interface BrowserPort {

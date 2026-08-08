@@ -194,6 +194,66 @@ describe("usecases/bookingTypes", () => {
         expect(res).toEqual({status: "not_allowed"});
     });
 
+    it("deleteBookingTypeUsecase refuses to delete a role-carrying type even when no booking uses it", async () => {
+        // The state a freshly created depot account is in: Buy/Sell/Dividend
+        // exist, nothing references them yet, so `canDelete` says yes. Deleting
+        // Buy would leave `resolveTypeIdByRole` returning undefined and no stock
+        // booking could be recorded for that account any more.
+        const del = vi.fn();
+
+        const res = await deleteBookingTypeUsecase(
+            {
+                repositories: createRepositoriesPortMock({
+                    bookingTypes: {
+                        delete: del,
+                        findById: vi.fn().mockResolvedValue(
+                            {...makeBookingTypeDb({cID: 2, cName: "Kauf"}), cRole: "buy"}
+                        )
+                    }
+                }),
+                records: createRecordsPortMock(),
+                runtime: createRuntimePortMock()
+            },
+            {
+                bookingTypeId: 2,
+                canDelete: () => true
+            }
+        );
+
+        expect(del).not.toHaveBeenCalled();
+        expect(res).toEqual({status: "roleProtected"});
+    });
+
+    it("deleteBookingTypeUsecase deletes an 'other'-role type", async () => {
+        // The counterpart: multiple custom types are fine, so `other` carries no
+        // invariant and the guard must not block it.
+        const del = vi.fn().mockResolvedValue(undefined);
+        const runtime = createRuntimePortMock();
+
+        const res = await deleteBookingTypeUsecase(
+            {
+                repositories: createRepositoriesPortMock({
+                    bookingTypes: {
+                        delete: del,
+                        findById: vi.fn().mockResolvedValue(
+                            {...makeBookingTypeDb({cID: 3, cName: "Zinsen"}), cRole: "other"}
+                        )
+                    }
+                }),
+                records: createRecordsPortMock(),
+                runtime
+            },
+            {
+                bookingTypeId: 3,
+                canDelete: () => true
+            }
+        );
+
+        expect(del).toHaveBeenCalledWith(3);
+        expect(res).toEqual({status: "deleted"});
+        expect(runtime.resetTeleport).toHaveBeenCalledTimes(1);
+    });
+
     it("addBookingTypeUsecase refuses to persist a type with no active account", async () => {
         // Orphaned booking types are counted by findExportConsistencyIssues too,
         // so one is enough to block every future database export.

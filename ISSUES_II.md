@@ -44,7 +44,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | # | Severity | Location | Finding |
 |---|----------|----------|---------|
 | 9.2 | ~~**High**~~ **FIXED** | cross-cutting (`browserAdapter` / `appAdapter` / `useOnlineStockData` / `i18n`) | Display currency is derived from the browser's UI language with no user override; only fetched quotes are converted, so `mEuroChange` and the two TitleBar chips mix currencies for any non-German-browser user |
-| 2.1 | Medium | `usecases/bookingTypes.ts:60` | A Buy/Sell/Dividend booking type can be deleted while it has no bookings, silently disabling all stock bookings for that account |
+| 2.1 | ~~**Medium**~~ **FIXED** | `usecases/bookingTypes.ts:60` | A Buy/Sell/Dividend booking type can be deleted while it has no bookings, silently disabling all stock bookings for that account |
 | 2.2 | Medium | `usecases/backup/import.ts:148` | The error handler awaits `setStorage` unguarded; a failure there discards the real error and skips `onError` |
 | 4.1 | Medium | `adapters/container.ts:66` | The documented `storageAdapter` override is accepted and silently ignored |
 | 5.1 | Medium | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
@@ -216,7 +216,16 @@ Files read in full: `accounts.ts`, `bookings.ts`, `bookingTypes.ts`, `stocks.ts`
 `records/init.ts`. Cross-checked against `DeleteBookingType.vue`, `AddBookingType.vue`,
 `BookingTypeForm.vue`, `useForms.ts`.
 
-### 2.1 — Medium · `usecases/bookingTypes.ts:60` · a role-carrying booking type can be deleted, disabling stock bookings for that account
+### 2.1 — Medium · **FIXED** · `usecases/bookingTypes.ts:60` · a role-carrying booking type can be deleted, disabling stock bookings for that account
+
+> **Resolved.** `deleteBookingTypeUsecase` now reads the record it is about to
+> delete (`repositories.bookingTypes.findById`, newly declared on
+> `BookingTypeRepositoryPort` for the same account-scoping reason `findByAccount`
+> was) and returns `{status: "roleProtected"}` for any `cRole` other than
+> `other`. `DeleteBookingType.vue` surfaces it as a new
+> `messages.roleProtected` string in both locales, which also names the recovery
+> (toggle the account's depot option). `canDelete` still runs first, so
+> "bookings are assigned" stays the answer when both apply.
 
 *Verified.*
 

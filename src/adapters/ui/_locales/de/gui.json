@@ -90,6 +90,7 @@
           "dbNotConnected": "Keine Datenbank Verbindung",
           "noDelete": "Buchungskategorie kann nicht gelöscht werden. Es existieren zugeordnete Buchungen.",
           "noSelection": "Keine Buchungskategorie ausgewählt",
+          "roleProtected": "Diese Buchungskategorie wird für Kauf-, Verkauf- oder Dividenden-Buchungen benötigt und kann nicht gelöscht werden. Zum Entfernen die Depot-Option des Kontos deaktivieren.",
           "success": "Buchungskategorie wurde gelöscht"
         }
       },

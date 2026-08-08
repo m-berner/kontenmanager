@@ -90,6 +90,7 @@
           "dbNotConnected": "No database connection",
           "noDelete": "The booking type could not be deleted. Bookings are assigned.",
           "noSelection": "No booking type was selected",
+          "roleProtected": "This booking type is required for buy, sell or dividend bookings and cannot be deleted. To remove it, switch the account's depot option off.",
           "success": "Booking type successfully deleted"
         }
       },
