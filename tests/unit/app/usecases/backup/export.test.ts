@@ -8,6 +8,8 @@ import {describe, expect, it, vi} from "vitest";
 import {exportDatabaseUsecase} from "@/app/usecases/backup/export";
 import {makeAccountDb, makeBookingDb, makeBookingTypeDb, makeStockDb} from "@test/usecases";
 import type {ExportDatabaseUsecaseDeps} from "@/app/usecases/backup/export";
+import {ERROR_CATEGORY} from "@/domain/constants";
+import {ERROR_DEFINITIONS} from "@/domain/errors";
 import type {RepositoryMap} from "@/domain/types";
 
 function makeDeps(overrides: Partial<{
@@ -69,7 +71,13 @@ describe("usecases/backup/export", () => {
         expect(res.estimatedSizeKb).toBeGreaterThan(0);
     });
 
-    it("throws when a booking references a non-existent account (consistency check)", async () => {
+    // The two refusals below must stay DISTINGUISHABLE, which is the whole
+    // point: both end in a throw, but "your database is inconsistent" is a
+    // fault while "you have nothing to export yet" is the expected state right
+    // after install. They used to share EXPORT_DATABASE.A, so a fresh install
+    // clicking Export was told its data had failed validation. Asserting the
+    // code (not just that it throws) is what keeps them from being merged back.
+    it("throws EXPORT_DATABASE.A when a booking references a non-existent account", async () => {
         const {deps} = makeDeps({
             repositories: {
                 bookings: {findAll: vi.fn().mockResolvedValue([makeBookingDb({cAccountNumberID: 999})])}
@@ -82,12 +90,12 @@ describe("usecases/backup/export", () => {
                 confirmLargeFile: vi.fn(),
                 notifyEstimatedSize: vi.fn()
             })
-        ).rejects.toThrow();
+        ).rejects.toMatchObject({code: ERROR_DEFINITIONS.EXPORT_DATABASE.A.CODE});
 
         expect(deps.browserAdapter.writeBufferToFile).not.toHaveBeenCalled();
     });
 
-    it("throws when there are no accounts at all", async () => {
+    it("throws EXPORT_DATABASE.EMPTY — not the validation-failed error — for an empty database", async () => {
         const {deps} = makeDeps({repositories: {accounts: {findAll: vi.fn().mockResolvedValue([])}}});
 
         await expect(
@@ -96,7 +104,12 @@ describe("usecases/backup/export", () => {
                 confirmLargeFile: vi.fn(),
                 notifyEstimatedSize: vi.fn()
             })
-        ).rejects.toThrow();
+        ).rejects.toMatchObject({
+            code: ERROR_DEFINITIONS.EXPORT_DATABASE.EMPTY.CODE,
+            category: ERROR_CATEGORY.VALIDATION
+        });
+
+        expect(deps.browserAdapter.writeBufferToFile).not.toHaveBeenCalled();
     });
 
     it("throws when export integrity verification fails", async () => {

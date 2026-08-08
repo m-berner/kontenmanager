@@ -73,9 +73,19 @@ export function findExportConsistencyIssues(input: {
     };
 }
 
+/**
+ * True when the data about to be exported contains a dangling reference.
+ *
+ * `noAccounts` is deliberately **not** part of this. It is still reported on
+ * {@link ExportConsistencyIssues} because the caller has to act on it, but an
+ * empty database is not an inconsistent one — folding the two together meant
+ * `exportDatabaseUsecase` threw `EXPORT_DATABASE.A` ("Export validation
+ * failed") for a user who had just installed the extension and clicked Export.
+ * The refusal is right; the diagnosis was not. `export.ts` now checks
+ * `issues.noAccounts` separately and throws `EXPORT_DATABASE.EMPTY`.
+ */
 export function hasExportConsistencyIssues(issues: ExportConsistencyIssues): boolean {
     return (
-        issues.noAccounts ||
         issues.invalidBookings > 0 ||
         issues.invalidStocks > 0 ||
         issues.invalidBookingTypes > 0

@@ -49,7 +49,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 4.1 | ~~**Medium**~~ **FIXED** | `adapters/container.ts:66` | The documented `storageAdapter` override is accepted and silently ignored |
 | 5.1 | ~~**Medium**~~ **FIXED** | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
 | 8.1 | ~~**Medium**~~ **FIXED** | `driven/browserAdapter.ts:264` | The system-notification `iconUrl` resolves to a path that does not exist in the build |
-| 2.3 | Low | `usecases/backup/exportHelpers.ts:69` | An empty database reports "Export validation failed" |
+| 2.3 | ~~Low~~ **FIXED** | `usecases/backup/exportHelpers.ts:69` | An empty database reports "Export validation failed" |
 | 3.1 | Low | `connectionManager.ts:41` | `onVersionChange` has no caller, so an extension update hard-reloads the tab and discards unsaved dialog input |
 | 3.2 | Low | `driven/database/` | ~8 API surfaces (builder, `executeMultiple`, `countByAccount`, …) reachable only from tests |
 | 3.3 | Info | `migrator.ts:143` | The `oldVersion < 27` migration can permanently break a legacy database with blank identifiers |
@@ -333,7 +333,16 @@ wrapped; the one in the handler is not.
 in-memory value, so a failed persist leaves memory and storage disagreeing until the next
 successful write — separate from, and less serious than, losing the error.
 
-### 2.3 — Low · `usecases/backup/exportHelpers.ts:69` · an empty database reports "export validation failed"
+### 2.3 — Low · **FIXED** · `usecases/backup/exportHelpers.ts:69` · an empty database reports "export validation failed"
+
+> **Resolved.** `noAccounts` is still reported on `ExportConsistencyIssues` (the
+> caller must refuse) but no longer counts as a *consistency* issue.
+> `exportDatabaseUsecase` checks it first and throws the new
+> `EXPORT_DATABASE.EMPTY` ("There is nothing to export yet — add an account
+> first") under `ERROR_CATEGORY.VALIDATION` rather than `DATABASE`, since
+> nothing is wrong with the database. The two export-refusal tests now assert
+> the distinct codes instead of just `.toThrow()`, which is what stops them
+> being folded back together.
 
 *Verified.*
 
