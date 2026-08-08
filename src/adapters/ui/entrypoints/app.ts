@@ -43,6 +43,33 @@ async function bootstrap(): Promise<void> {
     const pinia = createAppPinia(adapters); // inject adapters into pinia
     attachStoreTranslate(pinia, i18n.global.t); // wire the translation function into stores (see stores/deps.ts)
 
+    // Registered here because `connectionManager`'s `onversionchange` default is
+    // `window.location.reload()` — an immediate, unannounced hard reload that
+    // discards whatever the user has typed into an open dialog. The trigger in
+    // practice is an extension update landing while this tab is open, which is
+    // not something the user did and gives them no warning.
+    //
+    // A registered handler replaces that default entirely, so this turns the
+    // reload into a non-dismissing alert (`duration: null`) and lets the user
+    // finish and save first. The connection is already closed by the time this
+    // runs — `connectionManager` closes it before dispatching — so the app is
+    // read-only from here on and the alert has to say so.
+    //
+    // Deliberately after `createAppPinia`, which is what configures the alert
+    // sink; before it, `feedbackInfo` would have nowhere to render. Registering
+    // the handler itself does not require a live connection.
+    //
+    // Only the app entrypoint does this. `options.ts` has no dialogs holding
+    // unsaved input, so the plain reload is the better answer there.
+    adapters.databaseAdapter.onVersionChange(() => {
+        log("ENTRYPOINTS app: database versionchange, connection closed", null, "warn");
+        void adapters.alertAdapter.feedbackInfo(
+            i18n.global.t("mixed.versionChange.title"),
+            i18n.global.t("mixed.versionChange.message"),
+            {duration: null}
+        );
+    });
+
     provideAdapters(app, adapters); // inject adapters into vue
 
     installVueGlobalHandlers(app, "app");

@@ -230,6 +230,10 @@
     }
   },
   "mixed": {
+    "versionChange": {
+      "title": "Erweiterung aktualisiert",
+      "message": "KontenManager wurde im Hintergrund aktualisiert und die Datenbank-Verbindung dieses Tabs wurde geschlossen. Bereits gespeicherte Daten sind sicher, weitere Änderungen können hier aber nicht mehr gespeichert werden. Notieren Sie sich offene Eingaben und laden Sie die Seite anschließend neu."
+    },
     "smImportOnly": {
       "title": "INFO",
       "message": "KontenManager ist eine Weiterentwicklung des ehemaligen StockManagers. Der Import von StockManager-Daten ist nur direkt nach der Installation möglich – das heißt, bevor manuell ein KontenManager-Objekt angelegt wurde."

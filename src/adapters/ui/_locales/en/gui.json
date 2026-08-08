@@ -230,6 +230,10 @@
     }
   },
   "mixed": {
+    "versionChange": {
+      "title": "Extension updated",
+      "message": "KontenManager was updated in the background and this tab's database connection was closed. Anything you have already saved is safe, but nothing more can be saved here. Finish what you need to note down, then reload the page."
+    },
     "smImportOnly": {
       "title": "INFO",
       "message": "KontenManager is an evolution of the former StockManager. Importing StockManager data is only possible directly after installation – that is, before any KontenManager object has been manually created."
