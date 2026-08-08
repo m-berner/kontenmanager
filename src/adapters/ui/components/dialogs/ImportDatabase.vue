@@ -1,0 +1,110 @@
+<!--
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - one could get a copy at https://mozilla.org/MPL/2.0/.
+  -->
+
+<script lang="ts" setup>
+/**
+ * @fileoverview Dialog that imports a JSON backup into IndexedDB.
+ * Validates the file, runs integrity checks, executes an atomic import, and
+ * reports results via the alert overlay. Offers creating defaults when needed.
+ */
+import {useI18n} from "vue-i18n";
+
+import {log} from "@/domain/utils/utils";
+
+import {useAdapters} from "@/adapters/context";
+import {useDialogGuards} from "@/adapters/ui/composables/useDialogGuards";
+import {useImportDatabaseDialogController} from "@/adapters/ui/composables/useImportDialog";
+import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
+import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
+import {useSettingsStore} from "@/adapters/ui/stores/settings";
+
+const {t} = useI18n();
+const {browserAdapter, alertAdapter, storageAdapter, importExportAdapter, databaseAdapter, fetchAdapter} =
+    useAdapters();
+const {isLoading, submitGuard} = useDialogGuards(t);
+const runtime = useRuntimeStore();
+const settings = useSettingsStore();
+const records = useRecordsStore();
+
+const {
+  files,
+  fileInputKey,
+  isFileSelected,
+  onChange,
+  runImport
+} = useImportDatabaseDialogController({
+  t,
+  runtime,
+  settings,
+  records,
+  services: {browserAdapter, alertAdapter, storageAdapter, importExportAdapter, databaseAdapter, fetchAdapter}
+});
+
+const onClickOk = async (): Promise<void> => {
+  log("COMPONENTS DIALOGS ImportDatabase: onClickOk");
+
+  await submitGuard({
+    // no fillable form — the only control is a file picker.
+    // Declared explicitly because submitGuard's validation gate is
+    // fail-closed: omitting formRef no longer means "skip validation", so an
+    // accidental undefined cannot pass for a deliberate omission.
+    skipValidation: true,
+    showSystemNotification: alertAdapter.feedbackInfo,
+    errorTitle: t("components.dialogs.importDatabase.title"),
+    errorContext: "IMPORT_DATABASE",
+    operation: async () => {
+      // Moved inside submitGuard, following DeleteBookingType's fix: as a
+      // pre-check this sat outside the isLoading reentrancy guard, and it read
+      // the file selection at click time rather than at operation time. This was
+      // the one sibling that did not re-check its precondition inside at all.
+      if (!isFileSelected.value) {
+        await alertAdapter.feedbackInfo(
+            t("components.dialogs.importDatabase.title"),
+            browserAdapter.getMessage("xx_db_no_file")
+        );
+        return;
+      }
+
+      await runImport();
+    }
+  });
+};
+
+defineExpose({
+  onClickOk,
+  title: t("components.dialogs.importDatabase.title"),
+  isLoading: () => isLoading.value
+});
+
+log("COMPONENTS DIALOGS ImportDatabase: setup");
+</script>
+
+<template>
+  <v-form validate-on="submit" @submit.prevent>
+    <v-card-text class="pa-5">
+      <v-text-field
+          :label="t('components.dialogs.importDatabase.messageDelete')"
+          readonly
+          variant="plain"/>
+      <v-file-input
+          :key="fileInputKey"
+          v-model="files"
+          :clearable="true"
+          :label="t('components.dialogs.importDatabase.fileLabel')"
+          :show-size="true"
+          accept=".json"
+          prepend-icon="$fileUpload"
+          variant="outlined"
+          @update:model-value="onChange"/>
+    </v-card-text>
+    <v-overlay
+        v-model="isLoading"
+        class="align-center justify-center"
+        contained>
+      <v-progress-circular color="primary" indeterminate size="64"/>
+    </v-overlay>
+  </v-form>
+</template>

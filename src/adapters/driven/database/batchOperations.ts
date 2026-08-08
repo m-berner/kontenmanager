@@ -1,0 +1,291 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * one could get a copy at https://mozilla.org/MPL/2.0/.
+ */
+
+import {ERROR_CATEGORY, VALID_STORES, type ValidStoreNameType} from "@/domain/constants";
+import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
+import type {BatchOperationDescriptor, RecordOperation} from "@/domain/types";
+import {log} from "@/domain/utils/utils";
+
+import type {TransactionManagerContract} from "@/adapters/driven/database/transactionManager";
+
+export type BatchOperationBuilder = {
+    add: (_storeName: ValidStoreNameType, _operation: RecordOperation) => BatchOperationBuilder;
+    insert: (_storeName: ValidStoreNameType, _data: unknown) => BatchOperationBuilder;
+    update: (_storeName: ValidStoreNameType, _data: unknown) => BatchOperationBuilder;
+    remove: (_storeName: ValidStoreNameType, _key: number) => BatchOperationBuilder;
+    clear: (_storeName: ValidStoreNameType) => BatchOperationBuilder;
+    execute: () => Promise<void>;
+    getOperationCount: () => number;
+    reset: () => BatchOperationBuilder;
+};
+
+type BatchServiceContract = {
+    executeAtomic: (_descriptors: BatchOperationDescriptor[]) => Promise<void>;
+    executeBatch: (_storeName: ValidStoreNameType, _operations: RecordOperation[]) => Promise<void>;
+    createBuilder: () => BatchOperationBuilder;
+};
+
+function validateDescriptors(descriptors: BatchOperationDescriptor[]): void {
+    if (descriptors.length === 0) {
+        throw appError(
+            ERROR_DEFINITIONS.SERVICES.DATABASE.INVALID_BATCH.CODE,
+            ERROR_CATEGORY.DATABASE,
+            false,
+            {reason: "No operations provided"}
+        );
+    }
+
+    for (const descriptor of descriptors) {
+        // Runtime guard for callers that might bypass the type system.
+        if (!VALID_STORES.includes(descriptor.storeName as ValidStoreNameType)) {
+            throw appError(
+                ERROR_DEFINITIONS.SERVICES.DATABASE.INVALID_BATCH.CODE,
+                ERROR_CATEGORY.DATABASE,
+                false,
+                {storeName: descriptor.storeName, reason: "Invalid store name"}
+            );
+        }
+
+        if (descriptor.operations.length === 0) {
+            throw appError(
+                ERROR_DEFINITIONS.SERVICES.DATABASE.INVALID_BATCH.CODE,
+                ERROR_CATEGORY.DATABASE,
+                false,
+                {storeName: descriptor.storeName, reason: "No operations for the store"}
+            );
+        }
+    }
+}
+
+function promisifyRequest<T>(request: IDBRequest<T>, storeName: string): Promise<T> {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => {
+            const err = request.error as DOMException | null;
+            reject(
+                appError(
+                    ERROR_DEFINITIONS.SERVICES.DATABASE.REQUEST_FAILED.CODE,
+                    ERROR_CATEGORY.DATABASE,
+                    false,
+                    {storeName, name: err?.name, message: err?.message}
+                )
+            );
+        };
+    });
+}
+
+async function executeOperation(
+    store: IDBObjectStore,
+    operation: RecordOperation
+): Promise<void> {
+    switch (operation.type) {
+        case "add":
+            await promisifyRequest(store.add(operation.data), store.name);
+            break;
+        case "put":
+            await promisifyRequest(store.put(operation.data), store.name);
+            break;
+        case "delete":
+            await promisifyRequest(store.delete(operation.key), store.name);
+            break;
+        case "clear":
+            await promisifyRequest(store.clear(), store.name);
+            break;
+        default: {
+            throw appError(
+                ERROR_DEFINITIONS.SERVICES.DATABASE.D.CODE,
+                ERROR_CATEGORY.DATABASE,
+                false,
+                {operation}
+            );
+        }
+    }
+}
+
+async function executeOperations(
+    store: IDBObjectStore,
+    operations: RecordOperation[]
+): Promise<void> {
+    for (const operation of operations) {
+        await executeOperation(store, operation);
+    }
+}
+
+/**
+ * Creates a batch operation service instance.
+ */
+export function createBatchOperationService(transactionManager: TransactionManagerContract): BatchServiceContract {
+    /**
+     * Executes multiple operations across multiple stores atomically
+     *
+     * @param descriptors - Array of store operations
+     * @returns Promise that resolves when all operations complete
+     */
+    async function executeAtomic(descriptors: BatchOperationDescriptor[]): Promise<void> {
+        const startTime = performance.now();
+
+        validateDescriptors(descriptors);
+
+        const storeNames = descriptors.map((d) => d.storeName);
+
+        log("DATABASE batch: starting atomic operation", {
+            stores: storeNames,
+            totalOperations: descriptors.reduce(
+                (sum, d) => sum + d.operations.length,
+                0
+            )
+        });
+
+        await transactionManager.execute(
+            storeNames,
+            "readwrite",
+            async (tx: IDBTransaction) => {
+                for (const descriptor of descriptors) {
+                    const store = tx.objectStore(descriptor.storeName);
+                    await executeOperations(store, descriptor.operations);
+                }
+            }
+        );
+
+        const duration = Math.round(performance.now() - startTime);
+        log("DATABASE batch: atomic operation completed", {duration});
+    }
+
+    /**
+     * Executes operations on a single store
+     *
+     * @param storeName - Target store name
+     * @param operations - Operations to execute
+     */
+    async function executeBatch(
+        storeName: ValidStoreNameType,
+        operations: RecordOperation[]
+    ): Promise<void> {
+        return executeAtomic([{storeName, operations}]);
+    }
+
+    /**
+     * Creates a fluent builder for batch operations
+     */
+    function createBuilder(): BatchOperationBuilder {
+        return createBatchOperationBuilder({executeAtomic});
+    }
+
+    return {
+        executeAtomic,
+        executeBatch,
+        createBuilder
+    };
+}
+
+/**
+ * Creates a fluent builder for batch operations.
+ *
+ * Not exported: the only caller is `createBuilder()` above, which is how
+ * consumers are meant to reach it (via the batch service, which supplies
+ * `executeAtomic`).
+ */
+function createBatchOperationBuilder(service: Pick<BatchServiceContract, "executeAtomic">) {
+    const descriptors: Map<ValidStoreNameType, RecordOperation[]> = new Map();
+
+    function ensureOperations(storeName: ValidStoreNameType): RecordOperation[] {
+        const existing = descriptors.get(storeName);
+        if (existing) {
+            return existing;
+        }
+        const created: RecordOperation[] = [];
+        descriptors.set(storeName, created);
+        return created;
+    }
+
+    function add(storeName: ValidStoreNameType, operation: RecordOperation) {
+        ensureOperations(storeName).push(operation);
+        return builder;
+    }
+
+    function insert(storeName: ValidStoreNameType, data: unknown) {
+        return add(storeName, {type: "add", data});
+    }
+
+    function update(storeName: ValidStoreNameType, data: unknown) {
+        return add(storeName, {type: "put", data});
+    }
+
+    function remove(storeName: ValidStoreNameType, key: number) {
+        return add(storeName, {type: "delete", key});
+    }
+
+    function clear(storeName: ValidStoreNameType) {
+        return add(storeName, {type: "clear"});
+    }
+
+    async function execute(): Promise<void> {
+        // Snapshot (clone, not reference) each store's operations so a
+        // concurrent add()/insert()/etc. call made while this execute() is
+        // still awaiting doesn't get swept into the in-flight batch.
+        //
+        // `queue` keeps the *original* array alongside the clone. Everything
+        // that appends does so in place (`ensureOperations().push(...)`), so the
+        // array object stays identical for the lifetime of a store's queue — and
+        // is replaced only by `reset()`, which clears the map, or by the
+        // `descriptors.set(...)` below. That makes identity the exact test for
+        // "is this still the queue we executed from"; see the drop check below.
+        const entries = Array.from(descriptors.entries()).map(
+            ([storeName, operations]) => ({storeName, queue: operations, executed: [...operations]})
+        );
+        const snapshot = entries.map(({storeName, executed}) => ({storeName, operations: executed}));
+
+        await service.executeAtomic(snapshot);
+
+        // Remove exactly the operations that were executed, leaving any
+        // operations queued concurrently during the await intact for the
+        // next execute() call instead of silently discarding them.
+        for (const {storeName, queue, executed} of entries) {
+            const current = descriptors.get(storeName);
+            if (!current) continue;
+
+            // A `reset()` during the await dropped the array we executed from;
+            // anything queued afterwards landed in a *fresh* one, whose first
+            // `executed.length` entries are new operations, not the ones just
+            // executed. Slicing them off silently discarded them — the exact
+            // opposite of the contract the comment above states. Leave a queue
+            // we do not recognise completely alone.
+            if (current !== queue) continue;
+
+            const remaining = current.slice(executed.length);
+            if (remaining.length > 0) {
+                descriptors.set(storeName, remaining);
+            } else {
+                descriptors.delete(storeName);
+            }
+        }
+    }
+
+    function getOperationCount(): number {
+        return Array.from(descriptors.values()).reduce(
+            (sum, ops) => sum + ops.length,
+            0
+        );
+    }
+
+    function reset() {
+        descriptors.clear();
+        return builder;
+    }
+
+    const builder = {
+        add,
+        insert,
+        update,
+        remove,
+        clear,
+        execute,
+        getOperationCount,
+        reset
+    };
+
+    return builder;
+}

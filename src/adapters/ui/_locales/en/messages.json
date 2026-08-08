@@ -1,0 +1,50 @@
+{
+  "xx_error_code": {
+    "message": "Invalid error code"
+  },
+  "xx_missing_translation": {
+    "message": "Missing translation"
+  },
+  "xx_missing_record": {
+    "message": "Record not found"
+  },
+  "xx_invalid_backup": {
+    "message": "Corrupt backup"
+  },
+  "xx_db_connection_err": {
+    "message": "Database is not connected"
+  },
+  "xx_db_no_selected": {
+    "message": "No record selected"
+  },
+  "xx_db_fade_in": {
+    "message": "Record faded in"
+  },
+  "xx_db_no_file": {
+    "message": "The backup file is not selected"
+  },
+  "xx_db_no_rollback": {
+    "message": "Rollback failed"
+  },
+  "xx_db_rollback": {
+    "message": "Rollback successful"
+  },
+  "xx_no_active_account": {
+    "message": "No account selected"
+  },
+  "xx_form_invalid": {
+    "message": "Please correct the highlighted fields before saving."
+  },
+  "xx_blank_book_date": {
+    "message": "Please enter a valid booking date."
+  },
+  "xx_startup_failed_title": {
+    "message": "KontenManager could not start"
+  },
+  "xx_startup_failed_message": {
+    "message": "Something went wrong while starting up. Please try again."
+  },
+  "xx_startup_failed_retry": {
+    "message": "Retry"
+  }
+}
