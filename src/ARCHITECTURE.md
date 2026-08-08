@@ -381,7 +381,7 @@ account switch the store calls
 ## 10. Database
 
 The extension stores all user data in **IndexedDB** (database name
-`kontenmanager.db`, current schema version 28 — `INDEXED_DB.CURRENT_VERSION`).
+`kontenmanager.db`, current schema version 29 — `INDEXED_DB.CURRENT_VERSION`).
 `INDEXED_DB.MIN_SUPPORTED_VERSION` is 27: backups written by older schema versions are rejected on import.
 
 ### Object stores
@@ -489,11 +489,12 @@ useOnlineStockData.loadOnlineData(page)
 │   ])
 │
 ├─ Apply currency conversion
-│     browserAdapter.getUserLocale() → region → expected currency
-│     stockCur vs uiCur → divisor from runtime.curUsd / runtime.curEur
+│     resolveDisplayCurrency(accounts, activeAccountId, settings.currency)
+│       → the ACTIVE ACCOUNT's cCurrency (NOT the UI locale)
+│     stockCur vs targetCur → divisor from runtime.curUsd / runtime.curEur
 │
 ├─ Write mMin, mValue, mMax back into stocks.items (in place)
-│     (mEuroChange is NOT written here — portfolio.active derives it)
+│     (mChange is NOT written here — portfolio.active derives it)
 ├─ Write updated meeting / quarter dates back into stocks.items
 └─ runtime.markStocksPageLoaded(page)
 ```
@@ -524,6 +525,7 @@ watch(() => settings.stocksPerPage,   () => runtime.clearStocksPages())
 | `ACTIVE_ACCOUNT_ID`  | `-1`                     | Currently selected account |
 | `SKIN`               | `"ocean"`                | UI theme                   |
 | `SERVICE`            | `"wstreet"`              | Data provider              |
+| `CURRENCY`           | `"EUR"`                  | Default currency for new accounts (see §12.1) |
 | `BOOKINGS_PER_PAGE`  | `9`                      | Pagination                 |
 | `STOCKS_PER_PAGE`    | `9`                      | Pagination                 |
 | `DIVIDENDS_PER_PAGE` | `9`                      | Pagination                 |
@@ -535,6 +537,44 @@ watch(() => settings.stocksPerPage,   () => runtime.clearStocksPages())
 
 `storageAdapter.installStorageLocal()` writes all defaults on first install (or after an extension update that adds new
 keys). This is called by the background script's `onInstalled` handler.
+
+### 12.1 Currency
+
+**Currency is a property of the account, not of the UI language.** These are independent facts about a user — someone
+can run an English-language browser and hold euros — and the app used to conflate them, deriving the currency from
+`browserAdapter.getUserLocale()`. That put every eurozone user whose browser was not German onto USD and converted
+their EUR quotes by the USD/EUR rate to get there.
+
+Three pieces:
+
+| Piece | Where | Role |
+|-------|-------|------|
+| `AccountDb.cCurrency` | per account, edited in `AccountForm` | What that account's booking amounts **are**, and the target a quote is converted into |
+| `BROWSER_STORAGE.CURRENCY` | app-level, edited in `OptionsIndex` | Default for a newly created account; display fallback when no account is active |
+| `resolveDisplayCurrency()` | `domain/logic.ts` | The single definition combining the two — active account wins, app default is the fallback |
+
+All three consumers read that one function, so the conversion target and the printed symbol cannot drift apart:
+
+- `useOnlineStockData` — divides the fetched quote by the FX rate unless the quote is already in that currency.
+- `appAdapter.fetchExternalData` — requests exactly the two pairs (`${currency}USD`, `${currency}EUR`) that the divisor
+  chain can consume; the self-pair is dropped and its rate seeded to 1.
+- `plugins/currencySync.ts` — rewrites the i18n `currency`/`currency3` number formats via `mergeNumberFormat`, so all
+  ~13 `n(value, "currency")` call sites stay correct without knowing about any of this.
+
+The **locale still owns formatting** — separators, grouping, symbol placement — which is what a locale should own.
+`Intl.NumberFormat` takes locale and currency independently: `en-US` + EUR renders `€1,234.56`, `de-DE` + EUR renders
+`1.234,56 €`.
+
+`CURRENCIES.SUPPORTED` is `["EUR", "USD"]` and deliberately short: conversion needs a live rate, and only those two are
+fetched. A quote scraped in a third currency (`providerUtils` resolves CAD/AUD/NZD/HKD/SGD correctly) falls through
+with `divisor = 1`, i.e. unconverted — honest, but not converted. Widen the list only together with the rate-fetching
+side.
+
+**Stored booking amounts are never converted.** `cDebit`/`cCredit` and the tax/fee pairs are persisted exactly as
+entered, and `cCurrency` records which currency that was. Converting on write would destroy the transaction's real
+amount (breaking reconciliation against a broker statement, and German reporting, which wants the rate at the
+*transaction* date), would be irreversible, and would do so at whatever spot rate happened to be live — `runtime.curUsd`
+falls back to `1` when the FX fetch fails, which on a write path would silently persist a USD figure as EUR.
 
 ---
 

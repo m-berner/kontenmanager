@@ -57,14 +57,14 @@ describe("domains/mapping/formMapper", () => {
             swift: "  deutdeff  ",
             iban: " de89 3704 0044 0532 0130 00 ",
             logoUrl: "  http://logo  ",
-            withDepot: true
+            withDepot: true, currency: "EUR"
         });
 
         expect(res).toEqual({
             cSwift: "DEUTDEFF",
             cIban: "DE89370400440532013000",
             cLogoUrl: "http://logo",
-            cWithDepot: true
+            cWithDepot: true, cCurrency: "EUR"
         });
     });
 
@@ -75,7 +75,7 @@ describe("domains/mapping/formMapper", () => {
             swift: "s",
             iban: "i",
             logoUrl: "",
-            withDepot: false
+            withDepot: false, currency: "EUR"
         });
 
         expect(res).toEqual({
@@ -83,7 +83,7 @@ describe("domains/mapping/formMapper", () => {
             cSwift: "S",
             cIban: "I",
             cLogoUrl: "",
-            cWithDepot: false
+            cWithDepot: false, cCurrency: "EUR"
         });
     });
 

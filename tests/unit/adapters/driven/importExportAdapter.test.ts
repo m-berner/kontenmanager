@@ -22,7 +22,7 @@ function createValidBackup(): ModernBackupData {
             cDBVersion: INDEXED_DB.CURRENT_VERSION,
             cEngine: "kontenmanager"
         },
-        accounts: [{cID: 1, cSwift: "TEST", cIban: "DE123", cLogoUrl: "", cWithDepot: false}],
+        accounts: [{cID: 1, cSwift: "TEST", cIban: "DE123", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"}],
         stocks: [],
         bookingTypes: [],
         bookings: []
@@ -81,7 +81,7 @@ describe("importExportAdapter", () => {
 
         it("serializes valid data into round-trippable JSON", () => {
             const sm = {cVersion: "27", cDBVersion: 27, cEngine: "kontenmanager"};
-            const accounts = [{cID: 1, cSwift: "TEST", cIban: "DE123", cLogoUrl: "", cWithDepot: false}];
+            const accounts = [{cID: 1, cSwift: "TEST", cIban: "DE123", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"}];
 
             const json = stringifyDatabase(sm as any, accounts as any, [], [], []);
             const parsed = JSON.parse(json);

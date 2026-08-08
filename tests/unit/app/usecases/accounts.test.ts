@@ -44,7 +44,7 @@ describe("usecases/accounts", () => {
                 setStorage
             },
             {
-                accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
+                accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true, cCurrency: "EUR"},
                 withDepot: true,
                 bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
                 initMessages: {title: "IT", message: "IM"}
@@ -98,7 +98,7 @@ describe("usecases/accounts", () => {
                 setStorage: createSetStorageMock()
             },
             {
-                accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
+                accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true, cCurrency: "EUR"},
                 withDepot: true,
                 bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
                 initMessages: {title: "IT", message: "IM"}
@@ -133,7 +133,7 @@ describe("usecases/accounts", () => {
                     setStorage
                 },
                 {
-                    accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false},
+                    accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"},
                     withDepot: false,
                     bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
                     initMessages: {title: "IT", message: "IM"}
@@ -174,7 +174,7 @@ describe("usecases/accounts", () => {
                     setStorage
                 },
                 {
-                    accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false},
+                    accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"},
                     withDepot: false,
                     bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
                     initMessages: {title: "IT", message: "IM"}
@@ -205,7 +205,7 @@ describe("usecases/accounts", () => {
                     setStorage: createSetStorageMock()
                 },
                 {
-                    accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false},
+                    accountData: {cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"},
                     withDepot: false,
                     bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"},
                     initMessages: {title: "IT", message: "IM"}
@@ -228,7 +228,7 @@ describe("usecases/accounts", () => {
                 runtime
             },
             {
-                account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false},
+                account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"},
                 previousWithDepot: false,
                 bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
             }
@@ -254,7 +254,7 @@ describe("usecases/accounts", () => {
                 runtime: createRuntimePortMock()
             },
             {
-                account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
+                account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true, cCurrency: "EUR"},
                 previousWithDepot: true,
                 bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
             }
@@ -282,7 +282,7 @@ describe("usecases/accounts", () => {
                 runtime: createRuntimePortMock()
             },
             {
-                account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
+                account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true, cCurrency: "EUR"},
                 previousWithDepot: false,
                 bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
             }
@@ -333,7 +333,7 @@ describe("usecases/accounts", () => {
                 runtime: createRuntimePortMock()
             },
             {
-                account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
+                account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true, cCurrency: "EUR"},
                 previousWithDepot: false,
                 bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
             }
@@ -364,7 +364,7 @@ describe("usecases/accounts", () => {
                     runtime: createRuntimePortMock()
                 },
                 {
-                    account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true},
+                    account: {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true, cCurrency: "EUR"},
                     previousWithDepot: false,
                     bookingTypeLabels: {buy: "Buy", sell: "Sell", dividend: "Div"}
                 }

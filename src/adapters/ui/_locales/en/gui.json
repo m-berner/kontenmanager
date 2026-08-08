@@ -8,7 +8,9 @@
           "withDepotLabel": "Depot clearing account",
           "ibanLabel": "IBAN / Account number",
           "ibanPlaceholder": "e.g. DE67 1234 5678 9123 8531 78",
-          "missingLogo": "No logo found"
+          "missingLogo": "No logo found",
+          "currencyLabel": "Account currency",
+          "currencyHint": "The currency of every booking on this account. Changing it does not convert existing amounts."
         },
         "bookingForm": {
           "bookingLabel": "Booking",
@@ -409,6 +411,9 @@
       },
       "serviceNames": {
         "disabled": "Disabled"
+      },
+      "currency": {
+        "hint": "Default currency for new accounts. The currency shown is the active account's."
       },
       "markets": {
         "title": "Stock exchanges",

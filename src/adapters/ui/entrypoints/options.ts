@@ -11,6 +11,7 @@ import {log} from "@/domain/utils/utils";
 import {createAdapters} from "@/adapters/container";
 import {provideAdapters} from "@/adapters/context";
 import {installUnhandledRejectionLogger, installVueGlobalHandlers} from "@/adapters/ui/entrypoints/errorHandling";
+import {startCurrencySync} from "@/adapters/ui/plugins/currencySync";
 import {createI18nPlugin} from "@/adapters/ui/plugins/i18n";
 import {createAppPinia} from "@/adapters/ui/plugins/pinia";
 import {startThemeSync} from "@/adapters/ui/plugins/themeSync";
@@ -44,6 +45,10 @@ app.use(vuetifyPlugin);
 void useSettingsStore(pinia).load();
 
 startThemeSync(pinia, vuetifyPlugin);
+// The options page never loads accounts, so `resolveDisplayCurrency` falls back
+// to `settings.currency` here — which is exactly the value this page edits, so
+// the currency selector's own preview updates as soon as it is changed.
+startCurrencySync(pinia, i18n);
 app.mount("#options");
 
 log("ENTRYPOINTS options", window.location.href, "info");

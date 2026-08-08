@@ -14,7 +14,7 @@ describe("ImportExportService", () => {
         it("should stringify valid database data", () => {
             const sm = {cVersion: "1", cDBVersion: 26, cEngine: "test"};
             const accounts = [
-                {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false}
+                {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"}
             ];
             const stocks: any[] = [];
             const bookingTypes: any[] = [];

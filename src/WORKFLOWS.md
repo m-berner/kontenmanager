@@ -487,10 +487,10 @@ CompanyContent.vue onMounted / page change
         │           (always Finanzen.Net, independent of the active `settings.service` provider)
         │ ])
         │
-        ├─ Currency conversion (EUR ↔ USD based on user locale)
+        ├─ Currency conversion (EUR ↔ USD, target = active account's cCurrency)
         ├─ Write mMin / mValue / mMax in place onto stocksStore.items
         │   ├─ Vue reactivity propagates to table cells
-        │   └─ mEuroChange is deliberately NOT written — portfolio.active derives it
+        │   └─ mChange is deliberately NOT written — portfolio.active derives it
         ├─ Write fetched cMeetingDay / cQuarterDay / cAskDates onto the same items,
         │   then persist those stocks via repositories.stocks.save()
         │   └─ these three are real DB columns; cAskDates is the "don't re-fetch for

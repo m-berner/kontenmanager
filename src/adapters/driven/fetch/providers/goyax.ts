@@ -41,7 +41,7 @@ export async function goyaxFetcher(
                 // extractGoyaxRate's own doc comment says it was written to fix.
                 // A truthy `cur` suppresses useOnlineStockData's ISIN-based USD
                 // fallback AND makes `stockCur === uiCur` yield a divisor of 1, so
-                // a USD-quoted instrument was carried into mValue/mEuroChange and
+                // a USD-quoted instrument was carried into mValue/mChange and
                 // the depot total with no FX conversion at all. `withCurrency`
                 // already falls back to EUR when the page carries no marker, so
                 // the common German-market case is unchanged.

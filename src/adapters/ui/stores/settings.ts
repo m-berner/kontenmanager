@@ -92,6 +92,15 @@ export const useSettingsStore = defineStore(
         /** Key of the external financial service used for data fetching. */
         const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
 
+        /**
+         * App-level default currency — see `BROWSER_STORAGE.CURRENCY`.
+         *
+         * Not the display currency on its own: that is the active account's
+         * `cCurrency`, with this as the fallback. `resolveDisplayCurrency`
+         * (`domain/logic.ts`) is the single place those two are combined.
+         */
+        const currency = ref<string>(BROWSER_STORAGE.CURRENCY.value);
+
         /** List of enabled/visible material categories. */
         const materials = ref<string[]>([...BROWSER_STORAGE.MATERIALS.value]);
 
@@ -233,6 +242,7 @@ export const useSettingsStore = defineStore(
                 BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.value
             );
             syncFromStorage(service, storage, BROWSER_STORAGE.SERVICE.key, BROWSER_STORAGE.SERVICE.value);
+            syncFromStorage(currency, storage, BROWSER_STORAGE.CURRENCY.key, BROWSER_STORAGE.CURRENCY.value);
             syncFromStorage(materials, storage, BROWSER_STORAGE.MATERIALS.key, [...BROWSER_STORAGE.MATERIALS.value]);
             syncFromStorage(markets, storage, BROWSER_STORAGE.MARKETS.key, [...BROWSER_STORAGE.MARKETS.value]);
             syncFromStorage(indexes, storage, BROWSER_STORAGE.INDEXES.key, [...BROWSER_STORAGE.INDEXES.value]);
@@ -249,6 +259,7 @@ export const useSettingsStore = defineStore(
 
                 applyStorageChange(changes, BROWSER_STORAGE.SKIN.key, skin, BROWSER_STORAGE.SKIN.value);
                 applyStorageChange(changes, BROWSER_STORAGE.SERVICE.key, service, BROWSER_STORAGE.SERVICE.value);
+                applyStorageChange(changes, BROWSER_STORAGE.CURRENCY.key, currency, BROWSER_STORAGE.CURRENCY.value);
                 applyStorageChange(changes, BROWSER_STORAGE.INDEXES.key, indexes, [...BROWSER_STORAGE.INDEXES.value]);
                 applyStorageChange(changes, BROWSER_STORAGE.MARKETS.key, markets, [...BROWSER_STORAGE.MARKETS.value]);
                 applyStorageChange(changes, BROWSER_STORAGE.MATERIALS.key, materials, [...BROWSER_STORAGE.MATERIALS.value]);
@@ -341,6 +352,18 @@ export const useSettingsStore = defineStore(
         }
 
         /**
+         * Updates the app-level default currency.
+         *
+         * Affects newly created accounts and the no-account display fallback.
+         * It deliberately does NOT rewrite existing accounts' `cCurrency`:
+         * those denote what their stored booking amounts actually are, and
+         * changing that here would relabel real money without converting it.
+         */
+        async function setCurrency(v: string): Promise<void> {
+            await updateSetting(currency, BROWSER_STORAGE.CURRENCY.key, v);
+        }
+
+        /**
          * Updates the active account id.
          *
          * `activeAccountId` was the one persisted setting with no paired setter,
@@ -370,12 +393,14 @@ export const useSettingsStore = defineStore(
             sumsPerPage,
             activeAccountId,
             service,
+            currency,
             materials,
             markets,
             indexes,
             exchanges,
             load,
             init,
+            setCurrency,
             setSkin,
             setSumsPerPage,
             setBookingsPerPage,

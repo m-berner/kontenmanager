@@ -8,7 +8,9 @@
           "withDepotLabel": "Depot Verrechnungskonto",
           "ibanLabel": "IBAN / Kontonummer",
           "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-          "missingLogo": "Kein Logo gefunden"
+          "missingLogo": "Kein Logo gefunden",
+          "currencyLabel": "Währung des Kontos",
+          "currencyHint": "Währung aller Buchungen dieses Kontos. Eine Änderung rechnet vorhandene Beträge nicht um."
         },
         "bookingForm": {
           "bookingLabel": "Buchung",
@@ -463,6 +465,9 @@
       },
       "serviceNames": {
         "disabled": "Deaktiviert"
+      },
+      "currency": {
+        "hint": "Standardwährung für neue Konten. Die angezeigte Währung ist die des aktiven Kontos."
       },
       "markets": {
         "title": "Marktplätze",

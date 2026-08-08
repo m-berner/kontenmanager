@@ -16,7 +16,7 @@ describe("domain/validation/duplicates", () => {
             cSwift: "SWIFT",
             cIban,
             cLogoUrl: "",
-            cWithDepot: false
+            cWithDepot: false, cCurrency: "EUR"
         });
 
         it("returns true when an account with the same IBAN already exists", () => {

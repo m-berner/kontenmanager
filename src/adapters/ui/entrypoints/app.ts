@@ -13,6 +13,7 @@ import {provideAdapters} from "@/adapters/context";
 import {installUnhandledRejectionLogger, installVueGlobalHandlers} from "@/adapters/ui/entrypoints/errorHandling";
 import {ensureSingleAppTab} from "@/adapters/ui/entrypoints/singleTabGuard";
 import componentsPlugin from "@/adapters/ui/plugins/components";
+import {startCurrencySync} from "@/adapters/ui/plugins/currencySync";
 import {createI18nPlugin} from "@/adapters/ui/plugins/i18n";
 import {createAppPinia} from "@/adapters/ui/plugins/pinia";
 import routerPlugin from "@/adapters/ui/plugins/router";
@@ -54,6 +55,10 @@ async function bootstrap(): Promise<void> {
 
     // Keep theme changes (including cross-context storage updates) in the UI layer.
     startThemeSync(pinia, vuetifyPlugin);
+    // Same shape, for the display currency: the active account's cCurrency (or
+    // the app default) decides how `n(value, "currency")` renders, instead of
+    // the UI language deciding it.
+    startCurrencySync(pinia, i18n);
     app.mount("#app");
 
     log(

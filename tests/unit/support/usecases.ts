@@ -37,7 +37,8 @@ export function makeAccountDb(partial: Partial<AccountDb> = {}): AccountRecord {
         cSwift: partial.cSwift ?? "SWIFT",
         cIban: partial.cIban ?? "IBAN",
         cLogoUrl: partial.cLogoUrl ?? "",
-        cWithDepot: partial.cWithDepot ?? false
+        cWithDepot: partial.cWithDepot ?? false,
+        cCurrency: partial.cCurrency ?? "EUR"
     };
 }
 

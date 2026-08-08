@@ -4,8 +4,9 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {BOOKING_TYPE_ROLE, DATE, INDEXED_DB, PORTFOLIO} from "@/domain/constants";
+import {BOOKING_TYPE_ROLE, CURRENCIES, DATE, INDEXED_DB, PORTFOLIO} from "@/domain/constants";
 import type {
+    AccountDb,
     AccountStoreContract,
     BookingDb,
     BookingStoreContract,
@@ -35,6 +36,44 @@ function resolveTypeIdByRole(
     role: BookingTypeDb["cRole"]
 ): number | undefined {
     return bookingTypes.find((t) => t.cRole === role)?.cID;
+}
+
+/**
+ * The currency every monetary figure on screen is denominated in.
+ *
+ * One definition, because three different layers need the same answer and must
+ * not drift: `useOnlineStockData` converts quotes into it, `currencySync`
+ * formats with it, and `appAdapter` fetches the FX pairs for it. Deriving it
+ * three times is how they would end up disagreeing — which is precisely the
+ * class of bug this replaced, where the quote was converted to one currency and
+ * the label printed another.
+ *
+ * The **active account's** `cCurrency` wins, because that is what the figures
+ * actually are: booking amounts are stored as entered under that account, and a
+ * quote is converted into it. `settings.currency` is only the fallback for when
+ * no account is selected (a fresh install, or after deleting the last account),
+ * where there are no account-scoped figures to label anyway.
+ *
+ * Note this is deliberately NOT derived from the UI locale. Language and
+ * currency are independent properties of a user — someone can run an
+ * English-language browser and hold euros — and binding them put every eurozone
+ * user whose browser was not German onto USD. The locale still decides
+ * *formatting* (separators, grouping, symbol placement), which is the part a
+ * locale should own: `Intl.NumberFormat("en-US", {currency: "EUR"})` renders
+ * `€1,234.56` and `de-DE` renders `1.234,56 €` — same amount, same currency.
+ *
+ * @param accounts - The accounts currently in the store.
+ * @param activeAccountId - The selected account id, or the "none" sentinel.
+ * @param fallbackCurrency - `settings.currency`, the app-level default.
+ * @returns The ISO code to convert into and format with.
+ */
+export function resolveDisplayCurrency(
+    accounts: Pick<AccountDb, "cID" | "cCurrency">[],
+    activeAccountId: number,
+    fallbackCurrency: string
+): string {
+    const active = accounts.find((entry) => entry.cID === activeAccountId);
+    return active?.cCurrency || fallbackCurrency || CURRENCIES.EUR;
 }
 
 /**

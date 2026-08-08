@@ -39,7 +39,7 @@ export const useStocksStore = defineStore("stocks", function () {
         const {
             mPortfolio,
             mInvest,
-            mEuroChange,
+            mChange,
             mMin,
             mValue,
             mMax,
@@ -49,7 +49,7 @@ export const useStocksStore = defineStore("stocks", function () {
         return {
             mPortfolio,
             mInvest,
-            mEuroChange,
+            mChange,
             mMin,
             mValue,
             mMax,

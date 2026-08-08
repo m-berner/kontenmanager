@@ -8,7 +8,7 @@
 import {onBeforeUnmount, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 
-import {COMPONENTS} from "@/domain/constants";
+import {COMPONENTS, CURRENCIES} from "@/domain/constants";
 import type {AccountFormProps} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 import {createIbanMessages, createSwiftMessages} from "@/domain/validation/messages";
@@ -28,6 +28,14 @@ const records = useRecordsStore();
 
 const SWIFT_RULES = createSwiftMessages(t);
 const IBAN_RULES = createIbanMessages(t);
+// Plain ISO codes, untranslated — the same reasoning `createServiceLabelOverrides`
+// applies to provider brand names. "EUR" and "USD" are ISO 4217 identifiers, not
+// words, and are written the same way in both shipped locales.
+// Widened to `string[]` deliberately: `CURRENCIES.SUPPORTED` is `as const`, so a
+// bare spread gives `("EUR"|"USD")[]`, from which Vuetify infers the v-model as
+// that union — and `accountFormData.currency` is a plain `string`, since
+// `validateAccount` is what actually constrains it at the boundary.
+const CURRENCY_ITEMS: string[] = [...CURRENCIES.SUPPORTED];
 
 const search = ref<string>("");
 
@@ -93,6 +101,22 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
       v-model="accountFormData.withDepot"
       :label="t('components.dialogs.forms.accountForm.withDepotLabel')"
       color="red"
+      variant="outlined"/>
+  <!--
+    The currency this account's bookings are in, and the one its quotes are
+    converted into. Editable on update as well as on add: it is a correction of
+    what the stored amounts always were, not a conversion — nothing rewrites the
+    numbers, so changing it on an account with real bookings relabels them.
+    That is the honest behaviour for a field that records a fact about existing
+    data, but it is why the hint spells it out.
+  -->
+  <v-select
+      v-model="accountFormData.currency"
+      :hint="t('components.dialogs.forms.accountForm.currencyHint')"
+      :items="CURRENCY_ITEMS"
+      :label="t('components.dialogs.forms.accountForm.currencyLabel')"
+      density="compact"
+      persistent-hint
       variant="outlined"/>
   <v-text-field
       v-model="accountFormData.swift"

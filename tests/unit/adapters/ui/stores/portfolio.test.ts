@@ -40,7 +40,7 @@ describe("Portfolio Store", () => {
         expect(entry.mPortfolio).toBe(10);
         expect(entry.mInvest).toBe(1000);
         expect(entry.mDeleteable).toBe(false);
-        expect(entry.mEuroChange).toBe(120 * 10 - 1000);
+        expect(entry.mChange).toBe(120 * 10 - 1000);
     });
 
     it("marks a stock deletable when it has no bookings", () => {

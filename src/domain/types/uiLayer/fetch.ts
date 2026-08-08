@@ -197,11 +197,19 @@ export interface StockRamData {
     mPortfolio?: number;
     /** Cost basis still bound to the position (FIFO). */
     mInvest?: number;
-    /** Unrealized gain/loss in the UI currency: mValue * mPortfolio - mInvest. */
-    mEuroChange?: number;
+    /**
+     * Unrealized gain/loss: `mValue * mPortfolio - mInvest`.
+     *
+     * Named `mChange`, not `mEuroChange`: both operands are in the **active
+     * account's** `cCurrency`, which may be USD, so the old name asserted a
+     * currency the value does not carry. (It was also the one place the two
+     * sides could disagree, back when `mValue` was converted to the browser
+     * locale's currency while `mInvest` stayed as the raw booking amount.)
+     */
+    mChange?: number;
     /** 52-week low, as fetched. `0` means the provider reported no range. */
     mMin?: number;
-    /** Current quote, converted to the UI currency. */
+    /** Current quote, converted into the active account's `cCurrency`. */
     mValue?: number;
     /** 52-week high, as fetched. `0` means the provider reported no range. */
     mMax?: number;

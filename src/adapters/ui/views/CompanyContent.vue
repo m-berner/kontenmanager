@@ -394,13 +394,13 @@ log("VIEWS CompanyContent: setup");
         <td>
           <v-tooltip
               v-if="hasPortfolio(item.mPortfolio)"
-              :text="n(calculatePercentChange(item.mEuroChange, item.mInvest), 'percent')"
+              :text="n(calculatePercentChange(item.mChange, item.mInvest), 'percent')"
               location="left">
             <template #activator="{ props }">
                <span
-                   :class="winLossClass(item.mEuroChange ?? 0)"
+                   :class="winLossClass(item.mChange ?? 0)"
                    v-bind="props">
-                {{ n(item.mEuroChange ?? 0, "currency") }}
+                {{ n(item.mChange ?? 0, "currency") }}
               </span>
             </template>
           </v-tooltip>

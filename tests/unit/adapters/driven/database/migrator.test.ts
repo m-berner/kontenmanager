@@ -6,15 +6,15 @@
 
 import {describe, expect, it, vi} from "vitest";
 import {setupDatabase} from "@/adapters/driven/database/migrator";
-import {BOOKING_TYPE_ROLE, INDEXED_DB} from "@/domain/constants";
-import type {BookingTypeDb} from "@/domain/types";
+import {BOOKING_TYPE_ROLE, CURRENCIES, INDEXED_DB} from "@/domain/constants";
+import type {AccountDb, BookingTypeDb} from "@/domain/types";
 
 /**
  * Simulates an IndexedDB cursor walk synchronously: assigning `onsuccess` on the
  * returned fake request immediately drives the whole iteration (each `cursor.continue()`
  * call inside the handler recurses into the next record), ending with a `null` result.
  */
-function createFakeCursorRequest(records: BookingTypeDb[]) {
+function createFakeCursorRequest<T>(records: T[]) {
     const request: { onsuccess: ((event: unknown) => void) | null } = {onsuccess: null};
     Object.defineProperty(request, "onsuccess", {
         set(handler: (event: unknown) => void) {
@@ -26,7 +26,7 @@ function createFakeCursorRequest(records: BookingTypeDb[]) {
                 }
                 const cursor = {
                     value: records[index],
-                    update: vi.fn((updated: BookingTypeDb) => {
+                    update: vi.fn((updated: T) => {
                         records[index] = updated;
                     }),
                     continue: vi.fn(() => {
@@ -239,17 +239,31 @@ describe("migrator: setupDatabase", () => {
     });
 
     describe("backfillBookingTypeRoles (oldVersion < 28)", () => {
+        /**
+         * One mock PER STORE, keyed by name.
+         *
+         * A single shared `objectStore` mock used to serve every store, which
+         * was fine while `backfillBookingTypeRoles` was the only cursor-based
+         * migration — and stopped being fine the moment `backfillAccountCurrency`
+         * (v29) opened a cursor of its own: the two shared a call counter, so
+         * "the booking-type cursor opened once" silently became "some cursor
+         * opened twice". Keying by name keeps each migration's assertions about
+         * its own store.
+         */
         function createBackfillTx(records: BookingTypeDb[]) {
             const store = {openCursor: vi.fn(() => createFakeCursorRequest(records))};
+            const accountsStore = {openCursor: vi.fn(() => createFakeCursorRequest([]))};
             const tx = {
                 db: {objectStoreNames: {contains: vi.fn().mockReturnValue(true)}},
-                objectStore: vi.fn().mockReturnValue(store)
+                objectStore: vi.fn((name: string) =>
+                    name === INDEXED_DB.STORE.ACCOUNTS.NAME ? accountsStore : store
+                )
             };
-            return {tx, store};
+            return {tx, store, accountsStore};
         }
 
         function run(records: BookingTypeDb[], oldVersion = 27) {
-            const {tx, store} = createBackfillTx(records);
+            const {tx, store, accountsStore} = createBackfillTx(records);
             const db = {
                 objectStoreNames: {contains: vi.fn().mockReturnValue(true)},
                 createObjectStore: vi.fn()
@@ -261,7 +275,7 @@ describe("migrator: setupDatabase", () => {
             } as unknown as IDBVersionChangeEvent;
 
             setupDatabase(db as unknown as IDBDatabase, ev);
-            return {tx, store};
+            return {tx, store, accountsStore};
         }
 
         it("classifies a legacy row with a shipped default label and a non-1/2/3 id by name", () => {
@@ -322,6 +336,61 @@ describe("migrator: setupDatabase", () => {
             const {store} = run(records, 28);
 
             expect(store.openCursor).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("backfillAccountCurrency (oldVersion < 29)", () => {
+        function run(records: AccountDb[], oldVersion = 28) {
+            const accountsStore = {openCursor: vi.fn(() => createFakeCursorRequest(records))};
+            const otherStore = {openCursor: vi.fn(() => createFakeCursorRequest([]))};
+            const tx = {
+                db: {objectStoreNames: {contains: vi.fn().mockReturnValue(true)}},
+                objectStore: vi.fn((name: string) =>
+                    name === INDEXED_DB.STORE.ACCOUNTS.NAME ? accountsStore : otherStore
+                )
+            };
+            const db = {
+                objectStoreNames: {contains: vi.fn().mockReturnValue(true)},
+                createObjectStore: vi.fn()
+            };
+            const ev = {
+                oldVersion,
+                newVersion: 29,
+                target: {transaction: tx}
+            } as unknown as IDBVersionChangeEvent;
+
+            setupDatabase(db as unknown as IDBDatabase, ev);
+            return {accountsStore};
+        }
+
+        it("stamps EUR onto an account row written before the field existed", () => {
+            const records = [
+                {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true} as unknown as AccountDb
+            ];
+
+            run(records);
+
+            expect(records[0].cCurrency).toBe(CURRENCIES.EUR);
+        });
+
+        it("is idempotent: a row that already has a cCurrency is left untouched", () => {
+            const records: AccountDb[] = [
+                {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true, cCurrency: CURRENCIES.USD}
+            ];
+
+            run(records);
+
+            expect(records[0].cCurrency).toBe(CURRENCIES.USD);
+        });
+
+        it("does not run when upgrading from version 29 or later", () => {
+            const records = [
+                {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "", cWithDepot: true} as unknown as AccountDb
+            ];
+
+            const {accountsStore} = run(records, 29);
+
+            expect(accountsStore.openCursor).not.toHaveBeenCalled();
         });
     });
 

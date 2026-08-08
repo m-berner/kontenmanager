@@ -303,7 +303,7 @@ describe("DomainLogic", () => {
         it("should initialize records correctly", async () => {
             const storesDB: RecordsDbData = {
                 accountsDB: [
-                    {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "L", cWithDepot: false}
+                    {cID: 1, cSwift: "S", cIban: "I", cLogoUrl: "L", cWithDepot: false, cCurrency: "EUR"}
                 ],
                 bookingsDB: [],
                 bookingTypesDB: [],
@@ -348,6 +348,45 @@ describe("DomainLogic", () => {
 
         it("should return false for empty bookings", () => {
             expect(DomainLogic.hasBookings(1, [])).toBe(false);
+        });
+    });
+
+    describe("resolveDisplayCurrency", () => {
+        const accounts = [
+            {cID: 1, cCurrency: "EUR"},
+            {cID: 2, cCurrency: "USD"}
+        ];
+
+        it("returns the active account's currency", () => {
+            expect(DomainLogic.resolveDisplayCurrency(accounts, 2, "EUR")).toBe("USD");
+        });
+
+        // The whole point of the change: the account decides, and nothing about
+        // the user's language is consulted. A caller passing a fallback that
+        // disagrees with the active account must not win.
+        it("prefers the active account over the app-level fallback", () => {
+            expect(DomainLogic.resolveDisplayCurrency(accounts, 1, "USD")).toBe("EUR");
+        });
+
+        it("falls back to the app default when no account is active", () => {
+            expect(DomainLogic.resolveDisplayCurrency(accounts, -1, "USD")).toBe("USD");
+        });
+
+        it("falls back when the active id names an account that no longer exists", () => {
+            expect(DomainLogic.resolveDisplayCurrency(accounts, 99, "USD")).toBe("USD");
+        });
+
+        // Defence in depth for a row that predates migration 29 in some way the
+        // migration did not reach: an empty cCurrency must not render as an
+        // empty currency symbol, it must fall through.
+        it("falls through a blank account currency to the fallback", () => {
+            expect(
+                DomainLogic.resolveDisplayCurrency([{cID: 1, cCurrency: ""}], 1, "USD")
+            ).toBe("USD");
+        });
+
+        it("ends at EUR when even the fallback is empty", () => {
+            expect(DomainLogic.resolveDisplayCurrency([], -1, "")).toBe("EUR");
         });
     });
 });

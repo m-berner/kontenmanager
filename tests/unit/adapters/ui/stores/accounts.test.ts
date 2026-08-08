@@ -28,7 +28,7 @@ describe("Accounts Store", () => {
         cSwift: "TESTBIC",
         cLogoUrl: "http://logo.com",
         cIban: "DE1234567890",
-        cWithDepot: true
+        cWithDepot: true, cCurrency: "EUR"
     };
 
     it("should add an account", () => {

@@ -58,7 +58,7 @@ export const createCompanyHeaders = (t: (_key: string) => string): readonly Head
         createHeaderItem(t, TRANSLATION_KEYS.COMPANY_QF, "cQuarterDay"),
         createHeaderItem(t, TRANSLATION_KEYS.COMPANY_GM, "cMeetingDay"),
         createHeaderItem(t, TRANSLATION_KEYS.COMPANY_PORTFOLIO, "mPortfolio", true),
-        createHeaderItem(t, TRANSLATION_KEYS.COMPANY_WIN_LOSS, "mEuroChange"),
+        createHeaderItem(t, TRANSLATION_KEYS.COMPANY_WIN_LOSS, "mChange"),
         createHeaderItem(t, TRANSLATION_KEYS.COMPANY_52LOW, "mMin"),
         createHeaderItem(t, TRANSLATION_KEYS.COMPANY_RATE, "mValue"),
         createHeaderItem(t, TRANSLATION_KEYS.COMPANY_52HIGH, "mMax")

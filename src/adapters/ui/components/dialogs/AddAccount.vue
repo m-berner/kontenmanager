@@ -26,12 +26,14 @@ const {t} = useI18n();
 const {databaseAdapter, browserAdapter, alertAdapter, storageAdapter, repositories} =
     useAdapters();
 const {setStorage} = storageAdapter();
-const accountForm = createAccountFormManager();
+const settings = useSettingsStore();
+// Seeded with the user's app-level default so a new account starts on the
+// currency they actually use, rather than on a constant.
+const accountForm = createAccountFormManager(settings.currency);
 provideAccountFormManager(accountForm);
 const {accountFormData, mapAccountFormToDb, reset} = accountForm;
 const {submitGuard, isLoading} = useDialogGuards(t);
 const runtime = useRuntimeStore();
-const settings = useSettingsStore();
 const records = useRecordsStore();
 const baseDialogRef = ref<typeof BaseDialogForm | null>(null);
 

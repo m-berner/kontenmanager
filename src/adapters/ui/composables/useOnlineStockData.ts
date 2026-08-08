@@ -5,10 +5,12 @@
  */
 
 import {CURRENCIES, DATE} from "@/domain/constants";
+import {resolveDisplayCurrency} from "@/domain/logic";
 import type {NumberStringPair, OnlineStorageData, StockItem} from "@/domain/types";
 import {isoDate, isValidISODate, log, toNumber, utcDate} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
+import {useAccountsStore} from "@/adapters/ui/stores/accounts";
 import {usePortfolioStore} from "@/adapters/ui/stores/portfolio";
 import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
@@ -62,9 +64,10 @@ function toTimestamp(iso: string): number {
 }
 
 export function useOnlineStockData() {
-    const {fetchAdapter, storageAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
+    const {fetchAdapter, storageAdapter, alertAdapter, repositories} = useAdapters();
     const portfolio = usePortfolioStore();
     const stocks = useStocksStore();
+    const accounts = useAccountsStore();
     const runtime = useRuntimeStore();
     const settings = useSettingsStore();
 
@@ -176,25 +179,30 @@ export function useOnlineStockData() {
             // fetch for this stock must not also discard its already-fetched date data.
             const data = minRateMaxResponse.data[i];
             if (data) {
-                const locale = browserAdapter.getUserLocale();
-                let region: string | undefined;
-                try {
-                    region = new Intl.Locale(locale).region?.toLowerCase();
-                } catch {
-                    region = undefined;
-                }
-                const uiCur = region ? CURRENCIES.CODE.get(region) : undefined;
+                // The ACTIVE ACCOUNT's currency, not one derived from the browser
+                // locale. A user's UI language does not tell you what currency
+                // their holdings are denominated in — deriving it that way put
+                // every eurozone user whose browser was not German onto USD, and
+                // then divided their EUR quotes by the USD/EUR rate to get there.
+                // `resolveDisplayCurrency` is shared with `currencySync` (which
+                // formats) and `appAdapter` (which fetches the rate), so the
+                // conversion target and the printed symbol cannot drift apart.
+                const targetCur = resolveDisplayCurrency(
+                    accounts.items,
+                    settings.activeAccountId,
+                    settings.currency
+                );
 
                 // When the provider couldn't detect a currency, fall back to inferring
                 // USD for US-domiciled securities (ISIN prefix "US").
                 const stockCur = data.cur || (stock.cISIN?.startsWith("US") ? CURRENCIES.USD : "");
 
                 const rawDivisor =
-                    !stockCur || stockCur === uiCur
+                    !stockCur || stockCur === targetCur
                         ? 1
-                        : stockCur === "USD"
+                        : stockCur === CURRENCIES.USD
                             ? runtime.curUsd
-                            : stockCur === "EUR"
+                            : stockCur === CURRENCIES.EUR
                                 ? runtime.curEur
                                 : 1;
                 const divisor = rawDivisor > 0 ? rawDivisor : 1;
@@ -202,7 +210,7 @@ export function useOnlineStockData() {
                 stockToUpdate.mMin = toNumber(data.min) / divisor;
                 stockToUpdate.mValue = toNumber(data.rate) / divisor;
                 stockToUpdate.mMax = toNumber(data.max) / divisor;
-                // mEuroChange is deliberately NOT written here. It is derived,
+                // mChange is deliberately NOT written here. It is derived,
                 // not fetched: `portfolio.active` — the getter CompanyContent
                 // actually renders — recomputes it on every evaluation from
                 // mValue, mPortfolio and mInvest, so any value written into the

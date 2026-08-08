@@ -31,7 +31,7 @@ function parseQuoteSide(raw: string): number | null {
  * "there is no quote on that side", not "the price is zero". Averaging a zero
  * side in would halve the real price — e.g. an illiquid stock rendered as
  * bid "0,00" / ask "100,00" produced a mid-quote of 50, which then flowed
- * straight into mValue, mEuroChange and the depot total. When only one side has
+ * straight into mValue, mChange and the depot total. When only one side has
  * a price, that side *is* the best available price.
  *
  * (Round 23 made a missing/blank side distinguishable from a parsed zero, which
@@ -93,7 +93,7 @@ export function detectCurrency(value: string): string {
  * feeds it RAW whole-cell text from the "Währung" row, which is exactly where
  * such a name appears. The misread then reached useOnlineStockData, which
  * divides a "USD" price by the USD/EUR rate: a CAD-quoted stock was silently
- * converted with the wrong rate, corrupting mValue, mEuroChange and the depot
+ * converted with the wrong rate, corrupting mValue, mChange and the depot
  * total with a plausible-looking number and no error.
  *
  * Returning the true ISO code instead means useOnlineStockData's divisor chain

@@ -302,4 +302,12 @@ export async function updateAccountUsecase(
     for (const bt of createdTypes) deps.records.bookingTypes.add(bt);
 
     deps.runtime.resetTeleport();
+    // Editing an account can change `cCurrency`, which is the currency quotes are
+    // converted INTO (`useOnlineStockData`'s divisor) — so every already-fetched
+    // mValue/mMin/mMax on screen is now scaled to the wrong currency. Invalidate
+    // the freshness markers so the next render re-fetches and re-converts.
+    // Unconditional rather than gated on the currency actually having changed:
+    // the flag is a cheap in-memory marker, and the other write usecases
+    // invalidate on every write for the same reason.
+    deps.runtime.clearStocksPages();
 }

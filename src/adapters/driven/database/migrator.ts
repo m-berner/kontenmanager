@@ -4,8 +4,8 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {INDEXED_DB} from "@/domain/constants";
-import type {BookingTypeDb} from "@/domain/types";
+import {CURRENCIES, INDEXED_DB} from "@/domain/constants";
+import type {AccountDb, BookingTypeDb} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 import {resolveLegacyBookingTypeRole} from "@/domain/validation/validators";
 
@@ -194,6 +194,50 @@ function backfillBookingTypeRoles(tx: IDBTransaction): void {
 }
 
 /**
+ * Stamps `cCurrency` onto account rows written before schema 29, when accounts
+ * had no currency of their own and every amount was implicitly EUR.
+ *
+ * EUR is the truthful default rather than a guess: until this migration the app
+ * derived its currency from the UI language, and the German-language build is
+ * what every existing database was created under. `validateAccount` applies the
+ * same default on the import path, so a pre-v29 backup and a pre-v29 IndexedDB
+ * row end up identical.
+ *
+ * Idempotent, like `backfillBookingTypeRoles` above: a row that already carries
+ * a `cCurrency` is left alone, so this is safe to leave wired in permanently
+ * rather than gated to a single version transition.
+ */
+function backfillAccountCurrency(tx: IDBTransaction): void {
+    const storeName = INDEXED_DB.STORE.ACCOUNTS.NAME;
+
+    if (!tx.db.objectStoreNames.contains(storeName)) {
+        return;
+    }
+
+    const store = tx.objectStore(storeName);
+    const request = store.openCursor();
+    request.onsuccess = (event) => {
+        const cursor = (event.target as IDBRequest<IDBCursorWithValue | null>).result;
+        if (!cursor) return;
+        const record = cursor.value as AccountDb;
+        if (!record.cCurrency) {
+            cursor.update({...record, cCurrency: CURRENCIES.EUR});
+        }
+        cursor.continue();
+    };
+    // Same reasoning as backfillBookingTypeRoles: without this the cursor's
+    // failure surfaces as an unhandled request error that aborts the whole
+    // version-change transaction with none of the migrator's context attached.
+    request.onerror = () => {
+        log(
+            "SERVICE DATABASE migrator: backfillAccountCurrency cursor failed",
+            {storeName, error: request.error?.message},
+            "error"
+        );
+    };
+}
+
+/**
  * Executes schema/content migrations between versions.
  */
 function runMigrations(
@@ -232,6 +276,10 @@ function runMigrations(
 
     if (oldVersion < 28) {
         backfillBookingTypeRoles(tx);
+    }
+
+    if (oldVersion < 29) {
+        backfillAccountCurrency(tx);
     }
 }
 

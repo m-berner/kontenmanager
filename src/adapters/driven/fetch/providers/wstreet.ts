@@ -193,7 +193,7 @@ function extractWStreetStockData(doc: Document): FetchResult {
         // DEFAULT_CURRENCY for "no marker found at all", and three separate
         // files document why: an empty currency makes `useOnlineStockData` infer
         // USD from a "US" ISIN prefix and divide an EUR-quoted price by the USD
-        // rate, corrupting the displayed price, `mEuroChange` and the depot
+        // rate, corrupting the displayed price, `mChange` and the depot
         // total with a plausible-looking number. `providerUtils.parseCurrency`
         // states it as a rule: the fallback "must not be changed to ''".
         if (result.currency === "") {

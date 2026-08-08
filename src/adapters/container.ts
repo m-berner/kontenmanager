@@ -77,7 +77,6 @@ export function createAdapters(overrides: AdaptersOverrides = {}) {
     const appAdapter =
         overrides.appAdapter ??
         createAppAdapter({
-            browserAdapter,
             storageAdapter,
             databaseAdapter,
             fetchAdapter

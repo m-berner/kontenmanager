@@ -48,7 +48,7 @@ describe("ImportDatabase Logic Test", () => {
                     cSwift: "BANK1",
                     cIban: "DE1",
                     cLogoUrl: "",
-                    cWithDepot: true
+                    cWithDepot: true, cCurrency: "EUR"
                 }
             ],
             bookings: [],
