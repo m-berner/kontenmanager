@@ -43,7 +43,7 @@ const groupedLabel = (clean: string): string =>
     clean.length > 1 ? ` / ${clean.replace(/(.{4})/g, "$1 ")}` : "";
 
 // UpdateAccount.vue's onBeforeMount (parent) populates accountFormData
-// before this component's setup() runs (child), so derive the initial
+// before this component's setup() runs (child). So derive the initial
 // label from whatever value is already there instead of hardcoding "" -
 // otherwise editing an existing account shows a blank label suffix until
 // the user retypes the field.
@@ -111,6 +111,7 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
     data, but it is why the hint spells it out.
   -->
   <v-select
+      class="currency-select"
       v-model="accountFormData.currency"
       :hint="t('components.dialogs.forms.accountForm.currencyHint')"
       :items="CURRENCY_ITEMS"
@@ -150,3 +151,9 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
     </v-avatar>
   </div>
 </template>
+
+<style scoped>
+.currency-select {
+  margin-bottom: 24px;
+}
+</style>
