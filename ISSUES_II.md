@@ -46,7 +46,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 9.2 | ~~**High**~~ **FIXED** | cross-cutting (`browserAdapter` / `appAdapter` / `useOnlineStockData` / `i18n`) | Display currency is derived from the browser's UI language with no user override; only fetched quotes are converted, so `mEuroChange` and the two TitleBar chips mix currencies for any non-German-browser user |
 | 2.1 | ~~**Medium**~~ **FIXED** | `usecases/bookingTypes.ts:60` | A Buy/Sell/Dividend booking type can be deleted while it has no bookings, silently disabling all stock bookings for that account |
 | 2.2 | ~~**Medium**~~ **FIXED** | `usecases/backup/import.ts:148` | The error handler awaits `setStorage` unguarded; a failure there discards the real error and skips `onError` |
-| 4.1 | Medium | `adapters/container.ts:66` | The documented `storageAdapter` override is accepted and silently ignored |
+| 4.1 | ~~**Medium**~~ **FIXED** | `adapters/container.ts:66` | The documented `storageAdapter` override is accepted and silently ignored |
 | 5.1 | Medium | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
 | 8.1 | Medium | `driven/browserAdapter.ts:264` | The system-notification `iconUrl` resolves to a path that does not exist in the build |
 | 2.3 | Low | `usecases/backup/exportHelpers.ts:69` | An empty database reports "Export validation failed" |
@@ -441,7 +441,15 @@ Files read in full: `fetchAdapter.ts`, `fetch/{httpClient,httpCache,providerUtil
 Cross-checked against `AppIndex.vue` and `InfoBar.vue` (the two consumers of what this layer
 produces).
 
-### 4.1 — Medium · `adapters/container.ts:66` · the `storageAdapter` override is declared but silently ignored
+### 4.1 — Medium · **FIXED** · `adapters/container.ts:66` · the `storageAdapter` override is declared but silently ignored
+
+> **Resolved.** `createAdapters` now binds `const storage = overrides.storageAdapter
+> ?? storageAdapter` and uses that local in both places — the returned container
+> and the `createAppAdapter` argument — matching the pattern every other adapter
+> already followed and the one `containerBackground.ts` already got right.
+> A new `tests/unit/adapters/container.test.ts` locks all three behaviours
+> (returned container, pass-through to `createAppAdapter`, and the no-override
+> fallback), so the documented escape hatch can no longer go inert unnoticed.
 
 *Verified.*
 
