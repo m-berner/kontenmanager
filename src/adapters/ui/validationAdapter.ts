@@ -279,7 +279,10 @@ export function ibanRules(
         fromDomain((v) => ValidationRules.validateIBAN(v as string), {
             [VALIDATION_CODES.INVALID_LENGTH]: msgArray[1],
             [VALIDATION_CODES.INVALID_FORMAT]: msgArray[2],
-            [VALIDATION_CODES.INVALID_CHECKSUM]: msgArray[3],
+            // Same slot order as isinRules. Added when validateIBAN stopped
+            // folding "country not in IBAN_LENGTH_CODES" into INVALID_LENGTH.
+            [VALIDATION_CODES.INVALID_COUNTRY]: msgArray[3],
+            [VALIDATION_CODES.INVALID_CHECKSUM]: msgArray[4],
             [VALIDATION_CODES.REQUIRED]: msgArray[0]
         })
     ];
@@ -288,7 +291,7 @@ export function ibanRules(
         rules.push(createRule((v) => {
             const cleaned = cleanString(v);
             return !cleaned || !isDuplicate(cleaned.toUpperCase());
-        }, msgArray[4]));
+        }, msgArray[5]));
     }
 
     return rules;

@@ -466,6 +466,7 @@
       "required": "IBAN is required",
       "length": "Invalid IBAN length",
       "format": "Invalid IBAN",
+      "country": "IBAN country not supported",
       "checksum": "Invalid checksum",
       "duplicate": "Account already exists"
     },

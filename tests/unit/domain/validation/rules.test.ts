@@ -42,6 +42,18 @@ describe("Validation Rules", () => {
             });
         });
 
+        it("should report an unsupported country as INVALID_COUNTRY", () => {
+            // The country lookup used to be folded into the length comparison,
+            // so an absent country produced `undefined`, failed the comparison,
+            // and reported INVALID_LENGTH — a length claim for a country whose
+            // length is not known. validateISIN already returned
+            // INVALID_COUNTRY here.
+            expect(validateIBAN("ZZ89370400440532013000")).toEqual({
+                isValid: false,
+                error: VALIDATION_CODES.INVALID_COUNTRY
+            });
+        });
+
         it("should return invalid for incorrect checksum", () => {
             // Change one digit of a valid IBAN
             expect(validateIBAN("DE88 3704 0044 0532 0130 00")).toEqual({

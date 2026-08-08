@@ -141,7 +141,17 @@ Consequence is only in the message table: `swiftRules` (`validationAdapter.ts:32
 malformed BIC reports `INVALID_FORMAT`, which is accurate but less specific than the message
 table implies is available.
 
-### 1.2 — Low · `domain/validation/rules.ts:112` · unknown IBAN country reports "invalid length"
+### 1.2 — Low · **FIXED** · `domain/validation/rules.ts:112` · unknown IBAN country reports "invalid length"
+
+> **Resolved.** The table lookup is split out of the length comparison and
+> returns `INVALID_COUNTRY` when the country is absent — matching `validateISIN`,
+> which already did. `ibanRules` and `createIbanMessages` gained the matching
+> slot, inserted at position 3 so the order mirrors `isinRules`
+> (required/length/format/country/checksum/duplicate) rather than appended;
+> `duplicate` therefore moved from index 4 to 5, updated at the one call site
+> and in its test. New `country` key in both locales. Tests cover the
+> unsupported country, and that a genuinely wrong length for a *supported*
+> country still reports `INVALID_LENGTH`.
 
 *Verified.*
 

@@ -240,6 +240,7 @@
       "required": "IBAN ist erforderlich",
       "length": "Ungültige IBAN-Länge",
       "format": "Ungültige IBAN",
+      "country": "IBAN-Land wird nicht unterstützt",
       "checksum": "Ungültige Prüfsumme",
       "duplicate": "Konto existiert bereits"
     },

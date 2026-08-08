@@ -158,7 +158,11 @@ describe("validationAdapter", () => {
     });
 
     describe("ibanRules", () => {
-        const MSG = ["required", "length", "format", "checksum", "duplicate"] as const;
+        // Slot order mirrors isinRules: required, length, format, country,
+        // checksum, duplicate. `country` was inserted (not appended) when
+        // validateIBAN stopped folding an unsupported country into
+        // INVALID_LENGTH, so `duplicate` moved from index 4 to 5.
+        const MSG = ["required", "length", "format", "country", "checksum", "duplicate"] as const;
 
         it("reports required when empty", () => {
             const rules = ibanRules(MSG);
@@ -169,6 +173,22 @@ describe("validationAdapter", () => {
             const rules = ibanRules(MSG);
             // Same length/format as VALID_IBAN, wrong check digits.
             expect(rules[1]("DE00370400440532013000")).toBe("checksum");
+        });
+
+        it("reports an unsupported country as country, not as a length error", () => {
+            // "ZZ" is not in IBAN_LENGTH_CODES. The lookup used to be folded
+            // into the length comparison, so `undefined` failed it and the user
+            // was told their IBAN was the wrong length — for a country whose
+            // length is not even known. validateISIN already answered
+            // INVALID_COUNTRY here; the two validators simply disagreed.
+            const rules = ibanRules(MSG);
+            expect(rules[1]("ZZ89370400440532013000")).toBe("country");
+        });
+
+        it("still reports a genuinely wrong length for a supported country", () => {
+            const rules = ibanRules(MSG);
+            // DE is in the table and expects 22 characters.
+            expect(rules[1]("DE8937040044053201300")).toBe("length");
         });
 
         it("passes both domain rules for a valid IBAN", () => {
@@ -182,7 +202,7 @@ describe("validationAdapter", () => {
             expect(rules).toHaveLength(2);
         });
 
-        it("adds a duplicate-check rule when a checker is supplied, using the 5th message", () => {
+        it("adds a duplicate-check rule when a checker is supplied, using the 6th message", () => {
             const isDuplicate = vi.fn().mockReturnValue(true);
             const rules = ibanRules(MSG, isDuplicate);
 

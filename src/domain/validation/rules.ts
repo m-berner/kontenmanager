@@ -114,11 +114,23 @@ export function validateIBAN(iban: string): DomainValidationResult {
     if (!cleaned) return {isValid: false, error: VALIDATION_CODES.REQUIRED};
 
     const countryCode = cleaned.substring(0, 2);
+    const expectedLength =
+        IBAN_LENGTH_CODES[countryCode as keyof typeof IBAN_LENGTH_CODES];
 
-    if (
-        cleaned.length !==
-        IBAN_LENGTH_CODES[countryCode as keyof typeof IBAN_LENGTH_CODES]
-    ) {
+    // Split out of the length comparison. The two used to be one step
+    // (`cleaned.length !== IBAN_LENGTH_CODES[...]`), so a country absent from
+    // the table produced an `undefined` lookup, failed the comparison, and was
+    // reported as INVALID_LENGTH — telling the user their IBAN was the wrong
+    // length when the real answer is that the country is not supported. No
+    // length is even known for it, so that message could not have been right.
+    //
+    // `validateISIN` already returns INVALID_COUNTRY for exactly this
+    // situation; the two validators simply disagreed.
+    if (expectedLength === undefined) {
+        return {isValid: false, error: VALIDATION_CODES.INVALID_COUNTRY};
+    }
+
+    if (cleaned.length !== expectedLength) {
         return {isValid: false, error: VALIDATION_CODES.INVALID_LENGTH};
     }
 
