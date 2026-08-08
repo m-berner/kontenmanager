@@ -41,6 +41,21 @@ log("COMPONENTS DialogPort: setup");
           <component :is="runtime.dialogName" ref="dialogRef"/>
         </v-card-text>
         <v-card-actions class="pa-5">
+          <!--
+            No `type="submit"` on the OK button, deliberately.
+
+            It carried one and it was inert: this button lives in
+            `<v-card-actions>`, while each dialog's `<v-form>` is inside the
+            component rendered into `<v-card-text>` above. The button is
+            therefore a SIBLING of the form, not a descendant, so it submits
+            nothing. Every dialog's form also has `@submit.prevent`.
+
+            The real mechanism is the `@click` below: `submitGuard` calls
+            `formRef.validate()` explicitly and gates the operation on it. The
+            attribute stated a mechanism that is not the one in use, which is
+            worse than stating nothing — `validate-on="submit"` on each form
+            reads as though it pairs with it.
+          -->
           <v-tooltip :text="t('components.dialogs.ok')" location="bottom">
             <template v-slot:activator="{ props }">
               <v-btn
@@ -49,7 +64,7 @@ log("COMPONENTS DialogPort: setup");
                   :loading="isLoading"
                   class="ml-auto"
                   icon="$check"
-                  type="submit"
+                  type="button"
                   v-bind="props"
                   variant="outlined"
                   @click="dialogRef?.onClickOk"/>
