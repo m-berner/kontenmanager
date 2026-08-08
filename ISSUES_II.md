@@ -60,7 +60,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 5.3 | ~~Low~~ **FIXED** | `stores/deps.ts:130` | `attachStoreTranslate` has only a plausible-looking English fallback, no wiring guarantee |
 | 5.4 | ~~Low~~ **FIXED** | `plugins/vuetify.ts:101` | `info: "yellow"` on near-white surfaces in all six themes (~1.1:1 contrast) |
 | 5.5 | Low | `plugins/vuetify.ts` | **NEW (found while fixing 5.4)** — `warning`/`error`/`success` fail AA on the four coloured-surface themes, worse than `info` did |
-| 6.1 | Low | `useMenu.ts:258` / `useHeaderBarActions.ts:38` | Two action tables over one union, each ~⅔ dead, diverging on `updateQuote` |
+| 6.1 | ~~Low~~ **FIXED** | `useMenu.ts:258` / `useHeaderBarActions.ts:38` | Two action tables over one union, each ~⅔ dead, diverging on `updateQuote` |
 | 6.2 | Low | `useOnlineStockData.ts:136` | A blank-ISIN stock still issues a quote request and raises a non-dismissing alert every refresh |
 | 6.3 | Info | `entrypoints/app.ts:44` | `i18n.global.t` passed unbound — safe today for the same reason as 5.1 |
 | 7.1 | Low | 5 call sites | `item-key` is a Vuetify 2 prop; Vuetify 3 ignores it and `item-value` is never set |
@@ -860,7 +860,23 @@ Vuetify's stock `info` is blue (`#2196F3`) for exactly this reason.
 Files read in full: `composables/{useDialogGuards,useForms,useOnlineStockData,useImportDialog,useExportDialog,useMenu,useHeaderBarActions,useFavicon,useUrl,useKeyboardShortcuts}.ts`,
 `entrypoints/{app,background,options,errorHandling,singleTabGuard}.ts`.
 
-### 6.1 — Low · `useMenu.ts:258` vs `useHeaderBarActions.ts:38` · two action tables over one union, each mostly dead, and they diverge on `updateQuote`
+### 6.1 — Low · **FIXED** · `useMenu.ts:258` vs `useHeaderBarActions.ts:38` · two action tables over one union, each mostly dead, and they diverge on `updateQuote`
+
+> **Resolved by deletion.** `useMenu`'s table is now
+> `Record<RowMenuActionType, ActionHandler>` — the six actions `DotMenu` can
+> dispatch — narrowed with `Extract<MenuActionType, …>` so a rename in the
+> domain union still breaks it. The 17 unreachable entries are gone, including
+> the divergent `updateQuote` and its `AbortController`, `fetchAdapter` and
+> `useOnlineStockData` dependencies. Net **−107/+42** lines.
+>
+> `executeAction` keeps the full `MenuActionType` parameter and widens the
+> lookup, which turns its previously-unreachable `!handler` branch into the real
+> answer for a header-bar id sent to the row dispatcher — now covered by a test,
+> alongside one asserting `hasAction("updateQuote") === false` so the positional-
+> slice trap cannot come back through this file.
+>
+> `useHeaderBarActions` is left as-is: its table is the live one, and its own
+> comment already documents the six row-level entries it cannot reach.
 
 *Verified by tracing every dispatch site.*
 

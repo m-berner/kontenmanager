@@ -132,9 +132,48 @@ export function useOnlineStockData() {
             return;
         }
 
+        // Stocks with no ISIN are dropped before anything is requested for them.
+        //
+        // Without this, a blank `cISIN` still went into the request list, and
+        // `fetchMinRateMaxData` built `service.QUOTE + ""` — the provider's
+        // search endpoint with an empty query — fetched it, failed to parse a
+        // rate, and threw. The ISIN then landed in `failedIsins`, which raises a
+        // **non-dismissing** alert (`duration: null`) naming the company, on
+        // *every refresh of that page*, forever.
+        //
+        // `isinRules` makes the add form require an ISIN, so this is reachable
+        // only through a backup import — `validateStock` normalizes a missing
+        // `cISIN` to `""` and nothing rejects it — but that is precisely the
+        // path `StockDb.cISIN`'s optionality exists to support.
+        //
+        // Filtered AFTER the `stockIds` bail-out above, deliberately: that check
+        // is about ids that resolve to nothing, and folding this into it would
+        // log "requested stock ids resolved to no stocks" for ids that resolved
+        // perfectly well and merely have nothing fetchable.
+        //
+        // Everything downstream must use this list, not `pageStocks`:
+        // `minRateMaxResponse.data[i]` is indexed **positionally** against the
+        // request list, so the write-back loop has to iterate the same array the
+        // request was built from or every quote lands on the wrong stock.
+        const quotableStocks = pageStocks.filter((s) => (s.cISIN ?? "").trim() !== "");
+
+        if (quotableStocks.length === 0) {
+            // Marked as loaded rather than left open: there is nothing to fetch
+            // for this page, so retrying in a minute would find the same
+            // nothing. This differs from the bail-out above, which does NOT mark
+            // — there, a later attempt could legitimately succeed.
+            log(
+                "COMPOSABLES useOnlineStockData: no stock on this page has an ISIN",
+                {page, pageStocks: pageStocks.length},
+                "warn"
+            );
+            runtime.markStocksPageLoaded(page);
+            return;
+        }
+
         const now = Date.now();
 
-        for (const stock of pageStocks) {
+        for (const stock of quotableStocks) {
             const id = stock.cID as number;
             isin.push({id, isin: stock.cISIN, min: "0", rate: "0", max: "0", cur: ""});
 
@@ -155,7 +194,7 @@ export function useOnlineStockData() {
         if (!runtime.isStocksPageGenerationCurrent(page, generation)) return;
 
         if (minRateMaxResponse.failedIsins.length > 0) {
-            const companies = pageStocks
+            const companies = quotableStocks
                 .filter((s) => minRateMaxResponse.failedIsins.includes(s.cISIN))
                 .map((s) => s.cCompany);
             const names = companies.length > 0
@@ -171,7 +210,9 @@ export function useOnlineStockData() {
 
         const datesToPersist: StockItem[] = [];
 
-        pageStocks.forEach((stock, i) => {
+        // `quotableStocks`, not `pageStocks` — see the note at the filter: `i`
+        // indexes `minRateMaxResponse.data`, which was built from this array.
+        quotableStocks.forEach((stock, i) => {
             const stockToUpdate = stocks.getById(stock.cID as number);
             if (!stockToUpdate) return;
 
