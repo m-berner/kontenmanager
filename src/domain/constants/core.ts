@@ -30,10 +30,13 @@ export const VALIDATION_CODES = {
     NEGATIVE_VALUE: "negative_value",
     ONE_OF_TWO_REQUIRED: "one_of_two_required",
     INVALID_COUNTRY: "invalid_country",
-    INVALID_BANK: "invalid_bank",
-    INVALID_REGION: "invalid_region",
-    INVALID_BRANCH: "invalid_branch",
-    TEST_BIC: "test_bic",
+    // INVALID_BANK / INVALID_REGION / INVALID_BRANCH / TEST_BIC were removed:
+    // the first three were returned only by per-segment checks in validateSWIFT
+    // that its format regex had already made unreachable, and TEST_BIC was never
+    // returned by anything at all. They were not free — `swiftRules` mapped each
+    // to a translated message, so the message table promised failure reasons the
+    // validator could not produce. Do not reintroduce one without a validator
+    // path that can actually return it.
     MAX_LENGTH: "max_length",
     MUST_BEGIN_WITH_LETTER: "must_begin_with_letter"
 } as const;

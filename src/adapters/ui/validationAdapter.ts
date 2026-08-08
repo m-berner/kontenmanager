@@ -323,17 +323,22 @@ export function isinRules(
     return rules;
 }
 
+/**
+ * Rules for an account's BIC/SWIFT field.
+ *
+ * The map holds exactly the codes `validateSWIFT` can return. It used to carry
+ * five more (bank, country, region, branch, test-BIC), each with its own
+ * translated message and none of them reachable — see the note in
+ * `domain/validation/rules.ts`. Keep this map and that function in step: an
+ * entry here for a code the validator cannot produce is a message the user is
+ * promised and never shown.
+ */
 export function swiftRules(msgArray: readonly string[]): ValidationRuleType[] {
     return [
         required(msgArray[0]),
         fromDomain((v) => ValidationRules.validateSWIFT(v as string), {
             [VALIDATION_CODES.INVALID_LENGTH]: msgArray[1],
             [VALIDATION_CODES.INVALID_FORMAT]: msgArray[2],
-            [VALIDATION_CODES.INVALID_BANK]: msgArray[3],
-            [VALIDATION_CODES.INVALID_COUNTRY]: msgArray[4],
-            [VALIDATION_CODES.INVALID_REGION]: msgArray[5],
-            [VALIDATION_CODES.INVALID_BRANCH]: msgArray[6],
-            [VALIDATION_CODES.TEST_BIC]: msgArray[7],
             [VALIDATION_CODES.REQUIRED]: msgArray[0]
         })
     ];

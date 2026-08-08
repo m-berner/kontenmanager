@@ -115,7 +115,17 @@ Files read in full: `logic.ts`, `errors.ts`, `constants.ts`, `constants/core.ts`
 Cross-checked against `adapters/ui/validationAdapter.ts`, `BookingForm.vue`,
 `CreditDebitFieldset.vue`, `CurrencyInput.vue`.
 
-### 1.1 — Low · `domain/validation/rules.ts:181` · `validateSWIFT` has three unreachable failure codes
+### 1.1 — Low · **FIXED** · `domain/validation/rules.ts:181` · `validateSWIFT` has three unreachable failure codes
+
+> **Resolved.** The three per-segment checks are gone (the format regex already
+> implied all of them), and so are the four dead `VALIDATION_CODES` entries
+> (`INVALID_BANK`, `INVALID_REGION`, `INVALID_BRANCH`, `TEST_BIC`), the five dead
+> `swiftRules` map entries — `INVALID_COUNTRY` included, since the membership
+> check is deliberately skipped for BICs — the five `createSwiftMessages` slots,
+> and the ten locale keys behind them. Behaviour is unchanged by construction:
+> no input could reach any removed branch. A new test pins the outcome set by
+> asserting that a malformed bank, country, location *and* branch segment all
+> report `INVALID_FORMAT`.
 
 *Verified.*
 

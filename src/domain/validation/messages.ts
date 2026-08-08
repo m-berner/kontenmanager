@@ -24,6 +24,12 @@ export const createIbanMessages = (
 /**
  * Factory function to create swift rules.
  *
+ * One entry per outcome `validateSWIFT` can actually return. It used to
+ * allocate eight, five of which (bankCode, countryCode, locationCode,
+ * branchCode, test) were wired to validator codes that no input could produce —
+ * see the note in `domain/validation/rules.ts`. The corresponding locale keys
+ * were removed with them.
+ *
  * @param t - Localization function
  * @returns Array of swift validation messages
  */
@@ -33,10 +39,5 @@ export const createSwiftMessages = (
     [
         t("validators.swiftRules.required"),
         t("validators.swiftRules.length"),
-        t("validators.swiftRules.format"),
-        t("validators.swiftRules.bankCode"),
-        t("validators.swiftRules.countryCode"),
-        t("validators.swiftRules.locationCode"),
-        t("validators.swiftRules.branchCode"),
-        t("validators.swiftRules.test")
+        t("validators.swiftRules.format")
     ] as const;

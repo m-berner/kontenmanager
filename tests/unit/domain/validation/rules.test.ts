@@ -86,5 +86,28 @@ describe("Validation Rules", () => {
         it("should return invalid for incorrect format", () => {
             expect(validateSWIFT("1234DEFF")).toEqual({isValid: false, error: VALIDATION_CODES.INVALID_FORMAT});
         });
+
+        it("reports every malformed segment as INVALID_FORMAT, not a per-segment code", () => {
+            // The format regex already implies the bank/location/branch segment
+            // checks, so the three per-segment codes it used to return
+            // (INVALID_BANK / INVALID_REGION / INVALID_BRANCH) were unreachable
+            // — while `swiftRules` still mapped each to its own translated
+            // message. Both the checks and the codes are gone; this pins the
+            // outcome set so a future "more specific message" change has to add
+            // a validator path that can actually produce it.
+            const malformed = [
+                "1234DEFF",      // bank segment not all letters
+                "DEUT12FF",      // country segment not all letters
+                "DEUTDE-F",      // location segment not alphanumeric
+                "DEUTDEFFX-X"    // branch segment not alphanumeric
+            ];
+
+            for (const bic of malformed) {
+                expect(validateSWIFT(bic)).toEqual({
+                    isValid: false,
+                    error: VALIDATION_CODES.INVALID_FORMAT
+                });
+            }
+        });
     });
 });

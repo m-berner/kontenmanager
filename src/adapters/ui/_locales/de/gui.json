@@ -259,12 +259,7 @@
     "swiftRules": {
       "required": "SWIFT ist erforderlich",
       "length": "Nur 8 bzw. 11 Zeichen",
-      "format": "Ungültiges SWIFT Format",
-      "bankCode": "Ungültige Bank",
-      "countryCode": "Ungültiges Land",
-      "locationCode": "Ungültige Region",
-      "branchCode": "Ungültige Branche",
-      "test": "Test BIC"
+      "format": "Ungültiges SWIFT Format"
     },
     "isoDateRules": {
       "required": "Datum ist erforderlich",

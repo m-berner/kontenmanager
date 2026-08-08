@@ -485,12 +485,7 @@
     "swiftRules": {
       "required": "SWIFT is required",
       "length": "Only 8 or 11 characters",
-      "format": "Invalid SWIFT format",
-      "bankCode": "Invalid bank",
-      "countryCode": "Invalid country",
-      "locationCode": "Invalid region",
-      "branchCode": "Invalid branch",
-      "test": "Test BIC"
+      "format": "Invalid SWIFT format"
     },
     "isoDateRules": {
       "required": "Date is required",
