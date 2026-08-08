@@ -57,7 +57,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 4.3 | Info | `driven/fetchAdapter.ts:573` | Quote fetches are unbounded-parallel per page (up to 26 requests in one tick) |
 | 4.4 | Info | — | Round 1.5 re-examined against the provider and cleared as a non-issue |
 | 5.2 | ~~Low~~ **FIXED** | `stores/settings.ts:247` | Every local settings write echoes back through the cross-context storage listener |
-| 5.3 | Low | `stores/deps.ts:130` | `attachStoreTranslate` has only a plausible-looking English fallback, no wiring guarantee |
+| 5.3 | ~~Low~~ **FIXED** | `stores/deps.ts:130` | `attachStoreTranslate` has only a plausible-looking English fallback, no wiring guarantee |
 | 5.4 | Low | `plugins/vuetify.ts:101` | `info: "yellow"` on near-white surfaces in all six themes (~1.1:1 contrast) |
 | 6.1 | Low | `useMenu.ts:258` / `useHeaderBarActions.ts:38` | Two action tables over one union, each ~⅔ dead, diverging on `updateQuote` |
 | 6.2 | Low | `useOnlineStockData.ts:136` | A blank-ISIN stock still issues a quote request and raises a non-dismissing alert every refresh |
@@ -745,7 +745,16 @@ cache clear is correct either way; the duplicate path is not obvious from either
 `onChange` callback with a side effect (the parameter exists, currently unused) would fire twice
 for one user action.
 
-### 5.3 — Low · `stores/deps.ts:130` · `getStoreTranslate` has no wiring guarantee, only a fallback
+### 5.3 — Low · **FIXED** · `stores/deps.ts:130` · `getStoreTranslate` has no wiring guarantee, only a fallback
+
+> **Resolved** with the dev-mode log this finding suggested, rather than a
+> startup assertion. `getStoreTranslate` emits a one-shot warning naming the fix
+> when nothing is attached — once per context, because both consumers call it on
+> every access and an unguarded warning would fire on every alert instead of
+> pointing at the omission. `log()` is debug-gated, so release builds pay
+> nothing and the fallback contract is unchanged; a throw was rejected because an
+> untranslated confirm button beats a store that cannot render an alert at all.
+> New `stores/deps.test.ts` covers all four cases.
 
 *Verified.*
 

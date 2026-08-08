@@ -84,6 +84,44 @@ import {log} from "@/domain/utils/utils";
  * Note the icon aliases were always distinct — `$error`, `$warning`, `$success`
  * and `$info` are all defined below, so `AlertOverlay`'s dynamic `` `$${type}` ``
  * lookup resolves for all four. Only the colours collided.
+ *
+ * ## `info` is per-theme, and the values are measured
+ *
+ * `info` was the plain CSS keyword `yellow` (`#FFFF00`) in all six themes. It is
+ * the app's most-used severity — every `alertAdapter.feedbackInfo` call, which
+ * is the default channel for all non-error feedback — and `AlertOverlay` binds
+ * it to a `variant="tonal"` `v-alert`, which draws the *text and border in the
+ * colour itself* over a faint tint. On the `light` theme that was **1.08:1**.
+ *
+ * The values below are not a single blue, because a single value cannot work
+ * here: `AlertOverlay`'s `v-card` takes the theme's `surface`, and only `light`
+ * has a near-white one. `sky`, `ocean`, `earth` and `meadow` all use a strongly
+ * coloured surface (`#3282f6`, `#194f7d`, `#780e12`, `#378222`), so the five
+ * non-`dark` themes are not "light themes" as far as contrast is concerned.
+ * Each `info` is therefore chosen against *its own* surface — dark blue on the
+ * light surface, light blue on the dark ones — and every one clears WCAG AA
+ * (4.5:1) for body text:
+ *
+ * | theme | surface | info | ratio |
+ * |-------|---------|------|-------|
+ * | light | `#eeeeee` | `#1565C0` | 4.95:1 |
+ * | dark | `#23222B` | `#64B5F6` | 7.10:1 |
+ * | sky | `#3282f6` | `#031222` | 5.08:1 |
+ * | ocean | `#194f7d` | `#90CAF9` | 4.89:1 |
+ * | earth | `#780e12` | `#64B5F6` | 5.07:1 |
+ * | meadow | `#378222` | `#F5FAFF` | 4.57:1 |
+ *
+ * `sky` is the outlier and explains the near-black value: `#3282f6` is a
+ * mid-tone, and mid-tones are the worst case — nothing in the blue family, in
+ * either direction, reaches 4.5:1 against it, and even pure white manages only
+ * 3.71:1. If `sky` is ever restyled, re-measure rather than assuming a lighter
+ * blue will do.
+ *
+ * **Known and deliberately out of scope:** `warning`/`error`/`success` have the
+ * same problem on the same coloured surfaces, and in places worse than `info`
+ * ever was — `error` is 1.08:1 on `sky` and `success` 1.07:1 on `meadow`. That
+ * is a palette-wide question (arguably these four themes want lighter surfaces),
+ * not something to change quietly alongside an `info` fix.
  */
 export const vuetify = createVuetify({
     theme: {
@@ -98,7 +136,7 @@ export const vuetify = createVuetify({
                     secondary: "#e0e0e0",
                     warning: "orange",
                     error: "red",
-                    info: "yellow",
+                    info: "#1565C0",
                     success: "green"
                 }
             },
@@ -111,7 +149,7 @@ export const vuetify = createVuetify({
                     secondary: "#e0e0e0",
                     warning: "orange",
                     error: "red",
-                    info: "yellow",
+                    info: "#64B5F6",
                     success: "green"
                 }
             },
@@ -124,7 +162,7 @@ export const vuetify = createVuetify({
                     secondary: "#e0e0e0",
                     warning: "orange",
                     error: "red",
-                    info: "yellow",
+                    info: "#031222",
                     success: "green"
                 }
             },
@@ -137,7 +175,7 @@ export const vuetify = createVuetify({
                     secondary: "#e0e0e0",
                     warning: "orange",
                     error: "red",
-                    info: "yellow",
+                    info: "#90CAF9",
                     success: "green"
                 }
             },
@@ -150,7 +188,7 @@ export const vuetify = createVuetify({
                     secondary: "#e0e0e0",
                     warning: "orange",
                     error: "red",
-                    info: "yellow",
+                    info: "#64B5F6",
                     success: "green"
                 }
             },
@@ -163,7 +201,7 @@ export const vuetify = createVuetify({
                     secondary: "#e0e0e0",
                     warning: "orange",
                     error: "red",
-                    info: "yellow",
+                    info: "#F5FAFF",
                     success: "green"
                 }
             }
