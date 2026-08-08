@@ -53,7 +53,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 3.1 | ~~Low~~ **FIXED** | `connectionManager.ts:41` | `onVersionChange` has no caller, so an extension update hard-reloads the tab and discards unsaved dialog input |
 | 3.2 | ~~Low~~ **FIXED** | `driven/database/` | ~8 API surfaces (builder, `executeMultiple`, `countByAccount`, …) reachable only from tests |
 | 3.3 | Info | `migrator.ts:143` | The `oldVersion < 27` migration can permanently break a legacy database with blank identifiers |
-| 4.2 | Low | `driven/appAdapter.ts:675` | `getStatus` reports `storage: "error"` for a legitimately empty install |
+| 4.2 | ~~Low~~ **FIXED** | `driven/appAdapter.ts:675` | `getStatus` reports `storage: "error"` for a legitimately empty install |
 | 4.3 | Info | `driven/fetchAdapter.ts:573` | Quote fetches are unbounded-parallel per page (up to 26 requests in one tick) |
 | 4.4 | Info | — | Round 1.5 re-examined against the provider and cleared as a non-issue |
 | 5.2 | Low | `stores/settings.ts:247` | Every local settings write echoes back through the cross-context storage listener |
@@ -556,7 +556,21 @@ against the documented contract would silently exercise real browser storage and
 pass. `containerBackground.ts:28` gets the same override right (`overrides.storageAdapter ??
 storageAdapter`), which is what makes this look like an omission rather than a decision.
 
-### 4.2 — Low · `driven/appAdapter.ts:675` · `getStatus` reports a storage error for a legitimately empty install
+### 4.2 — Low · **FIXED** · `driven/appAdapter.ts:675` · `getStatus` reports a storage error for a legitimately empty install
+
+> **Resolved.** The proxy is replaced by direct evidence: a `storageReadOk` flag
+> that Phase 1 sets *after* `settings.init(storageData)` returns, so it means
+> "the store holds what storage actually contained" rather than "the read
+> resolved". Not set on the aborted path, so `"aborted"` still wins over `"ok"`.
+>
+> **Three existing tests asserted the old proxy**, and one stated the defect in
+> its own comment — *"-1 is the documented 'no active account' sentinel, i.e.
+> `settings.init()` never successfully populated the store"*, which equates the
+> sentinel with "init never ran". They now drive `initializeApp` instead of
+> hand-setting `activeAccountId`, and the set covers all four states: not
+> attempted, read succeeded, read *failed* (Phase 1 rethrows), and the
+> regression itself — an empty install with `activeAccountId === -1` reporting
+> `storage: "ok"`.
 
 *Verified.*
 

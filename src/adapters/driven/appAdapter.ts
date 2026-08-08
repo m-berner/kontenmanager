@@ -70,6 +70,19 @@ export function createAppAdapter(deps: AppAdapterDeps) {
 
     // Cached result of the last initializeApp call, used by getStatus.
     let lastStatusSnapshot: AppStatus | undefined;
+    /**
+     * Whether `browser.storage.local` has been read successfully at least once.
+     *
+     * This is the evidence `getStatus` reports as `storage: "ok"`. It used to
+     * infer it from `settings.activeAccountId !== -1`, which conflated "storage
+     * never loaded" with "no account is active" — but `-1` is not an error
+     * value. It is `BROWSER_STORAGE.ACTIVE_ACCOUNT_ID`'s shipped default and
+     * `INDEXED_DB.INVALID_ID`, the documented "no active account" sentinel that
+     * `deleteActiveAccountUsecase` and the import path both deliberately write.
+     * So a fresh install, or a user who had just deleted their last account, had
+     * storage working perfectly and was reported as `storage: "error"`.
+     */
+    let storageReadOk = false;
 
     /**
      * Creates a default status object with error states
@@ -296,6 +309,11 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             const storageData = await storage.getStorage();
             if (signal?.aborted) return;
             stores.settings.init(storageData);
+            // Set only after init() returns, so it means "the settings store
+            // holds what storage actually contained", not merely "the read
+            // resolved". Not set on the aborted path above — an aborted phase
+            // is reported as "aborted", never as "ok".
+            storageReadOk = true;
         } catch (err) {
             throw appError(
                 ERROR_DEFINITIONS.SERVICES.APP.STORAGE.CODE,
@@ -658,14 +676,17 @@ export function createAppAdapter(deps: AppAdapterDeps) {
     function getStatus(stores: AppStores): AppStatus {
         // Reuse last known initializeApp status if present, otherwise derive a snapshot.
         //
-        // `storage` is reported from the settings store rather than from the
-        // database connection: browser.storage.local and IndexedDB are
-        // independent subsystems, and deriving one from the other claimed
-        // storage was broken whenever the DB merely happened to be disconnected.
-        // A non-sentinel activeAccountId means settings.init() ran, which is the
-        // observable evidence that storage was read successfully.
+        // `storage` is reported independently of the database connection:
+        // browser.storage.local and IndexedDB are independent subsystems, and
+        // deriving one from the other claimed storage was broken whenever the DB
+        // merely happened to be disconnected.
+        //
+        // The evidence is `storageReadOk` — set by Phase 1 when the read
+        // completes — rather than `stores.settings.activeAccountId !== -1`,
+        // which was a proxy that answered the wrong question: see the flag's own
+        // note. `stores` is still the argument for `db`/`fetch`.
         const dbOk = databaseAdapter.isConnected();
-        const storageOk = stores.settings.activeAccountId !== -1;
+        const storageOk = storageReadOk;
         const derived: AppStatus = {
             storage: storageOk ? "ok" : "error",
             db: dbOk ? "ok" : "error",

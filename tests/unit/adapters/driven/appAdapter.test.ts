@@ -291,8 +291,11 @@ describe("appAdapter", () => {
 
         const status = adapter.getStatus(stores);
 
+        // Storage has genuinely not been read yet at this point — nothing has
+        // called initializeApp — so "error" is the honest answer. It used to
+        // report "ok" here purely because the fixture's activeAccountId is 1.
         expect(status).toEqual({
-            storage: "ok",
+            storage: "error",
             db: "ok",
             fetch: {exchanges: true, indexes: false, materials: false}
         });
@@ -301,31 +304,42 @@ describe("appAdapter", () => {
     // storage and db are independent subsystems (browser.storage.local vs
     // IndexedDB). getStatus used to derive BOTH from the database connection
     // flag, so a disconnected DB claimed storage was broken too.
-    it("getStatus() reports a db error without claiming storage also failed", () => {
-        const stores = createStores(); // activeAccountId 1 => settings.init() ran
+    it("getStatus() reports a db error without claiming storage also failed", async () => {
+        const stores = createStores();
+        await adapter.initializeApp(stores, {title: "t", message: "m"});
         databaseAdapterDep.isConnected.mockReturnValue(false);
 
         const status = adapter.getStatus(stores);
 
-        expect(status).toEqual({
-            storage: "ok",
-            db: "error",
-            fetch: {exchanges: false, indexes: false, materials: false}
-        });
+        expect(status.storage).toBe("ok");
+        expect(status.db).toBe("error");
     });
 
-    it("getStatus() reports a storage error when settings were never initialized", () => {
-        // -1 is the documented "no active account" sentinel, i.e. settings.init()
-        // never successfully populated the store.
+    it("getStatus() reports storage ok for an empty install, where no account is active", async () => {
+        // THE REGRESSION. `-1` is not an error value: it is
+        // BROWSER_STORAGE.ACTIVE_ACCOUNT_ID's shipped default and
+        // INDEXED_DB.INVALID_ID, the documented "no active account" sentinel
+        // that deleteActiveAccountUsecase and the import path both deliberately
+        // write. getStatus inferred storage health from
+        // `activeAccountId !== -1`, so a user who had just installed the
+        // extension — or had just deleted their last account — had storage
+        // working perfectly and was told `storage: "error"`.
         const stores = createStores({settings: {activeAccountId: -1}});
-        databaseAdapterDep.isConnected.mockReturnValue(false);
+        await adapter.initializeApp(stores, {title: "t", message: "m"});
 
-        const status = adapter.getStatus(stores);
+        expect(adapter.getStatus(stores).storage).toBe("ok");
+    });
 
-        expect(status).toEqual({
-            storage: "error",
-            db: "error",
-            fetch: {exchanges: false, indexes: false, materials: false}
-        });
+    it("getStatus() reports a storage error when the storage read itself fails", async () => {
+        // Phase 1 rethrows, so the failure is what makes this the real
+        // negative case rather than the "not attempted yet" one above.
+        mockGetStorage.mockRejectedValue(new Error("storage unavailable"));
+        const stores = createStores();
+
+        await expect(
+            adapter.initializeApp(stores, {title: "t", message: "m"})
+        ).rejects.toThrow();
+
+        expect(adapter.getStatus(stores).storage).toBe("error");
     });
 });
