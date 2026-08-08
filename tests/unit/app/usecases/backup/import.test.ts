@@ -247,6 +247,41 @@ describe("usecases/backup/import", () => {
         expect(input.onImported).not.toHaveBeenCalled();
     });
 
+    it("still reports the original error when the rollback's storage write also fails", async () => {
+        // The rollback `setStorage` used to be awaited unguarded, so its
+        // rejection propagated out of importDatabaseUsecase and `onError` never
+        // ran: the user got no import-failure message at all, and the real
+        // reason the import failed was replaced by a storage error. A rejecting
+        // setStorage is not hypothetical here — it is one of the paths that can
+        // land in this catch in the first place.
+        const backup = {
+            sm: {cVersion: "1", cDBVersion: MODERN, cEngine: "x"},
+            accounts: [makeAccountDb({cID: 42})],
+            stocks: [],
+            bookings: [],
+            bookingTypes: []
+        };
+        const {deps, settings} = makeDeps({
+            backup,
+            validation: {isValid: true, version: MODERN},
+            originalActiveId: 7
+        });
+        (deps.atomicImport as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("disk full"));
+        // The happy-path write (setActiveAccountIdPersisted) must still succeed,
+        // otherwise it — not atomicImport — would be the failure under test.
+        (deps.setStorage as ReturnType<typeof vi.fn>)
+            .mockResolvedValueOnce(undefined)
+            .mockRejectedValue(new Error("storage quota exceeded"));
+        const input = makeInput();
+
+        await expect(importDatabaseUsecase(deps, input)).resolves.toBeUndefined();
+
+        expect(input.onError).toHaveBeenCalledWith("disk full");
+        // The in-memory value is restored before the persist is attempted, so a
+        // failed write only leaves memory and storage disagreeing.
+        expect(settings.activeAccountId).toBe(7);
+    });
+
     it("does not roll back when the post-commit onImported callback throws", async () => {
         const backup = {
             sm: {cVersion: "1", cDBVersion: MODERN, cEngine: "x"},

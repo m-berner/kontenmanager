@@ -147,7 +147,27 @@ export async function importDatabaseUsecase(
         }
     } catch (err) {
         deps.settings.activeAccountId = originalActiveId;
-        await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
+        // Guarded, unlike the same call on the happy path above. A rejection
+        // here used to propagate out of importDatabaseUsecase, so `onError`
+        // never ran: the user got no import-failure message at all, and the
+        // real reason the import failed (`err`) was discarded in favour of a
+        // storage error. That is not a theoretical failure mode in this
+        // function — a rejecting `setStorage` is exactly what
+        // `setActiveAccountIdPersisted` exists to handle, and it is one of the
+        // paths that can land in this catch in the first place.
+        //
+        // The in-memory value is already restored on the line above, so a
+        // failed persist only leaves memory and storage disagreeing until the
+        // next successful write — strictly less serious than losing the error.
+        try {
+            await deps.setStorage(BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, originalActiveId);
+        } catch (restoreErr) {
+            log(
+                "USECASES backup/import: restoring the previous active account id failed",
+                restoreErr,
+                "warn"
+            );
+        }
         const errorMessage =
             isAppError(err) ? err.message : err instanceof Error ? err.message : ERROR_DEFINITIONS.UNKNOWN_ERROR.MSG;
         await input.onError(errorMessage);

@@ -45,7 +45,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 |---|----------|----------|---------|
 | 9.2 | ~~**High**~~ **FIXED** | cross-cutting (`browserAdapter` / `appAdapter` / `useOnlineStockData` / `i18n`) | Display currency is derived from the browser's UI language with no user override; only fetched quotes are converted, so `mEuroChange` and the two TitleBar chips mix currencies for any non-German-browser user |
 | 2.1 | ~~**Medium**~~ **FIXED** | `usecases/bookingTypes.ts:60` | A Buy/Sell/Dividend booking type can be deleted while it has no bookings, silently disabling all stock bookings for that account |
-| 2.2 | Medium | `usecases/backup/import.ts:148` | The error handler awaits `setStorage` unguarded; a failure there discards the real error and skips `onError` |
+| 2.2 | ~~**Medium**~~ **FIXED** | `usecases/backup/import.ts:148` | The error handler awaits `setStorage` unguarded; a failure there discards the real error and skips `onError` |
 | 4.1 | Medium | `adapters/container.ts:66` | The documented `storageAdapter` override is accepted and silently ignored |
 | 5.1 | Medium | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
 | 8.1 | Medium | `driven/browserAdapter.ts:264` | The system-notification `iconUrl` resolves to a path that does not exist in the build |
@@ -257,7 +257,12 @@ The counterpart guard already exists on the other side of the same invariant:
 (`bookingTypes.ts:100-110`) precisely because a role must stay resolvable. Deletion has no
 equivalent.
 
-### 2.2 — Medium · `usecases/backup/import.ts:148` · the error handler can throw, replacing the real failure and skipping `onError`
+### 2.2 — Medium · **FIXED** · `usecases/backup/import.ts:148` · the error handler can throw, replacing the real failure and skipping `onError`
+
+> **Resolved.** The rollback `setStorage` is wrapped in its own `try/catch` that
+> logs at `warn` and falls through, so `input.onError(errorMessage)` always runs
+> with the *original* `err`. Covered by a regression test that rejects the
+> rollback write while letting the happy-path write succeed.
 
 *Verified.*
 
