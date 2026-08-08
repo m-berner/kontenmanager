@@ -47,7 +47,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 2.1 | ~~**Medium**~~ **FIXED** | `usecases/bookingTypes.ts:60` | A Buy/Sell/Dividend booking type can be deleted while it has no bookings, silently disabling all stock bookings for that account |
 | 2.2 | ~~**Medium**~~ **FIXED** | `usecases/backup/import.ts:148` | The error handler awaits `setStorage` unguarded; a failure there discards the real error and skips `onError` |
 | 4.1 | ~~**Medium**~~ **FIXED** | `adapters/container.ts:66` | The documented `storageAdapter` override is accepted and silently ignored |
-| 5.1 | Medium | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
+| 5.1 | ~~**Medium**~~ **FIXED** | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
 | 8.1 | ~~**Medium**~~ **FIXED** | `driven/browserAdapter.ts:264` | The system-notification `iconUrl` resolves to a path that does not exist in the build |
 | 2.3 | Low | `usecases/backup/exportHelpers.ts:69` | An empty database reports "Export validation failed" |
 | 3.1 | Low | `connectionManager.ts:41` | `onVersionChange` has no caller, so an extension update hard-reloads the tab and discards unsaved dialog input |
@@ -557,7 +557,33 @@ both-separators branch reads correctly). No defect.
 Files read in full: `stores/{deps,recordsHub,accounts,bookings,bookingTypes,stocks,portfolio,accounting,runtime,settings,alerts}.ts`,
 `plugins/{pinia,router,i18n,themeSync,components,vuetify}.ts`.
 
-### 5.1 — Medium · `plugins/i18n.ts:126` · the app runs vue-i18n in **Legacy mode**, and the locale assignment only works *because* of that
+### 5.1 — Medium · **FIXED** · `plugins/i18n.ts:126` · the app runs vue-i18n in **Legacy mode**, and the locale assignment only works *because* of that
+
+> **Resolved.** `i18nConfig` now declares `legacy: false as const` (the `as const`
+> is load-bearing: `createI18n`'s return type branches on
+> `(typeof options)["legacy"] extends false`, so a widened `boolean` lands on
+> neither branch and yields `Composer | VueI18n`), and `vite.config.js` defines
+> `__VUE_I18N_LEGACY_API__: false` so the legacy code is dropped from the bundle
+> and the two answers cannot drift apart.
+>
+> Consequence (2) was handled at the same time rather than left as a trap: the
+> assignment is now `i18nInstance.global.locale.value = …`.
+>
+> The switch found a **second, latent instance of the same hazard in the plugin's
+> own test.** `numberFormats` is a plain object on Legacy's `VueI18n` and a
+> `ComputedRef` on a Composer, so `i18n.global.numberFormats` started reading
+> `undefined` — and the "defines the same number-format key set for every locale"
+> assertion did not catch it, because comparing `[]` to `[]` passes. Only the two
+> `toContain` assertions failed. The test now reads through one
+> `numberFormatsOf()` helper plus an explicit non-emptiness guard, so an
+> empty-key-set regression cannot pass silently again. Two further tests assert
+> the mode (`i18n.mode === "composition"`) and that the browser adapter's locale
+> is actually applied.
+>
+> Verified beyond the tests: no source file uses the Legacy global-injection
+> forms (`$t`/`$n`/`$d`/`$tm`) — every component already went through
+> `useI18n()`, which returned a Composer in either mode. `currencySync`'s
+> `mergeNumberFormat` exists on the Composer. Full unit suite green.
 
 *Verified against `node_modules/vue-i18n/dist/vue-i18n.mjs` (v11.1.11).*
 
@@ -714,17 +740,20 @@ import (`validateStock` normalizes a missing `cISIN` to `""` and nothing rejects
 is precisely the path `StockDb.cISIN`'s optionality exists to support. Skipping blank-ISIN
 stocks when building the request list would drop a useless request and a recurring alert.
 
-### 6.3 — Info · `entrypoints/app.ts:44` · `i18n.global.t` is passed unbound — safe today for the same reason as 5.1
+### 6.3 — Info · **RE-VERIFIED after 5.1** · `entrypoints/app.ts:44` · `i18n.global.t` is passed unbound
 
-*Verified.*
+*Verified against `vue-i18n.mjs` in both modes.*
 
-`attachStoreTranslate(pinia, i18n.global.t)` detaches `t` from its object. In Legacy mode
-(which is what runs today — see **5.1**) `VueI18n.t` is an object-literal method that closes over
-its composer and calls `Reflect.apply(composer.t, composer, …)`, so it does not read `this` and
-survives detaching.
+`attachStoreTranslate(pinia, i18n.global.t)` detaches `t` from its object. This was recorded
+alongside 5.1 as a second thing depending on the then-undeclared mode, with the note that any
+move to composition mode should re-verify the call and not just the `locale` assignment.
 
-Recorded alongside 5.1 because it is a second thing that depends on the same undeclared mode.
-Any move to composition mode should re-verify this call, not just the `locale` assignment.
+That re-verification was done as part of fixing 5.1 and the call is **still safe**. It was safe
+in Legacy mode because `VueI18n.t` is an object-literal method that closes over its composer and
+calls `Reflect.apply(composer.t, composer, …)`, never reading `this`. It is safe in composition
+mode for a stronger reason: the Composer's `t` is `function t(...args)` declared inside the
+`createComposer` closure (dist line 556) and attached to the returned object afterwards, so it
+has no `this` dependency to lose. Both entrypoints (`app.ts:44`, `options.ts:32`) are covered.
 
 ### Checked and found correct (Round 6)
 
