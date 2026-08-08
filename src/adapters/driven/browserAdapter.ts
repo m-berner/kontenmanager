@@ -11,6 +11,26 @@ import {log} from "@/domain/utils/utils";
 
 const APP_URL = "adapters/ui/entrypoints/app.html";
 const APP_TITLE = "KontenManager";
+/**
+ * Extension-root-relative path to the notification icon, resolved through
+ * `browser.runtime.getURL` at every use.
+ *
+ * It used to be the bare string `"assets/icon64.png"`, and a relative
+ * `iconUrl` resolves against the *calling document's* URL, not the extension
+ * root. The only production caller (`useImportDialog`) runs in `app.html`,
+ * which lives at `adapters/ui/entrypoints/`, so the icon resolved to
+ * `adapters/ui/entrypoints/assets/icon64.png` — a path that does not exist in
+ * the build. `manifest.json` references this icon three times and always with
+ * the full `adapters/ui/assets/` prefix; the build has no `assets/` directory
+ * at its root at all.
+ *
+ * That mattered because Firefox may reject `notifications.create` outright on
+ * an unresolvable `iconUrl`, and the surrounding `try/catch` logs and swallows
+ * the failure — while this notification is the *only* feedback the import
+ * dialog gives for a rejected file (empty, over 64 MB, or not `.json`). The
+ * file would vanish from the picker with nothing said.
+ */
+const NOTIFICATION_ICON_PATH = "adapters/ui/assets/icon64.png";
 const COMPLETE: EventTypes = "complete";
 const INTERRUPTED: EventTypes = "interrupted";
 /**
@@ -261,7 +281,7 @@ async function showSystemNotification(
         const notificationOption: browser.notifications.CreateNotificationOptions =
             {
                 type: "basic",
-                iconUrl: "assets/icon64.png",
+                iconUrl: browser.runtime.getURL(NOTIFICATION_ICON_PATH),
                 title: APP_TITLE,
                 message: messages.join("\n")
             };

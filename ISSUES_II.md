@@ -48,7 +48,7 @@ noted, by running the code). *Reasoned* = derived from the code but not executed
 | 2.2 | ~~**Medium**~~ **FIXED** | `usecases/backup/import.ts:148` | The error handler awaits `setStorage` unguarded; a failure there discards the real error and skips `onError` |
 | 4.1 | ~~**Medium**~~ **FIXED** | `adapters/container.ts:66` | The documented `storageAdapter` override is accepted and silently ignored |
 | 5.1 | Medium | `plugins/i18n.ts:126` | The app runs vue-i18n in removed-in-v12 Legacy mode, and the locale assignment works *only* because of that — the obvious fix silently reverts every euro amount to USD formatting |
-| 8.1 | Medium | `driven/browserAdapter.ts:264` | The system-notification `iconUrl` resolves to a path that does not exist in the build |
+| 8.1 | ~~**Medium**~~ **FIXED** | `driven/browserAdapter.ts:264` | The system-notification `iconUrl` resolves to a path that does not exist in the build |
 | 2.3 | Low | `usecases/backup/exportHelpers.ts:69` | An empty database reports "Export validation failed" |
 | 3.1 | Low | `connectionManager.ts:41` | `onVersionChange` has no caller, so an extension update hard-reloads the tab and discards unsaved dialog input |
 | 3.2 | Low | `driven/database/` | ~8 API surfaces (builder, `executeMultiple`, `countByAccount`, …) reachable only from tests |
@@ -867,7 +867,14 @@ Files read in full: `AppIndex.vue`, `TitleBar.vue`, `HeaderBar.vue`, `HomeConten
 `CompanyContent.vue`, `InfoBar.vue`, `FooterBar.vue`, `HelpContent.vue`, `PrivacyContent.vue`,
 `OptionsIndex.vue`, plus `views/README.md`.
 
-### 8.1 — Medium · `driven/browserAdapter.ts:264` · the system-notification icon path does not resolve
+### 8.1 — Medium · **FIXED** · `driven/browserAdapter.ts:264` · the system-notification icon path does not resolve
+
+> **Resolved.** The path is now the named constant `NOTIFICATION_ICON_PATH =
+> "adapters/ui/assets/icon64.png"` — the same prefix `manifest.json` uses in all
+> three of its references — resolved through `browser.runtime.getURL(...)` at the
+> call site, so it is absolute and cannot depend on the calling document's
+> location. Re-checked against `build/`: that file exists, and there is still no
+> `build/assets/` directory.
 
 *Verified against the build output.*
 
