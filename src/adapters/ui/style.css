@@ -18,18 +18,45 @@
     display: table-row;
 }
 
-.table-row:hover {
-    background-color: rgb(200, 200, 200);
+/*
+ * Row striping and hover, as TRANSLUCENT OVERLAYS rather than opaque colours.
+ *
+ * These used to be opaque light greys plus `color: darkgray`, on bare
+ * `tbody tr` selectors:
+ *
+ *     tbody tr:nth-of-type(even) { background-color: rgb(224,224,224); color: darkgray; }
+ *     tbody tr:nth-of-type(odd)  { background-color: rgb(248,248,248); color: darkgray; }
+ *
+ * Two problems, both of which this replacement fixes rather than works around:
+ *
+ * 1. They beat Vuetify's `.v-table { background: rgb(var(--v-theme-surface)) }`,
+ *    which paints the container and reaches rows only by inheritance — so every
+ *    table was light-themed in all six themes. In `dark`, the card around the
+ *    table is `#23222B` while the rows inside it were near-white.
+ * 2. `color: darkgray` (#A9A9A9) on `rgb(248,248,248)` is about 2.4:1 — well
+ *    under the 4.5:1 WCAG AA threshold for body text — for every cell not
+ *    explicitly overridden, including description, ISIN, date and booking type.
+ *
+ * A neutral grey at low alpha reads as a stripe over *whatever* the theme paints
+ * underneath, so it works on a near-white surface and on `#23222B` alike, and it
+ * needs no `var(--v-theme-*)` lookups (which the IDE cannot resolve). Setting no
+ * `color` at all is the point of the second fix: cells inherit Vuetify's
+ * on-surface colour, which is contrast-matched to the surface per theme.
+ *
+ * Scoped to `.v-table` so they apply to the app's data tables rather than to
+ * every `<tbody><tr>` the extension might ever render.
+ */
+.v-table tbody tr:nth-of-type(even) {
+    background-color: rgba(128, 128, 128, 0.09);
 }
 
-tbody tr:nth-of-type(even) {
-    background-color: rgb(224, 224, 224);
-    color: darkgray;
+.v-table tbody tr:nth-of-type(odd) {
+    background-color: rgba(128, 128, 128, 0.03);
 }
 
-tbody tr:nth-of-type(odd) {
-    background-color: rgb(248, 248, 248);
-    color: darkgray;
+/* After the striping rules so it wins on both odd and even rows. */
+.v-table tbody tr.table-row:hover {
+    background-color: rgba(128, 128, 128, 0.18);
 }
 
 thead tr div.v-progress-linear {
@@ -57,25 +84,26 @@ thead tr div.v-progress-linear {
 }
 
 /*
- * Theme-INDEPENDENT literal black. Do not apply this to anything rendered on a
- * themed surface: the user-selectable `dark` theme paints cards and sheets on
- * `surface: #23222B`, where black text sits at roughly 1.2:1 contrast and is
- * effectively invisible. CompanyContent's rate and gain cells both carried it
- * once and were unreadable for every dark-theme user. Prefer inheriting
- * Vuetify's on-surface color, or one legible in all six configured themes -
- * that is what winLossClass's non-negative branch settled on.
+ * Theme-INDEPENDENT literal black. **Has no callers, and should not gain one.**
  *
- * The single exception is a table cell, and it is an exception only because the
- * two `tbody tr:nth-of-type()` rules above hardcode the row background to light
- * gray in every theme. Those rules sit on the `tr` itself, so they outrank
- * `.v-table { background: rgb(var(--v-theme-surface)) }`, which paints only the
- * container and reaches rows by inheritance. Black on those rows is ~19:1, and
- * CompanyContent's mValue cell relies on exactly that.
+ * Do not apply this to anything rendered on a themed surface: the
+ * user-selectable `dark` theme paints cards and sheets on `surface: #23222B`,
+ * where black text sits at roughly 1.2:1 contrast and is effectively invisible.
+ * CompanyContent's rate and gain cells both carried it once and were unreadable
+ * for every dark-theme user. Prefer inheriting Vuetify's on-surface color, or
+ * one legible in all six configured themes - that is what winLossClass's
+ * non-negative branch settled on.
  *
- * So the rule is really "black needs a background this stylesheet controls".
- * Making the table theme-aware - dropping or softening those nth-of-type rules -
- * withdraws the exception and reinstates the original bug, so grep this class
- * before touching them.
+ * It used to have exactly one exception, CompanyContent's mValue cell, and that
+ * exception was borrowed rather than intrinsic: it held only while the two
+ * `tbody tr:nth-of-type()` rules above hardcoded the row background to light
+ * gray in every theme. Those rules are now translucent overlays over the theme
+ * surface, so the exception is withdrawn and the class is unused - the mValue
+ * cell keeps its emphasis from `font-weight-bold` alone and inherits a legible
+ * on-surface color in every theme.
+ *
+ * Kept, rather than deleted, only as the anchor for this note; a bare
+ * `color: black` is the kind of thing that gets re-added from muscle memory.
  */
 .color-black {
     color: black;

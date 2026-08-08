@@ -110,9 +110,11 @@ const hasQuote = (value: number | undefined): boolean => {
  * 100%.
  *
  * Worth having corrected rather than ignored because this file's comments are
- * unusually load-bearing — the `color-black` block and the phantom-zero block
- * both encode reasoning a future edit is meant to obey, and one comment that
- * cannot be trusted undermines the rest.
+ * unusually load-bearing — the mValue-cell block and the phantom-zero block both
+ * encode reasoning a future edit is meant to obey, and one comment that cannot
+ * be trusted undermines the rest. (The mValue block earned that description: it
+ * said to drop `color-black` in whatever change made the tables theme-aware, and
+ * that is exactly what happened.)
  *
  * @param {number | undefined} euroChange - Absolute change in euros
  * @param {number | undefined} invest - Original investment amount
@@ -427,27 +429,22 @@ log("VIEWS CompanyContent: setup");
           </template>
         </td>
         <!--
-          `color-black` is a literal `color: black`, deliberately overriding the
-          `color: darkgray` the rest of the row inherits from style.css's
-          `tbody tr:nth-of-type(odd/even)` rules, so the current price reads as
-          the emphasised figure of the row. A declaration on the td outranks a
-          value inherited from the tr, so no !important is needed.
+          Emphasis from `font-weight-bold` alone; the colour is inherited.
 
-          It was removed once before, because the user-selectable `dark` theme
-          paints surfaces on #23222B and black text there is invisible - the
-          reasoning winLossClass's non-negative branch still carries. That does
-          not describe these rows: the two nth-of-type rules also set the row
-          background to rgb(248,248,248) / rgb(224,224,224) on the `tr` itself,
-          beating Vuetify's `.v-table { background: rgb(var(--v-theme-surface)) }`,
-          which paints only the container and reaches rows by inheritance. The
-          rows are therefore light gray in all six themes and black sits at
-          roughly 19:1 contrast on them.
+          This cell used to also carry `color-black`, a literal `color: black`,
+          to override the `color: darkgray` the row inherited from style.css's
+          `tbody tr:nth-of-type(odd/even)` rules. That was safe only because
+          those rules ALSO hardcoded the row background to light gray in every
+          theme, beating Vuetify's
+          `.v-table { background: rgb(var(--v-theme-surface)) }` — a borrowed
+          safety, and its own comment said to drop this class in whatever change
+          made the table theme-aware. That change has happened: the striping is
+          now a translucent overlay over the theme surface, so black here would
+          be back to ~1.2:1 on `dark`, which is the exact bug that got it removed
+          from this cell once before.
 
-          That safety is borrowed, not intrinsic: it holds only while those
-          nth-of-type rules keep overriding the theme. Removing or softening
-          them to make the table theme-aware puts the dark theme's surface back
-          under this cell and reinstates the original bug, so drop this class in
-          the same change.
+          Inheriting Vuetify's on-surface colour is what winLossClass's
+          non-negative branch already settled on, for the same reason.
 
           Guarded by hasQuote() for the same reason min/max already are: a stock
           whose quote has not been fetched yet still has mValue === 0, and
@@ -455,7 +452,7 @@ log("VIEWS CompanyContent: setup");
           price. A traded instrument is never worth exactly 0, so an empty cell
           is the honest representation of "not fetched".
         -->
-        <td class="color-black font-weight-bold">
+        <td class="font-weight-bold">
           <template v-if="hasQuote(item.mValue)">
             {{ n(item.mValue as number, "currency3") }}
           </template>
