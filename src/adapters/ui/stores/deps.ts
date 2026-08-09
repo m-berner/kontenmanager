@@ -10,6 +10,7 @@
 import {getActivePinia, type Pinia} from "pinia";
 
 import type {HandleUserAlertOptions, StorageDataType, StorageValueType} from "@/domain/types";
+import {log} from "@/domain/utils/utils";
 
 type StorageAdapterApi = {
     clearStorage: () => Promise<void>;
@@ -121,11 +122,58 @@ export function attachStoreTranslate(pinia: Pinia, translate: StoreTranslate): v
     (pinia as unknown as Record<symbol, unknown>)[STORE_TRANSLATE_KEY] = translate;
 }
 
+/**
+ * Whether the "no translate function wired" warning has already been emitted.
+ *
+ * Once per context, not once per call: every consumer of `getStoreTranslate`
+ * calls it on each access (`settings.errorTitle`,
+ * `alerts.defaultConfirmText`/`defaultCancelText`), so an unguarded warning
+ * would fire on every alert.
+ */
+let warnedMissingTranslate = false;
+
+/**
+ * Returns the translate function wired by {@link attachStoreTranslate}, if any.
+ *
+ * Every consumer falls back to a hardcoded English string when this is
+ * `undefined`. That is a reasonable design, but those fallbacks read plausibly
+ * ("Settings error", "Confirm", "Cancel") — so a *missing*
+ * `attachStoreTranslate` in a new entrypoint would look exactly like a working
+ * app in English rather than like a wiring bug, and nothing would ever say
+ * otherwise.
+ *
+ * The warning below is what closes that. It is debug-gated (`log` is silent
+ * unless `MODE === "development"` or `VITE_DEBUG_LOGS=true`), so it costs
+ * release builds nothing and does not change the fallback behaviour — it only
+ * makes the omission visible to whoever added the entrypoint. Deliberately not
+ * a throw: an untranslated confirm button is far better than a store that
+ * cannot render an alert at all.
+ */
 export function getStoreTranslate(): StoreTranslate | undefined {
     const pinia = getActivePinia();
     const translate = pinia
         ? (pinia as unknown as Record<symbol, unknown>)[STORE_TRANSLATE_KEY]
         : undefined;
+
+    if (!translate && !warnedMissingTranslate) {
+        warnedMissingTranslate = true;
+        log(
+            "STORES deps: no translate function attached — store-rendered strings " +
+            "will fall back to English. Call attachStoreTranslate(pinia, i18n.global.t) " +
+            "in this entrypoint, as entrypoints/app.ts and options.ts do.",
+            null,
+            "warn"
+        );
+    }
+
     return translate as StoreTranslate | undefined;
+}
+
+/**
+ * Resets the one-shot warning above. Test-only seam — without it, whichever
+ * test happens to run first consumes the warning for the whole file.
+ */
+export function resetStoreTranslateWarningForTests(): void {
+    warnedMissingTranslate = false;
 }
 

@@ -6,18 +6,24 @@
 
 import {CURRENCIES, ERROR_CATEGORY} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS, isAppError, serializeError} from "@/domain/errors";
-import type {AppStatus, ExchangeData, RecordsDbData, StorageDataType} from "@/domain/types";
+import {resolveDisplayCurrency} from "@/domain/logic";
+import type {AccountDb, AppStatus, ExchangeData, RecordsDbData, StorageDataType} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
-import type {BrowserAdapter} from "@/adapters/driven/browserAdapter";
 import type {Service as DatabaseAdapter} from "@/adapters/driven/database/databaseAdapter";
 import type {FetchAdapter} from "@/adapters/driven/fetchAdapter";
 import type {storageAdapter} from "@/adapters/driven/storageAdapter";
 
 export type AppAdapter = ReturnType<typeof createAppAdapter>;
 
+/**
+ * `browserAdapter` is deliberately absent. It was here only to feed
+ * `getCurrencyFromLocale()`, which is gone (see the note above
+ * `initializeStorage`) — keeping an unused dependency would misrepresent what
+ * this adapter needs and is exactly the dead surface the audit flagged
+ * elsewhere in this tree.
+ */
 export type AppAdapterDeps = {
-    browserAdapter: BrowserAdapter;
     storageAdapter: typeof storageAdapter;
     databaseAdapter: DatabaseAdapter;
     fetchAdapter: FetchAdapter;
@@ -27,12 +33,20 @@ export type AppStores = {
     records: {
         init: (_storesDB: RecordsDbData, _messages: Record<string, string>, _removeAccounts?: boolean) => Promise<void>;
         clean: (_withAccounts?: boolean) => void;
+        /**
+         * Read by Phase 3 to resolve the display currency, which decides which
+         * FX pairs are worth fetching. Safe to read there: Phase 2 has already
+         * run `records.init`, so the accounts are loaded.
+         */
+        accounts: { items: Array<Pick<AccountDb, "cID" | "cCurrency">> };
     };
     settings: {
         init: (_storage: StorageDataType) => void;
         activeAccountId: number;
         exchanges: string[];
         service?: string;
+        /** App-level default currency; the fallback when no account is active. */
+        currency: string;
     };
     runtime: {
         curUsd: number;
@@ -50,12 +64,25 @@ export type AppStores = {
  * Handles app startup, data loading, and external API coordination.
  */
 export function createAppAdapter(deps: AppAdapterDeps) {
-    const {browserAdapter, storageAdapter, databaseAdapter, fetchAdapter} = deps;
+    const {storageAdapter, databaseAdapter, fetchAdapter} = deps;
     const storage = storageAdapter();
     const fetch = fetchAdapter;
 
     // Cached result of the last initializeApp call, used by getStatus.
     let lastStatusSnapshot: AppStatus | undefined;
+    /**
+     * Whether `browser.storage.local` has been read successfully at least once.
+     *
+     * This is the evidence `getStatus` reports as `storage: "ok"`. It used to
+     * infer it from `settings.activeAccountId !== -1`, which conflated "storage
+     * never loaded" with "no account is active" — but `-1` is not an error
+     * value. It is `BROWSER_STORAGE.ACTIVE_ACCOUNT_ID`'s shipped default and
+     * `INDEXED_DB.INVALID_ID`, the documented "no active account" sentinel that
+     * `deleteActiveAccountUsecase` and the import path both deliberately write.
+     * So a fresh install, or a user who had just deleted their last account, had
+     * storage working perfectly and was reported as `storage: "error"`.
+     */
+    let storageReadOk = false;
 
     /**
      * Creates a default status object with error states
@@ -112,53 +139,21 @@ export function createAppAdapter(deps: AppAdapterDeps) {
         logPhaseDuration(phaseName, tStart);
     }
 
-    /**
-     * Extracts the currency code from the user locale.
+    /*
+     * `getCurrencyFromLocale()` used to live here, deriving the app's currency
+     * from `browserAdapter.getUserLocale()` via a region -> ISO-code map. It is
+     * gone, along with that map (`CURRENCIES.CODE`), because the derivation
+     * itself was the defect: a user's UI language does not tell you what
+     * currency their money is in, and treating it as though it did put every
+     * eurozone user on a non-German browser onto USD. The currency is now an
+     * explicit property of the account (`AccountDb.cCurrency`) with an
+     * app-level default (`BROWSER_STORAGE.CURRENCY`), resolved by
+     * `resolveDisplayCurrency`.
      *
-     * Written defensively for arbitrary locale input, though its only current
-     * input is `browserAdapter.getUserLocale()`, which clamps every locale to
-     * `"de-DE"` or `"en-US"` — both well-formed, both with a region both
-     * `Intl.Locale` resolves. So the `_`→`-` normalization has nothing to
-     * normalize, the `try/catch` cannot throw, and the regex fallback is
-     * unreachable. That is kept deliberately rather than trimmed to the
-     * reachable path: these branches are the *right* logic in the wrong place,
-     * and widening `getUserLocale`'s accepted set would make them live again,
-     * whereas deleting them as dead code would throw away the fallback chain
-     * such a change depends on.
-     *
-     * What was removed is the *language-code* fallback, because it was the one
-     * branch that would have been wrong if revived. `CURRENCIES.CODE` is keyed
-     * by lowercase **region** codes — `"at" -> EUR`, `"us" -> USD`, `"br" ->
-     * BRL` — and contains no language keys at all. `get("de")` only ever
-     * resolved by coincidence, Germany's region code happening to equal the
-     * German language subtag, while `get("en")` returns `undefined` because no
-     * country has region code `en`. Reviving it as written would have silently
-     * given English-language users no currency; returning `undefined` for a
-     * locale with no resolvable region is the honest answer.
+     * Removed rather than left unused so the mechanism cannot be quietly
+     * reintroduced: with the map gone there is no longer a locale -> currency
+     * lookup available to reach for.
      */
-    function getCurrencyFromLocale(): string | undefined {
-        const rawLocale = browserAdapter.getUserLocale();
-        if (!rawLocale) {
-            return undefined;
-        }
-
-        const normalizedLocale = rawLocale.replace(/_/g, "-");
-
-        let regionCode: string | undefined;
-        try {
-            regionCode = new Intl.Locale(normalizedLocale).region?.toLowerCase();
-        } catch (err) {
-            void err;
-            regionCode = undefined;
-        }
-
-        if (!regionCode) {
-            const regionMatch = normalizedLocale.match(/-(\w{2})(?:-|$)/);
-            regionCode = regionMatch?.[1]?.toLowerCase();
-        }
-
-        return regionCode ? CURRENCIES.CODE.get(regionCode) : undefined;
-    }
 
     /**
      * Processes a fetch result and handles errors consistently
@@ -314,6 +309,11 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             const storageData = await storage.getStorage();
             if (signal?.aborted) return;
             stores.settings.init(storageData);
+            // Set only after init() returns, so it means "the settings store
+            // holds what storage actually contained", not merely "the read
+            // resolved". Not set on the aborted path above — an aborted phase
+            // is reported as "aborted", never as "ok".
+            storageReadOk = true;
         } catch (err) {
             throw appError(
                 ERROR_DEFINITIONS.SERVICES.APP.STORAGE.CODE,
@@ -406,7 +406,18 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             return {exchanges: false, indexes: false, materials: false};
         }
 
-        const currency = getCurrencyFromLocale();
+        // The currency the app will actually display and convert into — the
+        // active account's, falling back to the app-level default. NOT derived
+        // from the UI locale: `useOnlineStockData` divides quotes by
+        // `runtime.curUsd`/`curEur`, and those are seeded from exactly the pairs
+        // requested here, so if this used a different rule from the conversion
+        // site the app would fetch a rate for one currency and convert with it
+        // into another.
+        const currency = resolveDisplayCurrency(
+            stores.records.accounts.items,
+            stores.settings.activeAccountId,
+            stores.settings.currency
+        );
         if (!currency) {
             log(
                 "SERVICES app",
@@ -665,14 +676,17 @@ export function createAppAdapter(deps: AppAdapterDeps) {
     function getStatus(stores: AppStores): AppStatus {
         // Reuse last known initializeApp status if present, otherwise derive a snapshot.
         //
-        // `storage` is reported from the settings store rather than from the
-        // database connection: browser.storage.local and IndexedDB are
-        // independent subsystems, and deriving one from the other claimed
-        // storage was broken whenever the DB merely happened to be disconnected.
-        // A non-sentinel activeAccountId means settings.init() ran, which is the
-        // observable evidence that storage was read successfully.
+        // `storage` is reported independently of the database connection:
+        // browser.storage.local and IndexedDB are independent subsystems, and
+        // deriving one from the other claimed storage was broken whenever the DB
+        // merely happened to be disconnected.
+        //
+        // The evidence is `storageReadOk` — set by Phase 1 when the read
+        // completes — rather than `stores.settings.activeAccountId !== -1`,
+        // which was a proxy that answered the wrong question: see the flag's own
+        // note. `stores` is still the argument for `db`/`fetch`.
         const dbOk = databaseAdapter.isConnected();
-        const storageOk = stores.settings.activeAccountId !== -1;
+        const storageOk = storageReadOk;
         const derived: AppStatus = {
             storage: storageOk ? "ok" : "error",
             db: dbOk ? "ok" : "error",

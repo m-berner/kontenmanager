@@ -12,6 +12,7 @@ import {useI18n} from "vue-i18n";
 import {updateAccountUsecase} from "@/app/usecases/accounts";
 import {toRecordsPort} from "@/app/usecases/portAdapters";
 
+import {CURRENCIES} from "@/domain/constants";
 import type {AccountDb} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
@@ -72,7 +73,12 @@ const loadCurrentAccount = async (): Promise<void> => {
     swift: currentAccount.cSwift,
     iban: currentAccount.cIban,
     logoUrl: currentAccount.cLogoUrl,
-    withDepot: currentAccount.cWithDepot
+    withDepot: currentAccount.cWithDepot,
+    // `?? EUR` even though `cCurrency` is declared required: schema migration 29
+    // stamps it onto every stored row, but a row that predates the migration in
+    // some other way (a hand-written record, a test double) would otherwise put
+    // `undefined` into the select and render it blank.
+    currency: currentAccount.cCurrency ?? CURRENCIES.EUR
   });
 };
 

@@ -120,7 +120,7 @@ function extractFnetStockData(doc: Document): FetchResult {
                 // falls back to inferring the currency from the ISIN prefix, so
                 // a US-domiciled stock quoted in EUR on this German page had its
                 // price divided by the USD rate — silently, producing a
-                // plausible-looking number in `mValue`, `mEuroChange` and the
+                // plausible-looking number in `mValue`, `mChange` and the
                 // depot total. `providerUtils.parseCurrency` states the rule
                 // outright: the fallback "must not be changed to ''".
                 currency: detectCurrency(openPrevString) || DEFAULT_CURRENCY

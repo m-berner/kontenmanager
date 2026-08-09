@@ -11,6 +11,25 @@ import {log} from "@/domain/utils/utils";
 
 import type {TransactionManagerContract} from "@/adapters/driven/database/transactionManager";
 
+/**
+ * Fluent builder over a batch of record operations.
+ *
+ * **Only `executeAtomic` has a production caller.** That one is load-bearing —
+ * `databaseAdapter.atomicImport` routes the whole backup import through it. The
+ * builder below (and `batchService.createBuilder`, `databaseAdapter.batch()`,
+ * `databaseAdapter.batchOperations()`) is reached only from tests.
+ *
+ * Recorded here for the same reason `healthChecker` documents itself: it is a
+ * deliberately complete surface, not dead code left by a refactor, and saying so
+ * stops it being re-derived as a finding on every audit pass. `execute()`'s
+ * concurrent-queue/`reset()` analysis is likewise deliberate — it is what the
+ * class would need the day something outside a test instantiates it, and it is
+ * cheaper to keep correct than to re-establish later.
+ *
+ * If it is still test-only at the next major cleanup, the question to ask is
+ * whether `atomicImport` wants to be expressed through it — that is the one
+ * production flow whose shape it matches.
+ */
 export type BatchOperationBuilder = {
     add: (_storeName: ValidStoreNameType, _operation: RecordOperation) => BatchOperationBuilder;
     insert: (_storeName: ValidStoreNameType, _data: unknown) => BatchOperationBuilder;

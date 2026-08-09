@@ -6,7 +6,7 @@
 
 import {inject, type InjectionKey, provide, reactive, type UnwrapNestedRefs} from "vue";
 
-import {BOOKING_TYPE_ROLE, DATE} from "@/domain/constants";
+import {BOOKING_TYPE_ROLE, CURRENCIES, DATE} from "@/domain/constants";
 import {formMapper} from "@/domain/mapping/formMapper";
 import type {AccountFormData, BookingFormData, BookingTypeDb, BookingTypeFormData, StockFormData} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
@@ -82,13 +82,19 @@ export function createStockFormManager() {
  *
  * @returns Account-specific form state and mapping methods.
  */
-export function createAccountFormManager() {
+export function createAccountFormManager(defaultCurrency: string = CURRENCIES.EUR) {
     const initialData: AccountFormData = {
         id: -1,
         swift: "",
         iban: "",
         logoUrl: "",
-        withDepot: false
+        withDepot: false,
+        // Seeded from `settings.currency` by the caller, so a new account starts
+        // on the user's own default rather than a hardcoded one. `UpdateAccount`
+        // overwrites it from the loaded record, so the parameter only matters on
+        // the add path. It also flows through `reset()`, which is what keeps the
+        // add dialog on the right default for a second entry.
+        currency: defaultCurrency
     };
 
     const manager = createFormManager(initialData, formMapper().mapAccountForm);

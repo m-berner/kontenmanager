@@ -13,6 +13,7 @@ import {provideAdapters} from "@/adapters/context";
 import {installUnhandledRejectionLogger, installVueGlobalHandlers} from "@/adapters/ui/entrypoints/errorHandling";
 import {ensureSingleAppTab} from "@/adapters/ui/entrypoints/singleTabGuard";
 import componentsPlugin from "@/adapters/ui/plugins/components";
+import {startCurrencySync} from "@/adapters/ui/plugins/currencySync";
 import {createI18nPlugin} from "@/adapters/ui/plugins/i18n";
 import {createAppPinia} from "@/adapters/ui/plugins/pinia";
 import routerPlugin from "@/adapters/ui/plugins/router";
@@ -42,6 +43,33 @@ async function bootstrap(): Promise<void> {
     const pinia = createAppPinia(adapters); // inject adapters into pinia
     attachStoreTranslate(pinia, i18n.global.t); // wire the translation function into stores (see stores/deps.ts)
 
+    // Registered here because `connectionManager`'s `onversionchange` default is
+    // `window.location.reload()` — an immediate, unannounced hard reload that
+    // discards whatever the user has typed into an open dialog. The trigger in
+    // practice is an extension update landing while this tab is open, which is
+    // not something the user did and gives them no warning.
+    //
+    // A registered handler replaces that default entirely, so this turns the
+    // reload into a non-dismissing alert (`duration: null`) and lets the user
+    // finish and save first. The connection is already closed by the time this
+    // runs — `connectionManager` closes it before dispatching — so the app is
+    // read-only from here on and the alert has to say so.
+    //
+    // Deliberately after `createAppPinia`, which is what configures the alert
+    // sink; before it, `feedbackInfo` would have nowhere to render. Registering
+    // the handler itself does not require a live connection.
+    //
+    // Only the app entrypoint does this. `options.ts` has no dialogs holding
+    // unsaved input, so the plain reload is the better answer there.
+    adapters.databaseAdapter.onVersionChange(() => {
+        log("ENTRYPOINTS app: database versionchange, connection closed", null, "warn");
+        void adapters.alertAdapter.feedbackInfo(
+            i18n.global.t("mixed.versionChange.title"),
+            i18n.global.t("mixed.versionChange.message"),
+            {duration: null}
+        );
+    });
+
     provideAdapters(app, adapters); // inject adapters into vue
 
     installVueGlobalHandlers(app, "app");
@@ -54,6 +82,10 @@ async function bootstrap(): Promise<void> {
 
     // Keep theme changes (including cross-context storage updates) in the UI layer.
     startThemeSync(pinia, vuetifyPlugin);
+    // Same shape, for the display currency: the active account's cCurrency (or
+    // the app default) decides how `n(value, "currency")` renders, instead of
+    // the UI language deciding it.
+    startCurrencySync(pinia, i18n);
     app.mount("#app");
 
     log(

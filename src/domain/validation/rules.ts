@@ -114,11 +114,23 @@ export function validateIBAN(iban: string): DomainValidationResult {
     if (!cleaned) return {isValid: false, error: VALIDATION_CODES.REQUIRED};
 
     const countryCode = cleaned.substring(0, 2);
+    const expectedLength =
+        IBAN_LENGTH_CODES[countryCode as keyof typeof IBAN_LENGTH_CODES];
 
-    if (
-        cleaned.length !==
-        IBAN_LENGTH_CODES[countryCode as keyof typeof IBAN_LENGTH_CODES]
-    ) {
+    // Split out of the length comparison. The two used to be one step
+    // (`cleaned.length !== IBAN_LENGTH_CODES[...]`), so a country absent from
+    // the table produced an `undefined` lookup, failed the comparison, and was
+    // reported as INVALID_LENGTH — telling the user their IBAN was the wrong
+    // length when the real answer is that the country is not supported. No
+    // length is even known for it, so that message could not have been right.
+    //
+    // `validateISIN` already returns INVALID_COUNTRY for exactly this
+    // situation; the two validators simply disagreed.
+    if (expectedLength === undefined) {
+        return {isValid: false, error: VALIDATION_CODES.INVALID_COUNTRY};
+    }
+
+    if (cleaned.length !== expectedLength) {
         return {isValid: false, error: VALIDATION_CODES.INVALID_LENGTH};
     }
 
@@ -185,25 +197,29 @@ export function validateSWIFT(swift: string): DomainValidationResult {
         return {isValid: false, error: VALIDATION_CODES.INVALID_LENGTH};
     }
 
+    // This regex is the whole check, and it decomposes exactly as the doc
+    // comment describes: `[A-Z]{4}` bank, `[A-Z]{2}` country, `[A-Z0-9]{2}`
+    // location, optional `[A-Z0-9]{3}` branch.
+    //
+    // There used to be three further per-segment checks below it, re-testing
+    // the bank code against `/^[A-Z]{4}$/`, the location code against
+    // `/^[A-Z0-9]{2}$/` and the branch code against `/^[A-Z0-9]{3}$/`, each
+    // returning its own code (INVALID_BANK / INVALID_REGION / INVALID_BRANCH).
+    // Every one of them was already implied by the regex that had just passed,
+    // so none could ever fail and none of those three codes could ever be
+    // returned. They were removed rather than kept as defensive belt-and-braces
+    // because they were not inert documentation: `swiftRules` mapped them to
+    // real translated messages, so the message table advertised a specificity
+    // ("Invalid bank", "Invalid region", "Invalid branch") the validator could
+    // not actually produce. Any malformed BIC reports INVALID_FORMAT.
+    //
+    // Country code presence validates by the regex; a strict membership check
+    // against VALID_COUNTRY_CODES is deliberately NOT done, to allow
+    // specialized BIC country codes that are not in the standard list. That is
+    // why VALIDATION_CODES.INVALID_COUNTRY is likewise not reachable from here
+    // (unlike validateISIN, which does check membership and does return it).
     if (!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(cleaned)) {
         return {isValid: false, error: VALIDATION_CODES.INVALID_FORMAT};
-    }
-
-    const bankCode = cleaned.substring(0, 4);
-    if (!/^[A-Z]{4}$/.test(bankCode))
-        return {isValid: false, error: VALIDATION_CODES.INVALID_BANK};
-
-    // Country code presence validates by the regex above; strict membership
-    // check against VALID_COUNTRY_CODES is intentionally skipped to allow
-    // specialized BIC country codes not in the standard list.
-    const locationCode = cleaned.substring(6, 8);
-    if (!/^[A-Z0-9]{2}$/.test(locationCode))
-        return {isValid: false, error: VALIDATION_CODES.INVALID_REGION};
-
-    if (cleaned.length === 11) {
-        const branchCode = cleaned.substring(8, 11);
-        if (!/^[A-Z0-9]{3}$/.test(branchCode))
-            return {isValid: false, error: VALIDATION_CODES.INVALID_BRANCH};
     }
 
     return {isValid: true};

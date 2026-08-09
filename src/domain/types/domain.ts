@@ -31,6 +31,32 @@ export interface AccountDb {
     cIban?: string;
     cLogoUrl: string;
     cWithDepot: boolean;
+    /**
+     * The currency this account's bookings are denominated in, and the target
+     * a fetched quote is converted into while the account is active.
+     *
+     * Required rather than optional, unlike `cIban`: nothing ever omits it on
+     * write, and schema migration 29 (`backfillAccountCurrency`) stamps it onto
+     * every pre-existing row. `validateAccount` defaults an absent or
+     * unsupported value to EUR, so a backup written before this field existed
+     * imports cleanly.
+     *
+     * Held on the *account* rather than on each booking on purpose. A brokerage
+     * account has one settlement currency, so per-booking would be a finer grain
+     * than reality — and every monetary aggregate in this app is already
+     * single-account scoped (`getAccountRecords` loads only the active account's
+     * bookings; `TitleBar`'s chips, `ShowAccounting` and `CompanyContent` all
+     * read from that). At this grain no view ever has to add two currencies
+     * together.
+     *
+     * Booking amounts are stored exactly as the user entered them and are never
+     * converted on write — see `WORKFLOWS.md`. Converting would destroy the
+     * transaction's real amount, and would do so using whatever spot rate
+     * happened to be live at entry time; `runtime.curUsd` falls back to `1` when
+     * the FX fetch fails, which on a write path would silently persist a USD
+     * figure as EUR.
+     */
+    cCurrency: string;
 }
 
 /**

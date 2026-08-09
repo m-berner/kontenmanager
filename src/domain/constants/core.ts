@@ -30,10 +30,13 @@ export const VALIDATION_CODES = {
     NEGATIVE_VALUE: "negative_value",
     ONE_OF_TWO_REQUIRED: "one_of_two_required",
     INVALID_COUNTRY: "invalid_country",
-    INVALID_BANK: "invalid_bank",
-    INVALID_REGION: "invalid_region",
-    INVALID_BRANCH: "invalid_branch",
-    TEST_BIC: "test_bic",
+    // INVALID_BANK / INVALID_REGION / INVALID_BRANCH / TEST_BIC were removed:
+    // the first three were returned only by per-segment checks in validateSWIFT
+    // that its format regex had already made unreachable, and TEST_BIC was never
+    // returned by anything at all. They were not free — `swiftRules` mapped each
+    // to a translated message, so the message table promised failure reasons the
+    // validator could not produce. Do not reintroduce one without a validator
+    // path that can actually return it.
     MAX_LENGTH: "max_length",
     MUST_BEGIN_WITH_LETTER: "must_begin_with_letter"
 } as const;
@@ -108,6 +111,13 @@ export const VALID_COUNTRY_CODES: ReadonlySet<string> = new Set([
     "ER",
     "ES",
     "ET",
+    // Not an ISO-3166 country: the ISIN prefix used by European Union and EIB
+    // issues (e.g. EU000A1G0AA6). Sits here alphabetically alongside the real
+    // country codes, like the XS/XK securities prefixes further down. Without
+    // it, validateISIN rejected those with INVALID_COUNTRY and isinRules
+    // blocked the stock from being added at all — a legitimate holding for a
+    // European investor.
+    "EU",
     "FI",
     "FJ",
     "FK",
@@ -323,10 +333,15 @@ export const PORTFOLIO = {
     MINIMUM_THRESHOLD: 0.1
 } as const;
 
+// `TITLE_BAR.LOGO` used to live here as the raw string "../assets/icon64.png".
+// Because it sat in a TS constant rather than an HTML attribute literal, Vite
+// never saw it and never rewrote it: the browser resolved it at runtime relative
+// to app.html, so it was correct only while three unrelated settings stayed
+// aligned — the entrypoint's directory depth, `assetsDir`, and the absence of
+// content hashing. TitleBar.vue now imports the asset the Vite way, exactly as
+// it already did for its sibling icon48. Do not reintroduce an asset path as a
+// constant; `import icon from "@/adapters/ui/assets/…"` is the managed form.
 export const COMPONENTS = {
-    TITLE_BAR: {
-        LOGO: "../assets/icon64.png"
-    },
     DYNAMIC_LIST: {
         TYPES: {
             MARKETS: "markets",
@@ -372,83 +387,25 @@ export const COMPONENTS = {
 export const CURRENCIES = {
     EUR: "EUR",
     USD: "USD",
-    CODE: new Map([
-        ["ar", "ARS"],
-        ["at", "EUR"],
-        ["au", "AUD"],
-        ["be", "EUR"],
-        ["bg", "BGN"],
-        ["bo", "BOB"],
-        ["br", "BRL"],
-        ["bz", "BZD"],
-        ["ca", "CAD"],
-        ["ch", "CHF"],
-        ["cl", "CLP"],
-        ["chs", "CNY"],
-        ["cht", "CNY"],
-        ["co", "COU"],
-        ["cr", "CRC"],
-        ["cs", "CZK"],
-        ["cy", "EUR"],
-        ["da", "DKK"],
-        ["de", "EUR"],
-        ["do", "DOP"],
-        ["ec", "USD"],
-        ["ee", "EUR"],
-        ["el", "EUR"],
-        ["en", "GBP"],
-        ["es", "EUR"],
-        ["et", "EUR"],
-        ["fi", "EUR"],
-        ["fr", "EUR"],
-        ["gb", "GBP"],
-        ["gr", "EUR"],
-        ["gt", "GTQ"],
-        ["hk", "HKD"],
-        ["hn", "HNL"],
-        ["hu", "HUF"],
-        ["ie", "EUR"],
-        ["in", "INR"],
-        ["is", "ISK"],
-        ["it", "EUR"],
-        ["ja", "JPY"],
-        ["jm", "JMD"],
-        ["ko", "KRW"],
-        ["li", "EUR"],
-        ["lt", "EUR"],
-        ["lu", "EUR"],
-        ["mc", "EUR"],
-        ["mo", "MOP"],
-        ["mt", "EUR"],
-        ["mx", "MXN"],
-        ["ni", "NIO"],
-        ["nl", "EUR"],
-        ["no", "NOK"],
-        ["nz", "NZD"],
-        ["pa", "PAB"],
-        ["pe", "PEN"],
-        ["ph", "PHP"],
-        ["pl", "PLN"],
-        ["pr", "USD"],
-        ["pt", "EUR"],
-        ["py", "PYG"],
-        ["ro", "RON"],
-        ["ru", "RUB"],
-        ["se", "SEK"],
-        ["sg", "SGD"],
-        ["sk", "EUR"],
-        ["sl", "EUR"],
-        ["sp", "RSD"],
-        ["sv", "USD"],
-        ["tr", "TRY"],
-        ["tt", "TTD"],
-        ["tw", "TWD"],
-        ["uy", "UYU"],
-        ["us", "USD"],
-        ["ve", "VES"],
-        ["za", "ZAR"],
-        ["zw", "ZWD"]
-    ])
+    /**
+     * The currencies an account may be denominated in, and therefore the only
+     * ones a quote can be converted *into*.
+     *
+     * Deliberately short. Conversion needs a live rate for the pair, and
+     * `appAdapter.fetchExternalData` fetches exactly two —
+     * `${accountCurrency}USD` and `${accountCurrency}EUR` — which is what
+     * `useOnlineStockData`'s divisor chain can consume. Offering a third
+     * currency in the account form would produce prices that silently pass
+     * through unconverted (`divisor = 1`), which is the failure
+     * `providerUtils.parseCurrency` already documents for scraped CAD/AUD/HKD
+     * quotes. Widen this only together with the rate-fetching side.
+     *
+     * A 70-entry `CODE` map of region -> ISO currency used to sit here. It
+     * existed solely to derive the app's currency from the browser locale, which
+     * is the coupling this replaced, so it went with the derivation — leaving it
+     * would have left the lookup available to reach for again.
+     */
+    SUPPORTED: ["EUR", "USD"] as const
 } as const;
 
 export const FETCH = {
@@ -502,7 +459,8 @@ export const INDEXED_DB = {
                 SWIFT: "cSwift",
                 LOGO_URL: "cLogoUrl",
                 IBAN: "cIban",
-                WITH_DEPOT: "cWithDepot"
+                WITH_DEPOT: "cWithDepot",
+                CURRENCY: "cCurrency"
             }
         },
         BOOKINGS: {
@@ -579,7 +537,12 @@ export const INDEXED_DB = {
         STOCK_MEMORY: {
             mPortfolio: 0,
             mInvest: 0,
-            mEuroChange: 0,
+            // Renamed from `mEuroChange`. The name asserted a currency the value
+            // does not necessarily carry: it is `mValue * mPortfolio - mInvest`,
+            // and `mValue` is converted into the *account's* currency, which may
+            // be USD. The old name was accurate only while EUR was the one
+            // possible outcome.
+            mChange: 0,
             mMin: 0,
             mValue: 0,
             mMax: 0,
@@ -587,7 +550,9 @@ export const INDEXED_DB = {
         }
     },
     MIN_SUPPORTED_VERSION: 27,
-    CURRENT_VERSION: 28,
+    // 29 adds `cCurrency` to the accounts store (migrator's
+    // `backfillAccountCurrency` stamps EUR onto pre-existing rows).
+    CURRENT_VERSION: 29,
     MAX_FILE_SIZE: 64 * 1024 * 1024
 } as const;
 
@@ -659,6 +624,21 @@ export const SETTINGS: StoresConfigType = {
 export const BROWSER_STORAGE = {
     ACTIVE_ACCOUNT_ID: {key: "sActiveAccountId", value: -1},
     SKIN: {key: "sSkin", value: "ocean"},
+    /**
+     * The app-level default currency.
+     *
+     * Two jobs, both narrow: it seeds `cCurrency` for a newly created account,
+     * and it is the display currency while no account is active. The currency
+     * that actually matters for figures on screen is the **active account's**
+     * `cCurrency` — see `resolveDisplayCurrency` (`domain/logic.ts`).
+     *
+     * It exists as a stored preference rather than being derived from the UI
+     * language because those are independent properties of a user: someone can
+     * run an English-language browser and hold euros. Deriving one from the
+     * other put every eurozone user whose browser is not German onto USD, and
+     * converted their EUR quotes by the USD/EUR rate to get there.
+     */
+    CURRENCY: {key: "sCurrency", value: "EUR"},
     BOOKINGS_PER_PAGE: {key: "sBookingsPerPage", value: 9},
     STOCKS_PER_PAGE: {key: "sStocksPerPage", value: 9},
     DIVIDENDS_PER_PAGE: {key: "sDividendsPerPage", value: 9},

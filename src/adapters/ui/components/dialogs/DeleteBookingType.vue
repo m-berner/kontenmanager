@@ -83,6 +83,14 @@ const onClickOk = async (): Promise<void> => {
         return;
       }
 
+      if (res.status === "roleProtected") {
+        await alertAdapter.feedbackInfo(
+            t("components.dialogs.deleteBookingType.title"),
+            t("components.dialogs.deleteBookingType.messages.roleProtected")
+        );
+        return;
+      }
+
       await alertAdapter.feedbackInfo(
           t("components.dialogs.deleteBookingType.title"),
           t("components.dialogs.deleteBookingType.messages.success")

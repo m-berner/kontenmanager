@@ -74,11 +74,19 @@ export function createAdapters(overrides: AdaptersOverrides = {}) {
         overrides.importExportAdapter ?? createImportExportAdapter();
     const taskAdapter = overrides.taskAdapter ?? createTaskAdapter();
     const validationAdapter = overrides.validationAdapter ?? createValidationAdapter();
+    // Bound to a local, like every other adapter here. `storageAdapter` used to
+    // be referenced bare in both places below, so `createAdapters({storageAdapter:
+    // fake})` type-checked, was accepted, and handed back the real
+    // `browser.storage.local` wrapper — in the container *and* inside
+    // `appAdapter`, whose Phase 1 (`initializeStorage`) is the one thing a
+    // storage double exists to control. `containerBackground.ts` already did
+    // this correctly, which is what made the omission an omission rather than a
+    // decision.
+    const storage = overrides.storageAdapter ?? storageAdapter;
     const appAdapter =
         overrides.appAdapter ??
         createAppAdapter({
-            browserAdapter,
-            storageAdapter,
+            storageAdapter: storage,
             databaseAdapter,
             fetchAdapter
         });
@@ -88,7 +96,7 @@ export function createAdapters(overrides: AdaptersOverrides = {}) {
         databaseAdapter,
         fetchAdapter,
         faviconAdapter,
-        storageAdapter,
+        storageAdapter: storage,
         importExportAdapter,
         taskAdapter,
         validationAdapter,

@@ -97,7 +97,7 @@ describe("AccountRepository", () => {
     });
 
     it("should save a new account", async () => {
-        const newAccount = {cSwift: "NEW", cIban: "DE456", cLogoUrl: "", cWithDepot: false};
+        const newAccount = {cSwift: "NEW", cIban: "DE456", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"};
         requestMock.result = 2;
 
         const promise = repository.save(newAccount as Omit<AccountDb, "cID">);
@@ -109,7 +109,7 @@ describe("AccountRepository", () => {
     });
 
     it("should update an existing account", async () => {
-        const existingAccount = {cID: 1, cSwift: "UPD", cIban: "DE123", cLogoUrl: "", cWithDepot: false};
+        const existingAccount = {cID: 1, cSwift: "UPD", cIban: "DE123", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"};
         requestMock.result = 1;
 
         const promise = repository.save(existingAccount);
@@ -122,7 +122,7 @@ describe("AccountRepository", () => {
 
     it("should reject a caller-supplied readonly transaction for a write operation", async () => {
         const readonlyTx = {...txMock, mode: "readonly"};
-        const newAccount = {cSwift: "NEW", cIban: "DE456", cLogoUrl: "", cWithDepot: false};
+        const newAccount = {cSwift: "NEW", cIban: "DE456", cLogoUrl: "", cWithDepot: false, cCurrency: "EUR"};
 
         await expect(
             repository.save(newAccount as Omit<AccountDb, "cID">, {tx: readonlyTx})

@@ -106,21 +106,54 @@ describe("useMenuAction", () => {
         setActiveTestPinia();
     });
 
-    it("hasAction recognizes known action types and rejects unknown ones", () => {
+    // This table covers only the ROW-level actions now -- the six DotMenu can
+    // actually dispatch, from createHomeMenuItems/createCompanyMenuItems. It
+    // used to be exhaustive over all 23 MenuActionType members, so 17 were
+    // unreachable duplicates of useHeaderBarActions' table. `addBooking`, used
+    // by these two tests before, is one of the header-bar ones.
+    it("hasAction recognizes row-level actions and rejects unknown ones", () => {
         const {hasAction} = useMenuAction();
-        expect(hasAction("addBooking")).toBe(true);
+        expect(hasAction("updateBooking")).toBe(true);
+        expect(hasAction("openLink")).toBe(true);
         expect(hasAction("notARealAction")).toBe(false);
+    });
+
+    it("hasAction rejects header-bar actions, which belong to useHeaderBarActions", () => {
+        const {hasAction} = useMenuAction();
+        expect(hasAction("addBooking")).toBe(false);
+        expect(hasAction("exportDatabase")).toBe(false);
+        // The one that mattered: useMenu's dead updateQuote called
+        // refreshOnlineData WITHOUT stockIds -- the positional page slice that
+        // resolvePageStocks' own doc comment identifies as wrong once the user
+        // sorts the table. Wiring a per-row control to it would have silently
+        // reintroduced that bug.
+        expect(hasAction("updateQuote")).toBe(false);
     });
 
     it("executeAction opens the matching dialog via runtime teleport state", async () => {
         const runtime = useRuntimeStore();
         const {executeAction} = useMenuAction();
 
-        await executeAction("addBooking", 0);
+        await executeAction("updateBooking", 0);
 
-        expect(runtime.dialogName).toBe("addBooking");
+        expect(runtime.dialogName).toBe("updateBooking");
         expect(runtime.dialogOk).toBe(true);
         expect(runtime.dialogVisibility).toBe(true);
+    });
+
+    it("executeAction reports a header-bar action as invalid rather than handling it", async () => {
+        // The `!handler` branch used to be unreachable because the table was
+        // exhaustive; it is now the real answer for a header-bar id sent to the
+        // row dispatcher.
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("addBooking", 1);
+
+        expect(feedbackError).toHaveBeenCalledWith(
+            "composables.useMenu.title",
+            "composables.useMenu.messages.invalidCode",
+            {data: "addBooking"}
+        );
     });
 
     it("executeAction sets runtime.activeId to the target record before running the handler", async () => {

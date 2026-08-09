@@ -19,6 +19,11 @@ export const ERROR_DEFINITIONS = {
     EXPORT_DATABASE: {
         A: {CODE: "#edx", MSG: "Export validation failed"},
         B: {CODE: "#edz", MSG: "Export integrity check failed"},
+        // Distinct from A on purpose. An empty database is not an inconsistent
+        // one: refusing to export nothing is defensible, but reporting it with
+        // A's "Export validation failed" told a user who had just installed the
+        // extension and clicked Export that their data had failed validation.
+        EMPTY: {CODE: "#ede", MSG: "There is nothing to export yet — add an account first"},
         C: {CODE: "#edm", MSG: "Export failed"},
         TOO_LARGE: {
             CODE: "#edl",

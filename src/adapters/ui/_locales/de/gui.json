@@ -8,7 +8,9 @@
           "withDepotLabel": "Depot Verrechnungskonto",
           "ibanLabel": "IBAN / Kontonummer",
           "ibanPlaceholder": "z. B. DE67 1234 5678 9123 8531 78",
-          "missingLogo": "Kein Logo gefunden"
+          "missingLogo": "Kein Logo gefunden",
+          "currencyLabel": "Währung des Kontos",
+          "currencyHint": "Währung aller Buchungen dieses Kontos. Eine Änderung rechnet vorhandene Beträge nicht um."
         },
         "bookingForm": {
           "bookingLabel": "Buchung",
@@ -88,6 +90,7 @@
           "dbNotConnected": "Keine Datenbank Verbindung",
           "noDelete": "Buchungskategorie kann nicht gelöscht werden. Es existieren zugeordnete Buchungen.",
           "noSelection": "Keine Buchungskategorie ausgewählt",
+          "roleProtected": "Diese Buchungskategorie wird für Kauf-, Verkauf- oder Dividenden-Buchungen benötigt und kann nicht gelöscht werden. Zum Entfernen die Depot-Option des Kontos deaktivieren.",
           "success": "Buchungskategorie wurde gelöscht"
         }
       },
@@ -227,6 +230,10 @@
     }
   },
   "mixed": {
+    "versionChange": {
+      "title": "Erweiterung aktualisiert",
+      "message": "KontenManager wurde im Hintergrund aktualisiert und die Datenbank-Verbindung dieses Tabs wurde geschlossen. Bereits gespeicherte Daten sind sicher, weitere Änderungen können hier aber nicht mehr gespeichert werden. Notieren Sie sich offene Eingaben und laden Sie die Seite anschließend neu."
+    },
     "smImportOnly": {
       "title": "INFO",
       "message": "KontenManager ist eine Weiterentwicklung des ehemaligen StockManagers. Der Import von StockManager-Daten ist nur direkt nach der Installation möglich – das heißt, bevor manuell ein KontenManager-Objekt angelegt wurde."
@@ -237,6 +244,7 @@
       "required": "IBAN ist erforderlich",
       "length": "Ungültige IBAN-Länge",
       "format": "Ungültige IBAN",
+      "country": "IBAN-Land wird nicht unterstützt",
       "checksum": "Ungültige Prüfsumme",
       "duplicate": "Konto existiert bereits"
     },
@@ -256,12 +264,7 @@
     "swiftRules": {
       "required": "SWIFT ist erforderlich",
       "length": "Nur 8 bzw. 11 Zeichen",
-      "format": "Ungültiges SWIFT Format",
-      "bankCode": "Ungültige Bank",
-      "countryCode": "Ungültiges Land",
-      "locationCode": "Ungültige Region",
-      "branchCode": "Ungültige Branche",
-      "test": "Test BIC"
+      "format": "Ungültiges SWIFT Format"
     },
     "isoDateRules": {
       "required": "Datum ist erforderlich",
@@ -463,6 +466,9 @@
       },
       "serviceNames": {
         "disabled": "Deaktiviert"
+      },
+      "currency": {
+        "hint": "Standardwährung für neue Konten. Die angezeigte Währung ist die des aktiven Kontos."
       },
       "markets": {
         "title": "Marktplätze",

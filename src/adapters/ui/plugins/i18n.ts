@@ -13,6 +13,30 @@ import deDE from "@/adapters/ui/_locales/de/gui.json";
 import enUS from "@/adapters/ui/_locales/en/gui.json";
 
 const i18nConfig = {
+    // Composition mode, declared explicitly.
+    //
+    // Without this option vue-i18n's `initFeatureFlags()` defaults
+    // `__VUE_I18N_LEGACY_API__` to `true` (nothing defines it in vite.config.js),
+    // and `createI18n` resolves `__legacyMode = true`. So the app ran on the
+    // Legacy API path — deprecated in v11 and removed in v12 — purely by
+    // omission, while every component uses the Composition API via `useI18n()`.
+    //
+    // The reason this is written down rather than just flipped: the switch is
+    // NOT free, and the obvious one-line deprecation cleanup would have broken
+    // the locale silently. In Legacy mode `i18n.global` is a `VueI18n` whose
+    // `locale` is a real accessor pair, so a bare `i18n.global.locale = "de-DE"`
+    // worked. In Composition mode `i18n.global` is a **Composer**, whose
+    // `locale` is a `WritableComputedRef` — the bare assignment would *replace
+    // the ref with a string*, the locale would stay at the configured default
+    // "en-US", and nothing would throw or log. That is not merely an English
+    // UI: `locale` also selects the `datetimeFormats` block below. Hence
+    // `.locale.value` at the assignment, and the `.numberFormats.value` the
+    // plugin's test now reads.
+    //
+    // `as const` is load-bearing. `createI18n`'s return type branches on
+    // `(typeof options)["legacy"] extends false`, so a widened `boolean` would
+    // land on neither branch and hand back `Composer | VueI18n`.
+    legacy: false as const,
     locale: "en-US", // Default, will be updated after creation
     fallbackLocale: "en-US",
     messages: {
@@ -125,7 +149,8 @@ export function createI18nPlugin(
     browserAdapter: Pick<BrowserAdapter, "getUserLocale">
 ) {
     const i18nInstance = createI18n(i18nConfig);
-    i18nInstance.global.locale = browserAdapter.getUserLocale();
+    // `.value`, not a bare assignment — see the `legacy` note on `i18nConfig`.
+    i18nInstance.global.locale.value = browserAdapter.getUserLocale();
     log("PLUGINS i18n");
     return i18nInstance;
 }

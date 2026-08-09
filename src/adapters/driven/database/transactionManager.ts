@@ -160,7 +160,20 @@ export function createTransactionManager(connection: DatabaseConnection) {
     }
 
     /**
-     * Executes multiple operations in a single transaction
+     * Executes multiple operations in a single transaction.
+     *
+     * **Test-only today.** Production code that needs several reads in one
+     * transaction passes the same `tx` down instead (`databaseAdapter`'s
+     * `Promise.all` of repository reads, which relies on each `findAll`/`findBy`
+     * issuing its `IDBRequest` synchronously before its first `await`), and the
+     * one place that needs several *writes* atomically goes through
+     * `batchOperations.executeAtomic`. Kept as the sequential counterpart to
+     * those two — note it awaits each operation in turn, so unlike the
+     * `Promise.all` shape it is safe for operations that depend on one another,
+     * which is exactly when it would be reached for.
+     *
+     * Documented rather than removed for the reason given on
+     * `BatchOperationBuilder`.
      *
      * @param storeNames - Store(s) to include in transaction
      * @param mode - Transaction mode

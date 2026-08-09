@@ -37,7 +37,8 @@ export function makeAccountDb(partial: Partial<AccountDb> = {}): AccountRecord {
         cSwift: partial.cSwift ?? "SWIFT",
         cIban: partial.cIban ?? "IBAN",
         cLogoUrl: partial.cLogoUrl ?? "",
-        cWithDepot: partial.cWithDepot ?? false
+        cWithDepot: partial.cWithDepot ?? false,
+        cCurrency: partial.cCurrency ?? "EUR"
     };
 }
 
@@ -209,7 +210,12 @@ export function createRepositoriesPortMock(overrides: RepositoriesPortOverrides 
             // ACTIVE account's types — so the `cAccountNumberID` filter read as
             // account-agnostic while being correct only by an unasserted
             // invariant. Defaults to empty; tests that care override it.
-            findByAccount: vi.fn().mockResolvedValue([])
+            findByAccount: vi.fn().mockResolvedValue([]),
+            // Used by `deleteBookingTypeUsecase`'s role guard. Defaults to
+            // `null` ("record not found"), which is the fail-open case and so
+            // keeps every pre-existing delete test on its original path; tests
+            // that care about the guard override it.
+            findById: vi.fn().mockResolvedValue(null)
         },
         stocks: {
             save: vi.fn().mockResolvedValue(1),

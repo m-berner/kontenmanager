@@ -421,4 +421,93 @@ describe("useOnlineStockData", () => {
             expect.anything()
         );
     });
+
+    // A blank cISIN used to go into the request list anyway, so
+    // fetchMinRateMaxData built `service.QUOTE + ""` -- the provider's search
+    // endpoint with an empty query -- fetched it, failed to parse a rate, and
+    // threw. The ISIN landed in failedIsins, which raises a NON-DISMISSING
+    // alert naming the company, on every refresh of that page, forever.
+    // Reachable only via backup import: isinRules requires an ISIN on the add
+    // form, but validateStock normalizes a missing cISIN to "".
+    describe("stocks with no ISIN", () => {
+        it("are not included in the quote or date requests", async () => {
+            const stocks = useStocksStore();
+            const settings = useSettingsStore();
+
+            settings.activeAccountId = 1;
+            settings.stocksPerPage = 10;
+            stocks.items = [
+                createSampleStock({cID: 1, cISIN: "US123"}),
+                createSampleStock({cID: 2, cISIN: "", cCompany: "Imported Inc"}),
+                createSampleStock({cID: 3, cISIN: "   ", cCompany: "Whitespace Inc"})
+            ];
+
+            fetchMinRateMaxData.mockResolvedValue({
+                data: [{id: 1, isin: "US123", min: "50", rate: "150", max: "250", cur: "EUR"}],
+                failedIsins: []
+            });
+            fetchDateData.mockResolvedValue([]);
+
+            const {loadOnlineData} = useOnlineStockData();
+            await loadOnlineData(1);
+
+            expect(fetchMinRateMaxData).toHaveBeenCalledWith(
+                [expect.objectContaining({id: 1, isin: "US123"})],
+                expect.anything(),
+                expect.anything()
+            );
+            expect(fetchDateData).toHaveBeenCalledWith(
+                [{key: 1, value: "US123"}],
+                expect.anything()
+            );
+        });
+
+        it("do not shift the positional mapping of quotes onto other stocks", async () => {
+            // THE TRAP in this fix: minRateMaxResponse.data[i] is indexed
+            // positionally against the request list, so the write-back loop has
+            // to iterate the same filtered array. Putting the blank-ISIN stock
+            // FIRST is what catches an off-by-one -- if the loop still walked
+            // the unfiltered page, stock 2's quote would land on stock 1.
+            const stocks = useStocksStore();
+            const settings = useSettingsStore();
+
+            settings.activeAccountId = 1;
+            settings.stocksPerPage = 10;
+            stocks.items = [
+                createSampleStock({cID: 1, cISIN: "", cCompany: "No ISIN", mValue: 0}),
+                createSampleStock({cID: 2, cISIN: "US222", cCompany: "Real", mValue: 0})
+            ];
+
+            fetchMinRateMaxData.mockResolvedValue({
+                data: [{id: 2, isin: "US222", min: "10", rate: "222", max: "30", cur: "EUR"}],
+                failedIsins: []
+            });
+            fetchDateData.mockResolvedValue([]);
+
+            const {loadOnlineData} = useOnlineStockData();
+            await loadOnlineData(1);
+
+            expect(stocks.items.find((s) => s.cID === 2)?.mValue).toBe(222);
+            expect(stocks.items.find((s) => s.cID === 1)?.mValue).toBe(0);
+        });
+
+        it("mark the page loaded and fetch nothing when no stock on it has an ISIN", async () => {
+            const stocks = useStocksStore();
+            const runtime = useRuntimeStore();
+            const settings = useSettingsStore();
+
+            settings.activeAccountId = 1;
+            settings.stocksPerPage = 10;
+            stocks.items = [createSampleStock({cID: 1, cISIN: ""})];
+
+            const {loadOnlineData} = useOnlineStockData();
+            await loadOnlineData(1);
+
+            expect(fetchMinRateMaxData).not.toHaveBeenCalled();
+            expect(fetchDateData).not.toHaveBeenCalled();
+            // Marked, unlike the "requested ids resolved to nothing" bail-out:
+            // retrying in a minute would find the same nothing.
+            expect(runtime.loadedStocksPages.has(1)).toBe(true);
+        });
+    });
 });

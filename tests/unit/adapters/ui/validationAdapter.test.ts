@@ -158,7 +158,11 @@ describe("validationAdapter", () => {
     });
 
     describe("ibanRules", () => {
-        const MSG = ["required", "length", "format", "checksum", "duplicate"] as const;
+        // Slot order mirrors isinRules: required, length, format, country,
+        // checksum, duplicate. `country` was inserted (not appended) when
+        // validateIBAN stopped folding an unsupported country into
+        // INVALID_LENGTH, so `duplicate` moved from index 4 to 5.
+        const MSG = ["required", "length", "format", "country", "checksum", "duplicate"] as const;
 
         it("reports required when empty", () => {
             const rules = ibanRules(MSG);
@@ -169,6 +173,22 @@ describe("validationAdapter", () => {
             const rules = ibanRules(MSG);
             // Same length/format as VALID_IBAN, wrong check digits.
             expect(rules[1]("DE00370400440532013000")).toBe("checksum");
+        });
+
+        it("reports an unsupported country as country, not as a length error", () => {
+            // "ZZ" is not in IBAN_LENGTH_CODES. The lookup used to be folded
+            // into the length comparison, so `undefined` failed it and the user
+            // was told their IBAN was the wrong length — for a country whose
+            // length is not even known. validateISIN already answered
+            // INVALID_COUNTRY here; the two validators simply disagreed.
+            const rules = ibanRules(MSG);
+            expect(rules[1]("ZZ89370400440532013000")).toBe("country");
+        });
+
+        it("still reports a genuinely wrong length for a supported country", () => {
+            const rules = ibanRules(MSG);
+            // DE is in the table and expects 22 characters.
+            expect(rules[1]("DE8937040044053201300")).toBe("length");
         });
 
         it("passes both domain rules for a valid IBAN", () => {
@@ -182,7 +202,7 @@ describe("validationAdapter", () => {
             expect(rules).toHaveLength(2);
         });
 
-        it("adds a duplicate-check rule when a checker is supplied, using the 5th message", () => {
+        it("adds a duplicate-check rule when a checker is supplied, using the 6th message", () => {
             const isDuplicate = vi.fn().mockReturnValue(true);
             const rules = ibanRules(MSG, isDuplicate);
 
@@ -254,6 +274,30 @@ describe("validationAdapter", () => {
             // Shape matches \d{4}-\d{2}-\d{2}, but month 13 doesn't exist.
             expect(rules[0]("2026-13-01")).toBe(true);
             expect(rules[1]("2026-13-01")).toBe("invalid");
+        });
+
+        it("rejects a day that does not exist in the given month", () => {
+            // The rule used to test `!isNaN(new Date(v + "T00:00:00Z"))`, and
+            // JavaScript's ISO parser range-checks the month but ROLLS THE DAY
+            // OVER: "2024-02-31" parses to 2 March and passed. So the rule only
+            // ever added month 00/13 rejection on top of the regex while
+            // claiming to validate the date. It now delegates to the domain's
+            // isValidISODate, which computes the real days-in-month.
+            const rules = isoDateRules(MSG);
+
+            for (const impossible of ["2024-02-31", "2024-02-30", "2024-04-31", "2023-02-29"]) {
+                expect(rules[0](impossible)).toBe(true);
+                expect(rules[1](impossible)).toBe("invalid");
+            }
+
+            // 2024 is a leap year, so this one is real and must still pass.
+            expect(rules[1]("2024-02-29")).toBe(true);
+        });
+
+        it("rejects day 00 and month 00", () => {
+            const rules = isoDateRules(MSG);
+            expect(rules[1]("2024-00-10")).toBe("invalid");
+            expect(rules[1]("2024-10-00")).toBe("invalid");
         });
     });
 

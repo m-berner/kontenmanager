@@ -26,6 +26,16 @@ export default defineConfig(({ mode }) => {
     // root is "./src" below, but .env files live at the project root — without this, Vite's
     // client-side import.meta.env injection looks in src/ and silently misses them.
     envDir: fileURLToPath(new URL(".", import.meta.url)),
+    define: {
+      // vue-i18n reads this at import time and, when it is not a boolean,
+      // defaults it to `true` — which is how the app ended up running the
+      // Legacy API path (deprecated in v11, removed in v12) purely by omission.
+      // `plugins/i18n.ts` now passes `legacy: false as const`, which already
+      // decides the runtime mode; this define is what actually drops the legacy
+      // code from the bundle and pins the answer at build time so the two
+      // cannot drift apart. Both must stay false together.
+      __VUE_I18N_LEGACY_API__: false
+    },
     resolve: {
       alias: [
         {

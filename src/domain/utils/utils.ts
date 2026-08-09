@@ -337,12 +337,13 @@ export function compareIsoDateDesc(a: string, b: string): number {
  * could read only their losses. Inheriting lets Vuetify's on-surface color do the
  * right thing in every theme.
  *
- * This is a domain helper with no say in where its classes land. This is why it
- * stays theme-neutral even though its only caller today — CompanyContent's gain
- * cell — sits on a row whose background style.css hardcodes light gray in every
- * theme. That hardcoding is what lets the neighboring mValue cell use
- * `color-black` safely; see the `.color-black` comment in style.css. Relying on
- * it here would tie this helper to one caller's stylesheet, so don't.
+ * This is a domain helper with no say in where its classes land, so staying
+ * theme-neutral was the right call independently of any stylesheet — and it has
+ * since been vindicated. The neighbouring mValue cell *did* rely on style.css
+ * hardcoding a light row background in every theme, which let it use
+ * `color-black`; when that hardcoding was replaced by a translucent overlay so
+ * the tables follow the theme, that cell's colour had to be removed too. This
+ * helper needed no change.
  *
  * @param value - Value to determine CSS class for.
  */

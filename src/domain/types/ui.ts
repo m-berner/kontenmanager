@@ -15,6 +15,8 @@ export interface AccountFormData {
     iban: string;
     logoUrl: string;
     withDepot: boolean;
+    /** ISO code from `CURRENCIES.SUPPORTED`; seeded from `settings.currency` on add. */
+    currency: string;
 }
 
 /**

@@ -9,6 +9,7 @@ import type {Ref} from "vue";
 import {VALIDATION_CODES} from "@/domain/constants";
 import type {DomainValidationResult, ValidationCodeType, ValidationRuleType} from "@/domain/types";
 import {sanitizeExternalUrl} from "@/domain/utils/url";
+import {isValidISODate} from "@/domain/utils/utils";
 import * as ValidationRules from "@/domain/validation/rules";
 
 /**
@@ -256,17 +257,29 @@ export function validateIBAN(iban: string): boolean {
     return ValidationRules.validateIBAN(iban).isValid;
 }
 
+/**
+ * Rules for a `type="date"` field bound to an ISO `YYYY-MM-DD` string.
+ *
+ * The second rule delegates to the domain's `isValidISODate`, which walks
+ * `parseISODateParts` and computes the real days-in-month. It used to test
+ * `!isNaN(new Date(v + "T00:00:00Z").getTime())` instead — but JavaScript's ISO
+ * parser range-checks the month and then *rolls the day over*, so `2024-02-31`
+ * parses as 2 March and passed. The rule therefore only ever added month
+ * `00`/`13` rejection on top of the regex, while claiming to validate the date.
+ *
+ * Reusing the domain function also closes the asymmetry that made this worth
+ * fixing rather than noting. `validateBooking` already uses the strict check on
+ * the write path, and `normalizeDate` returns `""` for a date it rejects — so a
+ * value that slipped past this rule would be stored with a **blank date** while
+ * the in-memory store kept the typed value. Not reachable from the UI today
+ * (both fields using this are `type="date"`, and a native date input never
+ * yields an out-of-range day), which is why it is Low: the defect is that the
+ * rule did not enforce what it claimed, and did not reuse the function that did.
+ */
 export function isoDateRules(msgArray: string[]): ValidationRuleType[] {
-    const isValid = (message: string): ValidationRuleType => {
-        return createRule((v) => {
-            const tv = v as string;
-            const date = new Date(`${tv}T00:00:00Z`);
-            return !isNaN(date.getTime());
-        }, message);
-    };
     return [
         regex(/^\d{4}-\d{2}-\d{2}$/, msgArray[0]),
-        isValid(msgArray[1])
+        createRule((v) => isValidISODate(v as string), msgArray[1])
     ];
 }
 
@@ -279,7 +292,10 @@ export function ibanRules(
         fromDomain((v) => ValidationRules.validateIBAN(v as string), {
             [VALIDATION_CODES.INVALID_LENGTH]: msgArray[1],
             [VALIDATION_CODES.INVALID_FORMAT]: msgArray[2],
-            [VALIDATION_CODES.INVALID_CHECKSUM]: msgArray[3],
+            // Same slot order as isinRules. Added when validateIBAN stopped
+            // folding "country not in IBAN_LENGTH_CODES" into INVALID_LENGTH.
+            [VALIDATION_CODES.INVALID_COUNTRY]: msgArray[3],
+            [VALIDATION_CODES.INVALID_CHECKSUM]: msgArray[4],
             [VALIDATION_CODES.REQUIRED]: msgArray[0]
         })
     ];
@@ -288,7 +304,7 @@ export function ibanRules(
         rules.push(createRule((v) => {
             const cleaned = cleanString(v);
             return !cleaned || !isDuplicate(cleaned.toUpperCase());
-        }, msgArray[4]));
+        }, msgArray[5]));
     }
 
     return rules;
@@ -323,17 +339,22 @@ export function isinRules(
     return rules;
 }
 
+/**
+ * Rules for an account's BIC/SWIFT field.
+ *
+ * The map holds exactly the codes `validateSWIFT` can return. It used to carry
+ * five more (bank, country, region, branch, test-BIC), each with its own
+ * translated message and none of them reachable — see the note in
+ * `domain/validation/rules.ts`. Keep this map and that function in step: an
+ * entry here for a code the validator cannot produce is a message the user is
+ * promised and never shown.
+ */
 export function swiftRules(msgArray: readonly string[]): ValidationRuleType[] {
     return [
         required(msgArray[0]),
         fromDomain((v) => ValidationRules.validateSWIFT(v as string), {
             [VALIDATION_CODES.INVALID_LENGTH]: msgArray[1],
             [VALIDATION_CODES.INVALID_FORMAT]: msgArray[2],
-            [VALIDATION_CODES.INVALID_BANK]: msgArray[3],
-            [VALIDATION_CODES.INVALID_COUNTRY]: msgArray[4],
-            [VALIDATION_CODES.INVALID_REGION]: msgArray[5],
-            [VALIDATION_CODES.INVALID_BRANCH]: msgArray[6],
-            [VALIDATION_CODES.TEST_BIC]: msgArray[7],
             [VALIDATION_CODES.REQUIRED]: msgArray[0]
         })
     ];

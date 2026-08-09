@@ -23,7 +23,7 @@ describe("Records Hub Store", () => {
     it("isDepot reflects the active account's withDepot flag", () => {
         const settings = useSettingsStore();
         const records = useRecordsStore();
-        records.accounts.add(makeAccountDb({cID: 1, cWithDepot: true}));
+        records.accounts.add(makeAccountDb({cID: 1, cWithDepot: true, cCurrency: "EUR"}));
         settings.activeAccountId = 1;
 
         expect(records.isDepot).toBe(true);

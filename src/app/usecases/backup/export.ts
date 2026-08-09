@@ -67,6 +67,21 @@ export async function exportDatabaseUsecase(
     ]);
 
     const issues = findExportConsistencyIssues({accounts, bookings, stocks, bookingTypes});
+    // Checked before, and separately from, the referential-integrity issues.
+    // Both end in a refusal, but they are different answers: "you have nothing
+    // to export yet" is the expected state right after install, while "your
+    // database is inconsistent" is a fault. They used to share
+    // EXPORT_DATABASE.A, so a fresh install clicking Export was told its data
+    // had failed validation. Category is VALIDATION rather than DATABASE for
+    // the same reason — nothing is wrong with the database.
+    if (issues.noAccounts) {
+        throw appError(
+            ERROR_DEFINITIONS.EXPORT_DATABASE.EMPTY.CODE,
+            ERROR_CATEGORY.VALIDATION,
+            false
+        );
+    }
+
     if (hasExportConsistencyIssues(issues)) {
         throw appError(ERROR_DEFINITIONS.EXPORT_DATABASE.A.CODE, ERROR_CATEGORY.DATABASE, false);
     }

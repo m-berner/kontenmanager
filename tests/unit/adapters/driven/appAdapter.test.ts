@@ -10,19 +10,26 @@ import type {AppStores} from "@/adapters/driven/appAdapter";
 
 function createStores(overrides: {
     settings?: Partial<AppStores["settings"]>;
+    accounts?: AppStores["records"]["accounts"]["items"];
 } = {}): AppStores {
     return {
         records: {
             init: vi.fn().mockResolvedValue(undefined),
             // `clean`, not `$reset`: useRecordsStore is a Pinia setup store and
             // setup stores do not implement $reset() — calling it throws.
-            clean: vi.fn()
+            clean: vi.fn(),
+            // Phase 3 reads this to resolve the display currency, which decides
+            // which FX pairs it asks for. Defaults to a EUR account so the
+            // existing expectations (base pair "EURUSD") still describe the
+            // same scenario they did when the currency came from the locale.
+            accounts: {items: overrides.accounts ?? [{cID: 1, cCurrency: "EUR"}]}
         },
         settings: {
             init: vi.fn(),
             activeAccountId: 1,
             exchanges: ["EURUSD"],
             service: "wstreet",
+            currency: "EUR",
             ...overrides.settings
         },
         runtime: {
@@ -82,7 +89,6 @@ describe("appAdapter", () => {
         };
 
         adapter = createAppAdapter({
-            browserAdapter: browserAdapterDep as any,
             storageAdapter: storageAdapterDep as any,
             databaseAdapter: databaseAdapterDep as any,
             fetchAdapter: fetchAdapterDep as any
@@ -158,21 +164,39 @@ describe("appAdapter", () => {
         expect(fetchAdapterDep.fetchExchangesData).not.toHaveBeenCalled();
     });
 
-    // An unmappable locale no longer blocks startup. initializeDatabase used to
-    // compute the currency purely to throw when it came back empty, then never
-    // used the value — failing the *critical* database phase for something only
-    // the *non-critical* external-fetch phase needs, which already degrades
-    // gracefully on its own. The coupling was backwards.
-    it("still initializes the database when no currency can be derived, degrading only the fetch phase", async () => {
-        browserAdapterDep.getUserLocale.mockReturnValue("xx-XX");
-        const stores = createStores();
+    // The "no currency could be derived" case is gone along with the derivation.
+    // Currency is no longer parsed out of the UI locale (which could fail to map,
+    // and which was the wrong input anyway) — it is the active account's
+    // `cCurrency`, with the app-level default as a fallback, so it always
+    // resolves. These two tests pin the replacement behaviour.
+    it("fetches the FX pairs for the ACTIVE ACCOUNT's currency, not the browser locale's", async () => {
+        // An English-language browser holding a USD account. Under the old
+        // locale-derived rule these agreed by accident; the interesting case is
+        // that the ACCOUNT is what decides, so make the locale disagree with it.
+        browserAdapterDep.getUserLocale.mockReturnValue("de-DE");
+        const stores = createStores({
+            accounts: [{cID: 1, cCurrency: "USD"}],
+            settings: {currency: "EUR"}
+        });
 
-        const status = await adapter.initializeApp(stores, {});
+        await adapter.initializeApp(stores, {});
 
-        expect(databaseAdapterDep.connect).toHaveBeenCalled();
-        expect(status.db).toBe("ok");
-        expect(status.fetch).toEqual({exchanges: false, indexes: false, materials: false});
-        expect(fetchAdapterDep.fetchExchangesData).not.toHaveBeenCalled();
+        const calls = fetchAdapterDep.fetchExchangesData.mock.calls;
+        // Base list is USD-relative: USDUSD is the self-pair and dropped, so only
+        // USDEUR is requested, and curUsd is seeded to 1 rather than fetched.
+        expect(calls[0][0]).toEqual(["USDEUR"]);
+        expect(stores.runtime.curUsd).toBe(1);
+    });
+
+    it("falls back to the app-level default currency when no account is active", async () => {
+        const stores = createStores({
+            accounts: [],
+            settings: {activeAccountId: -1, currency: "USD"}
+        });
+
+        await adapter.initializeApp(stores, {});
+
+        expect(fetchAdapterDep.fetchExchangesData.mock.calls[0][0]).toEqual(["USDEUR"]);
     });
 
     it("resolves with an aborted status without touching storage or the database when the signal is already aborted", async () => {
@@ -267,8 +291,11 @@ describe("appAdapter", () => {
 
         const status = adapter.getStatus(stores);
 
+        // Storage has genuinely not been read yet at this point — nothing has
+        // called initializeApp — so "error" is the honest answer. It used to
+        // report "ok" here purely because the fixture's activeAccountId is 1.
         expect(status).toEqual({
-            storage: "ok",
+            storage: "error",
             db: "ok",
             fetch: {exchanges: true, indexes: false, materials: false}
         });
@@ -277,31 +304,42 @@ describe("appAdapter", () => {
     // storage and db are independent subsystems (browser.storage.local vs
     // IndexedDB). getStatus used to derive BOTH from the database connection
     // flag, so a disconnected DB claimed storage was broken too.
-    it("getStatus() reports a db error without claiming storage also failed", () => {
-        const stores = createStores(); // activeAccountId 1 => settings.init() ran
+    it("getStatus() reports a db error without claiming storage also failed", async () => {
+        const stores = createStores();
+        await adapter.initializeApp(stores, {title: "t", message: "m"});
         databaseAdapterDep.isConnected.mockReturnValue(false);
 
         const status = adapter.getStatus(stores);
 
-        expect(status).toEqual({
-            storage: "ok",
-            db: "error",
-            fetch: {exchanges: false, indexes: false, materials: false}
-        });
+        expect(status.storage).toBe("ok");
+        expect(status.db).toBe("error");
     });
 
-    it("getStatus() reports a storage error when settings were never initialized", () => {
-        // -1 is the documented "no active account" sentinel, i.e. settings.init()
-        // never successfully populated the store.
+    it("getStatus() reports storage ok for an empty install, where no account is active", async () => {
+        // THE REGRESSION. `-1` is not an error value: it is
+        // BROWSER_STORAGE.ACTIVE_ACCOUNT_ID's shipped default and
+        // INDEXED_DB.INVALID_ID, the documented "no active account" sentinel
+        // that deleteActiveAccountUsecase and the import path both deliberately
+        // write. getStatus inferred storage health from
+        // `activeAccountId !== -1`, so a user who had just installed the
+        // extension — or had just deleted their last account — had storage
+        // working perfectly and was told `storage: "error"`.
         const stores = createStores({settings: {activeAccountId: -1}});
-        databaseAdapterDep.isConnected.mockReturnValue(false);
+        await adapter.initializeApp(stores, {title: "t", message: "m"});
 
-        const status = adapter.getStatus(stores);
+        expect(adapter.getStatus(stores).storage).toBe("ok");
+    });
 
-        expect(status).toEqual({
-            storage: "error",
-            db: "error",
-            fetch: {exchanges: false, indexes: false, materials: false}
-        });
+    it("getStatus() reports a storage error when the storage read itself fails", async () => {
+        // Phase 1 rethrows, so the failure is what makes this the real
+        // negative case rather than the "not attempted yet" one above.
+        mockGetStorage.mockRejectedValue(new Error("storage unavailable"));
+        const stores = createStores();
+
+        await expect(
+            adapter.initializeApp(stores, {title: "t", message: "m"})
+        ).rejects.toThrow();
+
+        expect(adapter.getStatus(stores).storage).toBe("error");
     });
 });

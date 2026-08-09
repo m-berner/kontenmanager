@@ -111,3 +111,24 @@ describe("DomainValidators: resolveLegacyBookingTypeRole", () => {
     });
 });
 
+
+describe("DomainValidators: validateAccount cCurrency normalization", () => {
+    it("defaults to EUR when the field is absent, as a pre-v29 backup has it", () => {
+        expect(DomainValidators.validateAccount({cID: 1, cSwift: "S"}).cCurrency).toBe("EUR");
+    });
+
+    it("keeps a supported code and uppercases it", () => {
+        expect(DomainValidators.validateAccount({cID: 1, cCurrency: "usd"}).cCurrency).toBe("USD");
+    });
+
+    // Coerced rather than stored: the divisor chain in useOnlineStockData only
+    // has a rate for EUR and USD, so persisting e.g. CHF would produce an
+    // account whose quotes silently pass through unconverted.
+    it("coerces an unsupported currency to EUR rather than storing it", () => {
+        expect(DomainValidators.validateAccount({cID: 1, cCurrency: "CHF"}).cCurrency).toBe("EUR");
+    });
+
+    it("coerces a non-string to EUR", () => {
+        expect(DomainValidators.validateAccount({cID: 1, cCurrency: 42}).cCurrency).toBe("EUR");
+    });
+});

@@ -63,9 +63,32 @@ export async function deleteBookingTypeUsecase(
         bookingTypeId: number;
         canDelete: (bookingTypeId: number) => boolean;
     }
-): Promise<{ status: "not_allowed" } | { status: "deleted" }> {
+): Promise<{ status: "not_allowed" } | { status: "roleProtected" } | { status: "deleted" }> {
     if (!input.canDelete(input.bookingTypeId)) {
         return {status: "not_allowed"};
+    }
+
+    // A Buy/Sell/Dividend type must stay resolvable for as long as the account
+    // is depot-enabled — the mirror image of updateBookingTypeUsecase's
+    // roleConflict guard, which exists because `resolveTypeIdByRole`
+    // (domain/logic.ts) has to find exactly one type per role.
+    //
+    // Without this, the account's Buy type could be deleted whenever no booking
+    // referenced it yet — precisely the state a freshly created depot account is
+    // in — and `resolveTypeIdByRole` would then return `undefined`, so
+    // `mapBookingFormToDb`'s `isStockRelated` is false for every remaining type
+    // and BookingForm hides the stock picker and the count field outright. The
+    // account still advertises itself as depot-enabled while no purchase can be
+    // recorded any more, and nothing tells the user why. Recovery existed but
+    // was undiscoverable: the add dialog has no role control, so a re-created
+    // type is always `other`; only toggling `withDepot` off and on again
+    // re-runs `createDefaultBookingTypes`.
+    //
+    // `canDelete` is left as-is and checked first: "bookings are assigned" is
+    // the more specific answer when both apply.
+    const bookingType = await deps.repositories.bookingTypes.findById(input.bookingTypeId);
+    if (bookingType && bookingType.cRole !== BOOKING_TYPE_ROLE.OTHER) {
+        return {status: "roleProtected"};
     }
 
     await deps.repositories.bookingTypes.delete(input.bookingTypeId);

@@ -43,7 +43,7 @@ export const usePortfolioStore = defineStore("portfolio", function () {
                     mInvest,
                     mDeleteable,
                     // Derived for UI convenience; persisted/ram value may also update by online loads.
-                    mEuroChange:
+                    mChange:
                         (rec.mValue ?? 0) * (mPortfolio ?? 0) - (mInvest ?? 0)
                 };
             })

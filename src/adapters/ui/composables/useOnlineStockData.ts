@@ -5,10 +5,12 @@
  */
 
 import {CURRENCIES, DATE} from "@/domain/constants";
+import {resolveDisplayCurrency} from "@/domain/logic";
 import type {NumberStringPair, OnlineStorageData, StockItem} from "@/domain/types";
 import {isoDate, isValidISODate, log, toNumber, utcDate} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
+import {useAccountsStore} from "@/adapters/ui/stores/accounts";
 import {usePortfolioStore} from "@/adapters/ui/stores/portfolio";
 import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
@@ -62,9 +64,10 @@ function toTimestamp(iso: string): number {
 }
 
 export function useOnlineStockData() {
-    const {fetchAdapter, storageAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
+    const {fetchAdapter, storageAdapter, alertAdapter, repositories} = useAdapters();
     const portfolio = usePortfolioStore();
     const stocks = useStocksStore();
+    const accounts = useAccountsStore();
     const runtime = useRuntimeStore();
     const settings = useSettingsStore();
 
@@ -129,9 +132,48 @@ export function useOnlineStockData() {
             return;
         }
 
+        // Stocks with no ISIN are dropped before anything is requested for them.
+        //
+        // Without this, a blank `cISIN` still went into the request list, and
+        // `fetchMinRateMaxData` built `service.QUOTE + ""` — the provider's
+        // search endpoint with an empty query — fetched it, failed to parse a
+        // rate, and threw. The ISIN then landed in `failedIsins`, which raises a
+        // **non-dismissing** alert (`duration: null`) naming the company, on
+        // *every refresh of that page*, forever.
+        //
+        // `isinRules` makes the add form require an ISIN, so this is reachable
+        // only through a backup import — `validateStock` normalizes a missing
+        // `cISIN` to `""` and nothing rejects it — but that is precisely the
+        // path `StockDb.cISIN`'s optionality exists to support.
+        //
+        // Filtered AFTER the `stockIds` bail-out above, deliberately: that check
+        // is about ids that resolve to nothing, and folding this into it would
+        // log "requested stock ids resolved to no stocks" for ids that resolved
+        // perfectly well and merely have nothing fetchable.
+        //
+        // Everything downstream must use this list, not `pageStocks`:
+        // `minRateMaxResponse.data[i]` is indexed **positionally** against the
+        // request list, so the write-back loop has to iterate the same array the
+        // request was built from or every quote lands on the wrong stock.
+        const quotableStocks = pageStocks.filter((s) => (s.cISIN ?? "").trim() !== "");
+
+        if (quotableStocks.length === 0) {
+            // Marked as loaded rather than left open: there is nothing to fetch
+            // for this page, so retrying in a minute would find the same
+            // nothing. This differs from the bail-out above, which does NOT mark
+            // — there, a later attempt could legitimately succeed.
+            log(
+                "COMPOSABLES useOnlineStockData: no stock on this page has an ISIN",
+                {page, pageStocks: pageStocks.length},
+                "warn"
+            );
+            runtime.markStocksPageLoaded(page);
+            return;
+        }
+
         const now = Date.now();
 
-        for (const stock of pageStocks) {
+        for (const stock of quotableStocks) {
             const id = stock.cID as number;
             isin.push({id, isin: stock.cISIN, min: "0", rate: "0", max: "0", cur: ""});
 
@@ -152,7 +194,7 @@ export function useOnlineStockData() {
         if (!runtime.isStocksPageGenerationCurrent(page, generation)) return;
 
         if (minRateMaxResponse.failedIsins.length > 0) {
-            const companies = pageStocks
+            const companies = quotableStocks
                 .filter((s) => minRateMaxResponse.failedIsins.includes(s.cISIN))
                 .map((s) => s.cCompany);
             const names = companies.length > 0
@@ -168,7 +210,9 @@ export function useOnlineStockData() {
 
         const datesToPersist: StockItem[] = [];
 
-        pageStocks.forEach((stock, i) => {
+        // `quotableStocks`, not `pageStocks` — see the note at the filter: `i`
+        // indexes `minRateMaxResponse.data`, which was built from this array.
+        quotableStocks.forEach((stock, i) => {
             const stockToUpdate = stocks.getById(stock.cID as number);
             if (!stockToUpdate) return;
 
@@ -176,25 +220,30 @@ export function useOnlineStockData() {
             // fetch for this stock must not also discard its already-fetched date data.
             const data = minRateMaxResponse.data[i];
             if (data) {
-                const locale = browserAdapter.getUserLocale();
-                let region: string | undefined;
-                try {
-                    region = new Intl.Locale(locale).region?.toLowerCase();
-                } catch {
-                    region = undefined;
-                }
-                const uiCur = region ? CURRENCIES.CODE.get(region) : undefined;
+                // The ACTIVE ACCOUNT's currency, not one derived from the browser
+                // locale. A user's UI language does not tell you what currency
+                // their holdings are denominated in — deriving it that way put
+                // every eurozone user whose browser was not German onto USD, and
+                // then divided their EUR quotes by the USD/EUR rate to get there.
+                // `resolveDisplayCurrency` is shared with `currencySync` (which
+                // formats) and `appAdapter` (which fetches the rate), so the
+                // conversion target and the printed symbol cannot drift apart.
+                const targetCur = resolveDisplayCurrency(
+                    accounts.items,
+                    settings.activeAccountId,
+                    settings.currency
+                );
 
                 // When the provider couldn't detect a currency, fall back to inferring
                 // USD for US-domiciled securities (ISIN prefix "US").
                 const stockCur = data.cur || (stock.cISIN?.startsWith("US") ? CURRENCIES.USD : "");
 
                 const rawDivisor =
-                    !stockCur || stockCur === uiCur
+                    !stockCur || stockCur === targetCur
                         ? 1
-                        : stockCur === "USD"
+                        : stockCur === CURRENCIES.USD
                             ? runtime.curUsd
-                            : stockCur === "EUR"
+                            : stockCur === CURRENCIES.EUR
                                 ? runtime.curEur
                                 : 1;
                 const divisor = rawDivisor > 0 ? rawDivisor : 1;
@@ -202,7 +251,7 @@ export function useOnlineStockData() {
                 stockToUpdate.mMin = toNumber(data.min) / divisor;
                 stockToUpdate.mValue = toNumber(data.rate) / divisor;
                 stockToUpdate.mMax = toNumber(data.max) / divisor;
-                // mEuroChange is deliberately NOT written here. It is derived,
+                // mChange is deliberately NOT written here. It is derived,
                 // not fetched: `portfolio.active` — the getter CompanyContent
                 // actually renders — recomputes it on every evaluation from
                 // mValue, mPortfolio and mInvest, so any value written into the

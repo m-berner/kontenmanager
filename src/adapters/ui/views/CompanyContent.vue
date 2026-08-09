@@ -110,9 +110,11 @@ const hasQuote = (value: number | undefined): boolean => {
  * 100%.
  *
  * Worth having corrected rather than ignored because this file's comments are
- * unusually load-bearing — the `color-black` block and the phantom-zero block
- * both encode reasoning a future edit is meant to obey, and one comment that
- * cannot be trusted undermines the rest.
+ * unusually load-bearing — the mValue-cell block and the phantom-zero block both
+ * encode reasoning a future edit is meant to obey, and one comment that cannot
+ * be trusted undermines the rest. (The mValue block earned that description: it
+ * said to drop `color-black` in whatever change made the tables theme-aware, and
+ * that is exactly what happened.)
  *
  * @param {number | undefined} euroChange - Absolute change in euros
  * @param {number | undefined} invest - Original investment amount
@@ -231,11 +233,19 @@ const sameIds = (a: number[], b: number[]): boolean =>
  * visible symptom was quotes on the first pages and permanently blank price
  * columns on the rest.
  *
- * `key` and `value` are no substitute: both derive from the `item-value` prop,
- * which this table does not set, so they are `undefined` too.
+ * `key` and `value` used to be no substitute either: both derive from the
+ * `item-value` prop, and this table set `item-key="cID"` — a **Vuetify 2** prop
+ * that Vuetify 3 ignores entirely — so `item-value` was never set and they were
+ * `undefined` too. That is now fixed at the source (`item-value="cID"`), which
+ * also gives Vue a stable row key for list diffing instead of the positional
+ * fallback.
  *
- * Non-numeric ids are dropped rather than passed on as `undefined`, so a future
- * shape change fetches fewer rows instead of silently fetching none.
+ * The `.raw ?? row` unwrapping below is deliberately KEPT. It is now
+ * belt-and-braces rather than load-bearing, and it costs one `??`: the handler
+ * is typed `unknown[]` because Vuetify's emitted shape is a version detail, and
+ * reading `cID` off whichever shape arrives is what makes this correct under
+ * both. Non-numeric ids are dropped rather than passed on as `undefined`, so a
+ * future shape change fetches fewer rows instead of silently fetching none.
  */
 const toStockIds = (items: unknown[]): number[] => {
   return items
@@ -364,7 +374,7 @@ log("VIEWS CompanyContent: setup");
       :no-data-text="t('views.companyContent.stocksTable.noDataText')"
       :page="runtime.stocksPage"
       density="compact"
-      item-key="cID"
+      item-value="cID"
       @update:current-items="onCurrentItems"
       @update:items-per-page="setStocksPerPage"
       @update:page="onUpdatePage">
@@ -394,13 +404,13 @@ log("VIEWS CompanyContent: setup");
         <td>
           <v-tooltip
               v-if="hasPortfolio(item.mPortfolio)"
-              :text="n(calculatePercentChange(item.mEuroChange, item.mInvest), 'percent')"
+              :text="n(calculatePercentChange(item.mChange, item.mInvest), 'percent')"
               location="left">
             <template #activator="{ props }">
                <span
-                   :class="winLossClass(item.mEuroChange ?? 0)"
+                   :class="winLossClass(item.mChange ?? 0)"
                    v-bind="props">
-                {{ n(item.mEuroChange ?? 0, "currency") }}
+                {{ n(item.mChange ?? 0, "currency") }}
               </span>
             </template>
           </v-tooltip>
@@ -419,27 +429,22 @@ log("VIEWS CompanyContent: setup");
           </template>
         </td>
         <!--
-          `color-black` is a literal `color: black`, deliberately overriding the
-          `color: darkgray` the rest of the row inherits from style.css's
-          `tbody tr:nth-of-type(odd/even)` rules, so the current price reads as
-          the emphasised figure of the row. A declaration on the td outranks a
-          value inherited from the tr, so no !important is needed.
+          Emphasis from `font-weight-bold` alone; the colour is inherited.
 
-          It was removed once before, because the user-selectable `dark` theme
-          paints surfaces on #23222B and black text there is invisible - the
-          reasoning winLossClass's non-negative branch still carries. That does
-          not describe these rows: the two nth-of-type rules also set the row
-          background to rgb(248,248,248) / rgb(224,224,224) on the `tr` itself,
-          beating Vuetify's `.v-table { background: rgb(var(--v-theme-surface)) }`,
-          which paints only the container and reaches rows by inheritance. The
-          rows are therefore light gray in all six themes and black sits at
-          roughly 19:1 contrast on them.
+          This cell used to also carry `color-black`, a literal `color: black`,
+          to override the `color: darkgray` the row inherited from style.css's
+          `tbody tr:nth-of-type(odd/even)` rules. That was safe only because
+          those rules ALSO hardcoded the row background to light gray in every
+          theme, beating Vuetify's
+          `.v-table { background: rgb(var(--v-theme-surface)) }` — a borrowed
+          safety, and its own comment said to drop this class in whatever change
+          made the table theme-aware. That change has happened: the striping is
+          now a translucent overlay over the theme surface, so black here would
+          be back to ~1.2:1 on `dark`, which is the exact bug that got it removed
+          from this cell once before.
 
-          That safety is borrowed, not intrinsic: it holds only while those
-          nth-of-type rules keep overriding the theme. Removing or softening
-          them to make the table theme-aware puts the dark theme's surface back
-          under this cell and reinstates the original bug, so drop this class in
-          the same change.
+          Inheriting Vuetify's on-surface colour is what winLossClass's
+          non-negative branch already settled on, for the same reason.
 
           Guarded by hasQuote() for the same reason min/max already are: a stock
           whose quote has not been fetched yet still has mValue === 0, and
@@ -447,7 +452,7 @@ log("VIEWS CompanyContent: setup");
           price. A traded instrument is never worth exactly 0, so an empty cell
           is the honest representation of "not fetched".
         -->
-        <td class="color-black font-weight-bold">
+        <td class="font-weight-bold">
           <template v-if="hasQuote(item.mValue)">
             {{ n(item.mValue as number, "currency3") }}
           </template>

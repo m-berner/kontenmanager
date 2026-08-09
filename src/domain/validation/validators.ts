@@ -5,7 +5,7 @@
  */
 
 import type {BookingTypeRoleType} from "@/domain/constants";
-import {BOOKING_TYPE_ROLE, ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
+import {BOOKING_TYPE_ROLE, CURRENCIES, ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS, serializeError} from "@/domain/errors";
 import type {AccountRecord, BookingDb, BookingTypeDb, StockRecord} from "@/domain/types";
 import {isoDate, isValidISODate, log, toNumber} from "@/domain/utils/utils";
@@ -93,8 +93,34 @@ export function validateAccount(data: unknown): AccountRecord {
         cSwift: normalizeString(raw.cSwift).toUpperCase(),
         cIban: normalizeString(raw.cIban).replace(/\s/g, "").toUpperCase(),
         cLogoUrl: normalizeString(raw.cLogoUrl),
-        cWithDepot: Boolean(raw.cWithDepot)
+        cWithDepot: Boolean(raw.cWithDepot),
+        cCurrency: normalizeCurrency(raw.cCurrency)
     };
+}
+
+/**
+ * Coerces a raw value into one of `CURRENCIES.SUPPORTED`, defaulting to EUR.
+ *
+ * The default is what lets a pre-v29 backup import cleanly: `cCurrency` did not
+ * exist before schema 29, and `MIN_SUPPORTED_VERSION` is still 27, so a
+ * legitimate older export simply has no such field. EUR is the truthful default
+ * for this app's existing data — the same value schema migration 29 stamps onto
+ * rows already in IndexedDB.
+ *
+ * An *unsupported* code is coerced rather than rejected for the reason
+ * `CURRENCIES.SUPPORTED` documents: the divisor chain in `useOnlineStockData`
+ * has a rate only for EUR and USD, so storing e.g. "CHF" would produce an
+ * account whose quotes silently pass through unconverted. Coercing keeps the
+ * stored value and the conversion capability in agreement.
+ *
+ * @param value - The raw `cCurrency` from a backup, a form, or an IndexedDB row.
+ * @returns A supported ISO currency code.
+ */
+function normalizeCurrency(value: unknown): string {
+    const code = normalizeString(value).toUpperCase();
+    return (CURRENCIES.SUPPORTED as readonly string[]).includes(code)
+        ? code
+        : CURRENCIES.EUR;
 }
 
 /**

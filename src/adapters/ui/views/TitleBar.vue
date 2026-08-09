@@ -8,13 +8,19 @@
 import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 
-import {BROWSER_STORAGE, COMPONENTS, INDEXED_DB} from "@/domain/constants";
+import {BROWSER_STORAGE, INDEXED_DB} from "@/domain/constants";
 import type {ViewTypeSelectionType} from "@/domain/types";
 import {sanitizeExternalUrl} from "@/domain/utils/url";
 import {log} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
 import defaultIcon from "@/adapters/ui/assets/icon48.png";
+// Imported, not a path constant: Vite rewrites this to the built asset's real
+// URL, so it cannot go stale if `assetsDir`, the entrypoint's depth or asset
+// hashing ever changes. Same idiom as `defaultIcon` above — there used to be two
+// idioms for this one job, and the unmanaged one is what produced the broken
+// notification icon path (ISSUES_II 8.1).
+import titleBarLogo from "@/adapters/ui/assets/icon64.png";
 import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
 import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
@@ -325,7 +331,7 @@ log("VIEWS TitleBar: setup");
     <template #prepend>
       <img
           :alt="t('views.titleBar.iconsAlt.logo')"
-          :src="COMPONENTS.TITLE_BAR.LOGO"/>
+          :src="titleBarLogo"/>
     </template>
     <v-app-bar-title>{{ t("views.titleBar.title") }}</v-app-bar-title>
     <!--

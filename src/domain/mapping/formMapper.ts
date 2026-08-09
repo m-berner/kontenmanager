@@ -73,7 +73,8 @@ export function formMapper() {
             cSwift: data.swift.trim().toUpperCase(),
             cIban: data.iban.replace(/\s/g, "").toUpperCase(),
             cLogoUrl: data.logoUrl.trim(),
-            cWithDepot: data.withDepot
+            cWithDepot: data.withDepot,
+            cCurrency: data.currency
         };
         if (data.id > 0) {
             return {cID: data.id, ...account};

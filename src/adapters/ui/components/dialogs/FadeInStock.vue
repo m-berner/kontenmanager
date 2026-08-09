@@ -52,7 +52,7 @@ const onClickOk = async (): Promise<void> => {
       }
 
       // Build a fresh object instead of mutating `selected.value` in place:
-      // with return-object + item-key, v-model is bound directly to the
+      // with return-object, v-model is bound directly to the
       // live store record (records.stocks.passive doesn't clone), so writing
       // to it here would flip the stock to "active" in the UI immediately,
       // before the DB write below even starts - if repositories.stocks.save
@@ -86,8 +86,8 @@ log("COMPONENTS DIALOGS FadeInStock: setup");
       <v-select
           v-model="selected"
           density="compact"
-          item-key="cID"
           item-title="cCompany"
+          item-value="cID"
           v-bind:clearable="true"
           v-bind:items="records.stocks.passive"
           v-bind:label="t('components.dialogs.fadeInStock.selectLabel')"

@@ -79,10 +79,17 @@ describe("usecases/backup/exportHelpers", () => {
             expect(hasExportConsistencyIssues(issues)).toBe(false);
         });
 
-        it("flags an empty database as having no accounts", () => {
+        it("flags an empty database as having no accounts, but not as inconsistent", () => {
+            // An empty database is not an INCONSISTENT one. Folding the two
+            // together made exportDatabaseUsecase throw EXPORT_DATABASE.A
+            // ("Export validation failed") at a user who had just installed the
+            // extension and clicked Export. `noAccounts` is still reported --
+            // the caller has to refuse -- but it no longer counts as a
+            // consistency issue, and export.ts answers it with
+            // EXPORT_DATABASE.EMPTY instead.
             const issues = findExportConsistencyIssues({accounts: [], bookings: [], stocks: [], bookingTypes: []});
             expect(issues.noAccounts).toBe(true);
-            expect(hasExportConsistencyIssues(issues)).toBe(true);
+            expect(hasExportConsistencyIssues(issues)).toBe(false);
         });
 
         it("counts bookings/stocks/bookingTypes referencing a non-existent account", () => {
