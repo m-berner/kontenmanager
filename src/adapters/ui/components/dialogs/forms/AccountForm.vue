@@ -5,7 +5,7 @@
   -->
 
 <script lang="ts" setup>
-import {onBeforeUnmount, ref, watch} from "vue";
+import {computed, onBeforeUnmount, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 
 import {COMPONENTS, CURRENCIES} from "@/domain/constants";
@@ -49,6 +49,47 @@ const groupedLabel = (clean: string): string =>
 // the user retypes the field.
 const swiftLabel = ref<string>(groupedLabel(accountFormData.swift));
 const ibanLabel = ref<string>(groupedLabel(accountFormData.iban));
+
+/**
+ * Validation rules for the IBAN field — **none on the update path.**
+ *
+ * The field is `:disabled` there because an IBAN is the account's identity
+ * (`accounts_uk1`) and is deliberately immutable once created. A field the user
+ * cannot change must not gate the form, and binding rules to it did exactly
+ * that: Vuetify runs a *disabled* input's rules anyway. `useValidation`
+ * registers with the form unconditionally in `onBeforeMount`, its `validate()`
+ * has no disabled short-circuit, and the `isDisabled` it exposes is the
+ * enclosing **form's** prop rather than the input's own — so
+ * `createForm.validate()`, which iterates every registered item without
+ * filtering, collected this field's failures like any other.
+ *
+ * The consequence was not cosmetic. `submitGuard` is fail-closed: an invalid
+ * form returns early with the generic `xx_form_invalid` toast and never runs
+ * `operation`. So for any account whose stored IBAN is blank or
+ * checksum-invalid, *Update account* could never be saved — currency, SWIFT,
+ * the depot flag and the logo were all permanently uneditable, and the field
+ * responsible was greyed out, so nothing on screen explained why.
+ *
+ * Both states are ordinary rather than corrupt, which is what made this
+ * reachable:
+ * - `AccountDb.cIban` is optional **by design** — `accounts_uk1` is a global
+ *   unique index and IndexedDB indexes `""` as a colliding value, so
+ *   `accountRepository.save()` and `stripBlankAccountIban()` omit a blank one
+ *   and `initializeRecords` normalizes it back to `""` on the way in.
+ * - `validateAccount()` only *logs a warning* for a failed checksum and stores
+ *   the record regardless, so an imported IBAN that fails MOD-97 persists.
+ * - `TitleBar`'s `mLabel` fallback (`cSwift` → `#${cID}`) exists precisely so
+ *   IBAN-less accounts stay visible and selectable in the switcher.
+ *
+ * On the add path the rules are unchanged. `excludeId` is dropped along with
+ * them: it only ever had a value when `isUpdate` was true, which is now the
+ * branch that has no duplicate rule to exclude anything from.
+ */
+const ibanRules = computed(() =>
+    props.isUpdate
+        ? []
+        : validationAdapter.ibanRules(IBAN_RULES, (iban) => records.accounts.isDuplicate(iban))
+);
 
 const {domain} = useUrl(search);
 const {faviconUrl, onLoad, onError, reset} = useFavicon(domain);
@@ -132,7 +173,7 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
       :disabled="props.isUpdate"
       :label="`${t('components.dialogs.forms.accountForm.ibanLabel')}${ibanLabel}`"
       :placeholder="t('components.dialogs.forms.accountForm.ibanPlaceholder')"
-      :rules="validationAdapter.ibanRules(IBAN_RULES, (iban) => records.accounts.isDuplicate(iban, props.isUpdate ? accountFormData.id : undefined))"
+      :rules="ibanRules"
       variant="outlined"
       @update:model-value="onUpdateIban"/>
   <v-text-field
