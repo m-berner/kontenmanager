@@ -153,10 +153,35 @@ test.describe("Options page (firefox)", () => {
 
             const daxCheckbox = page.getByRole("checkbox", {name: "DAX"});
             await expect(daxCheckbox).toBeVisible({timeout: 10_000});
-            await daxCheckbox.click();
 
+            // DAX starts CHECKED, and asserting that is half the point of this
+            // test. `stubBrowser` boots with empty storage, so `sIndexes` is
+            // absent and the settings store falls back to its documented default
+            // of ["dax", "dow"] — which is what the InfoBar renders too.
+            //
+            // This used to assert the opposite (click once, expect "dax" to
+            // appear in storage). That passed only because CheckboxGrid read
+            // storage itself and did `Array.isArray(stored) ? … : []`, so an
+            // absent key seeded NO defaults and the grid contradicted the state
+            // the rest of the app was using. Commit a5a2b4e gave the four list
+            // settings a single owner in the store, which applies the default —
+            // so the first click now unchecks. The app is right; the old
+            // expectation had encoded the inconsistency.
+            await expect(daxCheckbox).toBeChecked();
+
+            // Toggle OFF: "dax" leaves storage, and the sibling default survives
+            // — a write that clobbered the whole key would also satisfy a bare
+            // "dax is gone" check.
+            await daxCheckbox.click();
+            await expect(daxCheckbox).not.toBeChecked();
             await expect.poll(() => getStorageValue(page, "sIndexes"), {timeout: 10_000})
-                .toEqual(expect.arrayContaining(["dax"]));
+                .toEqual(["dow"]);
+
+            // Toggle back ON: proves the round trip, not just one direction.
+            await daxCheckbox.click();
+            await expect(daxCheckbox).toBeChecked();
+            await expect.poll(() => getStorageValue(page, "sIndexes"), {timeout: 10_000})
+                .toEqual(expect.arrayContaining(["dax", "dow"]));
         } finally {
             await server.close();
         }
