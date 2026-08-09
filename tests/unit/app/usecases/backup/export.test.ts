@@ -10,30 +10,35 @@ import {makeAccountDb, makeBookingDb, makeBookingTypeDb, makeStockDb} from "@tes
 import type {ExportDatabaseUsecaseDeps} from "@/app/usecases/backup/export";
 import {ERROR_CATEGORY} from "@/domain/constants";
 import {ERROR_DEFINITIONS} from "@/domain/errors";
-import type {RepositoryMap} from "@/domain/types";
+import type {RecordsDbData} from "@/domain/types";
 
 function makeDeps(overrides: Partial<{
-    repositories: {
-        accounts?: Partial<RepositoryMap["accounts"]>;
-        bookings?: Partial<RepositoryMap["bookings"]>;
-        stocks?: Partial<RepositoryMap["stocks"]>;
-        bookingTypes?: Partial<RepositoryMap["bookingTypes"]>;
-    };
+    records: Partial<RecordsDbData>;
     verify: { valid: boolean; errors: string[] };
-}> = {}): {deps: ExportDatabaseUsecaseDeps; writeBufferToFile: ReturnType<typeof vi.fn>} {
+}> = {}): {
+    deps: ExportDatabaseUsecaseDeps;
+    writeBufferToFile: ReturnType<typeof vi.fn>;
+    getAllRecords: ReturnType<typeof vi.fn>;
+} {
     const account = makeAccountDb({cID: 1});
-    const repositories = {
-        accounts: {findAll: vi.fn().mockResolvedValue([account])},
-        bookings: {findAll: vi.fn().mockResolvedValue([makeBookingDb({cAccountNumberID: 1})])},
-        stocks: {findAll: vi.fn().mockResolvedValue([makeStockDb({cAccountNumberID: 1})])},
-        bookingTypes: {findAll: vi.fn().mockResolvedValue([makeBookingTypeDb({cAccountNumberID: 1})])},
-        ...overrides.repositories
-    } as unknown as RepositoryMap;
+    // One `getAllRecords` stub rather than four per-repository `findAll` stubs:
+    // the usecase now takes its snapshot in a single transaction, which is the
+    // point of `DatabaseSnapshotPort`. Four independent stubs could not have
+    // expressed the difference — that is exactly why the torn read went
+    // unnoticed.
+    const records: RecordsDbData = {
+        accountsDB: [account],
+        bookingsDB: [makeBookingDb({cAccountNumberID: 1})],
+        stocksDB: [makeStockDb({cAccountNumberID: 1})],
+        bookingTypesDB: [makeBookingTypeDb({cAccountNumberID: 1})],
+        ...overrides.records
+    };
+    const getAllRecords = vi.fn().mockResolvedValue(records);
 
     const writeBufferToFile = vi.fn().mockResolvedValue(undefined);
 
     const deps: ExportDatabaseUsecaseDeps = {
-        repositories,
+        databaseAdapter: {getAllRecords},
         browserAdapter: {
             manifest: () => ({version: "1.2.3"}),
             writeBufferToFile
@@ -48,7 +53,7 @@ function makeDeps(overrides: Partial<{
         runtime: {resetTeleport: vi.fn(), clearStocksPages: vi.fn()}
     };
 
-    return {deps, writeBufferToFile};
+    return {deps, writeBufferToFile, getAllRecords};
 }
 
 describe("usecases/backup/export", () => {
@@ -71,6 +76,25 @@ describe("usecases/backup/export", () => {
         expect(res.estimatedSizeKb).toBeGreaterThan(0);
     });
 
+    // The export's referential-integrity check is only meaningful over a
+    // snapshot the database was actually in. It used to issue four independent
+    // `repository.findAll()` calls — none of which pass a `tx`, so each opens
+    // its own transaction — and then survey the four results as though they were
+    // simultaneous. `getAllRecords` reads all four stores in one readonly
+    // transaction for exactly this reason. Asserting the single call is what
+    // stops the four-read shape being reintroduced.
+    it("reads the whole database in one snapshot call, not per store", async () => {
+        const {deps, getAllRecords} = makeDeps();
+
+        await exportDatabaseUsecase(deps, {
+            filename: "backup.json",
+            confirmLargeFile: vi.fn(),
+            notifyEstimatedSize: vi.fn().mockResolvedValue(undefined)
+        });
+
+        expect(getAllRecords).toHaveBeenCalledTimes(1);
+    });
+
     // The two refusals below must stay DISTINGUISHABLE, which is the whole
     // point: both end in a throw, but "your database is inconsistent" is a
     // fault while "you have nothing to export yet" is the expected state right
@@ -79,9 +103,7 @@ describe("usecases/backup/export", () => {
     // code (not just that it throws) is what keeps them from being merged back.
     it("throws EXPORT_DATABASE.A when a booking references a non-existent account", async () => {
         const {deps} = makeDeps({
-            repositories: {
-                bookings: {findAll: vi.fn().mockResolvedValue([makeBookingDb({cAccountNumberID: 999})])}
-            }
+            records: {bookingsDB: [makeBookingDb({cAccountNumberID: 999})]}
         });
 
         await expect(
@@ -96,7 +118,7 @@ describe("usecases/backup/export", () => {
     });
 
     it("throws EXPORT_DATABASE.EMPTY — not the validation-failed error — for an empty database", async () => {
-        const {deps} = makeDeps({repositories: {accounts: {findAll: vi.fn().mockResolvedValue([])}}});
+        const {deps} = makeDeps({records: {accountsDB: []}});
 
         await expect(
             exportDatabaseUsecase(deps, {

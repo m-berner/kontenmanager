@@ -79,6 +79,26 @@ export interface DatabaseAccountsPort {
     getAccountRecords: (_accountId: number) => Promise<RecordsDbData>;
 }
 
+/**
+ * A faithful whole-database read, in ONE readonly transaction.
+ *
+ * Declared as its own port because the difference from four separate
+ * `repository.findAll()` calls is a correctness property, not a convenience:
+ * `databaseAdapter.getAllRecords` reads all four stores inside a single
+ * transaction "so the four stores cannot be observed at different points in
+ * time" (its own doc comment). The export used to issue the four reads
+ * independently — each `findAll()` without a `tx` opens its own transaction —
+ * and then ran `findExportConsistencyIssues` over the possibly-torn result,
+ * which is the one check standing between the app and a backup it would later
+ * refuse to re-import.
+ *
+ * Note `getAccountRecords` is NOT interchangeable here: it returns every account
+ * but only the *active* account's bookings/bookingTypes/stocks.
+ */
+export interface DatabaseSnapshotPort {
+    getAllRecords: () => Promise<RecordsDbData>;
+}
+
 export interface ImportExportPort {
     validateBackup: (_data: unknown) => BackupValidationResult;
     validateDataIntegrity: (_backup: BackupData) => string[];
