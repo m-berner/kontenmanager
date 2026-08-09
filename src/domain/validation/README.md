@@ -8,8 +8,11 @@ consistency across the application.
 
 ## Key Components
 
-- `rules.ts`: Contains atomic, reusable validation rules (e.g., `required`, `validateIBAN`, `validateISIN`,
-  `validateSWIFT`).
+- `rules.ts`: Contains atomic, reusable validation rules (`validateIBAN`, `validateISIN`, `validateSWIFT`), each
+  returning a `DomainValidationResult` with a `VALIDATION_CODES` error the UI layer maps to a translated message.
+  Note there is deliberately **no** `required` here: the presence check belongs to the form layer and lives in
+  `adapters/ui/validationAdapter.ts`, which is what every form binds. A second function of that name at this level
+  was removed as unused — it had no `src/` consumer, and it disagreed with the adapter's on whitespace.
 - `validators.ts`: Combines atomic rules into higher-level validators for domain entities like Accounts, Bookings, and
   Stocks.
 - `messages.ts`: Factory functions producing localized IBAN/SWIFT validation rule messages.
@@ -33,7 +36,7 @@ feedback or by repositories to block invalid data.
   isDuplicateBookingTypeName
 - `messages.ts`: createIbanMessages, createSwiftMessages
 - `referentialIntegrity.ts`: findReferentialIssues, hasReferentialIssues, describeReferentialIssues
-- `rules.ts`: required, validateIBAN, validateISIN, validateSWIFT
+- `rules.ts`: validateIBAN, validateISIN, validateSWIFT
 - `validators.ts`: resolveLegacyBookingTypeRole, normalizeBookingTypeName, validateAccount, validateBooking,
   validateBookingType, validateStock
 

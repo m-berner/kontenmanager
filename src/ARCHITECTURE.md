@@ -505,12 +505,20 @@ useOnlineStockData.loadOnlineData(page)
 - `refreshOnlineData(page)` — forces a reload of one page.
 - `refreshAllOnlineData()` — reloads all pages that have holdings.
 
-Cache invalidation watchers run **once** in `AppIndex.vue` (not per call site):
+Cache invalidation watchers run **once** in `AppIndex.vue` (not per call site — it is the app shell, so its watchers
+live for the whole session, where a route component's exist only while that route is mounted):
 
 ```typescript
-watch(() => settings.service,       () => { runtime.clearStocksPages(); fetchAdapter.clearCache?.() })
+watch(() => settings.service,         () => { runtime.clearStocksPages(); fetchAdapter.clearCache?.() })
 watch(() => settings.activeAccountId, () => runtime.clearStocksPages())
 watch(() => settings.stocksPerPage,   () => runtime.clearStocksPages())
+
+// The display currency needs more than invalidation — see §12.1.
+watch(displayCurrency, async () => {
+    if (!isInitialized.value) return          // boot's Phase 3 owns the first fetch
+    await appAdapter.refreshExchangeRates({records, settings, runtime}, signal)
+    runtime.clearStocksPages()                // AFTER the await, never before
+})
 ```
 
 ---
@@ -558,8 +566,31 @@ All three consumers read that one function, so the conversion target and the pri
 - `useOnlineStockData` — divides the fetched quote by the FX rate unless the quote is already in that currency.
 - `appAdapter.fetchExternalData` — requests exactly the two pairs (`${currency}USD`, `${currency}EUR`) that the divisor
   chain can consume; the self-pair is dropped and its rate seeded to 1.
+- `appAdapter.refreshExchangeRates` — the same pair derivation and write-back, callable on its own (both share
+  `resolveBaseExchangePairs` / `applyBaseExchangeResult`, so the rule has one definition). See below for why.
 - `plugins/currencySync.ts` — rewrites the i18n `currency`/`currency3` number formats via `mergeNumberFormat`, so all
   ~13 `n(value, "currency")` call sites stay correct without knowing about any of this.
+
+**The divisors must be re-fetched when the display currency changes, not only at boot.** `runtime.curUsd`/`curEur` are
+written by `fetchExternalData`, which is Phase 3 of `initializeApp` and runs once at mount — so the pairs it fetches
+come from whichever currency was active *then*, and the self-pair is seeded to `1`. Switching to an account with the
+other `cCurrency` therefore left one divisor a stale rate and the other a `1` that no longer applied, and a EUR-quoted
+stock displayed its EUR price verbatim as USD (or the mirror image). Silently: the only guard downstream is
+`rawDivisor > 0`, which a stale-but-positive rate passes, and `currencySync` had already relabelled every figure with
+the new symbol — so the label was right and the number was wrong.
+
+`AppIndex` closes this with a watcher on `resolveDisplayCurrency(...)` — the same expression `currencySync` watches, so
+the conversion target and the printed symbol cannot drift apart. Three details are load-bearing:
+
+- **Both** divisors reset to `1` on every resolve, not just the self-pair. A failed fetch must not leave the previous
+  currency's rate converting; `1` shows the quote unconverted, the fallback `useOnlineStockData` and `InfoBar` already use.
+- `clearStocksPages()` runs **after** the await. Before it, the re-fetch would convert with the divisors being replaced;
+  it is also what supersedes in-flight loads, since it bumps every page's generation.
+- The watcher is gated on `isInitialized`, because Phase 2 loading the accounts is itself a currency change and Phase 3
+  already reads the post-Phase-2 value.
+
+Note `updateAccountUsecase.clearStocksPages()` is **not** sufficient on its own for a `cCurrency` edit — it makes the
+next render re-fetch, but the re-convert uses these divisors, which only the watcher updates.
 
 The **locale still owns formatting** — separators, grouping, symbol placement — which is what a locale should own.
 `Intl.NumberFormat` takes locale and currency independently: `en-US` + EUR renders `€1,234.56`, `de-DE` + EUR renders

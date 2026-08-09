@@ -218,19 +218,36 @@ rather than being blocked.
 **Processing:**
 
 ```
-TitleBar account selection
-    └─ settingsStore.setActiveAccountId(selectedId)
+TitleBar's v-select is v-model-bound to settings.activeAccountId,
+so the new id is applied OPTIMISTICALLY before the handler runs
+    └─ TitleBar.onUpdateTitleBar()
+        ├─ databaseAdapter.getAccountRecords(selectedId)
+        ├─ recordsStore.init(newData, translations)   [all sub-stores updated reactively]
         ├─ storageAdapter.setStorage(ACTIVE_ACCOUNT_ID, selectedId)
-        └─ databaseAdapter.getAccountRecords(selectedId)
-            └─ recordsStore.init(newData, translations)
-                └─ all sub-stores updated reactively
+        └─ lastConfirmedAccountId = selectedId
+        │
+        └─ on failure: revert settings.activeAccountId to lastConfirmedAccountId,
+           re-init the records from THAT account, then report the error
+    │
+    └─ AppIndex watchers fire on the changed settings.activeAccountId:
+        ├─ runtime.clearStocksPages()
+        └─ displayCurrency watcher (only if the new account's cCurrency differs)
+            ├─ appAdapter.refreshExchangeRates(...)   [re-fetches the FX pairs]
+            └─ runtime.clearStocksPages()             [after the await]
 ```
+
+Note this does **not** go through `settingsStore.setActiveAccountId`, despite that setter existing for this key.
+It cannot: the `v-select` has already written the ref, so `updateSetting`'s rollback would read the *new* id as the
+"previous" one and revert to it — `lastConfirmedAccountId` is what actually knows the pre-switch account. A failed
+switch must also revert the **record stores**, which the setter knows nothing about. See the note on
+`setActiveAccountId` in `stores/settings.ts`.
 
 **What the user sees:**
 
 - TitleBar updates: account name, IBAN, logo, balance
 - HomeContent table reloads with the new account's bookings
 - CompanyContent reloads with the new account's stocks
+- Quotes re-fetch, converted with the new account's currency (not the previous account's rates)
 
 ---
 
@@ -385,6 +402,13 @@ when that account happens to be active.
 
 Delete checks for any bookings still referencing the type before allowing removal.
 
+Both dialogs are reached from the header bar, which gates them on
+`records.hasActiveAccount` **before** the "this account has no booking types" check. Booking types are account-scoped,
+and the record stores are not cleared when `activeAccountId` falls back to the no-account sentinel — so a bare
+population count let either dialog open with no active account, listing the previous account's types. The length check
+is kept underneath, because "this account has no booking types yet" is the more specific answer when an account *is*
+active, and the only one of the two the user can act on.
+
 ---
 
 ## 5. Stock Portfolio Management
@@ -413,12 +437,24 @@ AddStock dialog submit
             ├─ stocksStore.add(newStock)                  [merges INDEXED_DB.STORE.STOCK_MEMORY defaults]
             │   └─ mValue, mMin, mMax set to 0 (placeholders for online data)
             └─ runtimeStore.resetTeleport()
+        │
+        └─ post-save, OUTSIDE the add's error path:
+            refreshOnlineData(res.page, {stockIds: [res.id]})
+            ├─ bracketed by runtime.beginDownload()/beginStockLoading()
+            └─ its own try/catch — a provider timeout here logs and is not
+               reported as an add-stock failure, since the stock is already saved
 ```
+
+The refresh is deliberately isolated from `submitGuard`'s catch. It runs after the write has committed and the success
+alert has shown, so letting it throw produced "stock added successfully" immediately followed by an add-stock error for
+a stock that *was* added — the same distinction `importDatabaseUsecase` draws for its post-commit steps. It passes
+`stockIds` rather than relying on the positional page slice, which stops matching what is on screen once the user sorts
+the table.
 
 **What the user sees:**
 
-- New row in CompanyContent with `—` for market data fields
-- Online data loads on next refresh cycle
+- New row in CompanyContent, with market data filled in by the post-save refresh
+- If that refresh fails, the row still appears with empty price cells; no error is shown for the add itself
 
 ---
 
@@ -742,7 +778,15 @@ settingsStore.setService(newProvider)
 ```
 
 Cache invalidation lives in watchers registered **once** in `AppIndex.vue`, not in the setter and not per call
-site — the same applies to `settings.activeAccountId` and `settings.stocksPerPage`.
+site — the same applies to `settings.activeAccountId` and `settings.stocksPerPage`. `AppIndex` is the app shell, so
+those watchers live for the whole session; a route component's would exist only while that route is mounted, which is
+why `CompanyContent`'s duplicate `stocksPerPage` watcher was removed rather than `AppIndex`'s.
+
+One case needs more than invalidation. When the **display currency** changes — switching accounts, editing the active
+account's `cCurrency`, or changing `settings.currency` with no account active — `AppIndex`'s `displayCurrency` watcher
+also calls `appAdapter.refreshExchangeRates(...)` and only *then* clears the pages. Invalidating alone would re-fetch
+every quote and re-convert it with `runtime.curUsd`/`curEur` still holding the previous currency's divisors. See
+`ARCHITECTURE.md` §12.1.
 
 ---
 
