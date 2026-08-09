@@ -65,7 +65,12 @@ export function createDatabaseConnectionManager(
      */
     function connect(): Promise<void> {
         if (db) {
-            log("DATABASE connection: already connected", null, "warn");
+            // `info`, not `warn`: re-entrant `connect()` is the ordinary case,
+            // not a fault. `appAdapter.initializeDatabase` calls it on every
+            // initialization — including `AppIndex`'s user-facing retry button —
+            // so a retry after an unrelated failure was emitting a warning for
+            // expected behaviour.
+            log("DATABASE connection: already connected", null, "info");
             return Promise.resolve();
         }
 

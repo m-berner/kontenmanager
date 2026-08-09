@@ -174,10 +174,22 @@ function backfillBookingTypeRoles(tx: IDBTransaction): void {
         if (!cursor) return;
         const record = cursor.value as BookingTypeDb;
         if (!record.cRole) {
-            cursor.update({
+            // The write's own error handler, not just the cursor's below. An
+            // `update()` failure aborts the version-change transaction exactly
+            // like an `openCursor()` failure does, and without this it did so
+            // with none of the migrator's context attached — which is precisely
+            // the outcome the cursor handler was added to prevent.
+            const updateRequest = cursor.update({
                 ...record,
                 cRole: resolveLegacyBookingTypeRole(record.cID, record.cName)
             });
+            updateRequest.onerror = () => {
+                log(
+                    "SERVICE DATABASE migrator: backfillBookingTypeRoles update failed",
+                    {storeName, cID: record.cID, error: updateRequest.error?.message},
+                    "error"
+                );
+            };
         }
         cursor.continue();
     };
@@ -221,7 +233,15 @@ function backfillAccountCurrency(tx: IDBTransaction): void {
         if (!cursor) return;
         const record = cursor.value as AccountDb;
         if (!record.cCurrency) {
-            cursor.update({...record, cCurrency: CURRENCIES.EUR});
+            // Same reasoning as backfillBookingTypeRoles' update handler above.
+            const updateRequest = cursor.update({...record, cCurrency: CURRENCIES.EUR});
+            updateRequest.onerror = () => {
+                log(
+                    "SERVICE DATABASE migrator: backfillAccountCurrency update failed",
+                    {storeName, cID: record.cID, error: updateRequest.error?.message},
+                    "error"
+                );
+            };
         }
         cursor.continue();
     };
@@ -270,7 +290,13 @@ function runMigrations(
         throw new Error("IndexedDB upgrade: version-change transaction unavailable");
     }
 
-    if (oldVersion < 27) {
+    // `oldVersion > 0` excludes a brand-new database. `createStores` has just
+    // created `uk1`–`uk4` in their current, correct form, so on a fresh install
+    // this migration only deleted `uk1`/`uk2` and recreated them identically —
+    // running a repair for a pre-v27 schema that never existed here. The
+    // backfills below are naturally inert on an empty store and need no such
+    // guard.
+    if (oldVersion > 0 && oldVersion < 27) {
         migrateStocksAccountScopedUniqueness(tx);
     }
 
