@@ -174,7 +174,17 @@ describe("useHeaderBarActions", () => {
     });
 
     describe("booking-type-gated actions", () => {
+        /** An active account, which both booking-type dialogs now require. */
+        const withActiveAccount = () => {
+            const records = useRecordsStore();
+            const settings = useSettingsStore();
+            records.accounts.add(makeAccountDb({cID: 1}));
+            settings.activeAccountId = 1;
+            return records;
+        };
+
         it("updateBookingType shows a notice when there are no booking types", async () => {
+            withActiveAccount();
             const {onIconClick} = useHeaderBarActions(t);
             await onIconClick(clickEventFor("updateBookingType"));
 
@@ -182,7 +192,7 @@ describe("useHeaderBarActions", () => {
         });
 
         it("updateBookingType opens the dialog once a booking type exists", async () => {
-            const records = useRecordsStore();
+            const records = withActiveAccount();
             const runtime = useRuntimeStore();
             records.bookingTypes.add(makeBookingTypeDb({cID: 1}));
             const {onIconClick} = useHeaderBarActions(t);
@@ -190,6 +200,47 @@ describe("useHeaderBarActions", () => {
             await onIconClick(clickEventFor("updateBookingType"));
 
             expect(runtime.dialogName).toBe("updateBookingType");
+        });
+
+        // Booking types are account-scoped, and the record stores are NOT
+        // cleared when activeAccountId falls back to the sentinel — so a bare
+        // length test let both dialogs open with no active account, listing the
+        // previous account's types. `addBookingType` was migrated to
+        // `hasActiveAccount`; these two were left behind on the old predicate.
+        it.each(["updateBookingType", "deleteBookingType"])(
+            "%s reports the missing ACCOUNT, not the missing booking type, when none is active",
+            async (action) => {
+                const records = useRecordsStore();
+                const runtime = useRuntimeStore();
+                const settings = useSettingsStore();
+                records.accounts.add(makeAccountDb({cID: 1}));
+                // Stale types left loaded from the previously active account.
+                records.bookingTypes.add(makeBookingTypeDb({cID: 1}));
+                settings.activeAccountId = -1;
+                const {onIconClick} = useHeaderBarActions(t);
+
+                await onIconClick(clickEventFor(action));
+
+                expect(feedbackInfo).toHaveBeenCalledWith(
+                    "views.headerBar.infoTitle",
+                    "views.headerBar.messages.noAccount"
+                );
+                expect(runtime.dialogName).toBeUndefined();
+            }
+        );
+
+        // `updateStock` is a row-level action reached from a stock's DotMenu,
+        // never from a header icon. It used to open the dialog from this table,
+        // which would have loaded whatever `runtime.activeId` held — including a
+        // booking id, since useMenu.executeAction writes it for any row action.
+        it("updateStock is inert from the header bar, so it cannot act on a stale activeId", async () => {
+            const runtime = useRuntimeStore();
+            runtime.activeId = 42;
+            const {onIconClick} = useHeaderBarActions(t);
+
+            await onIconClick(clickEventFor("updateStock"));
+
+            expect(runtime.dialogName).toBeUndefined();
         });
     });
 
