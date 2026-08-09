@@ -179,4 +179,56 @@ describe("Settings Store", () => {
             expect(store.exchanges).toEqual(["EURUSD", "EURGBP"]);
         });
     });
+
+    // The four list settings were the last with no setter, so `CheckboxGrid` and
+    // `DynamicList` each read their key straight from browser storage into a
+    // private ref and wrote back from that copy — a second owner for state this
+    // store already holds, and a second hand-rolled copy of the
+    // optimistic-update-and-roll-back that `updateSetting` provides.
+    describe("list setters", () => {
+        it.each([
+            ["setIndexes", BROWSER_STORAGE.INDEXES.key, ["dax", "sp"]],
+            ["setMaterials", BROWSER_STORAGE.MATERIALS.key, ["au", "brent"]],
+            ["setMarkets", BROWSER_STORAGE.MARKETS.key, ["XETRA"]],
+            ["setExchanges", BROWSER_STORAGE.EXCHANGES.key, ["EURUSD"]]
+        ])("%s applies the value and persists it under its own key", async (setter, key, value) => {
+            mockSetStorage.mockResolvedValueOnce(undefined);
+            const store = useSettingsStore();
+
+            await (store as unknown as Record<string, (v: string[]) => Promise<void>>)[setter](value);
+
+            expect(mockSetStorage).toHaveBeenCalledWith(key, value);
+        });
+
+        // The revert relies on an identity test against the value this call
+        // applied. `ref()` stores an object through `toReactive`, so `.value` on
+        // an array setting yields a reactive proxy rather than the array that was
+        // assigned — a bare `===` was always false and these would never have
+        // rolled back. Only primitives had setters before, which is why it went
+        // unnoticed.
+        it("reverts the optimistic value when the persist fails", async () => {
+            const store = useSettingsStore();
+            store.init({[BROWSER_STORAGE.MARKETS.key]: ["XETRA"]} as StorageDataType);
+            mockSetStorage.mockRejectedValueOnce(new Error("quota"));
+
+            await store.setMarkets(["XETRA", "Frankfurt"]);
+
+            expect(store.markets).toEqual(["XETRA"]);
+        });
+
+        // `{rethrow: true}` is what lets a component report the failure in its own
+        // surface — CheckboxGrid's inline alert, and DynamicList's need to restore
+        // the exchange rate it removed alongside the entry. Neither can act on an
+        // error the store has already swallowed into the global alert.
+        it("rethrows instead of alerting when asked, still reverting first", async () => {
+            const store = useSettingsStore();
+            store.init({[BROWSER_STORAGE.EXCHANGES.key]: ["EURUSD"]} as StorageDataType);
+            mockSetStorage.mockRejectedValueOnce(new Error("quota"));
+
+            await expect(
+                store.setExchanges(["EURUSD", "EURGBP"], {rethrow: true})
+            ).rejects.toThrow("quota");
+            expect(store.exchanges).toEqual(["EURUSD"]);
+        });
+    });
 });

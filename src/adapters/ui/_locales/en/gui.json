@@ -182,7 +182,6 @@
       }
     },
     "checkboxGrid": {
-      "loading": "Loading options...",
       "saving": "Saving..."
     },
     "creditDebitFieldset": {
@@ -195,7 +194,6 @@
     },
     "dynamicList": {
       "errorTitle": "List error",
-      "loading": "Loading...",
       "emptyState": "No items yet. Add one below.",
       "fallbackLabel": "Error",
       "duplicate": "That entry is already in the list."

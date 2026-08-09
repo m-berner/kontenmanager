@@ -10,10 +10,10 @@
  * markets or exchanges. Provides add/remove actions and emits updated arrays.
  */
 import {storeToRefs} from "pinia";
-import {computed, onBeforeMount, type Ref, ref} from "vue";
+import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
-import {BROWSER_STORAGE, COMPONENTS} from "@/domain/constants";
+import {COMPONENTS} from "@/domain/constants";
 import type {DynamicListProps, ExchangeData} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
@@ -24,8 +24,7 @@ import {useSettingsStore} from "@/adapters/ui/stores/settings";
 const props = defineProps<DynamicListProps>();
 
 const {t} = useI18n();
-const {storageAdapter, fetchAdapter, alertAdapter} = useAdapters();
-const {getStorage, setStorage} = storageAdapter();
+const {fetchAdapter, alertAdapter} = useAdapters();
 const runtime = useRuntimeStore();
 const {infoExchanges} = storeToRefs(runtime);
 const settings = useSettingsStore();
@@ -40,8 +39,6 @@ const {exchanges, markets} = storeToRefs(settings);
 // whole card down. Same root cause as the `clearable` v-select findings, on
 // the tree's only `clearable` v-text-field.
 const newItem = ref<string | null>("");
-const list = ref<string[]>([]);
-const isLoading = ref<boolean>(false);
 const isAdding = ref<boolean>(false);
 
 const fallbackLabel = computed(() => t("components.dynamicList.fallbackLabel"));
@@ -69,22 +66,45 @@ const title = computed(() => {
 });
 
 /**
- * Removes one occurrence of `value` by VALUE, not by position.
+ * The list this instance edits — the settings store's own array, not a copy.
  *
- * Rollbacks must not use `pop()`/a captured index: `markets` and `exchanges`
- * are `storeToRefs` handles on the settings store, and its cross-context
- * storage listener (stores/settings.ts `applyStorageChange`) replaces the
- * WHOLE array when another context writes that key. That can happen during the
- * `await setStorage(...)` a rollback is undoing, so the tail is not reliably
- * this call's entry — popping it would silently delete an unrelated market or
- * exchange. Same reasoning the `infoExchanges.set()` below already documents.
- *
- * `lastIndexOf`, so the entry this call appended is the one removed even if a
- * duplicate slipped in from another context meanwhile.
+ * This component used to keep a private `list` ref, filled by a `getStorage`
+ * read in `onBeforeMount` and written back with a bare `setStorage`, while ALSO
+ * pushing each add into `markets`/`exchanges`. Two owners for one key, with the
+ * persisted value taken from the private copy — plus a hand-rolled optimistic
+ * update and rollback (`removeByValue`) duplicating what `updateSetting`
+ * already does.
  */
-const removeByValue = (target: Ref<string[]>, value: string): void => {
-  const index = target.value.lastIndexOf(value);
-  if (index > -1) target.value.splice(index, 1);
+const currentList = computed<string[]>(() => {
+  switch (props.type) {
+    case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+      return markets.value;
+    case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+      return exchanges.value;
+    default:
+      return [];
+  }
+});
+
+/**
+ * Persists a whole new list through the store.
+ *
+ * `{rethrow: true}` because this component reports failures itself and, for
+ * exchanges, has to compensate by restoring the rate it removed alongside the
+ * entry — neither of which it can do if the store has already swallowed the
+ * error. The store reverts its own ref regardless, so there is no list rollback
+ * left to do here.
+ */
+const persist = async (next: string[]): Promise<void> => {
+  switch (props.type) {
+    case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
+      await settings.setMarkets(next, {rethrow: true});
+      break;
+    case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
+      await settings.setExchanges(next, {rethrow: true});
+      break;
+    default:
+  }
 };
 
 const addItem = async (item: string | null): Promise<void> => {
@@ -103,7 +123,7 @@ const addItem = async (item: string | null): Promise<void> => {
   // silently: no message, and `newItem` was not even cleared (that only
   // happened on the success path), so the button looked broken. Tell the user
   // instead of doing nothing.
-  if (list.value?.includes(normalizedItem)) {
+  if (currentList.value.includes(normalizedItem)) {
     await alertAdapter.feedbackInfo(
         t("components.dynamicList.errorTitle"),
         t("components.dynamicList.duplicate")
@@ -114,49 +134,26 @@ const addItem = async (item: string | null): Promise<void> => {
   isAdding.value = true; // Start loading
 
   try {
-    switch (props.type) {
-      case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-        list.value.push(normalizedItem);
-        markets.value.push(normalizedItem);
-        try {
-          await setStorage(BROWSER_STORAGE.MARKETS.key, [...list.value]);
-        } catch (err) {
-          removeByValue(list, normalizedItem);
-          removeByValue(markets, normalizedItem);
-          // noinspection ExceptionCaughtLocallyJS
-          throw err;
-        }
-        break;
-      case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES: {
-        list.value.push(normalizedItem);
-        exchanges.value.push(normalizedItem);
-        try {
-          await setStorage(BROWSER_STORAGE.EXCHANGES.key, [...list.value]);
-        } catch (err) {
-          removeByValue(list, normalizedItem);
-          removeByValue(exchanges, normalizedItem);
-          // noinspection ExceptionCaughtLocallyJS
-          throw err;
-        }
-        // fetchExchangesData resolves per-code (Promise.allSettled internally) and
-        // omits any code that failed to quote rather than rejecting the whole call
-        // — the add itself is already persisted above, so a missing rate here must
-        // not be treated as an add failure. It's picked up on a later refresh/re-add.
-        const exchangesInfoData: ExchangeData[] =
-            await fetchAdapter.fetchExchangesData([normalizedItem]);
-        if (exchangesInfoData[0]) {
-          // Key by the item this call actually added, not by whatever happens
-          // to sit last in `exchanges` now. The fetch above is awaited, and
-          // the cross-context storage listener (stores/settings.ts
-          // applyStorageChange) can replace the whole array meanwhile, so the
-          // tail is not reliably this adds entry — the rate would then be
-          // attached to the wrong exchange code.
-          infoExchanges.value.set(normalizedItem, exchangesInfoData[0].value);
-        }
-        break;
+    await persist([...currentList.value, normalizedItem]);
+
+    if (props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES) {
+      // fetchExchangesData resolves per-code (Promise.allSettled internally) and
+      // omits any code that failed to quote rather than rejecting the whole
+      // call — the add itself is already persisted above, so a missing rate here
+      // must not be treated as an add failure. It is picked up on a later
+      // refresh or re-add.
+      const exchangesInfoData: ExchangeData[] =
+          await fetchAdapter.fetchExchangesData([normalizedItem]);
+      if (exchangesInfoData[0]) {
+        // Key by the item this call actually added, not by whatever happens to
+        // sit last in `exchanges` now. The fetch above is awaited, and the
+        // cross-context storage listener (stores/settings.ts applyStorageChange)
+        // can replace the whole array meanwhile, so the tail is not reliably
+        // this add's entry — the rate would then attach to the wrong code.
+        infoExchanges.value.set(normalizedItem, exchangesInfoData[0].value);
       }
-      default:
     }
+
     newItem.value = "";
   } catch (err) {
     await alertAdapter.feedbackError(t("components.dynamicList.errorTitle"), err, {});
@@ -167,24 +164,11 @@ const addItem = async (item: string | null): Promise<void> => {
 
 const removeItem = async (n: number): Promise<void> => {
   log("COMPONENTS DynamicList: removeItem");
-  if (n < 0) return;
-
-  const removedItem = list.value[n];
-  list.value.splice(n, 1);
-
-  const storeList =
-      props.type === COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS
-          ? markets
-          : props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES
-              ? exchanges
-              : undefined;
-  const storeIndex = storeList?.value.indexOf(removedItem) ?? -1;
-  if (storeIndex > -1) {
-    storeList!.value.splice(storeIndex, 1);
-  }
+  const removedItem = currentList.value[n];
+  if (removedItem === undefined) return;
 
   // Captured before the delete below so the rollback can put it back — this
-  // removal happens optimistically, before the storage write that may fail.
+  // removal happens optimistically, before the write that may fail.
   const removedRate = infoExchanges.value.get(removedItem);
 
   if (props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES) {
@@ -195,23 +179,12 @@ const removeItem = async (n: number): Promise<void> => {
   }
 
   try {
-    switch (props.type) {
-      case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS:
-        await setStorage(BROWSER_STORAGE.MARKETS.key, [...list.value]);
-        break;
-      case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES:
-        await setStorage(BROWSER_STORAGE.EXCHANGES.key, [...list.value]);
-        break;
-      default:
-    }
+    await persist(currentList.value.filter((_, index) => index !== n));
   } catch (err) {
-    list.value.splice(n, 0, removedItem);
-    if (storeIndex > -1) {
-      storeList!.value.splice(storeIndex, 0, removedItem);
-    }
-    // Restore the rate too, or a failed write leaves the exchange listed but
-    // rate-less until the next refresh — an incomplete rollback that silently
-    // contradicts the "nothing happened" the error alert implies.
+    // The list itself is restored by the store. Only the rate is this
+    // component's to put back: without it a failed write leaves the exchange
+    // listed but rate-less until the next refresh — an incomplete rollback that
+    // silently contradicts the "nothing happened" the error alert implies.
     if (
         props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES &&
         removedRate !== undefined
@@ -222,101 +195,59 @@ const removeItem = async (n: number): Promise<void> => {
   }
 };
 
-onBeforeMount(async () => {
-  log("COMPONENTS DynamicList: onBeforeMount");
-  isLoading.value = true;
-
-  try {
-    const storage = await getStorage([
-      BROWSER_STORAGE.MARKETS.key,
-      BROWSER_STORAGE.EXCHANGES.key
-    ]);
-    switch (props.type) {
-      case COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES: {
-        // `stored*`, not `exchanges`/`markets`: those names are taken by the
-        // reactive storeToRefs handles above, and a raw array off storage read
-        // like the store handle is exactly the confusion worth avoiding here.
-        const storedExchanges = storage[BROWSER_STORAGE.EXCHANGES.key];
-        list.value = Array.isArray(storedExchanges)
-            ? storedExchanges.filter(
-                (entry): entry is string => typeof entry === "string"
-            )
-            : [];
-      }
-        break;
-      case COMPONENTS.DYNAMIC_LIST.TYPES.MARKETS: {
-        const storedMarkets = storage[BROWSER_STORAGE.MARKETS.key];
-        list.value = Array.isArray(storedMarkets)
-            ? storedMarkets.filter(
-                (entry): entry is string => typeof entry === "string"
-            )
-            : [];
-      }
-        break;
-    }
-  } catch (err) {
-    await alertAdapter.feedbackError(t("components.dynamicList.errorTitle"), err, {});
-  } finally {
-    isLoading.value = false;
-  }
-});
-
 log("COMPONENTS DynamicList: setup");
 </script>
 
 <template>
   <v-card :title="title" color="secondary">
-    <!-- Loading State -->
-    <v-card-text v-if="isLoading" class="text-center">
-      <v-progress-circular color="primary" indeterminate/>
-      <p class="mt-3">{{ t("components.dynamicList.loading") }}</p>
-    </v-card-text>
+    <!--
+      No loading state. The list comes from the settings store, which the options
+      entrypoint has already loaded, so there is nothing to wait for — this
+      component used to run a `getStorage` read of its own purely to populate a
+      ref the store was holding anyway.
+    -->
+    <v-list bg-color="secondary">
+      <v-list-item
+          v-for="(item, i) in currentList"
+          :key="item"
+          :title="item"
+          hide-details>
+        <template v-slot:prepend>
+          <v-btn
+              :disabled="isAdding"
+              class="mr-3"
+              icon="$close"
+              @click="removeItem(i)"/>
+        </template>
+      </v-list-item>
 
-    <!-- Content State -->
-    <template v-if="!isLoading">
-      <v-list bg-color="secondary">
-        <v-list-item
-            v-for="(item, i) in list"
-            :key="item"
-            :title="item"
-            hide-details>
-          <template v-slot:prepend>
-            <v-btn
-                :disabled="isAdding"
-                class="mr-3"
-                icon="$close"
-                @click="removeItem(i)"/>
-          </template>
-        </v-list-item>
+      <!-- Empty State -->
+      <v-list-item v-if="currentList.length === 0">
+        <v-list-item-title class="text-center text-grey">
+          {{ t("components.dynamicList.emptyState") }}
+        </v-list-item-title>
+      </v-list-item>
+    </v-list>
 
-        <!-- Empty State -->
-        <v-list-item v-if="list.length === 0">
-          <v-list-item-title class="text-center text-grey">
-            {{ t("components.dynamicList.emptyState") }}
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
-
-      <v-card-actions>
-        <v-text-field
-            v-model="newItem"
-            :autofocus="true"
-            :clearable="true"
-            :disabled="isAdding"
-            :label="label"
-            :placeholder="props.placeholder"
-            type="text">
-          <template v-slot:append>
-            <v-btn
-                :disabled="!newItem?.trim() || isAdding"
-                :loading="isAdding"
-                class="ml-3"
-                color="primary"
-                icon="$add"
-                @click="addItem(newItem)"/>
-          </template>
-        </v-text-field>
-      </v-card-actions>
-    </template>
+    <v-card-actions>
+      <v-text-field
+          v-model="newItem"
+          :autofocus="true"
+          :clearable="true"
+          :disabled="isAdding"
+          :label="label"
+          :placeholder="props.placeholder"
+          type="text">
+        <template v-slot:append>
+          <v-btn
+              :disabled="!newItem?.trim() || isAdding"
+              :loading="isAdding"
+              class="ml-3"
+              color="primary"
+              icon="$add"
+              @click="addItem(newItem)"/>
+        </template>
+      </v-text-field>
+    </v-card-actions>
   </v-card>
 </template>
