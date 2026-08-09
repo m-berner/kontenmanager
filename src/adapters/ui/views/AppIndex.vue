@@ -16,6 +16,7 @@ import {computed, onBeforeMount, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {RouterView} from "vue-router";
 
+import {resolveDisplayCurrency} from "@/domain/logic";
 import {log} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
@@ -30,7 +31,19 @@ const records = useRecordsStore();
 const runtime = useRuntimeStore();
 const {alertAdapter, appAdapter, databaseAdapter, fetchAdapter} = useAdapters();
 
-// Invalidate online-rate caches when provider settings change (single instance for the app lifetime).
+// The single owner of quote-cache invalidation, for the app's lifetime.
+//
+// All three triggers live here rather than on the route components that consume
+// the cache, because this shell is always mounted: a watcher on `CompanyContent`
+// only exists while that route is. `CompanyContent` used to duplicate the
+// `stocksPerPage` one exactly — same value, same idempotent call — which cost
+// nothing but left two places to keep in step.
+//
+// `stocksPerPage`: changing the page size moves every page boundary, so the
+// per-page freshness markers no longer describe anything real. Invalidation only
+// — the refetch is deliberately left to `CompanyContent.onCurrentItems`, which
+// fires because the rendered row set changed and knows exactly which rows those
+// are. See the note at that end for the race that made this the rule.
 watch(() => settings.service, () => {
   runtime.clearStocksPages();
   fetchAdapter.clearCache?.();
@@ -83,6 +96,79 @@ const degradedFetch = computed((): string[] => {
 // again.
 const degradedDismissed = ref(false);
 let controller: AbortController | null = null;
+
+/**
+ * The currency every figure on screen is denominated in.
+ *
+ * The SAME expression `currencySync` watches to patch the number formats, and
+ * deliberately so: that plugin decides the currency *symbol*, the watcher below
+ * decides the currency a quote is *converted into*, and those two drifting apart
+ * is exactly the failure `resolveDisplayCurrency`'s doc comment describes.
+ */
+const displayCurrency = computed(() => resolveDisplayCurrency(
+    records.accounts.items,
+    settings.activeAccountId,
+    settings.currency
+));
+
+let ratesController: AbortController | null = null;
+
+/**
+ * Re-fetches the FX rates whenever the display currency changes.
+ *
+ * `runtime.curUsd`/`curEur` are the divisors every quote is converted by, and
+ * they used to be written only by `initializeApp`'s Phase 3 — once, at mount —
+ * from whichever currency was active *then*. Switching to an account with the
+ * other `cCurrency` therefore left one divisor holding a stale rate and the
+ * other the `1` seeded for the *previous* currency's self-pair, and
+ * `useOnlineStockData` converted every quote with it: a EUR-quoted stock showed
+ * its EUR price verbatim as USD (or the mirror image), silently, propagating
+ * into `mChange`, the depot total and the app-bar chip — while `currencySync`
+ * had already relabelled everything with the new symbol.
+ *
+ * Watches the resolved value rather than any one input, so it covers all three
+ * ways the display currency can change: switching accounts, editing the active
+ * account's `cCurrency`, and changing `settings.currency` while no account is
+ * active.
+ *
+ * `clearStocksPages()` runs AFTER the await, not before. It is what makes the
+ * next render re-fetch, and a fetch kicked off before the new rates land would
+ * convert with the very divisors this is replacing. It is also what supersedes
+ * anything already in flight: it bumps every page's generation, so an in-flight
+ * `loadOnlineData` discards its write-back rather than committing a
+ * wrongly-converted quote.
+ */
+watch(displayCurrency, async () => {
+  // Boot owns the first fetch. `initializeApp`'s Phase 2 loads the accounts,
+  // which is itself a change to `displayCurrency` (it starts at the storage
+  // default with no accounts loaded), so without this gate a USD-account user
+  // got a second, redundant FX fetch queued while Phase 3 — which already reads
+  // the resolved currency, since it runs after Phase 2 — was still in flight.
+  // Both write the same values, so this is about not doing the work twice and
+  // not interleaving two writers, not about correctness.
+  if (!isInitialized.value) return;
+
+  ratesController?.abort();
+  const rates = new AbortController();
+  ratesController = rates;
+
+  try {
+    await appAdapter.refreshExchangeRates(
+        {records, settings, runtime},
+        rates.signal
+    );
+  } catch (err) {
+    // Non-critical, exactly like Phase 3 at boot: the app is fully usable with
+    // stale-or-absent rates, and `resolveBaseExchangePairs` has already reset
+    // both divisors to 1, so nothing converts with the previous currency's rate.
+    log("VIEWS AppIndex: refreshing exchange rates failed", err, "warn");
+  } finally {
+    if (ratesController === rates) ratesController = null;
+  }
+
+  if (rates.signal.aborted) return;
+  runtime.clearStocksPages();
+});
 
 const runInitialization = async (): Promise<void> => {
   hasInitError.value = false;
@@ -155,9 +241,23 @@ const onRetryInit = async (): Promise<void> => {
  * specifically for this caller (it awaits an in-flight `connect()` first, "which
  * is exactly when a slow connect could still be in flight").
  *
- * Not `{once: true}`: `pagehide` can fire for a page entering the back/forward
- * cache and then be revisited, and a one-shot listener would silently not be
- * there the second time.
+ * Registered on `beforeunload`, not `pagehide`, even though `pagehide` is the
+ * more reliable teardown signal in general and `browserAdapter.writeBufferToFile`
+ * uses it for its own blob-URL cleanup. The difference that matters here is that
+ * `pagehide` ALSO fires when a page enters the back/forward cache — and that page
+ * can be revisited. Disconnecting there would leave a restored, still-mounted app
+ * with a closed IndexedDB connection and no path back to one short of a reload:
+ * `connectionManager.connect()` is called only from `appAdapter`'s boot phase, and
+ * every dialog's `submitGuard` is gated on `databaseAdapter.isConnected()`.
+ * `beforeunload` fires only for a real teardown, which is the event this wants.
+ *
+ * (This comment previously argued the `pagehide` case while the listener below
+ * was already `beforeunload` — the reasoning described an event the code does not
+ * use.)
+ *
+ * Not `{once: true}`: `beforeunload` can fire more than once for one document
+ * when a navigation is started and then cancelled, and a one-shot listener would
+ * silently not be there the second time.
  */
 const onBeforeUnload = (): void => {
   log("VIEWS AppIndex: onBeforeUnload");
@@ -175,6 +275,7 @@ onUnmounted(() => {
   if (controller) {
     controller.abort();
   }
+  ratesController?.abort();
 });
 
 log("VIEWS AppIndex: setup", window.location.href, "info");

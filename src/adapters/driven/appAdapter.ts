@@ -382,6 +382,175 @@ export function createAppAdapter(deps: AppAdapterDeps) {
     }
 
     /**
+     * Resolves the FX pairs the display currency needs, and seeds the self-pair.
+     *
+     * Split out of {@link fetchExternalData} so {@link refreshExchangeRates} can
+     * reuse it verbatim — the divisor rule must have exactly one definition, for
+     * the same reason `resolveDisplayCurrency` does: two copies is how the app
+     * ends up fetching a rate for one currency and converting with it into
+     * another.
+     *
+     * @param stores - App store instances; `runtime.curUsd`/`curEur` may be seeded.
+     * @returns The display currency and the pairs to fetch, or `null` when no
+     *   currency could be resolved.
+     */
+    function resolveBaseExchangePairs(
+        stores: AppStores
+    ): { currency: string; basePairs: string[] } | null {
+        // The currency the app will actually display and convert into — the
+        // active account's, falling back to the app-level default. NOT derived
+        // from the UI locale: `useOnlineStockData` divides quotes by
+        // `runtime.curUsd`/`curEur`, and those are seeded from exactly the pairs
+        // requested here, so if this used a different rule from the conversion
+        // site the app would fetch a rate for one currency and convert with it
+        // into another.
+        const currency = resolveDisplayCurrency(
+            stores.records.accounts.items,
+            stores.settings.activeAccountId,
+            stores.settings.currency
+        );
+        if (!currency) {
+            log(
+                "SERVICES app",
+                {phase: "resolveBaseExchangePairs", warning: "missing currency"},
+                "warn"
+            );
+            return null;
+        }
+
+        const currencyEUR = `${currency}${CURRENCIES.EUR}`;
+        const currencyUSD = `${currency}${CURRENCIES.USD}`;
+
+        // Drop the self-pair. When the display currency IS EUR (or USD), one of
+        // the two codes above is "EUREUR" ("USDUSD") — a request asking
+        // fx-rate.net to convert a currency to itself, whose answer is always 1.
+        // That was one guaranteed-useless round trip on every app start, plus a
+        // parse that could fail and log a partial-failure warning for a value
+        // that never needed fetching. The matching runtime rate is seeded below
+        // instead.
+        const basePairs = [currencyUSD, currencyEUR].filter(
+            (code) => code.substring(0, 3) !== code.substring(3, 6)
+        );
+
+        // Both are re-seeded on every call, not just the self-pair. The other
+        // one is about to be overwritten by `applyBaseExchangeResult` with a
+        // freshly fetched rate — but if that fetch fails, leaving the PREVIOUS
+        // display currency's rate in place would convert with a divisor that
+        // belongs to a currency no longer on screen. `1` is the honest fallback:
+        // it shows the quote unconverted, which is the same choice
+        // `useOnlineStockData` and `InfoBar` already make for a missing rate.
+        stores.runtime.curUsd = 1;
+        stores.runtime.curEur = 1;
+
+        return {currency, basePairs};
+    }
+
+    /**
+     * Writes a settled base-pair fetch into `runtime.curUsd`/`curEur`, and
+     * copies any pair the user also has configured into `infoExchanges`.
+     *
+     * Shared by {@link fetchExternalData} and {@link refreshExchangeRates}.
+     *
+     * @param stores - App store instances whose runtime state is updated.
+     * @param result - The settled `fetchExchangesData` result for the base pairs.
+     * @returns Whether the fetch succeeded.
+     */
+    function applyBaseExchangeResult(
+        stores: AppStores,
+        result: PromiseSettledResult<ExchangeData[]>
+    ): boolean {
+        return processFetchResult(
+            result,
+            (data) => {
+                processExchangeBase(stores.runtime, data);
+                // A base pair the user also has configured (the default
+                // ["EURUSD"] IS the EUR-account base USD pair) is excluded from
+                // the info fetch to avoid a duplicate request, so its
+                // already-fetched value has to land in infoExchanges here or
+                // InfoBar would render it blank. Written directly rather than
+                // via processExchangeInfo, which logs a "no data" warning for
+                // the (normal) empty case.
+                const configured = new Set(stores.settings.exchanges);
+                for (const entry of data) {
+                    if (configured.has(entry.key)) {
+                        stores.runtime.infoExchanges.set(entry.key, entry.value);
+                    }
+                }
+            },
+            "baseExchanges"
+        );
+    }
+
+    /**
+     * Re-fetches only the FX pairs, for a display currency that changed after
+     * boot.
+     *
+     * **Why this is public.** `runtime.curUsd`/`curEur` are the divisors every
+     * quote is converted by, and they used to have exactly one writer:
+     * {@link fetchExternalData}, reachable only from {@link initializeApp},
+     * which runs once at mount. The pairs it fetches are chosen from the
+     * currency active *at boot* and the self-pair is seeded to `1` — so
+     * switching to an account with the other `cCurrency` left one divisor a
+     * stale rate and the other a `1` that was no longer correct. A EUR-quoted
+     * stock then displayed its EUR price verbatim as USD (or the mirror image),
+     * silently: the only guard downstream is `rawDivisor > 0`, which a
+     * stale-but-positive rate passes. The error is the whole FX rate and it
+     * propagates into `mValue`, `mMin`/`mMax`, the derived `mChange`,
+     * `calculateTotalDepotValue` and TitleBar's depot chip — while
+     * `currencySync` has already relabelled every figure with the NEW currency
+     * symbol, so the label was right and the number was wrong.
+     *
+     * Callers must invalidate the quote cache AFTER awaiting this, not before:
+     * `clearStocksPages()` is what makes the next render re-fetch, and a fetch
+     * that starts while this is still in flight would convert with the divisors
+     * this call is about to replace. `AppIndex`'s display-currency watcher is
+     * the one production caller and does exactly that.
+     *
+     * Deliberately does NOT fetch indexes or materials: those are currency-
+     * independent scrapes, and re-running them on every account switch would be
+     * three needless requests. Their values are already in `runtime.info*` from
+     * boot.
+     *
+     * @param stores - App store instances whose runtime state is updated.
+     * @param signal - An optional abort signal.
+     * @returns Whether new rates were fetched and applied.
+     */
+    async function refreshExchangeRates(
+        stores: AppStores,
+        signal?: AbortSignal
+    ): Promise<boolean> {
+        log("SERVICES app", {phase: "refreshExchangeRates", event: "start"});
+
+        // Same escape hatch as fetchExternalData's — see its comment.
+        if (stores.settings.service === "none") {
+            log("SERVICES app", {phase: "refreshExchangeRates", info: "service=none; skipping"});
+            return false;
+        }
+
+        if (signal?.aborted) return false;
+
+        const base = resolveBaseExchangePairs(stores);
+        if (!base) return false;
+
+        // Nothing to fetch: the display currency's only pair is the self-pair,
+        // already seeded to 1 above. Not a failure.
+        if (base.basePairs.length === 0) {
+            log("SERVICES app", {phase: "refreshExchangeRates", info: "self-pair only"});
+            return true;
+        }
+
+        const [settled] = await Promise.allSettled([
+            fetch.fetchExchangesData(base.basePairs, {signal})
+        ]);
+
+        if (signal?.aborted) return false;
+
+        const ok = applyBaseExchangeResult(stores, settled);
+        log("SERVICES app", {phase: "refreshExchangeRates", event: "done", ok});
+        return ok;
+    }
+
+    /**
      * Step 3: Fetch external data (non-critical, fails gracefully).
      * Fetches exchange rates, stock indexes, and material prices in parallel.
      *
@@ -406,42 +575,11 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             return {exchanges: false, indexes: false, materials: false};
         }
 
-        // The currency the app will actually display and convert into — the
-        // active account's, falling back to the app-level default. NOT derived
-        // from the UI locale: `useOnlineStockData` divides quotes by
-        // `runtime.curUsd`/`curEur`, and those are seeded from exactly the pairs
-        // requested here, so if this used a different rule from the conversion
-        // site the app would fetch a rate for one currency and convert with it
-        // into another.
-        const currency = resolveDisplayCurrency(
-            stores.records.accounts.items,
-            stores.settings.activeAccountId,
-            stores.settings.currency
-        );
-        if (!currency) {
-            log(
-                "SERVICES app",
-                {phase: "fetchExternalData", warning: "missing currency"},
-                "warn"
-            );
+        const base = resolveBaseExchangePairs(stores);
+        if (!base) {
             return {exchanges: false, indexes: false, materials: false};
         }
-
-        const currencyEUR = `${currency}${CURRENCIES.EUR}`;
-        const currencyUSD = `${currency}${CURRENCIES.USD}`;
-
-        // Drop the self-pair. When the locale currency IS EUR (or USD), one of
-        // the two codes above is "EUREUR" ("USDUSD") — a request asking
-        // fx-rate.net to convert a currency to itself, whose answer is always 1.
-        // That was one guaranteed-useless round trip on every app start, plus a
-        // parse that could fail and log a partial-failure warning for a value
-        // that never needed fetching. The matching runtime rate is seeded below
-        // instead.
-        const basePairs = [currencyUSD, currencyEUR].filter(
-            (code) => code.substring(0, 3) !== code.substring(3, 6)
-        );
-        if (currency === CURRENCIES.USD) stores.runtime.curUsd = 1;
-        if (currency === CURRENCIES.EUR) stores.runtime.curEur = 1;
+        const {basePairs} = base;
 
         // Exclude from the info list anything the base list already covers.
         // BROWSER_STORAGE.EXCHANGES defaults to ["EURUSD"], which for a de-DE
@@ -476,26 +614,7 @@ export function createAppAdapter(deps: AppAdapterDeps) {
 
         const runtime = stores.runtime;
 
-        const baseExchangesOk = processFetchResult(
-            exchangesBase,
-            (data) => {
-                processExchangeBase(runtime, data);
-                // A base pair the user also has configured (the default
-                // ["EURUSD"] IS the de-DE base USD pair) was excluded from the
-                // info fetch above to avoid the duplicate request, so its
-                // already-fetched value has to land in infoExchanges here or
-                // InfoBar would render it blank. Written directly rather than
-                // via processExchangeInfo, which logs a "no data" warning for
-                // the (normal) empty case.
-                const configured = new Set(stores.settings.exchanges);
-                for (const entry of data) {
-                    if (configured.has(entry.key)) {
-                        runtime.infoExchanges.set(entry.key, entry.value);
-                    }
-                }
-            },
-            "baseExchanges"
-        );
+        const baseExchangesOk = applyBaseExchangeResult(stores, exchangesBase);
 
         const infoExchangesOk = processFetchResult(
             exchangesInfo,
@@ -715,6 +834,7 @@ export function createAppAdapter(deps: AppAdapterDeps) {
     return {
         getStatus,
         initializeApp,
+        refreshExchangeRates,
         reset
     };
 }
