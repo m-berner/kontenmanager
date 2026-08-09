@@ -192,6 +192,14 @@ const depot = computed((): string => {
 /**
  * Event handler for account selection changes.
  * Loads records for the newly selected account.
+ *
+ * Persists with a bare `setStorage` rather than `settings.setActiveAccountId`,
+ * deliberately — see that setter's own note. The switcher is `v-model`-bound
+ * directly to `settings.activeAccountId`, so the optimistic write has already
+ * happened before this runs; the setter's rollback would read that new value as
+ * the "previous" one and revert to it. `lastConfirmedAccountId` below is what
+ * actually knows the pre-switch account, and the catch has to revert the record
+ * stores as well, which the setter knows nothing about.
  */
 const onUpdateTitleBar = async (): Promise<void> => {
   log("VIEWS TitleBar: onUpdateTitleBar");

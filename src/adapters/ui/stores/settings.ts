@@ -434,6 +434,25 @@ export const useSettingsStore = defineStore(
          * to get it wrong on, since a mismatched active account makes a later
          * add persist under one account while displaying under another.
          *
+         * **`TitleBar` is a deliberate exception and still writes by hand**, so
+         * do not "finish the migration" by pointing its account switcher here —
+         * it would be a regression. Two reasons, both structural:
+         *
+         * - Its `v-select` is `v-model`-bound straight to `activeAccountId`, so
+         *   by the time its handler runs the ref ALREADY holds the new id. This
+         *   setter's rollback reads `refVar.value` at call time, which would be
+         *   that same new id, so the revert would restore the value it was meant
+         *   to undo. Its own `lastConfirmedAccountId` is what actually knows the
+         *   pre-switch account.
+         * - A failed switch there has to revert the record stores too — the
+         *   handler has already re-hydrated bookings/stocks/booking types for the
+         *   new account — and `updateSetting` knows nothing about those.
+         *
+         * So this setter has no caller today. It is kept because it is the
+         * correct seam for any *non-optimistic* writer of this setting, and
+         * because leaving the store's most consequential value as the only one
+         * without a setter is what produced the original defect.
+         *
          * Note this is *not* the same seam as
          * `portAdapters.setActiveAccountIdPersisted`, which the app layer uses:
          * that one writes through a `SettingsPort` (a plain
