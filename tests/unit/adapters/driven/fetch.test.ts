@@ -1045,6 +1045,66 @@ describe("FetchService", () => {
             // ...and exactly one index (dax) is resolved, not all of them.
             expect(result).toEqual([{key: "dax", value: 18123.45}]);
         });
+
+        // The fallback match is a containment test, so a short scraped title can
+        // satisfy several configured labels — "S&P" is inside both "S&P 500"
+        // (sp) and "S&P/TSX" (tsx). Each property used to scan the links
+        // independently and take the first hit, so ONE link's value was reported
+        // as the current level of two different indexes.
+        it("does not let one link be claimed by two indexes", async () => {
+            const indexHtml = `
+                <div class="index-world-map">
+                  <a title="S&P">5.500,00</a>
+                </div>
+            `;
+
+            vi.spyOn(globalThis, "fetch").mockResolvedValue(
+                new Response(indexHtml, {status: 200})
+            );
+
+            const result = await fetchAdapter.fetchIndexData();
+
+            expect(result).toHaveLength(1);
+            expect(result[0].value).toBe(5500);
+        });
+
+        // An exact title is searched for across every candidate before falling
+        // back to containment, so the specific index wins over one that merely
+        // contains its name.
+        it("prefers an exact title match over a contained one", async () => {
+            const indexHtml = `
+                <div class="index-world-map">
+                  <a title="S&P">1,00</a>
+                  <a title="S&P 500">5.500,00</a>
+                </div>
+            `;
+
+            vi.spyOn(globalThis, "fetch").mockResolvedValue(
+                new Response(indexHtml, {status: 200})
+            );
+
+            const result = await fetchAdapter.fetchIndexData();
+
+            expect(result).toContainEqual({key: "sp", value: 5500});
+        });
+
+        // Comparison is trimmed and case-folded; it used to be neither, so a
+        // title differing from its label only in case or padding matched nothing.
+        it("matches a title that differs only in case or padding", async () => {
+            const indexHtml = `
+                <div class="index-world-map">
+                  <a title="  dax  ">18.123,45</a>
+                </div>
+            `;
+
+            vi.spyOn(globalThis, "fetch").mockResolvedValue(
+                new Response(indexHtml, {status: 200})
+            );
+
+            const result = await fetchAdapter.fetchIndexData();
+
+            expect(result).toEqual([{key: "dax", value: 18123.45}]);
+        });
     });
 
     describe("fetchExchangesData", () => {
