@@ -461,7 +461,7 @@ log("VIEWS CompanyContent: setup");
           price. A traded instrument is never worth exactly 0, so an empty cell
           is the honest representation of "not fetched".
         -->
-        <td class="font-weight-bold">
+        <td class="color-orange font-weight-bold">
           <template v-if="hasQuote(item.mValue)">
             {{ n(item.mValue as number, "currency3") }}
           </template>
