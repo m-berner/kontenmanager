@@ -142,6 +142,19 @@ export function useMenuHighlight() {
 }
 
 /**
+ * The subset of {@link MenuActionType} a row's DotMenu can dispatch — the six
+ * ids `createHomeMenuItems`/`createCompanyMenuItems` actually emit.
+ *
+ * Narrowed via `Extract` rather than hand-written so a rename in
+ * `MenuActionType` still breaks here. For a header-bar action, extend
+ * `useHeaderBarActions` — not this file.
+ */
+export type RowMenuActionType = Extract<
+    MenuActionType,
+    "updateBooking" | "deleteBooking" | "updateStock" | "deleteStock" | "showDividend" | "openLink"
+>;
+
+/**
  * Provides handlers for context/menu actions across the application.
  *
  * Responsibilities:
@@ -276,10 +289,8 @@ export function useMenuAction(translate?: (_key: string) => string) {
      * `MenuActionType` still breaks here. For a header-bar action, extend
      * `useHeaderBarActions` — not this file.
      */
-    type RowMenuActionType = Extract<
-        MenuActionType,
-        "updateBooking" | "deleteBooking" | "updateStock" | "deleteStock" | "showDividend" | "openLink"
-    >;
+    // Declared at module scope (below) so `hasAction` can narrow to it — a
+    // predicate has to name the type it proves.
 
     const actionHandlers: Record<RowMenuActionType, ActionHandler> = {
         async updateBooking() {
@@ -403,11 +414,25 @@ export function useMenuAction(translate?: (_key: string) => string) {
     };
 
     /**
-     * Type guard that checks whether a string is a known menu action.
+     * Type guard that checks whether a string is a **row-level** menu action —
+     * one this composable can actually dispatch.
+     *
+     * Narrows to {@link RowMenuActionType}, not `MenuActionType`. It used to
+     * claim the full union while testing membership in `actionHandlers`, which
+     * covers only these six of the union's 23 members — so it returned `false`
+     * for `"home"`, `"addStock"`, `"exportDatabase"` and the rest while telling
+     * TypeScript that a `false` meant "not a `MenuActionType` at all". A caller
+     * writing `if (hasAction(x)) … else …` would have had `x` narrowed to
+     * `never`-adjacent nonsense in the `else`, for a value that is a perfectly
+     * good menu action handled elsewhere.
+     *
+     * The runtime answer is unchanged and is the intended one; only the type it
+     * proves was wrong. See the tests in `useMenu.test.ts`, which pin exactly
+     * this row-only behaviour.
      *
      * @param actionType - Candidate action key.
      */
-    const hasAction = (actionType: string): actionType is MenuActionType => {
+    const hasAction = (actionType: string): actionType is RowMenuActionType => {
         return actionType in actionHandlers;
     };
 

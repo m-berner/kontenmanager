@@ -293,6 +293,14 @@ const onCurrentItems = async (items: unknown[]): Promise<void> => {
   // The freshness marker is keyed by page number, but after a sort the same page
   // number holds a different set of stocks — so it cannot be trusted here.
   // refreshOnlineData invalidates it before loading.
+  //
+  // Both flag pairs, matching `onBeforeMount` below. This path used to raise
+  // only `isStockLoading`, so the two routes into the same fetch reported
+  // themselves differently: `TitleBar` gates its depot chip on
+  // `!runtime.isDownloading`, and the chip therefore vanished during the initial
+  // sweep but stayed up — showing a total mid-recalculation — during every page
+  // change and re-sort.
+  runtime.beginDownload();
   runtime.beginStockLoading();
   const signal = startOnlineLoad();
   try {
@@ -305,6 +313,7 @@ const onCurrentItems = async (items: unknown[]): Promise<void> => {
     }
   } finally {
     runtime.endStockLoading();
+    runtime.endDownload();
   }
 };
 

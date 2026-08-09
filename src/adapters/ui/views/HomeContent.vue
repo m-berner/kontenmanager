@@ -43,19 +43,16 @@ const search = ref<string>("");
 // Search config lives in `bookingSearch.ts` so it can be unit-tested against
 // Vuetify's real `filterItems` — a `<script setup>` block is not importable, and
 // this config's correctness depends on Vuetify's filter internals.
-// Recomputed so a renamed booking type is searchable under its new name.
-const customSearchKeys = computed(() =>
-    createBookingSearchFilter(records.bookingTypes.getNameById)
-);
-
-/**
- * Cleanup function executed before the component or window unloads.
- * Disconnects from the database.
- */
-const onBeforeUnload = (): void => {
-  log("VIEWS HomeContent: onBeforeUnload");
-  databaseAdapter.disconnect();
-};
+//
+// A plain const, NOT a computed. It was wrapped in one "so a renamed booking
+// type is searchable under its new name", which described a mechanism that did
+// not run: `getNameById` is a `computed` whose body returns a closure without
+// reading `items.value`, so its identity never changes and the wrapper never
+// re-evaluated. Renames were tracked anyway, by the real mechanism — the closure
+// reads `items.value` when Vuetify's filter computed invokes it, so the
+// dependency is registered there. Dropping the wrapper leaves behaviour
+// identical and stops the comment claiming a guarantee it was not providing.
+const customSearchKeys = createBookingSearchFilter(records.bookingTypes.getNameById);
 
 const {register, unregister} = useKeyboardShortcuts();
 
@@ -165,14 +162,17 @@ const onResetStorage = async (): Promise<void> => {
   }
 };
 
+// The `beforeunload` database disconnect used to live here. It has moved to
+// `AppIndex`, the app shell: registered from a route component it only existed
+// while THIS route was mounted, so closing the tab from /company, /help or
+// /privacy never disconnected — a route-dependent lifecycle for something that
+// is a property of the page.
 onBeforeMount(() => {
   log("VIEWS HomeContent: onBeforeMount");
-  window.addEventListener("beforeunload", onBeforeUnload, {once: true});
   register("Ctrl+Alt+R", onResetStorage);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("beforeunload", onBeforeUnload);
   unregister("Ctrl+Alt+R");
 });
 

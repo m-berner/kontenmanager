@@ -9,6 +9,7 @@
  * @fileoverview Generic content card used to render a list of titled items
  * with optional icons. Primarily used for privacy/help static sections.
  */
+import {computed} from "vue";
 import {useI18n} from "vue-i18n";
 
 import type {ContentCardProps} from "@/domain/types";
@@ -60,6 +61,22 @@ const getTextContent = (item: {
   return isTranslationKey(content) ? t(content) : content;
 };
 
+/**
+ * Each section resolved once, instead of the template calling
+ * `getListContent(item)` twice per item — once to decide which branch to render
+ * (`v-if="…length > 0"`) and again to iterate it. Every call re-ran `tm()` and
+ * mapped `rt()` over the whole array, and the duplication was invisible at the
+ * call site because the two uses sit in different elements.
+ */
+const sections = computed(() =>
+    props.data.map((item) => ({
+      icon: item.icon,
+      subTitle: getSubTitle(item.subTitle),
+      list: getListContent(item),
+      text: getTextContent(item)
+    }))
+);
+
 log("COMPONENTS ContentCard: setup");
 </script>
 
@@ -85,32 +102,32 @@ log("COMPONENTS ContentCard: setup");
       The index is the honest key here: this is static, ordered content with no
       identity of its own, never reordered or filtered.
     -->
-    <v-col v-for="(item, index) in props.data" :key="index" cols="12">
+    <v-col v-for="(section, index) in sections" :key="index" cols="12">
       <v-card>
         <v-card-title class="d-flex">
-          <span v-if="item.icon !== ''">
+          <span v-if="section.icon !== ''">
             <v-icon
-                v-if="item.icon.substring(0, 1) === '$'"
-                :icon="item.icon"/>
+                v-if="section.icon.substring(0, 1) === '$'"
+                :icon="section.icon"/>
             <v-img
                 v-else
                 :inline="true"
-                :src="item.icon"
+                :src="section.icon"
                 height="32"
                 width="32"
             /><span>&nbsp;</span>
           </span>
-          {{ getSubTitle(item.subTitle) }}
+          {{ section.subTitle }}
         </v-card-title>
-        <v-card-text v-if="getListContent(item).length > 0">
+        <v-card-text v-if="section.list.length > 0">
           <ul>
-            <li v-for="(step, index) in getListContent(item)" :key="index">
+            <li v-for="(step, stepIndex) in section.list" :key="stepIndex">
               {{ step }}
             </li>
           </ul>
         </v-card-text>
         <v-card-text v-else>
-          {{ getTextContent(item) }}
+          {{ section.text }}
         </v-card-text>
       </v-card>
     </v-col>

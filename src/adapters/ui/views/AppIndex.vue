@@ -28,7 +28,7 @@ const {t} = useI18n();
 const settings = useSettingsStore();
 const records = useRecordsStore();
 const runtime = useRuntimeStore();
-const {alertAdapter, appAdapter, fetchAdapter} = useAdapters();
+const {alertAdapter, appAdapter, databaseAdapter, fetchAdapter} = useAdapters();
 
 // Invalidate online-rate caches when provider settings change (single instance for the app lifetime).
 watch(() => settings.service, () => {
@@ -144,12 +144,34 @@ const onRetryInit = async (): Promise<void> => {
   }
 };
 
+/**
+ * Closes the IndexedDB connection when the page goes away.
+ *
+ * Lives here, on the app shell, rather than on a route component. It used to be
+ * registered by `HomeContent.onBeforeMount` and torn down by its `onUnmounted`,
+ * so it existed only while the Home route was mounted: closing the tab from
+ * /company, /help or /privacy disconnected nothing. The connection belongs to
+ * the page, not to a route, and `connectionManager.disconnect()` was hardened
+ * specifically for this caller (it awaits an in-flight `connect()` first, "which
+ * is exactly when a slow connect could still be in flight").
+ *
+ * Not `{once: true}`: `pagehide` can fire for a page entering the back/forward
+ * cache and then be revisited, and a one-shot listener would silently not be
+ * there the second time.
+ */
+const onBeforeUnload = (): void => {
+  log("VIEWS AppIndex: onBeforeUnload");
+  void databaseAdapter.disconnect();
+};
+
 onBeforeMount(async () => {
   log("VIEWS AppIndex: onBeforeMount");
+  window.addEventListener("beforeunload", onBeforeUnload);
   await runInitialization();
 });
 
 onUnmounted(() => {
+  window.removeEventListener("beforeunload", onBeforeUnload);
   if (controller) {
     controller.abort();
   }
