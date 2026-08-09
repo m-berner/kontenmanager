@@ -4,12 +4,16 @@ Scope: every file under `/src` (191 files; 185 `.ts`/`.vue`, ~26.7k lines), read
 in full. Baseline before the audit was green: `vue-tsc --noEmit` clean,
 `vitest run` 84 files / 838 tests passing, `eslint` clean, `i18n-lint` clean.
 
-**Status: the High, both Mediums and all 13 Lows are FIXED** (see each entry).
-The 4 Infos are open by choice. After the fixes: `vue-tsc` clean, **858/858**
-unit tests (20 new regression tests), `eslint` clean, `i18n-lint` clean.
+**Status: everything actionable is FIXED** — the High, both Mediums, all 13 Lows
+and the three Infos that had an action (I2 was already resolved by
+documentation). After the fixes: `vue-tsc` clean, **867/867** unit tests (29 new
+regression tests), `eslint` clean, `i18n-lint` clean.
 
 One finding was **narrowed rather than fixed as written**: see L2, where half of
 what this register claimed turned out to be wrong.
+
+**The I3 cleanup uncovered a real latent defect** that no finding here had
+spotted — see I3.
 
 **Tags.** *Verified* = the defect was traced end to end through the code (and,
 where a library's behaviour decides it, confirmed against the installed source
@@ -34,10 +38,10 @@ triggering state was not reproduced.
 | L11 | Low — **FIXED** | `migrator.ts` | The v27 index migration re-runs on a brand-new database |
 | L12 | Low — **FIXED** | `connectionManager.ts` | "Already connected" is logged at `warn` on the ordinary retry path |
 | L13 | Low — **FIXED** | `views/bookingSearch.ts` / `HomeContent.vue` | The "recomputed" comment describes a mechanism that does not run |
-| I1 | Info | `useMenu.ts`, `stores/stocks.ts` | Exports with no `src/` consumer |
-| I2 | Info | `healthChecker.ts`, `transactionManager.ts`, `batchOperations.ts` | Test-only surfaces, re-confirmed |
-| I3 | Info | `CheckboxGrid.vue`, `DynamicList.vue` | The options page keeps a second copy of settings state |
-| I4 | Info | `alertAdapter.ts` | Two different idioms for resolving the default alert duration |
+| I1 | Info — **FIXED** | `useMenu.ts`, `stores/stocks.ts` | Exports with no `src/` consumer |
+| I2 | Info — no action | `healthChecker.ts`, `transactionManager.ts`, `batchOperations.ts` | Test-only surfaces, re-confirmed |
+| I3 | Info — **FIXED** | `CheckboxGrid.vue`, `DynamicList.vue` | The options page keeps a second copy of settings state |
+| I4 | Info — **FIXED** | `alertAdapter.ts` | Two different idioms for resolving the default alert duration |
 
 ---
 
@@ -515,12 +519,23 @@ filter computed, where the closure actually runs). Behaviour is identical.
 
 ## Info
 
-### I1 — Exports with no `src/` consumer
+### I1 — Exports with no `src/` consumer — DOCUMENTED
 
 - `useMenuAction().hasAction` — see L6. Not documented as deliberate.
 - `stores/stocks.ts` `active` — **deliberate**, documented in place as the leaf-store
   view versus `portfolio.active`'s enriched one, and covered by a dedicated unit
   test. Recorded so it is not re-derived as dead code.
+
+**RESOLVED by documenting, not deleting.** `hasAction` now carries the same kind
+of head note `healthChecker` and `BatchOperationBuilder` do: no production caller
+because `DotMenu` dispatches straight through `executeAction`, which has its own
+`!handler` branch and reports an unknown id — but it is the honest public form of
+the question `executeAction` answers privately, it is correct, and it is covered
+by four tests.
+
+Deleting it was the alternative and was rejected on precedent: `stocks.active`
+was removed as dead in an earlier round and had to be reinstated as a doc comment
+for exactly this reason. Neither is dead; both are unused.
 
 ### I2 — Test-only surfaces, re-confirmed
 
@@ -530,7 +545,15 @@ filter computed, where the closure actually runs). Behaviour is identical.
 have no production callers. All three carry head comments saying so and why, and
 `database/README.md` tabulates them. Confirmed still accurate; no action.
 
-### I3 — The options page keeps a second copy of settings state
+**Still no action, and that is the answer rather than a deferral.** Acting on
+this means deleting ~400 lines of `src/` plus three test files — capability the
+author twice chose to keep and annotated as "not dead code left behind by a
+refactor". `batchOperations`' own note invites one question at a cleanup:
+whether `atomicImport` wants to be expressed through the builder. It does not —
+`import.ts` and the rollback both pass explicit descriptor arrays, and routing
+them through a fluent builder would add indirection, not remove it. Left intact.
+
+### I3 — The options page keeps a second copy of settings state — FIXED
 
 `CheckboxGrid` (`checked`) and `DynamicList` (`list`) each read their key
 straight from `browser.storage.local` in `onBeforeMount` and write back from that
@@ -540,13 +563,50 @@ re-syncs afterwards, so the two agree in practice — but there are two sources 
 truth for the same four keys, and `DynamicList.addItem` pushes to *both* (`list`
 and the store ref) while persisting only `list`.
 
-### I4 — Two idioms for the default alert duration
+**FIXED.** The store gained the four missing setters (`setIndexes`,
+`setMaterials`, `setMarkets`, `setExchanges`), all going through `updateSetting`,
+which already owns the optimistic write, the revert and the failure report. Both
+components now seed from the store and persist through it:
+
+- `DynamicList` renders `settings.markets`/`exchanges` directly. Its private
+  `list`, its `getStorage` on mount, its `isLoading` state and its hand-rolled
+  `removeByValue` rollback are all gone.
+- `CheckboxGrid` keeps `checked` as an editing buffer for the checkbox v-model —
+  seeded from the store and kept current by a `watch`, which also covers
+  `settings.load()` resolving after mount (`options.ts` does not await it). Its
+  own `getStorage`, `isLoading` and per-item rollback are gone.
+
+Both pass `{rethrow: true}`, a new `updateSetting` option, so each keeps the
+error contract it deliberately had: `CheckboxGrid` its inline `v-alert` beside
+the control that failed, `DynamicList` the global alert plus the restore of the
+exchange rate it removed alongside the entry. Neither could do that if the store
+had already swallowed the error.
+
+The two now-unused `components.*.loading` locale keys were removed from both
+locale files (`i18n-lint` reported them).
+
+**This uncovered a real latent defect.** `updateSetting`'s revert is guarded by
+`refVar.value === value`, and `ref()` stores an object through `toReactive` — so
+`.value` on an array setting returns a reactive **proxy**, never the array that
+was assigned. The identity test was always false and the four list settings would
+never have rolled back on a failed write. It went unnoticed because every setter
+that existed until now held a primitive, where the test is sound. Now compared
+through `toRaw`, with a regression test for the revert on each path. The audit
+had not spotted this; the new tests did, on their first run.
+
+### I4 — Two idioms for the default alert duration — FIXED
 
 `alertAdapter.ts:189` and `:205` use
 `options?.duration !== undefined ? options.duration : DEFAULT`, while `:266` uses
 `options?.duration ?? DEFAULT`. Equivalent today only because
 `ALERT_INFO.DURATIONS.ERROR` is `null`; they diverge for any caller passing
 `duration: null` if that default ever becomes a number.
+
+**FIXED.** One shared `resolveDuration(options, fallback)` on the `!== undefined`
+form, which is the correct one: an explicit `duration: null` means "do not
+auto-dismiss" and must survive, and `app.ts`'s database-versionchange notice
+passes exactly that because the app is read-only from that point. Three
+parameterised tests assert all three helpers preserve it.
 
 ---
 
