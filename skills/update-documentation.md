@@ -70,7 +70,7 @@ One sentence on what this module does and where it fits in the architecture.
 
 #### Testing
 ```
-npm run test:logic -- tests/unit/<module>/*.test.ts
+npm run test:unit -- tests/unit/<module>/*.test.ts
 ```
 
 #### Notes

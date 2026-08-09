@@ -111,7 +111,7 @@ every call site instead of restating the string. See the `errors.ts` / `healthCh
 6. **Re-run the detection snippet** on the touched file to confirm the finding is gone.
 7. **Run the local gate**:
    ```powershell
-   npm run test:logic
+   npm run test:unit
    npm run test:typescript
    npm run lint
    ```
@@ -373,7 +373,7 @@ foreach ($g in $grouped) {
 - [ ] No `useI18n()` call was added to a composable/function invoked outside Vue setup context, and
       no i18n dependency was added to `domain/**` or `adapters/driven/**`.
 - [ ] `tests/unit/architecture.test.ts` still passes unmodified.
-- [ ] `npm run test:logic`, `npm run test:typescript`, `npm run lint` all pass.
+- [ ] `npm run test:unit`, `npm run test:typescript`, `npm run lint` all pass.
 - [ ] Re-running the detection snippet against changed files shows the fixed lines gone.
 
 ---
