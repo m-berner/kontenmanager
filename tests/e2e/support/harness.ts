@@ -255,6 +255,20 @@ export async function closeAllAlerts(page: Page): Promise<void> {
 }
 
 /**
+ * Clicks the OK action of the top-most open dialog.
+ *
+ * `DialogPort` renders OK first and Cancel last inside `<v-card-actions>`, and
+ * both are icon-only `v-btn`s whose tooltip gives them no accessible name, so
+ * position is the only stable handle. It used to be `button[type="submit"]`,
+ * but that attribute was removed deliberately (it was inert — the button is a
+ * sibling of each dialog's `<v-form>`, not a descendant), so the old selector
+ * matches nothing at all now. See DialogPort.vue's comment.
+ */
+export async function clickDialogOk(page: Page): Promise<void> {
+  await page.locator('.v-dialog[role="dialog"]').last().locator(".v-card-actions button").first().click();
+}
+
+/**
  * Confirms the import by clicking the dialogs confirm button.
  *
  * Waits for a SECOND dialog to exist first, instead of resolving `.last()`
@@ -325,7 +339,7 @@ export async function bootWithFixtureImported(
 
   const fixturePath = path.join(repoRoot, "tests", "e2e", "fixtures", "backup.modern.min.json");
   await page.locator('input[type="file"]').setInputFiles(fixturePath);
-  await page.locator('button[type="submit"]').click();
+  await clickDialogOk(page);
 
   await confirmImportDialog(page);
   await waitForDialogsClosed(page, 30_000);

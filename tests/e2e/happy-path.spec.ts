@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {
   blockExternalRequests,
+  clickDialogOk,
   closeAllAlerts,
   confirmImportDialog,
   getBuildDir,
@@ -53,7 +54,7 @@ test("happy path (firefox): import backup and see Company content", async ({page
     await page.locator('input[type="file"]').setInputFiles(fixturePath);
 
     // Confirm import (OK button).
-    await page.locator('button[type="submit"]').click();
+    await clickDialogOk(page);
 
     // Import flow shows a confirmation dialog (via alertAdapter.feedbackConfirm).
     // confirmImportDialog waits for that second dialog to exist before
@@ -119,7 +120,7 @@ test("add company by ISIN (firefox): create new company with ISIN DE000BASF111",
     await page.locator("#importDatabase").click();
     const fixturePath = path.join(repoRoot, "tests", "e2e", "fixtures", "backup.modern.min.json");
     await page.locator('input[type="file"]').setInputFiles(fixturePath);
-    await page.locator('button[type="submit"]').click();
+    await clickDialogOk(page);
     await confirmImportDialog(page);
     await page.waitForFunction(() => document.querySelectorAll('.v-dialog[role="dialog"]').length === 0, null, {timeout: 30_000});
 
