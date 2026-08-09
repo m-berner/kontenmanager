@@ -163,7 +163,25 @@ export function sanitizeExternalUrl(raw: string | undefined | null): string | nu
     if (trimmed === "") return null;
 
     try {
-        const url = new URL(trimmed);
+        // A string carrying no scheme at all gets `https://`, so a bare
+        // `www.example.com` is usable rather than rejected. This is NOT the
+        // blanket prepend `UrlUtils.parseUrl` does (`!startsWith("http")`),
+        // which would rewrite `javascript:alert(1)` into a valid https URL and
+        // defeat the allowlist below — the guard is the presence of a scheme,
+        // not the absence of "http".
+        //
+        // Without it, `new URL()` threw for every scheme-less value and this
+        // returned `null`, which had two edges: `urlRules` rejected a bare
+        // domain at entry with "invalid URL" rather than "add https://", and a
+        // stock saved before that rule existed (the field had no `:rules`
+        // binding at all then, so bare domains are the expected legacy content)
+        // silently reported "no link" in `useMenu.openLink`.
+        //
+        // `host:port` with no scheme is unchanged: `example.com:8080` matches
+        // the scheme pattern, is parsed as-is, and is rejected by the allowlist
+        // — exactly as before.
+        const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed);
+        const url = new URL(hasScheme ? trimmed : `https://${trimmed}`);
 
         // Scheme allowlist, not a denylist: enumerating the dangerous schemes
         // (`javascript:`, `data:`, `file:`, `blob:`, …) means the next one

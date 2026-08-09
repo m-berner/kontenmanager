@@ -5,7 +5,7 @@
  */
 
 import {describe, expect, it} from "vitest";
-import {UrlUtils} from "@/domain/utils/url";
+import {sanitizeExternalUrl, UrlUtils} from "@/domain/utils/url";
 
 describe("UrlUtils", () => {
     describe("getDomain", () => {
@@ -68,5 +68,41 @@ describe("UrlUtils", () => {
         it("should return / for root", () => {
             expect(UrlUtils.getPathname("https://example.com")).toBe("/");
         });
+    });
+});
+
+describe("sanitizeExternalUrl", () => {
+    it("accepts http(s) URLs and returns them normalized", () => {
+        expect(sanitizeExternalUrl("https://example.com/path")).toBe("https://example.com/path");
+        expect(sanitizeExternalUrl("http://example.com")).toBe("http://example.com/");
+    });
+
+    // A stock URL saved before `urlRules` existed — the field had no `:rules`
+    // binding at all then — is very likely scheme-less. Rejecting it made
+    // `useMenu.openLink` report "no link" for a perfectly good address, and
+    // blocked re-saving the stock with an "invalid URL" message that did not say
+    // what was missing.
+    it("assumes https for a scheme-less host", () => {
+        expect(sanitizeExternalUrl("www.example.com")).toBe("https://www.example.com/");
+        expect(sanitizeExternalUrl("  example.com/quotes  ")).toBe("https://example.com/quotes");
+    });
+
+    // The prepend above must key on "has no scheme", NOT on "does not start with
+    // http" — the latter is what `UrlUtils.parseUrl` does, and applying it here
+    // would rewrite `javascript:alert(1)` into a valid https URL and defeat the
+    // allowlist entirely.
+    it("still rejects a dangerous scheme rather than prepending https to it", () => {
+        expect(sanitizeExternalUrl("javascript:alert(1)")).toBeNull();
+        expect(sanitizeExternalUrl("data:text/html,<script>x</script>")).toBeNull();
+        expect(sanitizeExternalUrl("file:///etc/passwd")).toBeNull();
+        expect(sanitizeExternalUrl("blob:https://example.com/abc")).toBeNull();
+    });
+
+    it("rejects embedded credentials and blank input", () => {
+        expect(sanitizeExternalUrl("https://user:pw@example.com")).toBeNull();
+        expect(sanitizeExternalUrl("")).toBeNull();
+        expect(sanitizeExternalUrl("   ")).toBeNull();
+        expect(sanitizeExternalUrl(null)).toBeNull();
+        expect(sanitizeExternalUrl(undefined)).toBeNull();
     });
 });
