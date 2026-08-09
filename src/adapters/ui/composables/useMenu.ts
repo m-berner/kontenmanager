@@ -430,6 +430,14 @@ export function useMenuAction(translate?: (_key: string) => string) {
      * proves was wrong. See the tests in `useMenu.test.ts`, which pin exactly
      * this row-only behaviour.
      *
+     * **No production caller, deliberately kept.** `DotMenu` dispatches straight
+     * through `executeAction`, which has its own `!handler` branch and reports an
+     * unknown id to the user, so nothing needs to pre-check today. This stays
+     * because it is the honest public form of the question `executeAction`
+     * answers privately, it is correct, and it is covered — the same reasoning
+     * `healthChecker` and `BatchOperationBuilder` carry at their own heads.
+     * Recorded so it stops being re-derived as dead code on each audit pass.
+     *
      * @param actionType - Candidate action key.
      */
     const hasAction = (actionType: string): actionType is RowMenuActionType => {
