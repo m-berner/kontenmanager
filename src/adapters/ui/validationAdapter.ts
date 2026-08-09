@@ -63,14 +63,31 @@ export function oneOfTwo(
 }
 
 /**
- * Rule that requires a value to be present (not null, empty string, or undefined).
+ * Rule that requires a value to be present (not null, undefined, or blank).
+ *
+ * A whitespace-only string counts as absent. It used to pass — the test was
+ * `v !== ""` with no trim — and this is the ONE field in the tree bound to a bare
+ * `required()`: `StockForm`'s company name. (Every other text field goes through
+ * `nameRules`, `stringLength`, `regex` or `fromDomain`, all of which run
+ * `cleanString` first.) `mapStockFormToDb` then does `data.company.trim()`, so
+ * `"   "` was persisted as `cCompany: ""` — a stock with no name, rendering as an
+ * empty cell in `CompanyContent` and as a blank row in `BookingForm`'s stock
+ * picker, where `item-title="cCompany"` made it indistinguishable from the
+ * sentinel "no stock" placeholder it also sorts next to.
+ *
+ * Only strings are trimmed: `required` is generic, and a non-string value's
+ * presence is not a whitespace question.
  *
  * @param message - Error message if invalid.
  * @returns A validation rule function.
  */
 export function required(message: string): ValidationRuleType {
     return createRule(
-        (v) => v !== null && v !== "" && v !== undefined,
+        (v) => {
+            if (v === null || v === undefined) return false;
+            if (typeof v === "string") return v.trim() !== "";
+            return true;
+        },
         message
     );
 }
@@ -142,8 +159,24 @@ export function nameRules(msgArray: readonly string[]): ValidationRuleType[] {
 }
 
 /**
- * Rules for a stock's trading symbol: the same three `nameRules` checks it has
- * always had, plus an optional duplicate check.
+ * Rules for a stock's trading symbol: required, 1–32 characters, must start with
+ * a letter or a digit, plus an optional duplicate check.
+ *
+ * **Not `nameRules`.** It used to be, which imported that helper's
+ * `stringLength(2, 32)` — and a two-character floor is wrong for a ticker.
+ * **F** (Ford), **T** (AT&T), **V** (Visa), **C** (Citigroup), **K**
+ * (Kellanova) and **X** (US Steel) are all real, ordinary symbols, and none of
+ * them could be saved: the rule failed, `submitGuard` returned early, and the
+ * user saw a dead-looking OK button. Worse, `StockForm.onUpdateIsin` *auto-fills*
+ * this field from the fetch provider, so for those stocks the app supplied a
+ * value it then refused to accept, with the error on a field the user never
+ * typed into.
+ *
+ * The floor was never argued for the symbol — `nameRules`' own doc comment
+ * reasons at length about the *first-character* rule here (citing digit-leading
+ * Xetra symbols `1COV`, `2GB`, `3W9`) and says nothing about length. It remains
+ * right for the other consumer, a free-form booking-type name, which is why the
+ * two rule sets are now spelled out separately rather than one reusing the other.
  *
  * The duplicate rule is not optional in spirit — `stocks_uk4` is a per-account
  * UNIQUE index on `cSymbol` (migrator.ts), exactly like `uk3` is on `cISIN`.
@@ -161,7 +194,11 @@ export function symbolRules(
     msgArray: readonly string[],
     isDuplicate?: (_symbol: string) => boolean
 ): ValidationRuleType[] {
-    const rules: ValidationRuleType[] = nameRules(msgArray);
+    const rules: ValidationRuleType[] = [
+        required(msgArray[0]),
+        stringLength(1, 32, msgArray[1]),
+        regex(/^[\p{L}\p{N}]/u, msgArray[2])
+    ];
 
     if (isDuplicate) {
         rules.push(createRule((v) => {

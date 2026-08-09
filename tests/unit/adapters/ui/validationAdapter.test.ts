@@ -47,6 +47,26 @@ describe("validationAdapter", () => {
             expect(rule("x")).toBe(true);
         });
 
+        // StockForm's company field is the only one bound to a bare required(),
+        // and an untrimmed check let "   " through: mapStockFormToDb then trims
+        // it to cCompany: "", producing a nameless stock that renders as an empty
+        // cell and as a blank row in BookingForm's picker — indistinguishable
+        // from the sentinel "no stock" placeholder it also sorts next to.
+        it("required rejects a whitespace-only string", () => {
+            const rule = required("required!");
+            expect(rule("   ")).toBe("required!");
+            expect(rule("\t\n ")).toBe("required!");
+            expect(rule(" x ")).toBe(true);
+        });
+
+        // Only strings are trimmed — presence of a non-string is not a
+        // whitespace question, and required() is generic.
+        it("required accepts non-string values unchanged", () => {
+            const rule = required("required!");
+            expect(rule(0)).toBe(true);
+            expect(rule(false)).toBe(true);
+        });
+
         it("stringLength enforces min/max after stripping whitespace", () => {
             const rule = stringLength(2, 4, "bad length");
             expect(rule("a")).toBe("bad length");
@@ -304,15 +324,33 @@ describe("validationAdapter", () => {
     describe("symbolRules", () => {
         const MSG = ["required", "length", "begin", "duplicate"] as const;
 
-        it("keeps the three nameRules checks", () => {
+        it("keeps required / length / first-character checks", () => {
             const rules = symbolRules(MSG);
 
             expect(rules).toHaveLength(3);
             expect(rules[0]("")).toBe("required");
-            expect(rules[1]("A")).toBe("length");
+            expect(rules[1]("A".repeat(33))).toBe("length");
             // Punctuation start is what the first-character rule is actually for.
             expect(rules[2](".AAPL")).toBe("begin");
         });
+
+        // symbolRules no longer delegates to nameRules, whose stringLength(2, 32)
+        // made every one-character ticker unsaveable: F (Ford), T (AT&T),
+        // V (Visa), C (Citigroup), K (Kellanova), X (US Steel). The form even
+        // auto-fills this field from the provider, so the app supplied a value it
+        // then refused to accept — and submitGuard's early return made that look
+        // like a dead OK button. This test asserted the bug (`rules[1]("A")`
+        // was expected to be "length").
+        it.each(["F", "T", "V", "C", "K", "X"])(
+            "accepts the one-character ticker %s",
+            (symbol) => {
+                const rules = symbolRules(MSG);
+
+                expect(rules[0](symbol)).toBe(true);
+                expect(rules[1](symbol)).toBe(true);
+                expect(rules[2](symbol)).toBe(true);
+            }
+        );
 
         // The first-character rule used to require an ASCII letter or one of six
         // German umlauts, so a digit-leading symbol could not be entered at all
