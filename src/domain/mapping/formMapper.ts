@@ -191,8 +191,19 @@ export function formMapper() {
             cAccountNumberID: accountId,
             cRole: data.role
         };
-        if (!data.id) return bookingType;
-        if (data.id > 0) return {cID: data.id, ...bookingType};
+        // A single `> 0` gate, matching the three sibling mappers above.
+        //
+        // This used to be three branches — `if (!data.id)`, then `if (data.id >
+        // 0)`, then a bare return. `BookingTypeFormData.id` is `number | null`,
+        // so `null`/`0` took the first and a positive id the second; the third
+        // was reachable only for a negative id, which nothing produces
+        // (`createBookingTypeFormManager` seeds `id: null`, and the only writer
+        // is `BookingTypeForm.onSelect` copying a real `cID`). It returned the
+        // same value as the first branch anyway, so the shape suggested the
+        // negative case carried a meaning it never had.
+        if (data.id && data.id > 0) {
+            return {cID: data.id, ...bookingType};
+        }
         return bookingType;
     }
 

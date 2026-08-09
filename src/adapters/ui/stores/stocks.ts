@@ -7,8 +7,7 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 
-import {ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
-import {appError} from "@/domain/errors";
+import {INDEXED_DB} from "@/domain/constants";
 import type {StockItem, StockRamData, StockRecord} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 import {isDuplicateStockIsin, isDuplicateStockSymbol} from "@/domain/validation/duplicates";
@@ -66,16 +65,8 @@ export const useStocksStore = defineStore("stocks", function () {
         return stock ? stock : null;
     });
 
-    const getItemById = computed(
-        () =>
-            (id: number): StockItem => {
-                const stock = getById.value(id);
-                if (!stock) {
-                    throw appError("xx_missing_record", ERROR_CATEGORY.STORE, false, {id});
-                }
-                return stock;
-            }
-    );
+    // `getItemById`, the throwing counterpart to `getById`, was removed here —
+    // no consumer in `src/` or `tests/`. See the note in `stores/bookings.ts`.
 
     const isDuplicate = computed(() => (isin: string, excludeId?: number): boolean => {
         return isDuplicateStockIsin(items.value, isin, excludeId);
@@ -142,7 +133,6 @@ export const useStocksStore = defineStore("stocks", function () {
     return {
         items,
         getById,
-        getItemById,
         getIndexById,
         active,
         passive,

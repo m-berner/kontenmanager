@@ -7,8 +7,6 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 
-import {ERROR_CATEGORY} from "@/domain/constants";
-import {appError} from "@/domain/errors";
 import type {BookingTypeDb} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 import {isDuplicateBookingTypeName} from "@/domain/validation/duplicates";
@@ -58,17 +56,8 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
         return bookingType !== undefined ? bookingType.cName : "";
     });
 
-    /** Resolves a bookingType by its ID. */
-    const getItemById = computed(
-        () =>
-            (id: number): BookingTypeDb => {
-                const bookingType = getById.value(id);
-                if (!bookingType) {
-                    throw appError("xx_missing_record", ERROR_CATEGORY.STORE, false, {id});
-                }
-                return bookingType;
-            }
-    );
+    // `getItemById`, the throwing counterpart to `getById`, was removed here —
+    // no consumer in `src/` or `tests/`. See the note in `stores/bookings.ts`.
 
     /** Retrieves a booking type record by its ID. */
     const getById = computed(() => (ident: number): BookingTypeDb | null => {
@@ -91,31 +80,16 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
             }
     );
 
-    /** List of all booking type names. */
-    const getNames = computed(() => items.value.map((item) => item.cName));
-
-    /**
-     * List of booking type names paired with their **stable id**.
-     *
-     * The pairing used to be with the array *position* (`(item, index) =>
-     * ({name, index})`), which is the positional-versus-identity hazard this
-     * codebase already documents elsewhere — `stocks.active`'s comment warns
-     * that page positions computed from a getter "would not match what the UI
-     * renders". Every other accessor in this store (`getById`, `getNameById`,
-     * `getItemById`, `getIndexById`, `isDuplicate`) is keyed on `cID`, which is
-     * stable; the array position is not, and `add(…, prepend)`, `remove()` and
-     * `clean()` all reshuffle it. A consumer that stored or awaited the value
-     * across a mutation would have selected the wrong booking type.
-     *
-     * `getIndexById` remains for the genuinely positional case, where the caller
-     * is explicitly asking about the current array.
-     */
-    const getNamesWithId = computed(() =>
-        items.value.map((item) => ({
-            name: item.cName,
-            id: item.cID
-        }))
-    );
+    // `getNames` and `getNamesWithId` were removed here — neither had a consumer
+    // in `src/` or `tests/`. `getNamesWithId` is worth a word because it carried
+    // a six-line comment describing a positional-versus-identity bug that had
+    // been found and fixed *in it*: the pairing was once with the array index
+    // rather than `cID`, so a consumer holding the value across a mutation would
+    // have selected the wrong booking type. That analysis was real and correct —
+    // and protected nobody, because nothing called the getter. The lesson is
+    // recorded here rather than lost: every accessor in this store is keyed on
+    // the stable `cID`, and `getIndexById` is the only deliberately positional
+    // one, for callers explicitly asking about the current array.
 
     /**
      * Adds a booking type to the store.
@@ -160,10 +134,7 @@ export const useBookingTypesStore = defineStore("bookingTypes", function () {
         items,
         getById,
         getNameById,
-        getItemById,
         getIndexById,
-        getNames,
-        getNamesWithId,
         isDuplicate,
         add,
         remove,
