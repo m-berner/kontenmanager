@@ -23,10 +23,10 @@ import {isValidISODate, log, utcDate} from "@/domain/utils/utils";
 
 import {useAdapters} from "@/adapters/context";
 import DotMenu from "@/adapters/ui/components/DotMenu.vue";
+import {BOOKING_SEARCH_KEYS, createBookingSearchFilter} from "@/adapters/ui/composables/bookingSearch";
 import {useKeyboardShortcuts} from "@/adapters/ui/composables/useKeyboardShortcuts";
 import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
-import {BOOKING_SEARCH_KEYS, createBookingSearchFilter} from "@/adapters/ui/views/bookingSearch";
 
 const {d, n, t} = useI18n();
 const {alertAdapter, databaseAdapter, storageAdapter} = useAdapters();
@@ -40,7 +40,7 @@ const MENU_ITEMS = computed(() => createHomeMenuItems(t));
 
 const search = ref<string>("");
 
-// Search config lives in `bookingSearch.ts` so it can be unit-tested against
+// Search config lives in `composables/bookingSearch.ts` so it can be unit-tested against
 // Vuetify's real `filterItems` — a `<script setup>` block is not importable, and
 // this config's correctness depends on Vuetify's filter internals.
 //

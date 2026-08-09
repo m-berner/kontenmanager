@@ -10,8 +10,12 @@
  * Extracted from the SFC purely so it can be tested: a `<script setup>` block is
  * not importable, and this config is worth pinning because its correctness
  * depends on Vuetify's filter internals rather than on anything visible locally.
- * See `tests/unit/adapters/ui/views/bookingSearch.test.ts`, which drives the
- * real `filterItems` with exactly these values.
+ * See `tests/unit/adapters/ui/composables/bookingSearch.test.ts`, which drives
+ * the real `filterItems` with exactly these values.
+ *
+ * Not a `use*` composable — it holds no reactive state and calls no Vue API. It
+ * lives here rather than in `views/` because that folder is for `.vue` screens;
+ * this is the plain-module neighbour its single consumer imports.
  */
 
 /**

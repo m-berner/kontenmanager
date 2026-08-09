@@ -37,7 +37,7 @@ triggering state was not reproduced.
 | L10 | Low — **FIXED** | `migrator.ts` | The backfill cursors' `update()` requests carry no `onerror` |
 | L11 | Low — **FIXED** | `migrator.ts` | The v27 index migration re-runs on a brand-new database |
 | L12 | Low — **FIXED** | `connectionManager.ts` | "Already connected" is logged at `warn` on the ordinary retry path |
-| L13 | Low — **FIXED** | `views/bookingSearch.ts` / `HomeContent.vue` | The "recomputed" comment describes a mechanism that does not run |
+| L13 | Low — **FIXED** | `composables/bookingSearch.ts` / `HomeContent.vue` | The "recomputed" comment describes a mechanism that does not run |
 | I1 | Info — **FIXED** | `useMenu.ts`, `stores/stocks.ts` | Exports with no `src/` consumer |
 | I2 | Info — no action | `healthChecker.ts`, `transactionManager.ts`, `batchOperations.ts` | Test-only surfaces, re-confirmed |
 | I3 | Info — **FIXED** | `CheckboxGrid.vue`, `DynamicList.vue` | The options page keeps a second copy of settings state |

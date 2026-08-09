@@ -11,7 +11,7 @@ import {describe, expect, it} from "vitest";
 // only be testing our own understanding.
 import {filterItems} from "vuetify/lib/composables/filter.mjs";
 
-import {BOOKING_SEARCH_KEYS, createBookingSearchFilter} from "@/adapters/ui/views/bookingSearch";
+import {BOOKING_SEARCH_KEYS, createBookingSearchFilter} from "@/adapters/ui/composables/bookingSearch";
 
 const TYPE_NAMES: Record<number, string> = {1: "Dividende", 2: "Miete"};
 const getNameById = (id: number): string => TYPE_NAMES[id] ?? "";
