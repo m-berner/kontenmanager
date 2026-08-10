@@ -7,8 +7,6 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 
-import {ERROR_CATEGORY} from "@/domain/constants";
-import {appError} from "@/domain/errors";
 import {
     aggregateBookingsPerType,
     calculateInvestByStockId,
@@ -66,41 +64,20 @@ export const useBookingsStore = defineStore("bookings", function () {
         return items.value.findIndex((entry: BookingDb) => entry.cID === ident);
     });
 
-    /** Resolves a booking by its ID. */
-    const getItemById = computed(
-        () =>
-            (id: number): BookingDb => {
-                const booking = getById.value(id);
-                if (!booking) {
-                    throw appError(
-                        "xx_missing_record",
-                        ERROR_CATEGORY.STORE,
-                        false,
-                        {id}
-                    );
-                }
-                return booking;
-            }
-    );
+    // `getItemById` (the throwing counterpart to `getById`) and `getTextById`
+    // were removed here: neither had a single consumer in `src/` or `tests/`.
+    // The throwing variant existed in all three record stores and nothing ever
+    // used any of them — every real lookup site (`UpdateBooking`, `UpdateStock`,
+    // `UpdateAccount`, `BookingTypeForm`, `useMenu.openLink`) reaches for the
+    // nullable `getById` and writes its own guard, because each needs to do
+    // something specific on a miss rather than throw. Re-adding a fail-closed
+    // accessor is fine if a caller ever wants one; re-adding it speculatively is
+    // what produced three unused copies.
 
     /** Retrieves a booking record by its ID. */
     const getById = computed(() => (ident: number): BookingDb | null => {
         const booking = items.value.find((entry: BookingDb) => entry.cID === ident);
         return booking ? booking : null;
-    });
-
-    /** Generates a summary text for a booking. */
-    const getTextById = computed(() => (ident: number): string => {
-        const booking = items.value.find((entry: BookingDb) => entry.cID === ident);
-        if (booking) {
-            return `${booking.cBookDate} : ${booking.cDebit} : ${booking.cCredit}`;
-        } else {
-            throw appError(
-                "xx_missing_record",
-                ERROR_CATEGORY.STORE,
-                false
-            );
-        }
     });
 
     /**
@@ -286,9 +263,7 @@ export const useBookingsStore = defineStore("bookings", function () {
         bookedYears,
         hasUndatedBookings,
         getById,
-        getItemById,
         getIndexById,
-        getTextById,
         sumBookings,
         sumFees,
         sumTaxes,

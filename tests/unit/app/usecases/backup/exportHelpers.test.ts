@@ -58,6 +58,26 @@ describe("usecases/backup/exportHelpers", () => {
         it("returns 0 for an empty string", () => {
             expect(estimateSizeKb("")).toBe(0);
         });
+
+        // The byte count is now computed by walking the string rather than
+        // allocating a Uint8Array as long as it (this runs on an export that can
+        // approach 64 MB, already held alongside the arrays it came from). It
+        // must agree with TextEncoder exactly — including the cases the hand-
+        // rolled walk has to get right on its own: multi-byte scalars, surrogate
+        // PAIRS (4 bytes, two code units), and LONE surrogates, which
+        // TextEncoder replaces with U+FFFD at 3 bytes.
+        it.each([
+            ["ascii", "hello world"],
+            ["2-byte", "Ölpreis für Aktienkäufe"],
+            ["3-byte", "日本語のテキスト"],
+            ["surrogate pair", "profit 📈 and loss 📉"],
+            ["lone high surrogate", "a\uD83Db"],
+            ["lone low surrogate", "a\uDE00b"],
+            ["mixed", 'Ä📈{"cIban":"DE89…"}\uD800']
+        ])("matches TextEncoder for %s input", (_label, sample) => {
+            const expected = new TextEncoder().encode(sample).length / 1024;
+            expect(estimateSizeKb(sample)).toBe(expected);
+        });
     });
 
     describe("findExportConsistencyIssues / hasExportConsistencyIssues", () => {

@@ -4,11 +4,15 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import type {BrowserPort, ImportExportPort, RuntimePort} from "@/app/usecases/ports";
+import type {
+    BrowserPort,
+    DatabaseSnapshotPort,
+    ImportExportPort,
+    RuntimePort
+} from "@/app/usecases/ports";
 
 import {ERROR_CATEGORY, INDEXED_DB} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
-import type {RepositoryMap} from "@/domain/types";
 
 import {
     createExportMetadata,
@@ -45,7 +49,7 @@ const LARGE_FILE_THRESHOLD_KB = 10000;
 const MAX_EXPORT_SIZE_KB = INDEXED_DB.MAX_FILE_SIZE / 1024;
 
 export type ExportDatabaseUsecaseDeps = {
-    repositories: RepositoryMap;
+    databaseAdapter: DatabaseSnapshotPort;
     browserAdapter: BrowserPort;
     importExportAdapter: ImportExportPort;
     runtime: RuntimePort;
@@ -59,12 +63,19 @@ export async function exportDatabaseUsecase(
         notifyEstimatedSize: (_estimatedSizeKb: number) => Promise<void>;
     }
 ): Promise<{ estimatedSizeKb: number; cancelled: boolean }> {
-    const [accounts, bookings, stocks, bookingTypes] = await Promise.all([
-        deps.repositories.accounts.findAll(),
-        deps.repositories.bookings.findAll(),
-        deps.repositories.stocks.findAll(),
-        deps.repositories.bookingTypes.findAll()
-    ]);
+    // One transaction, via `getAllRecords`, NOT four independent
+    // `repository.findAll()` calls. Those pass no `tx`, so each opens its own
+    // transaction and the four stores are read at four different points in
+    // time — and the very next thing this function does is check referential
+    // integrity across them. A write landing between two of the reads yields a
+    // survey of a state the database was never in, on the one path whose output
+    // the app must later be able to re-import. See `DatabaseSnapshotPort`.
+    const {
+        accountsDB: accounts,
+        bookingsDB: bookings,
+        stocksDB: stocks,
+        bookingTypesDB: bookingTypes
+    } = await deps.databaseAdapter.getAllRecords();
 
     const issues = findExportConsistencyIssues({accounts, bookings, stocks, bookingTypes});
     // Checked before, and separately from, the referential-integrity issues.

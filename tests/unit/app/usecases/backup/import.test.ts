@@ -21,6 +21,7 @@ function makeInput(overrides: Partial<Parameters<typeof importDatabaseUsecase>[1
         onIntegrityErrors: vi.fn().mockResolvedValue(undefined),
         confirmUndatedBookings: vi.fn().mockResolvedValue(true),
         confirmProceed: vi.fn().mockResolvedValue(true),
+        prepareRollback: vi.fn().mockResolvedValue(true),
         onImported: vi.fn().mockResolvedValue(undefined),
         onError: vi.fn().mockResolvedValue(undefined),
         ...overrides
@@ -243,7 +244,82 @@ describe("usecases/backup/import", () => {
 
         expect(settings.activeAccountId).toBe(7);
         expect(setStorage).toHaveBeenLastCalledWith(expect.any(String), 7);
-        expect(input.onError).toHaveBeenCalledWith("disk full");
+        // `true` = the import reached `atomicImport`, so the caller must roll
+        // back. The flag is what stops a rollback running for failures that
+        // never wrote — see the "reports a pre-write failure as needing no
+        // rollback" case below.
+        expect(input.onError).toHaveBeenCalledWith("disk full", true);
+        expect(input.onImported).not.toHaveBeenCalled();
+    });
+
+    // A failure before the first write must NOT ask the caller to roll back.
+    // `restoreFromRollback` is a global clear + re-add of all four stores, so
+    // running it for a file that never reached `atomicImport` rewrote the whole
+    // database to undo nothing — and then told the user "rollback succeeded"
+    // for an import that had not begun.
+    it("reports a pre-write failure as needing no rollback", async () => {
+        const {deps} = makeDeps({
+            backup: {},
+            validation: {isValid: true, version: MODERN}
+        });
+        (deps.importExportAdapter.readJsonFile as ReturnType<typeof vi.fn>)
+            .mockRejectedValue(new Error("not valid JSON"));
+        const input = makeInput();
+
+        await importDatabaseUsecase(deps, input);
+
+        expect(input.onError).toHaveBeenCalledWith("not valid JSON", false);
+        expect(deps.atomicImport).not.toHaveBeenCalled();
+    });
+
+    // The snapshot is a whole-database read, so taking it before the file has
+    // even been parsed cost that read on every rejected file and every declined
+    // confirmation.
+    it("does not take a rollback snapshot for a backup that fails validation", async () => {
+        const {deps} = makeDeps({
+            backup: {},
+            validation: {isValid: false, version: -1, error: "Invalid data format"}
+        });
+        const input = makeInput();
+
+        await importDatabaseUsecase(deps, input);
+
+        expect(input.prepareRollback).not.toHaveBeenCalled();
+        expect(input.onInvalidBackup).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not take a rollback snapshot when the user declines the import", async () => {
+        const backup = {
+            sm: {cVersion: "1", cDBVersion: MODERN, cEngine: "x"},
+            accounts: [makeAccountDb({cID: 42})],
+            stocks: [],
+            bookings: [],
+            bookingTypes: []
+        };
+        const {deps} = makeDeps({backup, validation: {isValid: true, version: MODERN}});
+        const input = makeInput({confirmProceed: vi.fn().mockResolvedValue(false)});
+
+        await importDatabaseUsecase(deps, input);
+
+        expect(input.prepareRollback).not.toHaveBeenCalled();
+        expect(deps.atomicImport).not.toHaveBeenCalled();
+    });
+
+    it("aborts the import without writing when no rollback snapshot can be taken", async () => {
+        const backup = {
+            sm: {cVersion: "1", cDBVersion: MODERN, cEngine: "x"},
+            accounts: [makeAccountDb({cID: 42})],
+            stocks: [],
+            bookings: [],
+            bookingTypes: []
+        };
+        const {deps} = makeDeps({backup, validation: {isValid: true, version: MODERN}});
+        const input = makeInput({prepareRollback: vi.fn().mockResolvedValue(false)});
+
+        await importDatabaseUsecase(deps, input);
+
+        expect(deps.atomicImport).not.toHaveBeenCalled();
+        expect(input.onResetFileInput).toHaveBeenCalledTimes(1);
         expect(input.onImported).not.toHaveBeenCalled();
     });
 
@@ -276,7 +352,11 @@ describe("usecases/backup/import", () => {
 
         await expect(importDatabaseUsecase(deps, input)).resolves.toBeUndefined();
 
-        expect(input.onError).toHaveBeenCalledWith("disk full");
+        // `true` = the import reached `atomicImport`, so the caller must roll
+        // back. The flag is what stops a rollback running for failures that
+        // never wrote — see the "reports a pre-write failure as needing no
+        // rollback" case below.
+        expect(input.onError).toHaveBeenCalledWith("disk full", true);
         // The in-memory value is restored before the persist is attempted, so a
         // failed write only leaves memory and storage disagreeing.
         expect(settings.activeAccountId).toBe(7);

@@ -28,6 +28,15 @@ function createFakeCursorRequest<T>(records: T[]) {
                     value: records[index],
                     update: vi.fn((updated: T) => {
                         records[index] = updated;
+                        // `IDBCursor.update()` always returns an `IDBRequest` —
+                        // it throws on misuse rather than returning a falsy
+                        // value, the same guarantee `baseRepository`'s
+                        // `deleteByCursor` documents for `cursor.delete()`. The
+                        // migrator attaches an `onerror` to it so an update
+                        // failure aborts the version-change transaction with its
+                        // context attached; returning `undefined` here modelled
+                        // a cursor that cannot exist.
+                        return {onerror: null, error: null};
                     }),
                     continue: vi.fn(() => {
                         index += 1;
@@ -229,6 +238,38 @@ describe("migrator: setupDatabase", () => {
         const ev = {
             oldVersion: 27,
             newVersion: 28,
+            target: {transaction: tx}
+        } as unknown as IDBVersionChangeEvent;
+
+        setupDatabase(db as unknown as IDBDatabase, ev);
+
+        expect(storeMock.deleteIndex).not.toHaveBeenCalled();
+        expect(storeMock.createIndex).not.toHaveBeenCalled();
+    });
+
+    // `createStores` has just created uk1-uk4 in their current, correct form on
+    // a brand-new database, so running the v27 repair over them only deleted
+    // uk1/uk2 and recreated them identically — a migration for a pre-v27 schema
+    // that never existed here.
+    it("skips the uniqueness migration on a brand-new database", () => {
+        const storeMock = {
+            deleteIndex: vi.fn(),
+            createIndex: vi.fn(),
+            openCursor: vi.fn(() => createFakeCursorRequest([]))
+        };
+        const tx = {
+            db: {objectStoreNames: {contains: vi.fn().mockReturnValue(true)}},
+            objectStore: vi.fn().mockReturnValue(storeMock)
+        };
+        // `contains` false, so `createStores` builds the stores from scratch —
+        // the real fresh-install path.
+        const db = {
+            objectStoreNames: {contains: vi.fn().mockReturnValue(false)},
+            createObjectStore: vi.fn().mockReturnValue({createIndex: vi.fn()})
+        };
+        const ev = {
+            oldVersion: 0,
+            newVersion: 29,
             target: {transaction: tx}
         } as unknown as IDBVersionChangeEvent;
 

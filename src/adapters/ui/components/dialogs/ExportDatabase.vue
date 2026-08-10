@@ -22,12 +22,12 @@ import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
 const {t} = useI18n();
 const {isLoading, submitGuard} = useDialogGuards(t);
 const runtime = useRuntimeStore();
-const {browserAdapter, alertAdapter, importExportAdapter, repositories} = useAdapters();
+const {browserAdapter, alertAdapter, importExportAdapter, databaseAdapter} = useAdapters();
 
 const {dialogText, run} = useExportDatabaseDialogController({
   t,
   runtime,
-  services: {browserAdapter, alertAdapter, importExportAdapter, repositories}
+  services: {browserAdapter, alertAdapter, importExportAdapter, databaseAdapter}
 });
 
 const onClickOk = async (): Promise<void> => {

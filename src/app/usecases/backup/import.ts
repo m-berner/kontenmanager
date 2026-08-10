@@ -37,11 +37,38 @@ export async function importDatabaseUsecase(
         onIntegrityErrors: (_errors: string[], _totalCount: number) => Promise<void>;
         confirmUndatedBookings: (_counts: ImportCounts) => Promise<boolean>;
         confirmProceed: (_counts: ImportCounts, _existingCounts: ImportCounts) => Promise<boolean>;
+        /**
+         * Take the pre-import snapshot. Called once, immediately before the
+         * first write and after both confirmations — so a file that fails to
+         * parse, fails validation, or is declined never triggers a
+         * whole-database read.
+         *
+         * @returns `false` when no snapshot could be taken, which aborts the
+         *   import: writing without a way back is worse than not importing.
+         */
+        prepareRollback: () => Promise<boolean>;
         onImported: (_counts: ImportCounts) => Promise<void>;
-        onError: (_message: string) => Promise<void>;
+        /**
+         * @param _message - The failure to report.
+         * @param _didAttemptWrite - Whether `atomicImport` was reached. `false`
+         *   means the database is untouched and a rollback would clear and
+         *   rewrite every store to undo nothing — see the flag's declaration.
+         */
+        onError: (_message: string, _didAttemptWrite: boolean) => Promise<void>;
     }
 ): Promise<void> {
     const originalActiveId = deps.settings.activeAccountId;
+    /**
+     * Whether the import got as far as writing to IndexedDB.
+     *
+     * Set immediately *before* `atomicImport` rather than after, deliberately:
+     * `transactionManager.execute` logs "abort failed — writes may have been
+     * committed" for the case where the transaction auto-committed before the
+     * error was thrown, so a throw out of `atomicImport` is not proof that
+     * nothing landed. Erring toward "we wrote" costs a redundant restore; the
+     * other direction loses data.
+     */
+    let didAttemptWrite = false;
 
     try {
         const backup = await deps.importExportAdapter.readJsonFile(input.fileBlob);
@@ -114,6 +141,19 @@ export async function importDatabaseUsecase(
             return;
         }
 
+        // Snapshot for rollback, taken HERE — after the file has parsed, passed
+        // validation and been confirmed — rather than before any of it. It used
+        // to be the first thing the dialog did, so choosing a malformed or
+        // oversize file, or declining either confirmation, still read the entire
+        // database into memory for a rollback that could not be needed.
+        //
+        // It must still precede `setActiveAccountIdPersisted` below, because the
+        // snapshot carries `activeAccountId` and the rollback restores it.
+        if (!(await input.prepareRollback())) {
+            input.onResetFileInput();
+            return;
+        }
+
         // buildModernImportPlan filters records by === against normalized (Number-coerced)
         // cAccountNumberID values, so activeId must be coerced the same way here — a backup
         // with string-typed IDs (e.g. hand-edited JSON) would otherwise never match and
@@ -128,6 +168,7 @@ export async function importDatabaseUsecase(
         await setActiveAccountIdPersisted(deps, activeId);
 
         const plan = buildModernImportPlan({backup, activeId});
+        didAttemptWrite = true;
         await deps.atomicImport(plan.descriptors);
         await deps.records.init(plan.initData, input.initMessages);
 
@@ -170,7 +211,7 @@ export async function importDatabaseUsecase(
         }
         const errorMessage =
             isAppError(err) ? err.message : err instanceof Error ? err.message : ERROR_DEFINITIONS.UNKNOWN_ERROR.MSG;
-        await input.onError(errorMessage);
+        await input.onError(errorMessage, didAttemptWrite);
     }
 }
 

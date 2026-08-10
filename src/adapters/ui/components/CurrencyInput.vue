@@ -38,7 +38,12 @@ const getSeparators = (): { group: string; decimal: string } => {
 };
 
 const wrappedRules = computed(() => {
-  if (!props.rules) return undefined;
+  // A disabled field must not gate the form. Vuetify validates a disabled input
+  // regardless — see the long note on `AccountForm`'s `ibanRules`, where the
+  // same shape made an account permanently unsaveable — and while this instance
+  // is currently harmless (nothing passes `disabled`, and `oneOfTwo` accepts the
+  // 0 a disabled amount holds), it is the same trap one prop away.
+  if (props.disabled || !props.rules) return undefined;
   return props.rules.map((rule) => {
     return (v: string) => {
       const numValue = parseCurrency(v);

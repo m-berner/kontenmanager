@@ -18,11 +18,15 @@ function makeController(overrides: {
     const runtime = {resetTeleport: vi.fn(), clearStocksPages: vi.fn()};
     const account = makeAccountDb({cID: 1});
 
-    const repositories = {
-        accounts: {findAll: vi.fn().mockResolvedValue([account])},
-        bookings: {findAll: vi.fn().mockResolvedValue([makeBookingDb({cAccountNumberID: 1})])},
-        stocks: {findAll: vi.fn().mockResolvedValue([makeStockDb({cAccountNumberID: 1})])},
-        bookingTypes: {findAll: vi.fn().mockResolvedValue([makeBookingTypeDb({cAccountNumberID: 1})])}
+    // One snapshot read in a single transaction, not four per-store `findAll`s
+    // — see `DatabaseSnapshotPort` and export.test.ts's own note.
+    const databaseAdapter = {
+        getAllRecords: vi.fn().mockResolvedValue({
+            accountsDB: [account],
+            bookingsDB: [makeBookingDb({cAccountNumberID: 1})],
+            stocksDB: [makeStockDb({cAccountNumberID: 1})],
+            bookingTypesDB: [makeBookingTypeDb({cAccountNumberID: 1})]
+        })
     };
 
     const writeBufferToFile = vi.fn().mockResolvedValue(undefined);
@@ -42,7 +46,7 @@ function makeController(overrides: {
             stringifyDatabase: vi.fn().mockReturnValue(overrides.stringifyResult ?? "{}"),
             verifyExportIntegrity: vi.fn().mockReturnValue(overrides.verify ?? {valid: true, errors: []})
         },
-        repositories
+        databaseAdapter
     };
 
     const controller = useExportDatabaseDialogController({

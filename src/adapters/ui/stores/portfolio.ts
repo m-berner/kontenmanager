@@ -7,6 +7,7 @@
 import {defineStore} from "pinia";
 import {computed} from "vue";
 
+import {INDEXED_DB} from "@/domain/constants";
 import * as DomainLogic from "@/domain/logic";
 import type {StockItem} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
@@ -73,7 +74,19 @@ export const usePortfolioStore = defineStore("portfolio", function () {
      * re-renders often.
      */
     const sumDepot = computed((): number => {
-        if (settings.activeAccountId === -1) return 0;
+        // `INDEXED_DB.INVALID_ID`, not a bare `-1` — the named "no active
+        // account" sentinel every other call site in the write layer compares
+        // against (see `deleteActiveAccountUsecase`'s note on exactly this).
+        //
+        // Deliberately NOT `recordsHub.hasActiveAccount`, which additionally
+        // requires the id to resolve to a still-present account. That predicate
+        // guards *writes* and dialog entry — "can I record a booking under this
+        // account?" — and it is the wrong question here. This getter aggregates
+        // `portfolio.active`, i.e. whatever stocks are actually loaded, and
+        // `CompanyContent` renders those same rows with their values regardless.
+        // Returning 0 for a dangling id would put a 0 in the app bar above a
+        // table full of holdings, trading one inconsistency for a worse one.
+        if (settings.activeAccountId === INDEXED_DB.INVALID_ID) return 0;
         return DomainLogic.calculateTotalDepotValue(active.value);
     });
 

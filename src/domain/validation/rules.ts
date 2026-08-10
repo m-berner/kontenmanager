@@ -89,18 +89,19 @@ const RULE_CODES = {
     LUHN_BASE: 10
 } as const;
 
-/**
- * Validates that a given value is not null, undefined, or an empty string.
- *
- * @param value - The value to validate.
- * @returns An object indicating whether the value is valid, and an error code if invalid.
- */
-export function required(value: unknown): DomainValidationResult {
-    if (value === null || value === undefined || value === "") {
-        return {isValid: false, error: VALIDATION_CODES.REQUIRED};
-    }
-    return {isValid: true};
-}
+// A `required(value)` domain validator used to live here. It was removed: the
+// only two importers of this module take `validateIBAN`/`validateISIN`
+// (`validators.ts`) and `validateIBAN`/`validateISIN`/`validateSWIFT`
+// (`validationAdapter.ts`), so nothing in `src/` ever called it — only its own
+// unit test did. `validationAdapter` has its own, unrelated `required()`, which
+// is the one every form actually binds; having a second function of the same
+// name one layer down was an invitation to reach for the wrong one.
+//
+// Note the two also disagreed on the question that matters: the domain one
+// tested `value !== ""` without trimming, so a whitespace-only string passed.
+// That is the defect `validationAdapter.required` was just fixed for.
+// `VALIDATION_CODES.REQUIRED` stays in use — all three validators below return
+// it for a blank input.
 
 /**
  * Validates an International Bank Account Number (IBAN).

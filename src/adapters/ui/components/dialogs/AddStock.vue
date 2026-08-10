@@ -64,10 +64,41 @@ const onClickOk = async (): Promise<void> => {
           t("components.dialogs.addStock.messages.success")
       );
       reset();
+
       // addStockUsecase has already invalidated every page's freshness marker;
       // refresh the page the stock reports landing on so it shows live values
       // now rather than on the next visit.
-      await refreshOnlineData(res.page);
+      //
+      // Isolated from the add itself, in its own try/catch. This is a network
+      // call sitting AFTER the write committed and after the success alert has
+      // been shown, and `submitGuard` reports anything thrown out of `operation`
+      // through `feedbackError` with `errorContext: "ADD_STOCK"` — so a provider
+      // timeout produced "stock added successfully" immediately followed by an
+      // add-stock error, for a stock that was added. `importDatabaseUsecase`
+      // draws the same line for the same reason: "a failure in these purely
+      // cosmetic follow-up steps must not fall through to the catch below".
+      //
+      // Bracketed with both ref-counted loading flags, matching every other
+      // caller of loadOnlineData/refreshOnlineData (CompanyContent.onCurrentItems,
+      // useHeaderBarActions.updateQuote). Without them the table showed no
+      // loading state and TitleBar's depot chip stayed up while the figures
+      // behind it were being recomputed.
+      //
+      // `stockIds` names the row that was just added rather than letting
+      // `resolvePageStocks` fall back to a positional slice of `portfolio.active`
+      // — the shape that composable's own doc comment identifies as fetching
+      // "quotes for rows nobody was looking at" once the user has sorted the
+      // Company table.
+      runtime.beginDownload();
+      runtime.beginStockLoading();
+      try {
+        await refreshOnlineData(res.page, {stockIds: [res.id]});
+      } catch (refreshErr) {
+        log("COMPONENTS DIALOGS AddStock: post-save quote refresh failed", refreshErr, "warn");
+      } finally {
+        runtime.endStockLoading();
+        runtime.endDownload();
+      }
     }
   });
 };

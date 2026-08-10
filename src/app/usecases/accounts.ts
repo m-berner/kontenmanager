@@ -305,7 +305,18 @@ export async function updateAccountUsecase(
     // Editing an account can change `cCurrency`, which is the currency quotes are
     // converted INTO (`useOnlineStockData`'s divisor) — so every already-fetched
     // mValue/mMin/mMax on screen is now scaled to the wrong currency. Invalidate
-    // the freshness markers so the next render re-fetches and re-converts.
+    // the freshness markers so the next render re-fetches.
+    //
+    // Invalidation alone is NOT the whole fix, and this comment used to claim it
+    // was ("so the next render re-fetches and re-converts"). The re-convert uses
+    // `runtime.curUsd`/`curEur`, which nothing in this layer updates — they were
+    // written only by `appAdapter`'s boot-time Phase 3, so the re-fetched quotes
+    // were re-converted with the *previous* currency's divisors. The missing half
+    // lives in `AppIndex`'s `displayCurrency` watcher, which re-fetches the FX
+    // pairs and only then clears the pages again. This call stays because a
+    // currency change is not the only reason to invalidate here, and because it
+    // must not depend on a UI-layer watcher for correctness of its own concern.
+    //
     // Unconditional rather than gated on the currency actually having changed:
     // the flag is a cheap in-memory marker, and the other write usecases
     // invalidate on every write for the same reason.

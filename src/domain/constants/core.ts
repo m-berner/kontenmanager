@@ -372,7 +372,24 @@ export const COMPONENTS = {
         IMPORT_DATABASE: "importDatabase",
         SHOW_ACCOUNTING: {
             NAME: "showAccounting",
-            ALL_YEARS_ID: 1000
+            /**
+             * Sentinel selecting every year at once in `ShowAccounting`'s year
+             * picker.
+             *
+             * Negative for the same reason `DATE.UNDATED_YEAR` is, and stated
+             * there: "unreachable from a real ISO date, which `ISO_DATE_REGEX`
+             * requires to be four digits". This used to be `1000`, which **is**
+             * four digits and so is a perfectly reachable calendar year — a
+             * hand-edited backup dated `1000-06-15` puts 1000 into
+             * `bookings.bookedYears`, and the picker then offered two entries
+             * for it while `getAccountData` took the all-years branch for both,
+             * silently showing all-time figures for the year row.
+             *
+             * `-2` rather than `-1`: `-1` is already taken by
+             * `DATE.UNDATED_YEAR`, and the two must stay distinguishable —
+             * `getAccountData` and `getYearTitle` both branch on them.
+             */
+            ALL_YEARS_ID: -2
         },
         SHOW_DIVIDEND: "showDividend",
         UPDATE_QUOTE: "updateQuote",

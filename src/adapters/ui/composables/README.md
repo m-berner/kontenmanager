@@ -42,6 +42,10 @@ convention the code did not follow.
 - `useMenu.ts`: Menu action execution and temporary row highlighting for table interactions.
 - `useKeyboardShortcuts.ts`: Registration and cleanup of global keyboard shortcuts.
 - `useHeaderBarActions.ts`: Header bar icon/action handling (dialog opening, online data refresh).
+- `bookingSearch.ts`: Search configuration for `HomeContent`'s bookings table (filter keys plus the
+  custom-key-filter that makes the booking-type column searchable by its displayed name). Not a `use*`
+  composable — it holds no reactive state; it lives here because it is a plain module rather than a
+  `.vue` screen, and because being importable is what lets it be tested against Vuetify's real filter.
 
 ## Conventions
 
@@ -65,6 +69,7 @@ convention the code did not follow.
 
 ### Files
 
+- `bookingSearch.ts`: BOOKING_SEARCH_KEYS, createBookingSearchFilter
 - `useDialogGuards.ts`: useDialogGuards
 - `useExportDialog.ts`: useExportDatabaseDialogController
 - `useFavicon.ts`: useFavicon

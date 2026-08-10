@@ -37,8 +37,49 @@ export function createExportMetadata(manifestVersion: string): {
     };
 }
 
+/**
+ * UTF-8 byte length of `data`, counted without materializing the bytes.
+ *
+ * `new TextEncoder().encode(data).length` returns the same number but allocates
+ * a `Uint8Array` as long as the encoded string just to read `.length` off it.
+ * This runs on the export path, where the string can approach
+ * `MAX_EXPORT_SIZE_KB` (64 MB) and is already held alongside the four record
+ * arrays it was serialized from — so the copy is a whole extra buffer at the
+ * worst possible moment.
+ *
+ * (The other full pass on that path, `verifyExportIntegrity`'s `JSON.parse`, is
+ * deliberate and stays: re-parsing the exact string that will be written is the
+ * check, not an accident of implementation.)
+ */
+function utf8ByteLength(text: string): number {
+    let bytes = 0;
+    for (let i = 0; i < text.length; i++) {
+        const code = text.charCodeAt(i);
+        if (code < 0x80) {
+            bytes += 1;
+        } else if (code < 0x800) {
+            bytes += 2;
+        } else if (code >= 0xd800 && code <= 0xdbff) {
+            // High surrogate. A well-formed pair encodes to 4 bytes and consumes
+            // both halves; an unpaired one is replaced by U+FFFD, which is 3 —
+            // matching what TextEncoder does with a lone surrogate.
+            const next = text.charCodeAt(i + 1);
+            if (next >= 0xdc00 && next <= 0xdfff) {
+                bytes += 4;
+                i++;
+            } else {
+                bytes += 3;
+            }
+        } else {
+            // Includes an unpaired LOW surrogate, likewise replaced by U+FFFD.
+            bytes += 3;
+        }
+    }
+    return bytes;
+}
+
 export function estimateSizeKb(data: string): number {
-    return new TextEncoder().encode(data).length / 1024;
+    return utf8ByteLength(data) / 1024;
 }
 
 /**

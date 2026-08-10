@@ -199,6 +199,96 @@ describe("appAdapter", () => {
         expect(fetchAdapterDep.fetchExchangesData.mock.calls[0][0]).toEqual(["USDEUR"]);
     });
 
+    // `curUsd`/`curEur` are the divisors every quote is converted by, and they
+    // used to have exactly one writer: Phase 3, reachable only from
+    // initializeApp, which runs once at mount. The pairs it fetches come from
+    // the currency active AT BOOT and the self-pair is seeded to 1 — so
+    // switching to an account with the other cCurrency left one divisor a stale
+    // rate and the other a 1 that was no longer correct, and a EUR-quoted stock
+    // displayed its EUR price verbatim as USD (or the mirror image), silently.
+    describe("refreshExchangeRates", () => {
+        it("re-fetches the pairs for the CURRENT display currency, not the boot one", async () => {
+            const stores = createStores();
+
+            await adapter.initializeApp(stores, {});
+            expect(fetchAdapterDep.fetchExchangesData.mock.calls[0][0]).toEqual(["EURUSD"]);
+            expect(stores.runtime.curUsd).toBe(1.1);
+            expect(stores.runtime.curEur).toBe(1);
+
+            // The user switches to a USD-denominated account.
+            stores.records.accounts.items = [{cID: 2, cCurrency: "USD"}];
+            stores.settings.activeAccountId = 2;
+            fetchAdapterDep.fetchExchangesData.mockClear();
+
+            await adapter.refreshExchangeRates(stores);
+
+            expect(fetchAdapterDep.fetchExchangesData).toHaveBeenCalledTimes(1);
+            expect(fetchAdapterDep.fetchExchangesData.mock.calls[0][0]).toEqual(["USDEUR"]);
+            // Both divisors now describe USD: the self-pair is 1, and the other
+            // is freshly fetched. Before the fix curEur was still the 1 seeded
+            // for EUR at boot, so a EUR-quoted stock was left unconverted.
+            expect(stores.runtime.curUsd).toBe(1);
+            expect(stores.runtime.curEur).toBe(1.0);
+        });
+
+        it("resets both divisors to 1 when the fetch fails, rather than keeping the previous currency's rate", async () => {
+            const stores = createStores();
+            await adapter.initializeApp(stores, {});
+            expect(stores.runtime.curUsd).toBe(1.1);
+
+            stores.records.accounts.items = [{cID: 2, cCurrency: "USD"}];
+            stores.settings.activeAccountId = 2;
+            fetchAdapterDep.fetchExchangesData.mockRejectedValueOnce(new Error("offline"));
+
+            const ok = await adapter.refreshExchangeRates(stores);
+
+            expect(ok).toBe(false);
+            // 1 shows the quote unconverted — the same choice useOnlineStockData
+            // and InfoBar already make for a missing rate. Leaving 1.1 would
+            // convert USD prices by the old EUR account's rate.
+            expect(stores.runtime.curUsd).toBe(1);
+            expect(stores.runtime.curEur).toBe(1);
+        });
+
+        it("does not re-fetch indexes or materials, which are currency-independent", async () => {
+            const stores = createStores();
+            await adapter.initializeApp(stores, {});
+            fetchAdapterDep.fetchIndexData.mockClear();
+            fetchAdapterDep.fetchMaterialData.mockClear();
+
+            await adapter.refreshExchangeRates(stores);
+
+            expect(fetchAdapterDep.fetchIndexData).not.toHaveBeenCalled();
+            expect(fetchAdapterDep.fetchMaterialData).not.toHaveBeenCalled();
+        });
+
+        it("skips the network entirely when the provider is disabled", async () => {
+            const stores = createStores({settings: {service: "none"}});
+
+            const ok = await adapter.refreshExchangeRates(stores);
+
+            expect(ok).toBe(false);
+            expect(fetchAdapterDep.fetchExchangesData).not.toHaveBeenCalled();
+        });
+
+        // No test for the `basePairs.length === 0` branch: with
+        // CURRENCIES.SUPPORTED = ["EUR", "USD"] one of the two derived codes is
+        // always a real pair, so it is unreachable. It is a guard for a future
+        // single-currency configuration, not live behaviour, and a test that
+        // set it up would be asserting against a mock rather than the code.
+
+        it("does not write anything once the signal is aborted", async () => {
+            const stores = createStores();
+            const controller = new AbortController();
+            controller.abort();
+
+            const ok = await adapter.refreshExchangeRates(stores, controller.signal);
+
+            expect(ok).toBe(false);
+            expect(fetchAdapterDep.fetchExchangesData).not.toHaveBeenCalled();
+        });
+    });
+
     it("resolves with an aborted status without touching storage or the database when the signal is already aborted", async () => {
         const controller = new AbortController();
         controller.abort();

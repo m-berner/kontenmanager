@@ -363,45 +363,65 @@ export async function fetchIndexData(
     const doc = await parseHTML(html);
     const links = doc.querySelectorAll(".index-world-map a");
 
+    // A link with no `title` cannot identify an index and is dropped up front.
+    // `getAttribute` returns null when the attribute is absent, and the old
+    // `title || ""` fallback turned the membership test into
+    // `"DAX".includes("")` — which is `true`. One untitled link carrying any
+    // parseable number therefore matched the first index property tested, and,
+    // since it matched every other property just as well, would have filled all
+    // 18 configured indexes with that single value.
+    //
+    // Titles are trimmed and case-folded here rather than compared raw: the
+    // comparison used to be neither, so a title differing from its label only in
+    // case or padding did not match at all.
+    const titledLinks = [...links]
+        .map((link) => ({link, title: link.getAttribute("title")?.trim().toLowerCase() ?? ""}))
+        .filter((entry) => entry.title !== "");
+
     const indexes: StringNumberPair[] = [];
+    // A link may be claimed by at most ONE index. The fallback below is a
+    // containment test, so a short scraped title can satisfy several configured
+    // labels — "S&P" is contained in both "S&P 500" and "S&P/TSX" — and the old
+    // loop took the first link each property matched independently, so one
+    // link's value could be reported as the current level of two different
+    // indexes.
+    const claimed = new Set<Element>();
+
     for (const property of Object.keys(SETTINGS.INDEXES)) {
-        for (const link of links) {
-            const title = link.getAttribute("title");
-            // A link with no `title` cannot identify an index, and must be
-            // skipped rather than compared. `getAttribute` returns null when the
-            // attribute is absent, so the `title || ""` fallback below turned the
-            // membership test into `"DAX".includes("")` - which is `true`. One
-            // untitled link carrying any parseable number therefore matched the
-            // first index property tested, and, since it matched every other
-            // property just as well, would have filled all 18 configured indexes
-            // with that single value.
-            if (!title) continue;
+        const label = (SETTINGS.INDEXES[property] ?? "").trim().toLowerCase();
+        if (label === "") continue;
 
-            // finanzen.net markup changes occasionally; be resilient:
-            // - sometimes value is in a nested element
-            // - sometimes it's included directly in the link text
-            const valueText =
-                link.querySelector(":scope > *")?.textContent ??
-                link.textContent ??
-                "";
-            const numberText = valueText.match(/[-+]?\d[\d.,]*/)?.[0] ?? "";
+        const candidates = titledLinks.filter((entry) => !claimed.has(entry.link));
+        // An exact title wins over a merely-contained one, and is looked for
+        // across ALL candidates before falling back — rather than accepting
+        // whichever partial match happened to appear earliest in the document.
+        const match =
+            candidates.find((entry) => entry.title === label) ??
+            candidates.find((entry) => label.includes(entry.title));
+        if (!match) continue;
 
-            if (SETTINGS.INDEXES[property]?.includes(title) && numberText) {
-                indexes.push({
-                    key: property,
-                    // Locale pinned to "de", matching every sibling that reads
-                    // this same host: `providers/fnet.ts` runs
-                    // `normalizeNumber(value, "de")` on finanzen.net markup, and
-                    // ard/wstreet/goyax pin their (equally German) sources too.
-                    // Bare `toNumber` fell through to `detectNumberFormat`,
-                    // whose one-dot-no-comma branch reads "24.123" as English —
-                    // so a DAX quoted without decimals came back as 24.123 and
-                    // `InfoBar`'s `n(value, "integer")` rendered it as "24".
-                    value: toNumber(numberText, {locale: "de"})
-                });
-                break;
-            }
-        }
+        // finanzen.net markup changes occasionally; be resilient:
+        // - sometimes value is in a nested element
+        // - sometimes it's included directly in the link text
+        const valueText =
+            match.link.querySelector(":scope > *")?.textContent ??
+            match.link.textContent ??
+            "";
+        const numberText = valueText.match(/[-+]?\d[\d.,]*/)?.[0] ?? "";
+        if (!numberText) continue;
+
+        claimed.add(match.link);
+        indexes.push({
+            key: property,
+            // Locale pinned to "de", matching every sibling that reads this same
+            // host: `providers/fnet.ts` runs `normalizeNumber(value, "de")` on
+            // finanzen.net markup, and ard/wstreet/goyax pin their (equally
+            // German) sources too. Bare `toNumber` fell through to
+            // `detectNumberFormat`, whose one-dot-no-comma branch reads "24.123"
+            // as English — so a DAX quoted without decimals came back as 24.123
+            // and `InfoBar`'s `n(value, "integer")` rendered it as "24".
+            value: toNumber(numberText, {locale: "de"})
+        });
     }
 
     return indexes;

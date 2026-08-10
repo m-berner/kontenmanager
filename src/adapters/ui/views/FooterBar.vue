@@ -20,7 +20,7 @@ log("VIEWS FooterBar: setup");
 </script>
 
 <template>
-  <v-bottom-navigation color="primary">
+  <v-bottom-navigation color="secondary">
     <v-btn :to="HELP" color="white">
       <v-icon icon="$help"/>
       <div>{{ t("views.footerBar.help") }}</div>

@@ -73,10 +73,6 @@ export function useHeaderBarActions(t: (_key: string) => string): {
             openDialog("addStock");
         },
 
-        updateStock: () => {
-            openDialog("updateStock");
-        },
-
         addAccount: () => {
             openDialog("addAccount");
         },
@@ -114,8 +110,23 @@ export function useHeaderBarActions(t: (_key: string) => string): {
             }
         },
 
+        // Both preconditions, in order of specificity. `hasActiveAccount` comes
+        // first for the same reason the four account actions above use it:
+        // booking types are account-scoped, and the record stores are NOT
+        // cleared when `activeAccountId` falls back to the no-account sentinel
+        // (`HomeContent.onResetStorage` exists precisely because that leaves the
+        // stores holding the previous account's rows). So a bare length test let
+        // both dialogs open with no active account, listing a stale account's
+        // types. `addBookingType` was migrated to the new predicate; these two
+        // were left on the old one.
+        //
+        // The length test is kept underneath rather than replaced: "this account
+        // has no booking types yet" is the more specific answer when an account
+        // IS active, and it is the only one of the two the user can act on.
         updateBookingType: async () => {
-            if (records.bookingTypes.items.length === 0) {
+            if (!records.hasActiveAccount) {
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+            } else if (records.bookingTypes.items.length === 0) {
                 await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBookingType"));
             } else {
                 openDialog("updateBookingType");
@@ -123,7 +134,9 @@ export function useHeaderBarActions(t: (_key: string) => string): {
         },
 
         deleteBookingType: async () => {
-            if (records.bookingTypes.items.length === 0) {
+            if (!records.hasActiveAccount) {
+                await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noAccount"));
+            } else if (records.bookingTypes.items.length === 0) {
                 await alertAdapter.feedbackInfo(t("views.headerBar.infoTitle"), t("views.headerBar.messages.noBookingType"));
             } else {
                 openDialog("deleteBookingType");
@@ -191,6 +204,22 @@ export function useHeaderBarActions(t: (_key: string) => string): {
         // entry for each; these no-ops are the honest implementation, and unlike
         // `deleteAccount` above there is no header-bar affordance they could
         // ever plausibly grow.
+        //
+        // `updateStock` belongs here and used to be missing from the list — it
+        // called `openDialog("updateStock")` instead. That was not merely
+        // inconsistent: `UpdateStock.vue` loads `runtime.activeId`, a generic
+        // "last row acted on" id that `useMenu.executeAction` writes for ANY
+        // DotMenu action, including booking rows. Opening the dialog from a
+        // header icon would therefore have edited whichever record id happened
+        // to be sitting there — the cross-store id-collision hazard
+        // `UpdateBookingType.vue` documents at length and deliberately guards
+        // against. Unreachable today (HeaderBar emits 16 ids and this is not one
+        // of them), which is exactly the situation the sibling `deleteAccount`
+        // entry was fixed for; the difference is that this one would have done
+        // something wrong rather than nothing.
+        updateStock: () => {
+        },
+
         updateBooking: () => {
         },
 

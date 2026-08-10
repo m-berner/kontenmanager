@@ -9,7 +9,7 @@
  * @fileoverview CompanyContent component displays a data table of stock holdings
  * with real-time market data, portfolio information, and interactive menu actions.
  */
-import {computed, onBeforeMount, onBeforeUnmount, ref, watch} from "vue";
+import {computed, onBeforeMount, onBeforeUnmount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 import {
@@ -293,6 +293,14 @@ const onCurrentItems = async (items: unknown[]): Promise<void> => {
   // The freshness marker is keyed by page number, but after a sort the same page
   // number holds a different set of stocks — so it cannot be trusted here.
   // refreshOnlineData invalidates it before loading.
+  //
+  // Both flag pairs, matching `onBeforeMount` below. This path used to raise
+  // only `isStockLoading`, so the two routes into the same fetch reported
+  // themselves differently: `TitleBar` gates its depot chip on
+  // `!runtime.isDownloading`, and the chip therefore vanished during the initial
+  // sweep but stayed up — showing a total mid-recalculation — during every page
+  // change and re-sort.
+  runtime.beginDownload();
   runtime.beginStockLoading();
   const signal = startOnlineLoad();
   try {
@@ -305,6 +313,7 @@ const onCurrentItems = async (items: unknown[]): Promise<void> => {
     }
   } finally {
     runtime.endStockLoading();
+    runtime.endDownload();
   }
 };
 
@@ -336,23 +345,19 @@ onBeforeMount(async () => {
   }
 });
 
-/**
- * Watcher for stocksPerPage.
- *
- * Only invalidates: changing the page size moves every page boundary, so the
- * per-page freshness markers no longer describe anything real. The refetch is
- * deliberately NOT done here — the row set changes as a direct result, so
- * `onCurrentItems` fires and fetches exactly what is now on screen.
- *
- * This used to call `loadRequiredPages` as well, and the two raced: the watcher
- * created an AbortController, then `onCurrentItems` ran `startOnlineLoad()` one
- * tick later and aborted it mid-flight. The sweep was canceled every time, its
- * rejection swallowed as an AbortError, with both flows interleaving their
- * beginning/end loading pairs. One owner for "the visible rows changed" is enough.
- */
-watch(stocksPerPage, () => {
-  runtime.clearStocksPages();
-});
+// The `stocksPerPage` watcher that used to sit here has been removed: `AppIndex`
+// already watches the same value and calls the same `runtime.clearStocksPages()`,
+// and it is the app shell, so its watcher is alive for the whole session rather
+// than only while this route is mounted. Two watchers on one value, both doing
+// the identical idempotent thing, with only this one carrying the reasoning —
+// the reasoning has moved to `AppIndex` alongside the other three invalidation
+// triggers. The half worth keeping visible at this end is why this component
+// does NOT refetch on a page-size change: the row set changes as a direct
+// result, so `onCurrentItems` fires and fetches exactly what is now on screen.
+// It used to call `loadRequiredPages` too, and the two raced — the watcher
+// created an AbortController, then `onCurrentItems` ran `startOnlineLoad()` one
+// tick later and aborted it mid-flight, so the sweep was cancelled every time.
+// One owner for "the visible rows changed" is enough.
 
 onBeforeUnmount(() => {
   if (onlineLoadController) onlineLoadController.abort();
@@ -452,7 +457,7 @@ log("VIEWS CompanyContent: setup");
           price. A traded instrument is never worth exactly 0, so an empty cell
           is the honest representation of "not fetched".
         -->
-        <td class="font-weight-bold">
+        <td class="color-orange font-weight-bold">
           <template v-if="hasQuote(item.mValue)">
             {{ n(item.mValue as number, "currency3") }}
           </template>

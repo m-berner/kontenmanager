@@ -292,14 +292,21 @@ export function useImportDatabaseDialogController(input: {
         const {setStorage} = input.services.storageAdapter();
         const atomicImport = input.services.databaseAdapter.atomicImport;
 
-        const rollbackData = await createRollbackPoint();
-        if (!rollbackData) {
+        // Filled by `prepareRollback` below, which the usecase calls once the
+        // file has parsed, passed validation and been confirmed — so a bad file
+        // or a declined confirmation no longer costs a whole-database read.
+        let rollbackData: RollbackData | null = null;
+
+        const prepareRollback = async (): Promise<boolean> => {
+            rollbackData = await createRollbackPoint();
+            if (rollbackData) return true;
+
             await input.services.alertAdapter.feedbackInfo(
                 input.t("components.dialogs.importDatabase.title"),
                 input.services.browserAdapter.getMessage("xx_db_no_rollback")
             );
-            return;
-        }
+            return false;
+        };
 
         // Guards the two rollback paths below against both running for one
         // failed import. `onError` rolls back and reports; the outer catch does
@@ -311,9 +318,13 @@ export function useImportDatabaseDialogController(input: {
         // `restoreFromRollback` is a global clear + re-add, so the data ends up
         // correct either way; the cost is duplicated work on a large database
         // and a confusing double report.
+        //
+        // It also returns `false` when there is no snapshot yet: the failure
+        // happened before `prepareRollback` ran, so there is nothing written to
+        // undo and nothing to undo it with.
         let rollbackAttempted = false;
         const rollbackOnce = async (): Promise<boolean> => {
-            if (rollbackAttempted) return false;
+            if (rollbackAttempted || !rollbackData) return false;
             rollbackAttempted = true;
             return restoreFromRollback(rollbackData);
         };
@@ -390,8 +401,17 @@ export function useImportDatabaseDialogController(input: {
                             countsToSummary(counts)
                         );
                     },
-                    onError: async (message) => {
-                        const restored = await rollbackOnce();
+                    prepareRollback,
+                    onError: async (message, didAttemptWrite) => {
+                        // Only restore when the import actually reached
+                        // `atomicImport`. Every failure used to trigger a full
+                        // clear-and-rewrite of all four stores — including ones
+                        // that wrote nothing at all: a malformed or oversize
+                        // file rejected by `readJsonFile`, non-object JSON, or a
+                        // rejected `setStorage`. The user was then told
+                        // "rollback succeeded" for an import that had never
+                        // begun, after two complete passes over their database.
+                        const restored = didAttemptWrite ? await rollbackOnce() : false;
                         await input.services.alertAdapter.feedbackError(
                             input.t("components.dialogs.importDatabase.title"),
                             message,

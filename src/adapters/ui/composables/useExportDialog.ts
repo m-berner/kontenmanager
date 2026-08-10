@@ -10,7 +10,7 @@ import type {RuntimePort} from "@/app/usecases/ports";
 import {isConfirmDialogBusyError} from "@/domain/errors";
 import {log} from "@/domain/utils/utils";
 
-import type {Adapters, AlertAdapter, BrowserAdapter, RepositoryMap} from "@/adapters/driven/types";
+import type {Adapters, AlertAdapter, BrowserAdapter, DatabaseAdapter} from "@/adapters/driven/types";
 
 type TFunction = (key: string, params?: Record<string, unknown>) => string;
 type ImportExportService = Adapters["importExportAdapter"];
@@ -22,7 +22,10 @@ export function useExportDatabaseDialogController(input: {
         browserAdapter: BrowserAdapter;
         alertAdapter: AlertAdapter;
         importExportAdapter: ImportExportService;
-        repositories: RepositoryMap;
+        // Narrowed with `Pick`, matching `useImportDialog`'s own
+        // `Pick<DatabaseAdapter, "atomicImport" | "getAllRecords">`. The export
+        // reads the whole database in one transaction and needs nothing else.
+        databaseAdapter: Pick<DatabaseAdapter, "getAllRecords">;
     };
 }) {
     // Delegates to `createExportFilename` rather than re-deriving the same
@@ -47,7 +50,7 @@ export function useExportDatabaseDialogController(input: {
 
         await exportDatabaseUsecase(
             {
-                repositories: input.services.repositories,
+                databaseAdapter: input.services.databaseAdapter,
                 browserAdapter: input.services.browserAdapter,
                 importExportAdapter: input.services.importExportAdapter,
                 runtime: input.runtime

@@ -148,6 +148,28 @@ export function createAlertAdapter() {
     }
 
     /**
+     * Resolves the auto-dismiss duration for one call.
+     *
+     * `!== undefined`, not `??`: an explicit `duration: null` means "do not
+     * auto-dismiss" and has to survive — `app.ts`'s database-versionchange
+     * notice passes exactly that, deliberately, because the app is read-only
+     * from that point and the message must stay on screen.
+     *
+     * The three helpers below used two different idioms for this: `feedbackInfo`
+     * and `feedbackWarning` had the `!== undefined` form, `feedbackError` used
+     * `??`. They agreed only because `DURATIONS.ERROR` is itself `null`, so
+     * `null ?? null` happened to give the right answer — the idioms would
+     * diverge the moment that default became a number, and one call site would
+     * silently start dismissing errors.
+     */
+    function resolveDuration(
+        options: HandleUserAlertOptions | undefined,
+        fallback: number | null
+    ): number | null {
+        return options?.duration !== undefined ? options.duration : fallback;
+    }
+
+    /**
      * Checks if an alert should be suppressed based on rate limiting.
      */
     function isRateLimited(
@@ -186,8 +208,7 @@ export function createAlertAdapter() {
 
         const alerts = getAlertSinkSafe();
         if (!alerts) return;
-        const duration = options?.duration !== undefined ? options.duration : ALERT_INFO.DURATIONS.INFO;
-        return alerts.info(title, message, duration);
+        return alerts.info(title, message, resolveDuration(options, ALERT_INFO.DURATIONS.INFO));
     }
 
     async function feedbackWarning(
@@ -202,8 +223,7 @@ export function createAlertAdapter() {
 
         const alerts = getAlertSinkSafe();
         if (!alerts) return;
-        const duration = options?.duration !== undefined ? options.duration : ALERT_INFO.DURATIONS.WARNING;
-        return alerts.warning(title, message, duration);
+        return alerts.warning(title, message, resolveDuration(options, ALERT_INFO.DURATIONS.WARNING));
     }
 
     async function feedbackConfirm(
@@ -263,8 +283,7 @@ export function createAlertAdapter() {
 
         const alerts = getAlertSinkSafe();
         if (!alerts) return;
-        const duration = options?.duration ?? ALERT_INFO.DURATIONS.ERROR;
-        return alerts.error(title, message, duration);
+        return alerts.error(title, message, resolveDuration(options, ALERT_INFO.DURATIONS.ERROR));
     }
 
     return {

@@ -64,6 +64,24 @@ describe("AlertAdapter", () => {
         expect(sink.error).toHaveBeenCalledWith("Title", "message", 999);
     });
 
+    // All three helpers resolve the duration through one shared function, and it
+    // must treat an explicit `null` as "do not auto-dismiss" rather than as
+    // "absent". `app.ts`'s database-versionchange notice passes exactly that to
+    // `feedbackInfo`, deliberately, because the app is read-only from that point
+    // and the message has to stay on screen. `feedbackError` used to resolve this
+    // with `??`, which agreed only because its own default is `null` too.
+    it.each([
+        ["info", (a: typeof adapter) => a.feedbackInfo("T", "m", {duration: null})],
+        ["warning", (a: typeof adapter) => a.feedbackWarning("T", "m", {duration: null})],
+        ["error", (a: typeof adapter) => a.feedbackError("T", "m", {duration: null})]
+    ])("keeps an explicit null duration on feedback%s", async (kind, call) => {
+        adapter.configureAlertSink(sinkFactory);
+
+        await call(adapter);
+
+        expect(sink[kind as "info" | "warning" | "error"]).toHaveBeenCalledWith("T", "m", null);
+    });
+
     it("resolves the confirmation result from the sink", async () => {
         adapter.configureAlertSink(sinkFactory);
 

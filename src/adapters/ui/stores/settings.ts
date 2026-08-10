@@ -5,7 +5,7 @@
  */
 
 import {defineStore} from "pinia";
-import {type Ref, ref} from "vue";
+import {type Ref, ref, toRaw} from "vue";
 
 import {BROWSER_STORAGE} from "@/domain/constants";
 import type {StorageDataType, StorageValueType} from "@/domain/types";
@@ -216,11 +216,21 @@ export const useSettingsStore = defineStore(
          * @param refVar - The reactive reference to update.
          * @param key - The key used in browser storage.
          * @param value - The new value to apply.
+         * @param options - See `rethrow`.
+         * @param options.rethrow - Re-throw a failed persist (after reverting the
+         *        optimistic value) instead of reporting it through the global
+         *        alert. For callers that surface failures in their own place:
+         *        `CheckboxGrid` renders an inline `v-alert` beside the checkbox
+         *        whose toggle was just rolled back, and `DynamicList` needs to
+         *        know a write failed so it can restore the exchange rate it
+         *        removed alongside the entry. Neither can act on an error this
+         *        function has already swallowed.
          */
         async function updateSetting<T extends StorageValueType>(
             refVar: Ref<T>,
             key: string,
-            value: T
+            value: T,
+            options: { rethrow?: boolean } = {}
         ) {
             const prev = refVar.value;
             refVar.value = value;
@@ -231,9 +241,19 @@ export const useSettingsStore = defineStore(
                 // overlapping later call may have already applied and persisted a
                 // different value while this one was in flight, and rolling back
                 // unconditionally would clobber that newer, already-successful write.
-                if (refVar.value === value) {
+                //
+                // Compared through `toRaw`. A bare `refVar.value === value` is
+                // correct only for a primitive: `ref()` stores an object through
+                // `toReactive`, so reading `.value` on one of the four ARRAY
+                // settings hands back a reactive proxy, never the array that was
+                // assigned — the identity test was therefore always false and
+                // those settings would never have rolled back at all. Latent
+                // until now only because every setter that existed held a
+                // primitive; the list setters below are the first that do not.
+                if (toRaw(refVar.value) === toRaw(value)) {
                     refVar.value = prev;
                 }
+                if (options.rethrow) throw err;
                 await alertAdapter.feedbackError(errorTitle(), err, {});
             }
         }
@@ -414,6 +434,25 @@ export const useSettingsStore = defineStore(
          * to get it wrong on, since a mismatched active account makes a later
          * add persist under one account while displaying under another.
          *
+         * **`TitleBar` is a deliberate exception and still writes by hand**, so
+         * do not "finish the migration" by pointing its account switcher here —
+         * it would be a regression. Two reasons, both structural:
+         *
+         * - Its `v-select` is `v-model`-bound straight to `activeAccountId`, so
+         *   by the time its handler runs the ref ALREADY holds the new id. This
+         *   setter's rollback reads `refVar.value` at call time, which would be
+         *   that same new id, so the revert would restore the value it was meant
+         *   to undo. Its own `lastConfirmedAccountId` is what actually knows the
+         *   pre-switch account.
+         * - A failed switch there has to revert the record stores too — the
+         *   handler has already re-hydrated bookings/stocks/booking types for the
+         *   new account — and `updateSetting` knows nothing about those.
+         *
+         * So this setter has no caller today. It is kept because it is the
+         * correct seam for any *non-optimistic* writer of this setting, and
+         * because leaving the store's most consequential value as the only one
+         * without a setter is what produced the original defect.
+         *
          * Note this is *not* the same seam as
          * `portAdapters.setActiveAccountIdPersisted`, which the app layer uses:
          * that one writes through a `SettingsPort` (a plain
@@ -422,6 +461,36 @@ export const useSettingsStore = defineStore(
          */
         async function setActiveAccountId(v: number): Promise<void> {
             await updateSetting(activeAccountId, BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key, v);
+        }
+
+        /**
+         * The four list settings edited on the options page.
+         *
+         * These were the last settings with no setter, so `CheckboxGrid` and
+         * `DynamicList` each read their key straight from `browser.storage.local`
+         * on mount into a private ref and wrote back from that copy — a second
+         * source of truth for state this store already holds, and a second,
+         * hand-rolled copy of the optimistic-update-and-roll-back logic
+         * `updateSetting` exists to provide.
+         *
+         * Both take `{rethrow: true}`: each component reports failures in its own
+         * surface (see the option's own note), so the global alert would be a
+         * duplicate.
+         */
+        async function setIndexes(v: string[], options: { rethrow?: boolean } = {}): Promise<void> {
+            await updateSetting(indexes, BROWSER_STORAGE.INDEXES.key, v, options);
+        }
+
+        async function setMaterials(v: string[], options: { rethrow?: boolean } = {}): Promise<void> {
+            await updateSetting(materials, BROWSER_STORAGE.MATERIALS.key, v, options);
+        }
+
+        async function setMarkets(v: string[], options: { rethrow?: boolean } = {}): Promise<void> {
+            await updateSetting(markets, BROWSER_STORAGE.MARKETS.key, v, options);
+        }
+
+        async function setExchanges(v: string[], options: { rethrow?: boolean } = {}): Promise<void> {
+            await updateSetting(exchanges, BROWSER_STORAGE.EXCHANGES.key, v, options);
         }
 
         return {
@@ -446,7 +515,11 @@ export const useSettingsStore = defineStore(
             setDividendsPerPage,
             setStocksPerPage,
             setService,
-            setActiveAccountId
+            setActiveAccountId,
+            setIndexes,
+            setMaterials,
+            setMarkets,
+            setExchanges
         };
     }
 );

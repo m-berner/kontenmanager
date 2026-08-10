@@ -108,7 +108,7 @@ issues found in ... audit` commits):
 
 5. **Run the full local gate** before considering the pass done:
    ```powershell
-   npm run test:logic
+   npm run test:unit
    npm run test:typescript
    npm run lint
    npm run lint:i18n
@@ -126,7 +126,7 @@ issues found in ... audit` commits):
 - [ ] Fix lives in the architecturally correct layer (`domain` vs `app/usecases` vs `adapters`).
 - [ ] No fix silently loosens `tests/unit/architecture.test.ts` or adds a disallowed cross-layer
       import.
-- [ ] `npm run test:logic`, `npm run test:typescript`, `npm run lint`, `npm run lint:i18n` all pass.
+- [ ] `npm run test:unit`, `npm run test:typescript`, `npm run lint`, `npm run lint:i18n` all pass.
 - [ ] `npm run test:e2e` passes if a DB migration, transaction, or user-facing flow changed.
 - [ ] Commit message buckets fixes by High/Medium/Low severity.
 - [ ] Uncertain findings (no concrete failure scenario) are called out separately, not silently

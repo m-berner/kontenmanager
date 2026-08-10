@@ -105,6 +105,7 @@ describe("backup import refresh integration", () => {
                 onIntegrityErrors: vi.fn(),
                 confirmUndatedBookings: vi.fn().mockResolvedValue(true),
                 confirmProceed: vi.fn().mockResolvedValue(true),
+                prepareRollback: vi.fn().mockResolvedValue(true),
                 onImported,
                 onError
             }

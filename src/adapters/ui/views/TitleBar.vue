@@ -129,6 +129,11 @@ const connectionIcon = computed((): string => {
  * in-progress probe is not a result, so it inherits the app bar's own colour and
  * stays visually quiet.
  *
+ * Online is plain `black`, not `success`: a working connection is the normal,
+ * uneventful state, and the theme green washed out against the app bar. Black
+ * reads clearly on `secondary` (`#e0e0e0`) in every theme, and leaves colour to
+ * mean "something needs attention".
+ *
  * Offline is `warning`, not `error`: stored records are entirely unaffected by a
  * missing connection — only quotes and rates are — which is the same distinction
  * `mixed.smFetchDegraded.fetchDegradedMessage` already draws in words.
@@ -136,7 +141,7 @@ const connectionIcon = computed((): string => {
 const connectionColor = computed((): string | undefined => {
   switch (connectionState.value) {
     case "online":
-      return "success";
+      return "black";
     case "offline":
       return "warning";
     default:
@@ -187,6 +192,14 @@ const depot = computed((): string => {
 /**
  * Event handler for account selection changes.
  * Loads records for the newly selected account.
+ *
+ * Persists with a bare `setStorage` rather than `settings.setActiveAccountId`,
+ * deliberately — see that setter's own note. The switcher is `v-model`-bound
+ * directly to `settings.activeAccountId`, so the optimistic write has already
+ * happened before this runs; the setter's rollback would read that new value as
+ * the "previous" one and revert to it. `lastConfirmedAccountId` below is what
+ * actually knows the pre-switch account, and the catch has to revert the record
+ * stores as well, which the setter knows nothing about.
  */
 const onUpdateTitleBar = async (): Promise<void> => {
   log("VIEWS TitleBar: onUpdateTitleBar");

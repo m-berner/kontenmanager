@@ -18,7 +18,7 @@ tests (Vitest) and/or e2e tests (Playwright) that follow this repo's existing co
 
 ### Scope
 
-- **Unit tests**: `tests/unit/**/*.test.ts`, run via `npm run test:logic` (Vitest, `happy-dom`
+- **Unit tests**: `tests/unit/**/*.test.ts`, run via `npm run test:unit` (Vitest, `happy-dom`
   environment, globals enabled — see `vite.config.js` `test` block and `vitest-setup.js`).
 - **E2E tests**: `tests/e2e/*.spec.ts`, run via `npm run test:e2e` (builds `build:dev` first, then
   Playwright against Firefox — see `playwright.config.js`).
@@ -228,7 +228,7 @@ await page.waitForFunction(
 
 5. **Run the full local gate** before considering the work done:
    ```powershell
-   npm run test:logic
+   npm run test:unit
    npm run test:typescript
    npm run lint
    npm run test:e2e
@@ -306,7 +306,7 @@ npx vitest run --coverage
 - [ ] `tests/unit/architecture.test.ts` still passes unmodified.
 - [ ] New e2e specs reuse the static-server/browser-stub pattern and prefer `id="..."` /
       locale-agnostic role selectors over brittle text matches.
-- [ ] `npm run test:logic`, `npm run test:typescript`, `npm run lint` all pass.
+- [ ] `npm run test:unit`, `npm run test:typescript`, `npm run lint` all pass.
 - [ ] `npm run test:e2e` passes if e2e specs were added or changed.
 
 ---

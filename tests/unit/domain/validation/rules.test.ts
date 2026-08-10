@@ -5,25 +5,14 @@
  */
 
 import {describe, expect, it} from "vitest";
-import {required, validateIBAN, validateISIN, validateSWIFT} from "@/domain/validation/rules";
+import {validateIBAN, validateISIN, validateSWIFT} from "@/domain/validation/rules";
 import {VALIDATION_CODES} from "@/domain/constants";
 
+// The `required` block that used to open this file went with the function it
+// covered — see the note in `domain/validation/rules.ts`. It was the module's
+// only caller, and it pinned the untrimmed-string behaviour that
+// `validationAdapter.required` was fixed for.
 describe("Validation Rules", () => {
-    describe("required", () => {
-        it("should return valid for non-empty values", () => {
-            expect(required("test")).toEqual({isValid: true});
-            expect(required(123)).toEqual({isValid: true});
-            expect(required(0)).toEqual({isValid: true});
-            expect(required(false)).toEqual({isValid: true});
-        });
-
-        it("should return invalid for empty values", () => {
-            expect(required(null)).toEqual({isValid: false, error: VALIDATION_CODES.REQUIRED});
-            expect(required(undefined)).toEqual({isValid: false, error: VALIDATION_CODES.REQUIRED});
-            expect(required("")).toEqual({isValid: false, error: VALIDATION_CODES.REQUIRED});
-        });
-    });
-
     describe("validateIBAN", () => {
         it("should validate a correct German IBAN", () => {
             // Sample DE IBAN (randomly generated valid IBAN for testing)
