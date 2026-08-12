@@ -218,23 +218,34 @@ canceled on component unmount or user navigation.
 Pattern used in `CompanyContent.vue`:
 
 ```ts
+runtime.beginDownload();
+runtime.beginStockLoading();
 const signal = startOnlineLoad(); // aborts previous, returns new signal
 try {
     await loadRequiredPages(startPage, signal);
 } catch (err) {
-    if (!isAbortError(err)) await alertAdapter.feedbackError();
+    if (!isAbortError(err)) await alertAdapter.feedbackError(/* ... */);
 } finally {
-    if (!signal.aborted) {
-        runtime.isStockLoading = false;
-    }
+    runtime.endStockLoading();
+    runtime.endDownload();
 }
 ```
 
-#### Loading-state guards after abort
+#### Loading-state guards use ref-counting, not a signal check
 
-Use `if (!signal.aborted)` in `finally` blocks before resetting loading flags.
-Without the guard, the flag is reset even when a newer concurrent load has already
-started, making the loading spinner disappear prematurely.
+`runtime.isStockLoading` / `runtime.isDownloading` are backed by ref counters
+(`stockLoadingRefCount`, `downloadRefCount` in `stores/runtime.ts`), not a plain boolean.
+Multiple independent callers (header-bar refresh, per-row quote update, a page's own
+`onBeforeMount` sweep) can each have a fetch in flight at once; a plain boolean would let
+whichever call finishes first clear the flag while another is still running, making the
+spinner disappear prematurely.
+
+Always pair `beginStockLoading()`/`beginDownload()` with exactly one matching
+`endStockLoading()`/`endDownload()`, called **unconditionally** in a `finally` block — no
+`if (!signal.aborted)` guard is needed or correct here, since decrementing the counter (rather
+than assigning a boolean) is what already makes overlapping callers safe. A stale write from a
+superseded fetch is instead prevented one layer down, by `runtime.stocksPageGeneration` (see
+`useOnlineStockData.loadOnlineData`'s generation check before it writes fetched data back).
 
 ### IndexedDB
 
@@ -251,17 +262,23 @@ BUY bookings **newest-first** (as stored in Pinia after `initializeRecords` sort
 by `cBookDate` DESC) and prorating the boundary lot:
 
 ```ts
-sort((a, b) => utcMs(b.cBookDate) - utcMs(a.cBookDate))
+sort((a, b) => compareIsoDateDesc(a.cBookDate, b.cBookDate))
 .reduce((acc, entry) => {
     const prev = runningCount;
     runningCount += entry.cCount;
-    if (prev >= totalPortfolio) return acc;
+    if (prev >= totalPortfolio || entry.cCount === 0) return acc;
     const used = Math.min(entry.cCount, totalPortfolio - prev);
     return acc + (used / entry.cCount) * entry.cDebit;
 }, 0);
 ```
 
-The explicit `.sort()` makes the function correct regardless of input order.
+The explicit `.sort()` makes the function correct regardless of input order. It calls the dedicated
+`compareIsoDateDesc` comparator (`domain/utils/utils.ts`) rather than the more obvious
+`utcMs(b.cBookDate) - utcMs(a.cBookDate)`: `utcMs("")` is `NaN` (a blank `cBookDate` reaches here via
+backup import — `normalizeDate` deliberately yields `""` for a missing/malformed date rather than
+inventing one), and a comparator that can return `NaN` doesn't just misplace that one row — it makes
+the sort order of the *entire array* engine-dependent and arbitrary, silently attributing the FIFO
+cost basis to the wrong lots.
 
 ## Tests
 

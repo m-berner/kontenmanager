@@ -61,7 +61,7 @@ App Context Bootstrap (app.ts → AppIndex.vue)
     │       └─ restores all pagination settings
     │
     ├─ PHASE 2 — Database
-    │   ├─ databaseAdapter.connect()    [opens/upgrades IndexedDB v28]
+    │   ├─ databaseAdapter.connect()    [opens/upgrades IndexedDB v29]
     │   │   └─ migrator.migrate() if version mismatch
     │   ├─ databaseAdapter.getAccountRecords(activeAccountId)
     │   │   └─ reads accounts, bookings, bookingTypes, stocks
@@ -660,7 +660,7 @@ ExportDatabase dialog
     └─ useExportDialog.run()   [returns {filename, dialogText, run}]
         └─ exportDatabaseUsecase(deps)
             ├─ Serialize all stores to JSON:
-            │   { sm: { cVersion, cDBVersion: 28, cEngine: "indexeddb" },
+            │   { sm: { cVersion, cDBVersion: 29, cEngine: "indexeddb" },
             │     accounts: [...], stocks: [...], bookings: [...], bookingTypes: [...] }
             ├─ estimateSizeKb(data); if > 10,000 KB, ask user to confirm
             │   (confirmLargeFile) before proceeding, else just notify the size
@@ -1002,5 +1002,5 @@ CompanyContent / HeaderBar refresh trigger
 
 ---
 
-*Generated: 2026-03-25 | Updated: 2026-08-08 (schema v28 / booking-type roles, script renames) | KontenManager
-v28*
+*Generated: 2026-03-25 | Updated: 2026-08-12 (schema v29 / account currency, corrected two stale v28
+references) | KontenManager v29*
