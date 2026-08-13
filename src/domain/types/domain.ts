@@ -50,7 +50,7 @@ export interface AccountDb {
      * together.
      *
      * Booking amounts are stored exactly as the user entered them and are never
-     * converted on write — see `WORKFLOWS.md`. Converting would destroy the
+     * converted on write — see `app/usecases/README.md` §2. Converting would destroy the
      * transaction's real amount, and would do so using whatever spot rate
      * happened to be live at entry time; `runtime.curUsd` falls back to `1` when
      * the FX fetch fails, which on a write path would silently persist a USD

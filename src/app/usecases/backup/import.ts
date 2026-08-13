@@ -160,7 +160,7 @@ export async function importDatabaseUsecase(
         // leave the post-import in-memory records empty despite a successful DB write.
         // An empty accounts array (validateBackup only checks Array.isArray, not length, so
         // this passes validation) must land on the documented "no active account" sentinel
-        // (WORKFLOWS.md §2.3) instead of falling back to SM_RESTORE_ACCOUNT_ID, which would
+        // (README.md §2.3) instead of falling back to SM_RESTORE_ACCOUNT_ID, which would
         // otherwise point activeAccountId at an account that doesn't exist in the import.
         const activeId = backup.accounts && backup.accounts.length > 0
             ? Number(backup.accounts[0]?.cID ?? SM_RESTORE_ACCOUNT_ID)

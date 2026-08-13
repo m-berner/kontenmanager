@@ -17,7 +17,7 @@ The mission of the entrypoints layer is to:
 - **Single-Tab Enforcement**: `app.ts` runs `singleTabGuard.ts`'s `ensureSingleAppTab()` before mounting, and
   `background.ts` reacts to `browser.tabs.onCreated` via the same module's `closeDuplicateAppTab()` — together they
   keep at most one app tab open, including against the browser's native "Duplicate Tab" action, which has no
-  WebExtension API to block directly. See `src/ARCHITECTURE.md` §5/§6 for the full design.
+  WebExtension API to block directly. See `src/README.md` §5/§6 (Architecture section) for the full design.
 - **DOM Anchoring**: Provide the static HTML structures where the dynamic UI is mounted.
 
 ## Directory Structure

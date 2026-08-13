@@ -216,8 +216,9 @@ await page.waitForFunction(
 
 2. **Inventory untested user-facing actions.** Run the "missing e2e coverage" snippet below to
    diff `HeaderBar.vue` action ids against what the existing `tests/e2e/*.spec.ts` files exercise.
-   Cross-check against `src/WORKFLOWS.md`, which documents every intended user flow in detail —
-   use its "Processing" sections to know what a correct flow actually does before asserting on it.
+   Cross-check against the "Workflows" section of `src/app/usecases/README.md`, which documents
+   every intended user flow in detail — use its "Processing" sections to know what a correct flow
+   actually does before asserting on it.
 
 3. **Write unit tests first** for domain/usecase/store/composable gaps — they're fast, don't need
    a build, and de-risk the logic before you write a slower e2e test around it.
@@ -314,8 +315,8 @@ npx vitest run --coverage
 ### Tips
 - Read the target source file fully before writing its test — this repo's domain/usecase layer
   has narrow, deliberate behaviors (e.g. DB-first ordering, FIFO cost-basis prorating) that a
-  superficial test can assert incorrectly. When in doubt, check `src/WORKFLOWS.md` and
-  `src/ARCHITECTURE.md` for the documented intent.
+  superficial test can assert incorrectly. When in doubt, check `src/app/usecases/README.md`
+  (its "Workflows" section) and `src/README.md` (its "Architecture" section) for the documented intent.
 - Favor several small `it()` cases over one large one — easier to see which behavior regressed.
 - For fetch providers (`adapters/driven/fetch/providers/*.ts`), test the pure parsing/normalization
   functions against captured sample HTML/JSON fixtures rather than making real network calls.

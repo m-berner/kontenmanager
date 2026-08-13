@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "KontenManager",
-  "version": "2026.602",
+  "version": "2026.603",
   "default_locale": "de",
   "author": "Martin Berner",
   "icons": {

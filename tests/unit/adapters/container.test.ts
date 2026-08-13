@@ -34,7 +34,7 @@ describe("adapters/container", () => {
         createAppAdapter.mockClear();
     });
 
-    // ARCHITECTURE.md §8.1 states that `overrides` "accepts test doubles for any
+    // README.md's Architecture section §8.1 states that `overrides` "accepts test doubles for any
     // adapter". `storageAdapter` was declared on AdaptersOverrides and then
     // never read: the module import was used bare in both places, so a test
     // double type-checked, was accepted, and the real `browser.storage.local`
