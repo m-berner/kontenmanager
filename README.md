@@ -138,8 +138,8 @@ The project follows a hexagonal (ports & adapters) architecture. Dependencies po
 
 ## Documentation
 
-- Architecture guide: [src/ARCHITECTURE.md](src/ARCHITECTURE.md)
-- Detailed workflows: [src/WORKFLOWS.md](src/WORKFLOWS.md)
+- Architecture guide: [src/README.md](src/README.md#architecture)
+- Detailed workflows: [src/app/usecases/README.md](src/app/usecases/README.md#workflows)
 
 ## Architecture & Data Flow
 

@@ -62,7 +62,7 @@ export function attachStoreDeps(pinia: Pinia, next: StoreDeps): void {
 /**
  * Not exported: stores must go through a per-store accessor (below) so each
  * only "sees" what it depends on. Widening this to the module boundary invited
- * exactly the usage the accessors exist to prevent — ARCHITECTURE.md §8.3 was
+ * exactly the usage the accessors exist to prevent — README.md's Architecture section §8.3 was
  * still showing `getStoreDeps()` as the in-store pattern because of it.
  */
 function getStoreDeps(): StoreDeps {

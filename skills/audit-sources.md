@@ -23,11 +23,11 @@ src/app/usecases/**
 src/adapters/driven/**   (including adapters/driven/database/**, adapters/driven/fetch/**)
 src/adapters/ui/**       (stores, composables, components, dialogs, views, entrypoints, plugins)
 ```
-Read `src/ARCHITECTURE.md` first if unfamiliar with the layering — dependencies point inward
+Read `src/README.md`'s "Architecture" section first if unfamiliar with the layering — dependencies point inward
 (`adapters → app → domain`), and a bug's correct fix location often depends on which layer owns the
-invariant being violated. `src/WORKFLOWS.md` documents the intended behavior of each user-facing
-flow in detail; use it to judge whether behavior you're reading is a bug or an intentional design
-choice before "fixing" it.
+invariant being violated. `src/app/usecases/README.md`'s "Workflows" section documents the intended
+behavior of each user-facing flow in detail; use it to judge whether behavior you're reading is a
+bug or an intentional design choice before "fixing" it.
 
 Audit one layer/directory at a time rather than skimming the whole tree at once — bugs in this
 codebase tend to cluster around stateful code (DB transactions, connection lifecycle, batch
@@ -97,13 +97,14 @@ issues found in ... audit` commits):
 2. **Read fully, not by grep.** Open each file in the slice with Read and follow its call chain —
    many of this codebase's real bugs are only visible by tracing a value from where it's parsed to
    where it's consumed (a mismatch invisible from either file in isolation). Cross-check against
-   `src/WORKFLOWS.md` for the intended behavior of anything transaction- or money-related.
+   `src/app/usecases/README.md`'s "Workflows" section for the intended behavior of anything
+   transaction- or money-related.
 
 3. **Confirm before fixing.** For anything non-obvious, write a one-line failure scenario ("input X
    → wrong output Y") before touching code — if you can't state a concrete failure scenario, it's
    not a confirmed bug, just a suspicion; note it separately instead of fixing it.
 
-4. **Fix at the right layer.** Respect the hexagonal boundaries in `src/ARCHITECTURE.md` — a domain
+4. **Fix at the right layer.** Respect the hexagonal boundaries in `src/README.md`'s "Architecture" section — a domain
    bug gets fixed in `domain/`, not patched over in the adapter that calls it.
 
 5. **Run the full local gate** before considering the pass done:
@@ -136,7 +137,8 @@ issues found in ... audit` commits):
 
 ### Tips
 - Trust but verify your own read of "intentional" — if a branch looks asymmetric (one path clears
-  state, the other doesn't), assume it's a bug until `WORKFLOWS.md` or a test proves otherwise.
+  state, the other doesn't), assume it's a bug until `app/usecases/README.md`'s "Workflows" section
+  or a test proves otherwise.
 - IndexedDB connection lifecycle code (`adapters/driven/database/connectionManager.ts` and
   neighbors) has produced real bugs before around event-ordering assumptions — read the MDN spec
   behavior, don't assume handlers fire in the order you'd expect.

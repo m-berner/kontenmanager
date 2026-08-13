@@ -14,9 +14,13 @@ live under `tests/unit/adapters/ui/` alongside `src/adapters/ui/validationAdapte
 ### Files
 
 - `alert.test.ts`
+- `alertAdapter.test.ts`
+- `appAdapter.test.ts`
 - `browserAdapter.test.ts`
 - `faviconAdapter.test.ts`
 - `fetch.test.ts`
 - `importExport.test.ts`
+- `importExportAdapter.test.ts`
+- `storageAdapter.test.ts`
 - `taskAdapter.test.ts`
 

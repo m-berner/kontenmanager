@@ -30,7 +30,7 @@ export function useExportDatabaseDialogController(input: {
 }) {
     // Delegates to `createExportFilename` rather than re-deriving the same
     // `${date}_${dbVersion}_${dbName}.json` template inline. The helper was
-    // already exported, unit-tested and named in WORKFLOWS.md as the source of
+    // already exported, unit-tested and named in app/usecases/README.md as the source of
     // this filename, but nothing called it. Two copies of one rule, which is
     // exactly how they drift apart (see importExportAdapter.ts's note on the
     // MAX_SIZE constants that did drift).
