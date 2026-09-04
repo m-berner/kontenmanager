@@ -398,7 +398,9 @@
     },
     "optionsIndex": {
       "tabs": {
-        "ge": "Topics & Services",
+        "th": "Topics",
+        "srv": "Services",
+        "db": "Database",
         "mp": "Stock exchanges",
         "ind": "Indexes",
         "mat": "Commodities",

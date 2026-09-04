@@ -552,7 +552,7 @@ hits the `FNET.SEARCH` / `FNET.DATES` endpoints directly), regardless of which p
 
 Commodity/material prices and market index levels are a further exception: they share their **own**,
 independent data-source setting, `settings.marketDataService` (`BROWSER_STORAGE.MARKET_DATA_SERVICE`, key
-`sMarketDataService`, UI: `MarketDataServiceSelector` on the **Topics & Services** tab, not on the Indexes or
+`sMarketDataService`, UI: `MarketDataServiceSelector` on the **Services** tab, not on the Indexes or
 Commodities tabs) — not `settings.service`, and not affected by it. One setting for both by design: materials
 and indexes always use the same source rather than being independently selectable (they used to be two separate
 settings; merged on request). It supports two sources, finanzen.net remaining the default (unchanged behavior

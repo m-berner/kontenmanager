@@ -25,7 +25,9 @@ export const TRANSLATION_KEYS = {
     SERVICE_DISABLED: "views.optionsIndex.serviceNames.disabled",
 
     // Tabs
-    TAB_GE: "views.optionsIndex.tabs.ge",
+    TAB_TH: "views.optionsIndex.tabs.th",
+    TAB_SRV: "views.optionsIndex.tabs.srv",
+    TAB_DB: "views.optionsIndex.tabs.db",
     TAB_MP: "views.optionsIndex.tabs.mp",
     TAB_IND: "views.optionsIndex.tabs.ind",
     TAB_MAT: "views.optionsIndex.tabs.mat",

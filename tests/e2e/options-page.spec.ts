@@ -25,7 +25,16 @@ test.describe("Options page (firefox)", () => {
 
             const darkRadio = page.locator('input[type="radio"][value="dark"]');
             await expect(darkRadio).toBeVisible({timeout: 15_000});
-            await darkRadio.click({force: true});
+            // Retry the click itself, not just the outcome: under CPU contention (a
+            // full parallel e2e run) Playwright's own log showed a forced click
+            // land on the right native input, yet its `checked` state never flipped
+            // — a one-shot Vuetify/Vue reactivity race, not a missed click. `check()`
+            // alone still throws the first time that happens; wrapping in `toPass`
+            // re-issues the click+verify pair until it actually takes.
+            await expect(async () => {
+              await darkRadio.check({force: true});
+              await expect(darkRadio).toBeChecked();
+            }).toPass({timeout: 15_000});
 
             await expect.poll(() => getStorageValue(page, "sSkin"), {timeout: 10_000}).toBe("dark");
         } finally {
@@ -39,9 +48,18 @@ test.describe("Options page (firefox)", () => {
             await page.addInitScript(stubBrowser);
             await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/options.html`, {waitUntil: "load"});
 
+            // Tab index 1 = "Services" / "Dienste" (ServiceSelector).
+            await page.locator(".v-tab").nth(1).click();
+
             const goyaxRadio = page.locator('input[type="radio"][value="goyax"]');
             await expect(goyaxRadio).toBeVisible({timeout: 15_000});
-            await goyaxRadio.click({force: true});
+            // See the matching comment on `darkRadio` above: retry the click+verify
+            // pair (not just a single forced click) to ride out the occasional
+            // Vuetify/Vue reactivity race under a heavily parallel e2e run.
+            await expect(async () => {
+              await goyaxRadio.check({force: true});
+              await expect(goyaxRadio).toBeChecked();
+            }).toPass({timeout: 15_000});
 
             await expect.poll(() => getStorageValue(page, "sService"), {timeout: 10_000}).toBe("goyax");
         } finally {
@@ -55,9 +73,9 @@ test.describe("Options page (firefox)", () => {
             await page.addInitScript(stubBrowser);
             await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/options.html`, {waitUntil: "load"});
 
-            // Tab index 1 = "Stock exchanges" / "Marktplätze" (DynamicList, MARKETS type).
+            // Tab index 3 = "Stock exchanges" / "Marktplätze" (DynamicList, MARKETS type).
             // Unlike the EXCHANGES type, MARKETS doesn't trigger a real network fetch on add.
-            await page.locator(".v-tab").nth(1).click();
+            await page.locator(".v-tab").nth(3).click();
 
             const uniqueMarket = `TESTMKT${Date.now()}`;
             const input = page.getByRole("textbox", {name: /(New stock exchange|Neuer Marktplatz)/i});
@@ -108,8 +126,8 @@ test.describe("Options page (firefox)", () => {
             await page.addInitScript(stubBrowser);
             await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/options.html`, {waitUntil: "load"});
 
-            // Tab index 1 = MARKETS, which (unlike EXCHANGES) does no network fetch on add.
-            await page.locator(".v-tab").nth(1).click();
+            // Tab index 3 = MARKETS, which (unlike EXCHANGES) does no network fetch on add.
+            await page.locator(".v-tab").nth(3).click();
 
             const input = page.getByRole("textbox", {name: /(New stock exchange|Neuer Marktplatz)/i});
             await expect(input).toBeVisible({timeout: 10_000});
@@ -148,8 +166,8 @@ test.describe("Options page (firefox)", () => {
             await page.addInitScript(stubBrowser);
             await page.goto(`${server.baseUrl}/adapters/ui/entrypoints/options.html`, {waitUntil: "load"});
 
-            // Tab index 2 = "Indexes" (CheckboxGrid, INDEXES type).
-            await page.locator(".v-tab").nth(2).click();
+            // Tab index 4 = "Indexes" (CheckboxGrid, INDEXES type).
+            await page.locator(".v-tab").nth(4).click();
 
             const daxCheckbox = page.getByRole("checkbox", {name: "DAX"});
             await expect(daxCheckbox).toBeVisible({timeout: 10_000});

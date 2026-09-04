@@ -887,7 +887,7 @@ These four lists have no store setter: unlike `skin` / `service` / pagination, t
 
 The data **source** for indexes and materials (`fnet` vs `wstreet`) is a separate, single setting —
 `settings.marketDataService` — with a real store setter (`setMarketDataService`), same shape as `skin`/`service`.
-It lives on the **Topics & Services** tab (`MarketDataServiceSelector`, next to `ServiceSelector`), not on the
+It lives on the **Services** tab (`MarketDataServiceSelector`, next to `ServiceSelector`), not on the
 Indexes or Commodities tab: materials and indexes always use the same source, so there is nothing to configure
 per-tab. See `/src/README.md`'s "Fetch Adapter & Online Data" section for the two sources themselves.
 

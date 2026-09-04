@@ -7,9 +7,10 @@
 <script lang="ts" setup>
 /**
  * @fileoverview OptionsIndex renders the extension options page. It provides
- * tabs for theme/service selection and configuration of markets, indexes,
- * materials, and exchanges. All content is rendered using dedicated components
- * and localized via Vue I18n.
+ * tabs for theme selection, quote/market-data service selection, the default
+ * currency, and configuration of markets, indexes, materials, and exchanges.
+ * All content is rendered using dedicated components and localized via Vue
+ * I18n.
  */
 import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
@@ -51,37 +52,43 @@ log("VIEWS OptionsIndex: setup", window.location.href, "info");
               <v-col cols="12" md="6" sm="6">
                 <ThemeSelector/>
               </v-col>
-              <v-col cols="12" md="6" sm="6">
-                <ServiceSelector/>
-              </v-col>
             </v-row>
+          </v-tabs-window-item>
+          <v-tabs-window-item :value="1">
             <v-row>
               <v-col cols="12" md="6" sm="6">
-                <CurrencySelector/>
+                <ServiceSelector/>
               </v-col>
               <v-col cols="12" md="6" sm="6">
                 <MarketDataServiceSelector/>
               </v-col>
             </v-row>
           </v-tabs-window-item>
-          <v-tabs-window-item :value="1">
+          <v-tabs-window-item :value="2">
+            <v-row>
+              <v-col cols="12" md="6" sm="6">
+                <CurrencySelector/>
+              </v-col>
+            </v-row>
+          </v-tabs-window-item>
+          <v-tabs-window-item :value="3">
             <v-row class="pa-10" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList :type="DYNAMIC_LIST_TYPES.MARKETS"/>
               </v-col>
             </v-row>
           </v-tabs-window-item>
-          <v-tabs-window-item :value="2">
+          <v-tabs-window-item :value="4">
             <v-row>
               <CheckboxGrid :type="CHECKBOX_GRID_TYPES.INDEXES"/>
             </v-row>
           </v-tabs-window-item>
-          <v-tabs-window-item :value="3">
+          <v-tabs-window-item :value="5">
             <v-row>
               <CheckboxGrid :type="CHECKBOX_GRID_TYPES.MATERIALS"/>
             </v-row>
           </v-tabs-window-item>
-          <v-tabs-window-item :value="4">
+          <v-tabs-window-item :value="6">
             <v-row class="pa-12" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList :type="DYNAMIC_LIST_TYPES.EXCHANGES"/>

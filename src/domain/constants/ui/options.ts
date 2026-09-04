@@ -25,7 +25,9 @@ export const createServiceLabelOverrides = (t: (_key: string) => string): Record
 
 export const createTabs = (t: (_key: string) => string): readonly OptionTab[] =>
     [
-        {title: t(TRANSLATION_KEYS.TAB_GE), id: "register_ge"},
+        {title: t(TRANSLATION_KEYS.TAB_TH), id: "register_th"},
+        {title: t(TRANSLATION_KEYS.TAB_SRV), id: "register_srv"},
+        {title: t(TRANSLATION_KEYS.TAB_DB), id: "register_db"},
         {title: t(TRANSLATION_KEYS.TAB_MP), id: "register_mp"},
         {title: t(TRANSLATION_KEYS.TAB_IND), id: "register_ind"},
         {title: t(TRANSLATION_KEYS.TAB_MAT), id: "register_mat"},

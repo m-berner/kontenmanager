@@ -448,11 +448,13 @@
     },
     "optionsIndex": {
       "tabs": {
-        "ge": "Themen & Dienste",
+        "th": "Themen",
+        "srv": "Dienste",
+        "db": "Datenbank",
         "mp": "Marktplätze",
         "ind": "Indizes",
         "mat": "Rohstoffe",
-        "ex": "Währungen"
+        "ex": "Wechselkurse"
       },
       "themeNames": {
         "earth": "Erde",

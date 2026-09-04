@@ -9,7 +9,7 @@
  * @fileoverview Selector for the commodity/index market-data source — one
  * shared setting for both materials and indexes, deliberately: they always
  * use the same provider rather than being independently selectable. Lives
- * on the Topics & Services tab (alongside `ServiceSelector`, the separate
+ * on the Services tab (alongside `ServiceSelector`, the separate
  * stock-quote provider), not on the Indexes or Commodities tabs.
  * `MarketDataServiceName` is its own, narrower type — only "fnet" and
  * "wstreet" ever supply commodity/index data.
