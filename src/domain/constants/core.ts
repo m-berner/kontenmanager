@@ -612,9 +612,6 @@ export const SETTINGS: StoresConfigType = {
         nikkei: "NIKKEI 225",
         hang: "Hang Seng",
         ibex: "IBEX 35",
-        straits: "Straits Times",
-        asx: "Australia All Ordinaries",
-        rts: "RTS",
         bovespa: "BOVESPA",
         sensex: "SENSEX",
         sci: "Shanghai Composite",
@@ -672,5 +669,11 @@ export const BROWSER_STORAGE = {
      * only source this ever had, to keep existing installs' behavior
      * unchanged; "wstreet" (wallstreet-online.de) is the opt-in alternative.
      */
-    MATERIALS_SERVICE: {key: "sMaterialsService", value: "fnet"}
+    MATERIALS_SERVICE: {key: "sMaterialsService", value: "fnet"},
+    /**
+     * Data source for market index levels — independent of both `SERVICE`
+     * and `MATERIALS_SERVICE`. Same default/opt-in shape as
+     * `MATERIALS_SERVICE`, for the same reason.
+     */
+    INDEXES_SERVICE: {key: "sIndexesService", value: "fnet"}
 } as const;

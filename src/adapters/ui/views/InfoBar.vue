@@ -82,7 +82,14 @@ log("VIEWS InfoBar: setup");
         </v-list-item-subtitle>
       </v-list-item>
 
-      <v-list-item v-for="item in settings.indexes" :key="item">
+      <!--
+        Filtered against SETTINGS.INDEXES for the same reason the materials
+        row below is: a key dropped from the index set (e.g. discontinued
+        "straits"/"asx"/"rts") can still be sitting in an existing install's
+        stored selection, and `SETTINGS.INDEXES[item]` would render `undefined`
+        as the title for it.
+      -->
+      <v-list-item v-for="item in settings.indexes.filter((i) => i in SETTINGS.INDEXES)" :key="item">
         <v-list-item-title>{{ SETTINGS.INDEXES[item] }}</v-list-item-title>
         <v-list-item-subtitle>
           <template v-if="runtime.infoIndexes.get(item) !== undefined">

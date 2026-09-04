@@ -549,20 +549,31 @@ The active provider is stored in `settings.service`. The fetch service routes re
 back gracefully when a request fails. Meeting / quarterly-report dates are **not** provider-selectable: they are always
 fetched from Finanzen.Net (`fetchDateData` in `fetchAdapter.ts`
 hits the `FNET.SEARCH` / `FNET.DATES` endpoints directly), regardless of which provider is active for price quotes.
-Market indexes are the same: `fetchIndexData` always hits `FNET.INDEXES`, with no alternative source.
 
-Commodity/material prices (`fetchMaterialData`) are the one exception: they have their **own**, independent
-data-source setting, `settings.materialsService` (`BROWSER_STORAGE.MATERIALS_SERVICE`, key `sMaterialsService`,
-UI: `MaterialsServiceSelector` on the Commodities options tab) — not `settings.service`, and not affected by it.
-It supports two sources:
+Commodity/material prices and market index levels are each a further exception: both have their **own**,
+independent data-source setting — `settings.materialsService` / `settings.indexesService`
+(`BROWSER_STORAGE.MATERIALS_SERVICE` / `INDEXES_SERVICE`, keys `sMaterialsService` / `sIndexesService`, UI:
+`MaterialsServiceSelector` / `IndexesServiceSelector` on their respective options tabs) — neither is
+`settings.service`, and neither is affected by it. Both support the same two sources, finanzen.net remaining the
+default (unchanged behavior for existing installs) in each case because both sit behind Akamai bot protection
+that intermittently 403s these calls:
 
-| Key       | Provider          | Notes                                                                 |
-|-----------|-------------------|------------------------------------------------------------------------|
-| `fnet`    | Finanzen.Net      | Default. One request, `FNET.MATERIALS` overview table.               |
-| `wstreet` | Wallstreet-Online | Opt-in. One request per configured material (`fetchMaterialDataWstreet`, `providers/wstreetMaterials.ts`), scraping `wallstreet-online.de/rohstoffe/<slug>`. Only accepts a page whose quote is explicitly marked USD — two commodities (aluminum, lead, as of this writing) are quoted there in index points ("PKT") rather than a real price and are silently skipped rather than mislabeled. |
+| Key       | Provider          | Materials (`fetchMaterialData`)                                        | Indexes (`fetchIndexData`)                                        |
+|-----------|-------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| `fnet`    | Finanzen.Net      | Default. One request, `FNET.MATERIALS` overview table.                 | Default. One request, `FNET.INDEXES` overview table.                |
+| `wstreet` | Wallstreet-Online | Opt-in. One request per configured material (`fetchMaterialDataWstreet`, `providers/wstreetMaterials.ts`), scraping `wallstreet-online.de/rohstoffe/<slug>`. Only accepts a page whose quote is explicitly marked USD — two commodities (aluminum, lead, as of this writing) are quoted there in index points ("PKT") rather than a real price and are silently skipped rather than mislabeled. | Opt-in. One request per configured index (`fetchIndexDataWstreet`, `providers/wstreetIndexes.ts`), scraping `wallstreet-online.de/indizes/<slug>`. No currency check needed — index levels are plain points, not a currency amount. |
 
-finanzen.net remains the default (unchanged behavior for existing installs); `wstreet` exists because
-finanzen.net sits behind Akamai bot protection that intermittently 403s this call.
+Both scrapers scope their DOM lookups to the page's `#quoteBoxMarker`, not a document-global selector: every
+wallstreet-online.de instrument page also carries a "Kursleiste" ticker-ribbon widget (other instruments) above
+the page's own quote box, and that widget's rows render a `.quote_currency` span of their own too (for the
+%-change figure, literal text `"%"`). An unscoped `.quote_currency` lookup is what the materials fetcher
+originally shipped with — it picked up the ribbon's `"%"` on every page, rejected every material as non-USD, and
+left the InfoBar empty on every single load, not intermittently. `#quoteBoxMarker` scoping is what fixed it.
+
+Three of the eighteen indexes previously configured (`straits`/Straits Times, `asx`/Australia All Ordinaries,
+`rts`/RTS) were dropped from the app entirely rather than partially supported: wallstreet-online.de has no page
+at all for the first two, and no live quote box for the third. Tin (`sn`) was dropped from materials for the
+same reason (see `WSTREET_MATERIAL_SLUGS`' comment).
 
 #### Cache layers
 

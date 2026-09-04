@@ -10,6 +10,7 @@ import type {
     CompanyData,
     DateData,
     ExchangeData,
+    IndexesServiceName,
     MaterialsServiceName,
     NumberStringPair,
     OnlineStorageData,
@@ -33,6 +34,7 @@ import {fnetFetcher} from "@/adapters/driven/fetch/providers/fnet";
 import {goyaxFetcher} from "@/adapters/driven/fetch/providers/goyax";
 import {tgateFetcher} from "@/adapters/driven/fetch/providers/tgate";
 import {wstreetFetcher} from "@/adapters/driven/fetch/providers/wstreet";
+import {fetchIndexDataWstreet} from "@/adapters/driven/fetch/providers/wstreetIndexes";
 import {fetchMaterialDataWstreet} from "@/adapters/driven/fetch/providers/wstreetMaterials";
 
 const FNET = {
@@ -354,11 +356,22 @@ export async function fetchExchangesData(
 /**
  * Fetches current values for major stock market indices.
  *
+ * @param options
+ * @param provider - Which site to scrape. "fnet" (finanzen.net, the
+ *        long-standing default) reads a single overview page; "wstreet"
+ *        (wallstreet-online.de) is a per-index alternative added for the
+ *        same reason `fetchMaterialData` got one — see
+ *        `fetchIndexDataWstreet` for its own caveats.
  * @returns Array of index names and current values
  */
 export async function fetchIndexData(
-    options?: { signal?: AbortSignal }
+    options?: { signal?: AbortSignal },
+    provider: IndexesServiceName = "fnet"
 ): Promise<StringNumberPair[]> {
+    if (provider === "wstreet") {
+        return fetchIndexDataWstreet(options);
+    }
+
     log("SERVICES fetch: Fetching index data");
 
     const html = await fetchWithCache(FNET.INDEXES, CACHE_POLICY.DEFAULT_HTTP_TTL_MS, {signal: options?.signal});
@@ -371,7 +384,7 @@ export async function fetchIndexData(
     // `"DAX".includes("")` — which is `true`. One untitled link carrying any
     // parseable number therefore matched the first index property tested, and,
     // since it matched every other property just as well, would have filled all
-    // 18 configured indexes with that single value.
+    // configured indexes with that single value.
     //
     // Titles are trimmed and case-folded here rather than compared raw: the
     // comparison used to be neither, so a title differing from its label only in

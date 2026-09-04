@@ -468,6 +468,9 @@
       "materialsSource": {
         "hint": "Datenquelle für Rohstoffpreise."
       },
+      "indexesSource": {
+        "hint": "Datenquelle für Indexstände."
+      },
       "currency": {
         "hint": "Standardwährung für neue Konten. Die angezeigte Währung ist die des aktiven Kontos."
       },

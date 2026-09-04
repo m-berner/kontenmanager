@@ -169,6 +169,18 @@ export type ServiceName = "none" | "goyax" | "fnet" | "wstreet" | "acheck" | "ar
 export type MaterialsServiceName = "fnet" | "wstreet";
 
 /**
+ * Permitted data sources for market index levels.
+ *
+ * Deliberately a separate type from both {@link ServiceName} and
+ * {@link MaterialsServiceName}: `fetchIndexData` is its own independent
+ * feature (its own `settings.indexesService`), scraping
+ * wallstreet-online.de's per-index pages
+ * (`https://www.wallstreet-online.de/indizes/<slug>`) when `"wstreet"` is
+ * selected — see `WSTREET_INDEX_SLUGS`.
+ */
+export type IndexesServiceName = "fnet" | "wstreet";
+
+/**
  * Represents a stock item that combines database fields with calculated RAM-only values.
  *
  * Built on {@link StockRecord} rather than `StockDb`, so `cISIN` and `cSymbol`

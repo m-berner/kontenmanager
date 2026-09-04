@@ -1025,8 +1025,8 @@ describe("FetchService", () => {
             // `SETTINGS.INDEXES[property].includes(title || "")` degenerates to
             // `"DAX".includes("")`, which is true — so one untitled link holding any
             // parseable number was attributed to the first index tested, and, since
-            // it matched every other property equally, would have filled all 18
-            // configured indexes with that single bogus value.
+            // it matched every other property equally, would have filled every
+            // configured index with that single bogus value.
             const indexHtml = `
                 <div class="index-world-map">
                   <a>99.999,99</a>
@@ -1104,6 +1104,47 @@ describe("FetchService", () => {
             const result = await fetchAdapter.fetchIndexData();
 
             expect(result).toEqual([{key: "dax", value: 18123.45}]);
+        });
+
+        it("defaults to finanzen.net when no provider is given, unchanged from before the wstreet option existed", async () => {
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+                new Response(
+                    `<div class="index-world-map"><a title="DAX">18.123,45</a></div>`,
+                    {status: 200}
+                )
+            );
+
+            await fetchAdapter.fetchIndexData();
+
+            expect(fetchMock).toHaveBeenCalledWith(
+                "https://www.finanzen.net/indizes/",
+                expect.anything()
+            );
+        });
+
+        it("delegates to the wstreet per-index fetcher when that provider is selected, without touching finanzen.net", async () => {
+            const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((url) => {
+                const href = typeof url === "string" ? url : url.toString();
+                if (href.startsWith("https://www.finanzen.net")) {
+                    throw new Error("must not call finanzen.net when provider is wstreet");
+                }
+                return Promise.resolve(
+                    new Response(
+                        `<div id="quoteBoxMarker">
+                            <div class="quoteValue"><span>26.107,51</span></div>
+                        </div>`,
+                        {status: 200}
+                    )
+                );
+            });
+
+            const result = await fetchAdapter.fetchIndexData(undefined, "wstreet");
+
+            expect(result.length).toBeGreaterThan(0);
+            expect(fetchMock.mock.calls.every(([url]) => {
+                const href = typeof url === "string" ? url : (url as URL).toString();
+                return href.startsWith("https://www.wallstreet-online.de/indizes/");
+            })).toBe(true);
         });
     });
 
