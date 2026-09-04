@@ -7,7 +7,14 @@
 import {CURRENCIES, ERROR_CATEGORY} from "@/domain/constants";
 import {appError, ERROR_DEFINITIONS, isAppError, serializeError} from "@/domain/errors";
 import {resolveDisplayCurrency} from "@/domain/logic";
-import type {AccountDb, AppStatus, ExchangeData, RecordsDbData, StorageDataType} from "@/domain/types";
+import type {
+    AccountDb,
+    AppStatus,
+    ExchangeData,
+    MarketDataServiceName,
+    RecordsDbData,
+    StorageDataType
+} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
 import type {Service as DatabaseAdapter} from "@/adapters/driven/database/databaseAdapter";
@@ -45,6 +52,11 @@ export type AppStores = {
         activeAccountId: number;
         exchanges: string[];
         service?: string;
+        /**
+         * Data source shared by commodity/material prices and market index
+         * levels; see `MarketDataServiceName`.
+         */
+        marketDataService?: string;
         /** App-level default currency; the fallback when no account is active. */
         currency: string;
     };
@@ -596,6 +608,14 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             return {exchanges: false, indexes: false, materials: false};
         }
 
+        // Independent of `settings.service` (the stock-quote provider), and
+        // shared by both materials and indexes — see `MarketDataServiceName`.
+        // Defaults to "fnet" for the same reason `syncFromStorage` does: an
+        // unset/unrecognized value keeps this feature behaving exactly as it
+        // always did, rather than silently switching data sources.
+        const marketDataProvider: MarketDataServiceName =
+            stores.settings.marketDataService === "wstreet" ? "wstreet" : "fnet";
+
         // Forward the signal: these four are the only calls app boot makes
         // unconditionally, and without cancellation an aborted startup left
         // them running (and retrying) against the network with nothing able to
@@ -604,8 +624,8 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             await Promise.allSettled([
                 fetch.fetchExchangesData(basePairs, {signal}),
                 fetch.fetchExchangesData(infoPairs, {signal}),
-                fetch.fetchIndexData({signal}),
-                fetch.fetchMaterialData({signal})
+                fetch.fetchIndexData({signal}, marketDataProvider),
+                fetch.fetchMaterialData({signal}, marketDataProvider)
             ]);
 
         if (signal?.aborted) {

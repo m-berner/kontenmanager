@@ -612,9 +612,6 @@ export const SETTINGS: StoresConfigType = {
         nikkei: "NIKKEI 225",
         hang: "Hang Seng",
         ibex: "IBEX 35",
-        straits: "Straits Times",
-        asx: "Australia All Ordinaries",
-        rts: "RTS",
         bovespa: "BOVESPA",
         sensex: "SENSEX",
         sci: "Shanghai Composite",
@@ -634,7 +631,6 @@ export const SETTINGS: StoresConfigType = {
         pt: "Platinpreis",
         al: "Aluminiumpreis",
         ni: "Nickelpreis",
-        sn: "Zinnpreis",
         pb: "Bleipreis",
         pd: "Palladiumpreis"
     }
@@ -666,5 +662,15 @@ export const BROWSER_STORAGE = {
     EXCHANGES: {key: "sExchanges", value: ["EURUSD"]},
     INDEXES: {key: "sIndexes", value: ["dax", "dow"]},
     MARKETS: {key: "sMarkets", value: ["Frankfurt", "XETRA"]},
-    MATERIALS: {key: "sMaterials", value: ["au", "brent"]}
+    MATERIALS: {key: "sMaterials", value: ["au", "brent"]},
+    /**
+     * Data source shared by commodity/material prices and market index
+     * levels — independent of `SERVICE` (the stock-quote provider). Defaults
+     * to "fnet" (finanzen.net), the only source either ever had, to keep
+     * existing installs' behavior unchanged; "wstreet" (wallstreet-online.de)
+     * is the opt-in alternative. One setting for both by design: materials
+     * and indexes always use the same source, so this never lets the two
+     * drift onto different providers.
+     */
+    MARKET_DATA_SERVICE: {key: "sMarketDataService", value: "fnet"}
 } as const;

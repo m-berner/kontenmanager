@@ -550,6 +550,31 @@ back gracefully when a request fails. Meeting / quarterly-report dates are **not
 fetched from Finanzen.Net (`fetchDateData` in `fetchAdapter.ts`
 hits the `FNET.SEARCH` / `FNET.DATES` endpoints directly), regardless of which provider is active for price quotes.
 
+Commodity/material prices and market index levels are a further exception: they share their **own**,
+independent data-source setting, `settings.marketDataService` (`BROWSER_STORAGE.MARKET_DATA_SERVICE`, key
+`sMarketDataService`, UI: `MarketDataServiceSelector` on the **Topics & Services** tab, not on the Indexes or
+Commodities tabs) — not `settings.service`, and not affected by it. One setting for both by design: materials
+and indexes always use the same source rather than being independently selectable (they used to be two separate
+settings; merged on request). It supports two sources, finanzen.net remaining the default (unchanged behavior
+for existing installs) because it sits behind Akamai bot protection that intermittently 403s both calls:
+
+| Key       | Provider          | Materials (`fetchMaterialData`)                                        | Indexes (`fetchIndexData`)                                        |
+|-----------|-------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| `fnet`    | Finanzen.Net      | Default. One request, `FNET.MATERIALS` overview table.                 | Default. One request, `FNET.INDEXES` overview table.                |
+| `wstreet` | Wallstreet-Online | Opt-in. One request per configured material (`fetchMaterialDataWstreet`, `providers/wstreetMaterials.ts`), scraping `wallstreet-online.de/rohstoffe/<slug>`. Only accepts a page whose quote is explicitly marked USD — two commodities (aluminum, lead, as of this writing) are quoted there in index points ("PKT") rather than a real price and are silently skipped rather than mislabeled. | Opt-in. One request per configured index (`fetchIndexDataWstreet`, `providers/wstreetIndexes.ts`), scraping `wallstreet-online.de/indizes/<slug>`. No currency check needed — index levels are plain points, not a currency amount. |
+
+Both scrapers scope their DOM lookups to the page's `#quoteBoxMarker`, not a document-global selector: every
+wallstreet-online.de instrument page also carries a "Kursleiste" ticker-ribbon widget (other instruments) above
+the page's own quote box, and that widget's rows render a `.quote_currency` span of their own too (for the
+%-change figure, literal text `"%"`). An unscoped `.quote_currency` lookup is what the materials fetcher
+originally shipped with — it picked up the ribbon's `"%"` on every page, rejected every material as non-USD, and
+left the InfoBar empty on every single load, not intermittently. `#quoteBoxMarker` scoping is what fixed it.
+
+Three of the eighteen indexes previously configured (`straits`/Straits Times, `asx`/Australia All Ordinaries,
+`rts`/RTS) were dropped from the app entirely rather than partially supported: wallstreet-online.de has no page
+at all for the first two, and no live quote box for the third. Tin (`sn`) was dropped from materials for the
+same reason (see `WSTREET_MATERIAL_SLUGS`' comment).
+
 #### Cache layers
 
 1. **HTTP response cache** (`driven/fetch/httpCache.ts`) — caches raw HTTP responses by URL with a configurable TTL
@@ -846,7 +871,7 @@ test. All other files receive adapters via `useAdapters()` or the Pinia DI symbo
 3. Add state + getter + setter to `src/adapters/ui/stores/settings.ts`.
 4. Expose a UI control in `OptionsIndex.vue`.
 
-**New data provider:**
+**New data provider (stock quotes):**
 
 1. Add a provider file in `src/adapters/driven/fetch/providers/`.
 2. Register it in `src/adapters/driven/fetchAdapter.ts`.
@@ -855,6 +880,13 @@ test. All other files receive adapters via `useAdapters()` or the Pinia DI symbo
    needed. Its label comes from the entry's `NAME`; only the `none` pseudo-provider is translated, via
    `createServiceLabelOverrides` in `domain/constants/ui/options.ts` — real providers are brand names and stay
    untranslated in every locale.
+
+**New market-data source (commodities/indexes)**: a related but distinct recipe — `MarketDataServiceName` /
+`settings.marketDataService` is its own, narrower selection (currently `"fnet"` / `"wstreet"`), NOT auto-generated
+from `FETCH.PROVIDERS` the way `ServiceSelector`'s list is (most `FETCH.PROVIDERS` keys, e.g. `goyax`/`acheck`,
+never supplied commodities or indexes). Adding a third source means: a new `providers/wstreetMaterials.ts`-shaped
+file, a branch in `fetchAdapter.ts`'s `fetchMaterialData`/`fetchIndexData`, and adding the key to
+`MarketDataServiceSelector.vue`'s hardcoded `MARKET_DATA_SERVICES` array by hand.
 
 **Testing conventions:**
 

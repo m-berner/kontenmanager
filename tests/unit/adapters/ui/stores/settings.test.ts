@@ -52,6 +52,7 @@ describe("Settings Store", () => {
             [BROWSER_STORAGE.SUMS_PER_PAGE.key]: 30,
             [BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key]: 42,
             [BROWSER_STORAGE.SERVICE.key]: "alphavantage",
+            [BROWSER_STORAGE.MARKET_DATA_SERVICE.key]: "wstreet",
             [BROWSER_STORAGE.MATERIALS.key]: ["au", "cu"],
             [BROWSER_STORAGE.MARKETS.key]: ["XETRA"],
             [BROWSER_STORAGE.INDEXES.key]: ["dax"],
@@ -67,6 +68,7 @@ describe("Settings Store", () => {
         expect(store.sumsPerPage).toBe(30);
         expect(store.activeAccountId).toBe(42);
         expect(store.service).toBe("alphavantage");
+        expect(store.marketDataService).toBe("wstreet");
         expect(store.materials).toEqual(["au", "cu"]);
         expect(store.markets).toEqual(["XETRA"]);
         expect(store.indexes).toEqual(["dax"]);

@@ -26,9 +26,11 @@ The mission of the components layer is to:
 - `ContentCard.vue`
 - `CreditDebitFieldset.vue`
 - `CurrencyInput.vue`
+- `CurrencySelector.vue`
 - `DialogPort.vue`
 - `DotMenu.vue`
 - `DynamicList.vue`
+- `MarketDataServiceSelector.vue`
 - `MenuItem.vue`
 - `ServiceSelector.vue`
 - `ThemeSelector.vue`

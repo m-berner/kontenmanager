@@ -51,9 +51,12 @@ A functional module handling the application lifecycle and initialization.
 
 Thin orchestrator for all external network requests. Provider-specific scraping logic lives in `fetch/providers/`.
 
-- **Providers** (`fetch/providers/`): One file per data source (`ard`, `acheck`, `fnet`, `goyax`, `tgate`, `wstreet`).
-  Each exports a single fetcher function that scrapes and normalizes quote data (rate, min, max, currency) for that
-  portal.
+- **Providers** (`fetch/providers/`): One file per stock-quote data source (`ard`, `acheck`, `fnet`, `goyax`, `tgate`,
+  `wstreet`). Each exports a single fetcher function that scrapes and normalizes quote data (rate, min, max, currency)
+  for that portal. `wstreetMaterials.ts` and `wstreetIndexes.ts` are a separate pair: the opt-in wallstreet-online.de
+  source for `settings.marketDataService` (shared by commodity prices and index levels — see
+  `/src/README.md`'s "Fetch Adapter & Online Data" section), a different shape (name/value pairs, no currency
+  conversion) than the six quote fetchers.
 - **HTTP utilities** (`fetch/httpClient.ts`): `fetchWithRetry` (timeout + exponential backoff), `fetchWithCache`,
   `fetchTextWithCacheFollowRedirect`, `parseHTML`.
 - **Cache** (`fetch/httpCache.ts`): In-memory TTL cache shared across all providers.

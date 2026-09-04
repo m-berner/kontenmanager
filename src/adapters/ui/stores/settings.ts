@@ -40,6 +40,8 @@ export const useSettingsStore = defineStore(
      * @property {Ref<number>} activeAccountId - Identifier of the currently selected bank account.
      *                                           The default value is -1 if no account is selected.
      * @property {Ref<string>} service - Key of the external financial service used for data fetching.
+     * @property {Ref<string>} marketDataService - Data source shared by commodity/material prices
+     *                                             and market index levels.
      * @property {Ref<string[]>} materials - List of enabled/visible material categories.
      * @property {Ref<string[]>} markets - List of enabled/visible stock market identifiers.
      * @property {Ref<string[]>} indexes - List of enabled/visible financial indexes.
@@ -91,6 +93,14 @@ export const useSettingsStore = defineStore(
 
         /** Key of the external financial service used for data fetching. */
         const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
+
+        /**
+         * Data source shared by commodity/material prices and market index
+         * levels — independent of `service` (the stock-quote provider); see
+         * `MarketDataServiceName`. One setting for both by design: they
+         * always use the same source, never two different ones.
+         */
+        const marketDataService = ref<string>(BROWSER_STORAGE.MARKET_DATA_SERVICE.value);
 
         /**
          * App-level default currency — see `BROWSER_STORAGE.CURRENCY`.
@@ -301,6 +311,12 @@ export const useSettingsStore = defineStore(
                 BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.value
             );
             syncFromStorage(service, storage, BROWSER_STORAGE.SERVICE.key, BROWSER_STORAGE.SERVICE.value);
+            syncFromStorage(
+                marketDataService,
+                storage,
+                BROWSER_STORAGE.MARKET_DATA_SERVICE.key,
+                BROWSER_STORAGE.MARKET_DATA_SERVICE.value
+            );
             syncFromStorage(currency, storage, BROWSER_STORAGE.CURRENCY.key, BROWSER_STORAGE.CURRENCY.value);
             syncFromStorage(materials, storage, BROWSER_STORAGE.MATERIALS.key, [...BROWSER_STORAGE.MATERIALS.value]);
             syncFromStorage(markets, storage, BROWSER_STORAGE.MARKETS.key, [...BROWSER_STORAGE.MARKETS.value]);
@@ -318,6 +334,12 @@ export const useSettingsStore = defineStore(
 
                 applyStorageChange(changes, BROWSER_STORAGE.SKIN.key, skin, BROWSER_STORAGE.SKIN.value);
                 applyStorageChange(changes, BROWSER_STORAGE.SERVICE.key, service, BROWSER_STORAGE.SERVICE.value);
+                applyStorageChange(
+                    changes,
+                    BROWSER_STORAGE.MARKET_DATA_SERVICE.key,
+                    marketDataService,
+                    BROWSER_STORAGE.MARKET_DATA_SERVICE.value
+                );
                 applyStorageChange(changes, BROWSER_STORAGE.CURRENCY.key, currency, BROWSER_STORAGE.CURRENCY.value);
                 applyStorageChange(changes, BROWSER_STORAGE.INDEXES.key, indexes, [...BROWSER_STORAGE.INDEXES.value]);
                 applyStorageChange(changes, BROWSER_STORAGE.MARKETS.key, markets, [...BROWSER_STORAGE.MARKETS.value]);
@@ -408,6 +430,11 @@ export const useSettingsStore = defineStore(
         /** Updates the active market data provider. */
         async function setService(v: string): Promise<void> {
             await updateSetting(service, BROWSER_STORAGE.SERVICE.key, v);
+        }
+
+        /** Updates the active commodity/index market-data source (shared by both). */
+        async function setMarketDataService(v: string): Promise<void> {
+            await updateSetting(marketDataService, BROWSER_STORAGE.MARKET_DATA_SERVICE.key, v);
         }
 
         /**
@@ -501,6 +528,7 @@ export const useSettingsStore = defineStore(
             sumsPerPage,
             activeAccountId,
             service,
+            marketDataService,
             currency,
             materials,
             markets,
@@ -515,6 +543,7 @@ export const useSettingsStore = defineStore(
             setDividendsPerPage,
             setStocksPerPage,
             setService,
+            setMarketDataService,
             setActiveAccountId,
             setIndexes,
             setMaterials,

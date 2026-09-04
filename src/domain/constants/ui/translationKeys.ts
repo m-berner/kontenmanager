@@ -67,7 +67,6 @@ export const TRANSLATION_KEYS = {
     pb: "views.optionsIndex.materials.pb",
     pd: "views.optionsIndex.materials.pd",
     pt: "views.optionsIndex.materials.pt",
-    sn: "views.optionsIndex.materials.sn",
     wti: "views.optionsIndex.materials.wti"
 } as const;
 

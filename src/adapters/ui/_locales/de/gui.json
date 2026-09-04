@@ -465,6 +465,9 @@
       "serviceNames": {
         "disabled": "Deaktiviert"
       },
+      "marketDataSource": {
+        "hint": "Datenquelle für Rohstoffpreise und Indexstände."
+      },
       "currency": {
         "hint": "Standardwährung für neue Konten. Die angezeigte Währung ist die des aktiven Kontos."
       },
@@ -485,7 +488,6 @@
         "pt": "Platin",
         "al": "Aluminium",
         "ni": "Nickel",
-        "sn": "Zinn",
         "pb": "Blei",
         "pd": "Palladium"
       }
