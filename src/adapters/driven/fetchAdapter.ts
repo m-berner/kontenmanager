@@ -10,8 +10,7 @@ import type {
     CompanyData,
     DateData,
     ExchangeData,
-    IndexesServiceName,
-    MaterialsServiceName,
+    MarketDataServiceName,
     NumberStringPair,
     OnlineStorageData,
     ServiceName,
@@ -366,7 +365,7 @@ export async function fetchExchangesData(
  */
 export async function fetchIndexData(
     options?: { signal?: AbortSignal },
-    provider: IndexesServiceName = "fnet"
+    provider: MarketDataServiceName = "fnet"
 ): Promise<StringNumberPair[]> {
     if (provider === "wstreet") {
         return fetchIndexDataWstreet(options);
@@ -512,7 +511,7 @@ export async function fetchIsOk(options?: { signal?: AbortSignal }): Promise<boo
  */
 export async function fetchMaterialData(
     options?: { signal?: AbortSignal },
-    provider: MaterialsServiceName = "fnet"
+    provider: MarketDataServiceName = "fnet"
 ): Promise<StringNumberPair[]> {
     if (provider === "wstreet") {
         return fetchMaterialDataWstreet(options);

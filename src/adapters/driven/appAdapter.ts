@@ -11,8 +11,7 @@ import type {
     AccountDb,
     AppStatus,
     ExchangeData,
-    IndexesServiceName,
-    MaterialsServiceName,
+    MarketDataServiceName,
     RecordsDbData,
     StorageDataType
 } from "@/domain/types";
@@ -53,10 +52,11 @@ export type AppStores = {
         activeAccountId: number;
         exchanges: string[];
         service?: string;
-        /** Data source for commodity/material prices; see `MaterialsServiceName`. */
-        materialsService?: string;
-        /** Data source for market index levels; see `IndexesServiceName`. */
-        indexesService?: string;
+        /**
+         * Data source shared by commodity/material prices and market index
+         * levels; see `MarketDataServiceName`.
+         */
+        marketDataService?: string;
         /** App-level default currency; the fallback when no account is active. */
         currency: string;
     };
@@ -608,16 +608,13 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             return {exchanges: false, indexes: false, materials: false};
         }
 
-        // Independent of `settings.service` (the stock-quote provider) —
-        // see `MaterialsServiceName`. Defaults to "fnet" for the same reason
-        // `syncFromStorage` does: an unset/unrecognized value keeps this
-        // feature behaving exactly as it always did, rather than silently
-        // switching data sources.
-        const materialsProvider: MaterialsServiceName =
-            stores.settings.materialsService === "wstreet" ? "wstreet" : "fnet";
-        // Same shape, same reason — see `IndexesServiceName`.
-        const indexesProvider: IndexesServiceName =
-            stores.settings.indexesService === "wstreet" ? "wstreet" : "fnet";
+        // Independent of `settings.service` (the stock-quote provider), and
+        // shared by both materials and indexes — see `MarketDataServiceName`.
+        // Defaults to "fnet" for the same reason `syncFromStorage` does: an
+        // unset/unrecognized value keeps this feature behaving exactly as it
+        // always did, rather than silently switching data sources.
+        const marketDataProvider: MarketDataServiceName =
+            stores.settings.marketDataService === "wstreet" ? "wstreet" : "fnet";
 
         // Forward the signal: these four are the only calls app boot makes
         // unconditionally, and without cancellation an aborted startup left
@@ -627,8 +624,8 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             await Promise.allSettled([
                 fetch.fetchExchangesData(basePairs, {signal}),
                 fetch.fetchExchangesData(infoPairs, {signal}),
-                fetch.fetchIndexData({signal}, indexesProvider),
-                fetch.fetchMaterialData({signal}, materialsProvider)
+                fetch.fetchIndexData({signal}, marketDataProvider),
+                fetch.fetchMaterialData({signal}, marketDataProvider)
             ]);
 
         if (signal?.aborted) {

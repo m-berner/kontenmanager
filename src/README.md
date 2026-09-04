@@ -550,13 +550,13 @@ back gracefully when a request fails. Meeting / quarterly-report dates are **not
 fetched from Finanzen.Net (`fetchDateData` in `fetchAdapter.ts`
 hits the `FNET.SEARCH` / `FNET.DATES` endpoints directly), regardless of which provider is active for price quotes.
 
-Commodity/material prices and market index levels are each a further exception: both have their **own**,
-independent data-source setting — `settings.materialsService` / `settings.indexesService`
-(`BROWSER_STORAGE.MATERIALS_SERVICE` / `INDEXES_SERVICE`, keys `sMaterialsService` / `sIndexesService`, UI:
-`MaterialsServiceSelector` / `IndexesServiceSelector` on their respective options tabs) — neither is
-`settings.service`, and neither is affected by it. Both support the same two sources, finanzen.net remaining the
-default (unchanged behavior for existing installs) in each case because both sit behind Akamai bot protection
-that intermittently 403s these calls:
+Commodity/material prices and market index levels are a further exception: they share their **own**,
+independent data-source setting, `settings.marketDataService` (`BROWSER_STORAGE.MARKET_DATA_SERVICE`, key
+`sMarketDataService`, UI: `MarketDataServiceSelector` on the **Topics & Services** tab, not on the Indexes or
+Commodities tabs) — not `settings.service`, and not affected by it. One setting for both by design: materials
+and indexes always use the same source rather than being independently selectable (they used to be two separate
+settings; merged on request). It supports two sources, finanzen.net remaining the default (unchanged behavior
+for existing installs) because it sits behind Akamai bot protection that intermittently 403s both calls:
 
 | Key       | Provider          | Materials (`fetchMaterialData`)                                        | Indexes (`fetchIndexData`)                                        |
 |-----------|-------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------|

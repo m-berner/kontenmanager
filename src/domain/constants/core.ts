@@ -664,16 +664,13 @@ export const BROWSER_STORAGE = {
     MARKETS: {key: "sMarkets", value: ["Frankfurt", "XETRA"]},
     MATERIALS: {key: "sMaterials", value: ["au", "brent"]},
     /**
-     * Data source for commodity/material prices — independent of `SERVICE`
-     * (the stock-quote provider). Defaults to "fnet" (finanzen.net), the
-     * only source this ever had, to keep existing installs' behavior
-     * unchanged; "wstreet" (wallstreet-online.de) is the opt-in alternative.
+     * Data source shared by commodity/material prices and market index
+     * levels — independent of `SERVICE` (the stock-quote provider). Defaults
+     * to "fnet" (finanzen.net), the only source either ever had, to keep
+     * existing installs' behavior unchanged; "wstreet" (wallstreet-online.de)
+     * is the opt-in alternative. One setting for both by design: materials
+     * and indexes always use the same source, so this never lets the two
+     * drift onto different providers.
      */
-    MATERIALS_SERVICE: {key: "sMaterialsService", value: "fnet"},
-    /**
-     * Data source for market index levels — independent of both `SERVICE`
-     * and `MATERIALS_SERVICE`. Same default/opt-in shape as
-     * `MATERIALS_SERVICE`, for the same reason.
-     */
-    INDEXES_SERVICE: {key: "sIndexesService", value: "fnet"}
+    MARKET_DATA_SERVICE: {key: "sMarketDataService", value: "fnet"}
 } as const;

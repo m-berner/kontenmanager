@@ -21,8 +21,7 @@ import AlertOverlay from "@/adapters/ui/components/AlertOverlay.vue";
 import CheckboxGrid from "@/adapters/ui/components/CheckboxGrid.vue";
 import CurrencySelector from "@/adapters/ui/components/CurrencySelector.vue";
 import DynamicList from "@/adapters/ui/components/DynamicList.vue";
-import IndexesServiceSelector from "@/adapters/ui/components/IndexesServiceSelector.vue";
-import MaterialsServiceSelector from "@/adapters/ui/components/MaterialsServiceSelector.vue";
+import MarketDataServiceSelector from "@/adapters/ui/components/MarketDataServiceSelector.vue";
 import ServiceSelector from "@/adapters/ui/components/ServiceSelector.vue";
 import ThemeSelector from "@/adapters/ui/components/ThemeSelector.vue";
 
@@ -60,6 +59,9 @@ log("VIEWS OptionsIndex: setup", window.location.href, "info");
               <v-col cols="12" md="6" sm="6">
                 <CurrencySelector/>
               </v-col>
+              <v-col cols="12" md="6" sm="6">
+                <MarketDataServiceSelector/>
+              </v-col>
             </v-row>
           </v-tabs-window-item>
           <v-tabs-window-item :value="1">
@@ -71,20 +73,10 @@ log("VIEWS OptionsIndex: setup", window.location.href, "info");
           </v-tabs-window-item>
           <v-tabs-window-item :value="2">
             <v-row>
-              <v-col cols="12" md="6" sm="6">
-                <IndexesServiceSelector/>
-              </v-col>
-            </v-row>
-            <v-row>
               <CheckboxGrid :type="CHECKBOX_GRID_TYPES.INDEXES"/>
             </v-row>
           </v-tabs-window-item>
           <v-tabs-window-item :value="3">
-            <v-row>
-              <v-col cols="12" md="6" sm="6">
-                <MaterialsServiceSelector/>
-              </v-col>
-            </v-row>
             <v-row>
               <CheckboxGrid :type="CHECKBOX_GRID_TYPES.MATERIALS"/>
             </v-row>

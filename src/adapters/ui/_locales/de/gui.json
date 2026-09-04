@@ -465,11 +465,8 @@
       "serviceNames": {
         "disabled": "Deaktiviert"
       },
-      "materialsSource": {
-        "hint": "Datenquelle für Rohstoffpreise."
-      },
-      "indexesSource": {
-        "hint": "Datenquelle für Indexstände."
+      "marketDataSource": {
+        "hint": "Datenquelle für Rohstoffpreise und Indexstände."
       },
       "currency": {
         "hint": "Standardwährung für neue Konten. Die angezeigte Währung ist die des aktiven Kontos."

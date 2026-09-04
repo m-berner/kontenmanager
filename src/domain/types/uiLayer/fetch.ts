@@ -156,29 +156,23 @@ export interface ServiceFetcherType {
 export type ServiceName = "none" | "goyax" | "fnet" | "wstreet" | "acheck" | "ard" | "tgate";
 
 /**
- * Permitted data sources for commodity/material prices.
+ * Permitted data sources for commodity/material prices and market index
+ * levels — one shared setting for both.
  *
- * Deliberately a separate, narrower type from {@link ServiceName}: the
- * materials feature (`fetchMaterialData`) is independent of the stock-quote
- * `service` setting and only ever supported finanzen.net. `wstreet` was added
- * as a second source scraping wallstreet-online.de's per-commodity pages
- * (`https://www.wallstreet-online.de/rohstoffe/<slug>`) — see
- * `WSTREET_MATERIAL_SLUGS`. Every other `ServiceName` (goyax, acheck, ard,
- * tgate) only ever provided stock quotes, never commodities.
+ * Deliberately a separate, narrower type from {@link ServiceName}: this
+ * covers `fetchMaterialData` and `fetchIndexData`, which are independent of
+ * the stock-quote `service` setting and only ever supported finanzen.net.
+ * `wstreet` is a second source scraping wallstreet-online.de's per-instrument
+ * pages (`https://www.wallstreet-online.de/rohstoffe/<slug>` for materials,
+ * `/indizes/<slug>` for indexes — see `WSTREET_MATERIAL_SLUGS` /
+ * `WSTREET_INDEX_SLUGS`). Materials and indexes used to have their own
+ * separate settings/types (`materialsService`/`indexesService`); merged into
+ * one on request, so switching data source for one switches it for both
+ * rather than leaving them to drift apart. Every other `ServiceName` (goyax,
+ * acheck, ard, tgate) only ever provided stock quotes, never commodities or
+ * indexes.
  */
-export type MaterialsServiceName = "fnet" | "wstreet";
-
-/**
- * Permitted data sources for market index levels.
- *
- * Deliberately a separate type from both {@link ServiceName} and
- * {@link MaterialsServiceName}: `fetchIndexData` is its own independent
- * feature (its own `settings.indexesService`), scraping
- * wallstreet-online.de's per-index pages
- * (`https://www.wallstreet-online.de/indizes/<slug>`) when `"wstreet"` is
- * selected — see `WSTREET_INDEX_SLUGS`.
- */
-export type IndexesServiceName = "fnet" | "wstreet";
+export type MarketDataServiceName = "fnet" | "wstreet";
 
 /**
  * Represents a stock item that combines database fields with calculated RAM-only values.

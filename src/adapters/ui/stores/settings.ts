@@ -40,8 +40,8 @@ export const useSettingsStore = defineStore(
      * @property {Ref<number>} activeAccountId - Identifier of the currently selected bank account.
      *                                           The default value is -1 if no account is selected.
      * @property {Ref<string>} service - Key of the external financial service used for data fetching.
-     * @property {Ref<string>} materialsService - Data source for commodity/material prices.
-     * @property {Ref<string>} indexesService - Data source for market index levels.
+     * @property {Ref<string>} marketDataService - Data source shared by commodity/material prices
+     *                                             and market index levels.
      * @property {Ref<string[]>} materials - List of enabled/visible material categories.
      * @property {Ref<string[]>} markets - List of enabled/visible stock market identifiers.
      * @property {Ref<string[]>} indexes - List of enabled/visible financial indexes.
@@ -95,16 +95,12 @@ export const useSettingsStore = defineStore(
         const service = ref<string>(BROWSER_STORAGE.SERVICE.value);
 
         /**
-         * Data source for commodity/material prices — independent of
-         * `service` (the stock-quote provider); see `MaterialsServiceName`.
+         * Data source shared by commodity/material prices and market index
+         * levels — independent of `service` (the stock-quote provider); see
+         * `MarketDataServiceName`. One setting for both by design: they
+         * always use the same source, never two different ones.
          */
-        const materialsService = ref<string>(BROWSER_STORAGE.MATERIALS_SERVICE.value);
-
-        /**
-         * Data source for market index levels — independent of both
-         * `service` and `materialsService`; see `IndexesServiceName`.
-         */
-        const indexesService = ref<string>(BROWSER_STORAGE.INDEXES_SERVICE.value);
+        const marketDataService = ref<string>(BROWSER_STORAGE.MARKET_DATA_SERVICE.value);
 
         /**
          * App-level default currency — see `BROWSER_STORAGE.CURRENCY`.
@@ -316,16 +312,10 @@ export const useSettingsStore = defineStore(
             );
             syncFromStorage(service, storage, BROWSER_STORAGE.SERVICE.key, BROWSER_STORAGE.SERVICE.value);
             syncFromStorage(
-                materialsService,
+                marketDataService,
                 storage,
-                BROWSER_STORAGE.MATERIALS_SERVICE.key,
-                BROWSER_STORAGE.MATERIALS_SERVICE.value
-            );
-            syncFromStorage(
-                indexesService,
-                storage,
-                BROWSER_STORAGE.INDEXES_SERVICE.key,
-                BROWSER_STORAGE.INDEXES_SERVICE.value
+                BROWSER_STORAGE.MARKET_DATA_SERVICE.key,
+                BROWSER_STORAGE.MARKET_DATA_SERVICE.value
             );
             syncFromStorage(currency, storage, BROWSER_STORAGE.CURRENCY.key, BROWSER_STORAGE.CURRENCY.value);
             syncFromStorage(materials, storage, BROWSER_STORAGE.MATERIALS.key, [...BROWSER_STORAGE.MATERIALS.value]);
@@ -346,15 +336,9 @@ export const useSettingsStore = defineStore(
                 applyStorageChange(changes, BROWSER_STORAGE.SERVICE.key, service, BROWSER_STORAGE.SERVICE.value);
                 applyStorageChange(
                     changes,
-                    BROWSER_STORAGE.MATERIALS_SERVICE.key,
-                    materialsService,
-                    BROWSER_STORAGE.MATERIALS_SERVICE.value
-                );
-                applyStorageChange(
-                    changes,
-                    BROWSER_STORAGE.INDEXES_SERVICE.key,
-                    indexesService,
-                    BROWSER_STORAGE.INDEXES_SERVICE.value
+                    BROWSER_STORAGE.MARKET_DATA_SERVICE.key,
+                    marketDataService,
+                    BROWSER_STORAGE.MARKET_DATA_SERVICE.value
                 );
                 applyStorageChange(changes, BROWSER_STORAGE.CURRENCY.key, currency, BROWSER_STORAGE.CURRENCY.value);
                 applyStorageChange(changes, BROWSER_STORAGE.INDEXES.key, indexes, [...BROWSER_STORAGE.INDEXES.value]);
@@ -448,14 +432,9 @@ export const useSettingsStore = defineStore(
             await updateSetting(service, BROWSER_STORAGE.SERVICE.key, v);
         }
 
-        /** Updates the active commodity/material price data source. */
-        async function setMaterialsService(v: string): Promise<void> {
-            await updateSetting(materialsService, BROWSER_STORAGE.MATERIALS_SERVICE.key, v);
-        }
-
-        /** Updates the active market index level data source. */
-        async function setIndexesService(v: string): Promise<void> {
-            await updateSetting(indexesService, BROWSER_STORAGE.INDEXES_SERVICE.key, v);
+        /** Updates the active commodity/index market-data source (shared by both). */
+        async function setMarketDataService(v: string): Promise<void> {
+            await updateSetting(marketDataService, BROWSER_STORAGE.MARKET_DATA_SERVICE.key, v);
         }
 
         /**
@@ -549,8 +528,7 @@ export const useSettingsStore = defineStore(
             sumsPerPage,
             activeAccountId,
             service,
-            materialsService,
-            indexesService,
+            marketDataService,
             currency,
             materials,
             markets,
@@ -565,8 +543,7 @@ export const useSettingsStore = defineStore(
             setDividendsPerPage,
             setStocksPerPage,
             setService,
-            setMaterialsService,
-            setIndexesService,
+            setMarketDataService,
             setActiveAccountId,
             setIndexes,
             setMaterials,

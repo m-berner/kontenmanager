@@ -415,11 +415,8 @@
       "serviceNames": {
         "disabled": "Disabled"
       },
-      "materialsSource": {
-        "hint": "Data source for commodity prices."
-      },
-      "indexesSource": {
-        "hint": "Data source for market index levels."
+      "marketDataSource": {
+        "hint": "Data source for commodity prices and market index levels."
       },
       "currency": {
         "hint": "Default currency for new accounts. The currency shown is the active account's."
