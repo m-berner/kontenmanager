@@ -510,6 +510,10 @@ Rules that follow from this:
   dividend totals. `other` is exempt — arbitrarily many custom types are fine.
 - Schema migration 28 (`backfillBookingTypeRoles` in `migrator.ts`) stamps `cRole` onto pre-existing rows,
   inferring the legacy role from the old id/name pair.
+- Schema migration 30 (`collapseBookingCreditDebitFields` in `migrator.ts`) collapses each of the 5 tax/fee
+  Credit/Debit pairs on a booking (`cSoli`, `cTax`, `cFee`, `cSourceTax`, `cTransactionTax`) into the single
+  signed column described below under §12.1 Currency. Lossless, since the two halves were already mutually
+  exclusive per booking.
 
 #### Transactions
 
@@ -681,8 +685,9 @@ fetched. A quote scraped in a third currency (`providerUtils` resolves CAD/AUD/N
 with `divisor = 1`, i.e. unconverted — honest, but not converted. Widen the list only together with the rate-fetching
 side.
 
-**Stored booking amounts are never converted.** `cDebit`/`cCredit` and the tax/fee pairs are persisted exactly as
-entered, and `cCurrency` records which currency that was. Converting on write would destroy the transaction's real
+**Stored booking amounts are never converted.** `cDebit`/`cCredit` and the five tax/fee fields (`cSoli`, `cTax`,
+`cFee`, `cSourceTax`, `cTransactionTax` — each a single signed column since schema 30, sign encoding debit vs. credit)
+are persisted exactly as entered, and `cCurrency` records which currency that was. Converting on write would destroy the transaction's real
 amount (breaking reconciliation against a broker statement, and German reporting, which wants the rate at the
 *transaction* date), would be irreversible, and would do so at whatever spot rate happened to be live — `runtime.curUsd`
 falls back to `1` when the FX fetch fails, which on a write path would silently persist a USD figure as EUR.
