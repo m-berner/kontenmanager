@@ -5,7 +5,7 @@
   -->
 
 <script lang="ts" setup>
-import {nextTick, ref} from "vue";
+import {computed, nextTick, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import type {VTextField} from "vuetify/components";
 
@@ -32,6 +32,11 @@ const NAME_RULES = [
 
 const edit = ref(!!bookingTypeFormData.id);
 const nameInput = ref<InstanceType<typeof VTextField> | null>(null);
+
+/** The account's booking types, alphabetically — same convention as BookingForm's `sortedBookingTypes`. */
+const sortedBookingTypes = computed(() =>
+    [...records.bookingTypes.items].sort((a, b) => a.cName.localeCompare(b.cName))
+);
 
 const onSelect = (id: number | null) => {
   if (!id) return;
@@ -64,7 +69,7 @@ log("COMPONENTS DIALOGS FORMS BookingTypeForm: setup");
       v-model="bookingTypeFormData.id"
       :item-title="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.NAME"
       :item-value="INDEXED_DB.STORE.BOOKING_TYPES.FIELDS.ID"
-      :items="records.bookingTypes.items"
+      :items="sortedBookingTypes"
       :label="t('components.dialogs.updateBookingType.bookingTypeLabel')"
       :menu-props="{ maxHeight: '200px' }"
       class="mb-4"

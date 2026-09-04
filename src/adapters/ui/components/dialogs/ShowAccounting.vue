@@ -8,7 +8,13 @@
 import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
-import {COMPONENTS, createAccountingHeaders, DATE, DIALOG_ITEMS_PER_PAGE_OPTIONS} from "@/domain/constants";
+import {
+  BOOKING_TYPE_ROLE,
+  COMPONENTS,
+  createAccountingHeaders,
+  DATE,
+  DIALOG_ITEMS_PER_PAGE_OPTIONS
+} from "@/domain/constants";
 import type {AccountEntry} from "@/domain/types";
 import {log} from "@/domain/utils/utils";
 
@@ -58,8 +64,20 @@ const getYearTitle = (entry: number): string => {
   return entry.toString();
 };
 /**
- * The per-booking-type rows — and *only* those. This is what the table
- * paginates.
+ * `text-info` rather than a hand-rolled color: `info` is the one semantic
+ * color in `plugins/vuetify.ts` individually measured for WCAG AA contrast
+ * against every one of the six configured themes' own surface colour,
+ * including the strongly-tinted `sky`/`ocean`/`earth`/`meadow` ones — unlike
+ * `warning`/`error`/`success`, which that file documents as known-bad on some
+ * of them. It's also visually distinct from `color-red`, already used below
+ * for negative sums. Applied to the category (name) column only.
+ */
+const HIGHLIGHT_NAME_CLASS = "text-info";
+
+/**
+ * The per-booking-type rows — excluding the account's Buy and Sell types,
+ * which are pinned at the end instead (see {@link summaryEntries}) — sorted
+ * alphabetically by name. This is what the table paginates.
  *
  * The Sum row (plus, for a depot account, Taxes and Fees) used to be appended to
  * this same array, so they were paginated with the data. With more booking types
@@ -72,18 +90,32 @@ const getYearTitle = (entry: number): string => {
  */
 const accountEntries = computed(() => {
   const {sums} = getAccountData(selected.value);
+  const bookingTypes = records.bookingTypes.items;
 
-  return sums.map((entry, i): AccountEntry => ({
-    id: i,
-    name: entry.value,
-    sum: entry.key,
-    nameClass: "",
-    sumClass: entry.key < 0 ? "color-red" : ""
-  }));
+  return sums
+    .map((entry, i): AccountEntry & {role: string} => ({
+      id: i,
+      name: entry.value,
+      sum: entry.key,
+      nameClass: "",
+      sumClass: entry.key < 0 ? "color-red" : "",
+      // aggregateBookingsPerType maps 1:1 over the `bookingTypes` array it is
+      // given (same store, same order, both here and in accounting.ts), so
+      // index `i` into `sums` always corresponds to index `i` into
+      // `bookingTypes`.
+      role: bookingTypes[i]?.cRole ?? BOOKING_TYPE_ROLE.OTHER
+    }))
+    .filter((entry) => entry.role !== BOOKING_TYPE_ROLE.BUY && entry.role !== BOOKING_TYPE_ROLE.SELL)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(({role: _role, ...entry}): AccountEntry => entry);
 });
 
 /**
- * The Taxes/Fees/Sum rows, pinned below the paginated body on every page.
+ * The account's Buy/Sell rows, plus (for a depot account) Taxes and Fees,
+ * plus the Sum row — pinned below the paginated body on every page, in that
+ * order. Buy, Sell, Fees and Taxes carry {@link HIGHLIGHT_NAME_CLASS} on
+ * their category cell so they stand out as the rows always found at the end
+ * of the table, whichever page is showing.
  *
  * Ids continue past `accountEntries`' range so the two sets never collide — they
  * are rendered separately now, but the hidden id cell still shows them and a
@@ -91,22 +123,31 @@ const accountEntries = computed(() => {
  */
 const summaryEntries = computed(() => {
   const {sums, taxes, fees} = getAccountData(selected.value);
-  const result: AccountEntry[] = [];
+  const bookingTypes = records.bookingTypes.items;
   const finalSum = sums.reduce((acc, entry) => acc + entry.key, 0);
+
+  const buySellEntries: Omit<AccountEntry, "id">[] = [BOOKING_TYPE_ROLE.BUY, BOOKING_TYPE_ROLE.SELL]
+    .flatMap((role) => sums.filter((_entry, i) => bookingTypes[i]?.cRole === role))
+    .map((entry) => ({
+      name: entry.value,
+      sum: entry.key,
+      nameClass: HIGHLIGHT_NAME_CLASS,
+      sumClass: entry.key < 0 ? "color-red" : ""
+    }));
+
+  const result: Omit<AccountEntry, "id">[] = [...buySellEntries];
 
   if (records.isDepot) {
     result.push({
-      id: sums.length + 1,
-      name: t("components.dialogs.showAccounting.taxes"),
-      sum: taxes,
-      nameClass: "",
+      name: t("components.dialogs.showAccounting.fees"),
+      sum: fees,
+      nameClass: HIGHLIGHT_NAME_CLASS,
       sumClass: "color-red"
     });
     result.push({
-      id: sums.length + 2,
-      name: t("components.dialogs.showAccounting.fees"),
-      sum: fees,
-      nameClass: "",
+      name: t("components.dialogs.showAccounting.taxes"),
+      sum: taxes,
+      nameClass: HIGHLIGHT_NAME_CLASS,
       sumClass: "color-red"
     });
   }
@@ -122,7 +163,6 @@ const summaryEntries = computed(() => {
   // invariant, not by construction; gate it explicitly instead.
   const total = records.isDepot ? finalSum + taxes + fees : finalSum;
   result.push({
-    id: sums.length,
     name: t("components.dialogs.showAccounting.sum"),
     sum: total,
     nameClass: "font-weight-bold",
@@ -131,7 +171,7 @@ const summaryEntries = computed(() => {
     sumClass: total < 0 ? "font-weight-bold color-red" : "font-weight-bold"
   });
 
-  return result;
+  return result.map((entry, i): AccountEntry => ({id: sums.length + i, ...entry}));
 });
 
 const getAccountData = (year: number | null) => {
@@ -216,3 +256,19 @@ log("COMPONENTS DIALOGS ShowAccounting: setup");
     </v-card>
   </v-form>
 </template>
+
+<style scoped>
+/*
+ * Hides only the "1-5 of 5" item-range readout in the table footer — Vuetify's
+ * default `dataFooter.pageText` ("{0}-{1} of {2}" / German "{0}-{1} von {2}"),
+ * not a page count. There is no prop to turn off just this piece (only
+ * `hide-default-footer`, which would also remove the items-per-page selector
+ * and the prev/next pagination controls this table still needs when a
+ * booking-type count exceeds a page). `:deep()` is required because
+ * `.v-data-table-footer__info` is rendered inside VDataTable's own child
+ * component, outside this component's own template.
+ */
+:deep(.v-data-table-footer__info) {
+  display: none;
+}
+</style>
