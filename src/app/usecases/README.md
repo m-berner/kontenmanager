@@ -658,7 +658,12 @@ ShowAccounting dialog opens
     └─ accountingStore (derived from bookingsStore + bookingTypesStore)
         ├─ sumBookingsPerType          — aggregates all bookings by booking type
         ├─ sumBookingsPerTypeAndYear(y) — same, restricted to one year
-        └─ Returns rows for the v-data-table
+        └─ ShowAccounting.vue re-shapes the rows for the v-data-table:
+            ├─ every type other than Buy/Sell (matched by cRole, not name) — sorted
+            │   alphabetically, this is what the table paginates
+            └─ pinned below the paginated body on every page, in this fixed order:
+               Buy, Sell, Fees, Taxes, Sum — the first four highlighted (category
+               cell only) via the theme-measured `text-info` color
 
 Fee / tax totals come from the per-booking amount fields, not from type labels:
     └─ domain/logic.ts: calculateSumFees / calculateSumTaxes (per year),
