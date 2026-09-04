@@ -91,6 +91,18 @@ describe("fetchIndexDataWstreet", () => {
         clearCache();
     });
 
+    // Same reasoning as wstreetMaterials.test.ts's matching test: every other
+    // test here exercises the SLUGS mirror above, not the real
+    // SETTINGS.INDEXES key set, so an index added to SETTINGS.INDEXES
+    // without a matching entry added to the real WSTREET_INDEX_SLUGS in the
+    // module under test would silently vanish from fetchIndexDataWstreet's
+    // result in production without failing any test here. This one catches
+    // that: it fails the moment this mirror and SETTINGS.INDEXES' real keys
+    // disagree.
+    it("mirrors every key currently configured in SETTINGS.INDEXES (catches the slug map falling out of sync)", () => {
+        expect(Object.keys(SLUGS).sort()).toEqual(Object.keys(SETTINGS.INDEXES).sort());
+    });
+
     it("fetches every configured index and returns its level keyed by the short SETTINGS.INDEXES key", async () => {
         stubIndexPages();
 

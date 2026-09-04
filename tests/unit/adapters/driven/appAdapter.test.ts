@@ -118,6 +118,43 @@ describe("appAdapter", () => {
         expect(stores.runtime.infoMaterials.get("au")).toBe(2000);
     });
 
+    // materials and indexes were two independently-selectable data sources
+    // (settings.materialsService / settings.indexesService) before being
+    // merged into one settings.marketDataService on request: they must
+    // always use the SAME provider, never two different ones. These pin
+    // that fetchExternalData resolves it once and passes the identical
+    // value to both fetchIndexData and fetchMaterialData.
+    describe("marketDataService (shared by materials and indexes)", () => {
+        it("passes the configured provider to both fetchIndexData and fetchMaterialData", async () => {
+            const stores = createStores({settings: {marketDataService: "wstreet"}});
+
+            await adapter.initializeApp(stores, {});
+
+            expect(fetchAdapterDep.fetchIndexData).toHaveBeenCalledWith(expect.anything(), "wstreet");
+            expect(fetchAdapterDep.fetchMaterialData).toHaveBeenCalledWith(expect.anything(), "wstreet");
+        });
+
+        it("defaults both to fnet when marketDataService is unset", async () => {
+            const stores = createStores();
+
+            await adapter.initializeApp(stores, {});
+
+            expect(fetchAdapterDep.fetchIndexData).toHaveBeenCalledWith(expect.anything(), "fnet");
+            expect(fetchAdapterDep.fetchMaterialData).toHaveBeenCalledWith(expect.anything(), "fnet");
+        });
+
+        it("falls back to fnet for an unrecognized value rather than silently switching data sources", async () => {
+            // Mirrors syncFromStorage's own fallback contract: an unset or
+            // unrecognized value must not be treated as "wstreet" by accident.
+            const stores = createStores({settings: {marketDataService: "bogus"}});
+
+            await adapter.initializeApp(stores, {});
+
+            expect(fetchAdapterDep.fetchIndexData).toHaveBeenCalledWith(expect.anything(), "fnet");
+            expect(fetchAdapterDep.fetchMaterialData).toHaveBeenCalledWith(expect.anything(), "fnet");
+        });
+    });
+
     it("does not request the self-pair or re-request a configured base pair", async () => {
         // settings.exchanges defaults to ["EURUSD"], which for a de-DE install
         // IS the base USD pair — so the base and info calls used to request the

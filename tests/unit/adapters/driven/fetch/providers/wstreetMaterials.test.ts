@@ -84,6 +84,20 @@ describe("fetchMaterialDataWstreet", () => {
         clearCache();
     });
 
+    // Every other test in this file exercises the SLUGS mirror above, not
+    // the real SETTINGS.MATERIALS key set — so a material added to
+    // SETTINGS.MATERIALS without a matching entry added to the real
+    // WSTREET_MATERIAL_SLUGS in the module under test would silently vanish
+    // from fetchMaterialDataWstreet's result in production, with every test
+    // here still green (they'd just keep covering the old, now-incomplete
+    // set). This is the one test that would catch that: it fails the moment
+    // this mirror and SETTINGS.MATERIALS' real keys disagree, which is
+    // exactly when the module's own key set and SETTINGS.MATERIALS' would
+    // disagree too.
+    it("mirrors every key currently configured in SETTINGS.MATERIALS (catches the slug map falling out of sync)", () => {
+        expect(Object.keys(SLUGS).sort()).toEqual(Object.keys(SETTINGS.MATERIALS).sort());
+    });
+
     it("fetches every configured material and returns its USD price under the shared German label", async () => {
         stubMaterialPages();
 
