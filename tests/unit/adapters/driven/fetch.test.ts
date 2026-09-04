@@ -1125,7 +1125,8 @@ describe("FetchService", () => {
         it("delegates to the wstreet per-index fetcher when that provider is selected, without touching finanzen.net", async () => {
             const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((url) => {
                 const href = typeof url === "string" ? url : url.toString();
-                if (href.startsWith("https://www.finanzen.net")) {
+                const parsedUrl = new URL(href);
+                if (parsedUrl.protocol === "https:" && parsedUrl.hostname === "www.finanzen.net") {
                     throw new Error("must not call finanzen.net when provider is wstreet");
                 }
                 return Promise.resolve(
