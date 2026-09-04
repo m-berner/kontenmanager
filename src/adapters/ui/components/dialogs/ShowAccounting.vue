@@ -120,12 +120,15 @@ const summaryEntries = computed(() => {
   // applyBookingRoleInvariants — zero those fields for it). So an unconditional
   // addition would happen to be correct. It would be correct only by that
   // invariant, not by construction; gate it explicitly instead.
+  const total = records.isDepot ? finalSum + taxes + fees : finalSum;
   result.push({
     id: sums.length,
     name: t("components.dialogs.showAccounting.sum"),
-    sum: records.isDepot ? finalSum + taxes + fees : finalSum,
+    sum: total,
     nameClass: "font-weight-bold",
-    sumClass: "font-weight-bold"
+    // Bold always; red too when negative — the same rule accountEntries
+    // applies per row (entry.key < 0 above), just missing here before.
+    sumClass: total < 0 ? "font-weight-bold color-red" : "font-weight-bold"
   });
 
   return result;

@@ -286,19 +286,22 @@ describe("migrator: setupDatabase", () => {
          * A single shared `objectStore` mock used to serve every store, which
          * was fine while `backfillBookingTypeRoles` was the only cursor-based
          * migration — and stopped being fine the moment `backfillAccountCurrency`
-         * (v29) opened a cursor of its own: the two shared a call counter, so
-         * "the booking-type cursor opened once" silently became "some cursor
-         * opened twice". Keying by name keeps each migration's assertions about
-         * its own store.
+         * (v29) and `collapseBookingCreditDebitFields` (v30) opened cursors of
+         * their own: they'd all share a call counter, so "the booking-type
+         * cursor opened once" silently became "some cursor opened twice/thrice".
+         * Keying by name keeps each migration's assertions about its own store.
          */
         function createBackfillTx(records: BookingTypeDb[]) {
             const store = {openCursor: vi.fn(() => createFakeCursorRequest(records))};
             const accountsStore = {openCursor: vi.fn(() => createFakeCursorRequest([]))};
+            const bookingsStore = {openCursor: vi.fn(() => createFakeCursorRequest([]))};
             const tx = {
                 db: {objectStoreNames: {contains: vi.fn().mockReturnValue(true)}},
-                objectStore: vi.fn((name: string) =>
-                    name === INDEXED_DB.STORE.ACCOUNTS.NAME ? accountsStore : store
-                )
+                objectStore: vi.fn((name: string) => {
+                    if (name === INDEXED_DB.STORE.ACCOUNTS.NAME) return accountsStore;
+                    if (name === INDEXED_DB.STORE.BOOKINGS.NAME) return bookingsStore;
+                    return store;
+                })
             };
             return {tx, store, accountsStore};
         }
@@ -432,6 +435,86 @@ describe("migrator: setupDatabase", () => {
             const {accountsStore} = run(records, 29);
 
             expect(accountsStore.openCursor).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("collapseBookingCreditDebitFields (oldVersion < 30)", () => {
+        function run(records: Record<string, unknown>[], oldVersion = 29) {
+            const bookingsStore = {openCursor: vi.fn(() => createFakeCursorRequest(records))};
+            const otherStore = {openCursor: vi.fn(() => createFakeCursorRequest([]))};
+            const tx = {
+                db: {objectStoreNames: {contains: vi.fn().mockReturnValue(true)}},
+                objectStore: vi.fn((name: string) =>
+                    name === INDEXED_DB.STORE.BOOKINGS.NAME ? bookingsStore : otherStore
+                )
+            };
+            const db = {
+                objectStoreNames: {contains: vi.fn().mockReturnValue(true)},
+                createObjectStore: vi.fn()
+            };
+            const ev = {
+                oldVersion,
+                newVersion: 30,
+                target: {transaction: tx}
+            } as unknown as IDBVersionChangeEvent;
+
+            setupDatabase(db as unknown as IDBDatabase, ev);
+            return {bookingsStore};
+        }
+
+        it("collapses each legacy Credit/Debit pair into a single signed field (debit - credit)", () => {
+            const records = [
+                {
+                    cID: 1,
+                    cSoliCredit: 0, cSoliDebit: 5.5,
+                    cTaxCredit: 12, cTaxDebit: 0,
+                    cFeeCredit: 0, cFeeDebit: 3,
+                    cSourceTaxCredit: 0, cSourceTaxDebit: 0,
+                    cTransactionTaxCredit: 2, cTransactionTaxDebit: 0
+                }
+            ];
+
+            run(records);
+
+            expect(records[0]).toMatchObject({
+                cSoli: 5.5,
+                cTax: -12,
+                cFee: 3,
+                cSourceTax: 0,
+                cTransactionTax: -2
+            });
+            // The legacy fields are removed, not left alongside the new ones.
+            expect(records[0]).not.toHaveProperty("cSoliCredit");
+            expect(records[0]).not.toHaveProperty("cSoliDebit");
+            expect(records[0]).not.toHaveProperty("cTaxCredit");
+            expect(records[0]).not.toHaveProperty("cTaxDebit");
+            expect(records[0]).not.toHaveProperty("cFeeCredit");
+            expect(records[0]).not.toHaveProperty("cFeeDebit");
+            expect(records[0]).not.toHaveProperty("cSourceTaxCredit");
+            expect(records[0]).not.toHaveProperty("cSourceTaxDebit");
+            expect(records[0]).not.toHaveProperty("cTransactionTaxCredit");
+            expect(records[0]).not.toHaveProperty("cTransactionTaxDebit");
+        });
+
+        it("is idempotent: a row that already has cSoli (schema >= 30) is left untouched", () => {
+            const records = [
+                {cID: 1, cSoli: -9, cTax: 0, cFee: 0, cSourceTax: 0, cTransactionTax: 0}
+            ];
+
+            const {bookingsStore} = run(records);
+
+            expect(records[0].cSoli).toBe(-9);
+            expect(bookingsStore.openCursor).toHaveBeenCalledTimes(1);
+        });
+
+        it("does not run when upgrading from version 30 or later", () => {
+            const records = [
+                {cID: 1, cSoliCredit: 0, cSoliDebit: 5}
+            ];
+
+            const {bookingsStore} = run(records, 30);
+
+            expect(bookingsStore.openCursor).not.toHaveBeenCalled();
         });
     });
 

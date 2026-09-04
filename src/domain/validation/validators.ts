@@ -154,16 +154,16 @@ export function validateBooking(data: unknown): BookingDb {
         cBookingTypeID: Number(raw.cBookingTypeID ?? 0),
         cAccountNumberID: Number(raw.cAccountNumberID ?? 0),
         cStockID: Number(raw.cStockID ?? 0),
-        cSoliCredit: normalizeAmount(raw.cSoliCredit),
-        cSoliDebit: normalizeAmount(raw.cSoliDebit),
-        cTaxCredit: normalizeAmount(raw.cTaxCredit),
-        cTaxDebit: normalizeAmount(raw.cTaxDebit),
-        cFeeCredit: normalizeAmount(raw.cFeeCredit),
-        cFeeDebit: normalizeAmount(raw.cFeeDebit),
-        cSourceTaxCredit: normalizeAmount(raw.cSourceTaxCredit),
-        cSourceTaxDebit: normalizeAmount(raw.cSourceTaxDebit),
-        cTransactionTaxCredit: normalizeAmount(raw.cTransactionTaxCredit),
-        cTransactionTaxDebit: normalizeAmount(raw.cTransactionTaxDebit),
+        cSoli: normalizeSignedAmount(raw, "cSoli", "cSoliDebit", "cSoliCredit"),
+        cTax: normalizeSignedAmount(raw, "cTax", "cTaxDebit", "cTaxCredit"),
+        cFee: normalizeSignedAmount(raw, "cFee", "cFeeDebit", "cFeeCredit"),
+        cSourceTax: normalizeSignedAmount(raw, "cSourceTax", "cSourceTaxDebit", "cSourceTaxCredit"),
+        cTransactionTax: normalizeSignedAmount(
+            raw,
+            "cTransactionTax",
+            "cTransactionTaxDebit",
+            "cTransactionTaxCredit"
+        ),
         cMarketPlace: normalizeString(raw.cMarketPlace)
     };
 
@@ -258,6 +258,37 @@ export function validateStock(data: unknown): StockRecord {
 function normalizeAmount(value: unknown): number {
     const num = toNumber(value as string | number);
     return Number.isFinite(num) ? num : 0;
+}
+
+/**
+ * Normalizes one of the five signed tax/fee fields (schema 30: `cSoli`,
+ * `cTax`, `cFee`, `cSourceTax`, `cTransactionTax`), accepting either the
+ * current single-field shape or the pre-30 Credit/Debit pair it replaced.
+ *
+ * A backup file is versioned independently of the running app
+ * (`MIN_SUPPORTED_VERSION` is 27), so a pre-30 export still carries the old
+ * pair — collapsing it here the same way `formMapper.ts` does (`debit -
+ * credit`, the two having always been mutually exclusive per booking) keeps
+ * that data on import instead of silently dropping it to 0. The IndexedDB
+ * migration path for an existing local database is separate — see
+ * `migrator.ts`'s `collapseBookingCreditDebitFields`.
+ *
+ * @param raw - The raw booking record being normalized.
+ * @param field - The current single-field name.
+ * @param legacyDebitField - The pre-30 debit half of the pair.
+ * @param legacyCreditField - The pre-30 credit half of the pair.
+ * @returns The normalized signed amount.
+ */
+function normalizeSignedAmount(
+    raw: Record<string, unknown>,
+    field: string,
+    legacyDebitField: string,
+    legacyCreditField: string
+): number {
+    if (raw[field] !== undefined && raw[field] !== null) {
+        return normalizeAmount(raw[field]);
+    }
+    return normalizeAmount(raw[legacyDebitField]) - normalizeAmount(raw[legacyCreditField]);
 }
 
 /**

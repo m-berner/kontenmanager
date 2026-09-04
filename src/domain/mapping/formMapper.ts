@@ -138,16 +138,20 @@ export function formMapper() {
             cDebit: data.debit,
             cDescription: data.description.trim(),
             cBookingTypeID: data.selected,
-            cSoliCredit: isDividendOrSellRelated(data.selected) ? data.soliCredit : 0,
-            cSoliDebit: isDividendOrSellRelated(data.selected) ? data.soliDebit : 0,
-            cTaxCredit: isDividendOrSellRelated(data.selected) ? data.taxCredit : 0,
-            cTaxDebit: isDividendOrSellRelated(data.selected) ? data.taxDebit : 0,
-            cFeeCredit: isBuyOrSellRelated(data.selected) ? data.feeCredit : 0,
-            cFeeDebit: isBuyOrSellRelated(data.selected) ? data.feeDebit : 0,
-            cSourceTaxCredit: isDividendOrSellRelated(data.selected) ? data.sourceTaxCredit : 0,
-            cSourceTaxDebit: isDividendOrSellRelated(data.selected) ? data.sourceTaxDebit : 0,
-            cTransactionTaxCredit: isBuyRelated(data.selected) ? data.transactionTaxCredit : 0,
-            cTransactionTaxDebit: isBuyRelated(data.selected) ? data.transactionTaxDebit : 0,
+            // Debit minus credit: the two form inputs are mutually exclusive
+            // (`oneOfTwo` in validationAdapter.ts), so this collapses them into
+            // the single signed DB field without losing which side was filled
+            // in — a positive value is a debit (cost), negative is a credit
+            // (refund/reversal).
+            cSoli: isDividendOrSellRelated(data.selected) ? data.soliDebit - data.soliCredit : 0,
+            cTax: isDividendOrSellRelated(data.selected) ? data.taxDebit - data.taxCredit : 0,
+            cFee: isBuyOrSellRelated(data.selected) ? data.feeDebit - data.feeCredit : 0,
+            cSourceTax: isDividendOrSellRelated(data.selected)
+                ? data.sourceTaxDebit - data.sourceTaxCredit
+                : 0,
+            cTransactionTax: isBuyRelated(data.selected)
+                ? data.transactionTaxDebit - data.transactionTaxCredit
+                : 0,
             cStockID: isStockRelated(data.selected) ? data.stockId : 0,
             // `data.count` is typed `number` but holds a *string* at runtime:
             // BookingForm.vue binds it to a Vuetify `v-text-field type="number"`,

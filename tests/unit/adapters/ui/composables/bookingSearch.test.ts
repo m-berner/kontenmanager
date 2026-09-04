@@ -21,12 +21,12 @@ const ITEMS = [
         cID: 5, cBookDate: "2024-01-15", cDebit: 0, cCredit: 100,
         cDescription: "Aktie A", cBookingTypeID: 1,
         // Hidden fields, none rendered in the table.
-        cStockID: 55, cAccountNumberID: 1, cSoliDebit: 5, cTransactionTaxCredit: 0
+        cStockID: 55, cAccountNumberID: 1, cSoli: 5, cTransactionTax: 0
     },
     {
         cID: 2, cBookDate: "2023-06-01", cDebit: 800, cCredit: 0,
         cDescription: "Wohnung", cBookingTypeID: 2,
-        cStockID: 0, cAccountNumberID: 1, cSoliDebit: 0, cTransactionTaxCredit: 0
+        cStockID: 0, cAccountNumberID: 1, cSoli: 0, cTransactionTax: 0
     }
 ];
 

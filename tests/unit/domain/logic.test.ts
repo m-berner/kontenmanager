@@ -34,16 +34,11 @@ describe("DomainLogic", () => {
                 {
                     cCredit: 1000,
                     cDebit: 0,
-                    cTaxDebit: 0,
-                    cTaxCredit: 0,
-                    cSourceTaxDebit: 0,
-                    cSourceTaxCredit: 0,
-                    cTransactionTaxDebit: 0,
-                    cTransactionTaxCredit: 0,
-                    cSoliDebit: 0,
-                    cSoliCredit: 0,
-                    cFeeDebit: 50,
-                    cFeeCredit: 0
+                    cTax: 0,
+                    cSourceTax: 0,
+                    cTransactionTax: 0,
+                    cSoli: 0,
+                    cFee: 50
                 }
             ];
             // (1000 - 0) - (50 fee) = 950
@@ -59,16 +54,11 @@ describe("DomainLogic", () => {
                 {
                     cCredit: 500, // Dividend
                     cDebit: 0,
-                    cTaxDebit: 100, // Capital Gains Tax
-                    cTaxCredit: 0,
-                    cSourceTaxDebit: 0,
-                    cSourceTaxCredit: 0,
-                    cTransactionTaxDebit: 0,
-                    cTransactionTaxCredit: 0,
-                    cSoliDebit: 5.5,
-                    cSoliCredit: 0,
-                    cFeeDebit: 0,
-                    cFeeCredit: 0
+                    cTax: 100, // Capital Gains Tax
+                    cSourceTax: 0,
+                    cTransactionTax: 0,
+                    cSoli: 5.5,
+                    cFee: 0
                 }
             ];
             // 500 - (100 tax + 5.5 soli) = 394.5
@@ -81,12 +71,12 @@ describe("DomainLogic", () => {
     describe("calculateSumFees", () => {
         it("should sum fees only for the specified year", () => {
             const bookings: Partial<BookingDb>[] = [
-                {cBookDate: "2024-01-01", cFeeDebit: 10, cFeeCredit: 0},
-                {cBookDate: "2024-06-01", cFeeDebit: 15, cFeeCredit: 0},
-                {cBookDate: "2023-12-31", cFeeDebit: 20, cFeeCredit: 0}
+                {cBookDate: "2024-01-01", cFee: 10},
+                {cBookDate: "2024-06-01", cFee: 15},
+                {cBookDate: "2023-12-31", cFee: 20}
             ];
-            // Fees are stored as cFeeCredit - cFeeDebit in your logic
-            // 2024: (0-10) + (0-15) = -25
+            // Fees are stored as the signed cFee (debit-positive) in your logic
+            // 2024: -10 + -15 = -25
             expect(DomainLogic.calculateSumFees(bookings as BookingDb[], 2024)).toBe(
                 -25
             );
@@ -98,11 +88,11 @@ describe("DomainLogic", () => {
         // difference was unaccounted for on screen.
         it("collects undated bookings under DATE.UNDATED_YEAR, and no calendar year claims them", () => {
             const bookings: Partial<BookingDb>[] = [
-                {cBookDate: "2024-01-01", cFeeDebit: 10, cFeeCredit: 0},
-                {cBookDate: "", cFeeDebit: 5, cFeeCredit: 0},
+                {cBookDate: "2024-01-01", cFee: 10},
+                {cBookDate: "", cFee: 5},
                 // Malformed, not blank: normalizeDate would map this to "" on
                 // any write path, but a pre-existing DB row reaches here as-is.
-                {cBookDate: "15.03.2024", cFeeDebit: 3, cFeeCredit: 0}
+                {cBookDate: "15.03.2024", cFee: 3}
             ];
             const all = bookings as BookingDb[];
 
@@ -118,7 +108,7 @@ describe("DomainLogic", () => {
         // accounting view rather than mis-bucket one row.
         it("does not throw on a malformed cBookDate", () => {
             const bookings = [
-                {cBookDate: "15.03.2024", cFeeDebit: 3, cFeeCredit: 0}
+                {cBookDate: "15.03.2024", cFee: 3}
             ] as BookingDb[];
 
             expect(() => DomainLogic.calculateSumFees(bookings, 2024)).not.toThrow();
@@ -221,16 +211,13 @@ describe("DomainLogic", () => {
             cBookingTypeID: 41,
             cAccountNumberID: 1,
             cStockID: 5,
-            cSoliCredit: 1,
-            cSoliDebit: 0,
-            cTaxCredit: 2,
-            cTaxDebit: 0,
-            cFeeCredit: 3,
-            cFeeDebit: 0,
-            cSourceTaxCredit: 4,
-            cSourceTaxDebit: 0,
-            cTransactionTaxCredit: 5,
-            cTransactionTaxDebit: 0,
+            // Negative: the credit side of what used to be a Credit/Debit pair
+            // (see BookingDb's cSoli/cTax/.../cTransactionTax doc comment).
+            cSoli: -1,
+            cTax: -2,
+            cFee: -3,
+            cSourceTax: -4,
+            cTransactionTax: -5,
             cMarketPlace: "XETRA"
         };
 
@@ -244,11 +231,11 @@ describe("DomainLogic", () => {
                 cStockID: 5,
                 cCount: 10,
                 cMarketPlace: "XETRA",
-                cFeeCredit: 3,
-                cTransactionTaxCredit: 5,
-                cSoliCredit: 0,
-                cTaxCredit: 0,
-                cSourceTaxCredit: 0
+                cFee: -3,
+                cTransactionTax: -5,
+                cSoli: 0,
+                cTax: 0,
+                cSourceTax: 0
             });
         });
 
@@ -262,11 +249,11 @@ describe("DomainLogic", () => {
                 cStockID: 5,
                 cCount: 10,
                 cMarketPlace: "XETRA",
-                cFeeCredit: 3,
-                cSoliCredit: 1,
-                cTaxCredit: 2,
-                cSourceTaxCredit: 4,
-                cTransactionTaxCredit: 0
+                cFee: -3,
+                cSoli: -1,
+                cTax: -2,
+                cSourceTax: -4,
+                cTransactionTax: 0
             });
         });
 
@@ -280,11 +267,11 @@ describe("DomainLogic", () => {
                 cStockID: 0,
                 cCount: 0,
                 cMarketPlace: "",
-                cFeeCredit: 0,
-                cSoliCredit: 0,
-                cTaxCredit: 0,
-                cSourceTaxCredit: 0,
-                cTransactionTaxCredit: 0
+                cFee: 0,
+                cSoli: 0,
+                cTax: 0,
+                cSourceTax: 0,
+                cTransactionTax: 0
             });
         });
 
@@ -295,7 +282,7 @@ describe("DomainLogic", () => {
             );
 
             expect(result.cStockID).toBe(0);
-            expect(result.cFeeCredit).toBe(0);
+            expect(result.cFee).toBe(0);
         });
     });
 

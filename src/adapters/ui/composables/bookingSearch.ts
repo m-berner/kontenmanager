@@ -24,7 +24,7 @@
  * Without an explicit list, Vuetify's `useFilter` falls back to
  * `Object.keys(item)` and filters across **every property of the raw booking**,
  * so typing `5` matched any booking whose `cID`, `cStockID`,
- * `cAccountNumberID`, `cSoliDebit`, `cTransactionTaxCredit`, … contained a 5 —
+ * `cAccountNumberID`, `cSoli`, `cTransactionTax`, … contained a 5 —
  * fields not rendered anywhere in the table.
  *
  * `cBookDate` is the raw ISO string rather than the short date shown, so a year

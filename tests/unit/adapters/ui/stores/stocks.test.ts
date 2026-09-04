@@ -46,16 +46,11 @@ function createSampleBuyBooking(overrides: Partial<BookingDb> = {}): BookingDb {
         cDescription: "",
         cMarketPlace: "",
         cAccountNumberID: 1,
-        cTaxDebit: 0,
-        cTaxCredit: 0,
-        cSourceTaxDebit: 0,
-        cSourceTaxCredit: 0,
-        cTransactionTaxDebit: 0,
-        cTransactionTaxCredit: 0,
-        cSoliDebit: 0,
-        cSoliCredit: 0,
-        cFeeDebit: 0,
-        cFeeCredit: 0,
+        cTax: 0,
+        cSourceTax: 0,
+        cTransactionTax: 0,
+        cSoli: 0,
+        cFee: 0,
         ...overrides
     };
 }

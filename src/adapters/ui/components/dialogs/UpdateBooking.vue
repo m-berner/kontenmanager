@@ -60,6 +60,19 @@ const loadCurrentBooking = async (): Promise<void> => {
 
   bookingFormData.selected = currentBooking.cBookingTypeID || -1;
 
+  // Each DB field is a single signed value (schema 30); `BookingForm.vue`
+  // still presents it as a separate Credit/Debit pair, so split the sign back
+  // out here — the exact inverse of formMapper.ts's `debit - credit`.
+  const asPair = (v: number): { credit: number; debit: number } => ({
+    credit: v < 0 ? -v : 0,
+    debit: v > 0 ? v : 0
+  });
+  const sourceTax = asPair(currentBooking.cSourceTax);
+  const transactionTax = asPair(currentBooking.cTransactionTax);
+  const tax = asPair(currentBooking.cTax);
+  const fee = asPair(currentBooking.cFee);
+  const soli = asPair(currentBooking.cSoli);
+
   Object.assign(bookingFormData, {
     id: currentBooking.cID,
     bookDate: currentBooking.cBookDate,
@@ -69,16 +82,16 @@ const loadCurrentBooking = async (): Promise<void> => {
     exDate: currentBooking.cExDate,
     count: currentBooking.cCount,
     stockId: currentBooking.cStockID,
-    sourceTaxCredit: currentBooking.cSourceTaxCredit,
-    sourceTaxDebit: currentBooking.cSourceTaxDebit,
-    transactionTaxCredit: currentBooking.cTransactionTaxCredit,
-    transactionTaxDebit: currentBooking.cTransactionTaxDebit,
-    taxCredit: currentBooking.cTaxCredit,
-    taxDebit: currentBooking.cTaxDebit,
-    feeCredit: currentBooking.cFeeCredit,
-    feeDebit: currentBooking.cFeeDebit,
-    soliCredit: currentBooking.cSoliCredit,
-    soliDebit: currentBooking.cSoliDebit,
+    sourceTaxCredit: sourceTax.credit,
+    sourceTaxDebit: sourceTax.debit,
+    transactionTaxCredit: transactionTax.credit,
+    transactionTaxDebit: transactionTax.debit,
+    taxCredit: tax.credit,
+    taxDebit: tax.debit,
+    feeCredit: fee.credit,
+    feeDebit: fee.debit,
+    soliCredit: soli.credit,
+    soliDebit: soli.debit,
     marketPlace: currentBooking.cMarketPlace
   });
 };

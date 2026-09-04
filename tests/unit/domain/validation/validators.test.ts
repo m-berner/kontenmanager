@@ -37,6 +37,62 @@ describe("DomainValidators: normalizeDate behavior", () => {
     });
 });
 
+describe("DomainValidators: validateBooking signed tax/fee fields (schema 30)", () => {
+    it("passes through the current single-field shape", () => {
+        const booking = DomainValidators.validateBooking({
+            cID: 1,
+            cSoli: -5,
+            cTax: 12,
+            cFee: 3,
+            cSourceTax: 0,
+            cTransactionTax: -2
+        });
+
+        expect(booking.cSoli).toBe(-5);
+        expect(booking.cTax).toBe(12);
+        expect(booking.cFee).toBe(3);
+        expect(booking.cSourceTax).toBe(0);
+        expect(booking.cTransactionTax).toBe(-2);
+    });
+
+    // A backup file is versioned independently of the app (MIN_SUPPORTED_VERSION
+    // is 27), so a pre-30 export still carries the Credit/Debit pair these fields
+    // replaced. Collapsing it on import (debit - credit) — the same conversion
+    // formMapper.ts does — keeps the data instead of silently dropping it to 0.
+    it("collapses the legacy Credit/Debit pair when the single field is absent", () => {
+        const booking = DomainValidators.validateBooking({
+            cID: 1,
+            cSoliDebit: 5.5,
+            cSoliCredit: 0,
+            cTaxDebit: 0,
+            cTaxCredit: 12,
+            cFeeDebit: 3,
+            cFeeCredit: 0,
+            cSourceTaxDebit: 0,
+            cSourceTaxCredit: 0,
+            cTransactionTaxDebit: 0,
+            cTransactionTaxCredit: 2
+        });
+
+        expect(booking.cSoli).toBe(5.5);
+        expect(booking.cTax).toBe(-12);
+        expect(booking.cFee).toBe(3);
+        expect(booking.cSourceTax).toBe(0);
+        expect(booking.cTransactionTax).toBe(-2);
+    });
+
+    it("prefers the single field over a stray legacy pair, rather than adding them", () => {
+        const booking = DomainValidators.validateBooking({
+            cID: 1,
+            cFee: 3,
+            cFeeDebit: 999,
+            cFeeCredit: 0
+        });
+
+        expect(booking.cFee).toBe(3);
+    });
+});
+
 describe("DomainValidators: validateBookingType cRole handling", () => {
     it("passes through an explicit valid cRole", () => {
         const bookingType = DomainValidators.validateBookingType({

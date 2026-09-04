@@ -84,16 +84,11 @@ export function makeBookingDb(partial: Partial<BookingDb> = {}): BookingDb {
         cBookingTypeID: partial.cBookingTypeID ?? 1,
         cAccountNumberID: partial.cAccountNumberID ?? 1,
         cStockID: partial.cStockID ?? 0,
-        cSoliCredit: partial.cSoliCredit ?? 0,
-        cSoliDebit: partial.cSoliDebit ?? 0,
-        cTaxCredit: partial.cTaxCredit ?? 0,
-        cTaxDebit: partial.cTaxDebit ?? 0,
-        cFeeCredit: partial.cFeeCredit ?? 0,
-        cFeeDebit: partial.cFeeDebit ?? 0,
-        cSourceTaxCredit: partial.cSourceTaxCredit ?? 0,
-        cSourceTaxDebit: partial.cSourceTaxDebit ?? 0,
-        cTransactionTaxCredit: partial.cTransactionTaxCredit ?? 0,
-        cTransactionTaxDebit: partial.cTransactionTaxDebit ?? 0,
+        cSoli: partial.cSoli ?? 0,
+        cTax: partial.cTax ?? 0,
+        cFee: partial.cFee ?? 0,
+        cSourceTax: partial.cSourceTax ?? 0,
+        cTransactionTax: partial.cTransactionTax ?? 0,
         cMarketPlace: partial.cMarketPlace ?? ""
     };
 }
