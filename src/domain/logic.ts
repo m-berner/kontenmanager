@@ -108,16 +108,11 @@ export function applyBookingRoleInvariants(
         cStockID: isStockRelated ? booking.cStockID : 0,
         cCount: isStockRelated ? booking.cCount : 0,
         cMarketPlace: isBuyOrSell ? booking.cMarketPlace : "",
-        cSoliCredit: isDividendOrSell ? booking.cSoliCredit : 0,
-        cSoliDebit: isDividendOrSell ? booking.cSoliDebit : 0,
-        cTaxCredit: isDividendOrSell ? booking.cTaxCredit : 0,
-        cTaxDebit: isDividendOrSell ? booking.cTaxDebit : 0,
-        cSourceTaxCredit: isDividendOrSell ? booking.cSourceTaxCredit : 0,
-        cSourceTaxDebit: isDividendOrSell ? booking.cSourceTaxDebit : 0,
-        cFeeCredit: isBuyOrSell ? booking.cFeeCredit : 0,
-        cFeeDebit: isBuyOrSell ? booking.cFeeDebit : 0,
-        cTransactionTaxCredit: isBuy ? booking.cTransactionTaxCredit : 0,
-        cTransactionTaxDebit: isBuy ? booking.cTransactionTaxDebit : 0
+        cSoli: isDividendOrSell ? booking.cSoli : 0,
+        cTax: isDividendOrSell ? booking.cTax : 0,
+        cSourceTax: isDividendOrSell ? booking.cSourceTax : 0,
+        cFee: isBuyOrSell ? booking.cFee : 0,
+        cTransactionTax: isBuy ? booking.cTransactionTax : 0
     };
 }
 
@@ -440,29 +435,25 @@ export async function initializeRecords(
 }
 
 /**
- * Calculates the net entry fees by subtracting the credited fee from the debited fee.
+ * The net entry fee. `cFee` is already signed (positive = debit/cost,
+ * negative = credit/refund) — see its doc comment on `BookingDb`.
  *
- * @param entry - The booking database entry containing debit and credit fee information.
+ * @param entry - The booking database entry.
  * @returns The calculated net entry fees.
  */
 function calculateEntryFees(entry: BookingDb): number {
-    return entry.cFeeDebit - entry.cFeeCredit;
+    return entry.cFee;
 }
 
 /**
- * Calculates the total entry taxes for a given booking database record.
+ * The total entry taxes: tax + source tax + transaction tax + soli, each
+ * already signed (positive = debit/cost, negative = credit/refund).
  *
- * @param entry - The booking database record containing tax-related debit and credit properties.
+ * @param entry - The booking database record.
  * @returns The total calculated tax value based on the provided entry data.
  */
 function calculateEntryTaxes(entry: BookingDb): number {
-    return (
-        entry.cTaxDebit -
-        entry.cTaxCredit +
-        (entry.cSourceTaxDebit - entry.cSourceTaxCredit) +
-        (entry.cTransactionTaxDebit - entry.cTransactionTaxCredit) +
-        (entry.cSoliDebit - entry.cSoliCredit)
-    );
+    return entry.cTax + entry.cSourceTax + entry.cTransactionTax + entry.cSoli;
 }
 
 /**

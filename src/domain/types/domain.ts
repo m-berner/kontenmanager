@@ -90,16 +90,17 @@ export interface BookingDb {
     cBookingTypeID: number;
     cAccountNumberID: number;
     cStockID: number;
-    cSoliCredit: number;
-    cSoliDebit: number;
-    cTaxCredit: number;
-    cTaxDebit: number;
-    cFeeCredit: number;
-    cFeeDebit: number;
-    cSourceTaxCredit: number;
-    cSourceTaxDebit: number;
-    cTransactionTaxCredit: number;
-    cTransactionTaxDebit: number;
+    // Signed: positive is a debit (a cost to you), negative is a credit (a
+    // refund/reversal of that cost) — the same convention the credit/debit
+    // pair it replaced encoded, since the two were already mutually exclusive
+    // per booking (see `oneOfTwo` in validationAdapter.ts). `BookingForm.vue`
+    // still presents each as a separate Credit/Debit input; `formMapper.ts`
+    // and `UpdateBooking.vue` convert at the form/DB boundary.
+    cSoli: number;
+    cTax: number;
+    cFee: number;
+    cSourceTax: number;
+    cTransactionTax: number;
     cMarketPlace: string;
 }
 

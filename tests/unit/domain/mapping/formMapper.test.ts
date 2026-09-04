@@ -255,12 +255,15 @@ describe("domains/mapping/formMapper", () => {
             "1970-01-01",
             ACCOUNT_BOOKING_TYPES
         );
+        // makeBookingFormData sets feeCredit: 2, taxCredit: 1, soliCredit: 5,
+        // sourceTaxCredit: 3, transactionTaxCredit: 4 (all *Debit: 0), which
+        // collapse to negative signed values (debit - credit).
         expect(buy).toMatchObject({
-            cFeeCredit: 2,
-            cTransactionTaxCredit: 4,
-            cTaxCredit: 0,
-            cSoliCredit: 0,
-            cSourceTaxCredit: 0
+            cFee: -2,
+            cTransactionTax: -4,
+            cTax: 0,
+            cSoli: 0,
+            cSourceTax: 0
         });
 
         // Sell: fee + tax/soli/sourceTax are kept, transactionTax is cleared
@@ -272,11 +275,11 @@ describe("domains/mapping/formMapper", () => {
             ACCOUNT_BOOKING_TYPES
         );
         expect(sell).toMatchObject({
-            cFeeCredit: 2,
-            cTaxCredit: 1,
-            cSoliCredit: 5,
-            cSourceTaxCredit: 3,
-            cTransactionTaxCredit: 0
+            cFee: -2,
+            cTax: -1,
+            cSoli: -5,
+            cSourceTax: -3,
+            cTransactionTax: 0
         });
 
         // Switching to a non-stock-related ("other") type must clear every one
@@ -290,16 +293,11 @@ describe("domains/mapping/formMapper", () => {
             ACCOUNT_BOOKING_TYPES
         );
         expect(other).toMatchObject({
-            cFeeCredit: 0,
-            cFeeDebit: 0,
-            cTaxCredit: 0,
-            cTaxDebit: 0,
-            cSoliCredit: 0,
-            cSoliDebit: 0,
-            cSourceTaxCredit: 0,
-            cSourceTaxDebit: 0,
-            cTransactionTaxCredit: 0,
-            cTransactionTaxDebit: 0,
+            cFee: 0,
+            cTax: 0,
+            cSoli: 0,
+            cSourceTax: 0,
+            cTransactionTax: 0,
             cStockID: 0,
             cCount: 0,
             cMarketPlace: ""

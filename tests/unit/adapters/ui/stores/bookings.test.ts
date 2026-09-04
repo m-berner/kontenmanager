@@ -26,16 +26,11 @@ describe("Bookings Store", () => {
         cDescription: "Test purchase",
         cMarketPlace: "XETRA",
         cAccountNumberID: 1,
-        cTaxDebit: 0,
-        cTaxCredit: 0,
-        cSourceTaxDebit: 0,
-        cSourceTaxCredit: 0,
-        cTransactionTaxDebit: 0,
-        cTransactionTaxCredit: 0,
-        cSoliDebit: 0,
-        cSoliCredit: 0,
-        cFeeDebit: 5,
-        cFeeCredit: 0
+        cTax: 0,
+        cSourceTax: 0,
+        cTransactionTax: 0,
+        cSoli: 0,
+        cFee: 5
     };
 
     it("should add a booking", () => {

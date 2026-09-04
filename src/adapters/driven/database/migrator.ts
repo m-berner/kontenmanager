@@ -258,6 +258,79 @@ function backfillAccountCurrency(tx: IDBTransaction): void {
 }
 
 /**
+ * Collapses each of the five Credit/Debit field pairs on a booking row
+ * (`cSoliCredit`/`cSoliDebit`, `cTaxCredit`/`cTaxDebit`, `cFeeCredit`/
+ * `cFeeDebit`, `cSourceTaxCredit`/`cSourceTaxDebit`,
+ * `cTransactionTaxCredit`/`cTransactionTaxDebit`) into a single signed field
+ * each (`cSoli`, `cTax`, `cFee`, `cSourceTax`, `cTransactionTax`) —
+ * `debit - credit`. Lossless: the two halves of each pair were already
+ * mutually exclusive per booking (`oneOfTwo` in validationAdapter.ts), so the
+ * sign alone still says which side held the value. `validateBooking`
+ * (domain/validation/validators.ts) does the equivalent collapse for a
+ * pre-30 *backup file*, which is versioned independently of this schema.
+ *
+ * Idempotent, like the other backfills here: a row that already carries the
+ * new `cSoli` field (schema >= 30) is left untouched.
+ */
+function collapseBookingCreditDebitFields(tx: IDBTransaction): void {
+    const storeName = INDEXED_DB.STORE.BOOKINGS.NAME;
+
+    if (!tx.db.objectStoreNames.contains(storeName)) {
+        return;
+    }
+
+    const store = tx.objectStore(storeName);
+    const request = store.openCursor();
+    request.onsuccess = (event) => {
+        const cursor = (event.target as IDBRequest<IDBCursorWithValue | null>).result;
+        if (!cursor) return;
+        const record = cursor.value as Record<string, unknown>;
+        if (record.cSoli === undefined) {
+            const collapse = (debitField: string, creditField: string): number =>
+                (Number(record[debitField]) || 0) - (Number(record[creditField]) || 0);
+
+            const next = {...record};
+            delete next.cSoliCredit;
+            delete next.cSoliDebit;
+            delete next.cTaxCredit;
+            delete next.cTaxDebit;
+            delete next.cFeeCredit;
+            delete next.cFeeDebit;
+            delete next.cSourceTaxCredit;
+            delete next.cSourceTaxDebit;
+            delete next.cTransactionTaxCredit;
+            delete next.cTransactionTaxDebit;
+            next.cSoli = collapse("cSoliDebit", "cSoliCredit");
+            next.cTax = collapse("cTaxDebit", "cTaxCredit");
+            next.cFee = collapse("cFeeDebit", "cFeeCredit");
+            next.cSourceTax = collapse("cSourceTaxDebit", "cSourceTaxCredit");
+            next.cTransactionTax = collapse("cTransactionTaxDebit", "cTransactionTaxCredit");
+
+            // Same reasoning as backfillBookingTypeRoles' update handler above.
+            const updateRequest = cursor.update(next);
+            updateRequest.onerror = () => {
+                log(
+                    "SERVICE DATABASE migrator: collapseBookingCreditDebitFields update failed",
+                    {storeName, cID: record.cID, error: updateRequest.error?.message},
+                    "error"
+                );
+            };
+        }
+        cursor.continue();
+    };
+    // Same reasoning as backfillBookingTypeRoles: without this the cursor's
+    // failure surfaces as an unhandled request error that aborts the whole
+    // version-change transaction with none of the migrator's own context attached.
+    request.onerror = () => {
+        log(
+            "SERVICE DATABASE migrator: collapseBookingCreditDebitFields cursor failed",
+            {storeName, error: request.error?.message},
+            "error"
+        );
+    };
+}
+
+/**
  * Executes schema/content migrations between versions.
  */
 function runMigrations(
@@ -306,6 +379,10 @@ function runMigrations(
 
     if (oldVersion < 29) {
         backfillAccountCurrency(tx);
+    }
+
+    if (oldVersion < 30) {
+        collapseBookingCreditDebitFields(tx);
     }
 }
 

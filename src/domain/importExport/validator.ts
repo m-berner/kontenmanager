@@ -330,13 +330,15 @@ function validateBusinessRules(backup: ModernBackupData): string[] {
     // one, and normalizeAmount's 0 default is the right answer there. Rejecting
     // those outright would block importing valid backups — a worse failure than
     // the one this guards against.
+    //
+    // `cSoli`/`cTax`/`cFee`/`cSourceTax`/`cTransactionTax` are signed (schema
+    // 30): a negative value legitimately represents the credit/refund side —
+    // it's what a Credit/Debit pair collapses to (`formMapper.ts`) — so unlike
+    // `cCredit`/`cDebit` there is no sign to reject here, only "is it a
+    // finite number at all".
     const amountFields = [
         "cCredit", "cDebit",
-        "cSoliCredit", "cSoliDebit",
-        "cTaxCredit", "cTaxDebit",
-        "cSourceTaxCredit", "cSourceTaxDebit",
-        "cFeeCredit", "cFeeDebit",
-        "cTransactionTaxCredit", "cTransactionTaxDebit",
+        "cSoli", "cTax", "cFee", "cSourceTax", "cTransactionTax",
         "cCount"
     ] as const;
 
@@ -357,20 +359,6 @@ function validateBusinessRules(backup: ModernBackupData): string[] {
             errors.push(`Booking ${booking.cID} has negative credit/debit values`);
         if (booking.cCredit > 0 && booking.cDebit > 0)
             errors.push(`Booking ${booking.cID} has positive credit/debit values`);
-        // The other 5 credit/debit pairs the UI form's oneOfTwo()/amountRules() also
-        // reject a negative value on: a negative fee/tax debit or credit flips its sign
-        // contribution in calculateEntryFees/calculateEntryTaxes, silently skewing the
-        // displayed account balance for a hand-edited/legacy backup.
-        for (const [label, credit, debit] of [
-            ["soli", booking.cSoliCredit, booking.cSoliDebit],
-            ["tax", booking.cTaxCredit, booking.cTaxDebit],
-            ["source tax", booking.cSourceTaxCredit, booking.cSourceTaxDebit],
-            ["fee", booking.cFeeCredit, booking.cFeeDebit],
-            ["transaction tax", booking.cTransactionTaxCredit, booking.cTransactionTaxDebit]
-        ] as [string, number, number][]) {
-            if (credit < 0 || debit < 0)
-                errors.push(`Booking ${booking.cID} has negative ${label} credit/debit values`);
-        }
         // Mirrors the UI-form countRules() guard (adapters/ui/validationAdapter.ts) at
         // the backup-import boundary: a negative count silently inverts
         // calculatePortfolioByStockId's buy/sell math for hand-edited/legacy backups.

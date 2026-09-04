@@ -569,7 +569,9 @@ export const INDEXED_DB = {
     MIN_SUPPORTED_VERSION: 27,
     // 29 adds `cCurrency` to the accounts store (migrator's
     // `backfillAccountCurrency` stamps EUR onto pre-existing rows).
-    CURRENT_VERSION: 29,
+    // 30 collapses each of the 5 tax/fee Credit/Debit pairs on a booking into
+    // a single signed field (migrator's `collapseBookingCreditDebitFields`).
+    CURRENT_VERSION: 30,
     MAX_FILE_SIZE: 64 * 1024 * 1024
 } as const;
 

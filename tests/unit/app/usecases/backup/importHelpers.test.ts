@@ -183,8 +183,8 @@ describe("usecases/backup/importHelpers", () => {
                         cBookingTypeID: 41,
                         cStockID: 5,
                         cCount: 10,
-                        cTaxCredit: 99,
-                        cSoliCredit: 99
+                        cTax: -99,
+                        cSoli: -99
                     })
                 ]
             };
@@ -194,8 +194,8 @@ describe("usecases/backup/importHelpers", () => {
             expect(result.bookings[0]).toMatchObject({
                 cStockID: 5,
                 cCount: 10,
-                cTaxCredit: 0,
-                cSoliCredit: 0
+                cTax: 0,
+                cSoli: 0
             });
         });
 

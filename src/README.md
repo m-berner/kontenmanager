@@ -461,7 +461,7 @@ account switch the store calls
 ### 10. Database
 
 The extension stores all user data in **IndexedDB** (database name
-`kontenmanager.db`, current schema version 29 — `INDEXED_DB.CURRENT_VERSION`).
+`kontenmanager.db`, current schema version 30 — `INDEXED_DB.CURRENT_VERSION`).
 `INDEXED_DB.MIN_SUPPORTED_VERSION` is 27: backups written by older schema versions are rejected on import.
 
 #### Object stores
