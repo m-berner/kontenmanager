@@ -871,7 +871,7 @@ test. All other files receive adapters via `useAdapters()` or the Pinia DI symbo
 3. Add state + getter + setter to `src/adapters/ui/stores/settings.ts`.
 4. Expose a UI control in `OptionsIndex.vue`.
 
-**New data provider:**
+**New data provider (stock quotes):**
 
 1. Add a provider file in `src/adapters/driven/fetch/providers/`.
 2. Register it in `src/adapters/driven/fetchAdapter.ts`.
@@ -880,6 +880,13 @@ test. All other files receive adapters via `useAdapters()` or the Pinia DI symbo
    needed. Its label comes from the entry's `NAME`; only the `none` pseudo-provider is translated, via
    `createServiceLabelOverrides` in `domain/constants/ui/options.ts` — real providers are brand names and stay
    untranslated in every locale.
+
+**New market-data source (commodities/indexes)**: a related but distinct recipe — `MarketDataServiceName` /
+`settings.marketDataService` is its own, narrower selection (currently `"fnet"` / `"wstreet"`), NOT auto-generated
+from `FETCH.PROVIDERS` the way `ServiceSelector`'s list is (most `FETCH.PROVIDERS` keys, e.g. `goyax`/`acheck`,
+never supplied commodities or indexes). Adding a third source means: a new `providers/wstreetMaterials.ts`-shaped
+file, a branch in `fetchAdapter.ts`'s `fetchMaterialData`/`fetchIndexData`, and adding the key to
+`MarketDataServiceSelector.vue`'s hardcoded `MARKET_DATA_SERVICES` array by hand.
 
 **Testing conventions:**
 

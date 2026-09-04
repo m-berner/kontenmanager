@@ -126,8 +126,10 @@ Shared setup used by every spec file, imported via relative path (`./support/har
 static server, and **must be called before `page.goto`** in any test that boots the app.
 
 This is not just about speed. App boot's Phase 3 (`fetchExchangesData` / `fetchIndexData` /
-`fetchMaterialData`) hits real external sites unconditionally — none of the three consults `sService`, so
-setting it to `"none"` does not suppress them, and tests only set it *after* boot anyway. `AppIndex.vue`
+`fetchMaterialData`) hits real external sites unconditionally — none of the three consults `sService` (the
+stock-quote provider setting; `fetchIndexData`/`fetchMaterialData` have their own, `sMarketDataService`, which
+defaults to finanzen.net and has no `"none"` option either), so setting `sService` to `"none"` does not suppress
+them, and tests only set it *after* boot anyway. `AppIndex.vue`
 renders the header bars behind `v-if="isInitialized"`, which flips only once `initializeApp` has awaited that
 phase. Without the block, time-to-header is real network latency and every `header.v-app-bar` wait is
 effectively an internet-connectivity test.
