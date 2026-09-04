@@ -415,6 +415,9 @@
       "serviceNames": {
         "disabled": "Disabled"
       },
+      "materialsSource": {
+        "hint": "Data source for commodity prices."
+      },
       "currency": {
         "hint": "Default currency for new accounts. The currency shown is the active account's."
       },
@@ -435,7 +438,6 @@
         "pt": "Platinum",
         "al": "Aluminum",
         "ni": "Nickel",
-        "sn": "Tin",
         "pb": "Lead",
         "pd": "Palladium"
       }

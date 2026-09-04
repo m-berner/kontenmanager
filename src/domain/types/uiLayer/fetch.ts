@@ -156,6 +156,19 @@ export interface ServiceFetcherType {
 export type ServiceName = "none" | "goyax" | "fnet" | "wstreet" | "acheck" | "ard" | "tgate";
 
 /**
+ * Permitted data sources for commodity/material prices.
+ *
+ * Deliberately a separate, narrower type from {@link ServiceName}: the
+ * materials feature (`fetchMaterialData`) is independent of the stock-quote
+ * `service` setting and only ever supported finanzen.net. `wstreet` was added
+ * as a second source scraping wallstreet-online.de's per-commodity pages
+ * (`https://www.wallstreet-online.de/rohstoffe/<slug>`) — see
+ * `WSTREET_MATERIAL_SLUGS`. Every other `ServiceName` (goyax, acheck, ard,
+ * tgate) only ever provided stock quotes, never commodities.
+ */
+export type MaterialsServiceName = "fnet" | "wstreet";
+
+/**
  * Represents a stock item that combines database fields with calculated RAM-only values.
  *
  * Built on {@link StockRecord} rather than `StockDb`, so `cISIN` and `cSymbol`

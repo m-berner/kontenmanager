@@ -10,6 +10,7 @@ import type {
     CompanyData,
     DateData,
     ExchangeData,
+    MaterialsServiceName,
     NumberStringPair,
     OnlineStorageData,
     ServiceName,
@@ -32,6 +33,7 @@ import {fnetFetcher} from "@/adapters/driven/fetch/providers/fnet";
 import {goyaxFetcher} from "@/adapters/driven/fetch/providers/goyax";
 import {tgateFetcher} from "@/adapters/driven/fetch/providers/tgate";
 import {wstreetFetcher} from "@/adapters/driven/fetch/providers/wstreet";
+import {fetchMaterialDataWstreet} from "@/adapters/driven/fetch/providers/wstreetMaterials";
 
 const FNET = {
     INDEXES: "https://www.finanzen.net/indizes/",
@@ -486,11 +488,23 @@ export async function fetchIsOk(options?: { signal?: AbortSignal }): Promise<boo
 /**
  * Fetches current commodity and material prices.
  *
+ * @param options
+ * @param provider - Which site to scrape. "fnet" (finanzen.net, the
+ *        long-standing default) reads a single overview table; "wstreet"
+ *        (wallstreet-online.de) is a per-material alternative added because
+ *        finanzen.net sits behind Akamai bot protection that intermittently
+ *        403s this call — see `fetchMaterialDataWstreet` for its own caveats
+ *        (notably: two commodities it cannot supply a USD price for at all).
  * @returns Array of material names and prices
  */
 export async function fetchMaterialData(
-    options?: { signal?: AbortSignal }
+    options?: { signal?: AbortSignal },
+    provider: MaterialsServiceName = "fnet"
 ): Promise<StringNumberPair[]> {
+    if (provider === "wstreet") {
+        return fetchMaterialDataWstreet(options);
+    }
+
     log("SERVICES fetch: Fetching material data");
 
     const html = await fetchWithCache(FNET.MATERIALS, CACHE_POLICY.DEFAULT_HTTP_TTL_MS, {signal: options?.signal});

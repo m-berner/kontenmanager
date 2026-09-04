@@ -465,6 +465,9 @@
       "serviceNames": {
         "disabled": "Deaktiviert"
       },
+      "materialsSource": {
+        "hint": "Datenquelle für Rohstoffpreise."
+      },
       "currency": {
         "hint": "Standardwährung für neue Konten. Die angezeigte Währung ist die des aktiven Kontos."
       },
@@ -485,7 +488,6 @@
         "pt": "Platin",
         "al": "Aluminium",
         "ni": "Nickel",
-        "sn": "Zinn",
         "pb": "Blei",
         "pd": "Palladium"
       }

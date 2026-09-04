@@ -549,6 +549,20 @@ The active provider is stored in `settings.service`. The fetch service routes re
 back gracefully when a request fails. Meeting / quarterly-report dates are **not** provider-selectable: they are always
 fetched from Finanzen.Net (`fetchDateData` in `fetchAdapter.ts`
 hits the `FNET.SEARCH` / `FNET.DATES` endpoints directly), regardless of which provider is active for price quotes.
+Market indexes are the same: `fetchIndexData` always hits `FNET.INDEXES`, with no alternative source.
+
+Commodity/material prices (`fetchMaterialData`) are the one exception: they have their **own**, independent
+data-source setting, `settings.materialsService` (`BROWSER_STORAGE.MATERIALS_SERVICE`, key `sMaterialsService`,
+UI: `MaterialsServiceSelector` on the Commodities options tab) — not `settings.service`, and not affected by it.
+It supports two sources:
+
+| Key       | Provider          | Notes                                                                 |
+|-----------|-------------------|------------------------------------------------------------------------|
+| `fnet`    | Finanzen.Net      | Default. One request, `FNET.MATERIALS` overview table.               |
+| `wstreet` | Wallstreet-Online | Opt-in. One request per configured material (`fetchMaterialDataWstreet`, `providers/wstreetMaterials.ts`), scraping `wallstreet-online.de/rohstoffe/<slug>`. Only accepts a page whose quote is explicitly marked USD — two commodities (aluminum, lead, as of this writing) are quoted there in index points ("PKT") rather than a real price and are silently skipped rather than mislabeled. |
+
+finanzen.net remains the default (unchanged behavior for existing installs); `wstreet` exists because
+finanzen.net sits behind Akamai bot protection that intermittently 403s this call.
 
 #### Cache layers
 

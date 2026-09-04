@@ -217,7 +217,7 @@ export interface HighlightOptions {
 /**
  * Valid keys for commodity items.
  */
-export type MaterialItemKeyType = "ag" | "al" | "au" | "brent" | "cu" | "ni" | "pb" | "pd" | "pt" | "sn" | "wti";
+export type MaterialItemKeyType = "ag" | "al" | "au" | "brent" | "cu" | "ni" | "pb" | "pd" | "pt" | "wti";
 
 /**
  * Options for parsing localized numbers.

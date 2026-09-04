@@ -634,7 +634,6 @@ export const SETTINGS: StoresConfigType = {
         pt: "Platinpreis",
         al: "Aluminiumpreis",
         ni: "Nickelpreis",
-        sn: "Zinnpreis",
         pb: "Bleipreis",
         pd: "Palladiumpreis"
     }
@@ -666,5 +665,12 @@ export const BROWSER_STORAGE = {
     EXCHANGES: {key: "sExchanges", value: ["EURUSD"]},
     INDEXES: {key: "sIndexes", value: ["dax", "dow"]},
     MARKETS: {key: "sMarkets", value: ["Frankfurt", "XETRA"]},
-    MATERIALS: {key: "sMaterials", value: ["au", "brent"]}
+    MATERIALS: {key: "sMaterials", value: ["au", "brent"]},
+    /**
+     * Data source for commodity/material prices — independent of `SERVICE`
+     * (the stock-quote provider). Defaults to "fnet" (finanzen.net), the
+     * only source this ever had, to keep existing installs' behavior
+     * unchanged; "wstreet" (wallstreet-online.de) is the opt-in alternative.
+     */
+    MATERIALS_SERVICE: {key: "sMaterialsService", value: "fnet"}
 } as const;
