@@ -1,0 +1,100 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * one could get a copy at https://mozilla.org/MPL/2.0/.
+ */
+
+import {CACHE_POLICY} from "@/domain/constants";
+
+const DEFAULT_TTL = CACHE_POLICY.DEFAULT_HTTP_TTL_MS;
+
+/**
+ * Simple in-memory cache with TTL (time-to-live) expiration.
+ * Automatically cleans up expired entries, and evicts the oldest ones by
+ * insertion time, once the cache exceeds MAX_HTTP_CACHE_ENTRIES items.
+ * Used primarily for caching HTTP responses to reduce network requests.
+ */
+const cache = new Map<string, { data: string; timestamp: number; ttl: number }>();
+
+/** Removes all entries from the cache. */
+export function clearCache(): void {
+    cache.clear();
+}
+
+/**
+ * Returns the cached value for `key` if it exists and has not yet expired.
+ * Deletes the entry and returns `null` when it is stale.
+ *
+ * @param key - Cache key to look up.
+ * @param ttl - Maximum age in milliseconds before the entry is considered stale.
+ */
+export function getCache(key: string, ttl: number = DEFAULT_TTL): string | null {
+    const entry = cache.get(key);
+    if (!entry) return null;
+
+    // Honour the STRICTER of the reader's TTL and the one the writer recorded.
+    // Using the reader's alone let the same cached body have different expiry
+    // semantics depending on who looked it up: quote endpoints write with the
+    // short CACHE_POLICY.QUOTE_TTL_MS, but fetchWithCache's default is the much
+    // longer DEFAULT_HTTP_TTL_MS — so a reader using the default could serve a
+    // quote body long past the age its writer intended. The recorded ttl was
+    // previously consulted only by the eviction sweep.
+    const effectiveTtl = Math.min(entry.ttl, ttl);
+    const isExpired = Date.now() - entry.timestamp > effectiveTtl;
+    if (isExpired) {
+        cache.delete(key);
+        return null;
+    }
+
+    return entry.data;
+}
+
+/** Returns the current number of cached entries and their keys — useful for diagnostics. */
+export function getCacheStats(): { size: number; keys: string[] } {
+    return {
+        size: cache.size,
+        keys: Array.from(cache.keys())
+    };
+}
+
+/**
+ * Stores `data` under `key`, recording the current timestamp and the TTL
+ * this entry should be swept with (defaults to `DEFAULT_TTL`, but callers
+ * with a different TTL, e.g. quote endpoints, should pass their own so the
+ * automatic cleanup sweep evicts it at the correct age).
+ * Triggers a cleanup pass when the cache grows beyond `MAX_HTTP_CACHE_ENTRIES`.
+ *
+ * @param key - Cache key.
+ * @param data - String value to cache (typically serialized HTML).
+ * @param ttl - Time-to-live in milliseconds used by the automatic cleanup sweep.
+ */
+export function setCache(key: string, data: string, ttl: number = DEFAULT_TTL): void {
+    cache.set(key, {data, timestamp: Date.now(), ttl});
+    if (cache.size > CACHE_POLICY.MAX_HTTP_CACHE_ENTRIES) cleanupCache();
+}
+
+/**
+ * Removes all entries whose age exceeds their own recorded TTL. If the cache
+ * is still over `MAX_HTTP_CACHE_ENTRIES` afterwards (e.g. many distinct URLs
+ * cached within their TTL window), evicts the oldest entries until back at
+ * the cap, so the cache cannot grow unbounded in a long-lived extension context.
+ * Called automatically by `setCache` when the cache exceeds the cap.
+ */
+function cleanupCache(): void {
+    const now = Date.now();
+    for (const [key, entry] of cache.entries()) {
+        if (now - entry.timestamp > entry.ttl) {
+            cache.delete(key);
+        }
+    }
+
+    if (cache.size > CACHE_POLICY.MAX_HTTP_CACHE_ENTRIES) {
+        const oldestFirst = Array.from(cache.entries()).sort(
+            (a, b) => a[1].timestamp - b[1].timestamp
+        );
+        const excess = cache.size - CACHE_POLICY.MAX_HTTP_CACHE_ENTRIES;
+        for (let i = 0; i < excess; i++) {
+            cache.delete(oldestFirst[i][0]);
+        }
+    }
+}

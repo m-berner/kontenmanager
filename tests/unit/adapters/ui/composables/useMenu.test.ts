@@ -1,0 +1,385 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * one could get a copy at https://mozilla.org/MPL/2.0/.
+ */
+
+import {beforeEach, describe, expect, it, vi} from "vitest";
+import {ERROR_CATEGORY} from "@/domain/constants";
+import {appError, ERROR_DEFINITIONS} from "@/domain/errors";
+import {setActiveTestPinia} from "@test/pinia";
+
+const bookingsDelete = vi.fn().mockResolvedValue(undefined);
+const stocksDelete = vi.fn().mockResolvedValue(undefined);
+const feedbackInfo = vi.fn().mockResolvedValue(undefined);
+const feedbackError = vi.fn().mockResolvedValue(undefined);
+// Destructive actions (deleteBooking/deleteStock) now confirm first; default to
+// "user confirmed" so the existing happy-path assertions keep exercising the
+// deletion itself, and override per-test to cover the decline path.
+const feedbackConfirm = vi.fn().mockResolvedValue(true);
+
+vi.mock("@/adapters/context", () => ({
+    useAdapters: () => ({
+        alertAdapter: {feedbackInfo, feedbackError, feedbackConfirm},
+        browserAdapter: {getMessage: (k: string) => k, getUserLocale: () => "de-DE"},
+        fetchAdapter: {fetchMinRateMaxData: vi.fn(), fetchDateData: vi.fn(), clearCache: vi.fn()},
+        storageAdapter: () => ({getStorage: vi.fn().mockResolvedValue({})}),
+        repositories: {
+            bookings: {delete: bookingsDelete},
+            stocks: {delete: stocksDelete}
+        }
+    })
+}));
+
+import {useMenuAction, useMenuHighlight} from "@/adapters/ui/composables/useMenu";
+import {useBookingsStore} from "@/adapters/ui/stores/bookings";
+import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
+import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
+import {makeBookingDb, makeStockDb} from "@test/usecases";
+
+describe("useMenuHighlight", () => {
+    beforeEach(() => {
+        vi.useFakeTimers();
+    });
+
+    it("highlight() marks a record as highlighted with the given color", () => {
+        const {highlight, isHighlighted, getHighlightColor} = useMenuHighlight();
+        highlight(1, "red");
+
+        expect(isHighlighted(1)).toBe(true);
+        expect(getHighlightColor(1)).toBe("red");
+    });
+
+    it("defaults to green when no color is given", () => {
+        const {highlight, getHighlightColor} = useMenuHighlight();
+        highlight(1);
+        expect(getHighlightColor(1)).toBe("green");
+    });
+
+    it("clearHighlight() removes the highlight for one record", () => {
+        const {highlight, clearHighlight, isHighlighted} = useMenuHighlight();
+        highlight(1);
+
+        clearHighlight(1);
+
+        expect(isHighlighted(1)).toBe(false);
+    });
+
+    it("clearAllHighlights() removes every highlighted record", () => {
+        const {highlight, clearAllHighlights, isHighlighted} = useMenuHighlight();
+        highlight(1);
+        highlight(2);
+
+        clearAllHighlights();
+
+        expect(isHighlighted(1)).toBe(false);
+        expect(isHighlighted(2)).toBe(false);
+    });
+
+    it("highlightTemporary() auto-clears the highlight after the given duration", () => {
+        const {highlightTemporary, isHighlighted} = useMenuHighlight();
+        highlightTemporary(1, {duration: 1000});
+
+        expect(isHighlighted(1)).toBe(true);
+        vi.advanceTimersByTime(999);
+        expect(isHighlighted(1)).toBe(true);
+        vi.advanceTimersByTime(1);
+        expect(isHighlighted(1)).toBe(false);
+    });
+
+    it("highlightTemporary() replaces an existing timer instead of stacking them", () => {
+        const {highlightTemporary, isHighlighted} = useMenuHighlight();
+        highlightTemporary(1, {duration: 1000});
+        vi.advanceTimersByTime(500);
+        highlightTemporary(1, {duration: 1000}); // restart the clock
+
+        vi.advanceTimersByTime(999);
+        expect(isHighlighted(1)).toBe(true);
+        vi.advanceTimersByTime(1);
+        expect(isHighlighted(1)).toBe(false);
+    });
+});
+
+describe("useMenuAction", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        setActiveTestPinia();
+    });
+
+    // This table covers only the ROW-level actions now -- the six DotMenu can
+    // actually dispatch, from createHomeMenuItems/createCompanyMenuItems. It
+    // used to be exhaustive over all 23 MenuActionType members, so 17 were
+    // unreachable duplicates of useHeaderBarActions' table. `addBooking`, used
+    // by these two tests before, is one of the header-bar ones.
+    it("hasAction recognizes row-level actions and rejects unknown ones", () => {
+        const {hasAction} = useMenuAction();
+        expect(hasAction("updateBooking")).toBe(true);
+        expect(hasAction("openLink")).toBe(true);
+        expect(hasAction("notARealAction")).toBe(false);
+    });
+
+    it("hasAction rejects header-bar actions, which belong to useHeaderBarActions", () => {
+        const {hasAction} = useMenuAction();
+        expect(hasAction("addBooking")).toBe(false);
+        expect(hasAction("exportDatabase")).toBe(false);
+        // The one that mattered: useMenu's dead updateQuote called
+        // refreshOnlineData WITHOUT stockIds -- the positional page slice that
+        // resolvePageStocks' own doc comment identifies as wrong once the user
+        // sorts the table. Wiring a per-row control to it would have silently
+        // reintroduced that bug.
+        expect(hasAction("updateQuote")).toBe(false);
+    });
+
+    it("executeAction opens the matching dialog via runtime teleport state", async () => {
+        const runtime = useRuntimeStore();
+        const {executeAction} = useMenuAction();
+
+        await executeAction("updateBooking", 0);
+
+        expect(runtime.dialogName).toBe("updateBooking");
+        expect(runtime.dialogOk).toBe(true);
+        expect(runtime.dialogVisibility).toBe(true);
+    });
+
+    it("executeAction reports a header-bar action as invalid rather than handling it", async () => {
+        // The `!handler` branch used to be unreachable because the table was
+        // exhaustive; it is now the real answer for a header-bar id sent to the
+        // row dispatcher.
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("addBooking", 1);
+
+        expect(feedbackError).toHaveBeenCalledWith(
+            "composables.useMenu.title",
+            "composables.useMenu.messages.invalidCode",
+            {data: "addBooking"}
+        );
+    });
+
+    it("executeAction sets runtime.activeId to the target record before running the handler", async () => {
+        const runtime = useRuntimeStore();
+        const {executeAction} = useMenuAction();
+
+        await executeAction("updateBooking", 42);
+
+        expect(runtime.activeId).toBe(42);
+    });
+
+    it("executeAction reports an error for an unknown action type", async () => {
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("notARealAction" as never, 1);
+
+        expect(feedbackError).toHaveBeenCalledWith(
+            "composables.useMenu.title",
+            "composables.useMenu.messages.invalidCode",
+            {data: "notARealAction"}
+        );
+    });
+
+    it("falls back to browserAdapter.getMessage when no translate function is supplied", async () => {
+        const {executeAction} = useMenuAction();
+
+        await executeAction("notARealAction" as never, 1);
+
+        expect(feedbackError).toHaveBeenCalledWith(
+            "composables.useMenu.title",
+            "composables.useMenu.messages.invalidCode",
+            {data: "notARealAction"}
+        );
+    });
+
+    it("deleteBooking removes the booking from the repository and the store", async () => {
+        const records = useRecordsStore();
+        const bookings = useBookingsStore();
+        const runtime = useRuntimeStore();
+        bookings.add(makeBookingDb({cID: 1}));
+        runtime.markStocksPageLoaded(1);
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("deleteBooking", 1);
+
+        expect(bookingsDelete).toHaveBeenCalledWith(1);
+        expect(records.bookings.items).toHaveLength(0);
+        // A removed booking can change the stock's holdings (mPortfolio),
+        // portfolio.active's secondary sort key, so page freshness must reset.
+        expect(runtime.loadedStocksPages.size).toBe(0);
+    });
+
+    it("deleteStock is blocked with a notice when the stock still has bookings", async () => {
+        const records = useRecordsStore();
+        records.stocks.add(makeStockDb({cID: 1}));
+        records.bookings.add(makeBookingDb({cID: 1, cStockID: 1}));
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("deleteStock", 1);
+
+        expect(stocksDelete).not.toHaveBeenCalled();
+        expect(feedbackInfo).toHaveBeenCalledWith(
+            "composables.useMenu.title",
+            "composables.useMenu.messages.noDelete"
+        );
+    });
+
+    it("deleteStock succeeds when the stock has no linked bookings", async () => {
+        const records = useRecordsStore();
+        const runtime = useRuntimeStore();
+        records.stocks.add(makeStockDb({cID: 1}));
+        runtime.markStocksPageLoaded(1);
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("deleteStock", 1);
+
+        expect(stocksDelete).toHaveBeenCalledWith(1);
+        expect(records.stocks.items).toHaveLength(0);
+        // Removing a stock shifts every later stock's page position, so page
+        // freshness must reset for the shifted-in stocks to refetch.
+        expect(runtime.loadedStocksPages.size).toBe(0);
+    });
+
+    it("deleteBooking asks for confirmation and does nothing when the user declines", async () => {
+        feedbackConfirm.mockResolvedValueOnce(false);
+        const records = useRecordsStore();
+        const bookings = useBookingsStore();
+        bookings.add(makeBookingDb({cID: 1}));
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("deleteBooking", 1);
+
+        expect(feedbackConfirm).toHaveBeenCalledTimes(1);
+        expect(bookingsDelete).not.toHaveBeenCalled();
+        expect(records.bookings.items).toHaveLength(1);
+    });
+
+    it("deleteStock asks for confirmation and does nothing when the user declines", async () => {
+        feedbackConfirm.mockResolvedValueOnce(false);
+        const records = useRecordsStore();
+        records.stocks.add(makeStockDb({cID: 1}));
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("deleteStock", 1);
+
+        expect(feedbackConfirm).toHaveBeenCalledTimes(1);
+        expect(stocksDelete).not.toHaveBeenCalled();
+        expect(records.stocks.items).toHaveLength(1);
+    });
+
+    it("a rejected confirmation (dialog already open) cancels the deletion instead of surfacing an error", async () => {
+        // stores/alerts.ts confirm() REJECTS when a confirmation is already
+        // active, so a second delete click must quietly no-op rather than report
+        // a failure about dialog state.
+        //
+        // Rejected with that specific AppError code, not a bare Error: the catch
+        // now tests for it rather than absorbing everything, because a sink that
+        // could not present the confirmation at all throws
+        // ALERTS.SINK_UNAVAILABLE — and reading THAT as "the user declined" is
+        // the failure `alertAdapter.getAlertSinkOrThrow` exists to stop.
+        feedbackConfirm.mockRejectedValueOnce(
+            appError(ERROR_DEFINITIONS.STORES.ALERTS.A.CODE, ERROR_CATEGORY.STORE, true)
+        );
+        const records = useRecordsStore();
+        const bookings = useBookingsStore();
+        bookings.add(makeBookingDb({cID: 1}));
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("deleteBooking", 1);
+
+        expect(bookingsDelete).not.toHaveBeenCalled();
+        expect(feedbackError).not.toHaveBeenCalled();
+        expect(records.bookings.items).toHaveLength(1);
+    });
+
+    it("a confirmation that could not be presented at all is NOT read as a decline", async () => {
+        feedbackConfirm.mockRejectedValueOnce(
+            appError(
+                ERROR_DEFINITIONS.STORES.ALERTS.SINK_UNAVAILABLE.CODE,
+                ERROR_CATEGORY.STORE,
+                false
+            )
+        );
+        const bookings = useBookingsStore();
+        bookings.add(makeBookingDb({cID: 1}));
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("deleteBooking", 1);
+
+        // Nothing is deleted either way — but the failure surfaces instead of
+        // being silently converted into "the user pressed Cancel", which is what
+        // every `!!(await feedbackConfirm(...))` call site did with the old
+        // `undefined` return.
+        expect(bookingsDelete).not.toHaveBeenCalled();
+        expect(feedbackError).toHaveBeenCalled();
+    });
+
+    it("openLink opens the stock's URL when present", async () => {
+        const records = useRecordsStore();
+        records.stocks.add(makeStockDb({cID: 1, cURL: "https://example.com"}));
+        const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("openLink", 1);
+
+        // The URL is normalized by `sanitizeExternalUrl`'s `new URL(...)`
+        // round-trip, hence the trailing slash on a bare origin.
+        expect(openSpy).toHaveBeenCalledWith("https://example.com/", "_blank", "noopener,noreferrer");
+        openSpy.mockRestore();
+    });
+
+    // `cURL` is an arbitrary user- or backup-supplied string that no layer used
+    // to scheme-check before it reached window.open, so javascript:, data: and
+    // file: URLs were accepted, persisted and later opened. A rejected URL takes
+    // the same "no link" path as an absent one — from the user's side there is
+    // no usable link either way.
+    it.each(["javascript:alert(1)", "data:text/html,<script>1</script>", "file:///etc/passwd"])(
+        "openLink refuses to open %s",
+        async (hostileUrl) => {
+            const records = useRecordsStore();
+            records.stocks.add(makeStockDb({cID: 1, cURL: hostileUrl}));
+            const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
+            const {executeAction} = useMenuAction((k) => k);
+
+            await executeAction("openLink", 1);
+
+            expect(openSpy).not.toHaveBeenCalled();
+            expect(feedbackInfo).toHaveBeenCalledWith(
+                "composables.useMenu.title",
+                "composables.useMenu.messages.noLink"
+            );
+            openSpy.mockRestore();
+        }
+    );
+
+    it("openLink shows a notice instead of opening a window when no URL is set", async () => {
+        const records = useRecordsStore();
+        records.stocks.add(makeStockDb({cID: 1, cURL: ""}));
+        const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("openLink", 1);
+
+        expect(openSpy).not.toHaveBeenCalled();
+        expect(feedbackInfo).toHaveBeenCalledWith(
+            "composables.useMenu.title",
+            "composables.useMenu.messages.noLink"
+        );
+        openSpy.mockRestore();
+    });
+
+    it("executeAction reports an error via alertAdapter when a handler throws", async () => {
+        bookingsDelete.mockRejectedValueOnce(new Error("db down"));
+        const records = useRecordsStore();
+        const bookings = useBookingsStore();
+        bookings.add(makeBookingDb({cID: 1}));
+        const {executeAction} = useMenuAction((k) => k);
+
+        await executeAction("deleteBooking", 1);
+
+        expect(feedbackError).toHaveBeenCalledWith(
+            "composables.useMenu.title",
+            expect.any(Error),
+            {data: "deleteBooking"}
+        );
+        // The failed repository call must not have removed the in-memory record.
+        expect(records.bookings.items).toHaveLength(1);
+    });
+});

@@ -1,0 +1,50 @@
+{
+  "xx_error_code": {
+    "message": "Ungültiger Fehlercode"
+  },
+  "xx_missing_translation": {
+    "message": "Keine Übersetzung gefunden"
+  },
+  "xx_missing_record": {
+    "message": "Datensatz nicht gefunden"
+  },
+  "xx_invalid_backup": {
+    "message": "Korrupte Wiederherstellungsdatei"
+  },
+  "xx_db_connection_err": {
+    "message": "Datenbankverbindung fehlgeschlagen"
+  },
+  "xx_db_no_selected": {
+    "message": "Kein Datensatz ausgewählt"
+  },
+  "xx_db_fade_in": {
+    "message": "Datensatz ist eingeblendet"
+  },
+  "xx_db_no_file": {
+    "message": "Keine Wiederherstellungsdatei ausgewählt"
+  },
+  "xx_db_no_rollback": {
+    "message": "'Rollback' fehlgeschlagen"
+  },
+  "xx_db_rollback": {
+    "message": "'Rollback' erfolgreich"
+  },
+  "xx_no_active_account": {
+    "message": "Kein Konto ausgewählt"
+  },
+  "xx_form_invalid": {
+    "message": "Bitte korrigieren Sie die markierten Felder vor dem Speichern."
+  },
+  "xx_blank_book_date": {
+    "message": "Bitte geben Sie ein gültiges Buchungsdatum ein."
+  },
+  "xx_startup_failed_title": {
+    "message": "KontenManager konnte nicht gestartet werden"
+  },
+  "xx_startup_failed_message": {
+    "message": "Beim Start ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "xx_startup_failed_retry": {
+    "message": "Erneut versuchen"
+  }
+}

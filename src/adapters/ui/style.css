@@ -1,0 +1,166 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * one could get a copy at https://mozilla.org/MPL/2.0/.
+ */
+
+.sheet {
+    overflow: auto;
+    height: calc(100vh - 300px);
+}
+
+.d-none {
+    display: none;
+}
+
+.table-row {
+    /* Set the display to `table-row` because Vuetify makes `flex` */
+    display: table-row;
+}
+
+/*
+ * Row striping and hover, as TRANSLUCENT OVERLAYS rather than opaque colours.
+ *
+ * These used to be opaque light greys plus `color: darkgray`, on bare
+ * `tbody tr` selectors:
+ *
+ *     tbody tr:nth-of-type(even) { background-color: rgb(224,224,224); color: darkgray; }
+ *     tbody tr:nth-of-type(odd)  { background-color: rgb(248,248,248); color: darkgray; }
+ *
+ * Two problems, both of which this replacement fixes rather than works around:
+ *
+ * 1. They beat Vuetify's `.v-table { background: rgb(var(--v-theme-surface)) }`,
+ *    which paints the container and reaches rows only by inheritance — so every
+ *    table was light-themed in all six themes. In `dark`, the card around the
+ *    table is `#23222B` while the rows inside it were near-white.
+ * 2. `color: darkgray` (#A9A9A9) on `rgb(248,248,248)` is about 2.4:1 — well
+ *    under the 4.5:1 WCAG AA threshold for body text — for every cell not
+ *    explicitly overridden, including description, ISIN, date and booking type.
+ *
+ * A neutral grey at low alpha reads as a stripe over *whatever* the theme paints
+ * underneath, so it works on a near-white surface and on `#23222B` alike, and it
+ * needs no `var(--v-theme-*)` lookups (which the IDE cannot resolve). Setting no
+ * `color` at all is the point of the second fix: cells inherit Vuetify's
+ * on-surface colour, which is contrast-matched to the surface per theme.
+ *
+ * Scoped to `.v-table` so they apply to the app's data tables rather than to
+ * every `<tbody><tr>` the extension might ever render.
+ */
+.v-table tbody tr:nth-of-type(even) {
+    background-color: rgba(128, 128, 128, 0.09);
+}
+
+.v-table tbody tr:nth-of-type(odd) {
+    background-color: rgba(128, 128, 128, 0.03);
+}
+
+/* After the striping rules so it wins on both odd and even rows. */
+.v-table tbody tr.table-row:hover {
+    background-color: rgba(128, 128, 128, 0.18);
+}
+
+/*
+ * A translucent CATEGORY-CELL highlight, for the same reason the striping
+ * rules above are translucent overlays rather than opaque colours: it needs
+ * to read as "tinted" over whatever the theme paints underneath, on a
+ * near-white surface and on `#23222B` alike, with no `var(--v-theme-*)`
+ * lookup.
+ *
+ * This replaced a `text-info` attempt (a Vuetify utility class colouring the
+ * text itself, rgb(var(--v-theme-info))). That measured well on paper - see
+ * plugins/vuetify.ts's own per-theme WCAG contrast table for `info` against
+ * each theme's *surface* - but contrast-against-the-surface was the wrong
+ * property to check. What actually needs to be distinct is `info` against
+ * the theme's own *body-text* colour (Vuetify's auto-picked on-surface,
+ * always pure `#000` or `#fff`), since that is the colour every other cell
+ * in the row already renders in. Measured with Vuetify's own
+ * `getContrast`/`getForeground` utilities, that ratio is as low as 1.75
+ * (`ocean`) and 1.05 (`meadow`) - both themes pick white body text, and both
+ * themes' `info` is itself a pale, near-white blue chosen specifically to
+ * satisfy the *surface* contrast check. The highlighted rows were
+ * indistinguishable from ordinary ones on exactly the themes where that
+ * coincidence bites hardest.
+ *
+ * A background wash sidesteps the whole problem: the text stays whatever
+ * colour the theme already renders body text in (still contrast-correct by
+ * construction), and the tint reads as a highlight from hue and opacity
+ * alone, not from being lighter or darker than surrounding text.
+ */
+.category-highlight {
+    background-color: rgba(255, 179, 0, 0.28);
+}
+
+thead tr div.v-progress-linear {
+    color: red;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+.color-orange {
+    color: orange;
+}
+
+.color-red {
+    color: darksalmon;
+}
+
+.color-green {
+    color: green;
+}
+
+/*
+ * Theme-INDEPENDENT literal black. **Has no callers, and should not gain one.**
+ *
+ * Do not apply this to anything rendered on a themed surface: the
+ * user-selectable `dark` theme paints cards and sheets on `surface: #23222B`,
+ * where black text sits at roughly 1.2:1 contrast and is effectively invisible.
+ * CompanyContent's rate and gain cells both carried it once and were unreadable
+ * for every dark-theme user. Prefer inheriting Vuetify's on-surface color, or
+ * one legible in all six configured themes - that is what winLossClass's
+ * non-negative branch settled on.
+ *
+ * It used to have exactly one exception, CompanyContent's mValue cell, and that
+ * exception was borrowed rather than intrinsic: it held only while the two
+ * `tbody tr:nth-of-type()` rules above hardcoded the row background to light
+ * gray in every theme. Those rules are now translucent overlays over the theme
+ * surface, so the exception is withdrawn and the class is unused - the mValue
+ * cell keeps its emphasis from `font-weight-bold` alone and inherits a legible
+ * on-surface color in every theme.
+ *
+ * Kept, rather than deleted, only as the anchor for this note; a bare
+ * `color: black` is the kind of thing that gets re-added from muscle memory.
+ */
+.color-black {
+    color: black;
+}
+
+.router-link-active {
+    color: white;
+}
+
+.opacity-off {
+    opacity: 0;
+}
+
+.opacity-on {
+    opacity: 1;
+}
+
+.text-align-center {
+    text-align: center;
+}
+
+.withoutSpinner input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.withoutSpinner input::-webkit-outer-spin-button,
+.withoutSpinner input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}

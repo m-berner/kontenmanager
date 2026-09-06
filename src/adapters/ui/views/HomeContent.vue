@@ -1,0 +1,297 @@
+<!--
+  - This Source Code Form is subject to the terms of the Mozilla Public
+  - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  - one could get a copy at https://mozilla.org/MPL/2.0/.
+  -->
+
+<script lang="ts" setup>
+/**
+ * @fileoverview HomeContent component displays the main dashboard with a searchable
+ * data table of all bookings, including action menus and keyboard shortcuts.
+ */
+import {computed, onBeforeMount, onUnmounted, ref} from "vue";
+import {useI18n} from "vue-i18n";
+
+import {setActiveAccountIdPersisted} from "@/app/usecases/portAdapters";
+
+import {
+  createHomeHeaders,
+  createHomeMenuItems,
+  ITEMS_PER_PAGE_OPTIONS
+} from "@/domain/constants";
+import {isConfirmDialogBusyError} from "@/domain/errors";
+import {isValidISODate, log, utcDate} from "@/domain/utils/utils";
+
+import {useAdapters} from "@/adapters/context";
+import DotMenu from "@/adapters/ui/components/DotMenu.vue";
+import {BOOKING_SEARCH_KEYS, createBookingSearchFilter} from "@/adapters/ui/composables/bookingSearch";
+import {useKeyboardShortcuts} from "@/adapters/ui/composables/useKeyboardShortcuts";
+import {useRecordsStore} from "@/adapters/ui/stores/recordsHub";
+import {useRuntimeStore} from "@/adapters/ui/stores/runtime";
+import {useSettingsStore} from "@/adapters/ui/stores/settings";
+
+const {d, n, t} = useI18n();
+const {alertAdapter, databaseAdapter, storageAdapter} = useAdapters();
+const {clearStorage, installStorageLocal, setStorage} = storageAdapter();
+const records = useRecordsStore();
+const settings = useSettingsStore();
+const runtime = useRuntimeStore();
+const setBookingsPerPage = (value: number) => settings.setBookingsPerPage(value);
+
+const HEADERS = computed(() => createHomeHeaders(t));
+const MENU_ITEMS = computed(() => createHomeMenuItems(t));
+
+const search = ref<string>("");
+
+// Search config lives in `composables/bookingSearch.ts` so it can be unit-tested against
+// Vuetify's real `filterItems` — a `<script setup>` block is not importable, and
+// this config's correctness depends on Vuetify's filter internals.
+//
+// A plain const, NOT a computed. It was wrapped in one "so a renamed booking
+// type is searchable under its new name", which described a mechanism that did
+// not run: `getNameById` is a `computed` whose body returns a closure without
+// reading `items.value`, so its identity never changes and the wrapper never
+// re-evaluated. Renames were tracked anyway, by the real mechanism — the closure
+// reads `items.value` when Vuetify's filter computed invokes it, so the
+// dependency is registered there. Dropping the wrapper leaves behaviour
+// identical and stops the comment claiming a guarantee it was not providing.
+const customSearchKeys = createBookingSearchFilter(
+    records.bookingTypes.getNameById,
+    (value) => n(value, "currency"),
+    // Mirrors the Datum cell exactly (below): blank for an invalid/malformed
+    // cBookDate, "short"-formatted otherwise — never let a malformed date
+    // reach utcDate()/d(), which throws (see the cell's own comment).
+    (isoDate) => (isValidISODate(isoDate) ? d(utcDate(isoDate), "short") : "")
+);
+
+const {register, unregister} = useKeyboardShortcuts();
+
+/**
+ * Resets the application storage to its initial state.
+ * Clears all data and re-installs default local storage values.
+ * Asks for explicit confirmation first, since this is destructive and
+ * triggered by a global keyboard shortcut that is easy to hit by accident.
+ *
+ * @async
+ * @returns {Promise<void>}
+ */
+const onResetStorage = async (): Promise<void> => {
+  // A global `window` keydown listener (useKeyboardShortcuts) fires
+  // regardless of what else is on screen, including a teleported
+  // AddBooking/UpdateBooking/... dialog (`runtime.dialogVisibility`). Without
+  // this guard, confirming the reset while such a dialog was open swapped the
+  // active account and re-initialized the record stores underneath it — the
+  // dialog itself stayed open, bound to booking-type ids and an account id
+  // that no longer matched `settings.activeAccountId`, so submitting it wrote
+  // a cross-account reference nothing downstream validates against. Silently
+  // ignoring the shortcut here, not presenting the confirmation at all, is
+  // the same treatment `isConfirmDialogBusyError` below gives an
+  // already-open confirmation.
+  if (runtime.dialogVisibility) {
+    log("VIEWS HomeContent: a dialog is open, ignoring Ctrl+Alt+R", undefined, "warn");
+    return;
+  }
+
+  // Handled here rather than left to `useKeyboardShortcuts`' wrapper. That
+  // wrapper's `Promise.resolve(handler()).catch(...)` is a *blanket* catch —
+  // correct for its own purpose (an async handler behind a synchronous type must
+  // not produce an unhandled rejection), but it cannot tell "a confirmation was
+  // already open" from "the confirmation could not be presented at all", and it
+  // logs both at `warn` and moves on. Absorbing the second one there would undo
+  // the distinction `alertAdapter.getAlertSinkOrThrow` exists to create.
+  //
+  // So: the busy rejection means "not confirmed" and returns quietly, matching
+  // `useMenu.confirmDestructive`; anything else is a real failure and is
+  // reported. Nothing hostile reaches the blanket catch, which stays the safety
+  // net for genuinely unexpected rejections.
+  let confirmed: boolean | void;
+  try {
+    confirmed = await alertAdapter.feedbackConfirm(
+        t("views.homeContent.resetStorage.confirmTitle"),
+        t("views.homeContent.resetStorage.confirmMessage"),
+        {
+          confirm: {
+            confirmText: t("views.homeContent.resetStorage.confirmOk"),
+            cancelText: t("views.homeContent.resetStorage.confirmCancel"),
+            type: "warning"
+          }
+        }
+    );
+  } catch (err) {
+    if (isConfirmDialogBusyError(err)) {
+      log("VIEWS HomeContent: a confirmation is already open", err, "warn");
+      return;
+    }
+    await alertAdapter.feedbackError(t("views.homeContent.resetStorage.confirmTitle"), err, {});
+    return;
+  }
+
+  if (!confirmed) return;
+
+  try {
+    await clearStorage();
+    await installStorageLocal();
+
+    // Re-hydrate before reporting success. Only browser.storage.local is reset
+    // here — IndexedDB is untouched — so without this the app was left
+    // internally inconsistent while claiming the reset had worked:
+    // settings.activeAccountId went back to -1 (via the storage-change
+    // listener), but the record stores still held the previous account's
+    // bookings/stocks/booking types. `records.isDepot` then reads false and
+    // hides the Company nav while that depot's data is still listed, and any
+    // subsequent write stamps cAccountNumberID: -1 onto the row — which
+    // addBookingUsecase/addStockUsecase now reject outright, but which used to
+    // create an orphan that blocks every future export.
+    //
+    // settings.load() re-reads the freshly seeded storage deterministically
+    // rather than waiting on the async onChanged listener, so the id used below
+    // is the one that was actually persisted.
+    await settings.load();
+
+    // getAccountRecords returns EVERY account regardless of the id passed
+    // (findAll), so this first read doubles as "which accounts still exist?".
+    const initialRecords = await databaseAdapter.getAccountRecords(settings.activeAccountId);
+    const fallbackAccountId = initialRecords.accountsDB[0]?.cID;
+
+    // Landing on the "no account selected" sentinel while accounts still exist
+    // is a dead end, not a neutral state: TitleBar's switcher is the only way to
+    // choose an account, and the app has no other route back to one. Adopt the
+    // first account the same way deleteActiveAccountUsecase already does, so the
+    // reset ends on a usable selection instead of an unreachable one.
+    const needsAdoption =
+        settings.activeAccountId <= 0 && fallbackAccountId !== undefined;
+
+    // Through setActiveAccountIdPersisted, not a bare `settings.activeAccountId
+    // = id; await setStorage(...)` pair. That pairing had no rollback: if the
+    // write rejected, memory held the adopted id while storage still held -1,
+    // and the throw escaped before reaching records.init below — leaving the
+    // record stores holding whatever they had before this reset attempt while
+    // settings.activeAccountId claimed a different, unpersisted account.
+    // setActiveAccountIdPersisted reverts the in-memory value itself on
+    // failure (back to -1 here, a normal "no account selected" state — unlike
+    // deleteActiveAccountUsecase's forced-forward case, the previous id is not
+    // a deleted account), so the two can never diverge; captured rather than
+    // caught-and-dropped so it still surfaces after records.init keeps the
+    // stores consistent with wherever the id actually ended up.
+    let persistError: unknown;
+    if (needsAdoption) {
+      try {
+        await setActiveAccountIdPersisted({settings, setStorage}, fallbackAccountId);
+      } catch (err) {
+        persistError = err;
+      }
+    }
+    const adopted = needsAdoption && persistError === undefined;
+
+    // Re-read only when adoption actually took hold: the first read carried no
+    // bookings/stocks/booking types, because findByAccount(-1) matches
+    // nothing — which is also the correct snapshot for a reverted id.
+    const storesDB = adopted
+        ? await databaseAdapter.getAccountRecords(fallbackAccountId)
+        : initialRecords;
+
+    // Belt-and-braces alongside the dialogVisibility guard above: the
+    // `await alertAdapter.feedbackConfirm` earlier in this handler yields to
+    // the event loop, so a dialog could in principle open during that window
+    // even though none was open when this handler started. Closing it here,
+    // right before the stores it was bound to are replaced, matches every
+    // other usecase that mutates an account/stock/booking under it.
+    runtime.resetTeleport();
+    await records.init(storesDB, {
+      title: t("mixed.smImportOnly.title"),
+      message: t("mixed.smImportOnly.message")
+    });
+
+    if (persistError !== undefined) throw persistError;
+
+    await alertAdapter.feedbackInfo(
+        t("views.homeContent.resetStorage.confirmTitle"),
+        t("views.homeContent.resetStorage.successMessage")
+    );
+  } catch (err) {
+    await alertAdapter.feedbackError(
+        t("views.homeContent.resetStorage.confirmTitle"),
+        err,
+        {}
+    );
+  }
+};
+
+// The `beforeunload` database disconnect used to live here. It has moved to
+// `AppIndex`, the app shell: registered from a route component it only existed
+// while THIS route was mounted, so closing the tab from /company, /help or
+// /privacy never disconnected — a route-dependent lifecycle for something that
+// is a property of the page.
+onBeforeMount(() => {
+  log("VIEWS HomeContent: onBeforeMount");
+  register("Ctrl+Alt+R", onResetStorage);
+});
+
+onUnmounted(() => {
+  unregister("Ctrl+Alt+R");
+});
+
+log("VIEWS HomeContent: setup");
+</script>
+
+<template>
+  <v-text-field
+      v-model="search"
+      :label="t('views.homeContent.search')"
+      density="compact"
+      hide-details
+      prepend-inner-icon="$magnify"
+      single-line
+      variant="outlined"/>
+  <!--
+    `filter-mode="union"` is load-bearing, not a style choice. Vuetify's default
+    is "intersection", which requires EVERY entry in `custom-key-filter` to
+    match before a row is kept — so with the booking-type filter registered, a
+    search for "Miete" that matched only the description column would be
+    discarded because the type-name filter did not also match. "union" gives the
+    OR semantics a search box is expected to have.
+  -->
+  <v-data-table
+      :custom-key-filter="customSearchKeys"
+      :filter-keys="BOOKING_SEARCH_KEYS"
+      :headers="HEADERS"
+      :hide-no-data="false"
+      :hover="true"
+      :items="records.bookings.items"
+      :items-per-page="settings.bookingsPerPage"
+      :items-per-page-options="ITEMS_PER_PAGE_OPTIONS"
+      :items-per-page-text="t('views.homeContent.bookingsTable.itemsPerPageText')"
+      :no-data-text="t('views.homeContent.bookingsTable.noDataText')"
+      :search="search"
+      density="compact"
+      filter-mode="union"
+      item-value="cID"
+      @update:items-per-page="setBookingsPerPage">
+    <template v-slot:[`item`]="{ item }">
+      <tr class="table-row">
+        <td class="d-none">{{ item.cID }}</td>
+        <td>
+          <DotMenu :items="MENU_ITEMS" :record-id="item.cID"/>
+        </td>
+        <!--
+          Same crash class as ShowDividend.vue's ex-date cell: utcDate("") returns
+          an Invalid Date (its documented empty-string branch) and
+          Intl.DateTimeFormat.format() throws RangeError on that, so converting to a
+          Date is not on its own enough. A single booking with a missing/malformed
+          cBookDate - reachable via backup import, since normalizeDate() maps that to
+          "" - would take out the entire bookings table, not just its own row.
+        -->
+        <td>
+          <template v-if="isValidISODate(item.cBookDate)">
+            {{ d(utcDate(item.cBookDate), "short") }}
+          </template>
+        </td>
+        <td>{{ n(item.cDebit, "currency") }}</td>
+        <td>{{ n(item.cCredit, "currency") }}</td>
+        <td>{{ item.cDescription }}</td>
+        <td>{{ records.bookingTypes.getNameById(item.cBookingTypeID) }}</td>
+        <td class="d-none">{{ item.cAccountNumberID }}</td>
+      </tr>
+    </template>
+  </v-data-table>
+</template>
