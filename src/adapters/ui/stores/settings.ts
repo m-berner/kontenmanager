@@ -5,11 +5,11 @@
  */
 
 import {defineStore} from "pinia";
-import {type Ref, ref, toRaw} from "vue";
+import {type Ref, ref, toRaw, watch} from "vue";
 
 import {BROWSER_STORAGE} from "@/domain/constants";
 import type {StorageDataType, StorageValueType} from "@/domain/types";
-import {log} from "@/domain/utils/utils";
+import {log, setRuntimeDebugLogs} from "@/domain/utils/utils";
 
 import {getSettingsStoreDeps, getStoreTranslate} from "@/adapters/ui/stores/deps";
 
@@ -46,6 +46,8 @@ export const useSettingsStore = defineStore(
      * @property {Ref<string[]>} markets - List of enabled/visible stock market identifiers.
      * @property {Ref<string[]>} indexes - List of enabled/visible financial indexes.
      * @property {Ref<string[]>} exchanges - List of enabled/visible stock exchange identifiers.
+     * @property {Ref<boolean>} debugLogs - Whether `log()` emits structured logs in this
+     *                                      build regardless of build mode.
      *
      * @property {Function} init - Initializes the store with values retrieved from browser storage.
      *                             Also sets up a listener for cross-context storage synchronization.
@@ -122,6 +124,23 @@ export const useSettingsStore = defineStore(
 
         /** List of enabled/visible stock exchange identifiers. */
         const exchanges = ref<string[]>([...BROWSER_STORAGE.EXCHANGES.value]);
+
+        /**
+         * Whether `log()` emits structured logs in this (production) build
+         * regardless of build mode — see `BROWSER_STORAGE.DEBUG_LOGS` and
+         * `domain/utils/utils.ts`'s `setRuntimeDebugLogs`.
+         */
+        const debugLogs = ref<boolean>(BROWSER_STORAGE.DEBUG_LOGS.value);
+
+        // Keeps `log()`'s runtime gate in sync with this ref, however it changes:
+        // the initial default above, `init()` hydrating from storage, a genuine
+        // cross-context change applied through `applyStorageChange`, or this
+        // context's own `setDebugLogs`. A watcher is one seam for all four
+        // instead of a call at each site — a call site added later that forgets
+        // it would silently keep the previous context's build-mode gate.
+        watch(debugLogs, (enabled) => {
+            setRuntimeDebugLogs(enabled);
+        }, {immediate: true});
 
         /**
          * Creates a shallow copy of the provided storage value. If the value is an array,
@@ -322,6 +341,7 @@ export const useSettingsStore = defineStore(
             syncFromStorage(markets, storage, BROWSER_STORAGE.MARKETS.key, [...BROWSER_STORAGE.MARKETS.value]);
             syncFromStorage(indexes, storage, BROWSER_STORAGE.INDEXES.key, [...BROWSER_STORAGE.INDEXES.value]);
             syncFromStorage(exchanges, storage, BROWSER_STORAGE.EXCHANGES.key, [...BROWSER_STORAGE.EXCHANGES.value]);
+            syncFromStorage(debugLogs, storage, BROWSER_STORAGE.DEBUG_LOGS.key, BROWSER_STORAGE.DEBUG_LOGS.value);
 
             // Start listening for external changes (cross-context sync)
             if (removeStorageChangeListener) {
@@ -345,6 +365,7 @@ export const useSettingsStore = defineStore(
                 applyStorageChange(changes, BROWSER_STORAGE.MARKETS.key, markets, [...BROWSER_STORAGE.MARKETS.value]);
                 applyStorageChange(changes, BROWSER_STORAGE.MATERIALS.key, materials, [...BROWSER_STORAGE.MATERIALS.value]);
                 applyStorageChange(changes, BROWSER_STORAGE.EXCHANGES.key, exchanges, [...BROWSER_STORAGE.EXCHANGES.value]);
+                applyStorageChange(changes, BROWSER_STORAGE.DEBUG_LOGS.key, debugLogs, BROWSER_STORAGE.DEBUG_LOGS.value);
                 applyStorageChange(
                     changes,
                     BROWSER_STORAGE.ACTIVE_ACCOUNT_ID.key,
@@ -520,6 +541,18 @@ export const useSettingsStore = defineStore(
             await updateSetting(exchanges, BROWSER_STORAGE.EXCHANGES.key, v, options);
         }
 
+        /**
+         * Updates the debug-logging toggle (see `debugLogs`).
+         *
+         * The `watch` set up above applies `setRuntimeDebugLogs` for this and
+         * every other path that changes `debugLogs.value`, including this
+         * setter's own optimistic write and its rollback on a failed persist —
+         * no separate call needed here.
+         */
+        async function setDebugLogs(v: boolean): Promise<void> {
+            await updateSetting(debugLogs, BROWSER_STORAGE.DEBUG_LOGS.key, v);
+        }
+
         return {
             skin,
             bookingsPerPage,
@@ -534,6 +567,7 @@ export const useSettingsStore = defineStore(
             markets,
             indexes,
             exchanges,
+            debugLogs,
             load,
             init,
             setCurrency,
@@ -548,7 +582,8 @@ export const useSettingsStore = defineStore(
             setIndexes,
             setMaterials,
             setMarkets,
-            setExchanges
+            setExchanges,
+            setDebugLogs
         };
     }
 );

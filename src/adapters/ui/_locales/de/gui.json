@@ -458,7 +458,8 @@
         "mp": "Marktplätze",
         "ind": "Indizes",
         "mat": "Rohstoffe",
-        "ex": "Wechselkurse"
+        "ex": "Wechselkurse",
+        "diag": "Diagnose"
       },
       "themeNames": {
         "earth": "Erde",
@@ -484,6 +485,10 @@
       "exchanges": {
         "title": "Wechselkurse",
         "label": "Neues Wechselkurs-Kürzel"
+      },
+      "debugLogs": {
+        "label": "Debug-Protokollierung aktivieren",
+        "hint": "Schreibt ausführliche Protokolle in die Browser-Konsole (Entwicklerwerkzeuge), um ein Problem zu diagnostizieren. Kann Konto- und Buchungsdaten enthalten – nach der Fehlersuche wieder deaktivieren."
       },
       "materials": {
         "au": "Gold",

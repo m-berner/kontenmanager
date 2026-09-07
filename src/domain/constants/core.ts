@@ -672,5 +672,17 @@ export const BROWSER_STORAGE = {
      * and indexes always use the same source, so this never lets the two
      * drift onto different providers.
      */
-    MARKET_DATA_SERVICE: {key: "sMarketDataService", value: "fnet"}
+    MARKET_DATA_SERVICE: {key: "sMarketDataService", value: "fnet"},
+    /**
+     * Runtime override for `log()`'s production gate (`domain/utils/utils.ts`).
+     *
+     * The build-time `VITE_DEBUG_LOGS` env var is the only other way to see
+     * structured logs outside a development build, and it requires a
+     * dedicated rebuild — impractical for diagnosing an already-installed
+     * extension. This setting lets a user flip debug logging on from the
+     * options page ("Diagnostics" tab), reproduce an issue, and flip it back
+     * off, without a rebuild. Off by default, same reasoning as the env var:
+     * console output can carry account/booking data, so it stays opt-in.
+     */
+    DEBUG_LOGS: {key: "sDebugLogs", value: false}
 } as const;

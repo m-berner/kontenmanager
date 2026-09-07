@@ -82,7 +82,82 @@ export function isValidISODate(iso: string): boolean {
 }
 
 /**
+ * CSS color assigned to each layer tag a `log()` message starts with (e.g.
+ * `"STORES settings: init"` -> tag `"STORES"`). Purely cosmetic: lets a busy
+ * browser console be scanned by layer instead of reading every line's
+ * leading word. An unrecognized tag (or a message with no tag at all) falls
+ * back to the console's default color — see `styleTag`.
+ */
+const LOG_TAG_COLORS: Readonly<Record<string, string>> = {
+    ENTRYPOINTS: "#8e44ad",
+    SERVICES: "#2980b9",
+    USECASES: "#16a085",
+    DOMAINS: "#7f8c8d",
+    COMPONENTS: "#d35400",
+    STORES: "#27ae60",
+    PLUGINS: "#c0392b",
+    COMPOSABLES: "#34495e",
+    DATABASE: "#f39c12",
+    VIEWS: "#1a5276"
+};
+
+/**
+ * Runtime override for `log()`'s production gate.
+ *
+ * Separate from the compile-time `VITE_DEBUG_LOGS` env var: that one requires
+ * a dedicated rebuild, which is impractical for diagnosing an
+ * already-installed extension. This flag can be flipped without a rebuild —
+ * see `setRuntimeDebugLogs`.
+ */
+let runtimeDebugLogs = false;
+
+/**
+ * Enables or disables `log()`'s runtime debug override.
+ *
+ * Wired from `stores/settings.ts`, itself synced with the persisted
+ * `BROWSER_STORAGE.DEBUG_LOGS` setting (toggled on the options page's
+ * "Diagnostics" tab) — so this call happens once per context at startup and
+ * again whenever the setting changes, not once per `log()` call.
+ *
+ * @param enabled - Whether debug logs should be emitted regardless of build mode.
+ */
+export function setRuntimeDebugLogs(enabled: boolean): void {
+    runtimeDebugLogs = enabled;
+}
+
+/**
+ * Splits a `log()` message into its leading layer tag and the rest, and
+ * builds the `%c`-styled console arguments for it.
+ *
+ * Falls back to the plain message (no `%c` tokens, no style args) when the
+ * leading word isn't a recognized tag, so unusual call sites still print
+ * normally instead of showing a literal `%c`.
+ *
+ * @param msg - The raw `log()` message.
+ */
+function styleTag(msg: string): { text: string; styles: string[] } {
+    const spaceIdx = msg.indexOf(" ");
+    const tag = spaceIdx === -1 ? msg : msg.slice(0, spaceIdx);
+    const color = LOG_TAG_COLORS[tag];
+    if (!color) return {text: msg, styles: []};
+
+    const rest = spaceIdx === -1 ? "" : msg.slice(spaceIdx);
+    return {
+        text: `%c${tag}%c${rest}`,
+        styles: [`color:${color};font-weight:600`, "color:inherit;font-weight:400"]
+    };
+}
+
+/**
  * Logs a message to the console, optionally including additional data and specifying a log level.
+ *
+ * A structured payload (an object or array, but not an `Error`) is printed
+ * inside a collapsed `console.group` instead of appended inline — an array of
+ * records renders as a `console.table` — so a console full of these calls
+ * stays scannable: the colored summary line is always visible, the payload
+ * is one click away instead of pushing everything below it off-screen. An
+ * `Error` is deliberately excluded and stays inline, since seeing it
+ * immediately matters more than keeping the console compact.
  *
  * @param msg - The message to be logged.
  * @param data - Optional additional data to log alongside the message.
@@ -90,10 +165,12 @@ export function isValidISODate(iso: string): boolean {
  */
 export function log(msg: string, data?: unknown, level?: LogLevelType): void {
     // Default: silent outside development to keep production bundles clean.
-    // Override via `.env.*`: `VITE_DEBUG_LOGS=true` to re-enable structured logs.
+    // Override via `.env.*` (`VITE_DEBUG_LOGS=true`, requires a rebuild) or at
+    // runtime via `setRuntimeDebugLogs` (the options page's debug-logging toggle).
     const debugLogs =
         import.meta.env.MODE === "development" ||
-        import.meta.env.VITE_DEBUG_LOGS === "true";
+        import.meta.env.VITE_DEBUG_LOGS === "true" ||
+        runtimeDebugLogs;
     if (!debugLogs) return;
 
     /* eslint-disable no-console */
@@ -103,9 +180,28 @@ export function log(msg: string, data?: unknown, level?: LogLevelType): void {
         warn: console.warn.bind(console),
         error: console.error.bind(console)
     };
+    const group = console.groupCollapsed.bind(console);
+    const groupEnd = console.groupEnd.bind(console);
+    const table = console.table.bind(console);
     /* eslint-enable no-console */
+
     const logFn = level ? methods[level] : methods.log;
-    data !== undefined ? logFn(msg, data) : logFn(msg);
+    const {text, styles} = styleTag(msg);
+
+    const isStructuredPayload =
+        data !== undefined && data !== null && typeof data === "object" && !(data instanceof Error);
+    if (!isStructuredPayload) {
+        data !== undefined ? logFn(text, ...styles, data) : logFn(text, ...styles);
+        return;
+    }
+
+    group(text, ...styles);
+    if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && data[0] !== null) {
+        table(data);
+    } else {
+        logFn(data);
+    }
+    groupEnd();
 }
 
 /**

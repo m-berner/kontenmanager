@@ -4,14 +4,16 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {describe, expect, it} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import {
     compareIsoDateDesc,
     detectNumberFormat,
     isoDate,
     isValidISODate,
+    log,
     mean,
     normalizeNumber,
+    setRuntimeDebugLogs,
     toNumber,
     utcDate,
     winLossClass
@@ -215,5 +217,125 @@ describe("DomainUtils: winLossClass", () => {
         expect(winLossClass(0)).toBe("font-weight-bold");
         expect(winLossClass(12.5)).toBe("font-weight-bold");
         expect(winLossClass(0)).not.toContain("color-");
+    });
+});
+
+describe("DomainUtils: log", () => {
+    // `runtimeDebugLogs` is a module-level singleton (there's no store/DI seam
+    // in the domain layer to reset it through), so every test that flips it on
+    // must flip it back off, or it leaks into whichever test runs next.
+    afterEach(() => {
+        setRuntimeDebugLogs(false);
+    });
+
+    it("stays silent by default — no dev mode, no VITE_DEBUG_LOGS, no runtime flag", () => {
+        const spy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+        log("STORES settings: init");
+
+        expect(spy).not.toHaveBeenCalled();
+        spy.mockRestore();
+    });
+
+    it("setRuntimeDebugLogs(true) re-enables logging without a rebuild", () => {
+        const spy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+        setRuntimeDebugLogs(true);
+        log("STORES settings: init");
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
+    });
+
+    it("colors a recognized leading layer tag, leaving the rest of the message as-is", () => {
+        setRuntimeDebugLogs(true);
+        const spy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+        log("STORES settings: init");
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        const [text, style1, style2] = spy.mock.calls[0] as string[];
+        expect(text).toBe("%cSTORES%c settings: init");
+        expect(style1).toContain("color:");
+        expect(style2).toContain("color:inherit");
+        spy.mockRestore();
+    });
+
+    it("leaves a message with no recognized tag untouched — no stray %c placeholders", () => {
+        setRuntimeDebugLogs(true);
+        const spy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+        log("UNKNOWN_TAG something happened");
+
+        expect(spy).toHaveBeenCalledWith("UNKNOWN_TAG something happened");
+        spy.mockRestore();
+    });
+
+    it("collapses a structured object payload into a console.group instead of appending it inline", () => {
+        setRuntimeDebugLogs(true);
+        const group = vi.spyOn(console, "groupCollapsed").mockImplementation(() => undefined);
+        const groupEnd = vi.spyOn(console, "groupEnd").mockImplementation(() => undefined);
+        const consoleLog = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+        log("STORES settings: init", {skin: "ocean"});
+
+        expect(group).toHaveBeenCalledTimes(1);
+        expect(consoleLog).toHaveBeenCalledWith({skin: "ocean"});
+        expect(groupEnd).toHaveBeenCalledTimes(1);
+
+        group.mockRestore();
+        groupEnd.mockRestore();
+        consoleLog.mockRestore();
+    });
+
+    it("renders an array of records as a console.table inside the group", () => {
+        setRuntimeDebugLogs(true);
+        const group = vi.spyOn(console, "groupCollapsed").mockImplementation(() => undefined);
+        const groupEnd = vi.spyOn(console, "groupEnd").mockImplementation(() => undefined);
+        const table = vi.spyOn(console, "table").mockImplementation(() => undefined);
+
+        const rows = [{id: 1}, {id: 2}];
+        log("STORES stocks: loaded", rows);
+
+        expect(table).toHaveBeenCalledWith(rows);
+        expect(group).toHaveBeenCalledTimes(1);
+        expect(groupEnd).toHaveBeenCalledTimes(1);
+
+        group.mockRestore();
+        groupEnd.mockRestore();
+        table.mockRestore();
+    });
+
+    it("keeps an Error payload inline rather than collapsing it — it should be seen immediately", () => {
+        setRuntimeDebugLogs(true);
+        const group = vi.spyOn(console, "groupCollapsed").mockImplementation(() => undefined);
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+        const err = new Error("boom");
+        log("STORES settings: init error", err, "error");
+
+        expect(group).not.toHaveBeenCalled();
+        expect(consoleError).toHaveBeenCalledTimes(1);
+        expect(consoleError.mock.calls[0]).toContain(err);
+
+        group.mockRestore();
+        consoleError.mockRestore();
+    });
+
+    it("treats null data the same as no data — not as a structured payload to group", () => {
+        // `typeof null === "object"`, so this guards a real trap: a bare
+        // `typeof data === "object"` check would try to group() a call that
+        // passes `null` on purpose (several call sites do, e.g. stores/deps.ts).
+        setRuntimeDebugLogs(true);
+        const group = vi.spyOn(console, "groupCollapsed").mockImplementation(() => undefined);
+        const spy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+        log("STORES deps: no translate function attached", null, "warn");
+
+        expect(group).not.toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledTimes(1);
+
+        group.mockRestore();
+        spy.mockRestore();
     });
 });

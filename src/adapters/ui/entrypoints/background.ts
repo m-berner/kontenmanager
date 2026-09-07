@@ -4,13 +4,14 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {log} from "@/domain/utils/utils";
+import {BROWSER_STORAGE} from "@/domain/constants";
+import {log, setRuntimeDebugLogs} from "@/domain/utils/utils";
 
 import {createBackgroundAdapters} from "@/adapters/containerBackground";
 import {closeDuplicateAppTab, pickSurvivor} from "@/adapters/ui/entrypoints/singleTabGuard";
 
 const services = createBackgroundAdapters();
-const {installStorageLocal} = services.storageAdapter();
+const {installStorageLocal, getStorage, addStorageChangedListener} = services.storageAdapter();
 const {browserAdapter} = services;
 
 /**
@@ -25,6 +26,23 @@ async function onInstall(): Promise<void> {
         await installStorageLocal();
     } catch (err) {
         log("ENTRYPOINTS background: onInstall error", err, "error");
+    }
+}
+
+/**
+ * Applies the persisted debug-logging setting (`BROWSER_STORAGE.DEBUG_LOGS`)
+ * to this context's `log()` gate at startup.
+ *
+ * This script has no Pinia store to route it through settings.ts's `watch`
+ * the way `app.ts`/`options.ts` do, so it reads storage directly here and
+ * stays live via the listener below.
+ */
+async function initDebugLogs(): Promise<void> {
+    try {
+        const storage = await getStorage([BROWSER_STORAGE.DEBUG_LOGS.key]);
+        setRuntimeDebugLogs(storage[BROWSER_STORAGE.DEBUG_LOGS.key] ?? BROWSER_STORAGE.DEBUG_LOGS.value);
+    } catch (err) {
+        log("ENTRYPOINTS background: initDebugLogs error", err, "error");
     }
 }
 
@@ -121,5 +139,13 @@ async function onTabCreated(tab: browser.tabs.Tab): Promise<void> {
 browserAdapter.runtimeOnInstalled(onInstall);
 browserAdapter.actionOnClicked(onClick);
 browserAdapter.tabsOnCreated(onTabCreated);
+
+addStorageChangedListener((changes) => {
+    const change = changes[BROWSER_STORAGE.DEBUG_LOGS.key];
+    if (change) {
+        setRuntimeDebugLogs(Boolean(change.newValue));
+    }
+});
+void initDebugLogs();
 
 log("ENTRYPOINTS background", window.location.href, "info");

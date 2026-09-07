@@ -31,6 +31,7 @@ export const createTabs = (t: (_key: string) => string): readonly OptionTab[] =>
         {title: t(TRANSLATION_KEYS.TAB_MP), id: "register_mp"},
         {title: t(TRANSLATION_KEYS.TAB_IND), id: "register_ind"},
         {title: t(TRANSLATION_KEYS.TAB_MAT), id: "register_mat"},
-        {title: t(TRANSLATION_KEYS.TAB_EX), id: "register_ex"}
+        {title: t(TRANSLATION_KEYS.TAB_EX), id: "register_ex"},
+        {title: t(TRANSLATION_KEYS.TAB_DIAG), id: "register_diag"}
     ] as const;
 

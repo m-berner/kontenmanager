@@ -8,9 +8,9 @@
 /**
  * @fileoverview OptionsIndex renders the extension options page. It provides
  * tabs for theme selection, quote/market-data service selection, the default
- * currency, and configuration of markets, indexes, materials, and exchanges.
- * All content is rendered using dedicated components and localized via Vue
- * I18n.
+ * currency, configuration of markets, indexes, materials, and exchanges, and
+ * a diagnostics tab for the debug-logging toggle. All content is rendered
+ * using dedicated components and localized via Vue I18n.
  */
 import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
@@ -21,6 +21,7 @@ import {log} from "@/domain/utils/utils";
 import AlertOverlay from "@/adapters/ui/components/AlertOverlay.vue";
 import CheckboxGrid from "@/adapters/ui/components/CheckboxGrid.vue";
 import CurrencySelector from "@/adapters/ui/components/CurrencySelector.vue";
+import DebugLogsToggle from "@/adapters/ui/components/DebugLogsToggle.vue";
 import DynamicList from "@/adapters/ui/components/DynamicList.vue";
 import MarketDataServiceSelector from "@/adapters/ui/components/MarketDataServiceSelector.vue";
 import ServiceSelector from "@/adapters/ui/components/ServiceSelector.vue";
@@ -92,6 +93,13 @@ log("VIEWS OptionsIndex: setup", window.location.href, "info");
             <v-row class="pa-12" justify="center">
               <v-col cols="12" md="10" sm="10">
                 <DynamicList :type="DYNAMIC_LIST_TYPES.EXCHANGES"/>
+              </v-col>
+            </v-row>
+          </v-tabs-window-item>
+          <v-tabs-window-item :value="7">
+            <v-row>
+              <v-col cols="12" md="6" sm="6">
+                <DebugLogsToggle/>
               </v-col>
             </v-row>
           </v-tabs-window-item>

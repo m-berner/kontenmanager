@@ -4,10 +4,11 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
-import {beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {useSettingsStore} from "@/adapters/ui/stores/settings";
 import {BROWSER_STORAGE} from "@/domain/constants";
 import type {StorageDataType} from "@/domain/types";
+import {setRuntimeDebugLogs} from "@/domain/utils/utils";
 import {attachStoreDeps} from "@/adapters/ui/stores/deps";
 import {setActiveTestPinia} from "@test/pinia";
 
@@ -22,6 +23,14 @@ vi.mock("@/adapters/driven/storageAdapter", () => ({
 }));
 
 describe("Settings Store", () => {
+    // `setRuntimeDebugLogs` is a module-level singleton in the domain layer —
+    // the store's `watch(debugLogs, ...)` applies it as a side effect, so a
+    // test that ends with the setting on has to flip it back off or it leaks
+    // into whichever test (in any file) runs next.
+    afterEach(() => {
+        setRuntimeDebugLogs(false);
+    });
+
     beforeEach(() => {
         const pinia = setActiveTestPinia();
         attachStoreDeps(pinia, {
@@ -56,7 +65,8 @@ describe("Settings Store", () => {
             [BROWSER_STORAGE.MATERIALS.key]: ["au", "cu"],
             [BROWSER_STORAGE.MARKETS.key]: ["XETRA"],
             [BROWSER_STORAGE.INDEXES.key]: ["dax"],
-            [BROWSER_STORAGE.EXCHANGES.key]: ["EURUSD", "USDJPY"]
+            [BROWSER_STORAGE.EXCHANGES.key]: ["EURUSD", "USDJPY"],
+            [BROWSER_STORAGE.DEBUG_LOGS.key]: true
         };
 
         store.init(storage);
@@ -73,6 +83,7 @@ describe("Settings Store", () => {
         expect(store.markets).toEqual(["XETRA"]);
         expect(store.indexes).toEqual(["dax"]);
         expect(store.exchanges).toEqual(["EURUSD", "USDJPY"]);
+        expect(store.debugLogs).toBe(true);
     });
 
     it("setters should update state and persist via setStorage", async () => {
@@ -231,6 +242,44 @@ describe("Settings Store", () => {
                 store.setExchanges(["EURUSD", "EURGBP"], {rethrow: true})
             ).rejects.toThrow("quota");
             expect(store.exchanges).toEqual(["EURUSD"]);
+        });
+    });
+
+    // This is the runtime, no-rebuild alternative to `VITE_DEBUG_LOGS` — see
+    // `domain/utils/utils.ts`'s `log()` and `setRuntimeDebugLogs`.
+    describe("debugLogs", () => {
+        it("defaults to disabled", () => {
+            const store = useSettingsStore();
+
+            expect(store.debugLogs).toBe(false);
+        });
+
+        it("setDebugLogs updates state and persists it", async () => {
+            const store = useSettingsStore();
+
+            await store.setDebugLogs(true);
+
+            expect(store.debugLogs).toBe(true);
+            expect(mockSetStorage).toHaveBeenCalledWith(BROWSER_STORAGE.DEBUG_LOGS.key, true);
+        });
+
+        // The store owns applying the flag to `log()`'s gate (via a `watch`) —
+        // a component only has to write the setting, not remember to call
+        // `setRuntimeDebugLogs` itself. Proven end-to-end here rather than by
+        // asserting the internal wiring, since that's the behavior that matters.
+        it("wires through to log()'s runtime gate", async () => {
+            const {log} = await import("@/domain/utils/utils");
+            const store = useSettingsStore();
+            const spy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+            log("STORES settings: before enabling");
+            expect(spy).not.toHaveBeenCalled();
+
+            await store.setDebugLogs(true);
+            log("STORES settings: after enabling");
+            expect(spy).toHaveBeenCalledTimes(1);
+
+            spy.mockRestore();
         });
     });
 });

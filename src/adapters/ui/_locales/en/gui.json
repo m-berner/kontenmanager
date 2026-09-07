@@ -408,7 +408,8 @@
         "mp": "Stock exchanges",
         "ind": "Indexes",
         "mat": "Commodities",
-        "ex": "Exchange rates"
+        "ex": "Exchange rates",
+        "diag": "Diagnostics"
       },
       "themeNames": {
         "earth": "Earth",
@@ -434,6 +435,10 @@
       "exchanges": {
         "title": "Exchange rates",
         "label": "New exchange rate symbol"
+      },
+      "debugLogs": {
+        "label": "Enable debug logging",
+        "hint": "Writes verbose logs to the browser console (developer tools) to help diagnose an issue. May include account and booking data — turn it back off once you're done."
       },
       "materials": {
         "au": "Gold",

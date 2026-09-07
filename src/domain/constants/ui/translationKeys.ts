@@ -32,6 +32,7 @@ export const TRANSLATION_KEYS = {
     TAB_IND: "views.optionsIndex.tabs.ind",
     TAB_MAT: "views.optionsIndex.tabs.mat",
     TAB_EX: "views.optionsIndex.tabs.ex",
+    TAB_DIAG: "views.optionsIndex.tabs.diag",
 
     // Home/Bookings
     HOME_ACTION: "views.homeContent.bookingsTable.headers.action",

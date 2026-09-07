@@ -103,7 +103,9 @@ export type StorageDataType = {
                 ? number
                 : V extends string
                     ? string
-                    : V
+                    : V extends boolean
+                        ? boolean
+                        : V
         : never;
 };
 
