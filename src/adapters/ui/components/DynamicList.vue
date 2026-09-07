@@ -149,7 +149,7 @@ const addItem = async (item: string | null): Promise<void> => {
         // sit last in `exchanges` now. The fetch above is awaited, and the
         // cross-context storage listener (stores/settings.ts applyStorageChange)
         // can replace the whole array meanwhile, so the tail is not reliably
-        // this add's entry — the rate would then attach to the wrong code.
+        // this adds entry — the rate would then attach to the wrong code.
         infoExchanges.value.set(normalizedItem, exchangesInfoData[0].value);
       }
     }
@@ -168,7 +168,7 @@ const removeItem = async (n: number): Promise<void> => {
   if (removedItem === undefined) return;
 
   // Captured before the delete below so the rollback can put it back — this
-  // removal happens optimistically, before the write that may fail.
+  // removal happens optimistically, before write that may fail.
   const removedRate = infoExchanges.value.get(removedItem);
 
   if (props.type === COMPONENTS.DYNAMIC_LIST.TYPES.EXCHANGES) {

@@ -238,9 +238,9 @@ function validateExportData(
     if (!Array.isArray(bookings)) errors.push("Invalid bookings data");
 
     if (errors.length > 0) {
-        // `{errors}` passed as the details argument. This function did the work
-        // of identifying *which* collection is malformed and then discarded it,
-        // so a failing export reported "one of four arrays was invalid" when the
+        // `{errors}` passed as the detail's argument. This function did the work
+        // of identifying *which* collection is malformed and then discarded it.
+        // So a failing export reported "one of four arrays was invalid" when the
         // code already knew exactly which — while every other throw in this file
         // supplies context (`{originalError}`, `{reason}`).
         throw appError(

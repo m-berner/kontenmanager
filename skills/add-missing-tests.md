@@ -49,6 +49,9 @@ list before writing anything.
 
 - **Test runner**: Vitest with `describe`/`it`/`expect`/`vi` imported explicitly from `"vitest"`
   (globals are enabled in config, but this repo imports explicitly anyway — match existing files).
+- **Language**: comments (in new test files and in any `src/` code touched to make something
+  testable) are American English — `color`, `behavior`, `initialize`, `canceled`, not the British
+  `colour`, `behaviour`, `initialise`, `cancelled`.
 - **File header**: every test file starts with the MPL license block (copy from any existing test
   file, e.g. `tests/unit/app/usecases/accounts.test.ts`).
 - **Pinia stores/composables that touch stores**: call `setActiveTestPinia()` from `@test/pinia`
@@ -309,6 +312,7 @@ npx vitest run --coverage
       locale-agnostic role selectors over brittle text matches.
 - [ ] `npm run test:unit`, `npm run test:typescript`, `npm run lint` all pass.
 - [ ] `npm run test:e2e` passes if e2e specs were added or changed.
+- [ ] New/edited comments use American English spelling.
 
 ---
 

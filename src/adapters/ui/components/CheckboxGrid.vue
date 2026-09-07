@@ -47,7 +47,7 @@ const error = ref<string | null>(null);
 
 /**
  * Resolves the grid's data source, the settings ref it edits, its setter and its
- * labelling mode.
+ * labeling mode.
  *
  * An exhaustive `switch` with an explicit `null` default, matching the shape the
  * sibling `DynamicList` already uses for its own two-type split. This was an
@@ -61,7 +61,7 @@ const error = ref<string | null>(null);
  *
  * Latent only today (`TYPES` holds exactly two members and `OptionsIndex` passes
  * them explicitly), which is precisely why the shape rather than the reachability
- * is the thing to fix: an unrecognised type is now inert instead of destructive.
+ * is the thing to fix: an unrecognized type is now inert instead of destructive.
  */
 const config = computed(() => {
   switch (props.type) {
@@ -113,16 +113,16 @@ const getLabel = (item: MaterialItemKeyType): string => {
 
 const setChecked = async (): Promise<void> => {
   const activeConfig = config.value;
-  // Unrecognised type: write nothing. Previously this path wrote to the
+  // Unrecognized type: write nothing. Previously this path wrote to the
   // MATERIALS storage key by fallthrough - see the `config` comment above.
   if (!activeConfig) return;
 
   isSaving.value = true;
   error.value = null;
 
-  // No hand-rolled rollback any more, and no per-item bookkeeping to get right.
+  // No hand-rolled rollback anymore, and no per-item bookkeeping to get right.
   // `updateSetting` reverts the store ref when the persist fails, and the
-  // `watch` above copies that revert back into `checked` - so the selection
+  // `watch` above copies that revert back into `checked`. So the selection
   // returns to its last persisted state as a whole, rather than this component
   // un-toggling the one item it happened to be told about.
   //

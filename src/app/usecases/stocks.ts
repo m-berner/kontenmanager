@@ -63,7 +63,7 @@ export async function addStockUsecase(
  * Deletes a stock, refusing when bookings still reference it.
  *
  * The `canDelete` predicate is injected exactly as `deleteBookingTypeUsecase`
- * injects its own, and for the same reason: the invariant belongs where the
+ * injects its own, and for the same reason: the invariant belongs where
  * write happens, while the store-specific `hasBookings` lookup belongs to the
  * caller. This was the only deletion in the layer that trusted its callers —
  * `deleteActiveAccountUsecase` cascades, `deleteBookingTypeUsecase` takes this

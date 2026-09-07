@@ -223,7 +223,7 @@ export function useOnlineStockData() {
                 // The ACTIVE ACCOUNT's currency, not one derived from the browser
                 // locale. A user's UI language does not tell you what currency
                 // their holdings are denominated in — deriving it that way put
-                // every eurozone user whose browser was not German onto USD, and
+                // every eurozone user whose browser was not German onto USD. And
                 // then divided their EUR quotes by the USD/EUR rate to get there.
                 // `resolveDisplayCurrency` is shared with `currencySync` (which
                 // formats) and `appAdapter` (which fetches the rate), so the

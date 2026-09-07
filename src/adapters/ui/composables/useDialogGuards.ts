@@ -226,7 +226,7 @@ export function useDialogGuards(
          * fail-closed. It used to be inferred from `formRef` being falsy, and
          * that inference is the problem: 5 of the 13 dialogs calling
          * `submitGuard` pass no `formRef` at all, so the "skip validation"
-         * branch was not defensive, it ran routinely and deliberately — which
+         * branch was not defensive. It ran routinely and deliberately — which
          * made an *accidental* `undefined` indistinguishable from an intended
          * omission. Every caller passes `baseDialogRef.value?.formRef`, an
          * optional chain that yields `undefined` whenever the template ref is

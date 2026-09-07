@@ -53,13 +53,13 @@ log("COMPONENTS DIALOGS ShowDividend: setup");
                 `item.year` is the booking's raw cExDate string. Passing a string
                 straight to d() routes it through @intlify's parseDateTimeArgs,
                 which THROWS (INVALID_ISO_DATE_ARGUMENT) rather than degrading when
-                the value isn't a parseable ISO date - and validateBooking's
+                the value isn't a parseable ISO date. And validateBooking's
                 normalizeDate() deliberately yields "" for a missing/malformed date
                 (its "don't silently mutate data to today" fallback), which is
                 reachable by importing a backup whose dividend row has no ex-date.
                 That threw inside the render function and took the whole dialog out.
-                Guard first, then hand d() a real Date - note utcDate("") returns an
-                Invalid Date, and Intl.DateTimeFormat.format() throws RangeError on
+                Guard first, then hand d() a real Date. Note that utcDate("") returns
+                an Invalid Date, and Intl.DateTimeFormat.format() throws RangeError on
                 that too, so converting alone is not enough.
               -->
               <td>

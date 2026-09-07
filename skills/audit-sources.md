@@ -147,7 +147,12 @@ issues found in ... audit` commits):
 
 5. **Fix at the right layer.** Respect the hexagonal boundaries in `src/README.md`'s "Architecture" section — a domain
    bug gets fixed in `domain/`, not patched over in the adapter that calls it. Update each finding's
-   **Status** line in `ISSUES.md` as it's fixed.
+   **Status** line in `ISSUES.md` as it's fixed. Write any new or edited comment explaining the fix
+   in American English (`color`, `behavior`, `canceled`, `initialize` — not `colour`, `behaviour`,
+   `cancelled`, `initialise`); this codebase has accumulated some British spellings in older
+   comments (`colour`, `behaviour`, `grey`, `cancelled`, `relabelled`, `unrecognised`) — fix one in
+   passing if you're already touching that line for the bug itself, but don't go out of your way to
+   respell unrelated comments as a side effect of an unrelated fix.
 
 6. **Run the full local gate** before considering the pass done:
    ```powershell
@@ -183,6 +188,7 @@ issues found in ... audit` commits):
 - [ ] Commit message buckets fixes by High/Medium/Low severity.
 - [ ] Uncertain findings (no concrete failure scenario) are called out separately, not silently
       fixed or silently dropped.
+- [ ] New/edited comments use American English spelling.
 - [ ] `ISSUES.md` deleted once every finding in it is fixed and committed (or kept, if
       the user asked for a running log instead).
 

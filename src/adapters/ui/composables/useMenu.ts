@@ -145,7 +145,7 @@ export function useMenuHighlight() {
  * The subset of {@link MenuActionType} a row's DotMenu can dispatch — the six
  * ids `createHomeMenuItems`/`createCompanyMenuItems` actually emit.
  *
- * Narrowed via `Extract` rather than hand-written so a rename in
+ * Narrowed via `Extract` rather than handwritten so a rename in
  * `MenuActionType` still breaks here. For a header-bar action, extend
  * `useHeaderBarActions` — not this file.
  */
@@ -285,7 +285,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
      * to fix and which `CompanyContent.vue:289` passes. Wiring a per-row "update
      * quote" control to this table later would have silently reintroduced it.
      *
-     * Narrowed via `Extract` rather than a hand-written union so a rename in
+     * Narrowed via `Extract` rather than a handwritten union so a rename in
      * `MenuActionType` still breaks here. For a header-bar action, extend
      * `useHeaderBarActions` — not this file.
      */
@@ -419,7 +419,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
      *
      * Narrows to {@link RowMenuActionType}, not `MenuActionType`. It used to
      * claim the full union while testing membership in `actionHandlers`, which
-     * covers only these six of the union's 23 members — so it returned `false`
+     * covers only these six of the union's 23 members. So it returned `false`
      * for `"home"`, `"addStock"`, `"exportDatabase"` and the rest while telling
      * TypeScript that a `false` meant "not a `MenuActionType` at all". A caller
      * writing `if (hasAction(x)) … else …` would have had `x` narrowed to
@@ -428,7 +428,7 @@ export function useMenuAction(translate?: (_key: string) => string) {
      *
      * The runtime answer is unchanged and is the intended one; only the type it
      * proves was wrong. See the tests in `useMenu.test.ts`, which pin exactly
-     * this row-only behaviour.
+     * this row-only behavior.
      *
      * **No production caller, deliberately kept.** `DotMenu` dispatches straight
      * through `executeAction`, which has its own `!handler` branch and reports an

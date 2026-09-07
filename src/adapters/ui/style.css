@@ -19,9 +19,9 @@
 }
 
 /*
- * Row striping and hover, as TRANSLUCENT OVERLAYS rather than opaque colours.
+ * Row striping and hover, as TRANSLUCENT OVERLAYS rather than opaque colors.
  *
- * These used to be opaque light greys plus `color: darkgray`, on bare
+ * These used to be opaque light grays plus `color: darkgray`, on bare
  * `tbody tr` selectors:
  *
  *     tbody tr:nth-of-type(even) { background-color: rgb(224,224,224); color: darkgray; }
@@ -37,11 +37,11 @@
  *    under the 4.5:1 WCAG AA threshold for body text — for every cell not
  *    explicitly overridden, including description, ISIN, date and booking type.
  *
- * A neutral grey at low alpha reads as a stripe over *whatever* the theme paints
+ * A neutral gray at low alpha reads as a stripe over *whatever* the theme paints
  * underneath, so it works on a near-white surface and on `#23222B` alike, and it
  * needs no `var(--v-theme-*)` lookups (which the IDE cannot resolve). Setting no
  * `color` at all is the point of the second fix: cells inherit Vuetify's
- * on-surface colour, which is contrast-matched to the surface per theme.
+ * on-surface color, which is contrast-matched to the surface per theme.
  *
  * Scoped to `.v-table` so they apply to the app's data tables rather than to
  * every `<tbody><tr>` the extension might ever render.
@@ -61,18 +61,18 @@
 
 /*
  * A translucent CATEGORY-CELL highlight, for the same reason the striping
- * rules above are translucent overlays rather than opaque colours: it needs
+ * rules above are translucent overlays rather than opaque colors: it needs
  * to read as "tinted" over whatever the theme paints underneath, on a
  * near-white surface and on `#23222B` alike, with no `var(--v-theme-*)`
  * lookup.
  *
- * This replaced a `text-info` attempt (a Vuetify utility class colouring the
+ * This replaced a `text-info` attempt (a Vuetify utility class coloring the
  * text itself, rgb(var(--v-theme-info))). That measured well on paper - see
  * plugins/vuetify.ts's own per-theme WCAG contrast table for `info` against
  * each theme's *surface* - but contrast-against-the-surface was the wrong
  * property to check. What actually needs to be distinct is `info` against
- * the theme's own *body-text* colour (Vuetify's auto-picked on-surface,
- * always pure `#000` or `#fff`), since that is the colour every other cell
+ * the theme's own *body-text* color (Vuetify's auto-picked on-surface,
+ * always pure `#000` or `#fff`), since that is the color every other cell
  * in the row already renders in. Measured with Vuetify's own
  * `getContrast`/`getForeground` utilities, that ratio is as low as 1.75
  * (`ocean`) and 1.05 (`meadow`) - both themes pick white body text, and both
@@ -82,7 +82,7 @@
  * coincidence bites hardest.
  *
  * A background wash sidesteps the whole problem: the text stays whatever
- * colour the theme already renders body text in (still contrast-correct by
+ * color the theme already renders body text in (still contrast-correct by
  * construction), and the tint reads as a highlight from hue and opacity
  * alone, not from being lighter or darker than surrounding text.
  */

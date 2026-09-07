@@ -46,7 +46,7 @@ export async function addBookingUsecase(
     // `validateBooking` will not stop a blank date: its `normalizeDate` maps a
     // missing or malformed value to `""` on purpose, to avoid silently dating
     // the record "today". That is the right call for an import, where the
-    // alternative is inventing data — but on the add path there is a user at a
+    // alternative is inventing data. But on the add path there is a user at a
     // form who can supply the real date, and a booking that reaches the store
     // undated is counted by the all-time totals while belonging to no year.
     // Reject it here so the only undated bookings in a database are ones that

@@ -14,6 +14,7 @@ export const DEFAULT_VALUE = "0";
  * Parses a bid/ask side into a finite number, or null if it couldn't be
  * parsed (as opposed to a genuine, parseable zero price).
  *
+ * @param raw
  * @param locale - Forces the decimal/group-separator convention. Omitted, the
  *   side falls through to `toNumber`'s own auto-detection
  *   (`detectNumberFormat`), which is ambiguous for a lone comma sitting more
@@ -110,7 +111,7 @@ export function detectCurrency(value: string): string {
  * Returning the true ISO code instead means useOnlineStockData's divisor chain
  * falls through to 1 (no FX applied) rather than applying the WRONG FX. That is
  * still not a converted price — supporting these currencies properly needs a
- * rate fetched for each, which is a separate change — but it is honest, and a
+ * rate fetched for each, which is a separate change. But it is honest, and a
  * truthy `cur` correctly suppresses the ISIN-prefix USD inference for a
  * non-US-domiciled stock.
  *

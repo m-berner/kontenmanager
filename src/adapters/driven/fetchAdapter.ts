@@ -118,7 +118,7 @@ export async function fetchCompanyData(isin: string): Promise<CompanyData> {
         let symbol = "";
         // Scope to col1_content's first table specifically (the WKN/Kürzel/
         // ISIN table) - col1_content also contains several unrelated
-        // Bid/Ask market-data tables further down, so a plain "table tr"
+        // Bid/Ask market-data tables further down. So a plain "table tr"
         // scan across the whole container would silently mix rows from
         // different tables together.
         const col1Rows = col1?.querySelector("table")?.querySelectorAll<HTMLTableRowElement>("tr") ?? [];
@@ -142,13 +142,13 @@ export async function fetchCompanyData(isin: string): Promise<CompanyData> {
         // A page that loaded but simply carries no company/symbol still returns
         // blanks — that is a legitimate "not found", not a failure.
         //
-        // Fetch and parse failures are NOT caught here any more. Swallowing
+        // Fetch and parse failures are NOT caught here anymore. Swallowing
         // every error made a network failure, a 404 and "this page has no
         // symbol" indistinguishable to the caller, which left StockForm.vue's
         // dedicated ISIN-lookup error branch permanently unreachable: a lookup
         // that failed for an infrastructure reason silently looked like "no
         // data found". StockForm already clears the fields and alerts the user
-        // on a rejection, which is the intended behaviour.
+        // on a rejection, which is the intended behavior.
         return {company: company || "", symbol: symbol || ""};
     }
 }
@@ -297,7 +297,7 @@ export async function fetchDateData(
                 // one case only: `controller.signal.aborted && reason !==
                 // timeoutReason`, i.e. caller cancellation. Its own 30 s
                 // timeout aborts the INTERNAL controller with an AppError
-                // reason and is deliberately excluded there, so a timeout still
+                // reason and is deliberately excluded there. So a timeout still
                 // arrives here as an ordinary failure and still arms the
                 // backoff — which is right, a timeout being a real failure.
                 // Sniffing `error.name` as well would add a branch that cannot
@@ -333,6 +333,7 @@ export async function fetchDateData(
  * Fetches current exchange rates for currency pairs.
  *
  * @param exchangeCodes - Array of 6-character currency pair codes (e.g., 'USDEUR')
+ * @param options
  * @returns Array of exchange rates, filtering out failed requests
  */
 export async function fetchExchangesData(
@@ -447,7 +448,7 @@ export async function fetchIndexData(
     // A link may be claimed by at most ONE index. The fallback below is a
     // containment test, so a short scraped title can satisfy several configured
     // labels — "S&P" is contained in both "S&P 500" and "S&P/TSX" — and the old
-    // loop took the first link each property matched independently, so one
+    // loop took the first link each property matched independently. So one
     // link's value could be reported as the current level of two different
     // indexes.
     const claimed = new Set<Element>();
@@ -518,7 +519,7 @@ export async function fetchIsOk(options?: { signal?: AbortSignal }): Promise<boo
     // Free, request-free negative. `false` is authoritative (the OS reports no
     // network); `true` means nothing on its own, so it only short-circuits the
     // failure case.
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+    if (!navigator.onLine) {
         return false;
     }
 

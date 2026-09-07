@@ -133,18 +133,18 @@ export function attachStoreTranslate(pinia: Pinia, translate: StoreTranslate): v
 let warnedMissingTranslate = false;
 
 /**
- * Returns the translate function wired by {@link attachStoreTranslate}, if any.
+ * Returns the translation function wired by {@link attachStoreTranslate}, if any.
  *
  * Every consumer falls back to a hardcoded English string when this is
  * `undefined`. That is a reasonable design, but those fallbacks read plausibly
- * ("Settings error", "Confirm", "Cancel") — so a *missing*
+ * ("Settings error", "Confirm", "Cancel"). So a *missing*
  * `attachStoreTranslate` in a new entrypoint would look exactly like a working
  * app in English rather than like a wiring bug, and nothing would ever say
  * otherwise.
  *
  * The warning below is what closes that. It is debug-gated (`log` is silent
  * unless `MODE === "development"` or `VITE_DEBUG_LOGS=true`), so it costs
- * release builds nothing and does not change the fallback behaviour — it only
+ * release builds nothing and does not change the fallback behavior — it only
  * makes the omission visible to whoever added the entrypoint. Deliberately not
  * a throw: an untranslated confirm button is far better than a store that
  * cannot render an alert at all.

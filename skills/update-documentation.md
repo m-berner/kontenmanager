@@ -47,7 +47,11 @@ Provide a reliable, repeatable process to update all `README.md` files across th
 
 ### Conventions and Style
 - Tone: concise, imperative, developer-first. Prefer examples and commands.
-- Language: default to English unless a folder/README is clearly localized.
+- Language: default to English unless a folder/README is clearly localized. Use **American
+  English** spelling and conventions throughout — `color`, `behavior`, `organize`, `initialize`,
+  `license` (noun and verb), `canceled`/`canceling`, `gray` — not the British `colour`,
+  `behaviour`, `organise`, `initialise`, `licence`, `cancelled`/`cancelling`, `grey`. This applies
+  to doc prose and to any code comment touched while updating docs.
 - Headings:
   - Use `###` for top sections (project docs render well in narrow panes).
   - Use backticks for inline code and triple backticks for code blocks.
@@ -245,6 +249,8 @@ Get-ChildItem -Recurse -Filter README.md | ForEach-Object {
 - [ ] Relative links resolve correctly within the repo.
 - [ ] Headings normalized to `###`/`####` pattern.
 - [ ] Removed stale sections and replaced external dead links.
+- [ ] Prose (and any touched code comments) use American English spelling — no `colour`,
+      `behaviour`, `organise`/`-ise` endings, `licence`, `grey`, `cancelled`/`-ll-` doubling, etc.
 
 ---
 

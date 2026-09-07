@@ -67,7 +67,7 @@ export function startCurrencySync(pinia: Pinia, i18n: I18nPlugin): () => void {
                 // Patched for EVERY configured locale, not just the active one.
                 // `getUserLocale()` fixes the locale for the session today, but
                 // `fallbackLocale` is "en-US", so a lookup can still resolve
-                // through the other block — and leaving that one on its old
+                // through the other block. And leaving that one on its old
                 // hardcoded currency is precisely the kind of half-applied
                 // setting that shows up as one stray `$` in an otherwise
                 // euro-denominated view.

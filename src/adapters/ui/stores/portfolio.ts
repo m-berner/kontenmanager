@@ -60,7 +60,7 @@ export const usePortfolioStore = defineStore("portfolio", function () {
      * Total value of the active account's depot.
      *
      * A plain computed **value**, not a computed returning a zero-argument
-     * function. That wrapper is this codebase's idiom for *parameterised*
+     * function. That wrapper is this codebase's idiom for *parameterized*
      * getters (`getById`, `sumFees(y)`), where it is necessary — here there are
      * no parameters, so it bought nothing and disabled the caching outright:
      * `computed` cached only the function's identity while the body re-ran on
@@ -68,7 +68,7 @@ export const usePortfolioStore = defineStore("portfolio", function () {
      *
      * The cost was not trivial. Each call runs `calculateTotalDepotValue` over
      * `active`, which is itself a filter+map+sort calling `portfolioByStockId`
-     * and `investByStockId` per stock, each of which walks every booking — so
+     * and `investByStockId` per stock. Each of which walks every booking — so
      * reading the depot total was O(stocks × bookings), recomputed per read
      * rather than per dependency change, from an always-mounted app bar that
      * re-renders often.

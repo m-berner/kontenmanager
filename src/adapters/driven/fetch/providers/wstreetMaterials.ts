@@ -48,7 +48,7 @@ const WSTREET_MATERIAL_SLUGS: Readonly<Record<string, string>> = {
  * the same assumption the finanzen.net path has always made. Two of this
  * site's ten commodity pages (aluminum, lead, as of this writing) carry a
  * "PKT" unit instead of "USD" — an index-points figure, not an actual
- * per-tonne dollar price — so accepting them here would silently mislabel an
+ * per-tonne dollar price. So accepting them here would silently mislabel an
  * unrelated number as a USD price, corrupting the USD/local-currency figures
  * InfoBar renders. Skipping them is the same choice this codebase already
  * made for an unparseable finanzen.net row: report nothing rather than a

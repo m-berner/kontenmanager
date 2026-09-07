@@ -17,9 +17,9 @@ import type {BookingTypeRoleType} from "@/domain/constants";
  * blank were stored. `accountRepository.save()` and
  * `importHelpers.stripBlankAccountIban` therefore `delete` it.
  *
- * Declaring it required meant both of those needed an `as unknown as AccountDb`
- * double cast to say what they do, and — worse — every raw repository row was
- * typed as though the field were always present, so `row.cIban.trim()`
+ * Declaring it required instead would have meant both of those sites needed an
+ * `as unknown as AccountDb` double cast to say what they do, and — worse — every raw repository row was
+ * typed as though the field were always present. So `row.cIban.trim()`
  * type-checked and would have thrown for exactly the records those sites
  * create. See {@link AccountStoreItem}, which re-requires it: the *store* shape
  * genuinely always has it, because `initializeRecords` normalizes an absent

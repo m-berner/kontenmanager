@@ -15,7 +15,7 @@
  * its `"VDataTable's real internal item shape"` block. Every OTHER test in
  * that file feeds `filterItems` plain row objects, which is NOT the shape
  * `VDataTable` actually hands a `customKeyFilter` (see `createBookingSearchFilter`'s
- * doc comment) — that gap is exactly how every custom-filtered column silently
+ * doc comment). That gap is exactly how every custom-filtered column silently
  * matched nothing, in production, from this file's very first version until
  * it was found live in a built extension and fixed. Do not trust a green run
  * of only the plain-object tests as proof this file works; the wrapped-item
@@ -23,7 +23,7 @@
  *
  * Not a `use*` composable — it holds no reactive state and calls no Vue API. It
  * lives here rather than in `views/` because that folder is for `.vue` screens;
- * this is the plain-module neighbour its single consumer imports.
+ * this is the plain-module neighbor its single consumer imports.
  */
 
 /**
@@ -175,7 +175,7 @@ export function createBookingSearchFilter(
 
     const combined = (_value: unknown, query: string, item: unknown): number => {
         // An empty/nullish query means "no filter applied for this key" —
-        // every row must still count as matching it, or registering ANY
+        // every row must still count as matching it. Or registering ANY
         // custom filter would hide every row the moment the search box is
         // empty (filterItems runs the per-item loop whenever
         // customKeyFilter is non-empty, even with an empty query).

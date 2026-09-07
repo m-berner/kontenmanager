@@ -127,7 +127,7 @@ function extractGoyaxMinMax(doc: Document): { min: string; max: string } {
                 // above, and for the same reason: these "Statistiken" cells
                 // carry a leading percentage change before the price (e.g.
                 // "+12,5 % 123,45"). The raw string then flows through
-                // normalizeNumber -> toNumber, which take the FIRST number, so
+                // normalizeNumber -> toNumber, which takes the FIRST number, so
                 // the percentage silently became the 52-week high and was
                 // rendered as a currency amount. Tier 2 was added after tier 1
                 // and did not adopt its extractor.
@@ -172,7 +172,7 @@ function extractGoyaxMinMax(doc: Document): { min: string; max: string } {
         //
         // `extractLastNumber` rather than the raw cell text: these cells carry a
         // leading percentage change before the price ("+12,5 % 123,45"), and the
-        // raw string flows through `normalizeNumber -> toNumber`, which take the
+        // raw string flows through `normalizeNumber -> toNumber`, which takes the
         // FIRST number — so the percentage became the 52-week high and was
         // rendered as a currency amount. That is the exact bug tier 2's own
         // comment records being retrofitted.
@@ -201,8 +201,8 @@ function extractGoyaxMinMax(doc: Document): { min: string; max: string } {
  *
  * The currency used to be hardcoded to EUR, which made useOnlineStockData skip
  * FX conversion for a non-EUR instrument (a truthy `cur` suppresses the
- * ISIN-based USD fallback, and `stockCur === uiCur` then yields a divisor of 1)
- * — the same wrong-currency class round 30 fixed for acheck. Detect it from the
+ * ISIN-based USD fallback, and `stockCur === uiCur` then yields a divisor of 1).
+ * The same wrong-currency class round 30 fixed for acheck. Detect it from the
  * same text the rate came from, falling back to EUR when no marker is present
  * so the common German-market case behaves exactly as before.
  */

@@ -112,7 +112,7 @@ export const UrlUtils = {
  * and will later reach a navigation or resource sink.
  *
  * Returns the normalized absolute URL when it is safe to use, `null` otherwise.
- * `null` rather than a best guess is the whole point: a caller that gets
+ * `null` rather than the best guess is the whole point: a caller that gets
  * `null` must not navigate.
  *
  * **Why this exists.** Two URL fields are stored as arbitrary strings and no
@@ -135,7 +135,7 @@ export const UrlUtils = {
  * not run scripts inside an SVG it loads. What is certain is that an
  * externally-supplied scheme reached a navigation sink in an extension page,
  * and that opening a shared backup issued an automatic request to a host of the
- * sharer's choosing — a load-time signal that the file was opened, from the
+ * sharer's choosing. A load-time signal that the file was opened, from the
  * extension's own context. Neither depends on anything in this codebase for
  * mitigation, which is the part worth removing.
  *

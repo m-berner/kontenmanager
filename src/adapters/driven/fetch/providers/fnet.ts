@@ -44,7 +44,7 @@ export async function fnetFetcher(
 /**
  * Extracts the arithmetic mean of German-formatted numbers from a string.
  * Input example: "9,67 / 9,98 EUR" (bid / ask).
- * German format: dot as a thousand separator comma as decimal separator.
+ * German format: dot as a thousand separator, comma as decimal separator.
  * Returns a German-formatted string (e.g. "9,825") or DEFAULT_VALUE on failure.
  */
 function extractFnetMean(s: string): string {
@@ -79,7 +79,7 @@ function extractFnetStockData(doc: Document): FetchResult {
     // a flat cell index has already drifted at least twice on this page.
     // Cell [1] is "Eröffnung / Vortag" (open/previous close), not bid/ask -
     // the real BID/ASK pair lives at cell [3] (verified against live-captured
-    // markup). A stale flat-index read wouldn't fail loudly, it would
+    // markup). A stale flat-index read wouldn't fail loudly. It would
     // silently return a real-looking but wrong rate. Matching by label is
     // resilient to further row reordering.
     // Fallback: fixed-index extraction (cell [3] for bid/ask, cell [9] for
@@ -93,7 +93,7 @@ function extractFnetStockData(doc: Document): FetchResult {
         const cells = Array.from(tbody.querySelectorAll("tr td"));
         // The BID/ASK value cell itself never carries a currency suffix (verified
         // against live-captured markup for both an EUR- and a USD-underlying
-        // stock) - the "Eröffnung / Vortag" cell right before it does, so
+        // stock) - the "Eröffnung / Vortag" cell right before it does. So
         // currency detection reads from that one specifically, not from
         // whichever string produced the rate.
         const openPrevString =

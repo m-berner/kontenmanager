@@ -359,10 +359,10 @@ export function createAppAdapter(deps: AppAdapterDeps) {
             event: "start"
         });
 
-        // No currency gate here any more. This function computed
+        // No currency gate here anymore. This function computed
         // getCurrencyFromLocale() purely to throw when it came back empty, then
         // never used the value — a hard failure of the *critical* database
-        // phase for something only the *non-critical* Phase 3 needs, and Phase 3
+        // phase for something only the *non-critical* phase 3 needs. And phase 3
         // already degrades gracefully on its own when the currency is missing.
         // (Unreachable in practice, since getUserLocale() clamps every locale to
         // "de-DE" or "en-US", but the coupling was backwards.)
@@ -446,7 +446,7 @@ export function createAppAdapter(deps: AppAdapterDeps) {
 
         // Both are re-seeded on every call, not just the self-pair. The other
         // one is about to be overwritten by `applyBaseExchangeResult` with a
-        // freshly fetched rate — but if that fetch fails, leaving the PREVIOUS
+        // freshly fetched rate. But if that fetch fails, leaving the PREVIOUS
         // display currency's rate in place would convert with a divisor that
         // belongs to a currency no longer on screen. `1` is the honest fallback:
         // it shows the quote unconverted, which is the same choice
@@ -477,7 +477,7 @@ export function createAppAdapter(deps: AppAdapterDeps) {
                 processExchangeBase(stores.runtime, data);
                 // A base pair the user also has configured (the default
                 // ["EURUSD"] IS the EUR-account base USD pair) is excluded from
-                // the info fetch to avoid a duplicate request, so its
+                // the info fetch to avoid a duplicate request. So its
                 // already-fetched value has to land in infoExchanges here or
                 // InfoBar would render it blank. Written directly rather than
                 // via processExchangeInfo, which logs a "no data" warning for
@@ -501,15 +501,15 @@ export function createAppAdapter(deps: AppAdapterDeps) {
      * quote is converted by, and they used to have exactly one writer:
      * {@link fetchExternalData}, reachable only from {@link initializeApp},
      * which runs once at mount. The pairs it fetches are chosen from the
-     * currency active *at boot* and the self-pair is seeded to `1` — so
+     * currency active *at boot* and the self-pair is seeded to `1`. So
      * switching to an account with the other `cCurrency` left one divisor a
-     * stale rate and the other a `1` that was no longer correct. A EUR-quoted
+     * stale rate and the other a `1` that was no longer correct. An EUR-quoted
      * stock then displayed its EUR price verbatim as USD (or the mirror image),
      * silently: the only guard downstream is `rawDivisor > 0`, which a
-     * stale-but-positive rate passes. The error is the whole FX rate and it
+     * stale-but-positive rate passes. The error is the whole FX rate, and it
      * propagates into `mValue`, `mMin`/`mMax`, the derived `mChange`,
      * `calculateTotalDepotValue` and TitleBar's depot chip — while
-     * `currencySync` has already relabelled every figure with the NEW currency
+     * `currencySync` has already relabeled every figure with the NEW currency
      * symbol, so the label was right and the number was wrong.
      *
      * Callers must invalidate the quote cache AFTER awaiting this, not before:
@@ -798,7 +798,7 @@ export function createAppAdapter(deps: AppAdapterDeps) {
      * then returned `lastStatusSnapshot ?? derived`; since the snapshot is
      * assigned on *every* exit path of `initializeApp` (success, abort and the
      * catch), it is always set after boot and `derived` was always discarded.
-     * The "otherwise derive a live snapshot" behaviour the comment described
+     * The "otherwise derive a live snapshot" behavior the comment described
      * was reachable only before the app had ever initialized. Wired to a status
      * indicator, that would have frozen at boot-time status and could never
      * reflect a later DB disconnect — which `connectionManager` explicitly
@@ -825,9 +825,8 @@ export function createAppAdapter(deps: AppAdapterDeps) {
         // which was a proxy that answered the wrong question: see the flag's own
         // note. `stores` is still the argument for `db`/`fetch`.
         const dbOk = databaseAdapter.isConnected();
-        const storageOk = storageReadOk;
         const derived: AppStatus = {
-            storage: storageOk ? "ok" : "error",
+            storage: storageReadOk ? "ok" : "error",
             db: dbOk ? "ok" : "error",
             fetch: {
                 exchanges: stores.runtime.infoExchanges.size > 0,

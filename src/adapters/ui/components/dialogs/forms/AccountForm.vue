@@ -59,7 +59,7 @@ const ibanLabel = ref<string>(groupedLabel(accountFormData.iban));
  * that: Vuetify runs a *disabled* input's rules anyway. `useValidation`
  * registers with the form unconditionally in `onBeforeMount`, its `validate()`
  * has no disabled short-circuit, and the `isDisabled` it exposes is the
- * enclosing **form's** prop rather than the input's own — so
+ * enclosing **form's** prop rather than the input's own. So
  * `createForm.validate()`, which iterates every registered item without
  * filtering, collected this field's failures like any other.
  *
@@ -68,7 +68,7 @@ const ibanLabel = ref<string>(groupedLabel(accountFormData.iban));
  * `operation`. So for any account whose stored IBAN is blank or
  * checksum-invalid, *Update account* could never be saved — currency, SWIFT,
  * the depot flag and the logo were all permanently uneditable, and the field
- * responsible was greyed out, so nothing on screen explained why.
+ * responsible was grayed out, so nothing on screen explained why.
  *
  * Both states are ordinary rather than corrupt, which is what made this
  * reachable:
@@ -148,7 +148,7 @@ log("COMPONENTS DIALOGS FORMS AccountForm: setup");
     converted into. Editable on update as well as on add: it is a correction of
     what the stored amounts always were, not a conversion — nothing rewrites the
     numbers, so changing it on an account with real bookings relabels them.
-    That is the honest behaviour for a field that records a fact about existing
+    That is the honest behavior for a field that records a fact about existing
     data, but it is why the hint spells it out.
   -->
   <v-select

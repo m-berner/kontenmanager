@@ -47,7 +47,7 @@ export function createFaviconAdapter() {
         //
         // The stakes are small — an unauthenticated favicon lookup, so the worst
         // outcome is a wrong or default icon, with no credential and no
-        // same-origin data involved — but this is unencoded user data in a URL,
+        // same-origin data involved. But this is unencoded user data in a URL,
         // and encoding it is the whole fix.
         const encodedDomain = encodeURIComponent(domain);
 

@@ -151,7 +151,7 @@ export async function addAccountUsecase(
     // Every other path that populates the stocks store (initializeRecords,
     // used by account switch/delete/import/app boot) also seeds this
     // sentinel "no stock" row that BookingForm.vue's stock picker relies on
-    // for a blank option — without it. A booking added right after creating
+    // for a blank option. Without it, a booking added right after creating
     // this account (before the next switch/reload re-seeds it) would have no
     // blank entry in that dropdown.
     //
@@ -271,7 +271,7 @@ export async function updateAccountUsecase(
             // The store holds only the **active** account's booking types — the
             // contract `getAccountRecords` and `buildModernImportPlan` both
             // follow — so filtering it by `cAccountNumberID` yields an empty set
-            // for any other account, and `createDefaultBookingTypes` would then
+            // for any other account. And `createDefaultBookingTypes` would then
             // create a *second* Buy/Sell/Dividend set for an account that
             // already has them. That is the precise failure this guard exists to
             // prevent: `resolveTypeIdByRole` resolves only the first match per

@@ -82,7 +82,7 @@ export async function exportDatabaseUsecase(
     // Both end in a refusal, but they are different answers: "you have nothing
     // to export yet" is the expected state right after install, while "your
     // database is inconsistent" is a fault. They used to share
-    // EXPORT_DATABASE.A, so a fresh install clicking Export was told its data
+    // EXPORT_DATABASE.A, so a fresh installation clicking Export was told its data
     // had failed validation. Category is VALIDATION rather than DATABASE for
     // the same reason — nothing is wrong with the database.
     if (issues.noAccounts) {

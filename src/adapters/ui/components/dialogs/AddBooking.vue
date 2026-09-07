@@ -57,7 +57,7 @@ const onClickOk = async (): Promise<void> => {
       // "bookings are typically entered several at a time" (addBookingUsecase's
       // own comment). The alert adapter's default 1500 ms window keys on
       // kind|title|message, all three of which are identical for every success
-      // here, so two quick saves showed ONE confirmation — no signal at all
+      // here. So two quick saves showed ONE confirmation — no signal at all
       // that the second write landed, in the one flow built for repetition.
       await alertAdapter.feedbackInfo(
           t("components.dialogs.addBooking.title"),

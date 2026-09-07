@@ -93,6 +93,9 @@ every call site instead of restating the string. See the `errors.ts` / `healthCh
   already fits.
 - Suffix conventions already in use: `...Title` for alert/dialog titles, `...Label` for form
   field labels, `...ErrorTitle` for `feedbackError` titles, `Placeholder`, `Hint`.
+- Write the `en/gui.json` value in **American English** (`color`, `favorite`, `organize`, `license`
+  as both noun and verb — not `colour`, `favourite`, `organise`, `licence`). The `de` value is
+  German and unaffected by this.
 
 ---
 
@@ -396,6 +399,7 @@ foreach ($g in $grouped) {
 - [ ] `tests/unit/architecture.test.ts` still passes unmodified.
 - [ ] `npm run test:unit`, `npm run test:typescript`, `npm run lint` all pass.
 - [ ] Re-running the detection snippet against changed files shows the fixed lines gone.
+- [ ] Every new `en/gui.json` value and any new/edited comment uses American English spelling.
 
 ---
 

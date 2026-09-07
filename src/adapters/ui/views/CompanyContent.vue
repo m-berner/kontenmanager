@@ -105,7 +105,7 @@ const hasQuote = (value: number | undefined): boolean => {
  *
  * Returns 0 (0%) when the investment is zero, avoiding a division by zero. The
  * doc used to promise 1 (rendered "100%" by the `percent` formatter) while the
- * code returned 0 — a comment misstating behaviour by 100 percentage points.
+ * code returned 0 — a comment misstating behavior by 100 percentage points.
  * The code is the correct half: a position with no investment has not gained
  * 100%.
  *
@@ -399,7 +399,7 @@ onBeforeMount(async () => {
 // result, so `onCurrentItems` fires and fetches exactly what is now on screen.
 // It used to call `loadRequiredPages` too, and the two raced — the watcher
 // created an AbortController, then `onCurrentItems` ran `startOnlineLoad()` one
-// tick later and aborted it mid-flight, so the sweep was cancelled every time.
+// tick later and aborted it mid-flight, so the sweep was canceled every time.
 // One owner for "the visible rows changed" is enough.
 
 onBeforeUnmount(() => {
@@ -477,7 +477,7 @@ log("VIEWS CompanyContent: setup");
           </template>
         </td>
         <!--
-          Emphasis from `font-weight-bold` alone; the colour is inherited.
+          Emphasis from `font-weight-bold` alone; the color is inherited.
 
           This cell used to also carry `color-black`, a literal `color: black`,
           to override the `color: darkgray` the row inherited from style.css's
@@ -491,7 +491,7 @@ log("VIEWS CompanyContent: setup");
           be back to ~1.2:1 on `dark`, which is the exact bug that got it removed
           from this cell once before.
 
-          Inheriting Vuetify's on-surface colour is what winLossClass's
+          Inheriting Vuetify's on-surface color is what winLossClass's
           non-negative branch already settled on, for the same reason.
 
           Guarded by hasQuote() for the same reason min/max already are: a stock

@@ -127,8 +127,8 @@ function extractWStreetStockData(doc: Document): FetchResult {
         // table position. Unlike the rate, the 52-week row's *table* isn't
         // stable: on a stock page it's the last 2 rows of div.omega, but on
         // an ETF page div.omega is instead an unrelated, fixed-lookback
-        // "Performance" table with no Hoch/Tief row at all - a fixed flat-
-        // index read into that table (tds[5]/tds[7]) doesn't fail, it just
+        // "Performance" table with no Hoch/Tief row at all - a fixed flat-index
+        // read into that table (tds[5]/tds[7]) doesn't fail. It just
         // silently returns a real-looking but wrong value (e.g. a %-change
         // figure) from a totally different row. Label matching sidesteps
         // that by finding the right row wherever it actually lives.

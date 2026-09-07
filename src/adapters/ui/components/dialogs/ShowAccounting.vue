@@ -173,7 +173,7 @@ const getAccountData = (year: number | null) => {
   // The year select is `clearable`, which emits `null` (not `undefined`) when
   // cleared — treat that the same as "All Years" instead of falling through
   // to the per-year branch, where aggregateBookingsPerType's truthy year
-  // check would silently return all-time sums. While sumTaxes/sumFees's
+  // check would silently return all-time sums, while sumTaxes/sumFees's
   // strict `=== year` equality would silently return 0, producing a
   // mismatched, wrong total.
   if (year === COMPONENTS.DIALOGS.SHOW_ACCOUNTING.ALL_YEARS_ID || year === null) {
@@ -233,7 +233,7 @@ log("COMPONENTS DIALOGS ShowAccounting: setup");
             Pinned below the body rather than included in `:items`, so the total
             (and, for a depot account, Taxes and Fees) is on screen whichever
             page the user is on. `body.append` renders after the current page's
-            rows on every page, which is exactly the wanted behaviour and is why
+            rows on every page, which is exactly the wanted behavior and is why
             these are not table `items`.
           -->
           <template v-slot:[`body.append`]>
@@ -252,6 +252,7 @@ log("COMPONENTS DIALOGS ShowAccounting: setup");
   </v-form>
 </template>
 
+<!--suppress CssUnusedSymbol -->
 <style scoped>
 /*
  * Hides only the "1-5 of 5" item-range readout in the table footer — Vuetify's

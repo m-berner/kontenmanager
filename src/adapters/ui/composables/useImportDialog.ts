@@ -188,7 +188,7 @@ export function useImportDatabaseDialogController(input: {
             // itself is still corrupted.
             // Through `setActiveAccountIdPersisted`, not a bare ref assignment
             // followed by a separate `setStorage`. That pairing had no rollback:
-            // if the write rejected, the in-memory active account and the
+            // if write rejected, the in-memory active account and the
             // persisted one disagreed until the next reload — and the surrounding
             // catch reported it as a generic post-restore failure rather than
             // restoring the previous id. This helper reverts the in-memory value
@@ -273,7 +273,7 @@ export function useImportDatabaseDialogController(input: {
      * `importDatabaseUsecase` into `runImport`'s catch, which ran a full
      * rollback and showed a database error, telling the user their import had
      * failed when all that happened was that another dialog was up. (Nothing was
-     * corrupted — the confirm precedes any write, so the rollback restored
+     * corrupted — the confirmation precedes any write, so the rollback restored
      * identical data — but the report was wrong.)
      *
      * Only that specific rejection is absorbed. `ALERTS.SINK_UNAVAILABLE` — the

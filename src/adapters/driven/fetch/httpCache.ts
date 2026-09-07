@@ -32,7 +32,7 @@ export function getCache(key: string, ttl: number = DEFAULT_TTL): string | null 
     const entry = cache.get(key);
     if (!entry) return null;
 
-    // Honour the STRICTER of the reader's TTL and the one the writer recorded.
+    // Honor the STRICTER of the reader's TTL and the one the writer recorded.
     // Using the reader's alone let the same cached body have different expiry
     // semantics depending on who looked it up: quote endpoints write with the
     // short CACHE_POLICY.QUOTE_TTL_MS, but fetchWithCache's default is the much
@@ -75,7 +75,7 @@ export function setCache(key: string, data: string, ttl: number = DEFAULT_TTL): 
 
 /**
  * Removes all entries whose age exceeds their own recorded TTL. If the cache
- * is still over `MAX_HTTP_CACHE_ENTRIES` afterwards (e.g. many distinct URLs
+ * is still over `MAX_HTTP_CACHE_ENTRIES` afterward (e.g. many distinct URLs
  * cached within their TTL window), evicts the oldest entries until back at
  * the cap, so the cache cannot grow unbounded in a long-lived extension context.
  * Called automatically by `setCache` when the cache exceeds the cap.

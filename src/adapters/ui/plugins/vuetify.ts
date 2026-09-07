@@ -83,7 +83,7 @@ import {log} from "@/domain/utils/utils";
  *
  * Note the icon aliases were always distinct — `$error`, `$warning`, `$success`
  * and `$info` are all defined below, so `AlertOverlay`'s dynamic `` `$${type}` ``
- * lookup resolves for all four. Only the colours collided.
+ * lookup resolves for all four. Only the colors collided.
  *
  * ## `info` is per-theme, and the values are measured
  *
@@ -91,12 +91,12 @@ import {log} from "@/domain/utils/utils";
  * the app's most-used severity — every `alertAdapter.feedbackInfo` call, which
  * is the default channel for all non-error feedback — and `AlertOverlay` binds
  * it to a `variant="tonal"` `v-alert`, which draws the *text and border in the
- * colour itself* over a faint tint. On the `light` theme that was **1.08:1**.
+ * color itself* over a faint tint. On the `light` theme that was **1.08:1**.
  *
  * The values below are not a single blue, because a single value cannot work
  * here: `AlertOverlay`'s `v-card` takes the theme's `surface`, and only `light`
  * has a near-white one. `sky`, `ocean`, `earth` and `meadow` all use a strongly
- * coloured surface (`#3282f6`, `#194f7d`, `#780e12`, `#378222`), so the five
+ * colored surface (`#3282f6`, `#194f7d`, `#780e12`, `#378222`), so the five
  * non-`dark` themes are not "light themes" as far as contrast is concerned.
  * Each `info` is therefore chosen against *its own* surface — dark blue on the
  * light surface, light blue on the dark ones — and every one clears WCAG AA
@@ -118,7 +118,7 @@ import {log} from "@/domain/utils/utils";
  * blue will do.
  *
  * **Known and deliberately out of scope:** `warning`/`error`/`success` have the
- * same problem on the same coloured surfaces, and in places worse than `info`
+ * same problem on the same colored surfaces, and in places worse than `info`
  * ever was — `error` is 1.08:1 on `sky` and `success` 1.07:1 on `meadow`. That
  * is a palette-wide question (arguably these four themes want lighter surfaces),
  * not something to change quietly alongside an `info` fix.
@@ -127,8 +127,8 @@ import {log} from "@/domain/utils/utils";
  *
  * They were the bare CSS keyword strings `"red"`, `"orange"`, `"green"` — which
  * every note above, including the `sky`/`meadow` contrast ratios just quoted,
- * silently assumed rendered as those colours. They didn't: Vuetify's theme
- * colour parser (`util/colorUtils.js`'s `parseColor`) only recognises `#hex`,
+ * silently assumed rendered as those colors. They didn't: Vuetify's theme
+ * color parser (`util/colorUtils.js`'s `parseColor`) only recognizes `#hex`,
  * `rgb()`/`hsl()` and object/number forms. A plain keyword falls through to its
  * hex branch, which runs the string itself through `parseHex` — every
  * non-hex-digit character gets replaced with `F` before parsing. `"red"` (3
@@ -143,10 +143,10 @@ import {log} from "@/domain/utils/utils";
  * (see `CurrencyInput.vue`/`ValidationMessage.vue`), so a failed rule — e.g.
  * `CreditDebitFieldset`'s "only Soll or Haben, not negative" — never actually
  * showed in red; `MenuItem`'s `base-color="error"` and `AlertOverlay`'s error
- * variant were equally washed out. Fixed by using each colour's hex equivalent
+ * variant were equally washed out. Fixed by using each color's hex equivalent
  * (`#FF0000`/`#FFA500`/`#008000`) instead of its keyword — same intended hue,
  * a format `parseColor` actually understands. The `sky`/`meadow` contrast
- * figures above were computed against the *intended* colours and hold for the
+ * figures above were computed against the *intended* colors and hold for the
  * fixed values; they were never measuring what was actually on screen before.
  */
 export const vuetify = createVuetify({

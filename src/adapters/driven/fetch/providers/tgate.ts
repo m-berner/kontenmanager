@@ -60,7 +60,7 @@ function extractTgateStockData(doc: Document): { rate: string } {
     // comma-decimal (same reasoning as the hard-coded EUR currency below), but
     // low-priced instruments (UK banks, penny stocks) render 4 fraction
     // digits, e.g. "1,3105". detectNumberFormat's heuristic only trusts a lone
-    // comma as a decimal separator within the last 4 characters, so it read a
+    // comma as a decimal separator within the last 4 characters. So it read a
     // 4-decimal quote as English thousands-grouping and stripped the comma —
     // "1,3105" became 13105, inflating the mid-quote (and therefore mValue,
     // mChange and the depot total) by roughly 10⁴ for any tgate quote

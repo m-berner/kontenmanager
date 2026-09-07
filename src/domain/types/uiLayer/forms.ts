@@ -42,10 +42,10 @@ export type ValidationCodeType =
  *
  * `unknown` is deliberate and load-bearing: Vuetify hands rules the **raw model
  * value**, and a `v-text-field type="number"` supplies a *string*. Two
- * hand-written aliases used to sit in `types/uiLayer/misc.ts` declaring
+ * handwritten aliases used to sit in `types/uiLayer/misc.ts` declaring
  * `(_v: number)` and `(_v: string)` — unused, but better-named than this one and
  * therefore the first thing a rule author searching for the abstraction would
- * find. That assumption is exactly what made `countRules`' `typeof v ===
+ * find. That assumption is exactly what made `countRules` `typeof v ===
  * "number"` reject every share count a user typed, so no stock booking could be
  * saved at all. They were deleted rather than kept as spares; `unknown` forces
  * the narrowing that bug needed.

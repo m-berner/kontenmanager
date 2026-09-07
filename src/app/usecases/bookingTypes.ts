@@ -75,11 +75,11 @@ export async function deleteBookingTypeUsecase(
     //
     // Without this, the account's Buy type could be deleted whenever no booking
     // referenced it yet — precisely the state a freshly created depot account is
-    // in — and `resolveTypeIdByRole` would then return `undefined`, so
+    // in — and `resolveTypeIdByRole` would then return `undefined`. So
     // `mapBookingFormToDb`'s `isStockRelated` is false for every remaining type
     // and BookingForm hides the stock picker and the count field outright. The
     // account still advertises itself as depot-enabled while no purchase can be
-    // recorded any more, and nothing tells the user why. Recovery existed but
+    // recorded anymore, and nothing tells the user why. Recovery existed but
     // was undiscoverable: the add dialog has no role control, so a re-created
     // type is always `other`; only toggling `withDepot` off and on again
     // re-runs `createDefaultBookingTypes`.
@@ -137,7 +137,7 @@ export async function updateBookingTypeUsecase(
     deps.runtime.resetTeleport();
     // Changing a type's role changes which bookings count toward a stock's
     // holdings (domain/logic.ts resolves Buy/Sell/Dividend by the type's current
-    // cRole, not a fixed id), which can reposition a stock across pages. Only
+    // cRole, not a fixed id). This can reposition a stock across pages. Only
     // reached on the success path — the duplicate/roleConflict returns above
     // write nothing, so there is nothing to invalidate.
     deps.runtime.clearStocksPages();

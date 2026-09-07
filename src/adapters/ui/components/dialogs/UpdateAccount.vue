@@ -76,7 +76,7 @@ const loadCurrentAccount = async (): Promise<void> => {
     withDepot: currentAccount.cWithDepot,
     // `?? EUR` even though `cCurrency` is declared required: schema migration 29
     // stamps it onto every stored row, but a row that predates the migration in
-    // some other way (a hand-written record, a test double) would otherwise put
+    // some other way (a handwritten record, a test double) would otherwise put
     // `undefined` into the select and render it blank.
     currency: currentAccount.cCurrency ?? CURRENCIES.EUR
   });

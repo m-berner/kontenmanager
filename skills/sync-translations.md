@@ -97,6 +97,12 @@ Beyond "the key exists", judge each `en` value against its `de` counterpart for:
    chemical/element symbols (`Au`, `Ni`, `Pd`, ...) are correctly identical between locales; don't
    flag these as "untranslated" just because the automation snippet's identical-value heuristic
    surfaces them — that heuristic is a starting point for eyeballing, not a verdict.
+8. **American English spelling** — this codebase's `en` locale is American English: `color`,
+   `favorite`, `organize`, `initialize`, `license` (noun and verb), `canceled`/`canceling`, `gray`,
+   not the British `colour`, `favourite`, `organise`, `initialise`, `licence`,
+   `cancelled`/`cancelling`, `grey`. A British spelling that slipped into `en/gui.json` or
+   `en/messages.json` is a real finding under this checklist, fixed the same way as any other `en`
+   string issue — the `de` string is unaffected either way.
 
 ---
 
@@ -228,6 +234,8 @@ compare("messages.json", /\$[A-Za-z0-9_]+\$|\$\d+/g);
       skipped because they're array-shaped.
 - [ ] No fix touched `de` — every correction landed in `en`. Any genuine `de`-side issue was
       reported separately, not silently rewritten.
+- [ ] Every `en` string uses American English spelling — no British `-our`/`-ise`/`-re`/`-ll-`
+      forms slipped through.
 - [ ] Both locale JSON files still parse as valid JSON.
 - [ ] `npm run test:unit`, `npm run test:typescript`, `npm run lint` all pass.
 

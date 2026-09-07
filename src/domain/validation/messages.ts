@@ -18,7 +18,7 @@ export const createIbanMessages = (
         t("validators.ibanRules.length"),
         t("validators.ibanRules.format"),
         // Ordered to match createIsinMessages (required, length, format,
-        // country, checksum, duplicate) — `country` was added here when
+        // country, checksum, duplicate). `Country` was added here when
         // validateIBAN stopped reporting an unsupported country as a length
         // error, and slotting it in position rather than appending keeps the
         // two IBAN/ISIN rule sets readable side by side.

@@ -171,7 +171,7 @@ function migrateStocksAccountScopedUniqueness(tx: IDBTransaction): void {
  * runs `resolveLegacyBookingTypeRole` too) — this backfill is the other way such a
  * collision could be created (an in-place upgrade of an existing local database) and had
  * no equivalent guard. `openCursor()` with no explicit index iterates the store's primary
- * key (`cID`, autoIncrement) in ascending order, so tracking which roles are already taken
+ * key (`cID`, autoIncrement) in ascending order. So tracking which roles are already taken
  * per account while sweeping demotes every conflicting row EXCEPT the one with the lowest
  * `cID` — matching which of two colliding types a user is more likely to think of as "the
  * real one" (the older, probably-default one) without requiring any ordering pass of its
@@ -209,7 +209,7 @@ function backfillBookingTypeRoles(tx: IDBTransaction): void {
                 inferredRole = BOOKING_TYPE_ROLE.OTHER;
             }
 
-            // The write's own error handler, not just the cursor's below. An
+            // The write gets its own error handler, not just the cursor's below. An
             // `update()` failure aborts the version-change transaction exactly
             // like an `openCursor()` failure does, and without this it did so
             // with none of the migrator's context attached — which is precisely

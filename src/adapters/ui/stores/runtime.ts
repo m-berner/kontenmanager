@@ -225,7 +225,7 @@ export const useRuntimeStore = defineStore("runtime", function () {
     function setCurrentView(view: ViewTypeSelectionType): void {
         currentView.value = view;
 
-        // Ensure UI the state is clean when navigating
+        // Ensure the UI state is clean when navigating
         resetTeleport();
     }
 

@@ -104,7 +104,7 @@ export async function fetchWithRetry(
                 // The timeout is a budget for the WHOLE call, not per attempt:
                 // one controller and one timer are created before the loop and
                 // shared by every attempt. Once it fires, the signal stays
-                // aborted forever, so every remaining iteration would call
+                // aborted forever. So every remaining iteration would call
                 // fetch() with an already-aborted signal (instant AbortError)
                 // and delay() would return immediately (its own aborted-signal
                 // fast path) — spinning through the retry budget doing no work

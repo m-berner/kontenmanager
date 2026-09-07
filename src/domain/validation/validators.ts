@@ -276,7 +276,7 @@ function normalizeAmount(value: unknown): number {
  *
  * A backup file is versioned independently of the running app
  * (`MIN_SUPPORTED_VERSION` is 27), so a pre-30 export still carries the old
- * pair — collapsing it here the same way `formMapper.ts` does (`debit -
+ * pair. Collapsing it here the same way `formMapper.ts` does (`debit -
  * credit`, the two having always been mutually exclusive per booking) keeps
  * that data on import instead of silently dropping it to 0. The IndexedDB
  * migration path for an existing local database is separate — see

@@ -156,7 +156,7 @@ export function createAlertAdapter() {
      * from that point and the message must stay on screen.
      *
      * The three helpers below used two different idioms for this: `feedbackInfo`
-     * and `feedbackWarning` had the `!== undefined` form, `feedbackError` used
+     * and `feedbackWarning` had the `!== undefined` form. `feedbackError` used
      * `??`. They agreed only because `DURATIONS.ERROR` is itself `null`, so
      * `null ?? null` happened to give the right answer — the idioms would
      * diverge the moment that default became a number, and one call site would
@@ -239,7 +239,7 @@ export function createAlertAdapter() {
         // was indistinguishable from the user pressing Cancel. Within the 1.5 s
         // window that silently aborted an import or export — no dialog, no
         // explanation — and made HomeContent's Ctrl+Alt+R reset a no-op.
-        // Re-entrancy is already handled one layer down: alerts.confirm()
+        // Reentrancy is already handled one layer down: alerts.confirm()
         // rejects when a confirmation dialog is already open.
         //
         // `getAlertSinkOrThrow`, not the `Safe` variant: an unavailable sink is

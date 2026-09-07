@@ -53,7 +53,7 @@ const search = ref<string>("");
 // reading `items.value`, so its identity never changes and the wrapper never
 // re-evaluated. Renames were tracked anyway, by the real mechanism — the closure
 // reads `items.value` when Vuetify's filter computed invokes it, so the
-// dependency is registered there. Dropping the wrapper leaves behaviour
+// dependency is registered there. Dropping the wrapper leaves behavior
 // identical and stops the comment claiming a guarantee it was not providing.
 const customSearchKeys = createBookingSearchFilter(
     records.bookingTypes.getNameById,

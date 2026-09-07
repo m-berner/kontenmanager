@@ -144,7 +144,7 @@ export function regex(pattern: RegExp, message: string): ValidationRuleType {
  *   begin with a letter". For a German-language finance tool this is the more
  *   likely of the two to bite in daily use.
  *
- * The rule now expresses what it was plausibly *for* — rejecting a value that
+ * The rule now expresses what it was plausibly *for*: rejecting a value that
  * opens with whitespace or punctuation — as "must start with a letter or a
  * digit", using the Unicode-aware `\p{L}`/`\p{N}` classes so no alphabet is
  * privileged. Note `cleanString` already trims, so a leading-space value fails
@@ -167,7 +167,7 @@ export function nameRules(msgArray: readonly string[]): ValidationRuleType[] {
  * **F** (Ford), **T** (AT&T), **V** (Visa), **C** (Citigroup), **K**
  * (Kellanova) and **X** (US Steel) are all real, ordinary symbols, and none of
  * them could be saved: the rule failed, `submitGuard` returned early, and the
- * user saw a dead-looking OK button. Worse, `StockForm.onUpdateIsin` *auto-fills*
+ * user saw a dead-looking OK button. Worse, `StockForm.onUpdateIsin` *autofills*
  * this field from the fetch provider, so for those stocks the app supplied a
  * value it then refused to accept, with the error on a field the user never
  * typed into.
@@ -309,7 +309,7 @@ export function validateIBAN(iban: string): boolean {
  *
  * Reusing the domain function also closes the asymmetry that made this worth
  * fixing rather than noting. `validateBooking` already uses the strict check on
- * the write path, and `normalizeDate` returns `""` for a date it rejects — so a
+ * the write path. And `normalizeDate` returns `""` for a date it rejects — so a
  * value that slipped past this rule would be stored with a **blank date** while
  * the in-memory store kept the typed value. Not reachable from the UI today
  * (both fields using this are `type="date"`, and a native date input never

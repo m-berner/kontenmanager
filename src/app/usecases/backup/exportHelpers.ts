@@ -44,11 +44,11 @@ export function createExportMetadata(manifestVersion: string): {
  * a `Uint8Array` as long as the encoded string just to read `.length` off it.
  * This runs on the export path, where the string can approach
  * `MAX_EXPORT_SIZE_KB` (64 MB) and is already held alongside the four record
- * arrays it was serialized from — so the copy is a whole extra buffer at the
+ * arrays it was serialized from. So the copy is a whole extra buffer at the
  * worst possible moment.
  *
  * (The other full pass on that path, `verifyExportIntegrity`'s `JSON.parse`, is
- * deliberate and stays: re-parsing the exact string that will be written is the
+ * deliberate and stays: reparsing the exact string that will be written is the
  * check, not an accident of implementation.)
  */
 function utf8ByteLength(text: string): number {

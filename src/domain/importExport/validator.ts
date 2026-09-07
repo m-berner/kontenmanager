@@ -379,7 +379,7 @@ function validateBusinessRules(backup: ModernBackupData): string[] {
 function validateForeignKeys(backup: ModernBackupData): string[] {
     // Delegates to the shared survey in `domain/validation/referentialIntegrity`,
     // which the export path and the health checker now also use. This function
-    // was the strictest of the three hand-written traversals and is what the
+    // was the strictest of the three handwritten traversals and is what the
     // other two were reconciled *to* — see that module's comment.
     return describeReferentialIssues(findReferentialIssues(backup));
 }

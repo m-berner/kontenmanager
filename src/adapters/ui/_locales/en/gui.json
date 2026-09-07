@@ -383,14 +383,14 @@
           "subTitle": "Settings & Personalization",
           "content": [
             "Under 'Settings', choose one of six color themes (including Light, Dark, Ocean) and pick which service supplies quote and market data.",
-            "Further tabs manage the default currency for new accounts, plus the lists of market places, indexes, materials, and exchange rates shown in the Info Bar.",
+            "Further tabs manage the default currency for new accounts, plus the lists of marketplaces, indexes, materials, and exchange rates shown in the Info Bar.",
             "Configuration is stored locally in your browser and reloaded automatically when you open the extension."
           ],
           "icon": ""
         },
         {
           "subTitle": "Accessibility",
-          "content": "The interface is primarily designed for mouse and touch interaction. One exception is the Ctrl+Alt+R shortcut: after a confirmation prompt, it resets all of the extension's data — use it only if you really want to start over.",
+          "content": "The interface is primarily designed for mouse and touch interaction. One exception is the Ctrl+Alt+R shortcut: after a confirmation prompt, it resets all extension's data — use it only if you really want to start over.",
           "icon": ""
         },
         {

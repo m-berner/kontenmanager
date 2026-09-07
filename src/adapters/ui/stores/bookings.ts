@@ -85,7 +85,7 @@ export const useBookingsStore = defineStore("bookings", function () {
      *
      * A plain computed value — same reasoning as `portfolio.sumDepot`: the
      * computed-returning-a-zero-argument-function shape is the idiom for
-     * *parameterised* getters in this codebase, and applying it to a getter with
+     * *parameterized* getters in this codebase, and applying it to a getter with
      * no parameters only disables the memoization. Both feed always-mounted app
      * bar chips, so both used to recompute on every re-render of that bar rather
      * than when their inputs changed.

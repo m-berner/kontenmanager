@@ -327,7 +327,7 @@ export function calculateTotalSum(bookings: BookingDb[]): number {
  * currently marked as a depot account. `cWithDepot` can be switched off on an
  * account that still carries Buy/Sell/Dividend booking types and fee/tax
  * -bearing bookings — turning it off deletes nothing, and a booking's fee/tax
- * fieldsets gate on the type's *role*, not on `cWithDepot` — so a
+ * fieldsets gate on the type's *role*, not on `cWithDepot`. So a
  * formerly-depot account can still accrue real, non-zero fees and taxes after
  * the toggle. Gating the rows on `isDepot` instead let a toggle change what
  * ShowAccounting's Sum showed without changing {@link calculateTotalSum}'s
@@ -338,7 +338,7 @@ export function calculateTotalSum(bookings: BookingDb[]): number {
  * @param finalSum - The sum of **every** booking-type row, Buy and Sell
  *   included. `ShowAccounting` splits those two out of its paginated body and
  *   pins them below it, but they are still displayed rows and still part of
- *   the total — reading this as "the non-Buy/Sell rows" (which the wording
+ *   the total. Reading this as "the non-Buy/Sell rows" (which the wording
  *   here used to invite) and matching the call site to it would drop every
  *   purchase and sale from the sum, and break the identity below.
  *

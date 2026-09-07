@@ -87,7 +87,7 @@ export interface DatabaseAccountsPort {
  * `databaseAdapter.getAllRecords` reads all four stores inside a single
  * transaction "so the four stores cannot be observed at different points in
  * time" (its own doc comment). The export used to issue the four reads
- * independently — each `findAll()` without a `tx` opens its own transaction —
+ * independently. Each `findAll()` without a `tx` opens its own transaction —
  * and then ran `findExportConsistencyIssues` over the possibly-torn result,
  * which is the one check standing between the app and a backup it would later
  * refuse to re-import.

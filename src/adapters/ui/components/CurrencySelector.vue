@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 /**
- * @fileoverview Selects the app-level default currency. Modelled on
+ * @fileoverview Selects the app-level default currency. Modeled on
  * `ThemeSelector`, which writes its value into the settings store the same way.
  *
  * This is the *default*, not the display currency: it seeds `cCurrency` for

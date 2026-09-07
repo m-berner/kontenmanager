@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 /**
- * @fileoverview Toggles `log()`'s runtime debug override. Modelled on
+ * @fileoverview Toggles `log()`'s runtime debug override. Modeled on
  * `ThemeSelector`/`CurrencySelector`, which write into the settings store
  * the same way.
  *

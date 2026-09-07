@@ -69,7 +69,7 @@ export function createDatabaseConnectionManager(
             // not a fault. `appAdapter.initializeDatabase` calls it on every
             // initialization — including `AppIndex`'s user-facing retry button —
             // so a retry after an unrelated failure was emitting a warning for
-            // expected behaviour.
+            // expected behavior.
             log("DATABASE connection: already connected", null, "info");
             return Promise.resolve();
         }

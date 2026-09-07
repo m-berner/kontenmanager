@@ -55,7 +55,7 @@ const onClickOk = async (): Promise<void> => {
       // with return-object, v-model is bound directly to the
       // live store record (records.stocks.passive doesn't clone), so writing
       // to it here would flip the stock to "active" in the UI immediately,
-      // before the DB write below even starts - if repositories.stocks.save
+      // before the DB write below even starts. If repositories.stocks.save
       // then throws, the store would be left permanently out of sync with
       // the database until a reload. Only update the store after the save
       // actually succeeds, matching UpdateStock.vue's pattern.

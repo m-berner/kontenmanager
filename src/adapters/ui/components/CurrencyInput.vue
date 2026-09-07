@@ -29,7 +29,7 @@ const isFocused = ref<boolean>(false);
 const wrappedRules = computed(() => {
   // A disabled field must not gate the form. Vuetify validates a disabled input
   // regardless — see the long note on `AccountForm`'s `ibanRules`, where the
-  // same shape made an account permanently unsaveable — and while this instance
+  // same shape made an account permanently unsavable. And while this instance
   // is currently harmless (nothing passes `disabled`, and `oneOfTwo` accepts the
   // 0 a disabled amount holds), it is the same trap one prop away.
   if (props.disabled || !props.rules) return undefined;

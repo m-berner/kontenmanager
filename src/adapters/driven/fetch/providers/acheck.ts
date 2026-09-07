@@ -128,7 +128,7 @@ function extractFirstNumber(value: string): string {
  * Extracts the data-row value from the column whose header cell matches
  * `headerPattern`, for a 2-row (header + one data row) table shape - the
  * real live structure of aktien-check.de's rate table (verified 2026-08,
- * m.aktiencheck.de): header row ["Letzter","Vortag","Umsatz","Veraenderung"],
+ * m.aktiencheck.de): header row ["Letzter","Vortag","Umsatz","Veränderung"],
  * data row ["303,22","308,94","6,76 Mrd $","-1,85%"]. Returns "" when the
  * table has fewer than 2 rows or no header cell matches.
  */
@@ -198,7 +198,7 @@ function extractAcheckCurrencySymbol(table: Element): string {
         // correct only because parseCurrency("0") happens to find no marker and
         // fall back to DEFAULT_CURRENCY. "" is the value the sibling
         // detectCurrency already uses for "not known", and parseCurrency
-        // treats it identically — so this is a naming fix, not a behaviour
+        // treats it identically — so this is a naming fix, not a behavior
         // change.
         const CURRENCY_ROW = 1;
         const CURRENCY_CELL = 2;
@@ -278,7 +278,7 @@ function extractAcheckMinMax(table: Element): { min: string; max: string } {
         // Require BOTH sides before accepting this tier, matching goyax's
         // equivalent gate. An `||` here returned as soon as either side matched,
         // leaving the other at DEFAULT_VALUE ("0") and skipping the fallback
-        // below that might have found it - so a half-parsed table silently cost
+        // below that might have found it. So a half-parsed table silently cost
         // us a real 52-week value (rendered as an empty cell by CompanyContent's
         // hasQuote guard).
         if (min !== DEFAULT_VALUE && max !== DEFAULT_VALUE) return {min, max};

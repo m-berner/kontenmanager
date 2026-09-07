@@ -194,7 +194,7 @@ function extractArdStockData(doc: Document): FetchResult | null {
 
     // tagesschau.de's Börsenkurse section lists non-EUR instruments too, so the
     // currency must be read off the page rather than asserted. Falling back to
-    // EUR when no marker is present preserves the previous behaviour for the
+    // EUR when no marker is present preserves the previous behavior for the
     // (common) EUR case; returning "" instead would make useOnlineStockData
     // infer USD from a "US" ISIN prefix and wrongly divide an EUR-quoted price
     // by the USD rate.

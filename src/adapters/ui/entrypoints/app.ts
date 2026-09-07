@@ -117,9 +117,9 @@ async function bootstrap(): Promise<void> {
  * Deliberately NOT reached when `ensureSingleAppTab` returns `false`. That path
  * also ends in an unmounted page, and `focusThenClose`'s comment explicitly
  * accepts "stuck open and unmounted (blank page)" as the price of never
- * mounting twice — showing a "startup failed, retry" button there would invite
+ * mounting twice. Showing a "startup failed, retry" button there would invite
  * the user to defeat single-tab enforcement. The distinction is structural
- * rather than a flag: that path returns, this handler only sees a throw.
+ * rather than a flag: that path returns. This handler only sees a throw.
  */
 function renderBootstrapFailure(err: unknown): void {
     const root = document.querySelector("#app");

@@ -37,7 +37,7 @@ export interface BookingFormData {
     // type from `selected` and the account from its `accountId` parameter. Both
     // were redundant copies of state that lives elsewhere, and the naming
     // inverted the truth — `bookingTypeId` read as the canonical field while
-    // `selected` read like transient UI state — so a future edit that set
+    // `selected` read like transient UI state. So a future edit that set
     // `bookingTypeId` and expected it to persist would have silently lost the
     // change. Only a separate `bookingFormData.selected = …` line in
     // `UpdateBooking`, one line above the `Object.assign` that set the dead
@@ -75,7 +75,7 @@ export interface BookingTypeFormData {
  * `any`, so a click assigned `true`/`false` unchecked, and `UpdateStock`'s
  * `Object.assign` copied a widened `number` off `StockDb` (`Object.assign<T, U>`
  * returns `T & U`; it does not check assignability into `T`). The field
- * therefore held the declared type only by coincidence at initialisation.
+ * therefore held the declared type only by coincidence at initialization.
  *
  * `mapStockFormToDb` converts with `data.fadeOut ? 1 : 0`, so the mapper is
  * where the database's numeric representation is produced — which is what made

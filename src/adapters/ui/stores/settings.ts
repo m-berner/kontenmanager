@@ -209,7 +209,7 @@ export const useSettingsStore = defineStore(
          * - `onChange` (the parameter below) would fire twice for one user
          *   action, which is a trap for the first side-effecting callback added.
          *
-         * Value equality rather than an origin marker on the write, deliberately:
+         * Value equality rather than an origin marker on write, deliberately:
          * a marker has to be applied by *every* writer, and a missed writer is a
          * silent regression. This needs no cooperation from the write side, and
          * a genuine cross-context change necessarily differs from what this
@@ -516,7 +516,7 @@ export const useSettingsStore = defineStore(
          *
          * These were the last settings with no setter, so `CheckboxGrid` and
          * `DynamicList` each read their key straight from `browser.storage.local`
-         * on mount into a private ref and wrote back from that copy — a second
+         * on mount into a private ref and wrote back from that copy. A second
          * source of truth for state this store already holds, and a second,
          * hand-rolled copy of the optimistic-update-and-roll-back logic
          * `updateSetting` exists to provide.

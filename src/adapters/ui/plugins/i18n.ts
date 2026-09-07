@@ -29,7 +29,7 @@ const i18nConfig = {
     // `locale` is a `WritableComputedRef` — the bare assignment would *replace
     // the ref with a string*, the locale would stay at the configured default
     // "en-US", and nothing would throw or log. That is not merely an English
-    // UI: `locale` also selects the `datetimeFormats` block below. Hence
+    // UI: `locale` also selects the `datetimeFormats` block below. Hence,
     // `.locale.value` at the assignment, and the `.numberFormats.value` the
     // plugin's test now reads.
     //
@@ -76,7 +76,7 @@ const i18nConfig = {
         // second source to fall back to: vue-i18n warned and formatted the
         // value with default options, dropping the currency style. The
         // commodity row then read "1234.56 / $1,234.56" — the left half
-        // unlabelled, both halves the same number (the en-US divisor is 1).
+        // unlabeled, both halves the same number (the en-US divisor is 1).
         "de-DE": {
             currency3: {
                 style: "currency",

@@ -24,7 +24,7 @@ export type SingleTabGuardAdapter = {
  *
  * Shared by {@link ensureSingleAppTab}, {@link closeDuplicateAppTab} and
  * `background.ts`'s toolbar-icon handler, so the three mechanisms cannot
- * disagree — and all three now apply it to the *same candidate pool*, every app
+ * disagree. And all three now apply it to the *same candidate pool*, every app
  * tab they can see, which is what makes agreement structural rather than
  * dependent on tab ids happening to be monotonic.
  *
@@ -197,7 +197,7 @@ export async function closeDuplicateAppTab(
         // closed the new tab as a duplicate while that tab's own startup check
         // concluded it was the survivor and closed the others. Both run, and
         // every app tab ends up closed. Sharing the pool makes the agreement
-        // structural rather than conditional on tab-id behaviour.
+        // structural rather than conditional on tab-id behavior.
         const survivor = pickSurvivor([newTab, ...otherTabs]);
 
         if (survivor.id === newTabId) {

@@ -161,10 +161,10 @@ async function refreshRates(): Promise<void> {
  * from whichever currency was active *then*. Switching to an account with the
  * other `cCurrency` therefore left one divisor holding a stale rate and the
  * other the `1` seeded for the *previous* currency's self-pair, and
- * `useOnlineStockData` converted every quote with it: a EUR-quoted stock showed
+ * `useOnlineStockData` converted every quote with it: an EUR-quoted stock showed
  * its EUR price verbatim as USD (or the mirror image), silently, propagating
  * into `mChange`, the depot total and the app-bar chip — while `currencySync`
- * had already relabelled everything with the new symbol.
+ * had already relabeled everything with the new symbol.
  *
  * Watches the resolved value rather than any one input, so it covers all three
  * ways the display currency can change: switching accounts, editing the active
@@ -300,7 +300,7 @@ const onRetryInit = async (): Promise<void> => {
  * use.)
  *
  * Not `{once: true}`: `beforeunload` can fire more than once for one document
- * when a navigation is started and then cancelled, and a one-shot listener would
+ * when a navigation is started and then canceled, and a one-shot listener would
  * silently not be there the second time.
  */
 const onBeforeUnload = (): void => {

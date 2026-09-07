@@ -667,7 +667,7 @@ export const BROWSER_STORAGE = {
      * Data source shared by commodity/material prices and market index
      * levels — independent of `SERVICE` (the stock-quote provider). Defaults
      * to "fnet" (finanzen.net), the only source either ever had, to keep
-     * existing installs' behavior unchanged; "wstreet" (wallstreet-online.de)
+     * existing install behavior unchanged; "wstreet" (wallstreet-online.de)
      * is the opt-in alternative. One setting for both by design: materials
      * and indexes always use the same source, so this never lets the two
      * drift onto different providers.

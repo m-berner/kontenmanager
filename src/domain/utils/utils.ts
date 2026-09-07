@@ -435,10 +435,10 @@ export function compareIsoDateDesc(a: string, b: string): number {
  *
  * This is a domain helper with no say in where its classes land, so staying
  * theme-neutral was the right call independently of any stylesheet — and it has
- * since been vindicated. The neighbouring mValue cell *did* rely on style.css
+ * since been vindicated. The neighboring mValue cell *did* rely on style.css
  * hardcoding a light row background in every theme, which let it use
  * `color-black`; when that hardcoding was replaced by a translucent overlay so
- * the tables follow the theme, that cell's colour had to be removed too. This
+ * the tables follow the theme, that cell's color had to be removed too. This
  * helper needed no change.
  *
  * @param value - Value to determine CSS class for.

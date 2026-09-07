@@ -125,13 +125,13 @@ const connectionIcon = computed((): string => {
 });
 
 /**
- * Colour for the connectivity icon. "checking" gets none on purpose: an
- * in-progress probe is not a result, so it inherits the app bar's own colour and
+ * Color for the connectivity icon. "checking" gets none on purpose: an
+ * in-progress probe is not a result, so it inherits the app bar's own color and
  * stays visually quiet.
  *
  * Online is plain `black`, not `success`: a working connection is the normal,
- * uneventful state, and the theme green washed out against the app bar. Black
- * reads clearly on `secondary` (`#e0e0e0`) in every theme, and leaves colour to
+ * uneventful state, and the theme's green washed out against the app bar. Black
+ * reads clearly on `secondary` (`#e0e0e0`) in every theme, and leaves color to
  * mean "something needs attention".
  *
  * Offline is `warning`, not `error`: stored records are entirely unaffected by a
@@ -307,7 +307,7 @@ const onBrowserOnline = (): void => {
  * The machine lost its network. Authoritative — the browser fires this from the
  * OS network state — so it is published directly instead of spending the probe's
  * timeout confirming it. Bumping `probeSeq` first is what keeps an in-flight
- * probe from resolving afterwards and reporting "online" again.
+ * probe from resolving afterward and reporting "online" again.
  */
 const onBrowserOffline = (): void => {
   probeSeq++;

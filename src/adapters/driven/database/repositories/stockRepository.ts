@@ -27,7 +27,7 @@ export function createStockRepository(transactionManager: TransactionManagerCont
     // would silently match — or delete — stocks belonging to EVERY account.
     //
     // Nothing called either (only findByAccount/deleteByAccount below are used),
-    // so this removes a latent cross-account leak rather than changing behaviour.
+    // so this removes a latent cross-account leak rather than changing behavior.
     // `findBy`/`deleteBy` now throw NO_INDEX for these fields, which is the
     // honest answer: there is no account-scoped single-field index to serve them.
     // A composite lookup would need the `uk3`/`uk4` key range, not this map.

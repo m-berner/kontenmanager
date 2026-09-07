@@ -260,18 +260,18 @@ function createBatchOperationBuilder(service: Pick<BatchServiceContract, "execut
         await service.executeAtomic(snapshot);
 
         // Remove exactly the operations that were executed, leaving any
-        // operations queued concurrently during the await intact for the
+        // operations queued concurrently during await intact for the
         // next execute() call instead of silently discarding them.
         for (const {storeName, queue, executed} of entries) {
             const current = descriptors.get(storeName);
             if (!current) continue;
 
-            // A `reset()` during the await dropped the array we executed from;
-            // anything queued afterwards landed in a *fresh* one, whose first
+            // A `reset()` during await dropped the array we executed from;
+            // anything queued afterward landed in a *fresh* one, whose first
             // `executed.length` entries are new operations, not the ones just
             // executed. Slicing them off silently discarded them — the exact
             // opposite of the contract the comment above states. Leave a queue
-            // we do not recognise completely alone.
+            // we do not recognize completely alone.
             if (current !== queue) continue;
 
             const remaining = current.slice(executed.length);

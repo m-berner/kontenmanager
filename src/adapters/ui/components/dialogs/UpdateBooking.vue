@@ -157,7 +157,7 @@ log("COMPONENTS DIALOGS UpdateBooking: setup");
     declares no props at all, so it was a fallthrough attribute rendered into
     the DOM as `isupdate="true"`. Its siblings need the flag to exclude the
     edited record from their own duplicate checks (ISIN/symbol, IBAN);
-    bookings have no uniqueness constraint and no update-mode behaviour, so
+    bookings have no uniqueness constraint and no update-mode behavior, so
     there is nothing for it to drive.
   -->
   <BaseDialogForm ref="baseDialogRef" :is-loading="isLoading">

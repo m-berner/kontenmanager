@@ -42,7 +42,7 @@ const loadCurrentBookingType = (): void => {
   // generic "last booking/stock row acted on" id, written unconditionally by
   // useMenu.ts's executeAction() for DotMenu row actions. This dialog is only
   // ever reachable via HeaderBar.vue's icon (useHeaderBarActions.ts), which
-  // never sets activeId - so it could hold a stale booking/stock id from a
+  // never sets activeId. So it could hold a stale booking/stock id from a
   // completely different IndexedDB store, which happens to collide with a
   // real (but unrelated) booking type's own auto-increment id. Pre-selecting
   // from it silently let a user rename/re-role the wrong booking type with no

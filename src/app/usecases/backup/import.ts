@@ -199,7 +199,7 @@ export async function importDatabaseUsecase(
         // Guarded, unlike the same call on the happy path above. A rejection
         // here used to propagate out of importDatabaseUsecase, so `onError`
         // never ran: the user got no import-failure message at all, and the
-        // real reason the import failed (`err`) was discarded in favour of a
+        // real reason the import failed (`err`) was discarded in favor of a
         // storage error. That is not a theoretical failure mode in this
         // function — a rejecting `setStorage` is exactly what
         // `setActiveAccountIdPersisted` exists to handle, and it is one of the

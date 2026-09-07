@@ -9,7 +9,7 @@ import type {BookingDb, BookingTypeDb, StockDb} from "@/domain/types";
 /**
  * The one definition of "is this record set referentially consistent".
  *
- * Three hand-written traversals of this same invariant used to exist, and they
+ * Three handwritten traversals of this same invariant used to exist, and they
  * disagreed:
  *
  * | Check                         | `cAccountNumberID` | `cStockID` | `cBookingTypeID` | Guards  |
@@ -112,7 +112,7 @@ export function hasReferentialIssues(issues: ReferentialIssues): boolean {
 /**
  * Renders the survey as the human-readable messages the import reports.
  *
- * Kept in the order the previous hand-written traversal produced them, so the
+ * Kept in the order the previous handwritten traversal produced them, so the
  * import's error text is unchanged.
  */
 export function describeReferentialIssues(issues: ReferentialIssues): string[] {

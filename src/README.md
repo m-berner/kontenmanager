@@ -692,7 +692,7 @@ written by `fetchExternalData`, which is Phase 3 of `initializeApp` and runs onc
 come from whichever currency was active *then*, and the self-pair is seeded to `1`. Switching to an account with the
 other `cCurrency` therefore left one divisor a stale rate and the other a `1` that no longer applied, and a EUR-quoted
 stock displayed its EUR price verbatim as USD (or the mirror image). Silently: the only guard downstream is
-`rawDivisor > 0`, which a stale-but-positive rate passes, and `currencySync` had already relabelled every figure with
+`rawDivisor > 0`, which a stale-but-positive rate passes, and `currencySync` had already relabeled every figure with
 the new symbol — so the label was right and the number was wrong.
 
 `AppIndex` closes this with a watcher on `resolveDisplayCurrency(...)` — the same expression `currencySync` watches, so

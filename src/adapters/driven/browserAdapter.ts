@@ -137,7 +137,7 @@ function locale5() {
  * accounting dialog. The stored data and the arithmetic were never affected —
  * only every money label in a banking extension.
  *
- * The old behaviour was also self-contradictory: `locale5` expands a bare `de`
+ * The old behavior was also self-contradictory: `locale5` expands a bare `de`
  * to `de-DE`, so a browser reporting plain `de` got the German UI while `de-AT`
  * — strictly more information about the same language — did not.
  */
@@ -172,7 +172,7 @@ function getUserLocale(): "de-DE" | "en-US" {
  * the fragment is ignored — so that path already matched navigated app tabs
  * while this one did not.
  *
- * @param url - The tab URL to check, if known (may be `undefined` for a
+ * @param url - The tab URL to check, if known (maybe `undefined` for a
  *   brand-new tab whose navigation hasn't committed yet).
  */
 function isAppTabUrl(url: string | undefined): boolean {
@@ -433,7 +433,7 @@ async function writeBufferToFile(
     // The listener is registered BEFORE starting the download. Registering it
     // after awaiting `downloads.download()` meant a download that reached a
     // terminal state first — plausible for a small backup on a fast local disk
-    // — was never observed, so the blob URL (holding the entire serialized
+    // — was never observed. So the blob URL (holding the entire serialized
     // database in memory) was never revoked and the listener stayed attached
     // for the lifetime of the background page, once per export.
     //

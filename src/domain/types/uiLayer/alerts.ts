@@ -12,7 +12,7 @@
  * `$info`) and the same four `alertAdapter.ALERT_INFO.DURATIONS` is keyed on.
  * A separate `AlertKindType` (`"info" | "error" | "confirm"`) used to sit above
  * this declaration with no consumer and a different vocabulary in both
- * directions — `confirm` only there, `success`/`warning` only here — so anyone
+ * directions — `confirm` only there, `success`/`warning` only here. So anyone
  * typing a new alert helper against it would have produced values this struct
  * cannot hold. It was removed rather than reconciled, together with
  * `AlertModeType` and `AlertStoreContract`, neither of which had a consumer or
