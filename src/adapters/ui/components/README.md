@@ -27,6 +27,7 @@ The mission of the components layer is to:
 - `CreditDebitFieldset.vue`
 - `CurrencyInput.vue`
 - `CurrencySelector.vue`
+- `DebugLogsToggle.vue`
 - `DialogPort.vue`
 - `DotMenu.vue`
 - `DynamicList.vue`

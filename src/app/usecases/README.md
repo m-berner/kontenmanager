@@ -1304,6 +1304,7 @@ KontenManager v30*
 ### Directories
 
 - `backup/`
+- `docs/`
 - `records/`
 
 ### Files

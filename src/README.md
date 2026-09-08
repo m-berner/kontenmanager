@@ -304,6 +304,12 @@ adapters/ui/entrypoints/background.ts
 │       └─ storageAdapter.installStorageLocal()
 │               └─ writes all BROWSER_STORAGE defaults on first install / update
 │
+├─ initDebugLogs()   ← reads BROWSER_STORAGE.DEBUG_LOGS directly and calls
+│                        setRuntimeDebugLogs(); this context has no Pinia store
+│                        to route it through settings.ts's watch the way
+│                        app.ts/options.ts do, so it stays live via its own
+│                        addStorageChangedListener instead
+│
 ├─ browserAdapter.actionOnClicked(onClick)
 │       └─ tabsQuery() to find existing app tabs
 │              ├─ none found  → tabsCreate()  (opens a new tab)
@@ -658,6 +664,7 @@ watch(() => settings.service, async () => {
 | `INDEXES`            | `["dax", "dow"]`         | Displayed market indexes                      |
 | `MATERIALS`          | `["au", "brent"]`        | Displayed commodity prices                    |
 | `MARKETS`            | `["Frankfurt", "XETRA"]` | Displayed markets                             |
+| `DEBUG_LOGS`         | `false`                  | Runtime override for `log()`'s production gate (Options page "Diagnostics" tab) |
 
 `storageAdapter.installStorageLocal()` writes all defaults on first install (or after an extension update that adds new
 keys). This is called by the background script's `onInstalled` handler.
