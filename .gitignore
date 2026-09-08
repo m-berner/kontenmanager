@@ -1,6 +1,4 @@
 .yarn/**
-.vscode/**
-.claude/**
 .junie/**
 .env
 .env.production

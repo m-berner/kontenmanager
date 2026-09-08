@@ -1,3 +1,8 @@
+---
+name: update-documentation
+description: Refresh and keep consistent every README.md across the repo plus the Architecture/Workflows sections merged into src/README.md and src/app/usecases/README.md, catching dangling npm-script mentions and broken relative links. Use after refactors, new features, or reorganization that could leave docs stale.
+---
+
 ### Skill: Update Documentation (READMEs, ARCHITECTURE.md, WORKFLOW[S].md)
 
 #### Purpose

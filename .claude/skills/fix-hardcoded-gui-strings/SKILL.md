@@ -1,3 +1,8 @@
+---
+name: fix-hardcoded-gui-strings
+description: Find user-facing text hardcoded in src/ instead of routed through vue-i18n, and fix it: add matching de/en keys to gui.json and replace the literal with the translated lookup pattern appropriate to the file's architectural layer (Vue SFC, composable, Pinia store, or domain/driven). Use after adding a component/dialog/store/composable that shows text, or periodically to close i18n gaps.
+---
+
 ### Skill: Find and Fix Hardcoded GUI Strings
 
 #### Purpose

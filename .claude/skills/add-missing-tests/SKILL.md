@@ -1,3 +1,8 @@
+---
+name: add-missing-tests
+description: Find src/ code and user-facing workflows with no automated test coverage and add Vitest unit tests and/or Playwright e2e tests following this repo's conventions (mirrored test paths, port mocks, setActiveTestPinia, id-based e2e selectors). Use after adding a new domain/usecase/store/composable/driven-adapter file, or a new HeaderBar action/dialog with no e2e coverage.
+---
+
 ### Skill: Add Missing Tests (Vitest unit + Playwright e2e)
 
 #### Purpose

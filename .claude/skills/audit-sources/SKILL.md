@@ -1,3 +1,8 @@
+---
+name: audit-sources
+description: Systematically audit src/ for correctness bugs, data-integrity risks, race conditions, and other latent defects beyond what lint/type-check catch, then fix and verify with the full local gate. Use periodically as a standalone hardening pass, or to re-audit after a prior round landed fixes -- not a substitute for /code-review on a single diff.
+---
+
 ### Skill: Audit `src/` for Weaknesses, Issues, and Bugs
 
 #### Purpose

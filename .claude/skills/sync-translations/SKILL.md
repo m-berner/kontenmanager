@@ -1,3 +1,8 @@
+---
+name: sync-translations
+description: Verify and fix the English locale files (gui.json, messages.json) against the German master, checking both structural parity (key sets, placeholder tokens) and translation quality (meaning, tone, punctuation, terminology, American English spelling) -- not just whether a key exists. Use after any change to a de locale file, alongside (not instead of) npm run lint:i18n and fix-hardcoded-gui-strings.
+---
+
 ### Skill: Sync Translations (`de` master → `en`)
 
 #### Purpose
