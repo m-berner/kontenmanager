@@ -75,7 +75,7 @@ const onClickOk = async (): Promise<void> => {
           }
       );
 
-      await alertAdapter.feedbackInfo(
+      await alertAdapter.feedbackSuccess(
           title,
           t("components.dialogs.addAccount.messages.success")
       );

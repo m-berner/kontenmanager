@@ -767,10 +767,10 @@ of all in-memory store items before calling `importDatabaseUsecase` and restores
 
 ### 14. Alert System
 
-Alerts are the mechanism for all user-facing feedback (info, warning, confirmation dialogs, and errors).
+Alerts are the mechanism for all user-facing feedback (success, info, warning, confirmation dialogs, and errors).
 
 ```
-alertAdapter.feedbackInfo(title, message, options?)
+alertAdapter.feedbackSuccess(title, message, options?)
         │
         └─ alertsSink()              ← configured once in plugins/pinia.ts
                 │                      returns useAlertsStore(pinia)

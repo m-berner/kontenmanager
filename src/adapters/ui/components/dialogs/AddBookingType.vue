@@ -66,7 +66,7 @@ const onClickOk = async (): Promise<void> => {
         return;
       }
 
-      await alertAdapter.feedbackInfo(
+      await alertAdapter.feedbackSuccess(
           t("components.dialogs.addBookingType.title"),
           t("components.dialogs.addBookingType.messages.success"),
           {rateLimitMs: 0}

@@ -12,6 +12,7 @@ import {ERROR_CATEGORY} from "@/domain/constants";
 
 const {storeMock, logMock} = vi.hoisted(() => ({
     storeMock: {
+        success: vi.fn(),
         info: vi.fn(),
         warning: vi.fn(),
         confirm: vi.fn(),
@@ -65,6 +66,15 @@ describe("AlertService", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         alertAdapter.configureAlertSink(() => storeMock as unknown as AlertSink);
+    });
+
+    it("feedbackSuccess should normalize strings and use the default duration", async () => {
+        storeMock.success.mockReturnValueOnce(9);
+
+        const result = await alertAdapter.feedbackSuccess("Success", "text message");
+
+        expect(result).toBe(9);
+        expect(storeMock.success).toHaveBeenCalledWith("Success", "text message", 4000);
     });
 
     it("feedbackInfo should normalize strings and use the default duration", async () => {

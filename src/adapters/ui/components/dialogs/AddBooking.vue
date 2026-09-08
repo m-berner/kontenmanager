@@ -59,7 +59,7 @@ const onClickOk = async (): Promise<void> => {
       // kind|title|message, all three of which are identical for every success
       // here. So two quick saves showed ONE confirmation — no signal at all
       // that the second write landed, in the one flow built for repetition.
-      await alertAdapter.feedbackInfo(
+      await alertAdapter.feedbackSuccess(
           t("components.dialogs.addBooking.title"),
           t("components.dialogs.addBooking.messages.success"),
           {rateLimitMs: 0}

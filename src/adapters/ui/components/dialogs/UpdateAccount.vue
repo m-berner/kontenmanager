@@ -112,7 +112,7 @@ const onClickOk = async (): Promise<void> => {
           }
       );
 
-      await alertAdapter.feedbackInfo(
+      await alertAdapter.feedbackSuccess(
           t("components.dialogs.updateAccount.title"),
           t("components.dialogs.updateAccount.messages.success")
       );

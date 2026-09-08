@@ -18,6 +18,7 @@ const ALERT_INFO = {
     MAX_MESSAGE_AGE_MS: 60_000,
     MAX_TRACKED_MESSAGES: 200,
     DURATIONS: {
+        SUCCESS: 4000,
         INFO: 4000,
         WARNING: 4000,
         ERROR: null
@@ -30,6 +31,7 @@ const ALERT_INFO = {
  * setup concern and must not be callable from UI code.
  */
 export type AlertAdapter = {
+    feedbackSuccess: (_title: string, _msg: unknown, _options?: HandleUserAlertOptions) => Promise<number | void>;
     feedbackInfo: (_title: string, _msg: unknown, _options?: HandleUserAlertOptions) => Promise<number | void>;
     feedbackWarning: (_title: string, _msg: unknown, _options?: HandleUserAlertOptions) => Promise<number | void>;
     feedbackConfirm: (_title: string, _msg: unknown, _options?: HandleUserAlertOptions) => Promise<boolean | void>;
@@ -37,6 +39,7 @@ export type AlertAdapter = {
 };
 
 export type AlertSink = {
+    success: (_title: string, _message: string, _duration: number | null) => number;
     info: (_title: string, _message: string, _duration: number | null) => number;
     warning: (_title: string, _message: string, _duration: number | null) => number;
     error: (_title: string, _message: string, _duration: number | null) => number;
@@ -173,7 +176,7 @@ export function createAlertAdapter() {
      * Checks if an alert should be suppressed based on rate limiting.
      */
     function isRateLimited(
-        kind: "info" | "warn" | "confirm" | "error",
+        kind: "success" | "info" | "warn" | "confirm" | "error",
         title: string,
         message: string,
         options?: HandleUserAlertOptions
@@ -194,6 +197,21 @@ export function createAlertAdapter() {
         recentMessages.delete(key);
         recentMessages.set(key, now);
         return false;
+    }
+
+    async function feedbackSuccess(
+        title: string,
+        error: string | string[] | Error | unknown,
+        options?: HandleUserAlertOptions
+    ): Promise<number | void> {
+        const message = normalizedError(error);
+        if (isRateLimited("success", title, message, options)) {
+            return;
+        }
+
+        const alerts = getAlertSinkSafe();
+        if (!alerts) return;
+        return alerts.success(title, message, resolveDuration(options, ALERT_INFO.DURATIONS.SUCCESS));
     }
 
     async function feedbackInfo(
@@ -288,6 +306,7 @@ export function createAlertAdapter() {
 
     return {
         configureAlertSink,
+        feedbackSuccess,
         feedbackInfo,
         feedbackWarning,
         feedbackConfirm,

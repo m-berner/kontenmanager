@@ -13,6 +13,7 @@ import {ERROR_CATEGORY} from "@/domain/constants";
 describe("AlertAdapter", () => {
     let adapter: ReturnType<typeof createAlertAdapter>;
     let sink: {
+        success: ReturnType<typeof vi.fn>;
         info: ReturnType<typeof vi.fn>;
         warning: ReturnType<typeof vi.fn>;
         error: ReturnType<typeof vi.fn>;
@@ -23,6 +24,7 @@ describe("AlertAdapter", () => {
     beforeEach(() => {
         adapter = createAlertAdapter();
         sink = {
+            success: vi.fn().mockReturnValue(0),
             info: vi.fn().mockReturnValue(1),
             warning: vi.fn().mockReturnValue(2),
             error: vi.fn().mockReturnValue(3),
@@ -37,6 +39,15 @@ describe("AlertAdapter", () => {
     it("does nothing and returns void when no sink is configured", async () => {
         const result = await adapter.feedbackInfo("Title", "message");
         expect(result).toBeUndefined();
+    });
+
+    it("forwards feedbackSuccess to the sink with the default success duration", async () => {
+        adapter.configureAlertSink(sinkFactory);
+
+        const result = await adapter.feedbackSuccess("Title", "message");
+
+        expect(sink.success).toHaveBeenCalledWith("Title", "message", 4000);
+        expect(result).toBe(0);
     });
 
     it("forwards feedbackInfo to the sink with the default info duration", async () => {
@@ -71,6 +82,7 @@ describe("AlertAdapter", () => {
     // and the message has to stay on screen. `feedbackError` used to resolve this
     // with `??`, which agreed only because its own default is `null` too.
     it.each([
+        ["success", (a: typeof adapter) => a.feedbackSuccess("T", "m", {duration: null})],
         ["info", (a: typeof adapter) => a.feedbackInfo("T", "m", {duration: null})],
         ["warning", (a: typeof adapter) => a.feedbackWarning("T", "m", {duration: null})],
         ["error", (a: typeof adapter) => a.feedbackError("T", "m", {duration: null})]
@@ -79,7 +91,7 @@ describe("AlertAdapter", () => {
 
         await call(adapter);
 
-        expect(sink[kind as "info" | "warning" | "error"]).toHaveBeenCalledWith("T", "m", null);
+        expect(sink[kind as "success" | "info" | "warning" | "error"]).toHaveBeenCalledWith("T", "m", null);
     });
 
     it("resolves the confirmation result from the sink", async () => {

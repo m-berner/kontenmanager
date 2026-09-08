@@ -108,7 +108,7 @@ const onClickOk = async (): Promise<void> => {
         return;
       }
 
-      await alertAdapter.feedbackInfo(
+      await alertAdapter.feedbackSuccess(
           t("components.dialogs.updateBookingType.title"),
           t("components.dialogs.updateBookingType.messages.success")
       );

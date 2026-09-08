@@ -24,6 +24,11 @@ export interface AccountRepositoryPort {
 }
 
 export interface AlertPort {
+    feedbackSuccess: (
+        _title: string,
+        _msg: unknown,
+        _options?: HandleUserAlertOptions
+    ) => Promise<number | void>;
     feedbackInfo: (
         _title: string,
         _msg: unknown,

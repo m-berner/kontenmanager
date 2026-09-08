@@ -92,6 +92,12 @@ Not documented as their own flow: `home`/`company` (a one-line `runtime.setCurre
 and `setting` (`browserAdapter.openOptionsPage()`, opening the browser's native extension options page) —
 both are one-line calls with no dialog, no form, and no `app/usecases/` involvement at all.
 
+Cross-cutting infrastructure shared by every flow above, rather than a flow of its own:
+
+| Topic                     | Doc                                                |
+|---------------------------|-----------------------------------------------------|
+| Alerts, toasts, confirms  | [`docs/alerts-popup.md`](docs/alerts-popup.md)       |
+
 ## Workflows
 
 This section walks through every user-facing workflow in KontenManager end to end — the user

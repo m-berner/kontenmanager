@@ -100,7 +100,7 @@ const onClickOk = async (): Promise<void> => {
           {stock}
       );
 
-      await alertAdapter.feedbackInfo(
+      await alertAdapter.feedbackSuccess(
           t("components.dialogs.updateStock.title"),
           t("components.dialogs.updateStock.messages.success")
       );
