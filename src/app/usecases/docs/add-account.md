@@ -180,6 +180,7 @@ sequenceDiagram
     participant AccSt as accounts store
     participant BTSt as bookingTypes store
     participant Set as setActiveAccountIdPersisted
+    participant DB as databaseAdapter
 
     U->>HB: click "Add Account"
     HB->>DP: setTeleport(addAccount)
@@ -204,15 +205,18 @@ sequenceDiagram
     UC->>PA: stocks.add(placeholderStock)
     UC->>Set: setActiveAccountIdPersisted(accountId)
     alt persist fails
-        UC->>PA: accounts.remove(accountId); clean(false)
-        UC->>UC: deleteAccountRecords(accountId)
-        UC->>PA: init(previousAccountData)
+        UC->>PA: accounts.remove(accountId)
+        UC->>PA: clean(false)
+        UC->>DB: deleteAccountRecords(accountId)
+        UC->>DB: getAccountRecords(previousAccountId)
+        DB-->>UC: storesDB
+        UC->>PA: init(storesDB)
         UC-->>AA: throw
     else success
         UC->>UC: runtime.resetTeleport()
         UC-->>AA: {accountId, createdBookingTypes}
+        AA->>U: success toast — dialog closes
     end
-    AA->>U: success toast — dialog closes
 ```
 
 ## Related documents

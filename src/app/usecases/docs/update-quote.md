@@ -153,6 +153,7 @@ sequenceDiagram
     participant OD as useOnlineStockData.ts
     participant Prov as market-data provider
     participant St as stocks store
+    participant Repo as stockRepository
     participant RT as runtime store
 
     U->>HB: click "Refresh Quotes" (Company view only)
@@ -168,7 +169,7 @@ sequenceDiagram
         Prov-->>OD: quotes + dates
         OD->>OD: generation still current?
         OD->>St: write mMin/mValue/mMax in place
-        OD->>OD: repositories.stocks.save(datesToPersist)
+        OD->>Repo: stocks.save(datesToPersist)
         OD->>RT: markStocksPageLoaded(page)
     end
     UA->>RT: endStockLoading() + endDownload()

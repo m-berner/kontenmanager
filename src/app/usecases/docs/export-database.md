@@ -166,8 +166,8 @@ sequenceDiagram
         UC->>FS: writeBufferToFile(exportData, filename)
         UC->>UC: resetTeleport()
         UC-->>ED: {estimatedSizeKb, cancelled: false}
+        ED->>U: dialog closes / browser download prompt
     end
-    ED->>U: dialog closes / browser download prompt
 ```
 
 ## Related documents

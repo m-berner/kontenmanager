@@ -153,6 +153,7 @@ sequenceDiagram
     participant TX as IndexedDB transaction
     participant PA as toRecordsPort
     participant AccSt as accounts store
+    participant BTSt as bookingTypes store
     participant RT as runtime store
 
     U->>HB: click "Edit Account"
@@ -175,6 +176,7 @@ sequenceDiagram
     UC->>PA: accounts.update(account)
     PA->>AccSt: update(account)
     UC->>PA: bookingTypes.add(bt) for each created type
+    PA->>BTSt: add(bt)
     UC->>RT: resetTeleport() + clearStocksPages()
     UA->>U: success toast — dialog closes
 ```
