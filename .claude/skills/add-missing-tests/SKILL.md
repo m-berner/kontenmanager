@@ -253,9 +253,10 @@ await page.waitForFunction(
 ### Automation Snippets (Windows PowerShell)
 
 Find source files under logic-bearing directories with no mirrored `*.test.ts` (validated against
-this repo — currently surfaces candidates in `domain/validation`, `app/usecases/backup`,
-`adapters/ui/stores` aggregation stores, several composables, and most of `adapters/driven`; triage
-each against "What NOT to Test" before acting):
+this repo; as of 2026-09-09 the only surviving hit is `adapters/driven/fetchAdapter.ts`, which
+*is* fully tested — just under the non-mirrored name `tests/unit/adapters/driven/fetch.test.ts`,
+which this purely structural check can't detect. Triage each hit against "What NOT to Test" before
+acting, and check for a non-mirrored test file by name before writing a duplicate one):
 ```powershell
 $srcRoots = @(
   "src/domain",
@@ -264,7 +265,7 @@ $srcRoots = @(
   "src/adapters/ui/composables",
   "src/adapters/driven"
 )
-$excludePattern = '\\types\\|/types/|\\types\.d\.ts$|constants|\.d\.ts$|\\deps\.ts$|\\ports\.ts$'
+$excludePattern = '/types/|/types\.ts$|constants|\.d\.ts$|/deps\.ts$|/ports\.ts$'
 
 $missing = @()
 foreach ($root in $srcRoots) {
