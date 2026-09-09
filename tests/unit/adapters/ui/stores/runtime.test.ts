@@ -165,7 +165,7 @@ describe("Runtime Store", () => {
         expect(runtime.isStocksPageGenerationCurrent(1, staleGeneration)).toBe(false);
     });
 
-    it("clearStocksPages should bump the generation of every tracked page, not just clear the loaded set", () => {
+    it("clearStocksPages should invalidate the generation of every tracked page, not just clear the loaded set", () => {
         const runtime = useRuntimeStore();
 
         const staleGen1 = runtime.bumpStocksPageGeneration(1);

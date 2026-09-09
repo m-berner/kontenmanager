@@ -67,7 +67,24 @@ describe("useExportDatabaseDialogController", () => {
 
     it("builds dialogText from the translated key with the filename interpolated", () => {
         const {controller} = makeController();
-        expect(controller.dialogText).toContain(controller.filename);
+        expect(controller.dialogText.value).toContain(controller.filename);
+    });
+
+    it("dialogText stays in sync with the filename run() would actually write, not a snapshot frozen at open time", () => {
+        vi.useFakeTimers();
+        try {
+            const {controller} = makeController();
+            const initialFilename = controller.filename;
+            expect(controller.dialogText.value).toContain(initialFilename);
+
+            // Cross a day boundary while the dialog stays open.
+            vi.setSystemTime(new Date(Date.now() + 24 * 60 * 60 * 1000));
+            vi.advanceTimersByTime(60_000);
+
+            expect(controller.dialogText.value).not.toContain(initialFilename);
+        } finally {
+            vi.useRealTimers();
+        }
     });
 
     it("run() exports, writes the file, and notifies the estimated size for a normal-sized export", async () => {

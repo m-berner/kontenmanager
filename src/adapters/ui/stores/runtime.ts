@@ -149,16 +149,18 @@ export const useRuntimeStore = defineStore("runtime", function () {
 
     /**
      * Clears all tracked loaded stock pages.
-     * Also bumps every tracked page's generation, so a fetch already in flight
-     * for one of these pages discards its write-back instead of re-marking the
-     * page "loaded" and silently undoing this invalidation once it resolves.
+     * Also clears every tracked page's generation entirely, rather than
+     * bumping each one in place: a fetch already in flight for one of these
+     * pages looks up `stocksPageGeneration.get(page)`, which after a full
+     * clear comes back `undefined` and can never equal that fetch's
+     * (positive) generation number — so its write-back is discarded exactly
+     * as it would be after a bump, but the map itself does not accumulate one
+     * permanent entry per page number ever seen across the session.
      */
     function clearStocksPages(): void {
         loadedStocksPages.value.clear();
         loadedStocksPagesAt.value.clear();
-        for (const page of stocksPageGeneration.value.keys()) {
-            bumpStocksPageGeneration(page);
-        }
+        stocksPageGeneration.value.clear();
     }
 
     /**

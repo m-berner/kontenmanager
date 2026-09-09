@@ -48,8 +48,8 @@ precondition, unlike an action that operates *on* the currently active account.
 ### 2. The dialog — a read-only preview, no fillable form
 
 `ExportDatabase.vue` has no injected form manager. Its only content is a disabled
-`v-textarea` showing `dialogText` — a preview string built once by the controller (`t("...text", {filename})`) using a
-filename resolved from today's date. `onClickOk`
+`v-textarea` showing `dialogText` — a reactive preview string (`computed`, `t("...text", {filename})`)
+using a filename resolved from today's date. `onClickOk`
 passes `skipValidation: true` to `submitGuard` for the same reason every other
 no-form dialog does (see [Delete Account](delete-account.md) §3): the validation gate is
 fail-closed, so a dialog with genuinely nothing to validate must say so explicitly.
@@ -64,10 +64,13 @@ async function run(): Promise<void> {
 ```
 
 The filename shown in the dialog's preview text and the filename actually written are
-resolved from `new Date()` at two different moments on purpose. The preview is captured
-once when the dialog opens; if the dialog is left open across midnight and `run()` reused
-that same captured value, the exported file would carry the previous day's date in its
-name despite writing today's data.
+resolved from `new Date()` independently on purpose — `run()` never reuses the preview's
+value. The preview itself refreshes on a coarse (once-a-minute) timer for as long as the
+dialog stays mounted, rather than freezing at the moment the dialog opened: an earlier
+version captured it once, so a dialog left open across midnight kept showing yesterday's
+filename right up until the moment `run()` silently wrote today's — accurate on disk, stale
+on screen. The timer keeps what's displayed matching what a click on OK would produce
+right now.
 
 ### 4. The usecase — `exportDatabaseUsecase`
 

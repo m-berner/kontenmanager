@@ -4,6 +4,8 @@
  * one could get a copy at https://mozilla.org/MPL/2.0/.
  */
 
+import {computed, onUnmounted, ref} from "vue";
+
 import {createExportFilename, exportDatabaseUsecase} from "@/app/usecases/backup";
 import type {RuntimePort} from "@/app/usecases/ports";
 
@@ -37,13 +39,27 @@ export function useExportDatabaseDialogController(input: {
     const buildFilename = (): string =>
         createExportFilename(new Date().toISOString().substring(0, 10));
 
-    // Resolved once here for display. `run()` re-derives its own (below) rather
-    // than reusing this one, so the file actually written always carries the
-    // date it was written on. Previously the prefix was captured when the
-    // dialog opened and a dialog left open across midnight stamped the previous
-    // day onto the export.
+    // `run()` re-derives its own filename (below) rather than reusing this
+    // one, so the file actually written always carries the date it was
+    // written on. Previously the prefix was captured when the dialog opened
+    // and a dialog left open across midnight stamped the previous day onto
+    // the export.
     const filename = buildFilename();
-    const dialogText = input.t("components.dialogs.exportDatabase.text", {filename});
+
+    // `dialogText` (the displayed preview) used to be frozen from the same
+    // one-time `filename` above, so a dialog left open across midnight showed
+    // yesterday's filename even though `run()` would go on to write today's —
+    // the write-side bug was fixed, but the display was left stale. Kept
+    // reactive and re-derived on a coarse timer instead, so the preview stays
+    // in sync with what a click on OK would actually produce right now.
+    const displayFilename = ref(filename);
+    const dialogText = computed(() =>
+        input.t("components.dialogs.exportDatabase.text", {filename: displayFilename.value})
+    );
+    const filenameRefreshTimer = setInterval(() => {
+        displayFilename.value = buildFilename();
+    }, 60_000);
+    onUnmounted(() => clearInterval(filenameRefreshTimer));
 
     async function run(): Promise<void> {
         const exportFilename = buildFilename();
