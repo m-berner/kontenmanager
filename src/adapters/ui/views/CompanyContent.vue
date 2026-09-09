@@ -36,7 +36,7 @@ const settings = useSettingsStore();
 const setStocksPerPage = (value: number) => settings.setStocksPerPage(value);
 const runtime = useRuntimeStore();
 const {alertAdapter} = useAdapters();
-const {loadOnlineData, refreshOnlineData} = useOnlineStockData();
+const {loadOnlineData, refreshOnlineData} = useOnlineStockData(t);
 
 const activeStockItems = computed(() => records.portfolio.active);
 const stocksPerPage = computed(() => settings.stocksPerPage);
@@ -307,7 +307,7 @@ const onCurrentItems = async (items: unknown[]): Promise<void> => {
     await refreshOnlineData(runtime.stocksPage, {signal, stockIds: next});
   } catch (err) {
     if (!isAbortError(err)) {
-      await alertAdapter.feedbackError("COMPANY_CONTENT", err, {
+      await alertAdapter.feedbackError(t("views.companyContent.errorTitle"), err, {
         data: "onCurrentItems"
       });
     }
@@ -352,7 +352,7 @@ watch(() => [runtime.curUsd, runtime.curEur], async () => {
     await refreshOnlineData(runtime.stocksPage, {signal, stockIds: renderedStockIds.value});
   } catch (err) {
     if (!isAbortError(err)) {
-      await alertAdapter.feedbackError("COMPANY_CONTENT", err, {data: "curUsdCurEurWatcher"});
+      await alertAdapter.feedbackError(t("views.companyContent.errorTitle"), err, {data: "curUsdCurEurWatcher"});
     }
   } finally {
     runtime.endStockLoading();
@@ -379,7 +379,7 @@ onBeforeMount(async () => {
       await loadRequiredPages(runtime.stocksPage, signal);
     } catch (err) {
       if (!isAbortError(err)) {
-        await alertAdapter.feedbackError("COMPANY_CONTENT", err, {data: "loadRequiredPages"});
+        await alertAdapter.feedbackError(t("views.companyContent.errorTitle"), err, {data: "loadRequiredPages"});
       }
     } finally {
       runtime.endStockLoading();

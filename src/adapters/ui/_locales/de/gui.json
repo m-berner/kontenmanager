@@ -216,6 +216,12 @@
         "confirmOk": "Löschen",
         "confirmCancel": "Abbrechen"
       }
+    },
+    "useOnlineStockData": {
+      "title": "Netzwerk",
+      "messages": {
+        "fetchFailed": "Daten konnten nicht empfangen werden: {names}"
+      }
     }
   },
   "stores": {
@@ -363,6 +369,7 @@
       }
     },
     "companyContent": {
+      "errorTitle": "Marktdatenfehler",
       "stocksTable": {
         "headers": {
           "action": "Aktionen",

@@ -58,7 +58,7 @@ the reactive store's own array**, not a detached copy.
 
 ```ts
 if (!selected.value) {
-    await alertAdapter.feedbackInfo("FadeInStock", browserAdapter.getMessage("xx_db_no_selected"));
+    await alertAdapter.feedbackInfo(t("components.dialogs.fadeInStock.title"), browserAdapter.getMessage("xx_db_no_selected"));
     return;
 }
 
@@ -66,7 +66,7 @@ if (!selected.value) {
 const stock = {...selected.value!, cFadeOut: 0};
 
 await updateStockUsecase({repositories, records: toRecordsPort(records), runtime}, {stock});
-await alertAdapter.feedbackInfo("FadeInStock", browserAdapter.getMessage("xx_db_fade_in"));
+await alertAdapter.feedbackInfo(t("components.dialogs.fadeInStock.title"), browserAdapter.getMessage("xx_db_fade_in"));
 ```
 
 The selection check moved inside `submitGuard`'s `operation` for the same reentrancy

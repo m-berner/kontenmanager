@@ -25,7 +25,7 @@
           "stockLabel": "Company",
           "marketPlaceLabel": "Stock exchange",
           "transactionTaxLabel": "Transaction tax",
-          "sourceTaxLabel": "Source tax"
+          "sourceTaxLabel": "Withholding tax"
         },
         "stockForm": {
           "isinLabel": "ISIN",
@@ -209,12 +209,18 @@
         "delete": "Record has been deleted",
         "noDelete": "Record could not be deleted. There are assigned bookings.",
         "noLink": "No URL configured",
-        "invalidCode": "Invalid code",
+        "invalidCode": "Invalid error code",
         "confirmDeleteTitle": "Confirm deletion",
         "confirmDeleteBooking": "Permanently delete this booking?",
         "confirmDeleteStock": "Permanently delete this company?",
         "confirmOk": "Delete",
         "confirmCancel": "Cancel"
+      }
+    },
+    "useOnlineStockData": {
+      "title": "Network",
+      "messages": {
+        "fetchFailed": "Failed to receive data: {names}"
       }
     }
   },
@@ -313,6 +319,7 @@
       }
     },
     "companyContent": {
+      "errorTitle": "Market data error",
       "stocksTable": {
         "headers": {
           "action": "Actions",
@@ -352,9 +359,9 @@
         {
           "subTitle": "Getting Started",
           "content": [
-            "Create a new bank account via the header menu ('Add Bank Account').",
-            "Enable 'Depot Clearing Account' if you also want to manage stocks with this account — this automatically creates the 'Buy', 'Sell', and 'Dividend' booking types and unlocks the Company view for the account.",
-            "If you have existing data, use 'Import Database' to restore it, or 'Export Database' to create a backup.",
+            "Create a new bank account via the header menu ('Add bank account').",
+            "Enable 'Depot clearing account' if you also want to manage stocks with this account — this automatically creates the 'Buy', 'Sell', and 'Dividend' booking types and unlocks the Company view for the account.",
+            "If you have existing data, use 'Import database' to restore it, or 'Export database' to create a backup.",
             "The account selector in the title bar lets you switch between your accounts once more than one has been created."
           ],
           "icon": ""
@@ -383,14 +390,14 @@
           "subTitle": "Settings & Personalization",
           "content": [
             "Under 'Settings', choose one of six color themes (including Light, Dark, Ocean) and pick which service supplies quote and market data.",
-            "Further tabs manage the default currency for new accounts, plus the lists of marketplaces, indexes, materials, and exchange rates shown in the Info Bar.",
+            "Further tabs manage the default currency for new accounts, plus the lists of stock exchanges, indexes, commodities, and exchange rates shown in the Info Bar.",
             "Configuration is stored locally in your browser and reloaded automatically when you open the extension."
           ],
           "icon": ""
         },
         {
           "subTitle": "Accessibility",
-          "content": "The interface is primarily designed for mouse and touch interaction. One exception is the Ctrl+Alt+R shortcut: after a confirmation prompt, it resets all extension's data — use it only if you really want to start over.",
+          "content": "The interface is primarily designed for mouse and touch interaction. One exception is the Ctrl+Alt+R shortcut: after a confirmation prompt, it resets all of the extension's data — use it only if you really want to start over.",
           "icon": ""
         },
         {

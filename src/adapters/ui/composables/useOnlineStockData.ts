@@ -19,6 +19,8 @@ import {useStocksStore} from "@/adapters/ui/stores/stocks";
 const ASK_DATE_INTERVAL = 7;
 const MILLISECONDS_PER_DAY = 86400000;
 
+type TFunction = (_key: string, _params?: Record<string, unknown>) => string;
+
 /**
  * Composable that handles online market-data loading for the portfolio view.
  *
@@ -63,7 +65,15 @@ function toTimestamp(iso: string): number {
     return isValidISODate(iso) ? utcDate(iso).getTime() : DATE.ZERO_TIME;
 }
 
-export function useOnlineStockData() {
+/**
+ * @param t - Translation function, passed in rather than resolved via
+ * `useI18n()` here: this composable is also invoked from
+ * `useHeaderBarActions.ts`, a plain composable (not a component's own
+ * `setup()`) that already receives `t` from ITS caller for the same reason —
+ * see that file's own parameter. Accepting it as a parameter keeps this
+ * composable callable from any of those contexts without special-casing one.
+ */
+export function useOnlineStockData(t: TFunction) {
     const {fetchAdapter, storageAdapter, alertAdapter, repositories} = useAdapters();
     const portfolio = usePortfolioStore();
     const stocks = useStocksStore();
@@ -200,7 +210,11 @@ export function useOnlineStockData() {
             const names = companies.length > 0
                 ? companies.join(", ")
                 : minRateMaxResponse.failedIsins.join(", ");
-            await alertAdapter.feedbackInfo("network", `failed to receive data: ${names}`, {duration: null});
+            await alertAdapter.feedbackInfo(
+                t("composables.useOnlineStockData.title"),
+                t("composables.useOnlineStockData.messages.fetchFailed", {names}),
+                {duration: null}
+            );
 
             // Re-check after this await: a newer call for the same page may have
             // bumped the generation while this one was showing the alert, and its

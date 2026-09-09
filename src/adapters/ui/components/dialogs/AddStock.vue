@@ -29,7 +29,7 @@ const {activeAccountId} = storeToRefs(useSettingsStore());
 const runtime = useRuntimeStore();
 const records = useRecordsStore();
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
-const {refreshOnlineData} = useOnlineStockData();
+const {refreshOnlineData} = useOnlineStockData(t);
 const stockForm = createStockFormManager();
 provideStockFormManager(stockForm);
 const {mapStockFormToDb, reset} = stockForm;

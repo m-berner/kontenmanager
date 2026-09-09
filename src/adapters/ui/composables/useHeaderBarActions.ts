@@ -19,7 +19,7 @@ export function useHeaderBarActions(t: (_key: string) => string): {
     const runtime = useRuntimeStore();
     const records = useRecordsStore();
     const {browserAdapter, alertAdapter, fetchAdapter} = useAdapters();
-    const {refreshAllOnlineData} = useOnlineStockData();
+    const {refreshAllOnlineData} = useOnlineStockData(t);
 
     const openDialog = (dialogName: DialogNameType, dialogOk: boolean = true): void => {
         runtime.setTeleport({

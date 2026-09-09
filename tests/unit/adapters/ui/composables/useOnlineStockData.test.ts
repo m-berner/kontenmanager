@@ -45,6 +45,9 @@ function createSampleStock(overrides: Partial<StockItem> = {}): StockItem {
     };
 }
 
+const t = (key: string, params?: Record<string, unknown>): string =>
+    params ? `${key} ${JSON.stringify(params)}` : key;
+
 describe("useOnlineStockData", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -68,7 +71,7 @@ describe("useOnlineStockData", () => {
             {key: 1, value: {gm: 1738944000000, qf: 1738944000000}}
         ]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await loadOnlineData(1);
 
         const updated = stocks.items[0];
@@ -100,7 +103,7 @@ describe("useOnlineStockData", () => {
         });
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await loadOnlineData(1);
 
         // A price-only refresh must not turn into a DB write on every poll.
@@ -126,7 +129,7 @@ describe("useOnlineStockData", () => {
         ]);
         stocksSave.mockRejectedValueOnce(new Error("db down"));
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await expect(loadOnlineData(1)).resolves.toBeUndefined();
 
         // The dates are already correct in memory for this session; a failed
@@ -152,7 +155,7 @@ describe("useOnlineStockData", () => {
         });
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await loadOnlineData(1);
 
         // de-DE → EUR. USD is treated as "not EUR" so divisor uses runtime.curUsd.
@@ -184,7 +187,7 @@ describe("useOnlineStockData", () => {
             });
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
 
         const olderCall = loadOnlineData(1);
         const newerCall = loadOnlineData(1);
@@ -234,7 +237,7 @@ describe("useOnlineStockData", () => {
             });
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
 
         const olderCall = loadOnlineData(1);
         // Let the older call's fetch resolve and reach the (still-pending) alert await.
@@ -270,7 +273,7 @@ describe("useOnlineStockData", () => {
             {key: 1, value: {gm: 1738944000000, qf: 1738944000000}}
         ]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await loadOnlineData(1);
 
         const updated = stocks.items[0];
@@ -292,7 +295,7 @@ describe("useOnlineStockData", () => {
         fetchMinRateMaxData.mockResolvedValue({data: [], failedIsins: []});
         fetchDateData.mockResolvedValue([]);
 
-        const {refreshOnlineData} = useOnlineStockData();
+        const {refreshOnlineData} = useOnlineStockData(t);
         await refreshOnlineData(1);
 
         expect(runtime.loadedStocksPages.has(1)).toBe(true);
@@ -319,7 +322,7 @@ describe("useOnlineStockData", () => {
         fetchMinRateMaxData.mockResolvedValue({data: [], failedIsins: []});
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         // Page 1's positional slice would be [1, 2]; ask for [3, 1] instead.
         await loadOnlineData(1, {stockIds: [3, 1]});
 
@@ -344,7 +347,7 @@ describe("useOnlineStockData", () => {
         fetchMinRateMaxData.mockResolvedValue({data: [], failedIsins: []});
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await loadOnlineData(1, {stockIds: [undefined as unknown as number, 999]});
 
         expect(fetchMinRateMaxData).not.toHaveBeenCalled();
@@ -367,7 +370,7 @@ describe("useOnlineStockData", () => {
         fetchMinRateMaxData.mockResolvedValue({data: [], failedIsins: []});
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await loadOnlineData(2);
 
         const requested = fetchMinRateMaxData.mock.calls[0][0] as { id: number }[];
@@ -393,7 +396,7 @@ describe("useOnlineStockData", () => {
         });
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await expect(loadOnlineData(1)).resolves.toBeUndefined();
 
         expect(fetchMinRateMaxData).toHaveBeenCalled();
@@ -413,7 +416,7 @@ describe("useOnlineStockData", () => {
         fetchMinRateMaxData.mockResolvedValue({data: [], failedIsins: []});
         fetchDateData.mockResolvedValue([]);
 
-        const {loadOnlineData} = useOnlineStockData();
+        const {loadOnlineData} = useOnlineStockData(t);
         await loadOnlineData(1);
 
         expect(fetchDateData).toHaveBeenCalledWith(
@@ -448,7 +451,7 @@ describe("useOnlineStockData", () => {
             });
             fetchDateData.mockResolvedValue([]);
 
-            const {loadOnlineData} = useOnlineStockData();
+            const {loadOnlineData} = useOnlineStockData(t);
             await loadOnlineData(1);
 
             expect(fetchMinRateMaxData).toHaveBeenCalledWith(
@@ -484,7 +487,7 @@ describe("useOnlineStockData", () => {
             });
             fetchDateData.mockResolvedValue([]);
 
-            const {loadOnlineData} = useOnlineStockData();
+            const {loadOnlineData} = useOnlineStockData(t);
             await loadOnlineData(1);
 
             expect(stocks.items.find((s) => s.cID === 2)?.mValue).toBe(222);
@@ -500,7 +503,7 @@ describe("useOnlineStockData", () => {
             settings.stocksPerPage = 10;
             stocks.items = [createSampleStock({cID: 1, cISIN: ""})];
 
-            const {loadOnlineData} = useOnlineStockData();
+            const {loadOnlineData} = useOnlineStockData(t);
             await loadOnlineData(1);
 
             expect(fetchMinRateMaxData).not.toHaveBeenCalled();

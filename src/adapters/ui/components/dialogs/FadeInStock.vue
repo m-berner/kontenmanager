@@ -47,7 +47,7 @@ const onClickOk = async (): Promise<void> => {
       // the selection here rather than at click time is what makes the
       // non-null assertion below sound rather than merely true-in-practice.
       if (!selected.value) {
-        await alertAdapter.feedbackInfo("FadeInStock", browserAdapter.getMessage("xx_db_no_selected"));
+        await alertAdapter.feedbackInfo(t("components.dialogs.fadeInStock.title"), browserAdapter.getMessage("xx_db_no_selected"));
         return;
       }
 
@@ -65,7 +65,7 @@ const onClickOk = async (): Promise<void> => {
           {repositories, records: toRecordsPort(records), runtime},
           {stock}
       );
-      await alertAdapter.feedbackInfo("FadeInStock", browserAdapter.getMessage("xx_db_fade_in"));
+      await alertAdapter.feedbackInfo(t("components.dialogs.fadeInStock.title"), browserAdapter.getMessage("xx_db_fade_in"));
     }
   });
 };
