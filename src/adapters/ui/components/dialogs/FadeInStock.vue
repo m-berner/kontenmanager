@@ -5,7 +5,7 @@
   -->
 
 <script lang="ts" setup>
-import {onBeforeMount, ref} from "vue";
+import {computed, onBeforeMount, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 import {toRecordsPort} from "@/app/usecases/portAdapters";
@@ -26,6 +26,9 @@ const records = useRecordsStore();
 const {databaseAdapter, browserAdapter, alertAdapter, repositories} = useAdapters();
 
 const selected = ref<StockItem | null>(null);
+const sortedPassiveStocks = computed<Array<StockItem>>(() =>
+    [...records.stocks.passive].sort((a, b) => a.cCompany.localeCompare(b.cCompany))
+);
 
 const onClickOk = async (): Promise<void> => {
   log("COMPONENTS DIALOGS FadeInStock: onClickOk");
@@ -89,7 +92,7 @@ log("COMPONENTS DIALOGS FadeInStock: setup");
           item-title="cCompany"
           item-value="cID"
           v-bind:clearable="true"
-          v-bind:items="records.stocks.passive"
+          v-bind:items="sortedPassiveStocks"
           v-bind:label="t('components.dialogs.fadeInStock.selectLabel')"
           v-bind:return-object="true"
           variant="outlined"/>
