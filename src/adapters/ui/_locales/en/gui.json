@@ -397,7 +397,7 @@
         },
         {
           "subTitle": "Accessibility",
-          "content": "The interface is primarily designed for mouse and touch interaction. One exception is the Ctrl+Alt+R shortcut: after a confirmation prompt, it resets all of the extension's data — use it only if you really want to start over.",
+          "content": "The interface is primarily designed for mouse and touch interaction. One exception is the Ctrl+Alt+R shortcut: after a confirmation prompt, it resets all the extension's data — use it only if you really want to start over.",
           "icon": ""
         },
         {
