@@ -48,8 +48,13 @@ dialog — the entire form is one local `ref<StockItem | null>(null)`, bound wit
 `return-object` so `selected.value` is the live store record itself, not just its id:
 
 ```html
-<v-select v-model="selected" :items="records.stocks.passive" item-title="cCompany" item-value="cID" return-object .../>
+<v-select v-model="selected" :items="sortedPassiveStocks" item-title="cCompany" item-value="cID" return-object .../>
 ```
+
+`sortedPassiveStocks` is a local `computed` copy of `records.stocks.passive` sorted by
+`cCompany` (`localeCompare`), so the picker lists companies alphabetically. It spreads
+into a new array before sorting, so the store's own array order is left untouched — and
+the items are still the store's own records, which is what the next point relies on.
 
 `return-object` matters for what happens next: `selected.value` is a **reference into
 the reactive store's own array**, not a detached copy.

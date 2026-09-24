@@ -35,7 +35,9 @@ convention the code did not follow.
   `src/adapters/driven/faviconAdapter.ts`.
 - `useUrl.ts`: Reactive URL parsing interface. Delegates parsing logic to `src/domain/utils/url.ts`.
 - `useOnlineStockData.ts`: Online market-data loading for the portfolio view (fetching min/rate/max and date data,
-  writing results back to the stocks store, cache invalidation on provider changes).
+  writing results back to the stocks store, cache invalidation on provider changes). Takes the caller's `t` as a
+  parameter (`useOnlineStockData(t)`) instead of calling `useI18n()`, since it is also invoked from the plain
+  composable `useHeaderBarActions(t)`, outside a component's `setup()`.
 
 ### UI Interaction
 

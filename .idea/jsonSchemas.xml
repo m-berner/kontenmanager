@@ -37,6 +37,22 @@
             </SchemaInfo>
           </value>
         </entry>
+        <entry key="browser.i18n.json">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="browser.i18n.json" />
+              <option name="relativePathToSchema" value="https://www.schemastore.org/browser.i18n.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="src/adapters/ui/_locales/de/messages.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
       </map>
     </state>
   </component>

@@ -709,7 +709,8 @@ the conversion target and the printed symbol cannot drift apart. Three details a
   currency's rate converting; `1` shows the quote unconverted, the fallback `useOnlineStockData` and `InfoBar` already
   use.
 - `clearStocksPages()` runs **after** the await. Before it, the re-fetch would convert with the divisors being replaced;
-  it is also what supersedes in-flight loads, since it bumps every page's generation. It only **invalidates freshness
+  it is also what supersedes in-flight loads, since it clears every page's generation entry (an in-flight load's
+  positive generation can then never match the missing entry, so its write-back is discarded). It only **invalidates freshness
   markers**, though — see the correction below for what actually repaints an already-mounted `CompanyContent`.
 - The watcher is gated on `isInitialized`, because Phase 2 loading the accounts is itself a currency change and Phase 3
   already reads the post-Phase-2 value.
