@@ -135,11 +135,25 @@ export const useRuntimeStore = defineStore("runtime", function () {
      */
     const stocksPageGeneration = ref<Map<number, number>>(new Map());
 
+    /**
+     * Source of every generation number, shared across all pages and never
+     * reset — not even by `clearStocksPages()`, which empties the map above.
+     * A per-page counter derived from the map (`get(page) ?? 0) + 1`) restarted
+     * at 1 after that clear, so the first new fetch for a page was handed the
+     * SAME number as a fetch still in flight from before it — and that stale
+     * fetch then passed `isStocksPageGenerationCurrent` and wrote back after
+     * all. Header-bar "update quotes" hits exactly this: it clears, then
+     * immediately bumps page 1 while a mount-time load of page 1 may still be
+     * pending. A number drawn from here is strictly greater than any issued
+     * before, so it can never collide with an outstanding one.
+     */
+    let lastStocksPageGeneration = 0;
+
     /** Marks the start of a new fetch attempt for a page; returns its generation number. */
     function bumpStocksPageGeneration(page: number): number {
-        const next = (stocksPageGeneration.value.get(page) ?? 0) + 1;
-        stocksPageGeneration.value.set(page, next);
-        return next;
+        lastStocksPageGeneration += 1;
+        stocksPageGeneration.value.set(page, lastStocksPageGeneration);
+        return lastStocksPageGeneration;
     }
 
     /** Returns whether `generation` is still the most recently started fetch attempt for `page`. */
@@ -152,10 +166,11 @@ export const useRuntimeStore = defineStore("runtime", function () {
      * Also clears every tracked page's generation entirely, rather than
      * bumping each one in place: a fetch already in flight for one of these
      * pages looks up `stocksPageGeneration.get(page)`, which after a full
-     * clear comes back `undefined` and can never equal that fetch's
-     * (positive) generation number — so its write-back is discarded exactly
-     * as it would be after a bump, but the map itself does not accumulate one
-     * permanent entry per page number ever seen across the session.
+     * clear comes back `undefined` — and, once a newer fetch re-bumps the
+     * page, a number greater than its own (see `lastStocksPageGeneration`) —
+     * so it can never match that fetch's generation again, and its write-back
+     * is discarded exactly as it would be after a bump. The map itself does
+     * not accumulate one permanent entry per page number ever seen.
      */
     function clearStocksPages(): void {
         loadedStocksPages.value.clear();

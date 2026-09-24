@@ -180,6 +180,20 @@ describe("Runtime Store", () => {
         expect(runtime.isStocksPageGenerationCurrent(2, staleGen2)).toBe(false);
     });
 
+    it("a fetch in flight across clearStocksPages must stay stale after the page is re-bumped", () => {
+        const runtime = useRuntimeStore();
+
+        // e.g. a mount-time load of page 1 still pending...
+        const staleGen = runtime.bumpStocksPageGeneration(1);
+        // ...when refreshAllOnlineData clears and immediately reloads page 1.
+        runtime.clearStocksPages();
+        const freshGen = runtime.bumpStocksPageGeneration(1);
+
+        expect(freshGen).not.toBe(staleGen);
+        expect(runtime.isStocksPageGenerationCurrent(1, staleGen)).toBe(false);
+        expect(runtime.isStocksPageGenerationCurrent(1, freshGen)).toBe(true);
+    });
+
     it("exposed refs should be mutable for consumers (currency, flags)", () => {
         const runtime = useRuntimeStore();
         runtime.curUsd = 1.1;
