@@ -62,7 +62,7 @@ const hasInitError = ref(false);
 const isRetrying = ref(false);
 // Which non-critical startup phases are unavailable. `initializeApp` returns a
 // structured per-phase AppStatus — `storage` and `db` each
-// "ok" | "error" | "aborted", plus three `fetch` booleans — and this component
+// "ok" | "error" | "aborted", plus three `fetch` booleans. And this component
 // used to log it and then set `isInitialized` unconditionally, with the log line
 // reading "Initialization successful" whatever the status contained. Nothing
 // inspected a single field.
@@ -123,7 +123,7 @@ let ratesController: AbortController | null = null;
  * and an in-flight fetch a newer trigger supersedes is simply discarded
  * rather than racing its write-back against the newer one's.
  *
- * `clearStocksPages()` runs AFTER the await, not before. It is what makes the
+ * `clearStocksPages()` runs AFTER await, not before. It is what makes the
  * next render re-fetch, and a fetch kicked off before the new rates land would
  * convert with the very divisors this is replacing. It is also what supersedes
  * anything already in flight: it bumps every page's generation, so an in-flight
@@ -174,7 +174,7 @@ async function refreshRates(): Promise<void> {
 watch(displayCurrency, async () => {
   // Boot owns the first fetch. `initializeApp`'s Phase 2 loads the accounts,
   // which is itself a change to `displayCurrency` (it starts at the storage
-  // default with no accounts loaded), so without this gate a USD-account user
+  // default with no accounts loaded). So without this gate a USD-account user
   // got a second, redundant FX fetch queued while Phase 3 — which already reads
   // the resolved currency, since it runs after Phase 2 — was still in flight.
   // Both write the same values, so this is about not doing the work twice and

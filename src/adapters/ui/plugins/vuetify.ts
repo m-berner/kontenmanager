@@ -163,7 +163,7 @@ export const vuetify = createVuetify({
                     warning: "#FFA500",
                     error: "#FF0000",
                     info: "#1565C0",
-                    success: "#008000"
+                    success: "#90EE90"
                 }
             },
             dark: {
@@ -176,7 +176,7 @@ export const vuetify = createVuetify({
                     warning: "#FFA500",
                     error: "#FF0000",
                     info: "#64B5F6",
-                    success: "#008000"
+                    success: "#90EE90"
                 }
             },
             sky: {
@@ -189,7 +189,7 @@ export const vuetify = createVuetify({
                     warning: "#FFA500",
                     error: "#FF0000",
                     info: "#031222",
-                    success: "#008000"
+                    success: "#90EE90"
                 }
             },
             ocean: {
@@ -202,7 +202,7 @@ export const vuetify = createVuetify({
                     warning: "#FFA500",
                     error: "#FF0000",
                     info: "#90CAF9",
-                    success: "#008000"
+                    success: "#90EE90"
                 }
             },
             earth: {
@@ -215,7 +215,7 @@ export const vuetify = createVuetify({
                     warning: "#FFA500",
                     error: "#FF0000",
                     info: "#64B5F6",
-                    success: "#008000"
+                    success: "#90EE90"
                 }
             },
             meadow: {
@@ -228,7 +228,7 @@ export const vuetify = createVuetify({
                     warning: "#FFA500",
                     error: "#FF0000",
                     info: "#F5FAFF",
-                    success: "#008000"
+                    success: "#90EE90"
                 }
             }
         }
